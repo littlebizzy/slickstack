@@ -14,4 +14,4 @@ Before the likes of Shopify and Wix
 
 ## The Basics
 
-Much of modern computing history can be traced back to one thing: [Unix](https://en.wikipedia.org/wiki/Unix).
+Much of modern computing history can be traced back to one thing: [Unix](https://en.wikipedia.org/wiki/Unix). Indeed, one of the only things about web servers tbat hasn't changed in several decades is the shell (bash) language. Keeping long-term support and simplicity in mind, SlickStack is coded entirely in bash scripts.
