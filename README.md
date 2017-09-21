@@ -6,10 +6,13 @@ Outside of the so-called [Application Layer](https://en.wikipedia.org/wiki/Appli
 
 While this is surely quite exciting, there is now a massive disconnect between emerging technologies and services and typical small and medium sized businesses (SMBs) and independent teams who face an impossible learning curve to maintain not only a competitive edge, but to even keep up with basic standards in security, etc.
 
+Typical SMB owner thought process:
+
 * Why is my website loading so slowly?
 * Which web hosting company should I choose?
 * What cache/security plugin is the best?
-* @#$%! THIS... BACK TO SHOPIFY!!
+* When is my freelancer going to reply?
+* @#$%! THIS... BACK TO SHOPIFY!
 
 TL;DR: while "the wheel" might not need re-inventing, it surely [can be improved](https://www.scientificamerican.com/article/greener-tires/).
 
