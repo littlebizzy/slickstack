@@ -4,7 +4,7 @@
 
 Outside of the so-called [Application Layer](https://en.wikipedia.org/wiki/Application_layer), so much of the way computers and servers now work has been moved away from in-house teams and specialists and onto "the cloud" that terms like [DevOps](https://www.reddit.com/r/devops/comments/3rpzem/devops_vs_sysadmin/cwqmlnd/) have become standard among recruiters, companies, and developers alike. Modern web development trends have begun to revolve entirely around concepts such as automation, APIs, cloud services, and beyond — a phenomemon we might refer to as *Web 3.0*.
 
-While this shift is exciting, there is now a massive and growing disconnect between emerging technologies and services, and typical small and medium sized businesses (SMBs) -- not to mention independent agencies -- who face an impossible learning curve to maintain not only a competitive edge, but to even keep up with basic standards in security, etc.
+While this shift is exciting, there is now a massive and growing disconnect between these emerging technologies and services, and the humans that are expected to implement or benefit from them. Typical small and medium sized businesses (SMBs) — not to mention independent agencies or freelancers — who face an impossible learning curve to maintain not only a competitive edge, but to even keep up with basic standards in security, etc.
 
 Typical SMB owner thought process:
 
