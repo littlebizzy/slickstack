@@ -6,6 +6,11 @@ Outside of the so-called [Application Layer](https://en.wikipedia.org/wiki/Appli
 
 While this is surely quite exciting, there is now a massive disconnect between emerging technologies and services and typical small and medium sized businesses (SMBs) and independent teams who face an impossible learning curve to maintain not only a competitive edge, but to even keep up with basic standards in security, etc.
 
+* Why is my website loading so slowly?
+* Which web hosting company should I choose?
+* What cache/security plugin is the best?
+* @#$%! THIS... BACK TO SHOPIFY!!
+
 TL;DR: while "the wheel" might not need re-inventing, it surely [can be improved](https://www.scientificamerican.com/article/greener-tires/).
 
 That is, while Silicon Valley bigwigs and corporate players pump out new terms and services on a daily basis -- like Configuration Management (CM) -- the typical small business website is still trying to figure out how to make their contact forms work correctly. The "old guard" shared web hosting monopoly -- think EIG/GoDaddy -- also has little motivation to education their audience, as perpetuating confusion seems to be a core pillar of their business model.
