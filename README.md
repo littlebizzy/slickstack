@@ -1,10 +1,20 @@
-# SlickStack
+# SlickStack (NOT READY YET)
 
 SlickStack is a free collection of LEMP server automation scripts written in bash designed to enhance and simplify WordPress performance and security.
+
+1. [Installation](https://github.com/littlebizzy/slickstack#install)
+2. [Introduction](https://github.com/littlebizzy/slickstack#intro)
 
 ## Compatibility
 
 SlickStack works best on VPS servers with KVM virtualization that have at least 2GB RAM and 2 CPU cores from cloud providers such as Vultr, DigitalOcean, Linode, and other non-AWS networks. The underlying LEMP configuration is meant specifically for single-site WordPress installations, and does not support Multi-Site installs. SlickStack supports WordPress, WooCommerce, bbPress, and BuddyPress "out of the box" with pre-optimized LEMP stack configurations that scale.
+
+## Installation
+
+Because it’s written purely in bash, SlickStack has no dependencies and works “out of the box” on any Ubuntu machine. Unlike provisioning tools like EasyEngine or Ansible, there is no third party language used such as Python.
+
+
+`sudo wget mirrors.littlebizzy.com/slickstack/installer && sudo bash ss`
 
 ## Introduction
 
