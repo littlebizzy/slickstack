@@ -53,6 +53,7 @@ Much of modern computing history can be traced back to one thing: [Unix](https:/
 | ... | SlickStack | Ansible | Puppet | Salt | Chef | EasyEngine | Trellis | AnsiPress | Centminmod | VPSSIM |
 |:---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
 | Dependencies | (Unix) | Python | Ruby | Python | Python | Ansible | Ansible | (Unix) | (Unix) |
+| Standard Shell Commands | Yes | No | No | No | No | No | No | No | Yes | Yes |
 | WordPress Focus | Yes | No | Yes | Yes | No | No | Yes |
 | Single Sites Focus | Yes | N/A | No | No | N/A | N/A | No |
 | Email APIs | Yes | N/A | No | No | No | No | No |
