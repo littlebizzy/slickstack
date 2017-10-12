@@ -5,6 +5,7 @@ SlickStack is a free collection of LEMP server automation scripts written in bas
 1. [Installation](https://github.com/littlebizzy/slickstack#install)
 2. [Introduction](https://github.com/littlebizzy/slickstack#intro)
 3. [The Basics](https://github.com/littlebizzy/slickstack#basics)
+4. [Comparison](https://github.com/littlebizzy/slickstack#compare)
 
 ## Compatibility
 
@@ -46,3 +47,14 @@ Before the likes of Google and Amazon and Shopify and Wix take over the entire w
 ## The Basics
 
 Much of modern computing history can be traced back to one thing: [Unix](https://en.wikipedia.org/wiki/Unix). Indeed, one of the only things about web servers tbat hasn't changed in several decades is the shell (bash) language. Keeping the same pragmatism and simplicity in mind that inspired LittleBizzy's managed hosting approach, SlickStack is coded entirely in bash. While there are certainly arguments to be made about [the benefits](https://medium.com/capital-one-developers/bashing-the-bash-replacing-shell-scripts-with-python-d8d201bc0989) of programming languages such as Python or Ruby, the truth is that provisioning a server with WordPress isn't very complicated, and every server always comes with [shell built into it](https://www.infoworld.com/article/2893519/linux/perl-python-ruby-are-nice-bash-is-where-its-at.html).
+
+## Comparison
+
+| | SlickStack | Ansible | EasyEngine | Trellis | Centminmod | VPSSIM |
+|---|:---:|:---:|:---:|:---:|:---:|:---:|
+|  Dependencies | NO | Python | Python | Ansible | NO | NO |
+|   |   |   |   |   |
+|   |   |   |   |   |
+|   |   |   |   |   |
+|   |   |   |   |   |
+|   |   |   |   |   |
