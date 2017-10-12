@@ -18,7 +18,7 @@ Because it’s written purely in [bash](https://en.wikipedia.org/wiki/Bash_(Unix
 
 ## Introduction
 
-Outside of the so-called [Application Layer](https://en.wikipedia.org/wiki/Application_layer), so much of the way computers and servers now work has been moved away from in-house teams and specialists and onto "the cloud" that terms like [DevOps](https://www.reddit.com/r/devops/comments/3rpzem/devops_vs_sysadmin/cwqmlnd/) have become standard among recruiters, companies, and developers alike. Modern web development trends have begun to revolve entirely around concepts such as automation, APIs, cloud services, and beyond — a phenomemon we might refer to as *Web 3.0*.
+Outside of the so-called [Application Layer](https://en.wikipedia.org/wiki/Application_layer), so much of the way computers and servers now work has been moved away from in-house teams and specialists and onto "the cloud" that terms like [DevOps](https://www.reddit.com/r/devops/comments/3rpzem/devops_vs_sysadmin/cwqmlnd/) have become standard among recruiters, companies, and developers alike. Modern web development trends have begun to revolve entirely around concepts such as automation, APIs, [cloud services](http://www.lsainsider.com/infographic-63-of-smbs-have-adopted-a-cloud-based-service/archives), and beyond — a phenomemon we might refer to as *Web 3.0*.
 
 While this shift is exciting, there is now a massive and growing disconnect between these emerging technologies and the humans that are expected to implement or benefit from them. Typical small business owners (SMBs), along with independent agencies or freelancers, now face a virtually impossible learning curve if they wish to maintain not only a competitive "webdev" edge, but even to keep up with basic standards in website security, etc.
 
@@ -44,4 +44,4 @@ Before the likes of Google and Amazon and Shopify and Wix take over the entire w
 
 ## The Basics
 
-Much of modern computing history can be traced back to one thing: [Unix](https://en.wikipedia.org/wiki/Unix). Indeed, one of the only things about web servers tbat hasn't changed in several decades is the shell (bash) language. Keeping long-term support and simplicity in mind, SlickStack is coded entirely in bash scripts.
+Much of modern computing history can be traced back to one thing: [Unix](https://en.wikipedia.org/wiki/Unix). Indeed, one of the only things about web servers tbat hasn't changed in several decades is the shell (bash) language. Keeping the same pragmatism and simplicity in mind that inspired LittleBizzy's managed hosting approach, SlickStack is coded entirely in bash. While there are certainly arguments to be made about the benefits of programming languages such as Python or Ruby, the truth is that provisioning a server with WordPress isn't very complicated, and every server always comes with [shell built into it](https://www.infoworld.com/article/2893519/linux/perl-python-ruby-are-nice-bash-is-where-its-at.html).
