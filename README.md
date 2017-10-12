@@ -50,8 +50,8 @@ Much of modern computing history can be traced back to one thing: [Unix](https:/
 
 ## Comparison
 
-| ... | SlickStack | Ansible | EasyEngine | Trellis | Centminmod | VPSSIM | AnsiPress |
-|:---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+| ... | SlickStack | Ansible | Puppet | Salt | Chef | EasyEngine | Trellis | Centminmod | VPSSIM | AnsiPress |
+|:---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
 | Dependencies | (Unix) | Python | Python | Ansible | (Unix) | (Unix) | Ansible |
 | WordPress Focus | Yes | No | Yes | Yes | No | No | Yes |
 | Single Sites Focus | Yes | N/A | No | No | N/A | N/A | No |
