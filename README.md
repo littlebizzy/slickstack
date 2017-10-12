@@ -51,9 +51,9 @@ Much of modern computing history can be traced back to one thing: [Unix](https:/
 ## Comparison
 
 | | SlickStack | Ansible | EasyEngine | Trellis | Centminmod | VPSSIM |
-|---|:---:|:---:|:---:|:---:|:---:|:---:|
-|  Dependencies | NO | Python | Python | Ansible | NO | NO |
-|   |   |   |   |   |
+|:---|:---:|:---:|:---:|:---:|:---:|:---:|
+| Dependencies | None | Python | Python | Ansible | None | None |
+| WordPress Focused | Yes | No | Yes | Yes | No | No |
 |   |   |   |   |   |
 |   |   |   |   |   |
 |   |   |   |   |   |
