@@ -1,6 +1,8 @@
 # SlickStack (NOT READY YET)
 
-SlickStack is a free collection of LEMP server automation scripts written in bash designed to enhance and simplify WordPress performance and security.
+SlickStack is a free LEMPWURM stack automation script written in bash designed to enhance and simplify WordPress provisioning, performance and security.
+
+LEMPWURM: Linux, Nginx, MySQL, PHP-FPM, WordPress, UFW, Redis, Monit
 
 1. [Installation](https://github.com/littlebizzy/slickstack#install)
 2. [Introduction](https://github.com/littlebizzy/slickstack#intro)
