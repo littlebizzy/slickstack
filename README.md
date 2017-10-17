@@ -52,11 +52,11 @@ Much of modern computing history can be traced back to one thing: [Unix](https:/
 
 ## Comparison
 
-| ... | SlickStack | Ansible | Puppet | Salt | Chef | EasyEngine | Trellis | AnsiPress | Centminmod | VPSSIM |
-|:---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| Dependencies | (Unix) | Python | Ruby | Python | Python | Python | Ansible | Ansible | (Unix) | (Unix) |
-| Standard Shell Commands | Yes | No | No | No | No | No | No | No | Yes | Yes |
-| WordPress Focus | Yes | No | No | No | No | Yes | Yes | No | No | Yes |
+| ... | SlickStack | Ansible | Puppet | Salt | Chef | EasyEngine | Trellis | AnsiPress | VVV | VCCW | Centminmod | VPSSIM |
+|:---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+| Dependencies | (Unix) | Python | Ruby | Python | Python | Python | Ansible | Ansible | Vagrant | Vagrant | (Unix) | (Unix) |
+| Standard Shell Commands | Yes | No | No | No | No | No | No | No | No | No | Yes | Yes |
+| WordPress Focus | Yes | No | No | No | No | Yes | Yes | No | Yes | Yes | No | Yes |
 | Single Sites Focus | Yes | N/A | No | No | N/A | N/A | No |
 | Email APIs | Yes | N/A | N/A | N/A | No | No | No | No | No | No |
 | Monitoring App | Monit | N/A | None | None | None | None | None |
