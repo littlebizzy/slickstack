@@ -52,7 +52,7 @@ Before the likes of Google and Amazon and Shopify and Wix take over the entire w
 
 Much of modern computing history can be traced back to one thing: [Unix](https://en.wikipedia.org/wiki/Unix). Indeed, one of the only things about web servers tbat hasn't changed in several decades is the shell (bash) language. Keeping the same pragmatism and simplicity in mind that inspired LittleBizzy's managed hosting approach, SlickStack [SS] is coded entirely in bash.
 
-While there are strong arguments to be made about [the benefits](https://medium.com/capital-one-developers/bashing-the-bash-replacing-shell-scripts-with-python-d8d201bc0989) of programming languages such as Python or Ruby, provisioning a server with WordPress isn't very complicated, and every Linux server always comes with [shell built into it](https://www.infoworld.com/article/2893519/linux/perl-python-ruby-are-nice-bash-is-where-its-at.html). Besides, let's not forget what happens to amateurs when relying on dependencies like Ansible...
+While there are [clear benefits](https://medium.com/capital-one-developers/bashing-the-bash-replacing-shell-scripts-with-python-d8d201bc0989) of programming languages such as Python or Ruby, provisioning a server with WordPress isn't very complicated, and every Linux server always comes with [shell built into it](https://www.infoworld.com/article/2893519/linux/perl-python-ruby-are-nice-bash-is-where-its-at.html). Besides, let's not forget [what happens](https://discourse.roots.io/t/updated-to-ansible-2-4-deploys-broken-now-what/10588) to amateurs when relying on dependencies like Ansible...
 
 ## Comparison
 
