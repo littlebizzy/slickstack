@@ -4,10 +4,11 @@
 
 Table Of Contents
 
-1. [Installation](https://github.com/littlebizzy/slickstack#install)
-2. [Introduction](https://github.com/littlebizzy/slickstack#intro)
-3. [The Basics](https://github.com/littlebizzy/slickstack#basics)
-4. [Comparison](https://github.com/littlebizzy/slickstack#compare)
+1. [Compatibility](https://github.com/littlebizzy/slickstack#compatibility)
+2. [Installation](https://github.com/littlebizzy/slickstack#installation)
+3. [Philosophy](https://github.com/littlebizzy/slickstack#philosophy)
+3. [Usage](https://github.com/littlebizzy/slickstack#usage)
+4. [Comparison](https://github.com/littlebizzy/slickstack#comparison)
 
 ## Compatibility
 
@@ -21,7 +22,7 @@ Install SlickStack [SS] with a single bash command:
 
 `sudo wget mirrors.littlebizzy.com/slickstack/installer && sudo bash ss`
 
-## Introduction
+## Philosophy
 
 Outside of the so-called [Application Layer](https://en.wikipedia.org/wiki/Application_layer), so much of the way computers and servers now work has been moved away from in-house teams and specialists and onto "the cloud" that terms like [DevOps](https://www.reddit.com/r/devops/comments/3rpzem/devops_vs_sysadmin/cwqmlnd/) have become standard among recruiters, companies, and developers alike. Modern web development trends have begun to revolve entirely around concepts such as automation, APIs, [cloud services](http://www.lsainsider.com/infographic-63-of-smbs-have-adopted-a-cloud-based-service/archives), and beyond — a phenomemon we might refer to as *Web 3.0*.
 
@@ -47,7 +48,7 @@ That is, while Silicon Valley bigwigs and corporate players pump out new terms a
 
 Before the likes of Google and Amazon and Shopify and Wix take over the entire web and turn it into Wall Street-backed website builders that feed into their private ecosystems, SlickStack hopes to bridge the knowledge gap between emerging technology and old-school web development to empower SMBs to achieve top notch website performance and security by offering a "controlled" LEMP-stack environment with limited options that is perfectly suited to the world's most popular open-source CMS: WordPress.
 
-## The Basics
+## Usage
 
 Much of modern computing history can be traced back to one thing: [Unix](https://en.wikipedia.org/wiki/Unix). Indeed, one of the only things about web servers tbat hasn't changed in several decades is the shell (bash) language. Keeping the same pragmatism and simplicity in mind that inspired LittleBizzy's managed hosting approach, SlickStack is coded entirely in bash. While there are certainly arguments to be made about [the benefits](https://medium.com/capital-one-developers/bashing-the-bash-replacing-shell-scripts-with-python-d8d201bc0989) of programming languages such as Python or Ruby, the truth is that provisioning a server with WordPress isn't very complicated, and every server always comes with [shell built into it](https://www.infoworld.com/article/2893519/linux/perl-python-ruby-are-nice-bash-is-where-its-at.html).
 
