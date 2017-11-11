@@ -56,6 +56,10 @@ While there are [clear benefits](https://medium.com/capital-one-developers/bashi
 
 After you've installed SlickStack [SS] using the one-line command mentioned above, proceed as follows:
 
+1. Manually edit the ss-config file.
+
+`sudo nano /var/www/ss-config`
+
 ## Comparison
 
 | ... | SlickStack | Ansible | Puppet | Salt | Chef | EasyEngine | Trellis | AnsiPress | VVV | VCCW | Centminmod | VPSSIM |
