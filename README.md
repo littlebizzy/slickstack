@@ -17,7 +17,7 @@ SlickStack [SS] works best on VPS servers with KVM virtualization that have at l
 
 Because it’s written purely in [bash](https://en.wikipedia.org/wiki/Bash_(Unix_shell)) (Unix shell), SlickStack [SS] has no dependencies and works on any Ubuntu machine. Unlike heavier provisioning tools like EasyEngine or Ansible, there is no third party language required such as Python, meaning a lighter and simpler approach to launching WordPress servers.
 
-**How to install with a single bash command:**
+*How to install with a single bash command:*
 
 `sudo wget mirrors.littlebizzy.com/slickstack/installer && sudo bash ss`
 
