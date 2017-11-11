@@ -11,7 +11,7 @@ LEMPWURM: Linux, Nginx, MySQL, PHP-FPM, WordPress, UFW, Redis, Monit
 
 ## Compatibility
 
-SlickStack works best on VPS servers with KVM virtualization that have at least 2GB RAM from cloud providers such as Vultr, DigitalOcean, Linode, and other non-AWS networks. The underlying LEMP configuration is meant specifically for single-site WordPress installations, and does not support [Multisite](https://codex.wordpress.org/Create_A_Network) installs. SlickStack supports WordPress, WooCommerce, bbPress, and BuddyPress "out of the box" with pre-optimized LEMP stack settings that scale.
+SlickStack works best on VPS servers with KVM virtualization that have at least 2GB RAM from quality cloud network providers such as Vultr, DigitalOcean, Linode, and other non-AWS networks. The underlying LEMP configuration is meant specifically for single-site WordPress installations, and does not support [Multisite](https://codex.wordpress.org/Create_A_Network) installs. SlickStack supports WordPress, WooCommerce, bbPress, and BuddyPress "out of the box" with pre-optimized LEMP stack settings that scale.
 
 ## Installation
 
