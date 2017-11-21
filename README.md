@@ -22,6 +22,18 @@ Install SlickStack [SS] with a single bash command:
 
 `sudo wget mirrors.littlebizzy.com/slickstack/installer && sudo bash ss`
 
+## Structure
+
+    /var/www/ss-clean
+    /var/www/ss-config
+    /var/www/ss-install
+    /var/www/ss-perms
+    /var/www/ss-upgrade
+    /var/www/html/wp-admin/
+    /var/www/html/wp-includes/
+    /var/www/html/wp-content/
+    /var/www/html/wp-...
+
 ## Philosophy
 
 Outside of the so-called [Application Layer](https://en.wikipedia.org/wiki/Application_layer), so much of the way computers and servers now work has been moved away from in-house teams and specialists and onto "the cloud" that terms like [DevOps](https://www.reddit.com/r/devops/comments/3rpzem/devops_vs_sysadmin/cwqmlnd/) have become standard among recruiters, companies, and developers alike. Modern web development trends have begun to revolve entirely around concepts such as automation, APIs, [cloud services](http://www.lsainsider.com/infographic-63-of-smbs-have-adopted-a-cloud-based-service/archives), and beyond — a phenomenon we might refer to as *Web 3.0*.
