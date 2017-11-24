@@ -83,3 +83,7 @@ After you've installed SlickStack [SS] using the one-line command mentioned abov
 | Email APIs | Yes | N/A | N/A | N/A | No | No | No | No | No | No |
 | Monitoring App | Monit | N/A | None | None | None | None | None |
 |  |  |  |  |  |  |  |  |
+
+## FAQ
+
+* Why don't use you env-vars? Teams who use GitHub repos to develop their sites (e.g. dev/stage/production branches) have started using env-vars with systems like Roots Trellis so that their entire codebase can be safely open-source. However, this requires defining the env-vars within the server stack (hidden from public root) so it's not so friendly for many agencies. Since our goal is to support "typical" agencies with mostly frontend knowledge, we felt that reflecting the WordPress setup was a simpler approach and so if using SlickStack there will be two config files (ss-config and wp-config.php)
