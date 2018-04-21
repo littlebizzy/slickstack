@@ -1,0 +1,312 @@
+#!/bin/bash
+
+####################################################################
+#### author: slickstack ############################################
+#### link: https://slickstack.io ###################################
+#### mirror: http://mirrors.littlebizzy.com/bash/ss-install.txt ####
+#### path: /var/www/ss-install #####################################
+#### purpose: installs slickstack (re-installable) #################
+####################################################################
+
+source /var/www/bash-setup-users.txt
+source /var/www/bash-secure-root.txt
+
+## server config details ##
+source /var/www/ss-config
+
+## root config ##
+## reset root password ##
+# echo root:$passroot | /usr/sbin/chpasswd
+## ensure root user and password never expire ##
+## chage -E -1 -m 0 -M -1 -I -1 -W 99999 root
+
+### wpcli install ####
+## retrieve latest wp-cli version ##
+## cd /tmp/
+## wget https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
+## rename and move phar ##
+## mv wp-cli.phar /usr/local/bin/wp
+## reset permissions ##
+## chmod +x wp-cli.phar
+
+## php install ##
+## update repo cache ##
+# source /var/www/apt-update
+## install php and extensions ##
+# DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt-get -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install php7.0 php7.0-fpm php7.0-mysql php7.0-curl php7.0-zip php7.0-gd php7.0-mcrypt php7.0-mbstring php7.0-bcmath php7.0-xml php7.0-json php7.0-soap
+## delete previous tmp files ##
+# rm -R -f /tmp/php-ini.txt* /tmp/php.ini*
+# rm -R -f /tmp/php-fpm-conf.txt* /tmp/php-fpm.conf*
+# rm -R -f /tmp/www-conf.txt* /tmp/www.conf*
+## retrieve custom config files ##
+# cd /tmp/
+# wget --no-cache http://mirrors.littlebizzy.com/php/php-ini.txt
+# wget --no-cache http://mirrors.littlebizzy.com/php/php-fpm-conf.txt
+# wget --no-cache http://mirrors.littlebizzy.com/php/www-conf.txt
+## rename txt files ##
+# mv php-ini.txt php.ini
+# mv php-fpm-conf.txt php-fpm.conf
+# mv www-conf.txt www.conf
+## copy custom config files to their destinations ##
+# cp -R -f --no-preserve=mode,ownership /tmp/php.ini /etc/php/7.0/fpm/php.ini
+# cp -R -f --no-preserve=mode,ownership /tmp/php.ini /etc/php/7.0/cli/php.ini
+# cp -R -f --no-preserve=mode,ownership /tmp/php-fpm.conf /etc/php/7.0/fpm/php-fpm.conf
+# cp -R -f --no-preserve=mode,ownership /tmp/www.conf /etc/php/7.0/fpm/pool.d/www.conf
+## delete remaining tmp files ##
+# rm -R -f /tmp/php-ini.txt* /tmp/php.ini*
+# rm -R -f /tmp/php-fpm-conf.txt* /tmp/php-fpm.conf*
+# rm -R -f /tmp/www-conf.txt* /tmp/www.conf*
+## reset permissions ##
+# chown root:root /etc/php/7.0/cli/php.ini
+# chown root:root /etc/php/7.0/fpm/php.ini
+# chown root:root /etc/php/7.0/fpm/php-fpm.conf
+# chown root:root /etc/php/7.0/fpm/pool.d/www.conf
+## restart services ##
+# /etc/init.d/php7.0-fpm restart
+
+## mysql install ##
+## set noninteractive ##
+## export DEBIAN_FRONTEND=noninteractive
+## store mysql root password prior to installation ##
+## echo "mysql-server mysql-server/root_password password "$dbpassroot"" | debconf-set-selections
+## echo "mysql-server mysql-server/root_password_again password "$dbpassroot"" | debconf-set-selections
+## debconf-set-selections <<< "mysql-server-5.7 mysql-server/root_password password "$dbpassroot""
+## debconf-set-selections <<< "mysql-server-5.7 mysql-server/root_password_again password "$dbpassroot""
+## continue with the mysql installation ##
+## DEBIAN_FRONTEND=noninteractive apt-get --yes --option Dpkg::Options::="--force-confold" install mysql-server
+
+## add users ##
+## add user bizzy and set password ##
+## /usr/sbin/useradd bizzy
+## echo bizzy:$passroot | /usr/sbin/chpasswd
+## add user client and set password ##
+## /usr/sbin/useradd client
+## echo client:$pass | /usr/sbin/chpasswd
+
+
+
+########################
+#### config sudoers ####
+########################
+
+# cd /tmp/
+# wget --no-cache http://mirrors.littlebizzy.com/linux/sudoers.txt
+# mv sudoers.txt sudoers
+# cp -R -d --remove-destination --preserve=timestamps --no-preserve=mode,ownership /tmp/sudoers /etc/sudoers
+# chown root:root /etc/sudoers
+# rm -R -f /tmp/sudoers.txt sudoers
+
+
+
+#####################
+#### install ssh ####
+#####################
+
+# cd /tmp/
+# wget --no-cache http://mirrors.littlebizzy.com/ssh/sshd-config.txt
+# mv sshd-config.txt sshd_config
+# cp -R -d --remove-destination --preserve=timestamps --no-preserve=mode,ownership /tmp/sshd_config /etc/ssh/sshd_config
+# chown root:root /etc/ssh/sshd_config
+# rm -R -f /tmp/sshd-config.txt sshd_config
+
+
+
+##########################
+#### set UTC timezone ####
+##########################
+
+timedatectl set-timezone UTC
+
+## update repos and install lemp depencies ##
+apt-get update
+apt-get install -y software-properties-common
+add-apt-repository ppa:nginx/development
+apt-get update
+apt-get install -y nginx
+DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt-get -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install zip unzip
+apt-get install -y php7.0 php7.0-fpm php7.0-mysql php7.0-gd php7.0-curl php7.0-zip php7.0-mcrypt php7.0-mbstring php7.0-xml php7.0-json php7.0-soap
+apt-get upgrade
+
+
+
+#########################
+#### install crontab ####
+#########################
+
+cd /tmp/
+rm -R -f /tmp/crontab.txt /tmp/root
+wget --no-cache http://mirrors.littlebizzy.com/ubuntu/crontab.txt
+mv /tmp/crontab.txt /tmp/root
+cp -R -f --preserve=mode,ownership /tmp/root /var/spool/cron/crontabs/root
+rm -R -f /tmp/crontab.txt /tmp/root
+chown root:root /var/spool/cron/crontabs/root
+
+## reload crontab ##
+/etc/init.d/cron reload
+
+
+
+##############################
+#### install nginx config ####
+##############################
+
+cd /tmp/
+wget --timestamping http://mirrors.littlebizzy.com/nginx/nginx-conf.txt
+mv nginx-conf.txt nginx.conf
+cp -R -d --remove-destination --preserve=timestamps --no-preserve=mode,ownership /tmp/nginx.conf /etc/nginx/nginx.conf
+rm -R -f /tmp/nginx.conf /tmp/nginx-conf.txt
+chown root:root /etc/nginx/nginx.conf
+
+
+
+############################
+#### setup nginx server ####
+############################
+
+## delete all tmp files before we begin ##
+# rm -R -f /tmp/nginx.conf /tmp/nginx-conf /tmp/nginx-conf.txt
+# rm -R -f /tmp/default /tmp/default.txt /tmp/server-block /tmp/server-block.txt /tmp/server-block-ssl /tmp/server-block-ssl.txt
+
+## download nginx.conf (production) file ##
+# cd /tmp/
+# wget --no-cache http://mirrors.littlebizzy.com/nginx/nginx-conf.txt
+
+## download correct template for building nginx server block ##
+# cd /tmp/
+# if [[ "$ssl" == "yes" ]]
+# then wget --no-cache http://mirrors.littlebizzy.com/nginx/server-block-ssl.txt
+# mv /tmp/server-block-ssl.txt /tmp/default.txt
+# else wget --no-cache http://mirrors.littlebizzy.com/nginx/server-block.txt
+# mv /tmp/server-block.txt /tmp/default.txt
+# fi
+
+## replace @DOMAIN placeholder with variable from config ##
+# sed -i "s/@DOMAIN/${domain}/g" /tmp/default.txt
+
+## rename all txt files to no extension ##
+# mv /tmp/nginx-conf.txt /tmp/nginx.conf
+# mv /tmp/default.txt /tmp/default
+
+## overwrite all files to their various destinations ##
+# cp -R -f --no-preserve=mode,ownership /tmp/nginx.conf /etc/nginx/nginx.conf
+# cp -R -f --no-preserve=mode,ownership /tmp/default /etc/nginx/sites-available/default
+
+## delete all tmp files after we finish ##
+# rm -R -f /tmp/nginx.conf /tmp/nginx-conf /tmp/nginx-conf.txt
+# rm -R -f /tmp/default /tmp/default.txt /tmp/server-block /tmp/server-block.txt /tmp/server-block-ssl /tmp/server-block-ssl.txt
+
+## quick permissions reset ##
+# chown root:root /etc/nginx/nginx.conf
+# chown root:root /etc/nginx/sites-available/default
+
+## restart nginx ##
+# /etc/init.d/nginx restart
+
+
+
+############################
+#### install php config ####
+############################
+
+cd /tmp/
+wget --timestamping http://mirrors.littlebizzy.com/php/php-ini.txt
+wget --timestamping http://mirrors.littlebizzy.com/php/php-fpm-conf.txt
+mv php-ini.txt php.ini
+mv php-fpm-conf.txt php-fpm.conf
+cp -R -d --remove-destination --preserve=timestamps --no-preserve=mode,ownership /tmp/php.ini /etc/php/7.0/fpm/php.ini
+cp -R -d --remove-destination --preserve=timestamps --no-preserve=mode,ownership /tmp/php.ini /etc/php/7.0/cli/php.ini
+cp -R -d --remove-destination --preserve=timestamps --no-preserve=mode,ownership /tmp/php-fpm.conf /etc/php/7.0/fpm/php-fpm.conf
+chown root:root /etc/php/7.0/fpm/php.ini
+chown root:root /etc/php/7.0/cli/php.ini
+chown root:root /etc/php/7.0/fpm/php-fpm.conf
+rm -R -f /tmp/php.ini /tmp/php-ini.txt
+rm -R -f /tmp/php-fpm.conf /tmp/php-fpm-conf.txt
+
+
+
+#######################
+#### install mysql ####
+#######################
+
+echo "mysql-server mysql-server/root_password password "$dbpassroot"" | debconf-set-selections
+echo "mysql-server mysql-server/root_password_again password "$dbpassroot"" | debconf-set-selections
+apt-get install -y mysql-server
+
+## secure mysql 5.7 ##
+source /var/www/mysql-secure
+
+
+
+#####################
+#### install ssl ####
+#####################
+
+## generate ssl certificate ##
+# openssl req -new -x509 -nodes -days 730 -newkey rsa:2048 -keyout /etc/ssl/nginx.key -out /etc/ssl/nginx.crt -subj "/C=${country}/ST=${state}/L=${city}/O=${company}/OU=${dept}/CN=${domain}"
+
+## quick permissions reset ##
+# chown root:root /etc/ssl/nginx.key
+# chown root:root /etc/ssl/nginx.crt
+
+## restart services ##
+# /etc/init.d/nginx restart
+
+
+
+###########################
+#### install wordpress ####
+###########################
+
+## download and unzip latest wordpress version ##
+# cd /var/www/html/
+# wget http://wordpress.org/latest.tar.gz
+# tar xfz latest.tar.gz
+# rsync -raqIp wordpress/* ./
+# rm -rf wordpress
+# rm -f latest.tar.gz
+
+## reset permissions ##
+# chown -R www-data:wordpress /var/www/html
+# find /var/www/html/ -type d -exec chmod 775 {} \;
+# find /var/www/html/ -type f -exec chmod 664 {} \;
+
+
+
+####################
+#### config ssh ####
+####################
+
+## delete all tmp files before we begin ##
+# rm -R -f /tmp/sshd_config /tmp/sshd-config.txt
+
+## download template files ##
+# cd /tmp/
+# wget --no-cache http://mirrors.littlebizzy.com/ubuntu/sshd-config.txt
+
+## replace placeholders with variables from config ##
+# sed -i "s/@CLIENT/${user}/g" /tmp/sshd-config.txt
+
+## rename tmp files ##
+# mv sshd-config.txt sshd_config
+
+## overwrite all files to their various destinations ##
+# cp -R -f --no-preserve=mode,ownership /tmp/sshd_config /etc/ssh/sshd_config
+
+## delete all tmp files after we finish ##
+# rm -R -f /tmp/sshd_config /tmp/sshd-config.txt
+
+## quick permissions reset ##
+# chown root:root /etc/ssh/sshd_config
+
+## restart ssh ##
+# /etc/init.d/ssh restart
+
+
+
+##########################
+#### restart services ####
+##########################
+
+service nginx restart
+service php5-fpm restart
+service php7.0-fpm restart
