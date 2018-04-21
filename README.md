@@ -18,15 +18,15 @@ SlickStack [SS] works best on VPS servers with KVM virtualization that have at l
 
 ## Installation
 
-Because it’s written purely in [bash](https://en.wikipedia.org/wiki/Bash_(Unix_shell)) (Unix shell), SlickStack [SS] has no dependencies and works on any Ubuntu machine. Unlike heavier provisioning tools like EasyEngine or Ansible, there is no third party language required such as Python or Vagrant, meaning a lighter and simpler approach to launching WordPress servers.
+Because it’s written purely in [bash](https://en.wikipedia.org/wiki/Bash_(Unix_shell)) (Unix shell), SlickStack [SS] has no dependencies and works on any Ubuntu Linux machine. Unlike heavier provisioning tools like EasyEngine or Ansible, there is no third party language required such as Python, meaning a lighter and simpler approach to launching WordPress servers.
 
-First, configure a `ss-config` file in the `/var/www/` directory.
+First, create an [ss-config](https://github.com/littlebizzy/slickstack/blob/master/ss-config.txt) file in the `/var/www/` directory with desired variables.
 
 Then, install SlickStack [SS] with the below command:
 
 `sudo wget mirrors.slickstack.io/ss-check && sudo bash ss-check && sudo bash ss-install`
 
-* *In the future, SlickStack will have an interactive installation.*
+**In the future, SlickStack will have an interactive installation.*
 
 ## Structure
 
