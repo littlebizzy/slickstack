@@ -1,0 +1,145 @@
+#!/bin/bash
+
+##################################################################
+#### author: slickstack ##########################################
+#### link: https://slickstack.io #################################
+#### mirror: http://mirrors.littlebizzy.com/bash/ss-perms.txt ####
+#### path: /var/www/ss-perms #####################################
+#### purpose: rest all slickstack file permissions ###############
+##################################################################
+
+## server config variables ##
+source /var/www/ss-config
+
+## create group wordpress ##
+addgroup wordpress
+
+## add users to group wordpress ##
+adduser $user wordpress
+adduser www-data wordpress
+
+## reset permissions for @slickstack bash scripts ##
+chown root:root /var/www/1-cron-often
+chown root:root /var/www/2-cron-regular
+chown root:root /var/www/3-cron-hourly
+chown root:root /var/www/4-cron-daily
+chown root:root /var/www/5-cron-weekly
+chown root:root /var/www/6-cron-monthly
+chown root:root /var/www/7-cron-sometimes
+chown root:root /var/www/bash-worker
+chown root:root /var/www/lemp-install
+chown root:root /var/www/lemp-updates
+chown root:root /var/www/linux-crontab-config
+chown root:root /var/www/linux-root-config
+chown root:root /var/www/linux-ssh-config
+chown root:root /var/www/linux-sudo-config
+chown root:root /var/www/linux-time-config
+chown root:root /var/www/linux-users-config
+chown root:root /var/www/linux-utils-install
+chown root:root /var/www/muplugs-install
+chown root:root /var/www/mysql-install
+chown root:root /var/www/mysql-secure
+chown root:root /var/www/nginx-install
+chown root:root /var/www/nginx-config
+chown root:root /var/www/perms-reset
+chown root:root /var/www/php-install
+chown root:root /var/www/wp-clean
+chown root:root /var/www/wp-install
+chmod +x /var/www/1-cron-often
+chmod +x /var/www/2-cron-regular
+chmod +x /var/www/3-cron-hourly
+chmod +x /var/www/4-cron-daily
+chmod +x /var/www/5-cron-weekly
+chmod +x /var/www/6-cron-monthly
+chmod +x /var/www/7-cron-sometimes
+chmod +x /var/www/bash-worker
+chmod +x /var/www/lemp-install
+chmod +x /var/www/lemp-updates
+chmod +x /var/www/linux-crontab-config
+chmod +x /var/www/linux-root-config
+chmod +x /var/www/linux-ssh-config
+chmod +x /var/www/linux-sudo-config
+chmod +x /var/www/linux-time-config
+chmod +x /var/www/linux-users-config
+chmod +x /var/www/linux-utils-install
+chmod +x /var/www/muplugs-install
+chmod +x /var/www/mysql-install
+chmod +x /var/www/mysql-secure
+chmod +x /var/www/nginx-install
+chmod +x /var/www/nginx-config
+chmod +x /var/www/perms-reset
+chmod +x /var/www/php-install
+chmod +x /var/www/wp-clean
+chmod +x /var/www/wp-install
+
+## chown user parent directories ##
+chown root:root /home/$user
+chown root:root /home/bizzy
+chown root:root /var/www
+
+## chmod user parent directories ##
+chmod 755 /home/$user
+chmod 755 /home/bizzy
+chmod 755 /var/www
+chmod 755 /var/www/html
+
+## chown all wordpress files and directories ##
+chown -R $user:wordpress /var/www/html
+chown -R www-data:wordpress /var/www/html/wp-content/mu-plugins
+
+## chmod all wordpress files ##
+find /var/www/html/ -type d -exec chmod 775 {} \;
+find /var/www/html/ -type f -exec chmod 664 {} \;
+find /var/www/html/wp-content/cache/ -type d -exec chmod 777 {} \;
+find /var/www/html/wp-content/cache/ -type f -exec chmod 777 {} \;
+chmod 660 /var/www/html/wp-config.php
+chmod -R g+s /var/www/html/
+
+## reset permissions for nginx fastcgi cache files ##
+chown www-data:root /etc/nginx/cache
+chmod 775 /etc/nginx/cache
+find /etc/nginx/cache/ -type d -exec chmod 777 {} \;
+find /etc/nginx/cache/ -type f -exec chmod 777 {} \;
+
+## make log directories if do not exist ##
+mkdir -p /var/log/nginx
+mkdir -p /var/log/php-fpm
+mkdir -p /var/log/mysql
+
+## make log files if do not exist ##
+if [ ! -f "/var/log/php-fpm/error.log" ]; then touch "/var/log/php-fpm/error.log"; fi
+
+## reset permissions for log files ##
+chown -R www-data:www-data /var/log/nginx/access.log
+chown -R www-data:www-data /var/log/nginx/error.log
+chown -R www-data:www-data /var/log/php7.0-fpm.log
+chown -R www-data:www-data /var/log/php-fpm/error.log
+chown -R www-data:www-data /var/log/monit.log
+chmod -R 755 /var/log/nginx/access.log
+chmod -R 755 /var/log/nginx/error.log
+chmod -R 755 /var/log/php7.0-fpm.log
+chmod -R 755 /var/log/php-fpm/error.log
+chmod -R 755 /var/log/monit.log
+
+## reset permissions for ssl certificates ##
+chown root:root /etc/ssl/nginx.crt
+chown root:root /etc/ssl/nginx.key
+chown root:root /etc/ssl/nginx.pem
+chmod -R 700 /etc/ssl/nginx.crt
+chmod -R 700 /etc/ssl/nginx.key
+chmod -R 700 /etc/ssl/nginx.pem
+
+## chown all config files ##
+chown root:root /etc/ssh/sshd_config
+chown root:root /etc/nginx/nginx.conf
+chown root:root /etc/nginx/fastcgi.conf
+chown root:root /etc/php/7.0/fpm/php.ini
+chown root:root /etc/php/7.0/fpm/php-fpm.conf
+chown root:root /etc/php/7.0/cli/php.ini
+chown root:root /etc/mysql/my.cnf
+chown root:root /etc/mysql/mysql.cnf
+chown root:root /etc/mysql/mysql.conf.d/mysqld.cnf
+chown root:root /etc/monit/monitrc
+
+## chmod all config files ##
+chmod -R 700 /etc/monit/monitrc
