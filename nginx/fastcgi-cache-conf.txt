@@ -1,0 +1,14 @@
+#####################################################################
+#### littlebizzy production /etc/nginx/conf.d/fastcgi-cache.conf ####
+#####################################################################
+
+    #### FASTCGI CACHE ####
+    #### below lines must be outside server blocks to enable FastCGI cache for Nginx
+    #### path can be anywhere, app name must be consistent, total size small enough to avoid RAM depletion
+    fastcgi_cache_path /etc/nginx/cache levels=1:2 keys_zone=WORDPRESS:256m inactive=1m max_size=512m;
+    fastcgi_cache_key "$scheme$request_method$host$request_uri";
+    fastcgi_cache_use_stale error timeout invalid_header updating http_500;
+    fastcgi_ignore_headers Cache-Control Expires Set-Cookie;
+    fastcgi_cache_lock on;
+    fastcgi_cache_valid 2m;
+    add_header X-FastCGI-Cache $upstream_cache_status;
