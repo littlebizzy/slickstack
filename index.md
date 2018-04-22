@@ -24,3 +24,10 @@
 <h3>slickstack / scripts</h3>
 
 <a href="ss-check.txt">ss-check.txt</a><br>
+<a href="ss-clean.txt">ss-clean.txt</a><br>
+<a href="ss-config-sample.txt">ss-config-sample.txt</a><br>
+<a href="ss-install.txt">ss-install.txt</a><br>
+<a href="ss-muplugs.txt">ss-muplugs.txt</a><br>
+<a href="ss-perms.txt">ss-perms.txt</a><br>
+<a href="ss-update.txt">ss-update.txt</a><br>
+<a href="ss-worker.txt">ss-worker.txt</a><br>
