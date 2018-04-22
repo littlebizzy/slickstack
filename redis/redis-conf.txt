@@ -1,0 +1,128 @@
+######################################################
+#### littlebizzy production /etc/redis/redis.conf ####
+######################################################
+
+# Note that in order to read the configuration file, Redis must be
+# started with the file path as first argument:
+#
+# ./redis-server /path/to/redis.conf
+
+################################## INCLUDES ###################################
+
+# include /path/to/local.conf
+# include /path/to/other.conf
+
+################################ GENERAL  #####################################
+
+daemonize yes
+pidfile /var/run/redis/redis-server.pid
+
+port 6379
+# TCP listen() backlog.
+tcp-backlog 511
+bind 127.0.0.1
+# unixsocket /var/run/redis/redis.sock
+# unixsocketperm 700
+timeout 0
+tcp-keepalive 0
+loglevel notice
+logfile /var/log/redis/redis-server.log
+# syslog-enabled no
+# syslog-ident redis
+# syslog-facility local0
+databases 16
+
+################################ SNAPSHOTTING  ################################
+
+save 900 1
+save 300 10
+save 60 10000
+stop-writes-on-bgsave-error yes
+rdbcompression yes
+rdbchecksum yes
+dbfilename dump.rdb
+dir /var/lib/redis
+
+################################# REPLICATION #################################
+
+# slaveof <masterip> <masterport>
+# masterauth <master-password>
+slave-serve-stale-data yes
+slave-read-only yes
+repl-diskless-sync no
+repl-diskless-sync-delay 5
+# repl-ping-slave-period 10
+# repl-timeout 60
+repl-disable-tcp-nodelay no
+# repl-backlog-size 1mb
+# repl-backlog-ttl 3600
+slave-priority 100
+# min-slaves-to-write 3
+# min-slaves-max-lag 10
+
+################################## SECURITY ###################################
+
+# requirepass foobared
+# rename-command CONFIG b840fc02d524045429941cc15f59e41cb7be6c52
+
+################################### LIMITS ####################################
+
+# maxclients 10000
+maxmemory 512mb
+maxmemory-policy allkeys-lru
+# maxmemory-samples 5
+
+############################## APPEND ONLY MODE ###############################
+
+appendonly no
+appendfilename "appendonly.aof"
+# appendfsync always
+appendfsync everysec
+# appendfsync no
+no-appendfsync-on-rewrite no
+auto-aof-rewrite-percentage 100
+auto-aof-rewrite-min-size 64mb
+aof-load-truncated yes
+
+################################ LUA SCRIPTING  ###############################
+
+lua-time-limit 5000
+
+################################ REDIS CLUSTER  ###############################
+
+# cluster-enabled yes
+# cluster-config-file nodes-6379.conf
+# cluster-node-timeout 15000
+# cluster-slave-validity-factor 10
+# cluster-migration-barrier 1
+# cluster-require-full-coverage yes
+
+################################## SLOW LOG ###################################
+
+slowlog-log-slower-than 10000
+slowlog-max-len 128
+
+################################ LATENCY MONITOR ##############################
+
+latency-monitor-threshold 0
+
+############################# EVENT NOTIFICATION ##############################
+
+notify-keyspace-events ""
+
+############################### ADVANCED CONFIG ###############################
+
+hash-max-ziplist-entries 512
+hash-max-ziplist-value 64
+list-max-ziplist-entries 512
+list-max-ziplist-value 64
+set-max-intset-entries 512
+zset-max-ziplist-entries 128
+zset-max-ziplist-value 64
+hll-sparse-max-bytes 3000
+activerehashing yes
+client-output-buffer-limit normal 0 0 0
+client-output-buffer-limit slave 256mb 64mb 60
+client-output-buffer-limit pubsub 32mb 8mb 60
+hz 10
+aof-rewrite-incremental-fsync yes
