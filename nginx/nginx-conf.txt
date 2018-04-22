@@ -1,0 +1,125 @@
+######################################################
+#### littlebizzy production /etc/nginx/nginx.conf ####
+######################################################
+
+## do not change the below username unless you know what you are doing ##
+user www-data;
+## should be 1 per CPU core, or simply "auto" is fine for newer Nginx versions ##
+worker_processes auto;
+## do not change the below pid unless you know what you are doing ##
+pid /run/nginx.pid;
+## must include all of the nginx modules to function correctly ##
+include /etc/nginx/modules-enabled/*.conf;
+
+### EVENTS ###
+
+events {
+    ## debated but can be 1024 x number of CPU cores (2048 is enough for most single-site servers) ##
+    worker_connections 1024;
+    ## allow multiple connections for better performance ##
+    multi_accept on;
+    ## event polling recommended for most linux servers ##
+    use epoll;
+}
+
+http {
+    ## WARNING: do not enable any of below cache rules if set in WordPress: https://www.littlebizzy.com/blog/http-headers
+    ## "expires" and "Pragma" headers are outdated, and Etags are enabled by default on newer Nginx versions
+    ## Nginx adds its own Cache-Control header if the expires header exists but doesn't include the "public" directive
+    ## if your site is behind CloudFlare keep in mind that only the first Cache Control header will be used
+    # add_header Cache-Control "public, max-age=300";
+
+    #### FASTCGI CACHE ####
+    #### below lines must be outside server blocks to enable FastCGI cache for Nginx
+    #### path can be anywhere, app name must be consistent, total size small enough to avoid RAM depletion
+    fastcgi_cache_path /etc/nginx/cache levels=1:2 keys_zone=WORDPRESS:256m inactive=60m max_size=1G;
+    # fastcgi_cache_key "$scheme$request_method$host$request_uri";
+    fastcgi_cache_key "$scheme$request_method$host$request_uri$rt_session";
+    fastcgi_cache_use_stale error timeout invalid_header updating http_500;
+    fastcgi_ignore_headers Cache-Control Expires Set-Cookie;
+    fastcgi_cache_lock on;
+    add_header X-FastCGI-Cache $upstream_cache_status;
+
+    #### OPEN FILE CACHE ####
+    ## cache metadata (only) of any files that are opened regularly (including errors)
+    ## how many files cached and how often a file must be requested to remain in the cache
+    open_file_cache max=5000 inactive=15s;
+    ## how long with the cached file data remain valid for
+    open_file_cache_valid 30s;
+    ## how many requests per file within "inactivate" window to activate a file to be cached
+    open_file_cache_min_uses 1;
+    ## should error message pages be cached as well
+    open_file_cache_errors on;
+		
+    ## buffers (comment these lines out if you see 414/400 errors)
+    ## any body size request greater than this will be written to a temporary file
+    client_body_buffer_size 16K;
+    ## usually 1k is recommended but 4k is safer to avoid browser errors
+    client_header_buffer_size 4k;
+    ## allows super large cookies and browser headers (i.e. POST data)... usually 4 x 16k or 4 x 32k ("safer") is recommended
+    large_client_header_buffers 4 32k;
+
+    #### TIMEOUT LIMITS GENERAL ####
+    client_body_timeout 15;
+    client_header_timeout 15;
+    keepalive_timeout 15;
+    send_timeout 15;
+
+    #### TIMEOUT LIMITS FASTCGI ####
+    fastcgi_read_timeout 60;
+    
+    #### MAX FILE SIZE (FRONTEND UPLOADS)
+    client_max_body_size 512M;
+
+    #### MISC NGINX SETTINGS
+    sendfile on;
+    tcp_nopush on;
+    tcp_nodelay on;
+    ## errors may occur without this on
+    types_hash_max_size 2048;
+
+    #### NGINX SECURITY ####
+    ## hide nginx version
+    server_tokens off;
+    # server_names_hash_bucket_size 64;
+    # server_name_in_redirect off;
+    
+     #### SECURITY HEADERS ####
+    add_header X-Frame-Options SAMEORIGIN;
+    add_header X-Content-Type-Options nosniff;
+    add_header X-XSS-Protection "1; mode=block";
+    add_header Referrer-Policy "strict-origin-when-cross-origin";
+
+    #### MIME ####
+    include /etc/nginx/mime.types;
+    default_type application/octet-stream;
+
+    #### LOGS ####
+    access_log off;
+    error_log /var/log/nginx/error.log;
+
+    #### GZIP ####
+    gzip on;
+    ## enable vary unless behind cloudflare https://www.maxcdn.com/blog/accept-encoding-its-vary-important/
+    ## https://support.cloudflare.com/hc/en-us/articles/200168086-Does-CloudFlare-gzip-resources-
+    gzip_vary off;
+    gzip_comp_level 3;
+    gzip_min_length 1024;
+    gzip_proxied any;
+    gzip_buffers 16 8k;
+    gzip_types text/plain text/css application/json application/x-javascript text/xml application/xml application/xml+rss text/javascript application/javascript text/x-js;
+
+    #### BRUTE FORCE PROTECTION ####
+    limit_req_zone $binary_remote_addr zone=one:10m rate=1r/s;
+    limit_req_status 444;
+    
+    #### INDEX FILE ####
+    # index index.php;
+    
+    #### NO INDEXING ####
+    autoindex off;
+
+    #### INCLUDE VHOSTS ###
+    include /etc/nginx/conf.d/*.conf;
+    include /etc/nginx/sites-enabled/*;
+}
