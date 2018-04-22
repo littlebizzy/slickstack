@@ -1,0 +1,92 @@
+###################################################################
+#### author: @slickstack ##########################################
+#### link: https://github.com/littlebizzy/slickstack ##############
+#### mirror: http://mirrors.littlebizzy.com/monit/monitrc.txt #####
+#### type: template for /etc/monit/monitrc (5.23) #################
+#### slug: monitrc ################################################
+#### executable: no ###############################################
+###################################################################
+
+## scheduling ##
+set daemon 300
+    # with start delay 240
+    
+## file paths ##
+set pidfile /var/run/monit.pid
+set idfile /var/lib/monit/id
+set statefile /var/lib/monit/state
+
+## mail settings ##
+set mailserver @MAILSMTP port @MAILPORT
+    username "@MAILUSER" password "@MAILPASS"
+set alert @MAILALERT
+
+## log settings ##
+set logfile /var/log/monit.log
+set eventqueue
+    basedir /var/monit
+    slots 100
+
+## web interface ##
+set httpd
+    port 2812
+    with ssl {
+        pemfile: /etc/ssl/nginx.pem
+        selfsigned: allow
+     }
+    allow @MONITUSER:@MONITPASS
+    
+## nginx monitor ##
+check process nginx with pidfile /var/run/nginx.pid
+	if cpu > 80% for 2 cycles then alert
+    
+## php-fpm monitor ##
+check process php7.0-fpm with pidfile /var/run/php/php7.0-fpm.pid
+	if cpu > 80% for 2 cycles then alert
+	
+## mysql 5.7 monitor ##
+check process mysqld with pidfile /var/run/mysqld/mysqld.pid			
+    if cpu > 80% for 2 cycles then alert
+    if failed unixsocket /var/run/mysqld/mysqld.sock then restart
+    
+## check disk space ##
+check filesystem rootfs with path /
+    if space usage > 80% then alert
+
+## check system health ##
+check system localhost
+if loadavg (1min) > 2 then alert
+if loadavg (5min) > 1 then alert
+if cpu usage > 50% for 10 cycles then alert
+if memory usage > 75% then alert
+
+# set limits {
+#     programOutput:     512 B,    # check program's output truncate limit
+#     sendExpectBuffer:  256 B,    # limit for send/expect protocol test
+#     fileContentBuffer: 512 B,    # limit for file content test
+#     httpContentBuffer: 1 MB,     # limit for HTTP content test
+#     networkTimeout:    5 seconds # timeout for network I/O
+# }
+
+#  check process apache with pidfile /usr/local/apache/logs/httpd.pid
+#    start program = "/etc/init.d/httpd start" with timeout 60 seconds
+#    stop program  = "/etc/init.d/httpd stop"
+#    if cpu > 60% for 2 cycles then alert
+#    if cpu > 80% for 5 cycles then restart
+#    if totalmem > 200.0 MB for 5 cycles then restart
+#    if children > 250 then restart
+#    if loadavg(5min) greater than 10 for 8 cycles then stop
+#    if failed host www.tildeslash.com port 80 protocol http
+#       and request "/somefile.html"
+#    then restart
+#    if failed port 443 protocol https with timeout 15 seconds then restart
+#    if 3 restarts within 5 cycles then unmonitor
+#    depends on apache_bin
+#    group server
+
+#  check host myserver with address 192.168.1.1
+#    if failed ping then alert
+#    if failed port 3306 protocol mysql with timeout 15 seconds then alert
+#    if failed port 80 protocol http
+#       and request /some/path with content = "a string"
+#    then alert
