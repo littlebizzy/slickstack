@@ -8,19 +8,63 @@
 #### purpose: installs slickstack (re-installable) ##########
 #############################################################
 
-source /var/www/bash-setup-users.txt
-source /var/www/bash-secure-root.txt
-
-## server config details ##
+## slickstack config ##
 source /var/www/ss-config
 
-## root config ##
+###############
+#### users ####
+###############
+
 ## reset root password ##
 # echo root:$passroot | /usr/sbin/chpasswd
-## ensure root user and password never expire ##
-## chage -E -1 -m 0 -M -1 -I -1 -W 99999 root
 
-### wpcli install ####
+## ensure root user and password never expire ##
+chage -E -1 -m 0 -M -1 -I -1 -W 99999 root
+
+## setup sudo user and password ##
+# /usr/sbin/useradd $usersudo
+# echo $usersudo:$passsudo | /usr/sbin/chpasswd
+
+## config visudo rules ##
+# (to do)
+
+## setup sftp user and password ##
+# /usr/sbin/useradd $usersftp
+# echo $usersftp:$pass | /usr/sbin/chpasswd
+
+#############
+#### ssh ####
+#############
+
+## delete tmp files ##
+rm -R -f /tmp/sshd-config.txt sshd_config
+
+## download latest versions ##
+cd /tmp/
+wget --no-cache http://mirrors.littlebizzy.com/ubuntu/sshd-config.txt
+
+## replace variables ##
+sed -i "s/@CLIENT/${user}/g" /tmp/sshd-config.txt
+
+## rename files ##
+mv sshd-config.txt sshd_config
+
+## overwrite all files to their various destinations ##
+cp -R -f --no-preserve=mode,ownership /tmp/sshd_config /etc/ssh/sshd_config
+
+## delete tmp files ##
+rm -R -f /tmp/sshd-config.txt sshd_config
+
+## reset permissions ##
+chown root:root /etc/ssh/sshd_config
+
+## restart services ##
+/etc/init.d/ssh restart
+
+###############
+### wp-cli ####
+###############
+
 ## retrieve latest wp-cli version ##
 ## cd /tmp/
 ## wget https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
@@ -29,7 +73,10 @@ source /var/www/ss-config
 ## reset permissions ##
 ## chmod +x wp-cli.phar
 
-## php install ##
+##############
+#### php #####
+##############
+
 ## update repo cache ##
 # source /var/www/apt-update
 ## install php and extensions ##
@@ -64,7 +111,10 @@ source /var/www/ss-config
 ## restart services ##
 # /etc/init.d/php7.0-fpm restart
 
-## mysql install ##
+###############
+#### mysql ####
+###############
+
 ## set noninteractive ##
 ## export DEBIAN_FRONTEND=noninteractive
 ## store mysql root password prior to installation ##
@@ -74,14 +124,6 @@ source /var/www/ss-config
 ## debconf-set-selections <<< "mysql-server-5.7 mysql-server/root_password_again password "$dbpassroot""
 ## continue with the mysql installation ##
 ## DEBIAN_FRONTEND=noninteractive apt-get --yes --option Dpkg::Options::="--force-confold" install mysql-server
-
-## add users ##
-## add user bizzy and set password ##
-## /usr/sbin/useradd bizzy
-## echo bizzy:$passroot | /usr/sbin/chpasswd
-## add user client and set password ##
-## /usr/sbin/useradd client
-## echo client:$pass | /usr/sbin/chpasswd
 
 
 
@@ -98,16 +140,7 @@ source /var/www/ss-config
 
 
 
-#####################
-#### install ssh ####
-#####################
 
-# cd /tmp/
-# wget --no-cache http://mirrors.littlebizzy.com/ssh/sshd-config.txt
-# mv sshd-config.txt sshd_config
-# cp -R -d --remove-destination --preserve=timestamps --no-preserve=mode,ownership /tmp/sshd_config /etc/ssh/sshd_config
-# chown root:root /etc/ssh/sshd_config
-# rm -R -f /tmp/sshd-config.txt sshd_config
 
 
 
@@ -270,36 +303,6 @@ source /var/www/mysql-secure
 # find /var/www/html/ -type d -exec chmod 775 {} \;
 # find /var/www/html/ -type f -exec chmod 664 {} \;
 
-
-
-####################
-#### config ssh ####
-####################
-
-## delete all tmp files before we begin ##
-# rm -R -f /tmp/sshd_config /tmp/sshd-config.txt
-
-## download template files ##
-# cd /tmp/
-# wget --no-cache http://mirrors.littlebizzy.com/ubuntu/sshd-config.txt
-
-## replace placeholders with variables from config ##
-# sed -i "s/@CLIENT/${user}/g" /tmp/sshd-config.txt
-
-## rename tmp files ##
-# mv sshd-config.txt sshd_config
-
-## overwrite all files to their various destinations ##
-# cp -R -f --no-preserve=mode,ownership /tmp/sshd_config /etc/ssh/sshd_config
-
-## delete all tmp files after we finish ##
-# rm -R -f /tmp/sshd_config /tmp/sshd-config.txt
-
-## quick permissions reset ##
-# chown root:root /etc/ssh/sshd_config
-
-## restart ssh ##
-# /etc/init.d/ssh restart
 
 
 
