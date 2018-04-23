@@ -15,8 +15,17 @@ source /var/www/ss-config
 #### repos ####
 ###############
 
+## fix dpkg ##
+DEBIAN_FRONTEND=noninteractive dpkg --configure -a --force-confold
+
 ## update repos ##
 DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt-get -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" update
+
+## install linux utilities ##
+DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt-get -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install zip unzip
+
+## install git ##
+DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt-get -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install git
 
 ###############
 #### users ####
@@ -225,7 +234,6 @@ apt-get install -y software-properties-common
 add-apt-repository ppa:nginx/development
 apt-get update
 apt-get install -y nginx
-DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt-get -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install zip unzip
 apt-get install -y php7.0 php7.0-fpm php7.0-mysql php7.0-gd php7.0-curl php7.0-zip php7.0-mcrypt php7.0-mbstring php7.0-xml php7.0-json php7.0-soap
 apt-get upgrade
 
@@ -258,8 +266,6 @@ source /var/www/mysql-secure
 ## restart services ##
 # /etc/init.d/nginx restart
 
-
-
 ###########################
 #### install wordpress ####
 ###########################
@@ -277,12 +283,68 @@ source /var/www/mysql-secure
 # find /var/www/html/ -type d -exec chmod 775 {} \;
 # find /var/www/html/ -type f -exec chmod 664 {} \;
 
+###############
+#### redis ####
+###############
 
+# skip for now
 
+###############
+#### monit ####
+###############
+
+# skip for now
+
+#####################
+#### install ufw ####
+#####################
+
+## ensure ufw installed in ubuntu ##
+DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt-get -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install ufw
+
+## configure ufw rules ##
+ufw default deny incoming
+ufw default allow outgoing
+ufw allow 6969
+ufw allow 80
+ufw allow 443
+ufw --force disable
+ufw --force enable
+echo "y" | ufw enable
+/etc/init.d/ufw force-reload
+/etc/init.d/ufw restart
+
+## delete previous tmp files ##
+rm -R -f /tmp/ufw-conf.txt* /tmp/ufw.conf*
+rm -R -f /tmp/user-rules.txt* /tmp/user.rules*
+
+# retrieve custom config files ##
+cd /tmp/
+wget --no-cache http://mirrors.slickstack.io/ubuntu/ufw-conf.txt
+wget --no-cache http://mirrors.slickstack.io/ubuntu/user-rules.txt
+
+## rename scripts and configs ##
+mv ufw-conf.txt ufw.conf
+mv user-rules.txt user.rules
+
+## copy scripts and configs to their destinations ##
+cp -R -f -d --no-preserve=mode,ownership /tmp/ufw.conf /etc/ufw/ufw.conf
+cp -R -f -d --no-preserve=mode,ownership /tmp/user.rules /etc/ufw/user.rules
+
+## delete remaining tmp files ##
+rm -R -f /tmp/ufw-conf.txt* /tmp/ufw.conf*
+rm -R -f /tmp/user-rules.txt* /tmp/user.rules*
+
+## restart services ##
+/etc/init.d/ufw force-reload
+/etc/init.d/ufw restart
 
 ##########################
 #### restart services ####
 ##########################
+
+## fix dpkg ##
+DEBIAN_FRONTEND=noninteractive dpkg --configure -a --force-confold
 
 service nginx restart
 service php5-fpm restart
