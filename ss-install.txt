@@ -25,8 +25,14 @@ chage -E -1 -m 0 -M -1 -I -1 -W 99999 root
 # /usr/sbin/useradd $usersudo
 # echo $usersudo:$passsudo | /usr/sbin/chpasswd
 
-## config visudo rules ##
-# (to do)
+## setup sudoers (visudo) ##
+# rm -R -f /tmp/sudoers.txt sudoers
+# cd /tmp/
+# wget --no-cache http://mirrors.littlebizzy.com/linux/sudoers.txt
+# mv sudoers.txt sudoers
+# cp -R -d --remove-destination --preserve=timestamps --no-preserve=mode,ownership /tmp/sudoers /etc/sudoers
+# chown root:root /etc/sudoers
+# rm -R -f /tmp/sudoers.txt sudoers
 
 ## setup sftp user and password ##
 # /usr/sbin/useradd $usersftp
@@ -58,8 +64,84 @@ rm -R -f /tmp/sshd-config.txt sshd_config
 ## reset permissions ##
 chown root:root /etc/ssh/sshd_config
 
-## restart services ##
+## restart ssh ##
 /etc/init.d/ssh restart
+
+##################
+#### timezone ####
+##################
+
+## set UTC timezone ##
+timedatectl set-timezone UTC
+
+#################
+#### crontab ####
+#################
+
+cd /tmp/
+rm -R -f /tmp/crontab.txt /tmp/root
+wget --no-cache http://mirrors.littlebizzy.com/ubuntu/crontab.txt
+mv /tmp/crontab.txt /tmp/root
+cp -R -f --preserve=mode,ownership /tmp/root /var/spool/cron/crontabs/root
+rm -R -f /tmp/crontab.txt /tmp/root
+chown root:root /var/spool/cron/crontabs/root
+
+## reload crontab ##
+/etc/init.d/cron reload
+
+######################
+#### nginx config ####
+######################
+
+cd /tmp/
+wget --timestamping http://mirrors.littlebizzy.com/nginx/nginx-conf.txt
+mv nginx-conf.txt nginx.conf
+cp -R -d --remove-destination --preserve=timestamps --no-preserve=mode,ownership /tmp/nginx.conf /etc/nginx/nginx.conf
+rm -R -f /tmp/nginx.conf /tmp/nginx-conf.txt
+chown root:root /etc/nginx/nginx.conf
+
+############################
+#### setup nginx server ####
+############################
+
+## delete all tmp files before we begin ##
+# rm -R -f /tmp/nginx.conf /tmp/nginx-conf /tmp/nginx-conf.txt
+# rm -R -f /tmp/default /tmp/default.txt /tmp/server-block /tmp/server-block.txt /tmp/server-block-ssl /tmp/server-block-ssl.txt
+
+## download nginx.conf (production) file ##
+# cd /tmp/
+# wget --no-cache http://mirrors.littlebizzy.com/nginx/nginx-conf.txt
+
+## download correct template for building nginx server block ##
+# cd /tmp/
+# if [[ "$ssl" == "yes" ]]
+# then wget --no-cache http://mirrors.littlebizzy.com/nginx/server-block-ssl.txt
+# mv /tmp/server-block-ssl.txt /tmp/default.txt
+# else wget --no-cache http://mirrors.littlebizzy.com/nginx/server-block.txt
+# mv /tmp/server-block.txt /tmp/default.txt
+# fi
+
+## replace @DOMAIN placeholder with variable from config ##
+# sed -i "s/@DOMAIN/${domain}/g" /tmp/default.txt
+
+## rename all txt files to no extension ##
+# mv /tmp/nginx-conf.txt /tmp/nginx.conf
+# mv /tmp/default.txt /tmp/default
+
+## overwrite all files to their various destinations ##
+# cp -R -f --no-preserve=mode,ownership /tmp/nginx.conf /etc/nginx/nginx.conf
+# cp -R -f --no-preserve=mode,ownership /tmp/default /etc/nginx/sites-available/default
+
+## delete all tmp files after we finish ##
+# rm -R -f /tmp/nginx.conf /tmp/nginx-conf /tmp/nginx-conf.txt
+# rm -R -f /tmp/default /tmp/default.txt /tmp/server-block /tmp/server-block.txt /tmp/server-block-ssl /tmp/server-block-ssl.txt
+
+## quick permissions reset ##
+# chown root:root /etc/nginx/nginx.conf
+# chown root:root /etc/nginx/sites-available/default
+
+## restart nginx ##
+# /etc/init.d/nginx restart
 
 ###############
 ### wp-cli ####
@@ -125,31 +207,6 @@ chown root:root /etc/ssh/sshd_config
 ## continue with the mysql installation ##
 ## DEBIAN_FRONTEND=noninteractive apt-get --yes --option Dpkg::Options::="--force-confold" install mysql-server
 
-
-
-########################
-#### config sudoers ####
-########################
-
-# cd /tmp/
-# wget --no-cache http://mirrors.littlebizzy.com/linux/sudoers.txt
-# mv sudoers.txt sudoers
-# cp -R -d --remove-destination --preserve=timestamps --no-preserve=mode,ownership /tmp/sudoers /etc/sudoers
-# chown root:root /etc/sudoers
-# rm -R -f /tmp/sudoers.txt sudoers
-
-
-
-
-
-
-
-##########################
-#### set UTC timezone ####
-##########################
-
-timedatectl set-timezone UTC
-
 ## update repos and install lemp depencies ##
 apt-get update
 apt-get install -y software-properties-common
@@ -162,78 +219,7 @@ apt-get upgrade
 
 
 
-#########################
-#### install crontab ####
-#########################
 
-cd /tmp/
-rm -R -f /tmp/crontab.txt /tmp/root
-wget --no-cache http://mirrors.littlebizzy.com/ubuntu/crontab.txt
-mv /tmp/crontab.txt /tmp/root
-cp -R -f --preserve=mode,ownership /tmp/root /var/spool/cron/crontabs/root
-rm -R -f /tmp/crontab.txt /tmp/root
-chown root:root /var/spool/cron/crontabs/root
-
-## reload crontab ##
-/etc/init.d/cron reload
-
-
-
-##############################
-#### install nginx config ####
-##############################
-
-cd /tmp/
-wget --timestamping http://mirrors.littlebizzy.com/nginx/nginx-conf.txt
-mv nginx-conf.txt nginx.conf
-cp -R -d --remove-destination --preserve=timestamps --no-preserve=mode,ownership /tmp/nginx.conf /etc/nginx/nginx.conf
-rm -R -f /tmp/nginx.conf /tmp/nginx-conf.txt
-chown root:root /etc/nginx/nginx.conf
-
-
-
-############################
-#### setup nginx server ####
-############################
-
-## delete all tmp files before we begin ##
-# rm -R -f /tmp/nginx.conf /tmp/nginx-conf /tmp/nginx-conf.txt
-# rm -R -f /tmp/default /tmp/default.txt /tmp/server-block /tmp/server-block.txt /tmp/server-block-ssl /tmp/server-block-ssl.txt
-
-## download nginx.conf (production) file ##
-# cd /tmp/
-# wget --no-cache http://mirrors.littlebizzy.com/nginx/nginx-conf.txt
-
-## download correct template for building nginx server block ##
-# cd /tmp/
-# if [[ "$ssl" == "yes" ]]
-# then wget --no-cache http://mirrors.littlebizzy.com/nginx/server-block-ssl.txt
-# mv /tmp/server-block-ssl.txt /tmp/default.txt
-# else wget --no-cache http://mirrors.littlebizzy.com/nginx/server-block.txt
-# mv /tmp/server-block.txt /tmp/default.txt
-# fi
-
-## replace @DOMAIN placeholder with variable from config ##
-# sed -i "s/@DOMAIN/${domain}/g" /tmp/default.txt
-
-## rename all txt files to no extension ##
-# mv /tmp/nginx-conf.txt /tmp/nginx.conf
-# mv /tmp/default.txt /tmp/default
-
-## overwrite all files to their various destinations ##
-# cp -R -f --no-preserve=mode,ownership /tmp/nginx.conf /etc/nginx/nginx.conf
-# cp -R -f --no-preserve=mode,ownership /tmp/default /etc/nginx/sites-available/default
-
-## delete all tmp files after we finish ##
-# rm -R -f /tmp/nginx.conf /tmp/nginx-conf /tmp/nginx-conf.txt
-# rm -R -f /tmp/default /tmp/default.txt /tmp/server-block /tmp/server-block.txt /tmp/server-block-ssl /tmp/server-block-ssl.txt
-
-## quick permissions reset ##
-# chown root:root /etc/nginx/nginx.conf
-# chown root:root /etc/nginx/sites-available/default
-
-## restart nginx ##
-# /etc/init.d/nginx restart
 
 
 
