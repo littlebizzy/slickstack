@@ -261,49 +261,47 @@ chown root:root /etc/php/7.0/fpm/pool.d/www.conf
 ## continue with the mysql installation ##
 ## DEBIAN_FRONTEND=noninteractive apt-get --yes --option Dpkg::Options::="--force-confold" install mysql-server
 
-#######################
-#### install mysql ####
-#######################
-
-echo "mysql-server mysql-server/root_password password "$dbpassroot"" | debconf-set-selections
-echo "mysql-server mysql-server/root_password_again password "$dbpassroot"" | debconf-set-selections
-apt-get install -y mysql-server
+# echo "mysql-server mysql-server/root_password password "$dbpassroot"" | debconf-set-selections
+# echo "mysql-server mysql-server/root_password_again password "$dbpassroot"" | debconf-set-selections
+# apt-get install -y mysql-server
 
 ## secure mysql 5.7 ##
-source /var/www/mysql-secure
+# source /var/www/mysql-secure
 
-
-
-#####################
-#### install ssl ####
-#####################
+#############
+#### ssl ####
+#############
 
 ## generate ssl certificate ##
-# openssl req -new -x509 -nodes -days 730 -newkey rsa:2048 -keyout /etc/ssl/nginx.key -out /etc/ssl/nginx.crt -subj "/C=${country}/ST=${state}/L=${city}/O=${company}/OU=${dept}/CN=${domain}"
+openssl req -new -x509 -nodes -days 730 -newkey rsa:2048 -keyout /etc/ssl/nginx.key -out /etc/ssl/nginx.crt -subj "/C=${country}/ST=${state}/L=${city}/O=${company}/OU=${dept}/CN=${domain}"
 
-## quick permissions reset ##
-# chown root:root /etc/ssl/nginx.key
-# chown root:root /etc/ssl/nginx.crt
+## permissions reset ##
+chown root:root /etc/ssl/nginx.key
+chown root:root /etc/ssl/nginx.crt
 
-## restart services ##
-# /etc/init.d/nginx restart
+## restart nginx ##
+/etc/init.d/nginx restart
 
-###########################
-#### install wordpress ####
-###########################
+###################
+#### wordpress ####
+###################
 
-## download and unzip latest wordpress version ##
-# cd /var/www/html/
-# wget http://wordpress.org/latest.tar.gz
-# tar xfz latest.tar.gz
-# rsync -raqIp wordpress/* ./
-# rm -rf wordpress
-# rm -f latest.tar.gz
+## download latest versions ##
+cd /var/www/html/
+wget --no-cache http://wordpress.org/latest.tar.gz
+
+## untar files ##
+tar xfz latest.tar.gz
+rsync -raqIp wordpress/* ./
+
+## delete junk ##
+rm -rf wordpress
+rm -f latest.tar.gz
 
 ## reset permissions ##
-# chown -R www-data:wordpress /var/www/html
-# find /var/www/html/ -type d -exec chmod 775 {} \;
-# find /var/www/html/ -type f -exec chmod 664 {} \;
+chown -R www-data:wordpress /var/www/html
+find /var/www/html/ -type d -exec chmod 775 {} \;
+find /var/www/html/ -type f -exec chmod 664 {} \;
 
 ###############
 #### redis ####
@@ -321,6 +319,10 @@ source /var/www/mysql-secure
 #### install ufw ####
 #####################
 
+## delete tmp files ##
+rm -R -f /tmp/ufw-conf.txt* /tmp/ufw.conf*
+rm -R -f /tmp/user-rules.txt* /tmp/user.rules*
+
 ## ensure ufw installed in ubuntu ##
 DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt-get -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install ufw
 
@@ -336,28 +338,24 @@ echo "y" | ufw enable
 /etc/init.d/ufw force-reload
 /etc/init.d/ufw restart
 
-## delete previous tmp files ##
-rm -R -f /tmp/ufw-conf.txt* /tmp/ufw.conf*
-rm -R -f /tmp/user-rules.txt* /tmp/user.rules*
-
-# retrieve custom config files ##
+# retrieve latest versions ##
 cd /tmp/
 wget --no-cache http://mirrors.slickstack.io/ubuntu/ufw-conf.txt
 wget --no-cache http://mirrors.slickstack.io/ubuntu/user-rules.txt
 
-## rename scripts and configs ##
+## rename files ##
 mv ufw-conf.txt ufw.conf
 mv user-rules.txt user.rules
 
-## copy scripts and configs to their destinations ##
+## copy files to their destinations ##
 cp -R -f -d --no-preserve=mode,ownership /tmp/ufw.conf /etc/ufw/ufw.conf
 cp -R -f -d --no-preserve=mode,ownership /tmp/user.rules /etc/ufw/user.rules
 
-## delete remaining tmp files ##
+## delete tmp files ##
 rm -R -f /tmp/ufw-conf.txt* /tmp/ufw.conf*
 rm -R -f /tmp/user-rules.txt* /tmp/user.rules*
 
-## restart services ##
+## restart ufw ##
 /etc/init.d/ufw force-reload
 /etc/init.d/ufw restart
 
@@ -372,6 +370,6 @@ DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/u
 ## fix dpkg ##
 DEBIAN_FRONTEND=noninteractive dpkg --configure -a --force-confold
 
-service nginx restart
-service php5-fpm restart
-service php7.0-fpm restart
+## restart services ##
+/etc/init.d/nginx restart
+/etc/init.d/php7.0-fpm restart
