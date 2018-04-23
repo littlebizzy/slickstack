@@ -12,6 +12,13 @@
 source /var/www/ss-config
 
 ###############
+#### repos ####
+###############
+
+## update repos ##
+DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt-get -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" update
+
+###############
 #### users ####
 ###############
 
@@ -28,7 +35,7 @@ chage -E -1 -m 0 -M -1 -I -1 -W 99999 root
 ## setup sudoers (visudo) ##
 # rm -R -f /tmp/sudoers.txt sudoers
 # cd /tmp/
-# wget --no-cache http://mirrors.littlebizzy.com/linux/sudoers.txt
+# wget --no-cache http://mirrors.slickstack.io/linux/sudoers.txt
 # mv sudoers.txt sudoers
 # cp -R -d --remove-destination --preserve=timestamps --no-preserve=mode,ownership /tmp/sudoers /etc/sudoers
 # chown root:root /etc/sudoers
@@ -47,7 +54,7 @@ rm -R -f /tmp/sshd-config.txt sshd_config
 
 ## download latest versions ##
 cd /tmp/
-wget --no-cache http://mirrors.littlebizzy.com/ubuntu/sshd-config.txt
+wget --no-cache http://mirrors.slickstack.io/ubuntu/sshd-config.txt
 
 ## replace variables ##
 sed -i "s/@CLIENT/${user}/g" /tmp/sshd-config.txt
@@ -80,7 +87,7 @@ timedatectl set-timezone UTC
 
 cd /tmp/
 rm -R -f /tmp/crontab.txt /tmp/root
-wget --no-cache http://mirrors.littlebizzy.com/ubuntu/crontab.txt
+wget --no-cache http://mirrors.slickstack.io/ubuntu/crontab.txt
 mv /tmp/crontab.txt /tmp/root
 cp -R -f --preserve=mode,ownership /tmp/root /var/spool/cron/crontabs/root
 rm -R -f /tmp/crontab.txt /tmp/root
@@ -94,7 +101,7 @@ chown root:root /var/spool/cron/crontabs/root
 ######################
 
 cd /tmp/
-wget --timestamping http://mirrors.littlebizzy.com/nginx/nginx-conf.txt
+wget --timestamping http://mirrors.slickstack.io/nginx/nginx-conf.txt
 mv nginx-conf.txt nginx.conf
 cp -R -d --remove-destination --preserve=timestamps --no-preserve=mode,ownership /tmp/nginx.conf /etc/nginx/nginx.conf
 rm -R -f /tmp/nginx.conf /tmp/nginx-conf.txt
@@ -110,14 +117,14 @@ chown root:root /etc/nginx/nginx.conf
 
 ## download nginx.conf (production) file ##
 # cd /tmp/
-# wget --no-cache http://mirrors.littlebizzy.com/nginx/nginx-conf.txt
+# wget --no-cache http://mirrors.slickstack.io/nginx/nginx-conf.txt
 
 ## download correct template for building nginx server block ##
 # cd /tmp/
 # if [[ "$ssl" == "yes" ]]
-# then wget --no-cache http://mirrors.littlebizzy.com/nginx/server-block-ssl.txt
+# then wget --no-cache http://mirrors.slickstack.io/nginx/server-block-ssl.txt
 # mv /tmp/server-block-ssl.txt /tmp/default.txt
-# else wget --no-cache http://mirrors.littlebizzy.com/nginx/server-block.txt
+# else wget --no-cache http://mirrors.slickstack.io/nginx/server-block.txt
 # mv /tmp/server-block.txt /tmp/default.txt
 # fi
 
@@ -159,39 +166,44 @@ chown root:root /etc/nginx/nginx.conf
 #### php #####
 ##############
 
-## update repo cache ##
-# source /var/www/apt-update
 ## install php and extensions ##
-# DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt-get -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install php7.0 php7.0-fpm php7.0-mysql php7.0-curl php7.0-zip php7.0-gd php7.0-mcrypt php7.0-mbstring php7.0-bcmath php7.0-xml php7.0-json php7.0-soap
-## delete previous tmp files ##
-# rm -R -f /tmp/php-ini.txt* /tmp/php.ini*
-# rm -R -f /tmp/php-fpm-conf.txt* /tmp/php-fpm.conf*
-# rm -R -f /tmp/www-conf.txt* /tmp/www.conf*
-## retrieve custom config files ##
-# cd /tmp/
-# wget --no-cache http://mirrors.littlebizzy.com/php/php-ini.txt
-# wget --no-cache http://mirrors.littlebizzy.com/php/php-fpm-conf.txt
-# wget --no-cache http://mirrors.littlebizzy.com/php/www-conf.txt
-## rename txt files ##
-# mv php-ini.txt php.ini
-# mv php-fpm-conf.txt php-fpm.conf
-# mv www-conf.txt www.conf
-## copy custom config files to their destinations ##
-# cp -R -f --no-preserve=mode,ownership /tmp/php.ini /etc/php/7.0/fpm/php.ini
-# cp -R -f --no-preserve=mode,ownership /tmp/php.ini /etc/php/7.0/cli/php.ini
-# cp -R -f --no-preserve=mode,ownership /tmp/php-fpm.conf /etc/php/7.0/fpm/php-fpm.conf
-# cp -R -f --no-preserve=mode,ownership /tmp/www.conf /etc/php/7.0/fpm/pool.d/www.conf
-## delete remaining tmp files ##
-# rm -R -f /tmp/php-ini.txt* /tmp/php.ini*
-# rm -R -f /tmp/php-fpm-conf.txt* /tmp/php-fpm.conf*
-# rm -R -f /tmp/www-conf.txt* /tmp/www.conf*
+DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt-get -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install php7.0 php7.0-fpm php7.0-mysql php7.0-curl php7.0-zip php7.0-gd php7.0-mcrypt php7.0-mbstring php7.0-bcmath php7.0-xml php7.0-json php7.0-soap
+
+## delete tmp files ##
+rm -R -f /tmp/php-ini.txt* /tmp/php.ini*
+rm -R -f /tmp/php-fpm-conf.txt* /tmp/php-fpm.conf*
+rm -R -f /tmp/www-conf.txt* /tmp/www.conf*
+
+## download latest versions ##
+cd /tmp/
+wget --no-cache http://mirrors.slickstack.io/php/php-ini.txt
+wget --no-cache http://mirrors.slickstack.io/php/php-fpm-conf.txt
+wget --no-cache http://mirrors.slickstack.io/php/www-conf.txt
+
+## rename files ##
+mv php-ini.txt php.ini
+mv php-fpm-conf.txt php-fpm.conf
+mv www-conf.txt www.conf
+
+## copy files to their destinations ##
+cp -R -f --no-preserve=mode,ownership /tmp/php.ini /etc/php/7.0/fpm/php.ini
+cp -R -f --no-preserve=mode,ownership /tmp/php.ini /etc/php/7.0/cli/php.ini
+cp -R -f --no-preserve=mode,ownership /tmp/php-fpm.conf /etc/php/7.0/fpm/php-fpm.conf
+cp -R -f --no-preserve=mode,ownership /tmp/www.conf /etc/php/7.0/fpm/pool.d/www.conf
+
+## delete tmp files ##
+rm -R -f /tmp/php-ini.txt* /tmp/php.ini*
+rm -R -f /tmp/php-fpm-conf.txt* /tmp/php-fpm.conf*
+rm -R -f /tmp/www-conf.txt* /tmp/www.conf*
+
 ## reset permissions ##
-# chown root:root /etc/php/7.0/cli/php.ini
-# chown root:root /etc/php/7.0/fpm/php.ini
-# chown root:root /etc/php/7.0/fpm/php-fpm.conf
-# chown root:root /etc/php/7.0/fpm/pool.d/www.conf
-## restart services ##
-# /etc/init.d/php7.0-fpm restart
+chown root:root /etc/php/7.0/cli/php.ini
+chown root:root /etc/php/7.0/fpm/php.ini
+chown root:root /etc/php/7.0/fpm/php-fpm.conf
+chown root:root /etc/php/7.0/fpm/pool.d/www.conf
+
+## restart php ##
+/etc/init.d/php7.0-fpm restart
 
 ###############
 #### mysql ####
@@ -216,30 +228,6 @@ apt-get install -y nginx
 DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt-get -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install zip unzip
 apt-get install -y php7.0 php7.0-fpm php7.0-mysql php7.0-gd php7.0-curl php7.0-zip php7.0-mcrypt php7.0-mbstring php7.0-xml php7.0-json php7.0-soap
 apt-get upgrade
-
-
-
-
-
-
-
-############################
-#### install php config ####
-############################
-
-cd /tmp/
-wget --timestamping http://mirrors.littlebizzy.com/php/php-ini.txt
-wget --timestamping http://mirrors.littlebizzy.com/php/php-fpm-conf.txt
-mv php-ini.txt php.ini
-mv php-fpm-conf.txt php-fpm.conf
-cp -R -d --remove-destination --preserve=timestamps --no-preserve=mode,ownership /tmp/php.ini /etc/php/7.0/fpm/php.ini
-cp -R -d --remove-destination --preserve=timestamps --no-preserve=mode,ownership /tmp/php.ini /etc/php/7.0/cli/php.ini
-cp -R -d --remove-destination --preserve=timestamps --no-preserve=mode,ownership /tmp/php-fpm.conf /etc/php/7.0/fpm/php-fpm.conf
-chown root:root /etc/php/7.0/fpm/php.ini
-chown root:root /etc/php/7.0/cli/php.ini
-chown root:root /etc/php/7.0/fpm/php-fpm.conf
-rm -R -f /tmp/php.ini /tmp/php-ini.txt
-rm -R -f /tmp/php-fpm.conf /tmp/php-fpm-conf.txt
 
 
 
