@@ -11,6 +11,42 @@
 ## slickstack config ##
 source /var/www/ss-config
 
+############################
+#### prepare slickstack ####
+############################
+
+## delete tmp files ##
+rm -R -f /tmp/1-cron-often.txt* /tmp/1-cron-often*
+rm -R -f /tmp/ss-check*
+
+# download latest files ##
+cd /tmp/
+wget --no-cache http://mirrors.slickstack.io/1-cron-often.txt
+wget --no-cache http://mirrors.slickstack.io/ss-check.txt
+
+## rename files ##
+cd /tmp/
+mv 1-cron-often.txt 1-cron-often
+mv ss-check.txt ss-check
+
+## copy files to their destinations ##
+cp -R -f -d --no-preserve=mode,ownership /tmp/1-cron-often /var/www/1-cron-often
+cp -R -f -d --no-preserve=mode,ownership /tmp/ss-check /var/www/ss-check
+
+## delete tmp files ##
+rm -R -f /tmp/1-cron-often.txt* /tmp/1-cron-often*
+rm -R -f /tmp/ss-check*
+
+## reset file permissions ##
+chown root:root /var/www/1-cron-often
+chmod -R 700 /var/www/1-cron-often
+chown root:root /var/www/ss-check
+chmod -R 700 /var/www/ss-check
+
+## ss-check and ss-perms ##
+source /var/www/ss-check
+source /var/www/ss-perms
+
 ###############
 #### repos ####
 ###############
