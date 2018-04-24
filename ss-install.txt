@@ -174,6 +174,17 @@ mv wp-cli.phar /usr/local/bin/wp
 ## reset permissions ##
 chmod +x wp-cli.phar
 
+#############
+#### ssl ####
+#############
+
+## generate ssl certificate ##
+openssl req -new -x509 -nodes -days 730 -newkey rsa:2048 -keyout /etc/ssl/nginx.key -out /etc/ssl/nginx.crt -subj "/C=${country}/ST=${state}/L=${city}/O=${company}/OU=${dept}/CN=${domain}"
+
+## permissions reset ##
+chown root:root /etc/ssl/nginx.key
+chown root:root /etc/ssl/nginx.crt
+
 ###############
 #### nginx ####
 ###############
@@ -212,9 +223,6 @@ rm -R -f /tmp/nginx-conf.txt /tmp/nginx.conf
 
 ## reset permissions ##
 chown root:root /etc/nginx/nginx.conf
-
-## restart nginx ##
-/etc/init.d/nginx restart
 
 ######################
 #### nginx server ####
@@ -314,20 +322,6 @@ chown root:root /etc/php/7.0/fpm/pool.d/www.conf
 ## secure mysql 5.7 ##
 # source /var/www/mysql-secure
 
-#############
-#### ssl ####
-#############
-
-## generate ssl certificate ##
-openssl req -new -x509 -nodes -days 730 -newkey rsa:2048 -keyout /etc/ssl/nginx.key -out /etc/ssl/nginx.crt -subj "/C=${country}/ST=${state}/L=${city}/O=${company}/OU=${dept}/CN=${domain}"
-
-## permissions reset ##
-chown root:root /etc/ssl/nginx.key
-chown root:root /etc/ssl/nginx.crt
-
-## restart nginx ##
-/etc/init.d/nginx restart
-
 ###################
 #### wordpress ####
 ###################
@@ -369,10 +363,10 @@ find /var/www/html/ -type f -exec chmod 664 {} \;
 rm -R -f /tmp/ufw-conf.txt* /tmp/ufw.conf*
 rm -R -f /tmp/user-rules.txt* /tmp/user.rules*
 
-## ensure ufw installed in ubuntu ##
+## install ufw ##
 DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt-get -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install ufw
 
-## configure ufw rules ##
+## ufw rules ##
 ufw default deny incoming
 ufw default allow outgoing
 ufw allow 6969
