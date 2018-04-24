@@ -11,39 +11,32 @@
 ## slickstack config ##
 source /var/www/ss-config
 
-############################
-#### prepare slickstack ####
-############################
+##################
+#### ss-check ####
+##################
 
 ## delete tmp files ##
-rm -R -f /tmp/1-cron-often.txt* /tmp/1-cron-often*
 rm -R -f /tmp/ss-check*
 
-# download latest files ##
+# download latest versions ##
 cd /tmp/
-wget --no-cache http://mirrors.slickstack.io/1-cron-often.txt
 wget --no-cache http://mirrors.slickstack.io/ss-check.txt
 
 ## rename files ##
 cd /tmp/
-mv 1-cron-often.txt 1-cron-often
 mv ss-check.txt ss-check
 
 ## copy files to their destinations ##
-cp -R -f -d --no-preserve=mode,ownership /tmp/1-cron-often /var/www/1-cron-often
 cp -R -f -d --no-preserve=mode,ownership /tmp/ss-check /var/www/ss-check
 
 ## delete tmp files ##
-rm -R -f /tmp/1-cron-often.txt* /tmp/1-cron-often*
 rm -R -f /tmp/ss-check*
 
-## reset file permissions ##
-chown root:root /var/www/1-cron-often
-chmod -R 700 /var/www/1-cron-often
+## reset permissions ##
 chown root:root /var/www/ss-check
 chmod -R 700 /var/www/ss-check
 
-## ss-check and ss-perms ##
+## call scripts ##
 source /var/www/ss-check
 source /var/www/ss-perms
 
@@ -67,28 +60,42 @@ DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/u
 #### users ####
 ###############
 
-## reset root password ##
-# echo root:$passroot | /usr/sbin/chpasswd
+## reset root ssh/sftp password ##
+# echo root:$rootpass | /usr/sbin/chpasswd
 
 ## ensure root user and password never expire ##
 chage -E -1 -m 0 -M -1 -I -1 -W 99999 root
 
-## setup sudo user and password ##
-# /usr/sbin/useradd $usersudo
-# echo $usersudo:$passsudo | /usr/sbin/chpasswd
+## sudo ssh/sftp user and password ##
+# /usr/sbin/useradd $sudo
+# echo $sudo:$sudopass | /usr/sbin/chpasswd
 
-## setup sudoers (visudo) ##
+## basic sftp user and password ##
+# /usr/sbin/useradd $user
+# echo $user:$userpass | /usr/sbin/chpasswd
+
+##########################
+#### sudoers (visudo) ####
+##########################
+
+## delete tmp files ##
 # rm -R -f /tmp/sudoers.txt sudoers
+
+## download latest versions ##
 # cd /tmp/
 # wget --no-cache http://mirrors.slickstack.io/linux/sudoers.txt
+
+## rename files ##
 # mv sudoers.txt sudoers
-# cp -R -d --remove-destination --preserve=timestamps --no-preserve=mode,ownership /tmp/sudoers /etc/sudoers
-# chown root:root /etc/sudoers
+
+## copy files to their destinations ##
+# cp -R -f -d --no-preserve=mode,ownership /tmp/sudoers /etc/sudoers
+
+## delete tmp files ##
 # rm -R -f /tmp/sudoers.txt sudoers
 
-## setup sftp user and password ##
-# /usr/sbin/useradd $usersftp
-# echo $usersftp:$pass | /usr/sbin/chpasswd
+## reset permissions ##
+# chown root:root /etc/sudoers
 
 #############
 #### ssh ####
@@ -102,7 +109,8 @@ cd /tmp/
 wget --no-cache http://mirrors.slickstack.io/ubuntu/sshd-config.txt
 
 ## replace variables ##
-sed -i "s/@CLIENT/${user}/g" /tmp/sshd-config.txt
+sed -i "s/@SUDO/${sudo}/g" /tmp/sshd-config.txt
+sed -i "s/@USER/${user}/g" /tmp/sshd-config.txt
 
 ## rename files ##
 mv sshd-config.txt sshd_config
@@ -156,13 +164,15 @@ chown root:root /var/spool/cron/crontabs/root
 ### wp-cli ####
 ###############
 
-## retrieve latest wp-cli version ##
-## cd /tmp/
-## wget https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
-## rename and move phar ##
-## mv wp-cli.phar /usr/local/bin/wp
+## download latest versions ##
+cd /tmp/
+wget https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
+
+## rename files and copy to their destinations ##
+mv wp-cli.phar /usr/local/bin/wp
+
 ## reset permissions ##
-## chmod +x wp-cli.phar
+chmod +x wp-cli.phar
 
 ###############
 #### nginx ####
