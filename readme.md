@@ -38,7 +38,7 @@ Because it’s written purely in [bash](https://en.wikipedia.org/wiki/Bash_(Unix
 
 3. Complete SlickStack [SS] installation with the below command:
 
-`sudo wget mirrors.slickstack.io/ss-check && sudo bash ss-check && sudo bash ss-install`
+`sudo wget --no-cache mirrors.slickstack.io/ss-install && sudo bash ss-install`
 
 **In the future, SlickStack will have an interactive installation.*
 
