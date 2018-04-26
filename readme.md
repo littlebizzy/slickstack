@@ -1,4 +1,4 @@
-# NOT READY YET !!!!!
+# NOT READY YET!!! USE AT YOUR OWN RISK!!!
 
 # SlickStack [SS]
 
@@ -12,11 +12,11 @@ Please don't email us. Post all support/questions/comments in FREE Facebook grou
 
 ## Table Of Contents
 
-1. [Compatibility](https://github.com/littlebizzy/slickstack#compatibility)
+1. [Compatibility](#compatibility)
 2. [Installation](#installation)
-3. [Philosophy](https://github.com/littlebizzy/slickstack#philosophy)
-4. [Instructions](https://github.com/littlebizzy/slickstack#instructions)
-5. [Comparison](https://github.com/littlebizzy/slickstack#comparison)
+3. [Structure](#structure)
+4. [Philosophy](#philosophy)
+5. [Comparison](#comparison)
 
 ## Compatibility
 
