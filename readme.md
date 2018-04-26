@@ -28,10 +28,9 @@ The below installation steps presume that you've already spun up a dedicated Ubu
 
 `sudo mkdir /var/www && sudo chown root:root /var/www && sudo chmod 755 /var/www`
 
-2. Create an [ss-config](https://github.com/littlebizzy/slickstack/blob/master/ss-config.txt) file in the `/var/www/` directory with desired variables:
+2. Create an [ss-config](http://mirrors.slickstack.io/ss-config-sample.txt) file with desired variables:
 
 `cd /var/www`
-
 `sudo nano ss-config`
 
 3. Complete SlickStack [SS] installation with the below command:
