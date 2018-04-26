@@ -34,13 +34,15 @@ The below installation steps presume that you've already spun up a dedicated Ubu
 
 `sudo nano ss-config`
 
-3. Complete the installation:
+3. Complete the SlickStack [SS] installation:
+
+`cd /var/www/`
 
 `sudo wget --no-cache mirrors.slickstack.io/ss-install && sudo bash ss-install`
 
-*Note: future versions of SlickStack [SS] will be interactive.*
-
 ## Structure
+
+After completing the installation steps above, your `/var/www/` directory should look like this:
 
     /var/www/ss-clean
     /var/www/ss-config
