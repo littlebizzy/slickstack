@@ -26,14 +26,15 @@ The below installation steps presume that you've already spun up a dedicated Ubu
 
 1. Create the `/var/www/` directory:
 
-`sudo mkdir /var/www && sudo chown root:root /var/www && sudo chmod 755 /var/www`
+`sudo mkdir /var/www/ && sudo chown root:root /var/www/ && sudo chmod 755 /var/www/`
 
 2. Create an [ss-config](http://mirrors.slickstack.io/ss-config-sample.txt) file with desired variables:
 
-`cd /var/www`
+`cd /var/www/`
+
 `sudo nano ss-config`
 
-3. Complete installation:
+3. Complete the installation:
 
 `sudo wget --no-cache mirrors.slickstack.io/ss-install && sudo bash ss-install`
 
