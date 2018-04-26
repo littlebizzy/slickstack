@@ -13,7 +13,7 @@ Please don't email us. Post all support/questions/comments in FREE Facebook grou
 ## Table Of Contents
 
 1. [Compatibility](https://github.com/littlebizzy/slickstack#compatibility)
-2. [Installation](https://github.com/littlebizzy/slickstack#installation)
+2. [Installation](#installation)
 3. [Philosophy](https://github.com/littlebizzy/slickstack#philosophy)
 4. [Instructions](https://github.com/littlebizzy/slickstack#instructions)
 5. [Comparison](https://github.com/littlebizzy/slickstack#comparison)
