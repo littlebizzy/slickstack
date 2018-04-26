@@ -30,10 +30,10 @@ The below installation steps presume that you've already spun up a dedicated Ubu
 
 2. Create an [ss-config](http://mirrors.slickstack.io/ss-config-sample.txt) file with desired variables:
 
-`cd /var/www`
-`sudo nano ss-config`
+    cd /var/www
+    sudo nano ss-config`
 
-3. Complete SlickStack [SS] installation with the below command:
+3. Complete installation with the below command:
 
 `sudo wget --no-cache mirrors.slickstack.io/ss-install && sudo bash ss-install`
 
