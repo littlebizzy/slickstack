@@ -22,9 +22,7 @@ SlickStack [SS] works best on VPS servers with KVM virtualization that have at l
 
 Because it’s written purely in [bash](https://en.wikipedia.org/wiki/Bash_(Unix_shell)) (Unix shell), SlickStack [SS] has no dependencies and works on any Ubuntu Linux machine. Unlike heavier provisioning tools like EasyEngine or Ansible, there are no third party languages required such as Python, meaning a lighter and simpler approach to launching WordPress servers.
 
-*Note: future versions of SlickStack [SS] will be interactive.*
-
-The below installation steps presume that you've already spun up a dedicated Ubuntu 16.04 VPS server with at least 2GB RAM memory and that you are logged in already via SSH.
+The below installation steps presume that you've already spun up a dedicated Ubuntu 16.04 VPS server (KVM) with at least 2GB RAM memory and that you are logged in already via SSH.
 
 1. Create the `/var/www/` directory:
 
@@ -40,7 +38,7 @@ The below installation steps presume that you've already spun up a dedicated Ubu
 
 `sudo wget --no-cache mirrors.slickstack.io/ss-install && sudo bash ss-install`
 
-**In the future, SlickStack will have an interactive installation.*
+*Note: future versions of SlickStack [SS] will be interactive.*
 
 ## Structure
 
