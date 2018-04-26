@@ -44,11 +44,26 @@ The below installation steps presume that you've already spun up a dedicated Ubu
 
 After completing the installation steps above, your `/var/www/` directory should look like this:
 
+    /var/www/1-cron-often
+    /var/www/2-cron-regular
+    /var/www/3-cron-hourly
+    /var/www/4-cron-daily
+    /var/www/5-cron-weekly
+    /var/www/6-cron-monthly
+    /var/www/7-cron-sometimes
+    /var/www/html/
+    /var/www/ss-check
     /var/www/ss-clean
     /var/www/ss-config
+    /var/www/ss-config-sample
     /var/www/ss-install
+    /var/www/ss-muplugs
     /var/www/ss-perms
-    /var/www/ss-upgrade
+    /var/www/ss-update
+    /var/www/ss-worker
+    
+...and your `/var/www/html/` directory should look like this:    
+    
     /var/www/html/wp-admin/
     /var/www/html/wp-includes/
     /var/www/html/wp-content/
