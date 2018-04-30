@@ -66,13 +66,29 @@ DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/u
 ## ensure root user and password never expire ##
 chage -E -1 -m 0 -M -1 -I -1 -W 99999 root
 
-## sudo ssh/sftp user and password ##
+## sudo ssh/sftp ##
 # /usr/sbin/useradd $sudo
 # echo $sudo:$sudopass | /usr/sbin/chpasswd
 
-## basic sftp user and password ##
+## sudo2 ssh/sftp ##
+# /usr/sbin/useradd $sudo2
+# echo $sudo2:$sudo2pass | /usr/sbin/chpasswd
+
+## sudo3 ssh/sftp ##
+# /usr/sbin/useradd $sudo3
+# echo $sudo3:$sudo3pass | /usr/sbin/chpasswd
+
+## user sftp chroot jail ##
 # /usr/sbin/useradd $user
 # echo $user:$userpass | /usr/sbin/chpasswd
+
+## user2 sftp chroot jail ##
+# /usr/sbin/useradd $user2
+# echo $user2:$user2pass | /usr/sbin/chpasswd
+
+## user3 sftp chroot jail ##
+# /usr/sbin/useradd $user3
+# echo $user3:$user3pass | /usr/sbin/chpasswd
 
 ##########################
 #### sudoers (visudo) ####
@@ -181,7 +197,7 @@ chmod +x wp-cli.phar
 ## generate ssl certificate ##
 openssl req -new -x509 -nodes -days 730 -newkey rsa:2048 -keyout /etc/ssl/nginx.key -out /etc/ssl/nginx.crt -subj "/C=${country}/ST=${state}/L=${city}/O=${company}/OU=${dept}/CN=${domain}"
 
-## permissions reset ##
+## reset permissions ##
 chown root:root /etc/ssl/nginx.key
 chown root:root /etc/ssl/nginx.crt
 
@@ -192,7 +208,7 @@ chown root:root /etc/ssl/nginx.crt
 ## update repos ##
 DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt-get -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" update
 
-## add nginx mainline (dev) ppa repo ##
+## add nginx mainline (dev) ppa ##
 DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/add-apt-repository --yes ppa:nginx/development
 
 ## update repos ##
