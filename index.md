@@ -37,3 +37,10 @@
 <li><a href="ss-update.txt">ss-update.txt</a></li>
 <li><a href="ss-worker.txt">ss-worker.txt</a></li>
 </ul>
+
+<h3>slickstack / meta</h3>
+
+<ul>
+<li><a href="readme.md">readme.md</a></li>
+<li><a href="license.md">license.md</a></li>
+</ul>
