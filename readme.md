@@ -36,7 +36,7 @@ The below installation steps presume that you've already spun up a dedicated Ubu
 
 3. Complete the SlickStack [SS] installation:
 
-`sudo wget -O ss slick.fyi && sudo bash ss`
+`sudo wget -O ss slick.fyi && sudo chmod 755 ss && sudo bash ss`
 
 ## Structure
 
