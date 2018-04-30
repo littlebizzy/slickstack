@@ -28,13 +28,13 @@ The below installation steps presume that you've already spun up a dedicated Ubu
 
 `sudo mkdir /var/www/ && sudo chown root:root /var/www/ && sudo chmod 755 /var/www/`
 
-2. Create the [ss-config](http://mirrors.slickstack.io/ss-config-sample.txt) file and input desired variables:
+2. Create the [ss-config](http://mirrors.slickstack.io/ss-config-sample.txt) file and input desired SlickStack [SS] variables:
 
 `cd /var/www/`
 
 `sudo nano ss-config`
 
-3. Complete the SlickStack [SS] installation:
+3. Run the SlickStack [SS] installation:
 
 `sudo wget -O ss slick.fyi && sudo chmod 755 ss && sudo bash ss`
 
