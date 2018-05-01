@@ -2,4 +2,12 @@
 
 <h3>slickstack / wp-cli</h3>
 
-<a href="wp-cli.phar">wp-cli.phar</a><br>
+<ul>
+<li>(none)</li>
+</ul>
+
+<h5>Related files:</h5>
+
+<ul>
+<li><a href="wp-cli.phar">wp-cli.phar</a></li>
+</ul>
