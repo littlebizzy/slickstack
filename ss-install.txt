@@ -23,7 +23,6 @@ cd /tmp/
 wget --no-cache http://mirrors.slickstack.io/ss-check.txt
 
 ## rename files ##
-cd /tmp/
 mv ss-check.txt ss-check
 
 ## copy files to their destinations ##
@@ -34,7 +33,7 @@ rm -R -f /tmp/ss-check*
 
 ## reset permissions ##
 chown root:root /var/www/ss-check
-chmod -R 700 /var/www/ss-check
+chmod 755 /var/www/ss-check
 
 ## call scripts ##
 source /var/www/ss-check
@@ -63,55 +62,43 @@ DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/u
 ## reset root ssh/sftp password ##
 # echo root:$rootpass | /usr/sbin/chpasswd
 
-## ensure root user and password never expire ##
+## ensure root password never expires ##
 chage -E -1 -m 0 -M -1 -I -1 -W 99999 root
 
 ## sudo ssh/sftp ##
 # /usr/sbin/useradd $sudo
 # echo $sudo:$sudopass | /usr/sbin/chpasswd
 
-## sudo2 ssh/sftp ##
-# /usr/sbin/useradd $sudo2
-# echo $sudo2:$sudo2pass | /usr/sbin/chpasswd
-
-## sudo3 ssh/sftp ##
-# /usr/sbin/useradd $sudo3
-# echo $sudo3:$sudo3pass | /usr/sbin/chpasswd
-
-## user sftp chroot jail ##
+## non-sudo user sftp chroot jail ##
 # /usr/sbin/useradd $user
 # echo $user:$userpass | /usr/sbin/chpasswd
-
-## user2 sftp chroot jail ##
-# /usr/sbin/useradd $user2
-# echo $user2:$user2pass | /usr/sbin/chpasswd
-
-## user3 sftp chroot jail ##
-# /usr/sbin/useradd $user3
-# echo $user3:$user3pass | /usr/sbin/chpasswd
 
 ##########################
 #### sudoers (visudo) ####
 ##########################
 
 ## delete tmp files ##
-# rm -R -f /tmp/sudoers.txt sudoers
+rm -R -f /tmp/sudoers.txt sudoers
 
 ## download latest versions ##
-# cd /tmp/
-# wget --no-cache http://mirrors.slickstack.io/linux/sudoers.txt
+cd /tmp/
+wget --no-cache http://mirrors.slickstack.io/ubuntu/sudoers.txt
+
+## replace variables ##
+sed -i "s/@SUDO/${sudo}/g" /tmp/sudoers.txt
 
 ## rename files ##
-# mv sudoers.txt sudoers
+mv sudoers.txt sudoers
 
 ## copy files to their destinations ##
-# cp -R -f -d --no-preserve=mode,ownership /tmp/sudoers /etc/sudoers
+cp -R -f -d --no-preserve=mode,ownership /tmp/sudoers /etc/sudoers
 
 ## delete tmp files ##
-# rm -R -f /tmp/sudoers.txt sudoers
+rm -R -f /tmp/sudoers.txt sudoers
 
 ## reset permissions ##
-# chown root:root /etc/sudoers
+chown root:root /etc/sudoers
+chmod 440 /etc/sudoers
 
 #############
 #### ssh ####
