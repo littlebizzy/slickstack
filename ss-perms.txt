@@ -5,20 +5,20 @@
 #### link: https://slickstack.io ##########################
 #### mirror: http://mirrors.slickstack.io/ss-perms.txt ####
 #### path: /var/www/ss-perms ##############################
-#### purpose: resets all slickstack file permissions ######
+#### purpose: resets all slickstack permissions ###########
 ###########################################################
 
 ## slickstack config ##
 source /var/www/ss-config
 
-## create ubuntu user group wordpress ##
+## create user group if does not exist ##
 addgroup wordpress
 
-## add users to group wordpress ##
+## add user and nginx to group ##
 adduser $user wordpress
 adduser www-data wordpress
 
-## reset file permissions ##
+## slickstack file permissions ##
 chown root:root /var/www/1-cron-often
 chown root:root /var/www/2-cron-regular
 chown root:root /var/www/3-cron-hourly
@@ -55,12 +55,12 @@ chmod 755 /var/www/ss-perms
 chmod 755 /var/www/ss-update
 chmod 755 /var/www/ss-worker
 
-## reset directory permissions ##
+## slickstack directory permissions ##
 chown root:root /var/www
 chmod 755 /var/www
 chmod 755 /var/www/html
 
-## reset wordpress permissions ##
+## wordpress permissions ##
 chown -R $user:wordpress /var/www/html
 chown -R www-data:wordpress /var/www/html/wp-content/mu-plugins
 find /var/www/html/ -type d -exec chmod 775 {} \;
@@ -70,7 +70,7 @@ find /var/www/html/wp-content/cache/ -type f -exec chmod 777 {} \;
 chmod 660 /var/www/html/wp-config.php
 chmod -R g+s /var/www/html/
 
-## reset nginx cache permissions ##
+## nginx cache permissions ##
 chown www-data:root /etc/nginx/cache
 chmod 775 /etc/nginx/cache
 find /etc/nginx/cache/ -type d -exec chmod 777 {} \;
@@ -116,3 +116,7 @@ chown root:root /etc/mysql/mysql.cnf
 chown root:root /etc/mysql/mysql.conf.d/mysqld.cnf
 chown root:root /etc/monit/monitrc
 chmod -R 700 /etc/monit/monitrc
+
+## sudoers permissions ##
+chown root:root /etc/sudoers
+chmod 440 /etc/sudoers
