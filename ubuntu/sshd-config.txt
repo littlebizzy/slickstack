@@ -1,36 +1,43 @@
-###################################################
-#### littlebizzy template /etc/ssh/sshd_config ####
-###################################################
+#####################################################################
+#### author: slickstack #############################################
+#### link: https://slickstack.io ####################################
+#### mirror: http://mirrors.slickstack.io/ubuntu/sshd-config.txt ####
+#### path: /etc/ssh/sshd_config #####################################
+#### purpose: ssh configuration file ################################
+#####################################################################
 
-## port for ssh and sftp ##
+## ssh/sftp port ##
 Port 6969
 
-## protocol to use for sshd ##
+## sshd protocol version ##
 Protocol 2
 
-## hostkeys for protocol version 2 ##
+## hostkeys for protocol 2 ##
 HostKey /etc/ssh/ssh_host_rsa_key
 HostKey /etc/ssh/ssh_host_dsa_key
 HostKey /etc/ssh/ssh_host_ecdsa_key
 HostKey /etc/ssh/ssh_host_ed25519_key
 
-## privilege separation is turned on for security ##
+## privilege security ##
 UsePrivilegeSeparation yes
 
 # Lifetime and size of ephemeral version 1 server key
 KeyRegenerationInterval 3600
 ServerKeyBits 1024
 
-# Logging
+## logging ##
 SyslogFacility AUTH
 LogLevel INFO
 
-# Authentication:
+## authentication ##
 LoginGraceTime 120
 PermitRootLogin no
 StrictModes yes
-AllowUsers bizzy @SUDO @USER
 
+## allow sudo users to ssh ##
+AllowUsers bizzy @SUDO @SUDO2 @SUDO3
+
+## ssh keys ##
 RSAAuthentication yes
 PubkeyAuthentication yes
 #AuthorizedKeysFile	%h/.ssh/authorized_keys
@@ -44,7 +51,7 @@ HostbasedAuthentication no
 # Uncomment if you don't trust ~/.ssh/known_hosts for RhostsRSAAuthentication
 #IgnoreUserKnownHosts yes
 
-# To enable empty passwords, change to yes (NOT RECOMMENDED)
+## never ever ever set this to yes ##
 PermitEmptyPasswords no
 
 # Change to yes to enable challenge-response passwords (beware issues with
@@ -88,7 +95,10 @@ AcceptEnv LANG LC_*
 # and ChallengeResponseAuthentication to 'no'.
 UsePAM yes
 
+## enable sftp ##
 Subsystem sftp internal-sftp
+
+## chroot jail non-sudo users ##
 Match User @CLIENT
 ChrootDirectory /var/www
 ForceCommand internal-sftp
