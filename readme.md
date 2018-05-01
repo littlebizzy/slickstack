@@ -31,15 +31,11 @@ Because it’s written purely in [Bash](https://en.wikipedia.org/wiki/Bash_(Unix
 
 The below installation steps presume that you've already spun up a dedicated Ubuntu 16.04 VPS server (KVM) with at least 2GB RAM memory and that you are logged in via SSH.
 
-1. Create the Nginx directory:
+1. Create Nginx directory:
 
 `sudo mkdir /var/www/ && sudo chown root:root /var/www/ && sudo chmod 755 /var/www/`
 
-2. Create the [ss-config](http://mirrors.slickstack.io/ss-config-sample.txt) file and input desired SlickStack [SS] variables:
-
-`cd /var/www/`
-
-`sudo nano ss-config`
+2. Create [/var/www/ss-config](http://mirrors.slickstack.io/ss-config-sample.txt) and input all SlickStack [SS] variables.
 
 3. Run the SlickStack [SS] installation:
 
