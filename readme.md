@@ -14,6 +14,7 @@
 4. [Structure](#structure)
 5. [Comparison](#comparison)
 6. [Philosophy](#philosophy)
+7. [FAQ](#faq)
 
 ## Abstract
 
