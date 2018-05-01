@@ -11,6 +11,7 @@
 <li><a href="redis/">/redis/</a></li>
 <li><a href="ubuntu/">/ubuntu/</a></li>
 <li><a href="wordpress/">/wordpress/</a></li>
+<li><a href="wp-cli/">/wp-cli/</a></li>
 </ul>
 
 <h3>slickstack / crons</h3>
