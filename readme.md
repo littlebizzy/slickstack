@@ -1,6 +1,6 @@
 # NOT READY YET!!! USE AT YOUR OWN RISK!!!
 
-# SlickStack [SS]
+# SlickStack [ss]
 
 > SlickStack is a free LEMP stack automation script written in Bash designed to enhance and simplify WordPress provisioning, performance, and security.
 
@@ -18,17 +18,21 @@
 
 ## Abstract
 
-Much of modern computing history can be traced back to one thing: [Unix](https://en.wikipedia.org/wiki/Unix). Indeed, one of the only things about web servers tbat hasn't changed in several decades is the Unix shell (Bash) command language. Keeping the same pragmatism and simplicity in mind that inspired LittleBizzy's managed hosting, SlickStack [SS] is coded entirely in Bash.
+Much of modern computing history can be traced back to one thing: [Unix](https://en.wikipedia.org/wiki/Unix). Indeed, one of the only things about web servers tbat hasn't changed in several decades is the Unix shell (Bash) command language. Keeping the same pragmatism and simplicity in mind that inspired LittleBizzy's managed hosting, SlickStack [ss] is coded entirely in Bash.
 
 While there are [clear benefits](https://medium.com/capital-one-developers/bashing-the-bash-replacing-shell-scripts-with-python-d8d201bc0989) to programming languages like Python or Ruby, provisioning a server with WordPress isn't very complicated, and every Linux server comes with [shell built into it](https://www.infoworld.com/article/2893519/linux/perl-python-ruby-are-nice-bash-is-where-its-at.html). Let's not forget [what happens](https://discourse.roots.io/t/updated-to-ansible-2-4-deploys-broken-now-what/10588) when typical web agencies rely on advanced dependencies like Ansible... yikes! Onward, then...
 
 ## Compatibility
 
-SlickStack [SS] works best on VPS servers with KVM virtualization that have at least 2GB RAM from quality network providers such as Vultr, DigitalOcean, Linode, and other non-AWS networks. The underlying LEMP configuration is meant specifically for single-site WordPress installations, and does not support [Multisite](https://codex.wordpress.org/Create_A_Network) installs. SlickStack [SS] supports WordPress, WooCommerce, bbPress, and BuddyPress "out of the box" with pre-optimized settings that scale.
+SlickStack [ss] works best on VPS servers with KVM virtualization that have at least 2GB RAM from quality network providers such as Vultr, DigitalOcean, Linode, and other non-AWS networks. The underlying LEMP configuration is meant specifically for single-site WordPress installations, and does not support [Multisite](https://codex.wordpress.org/Create_A_Network) installs. SlickStack [ss] supports WordPress, WooCommerce, bbPress, and BuddyPress "out of the box" with pre-optimized settings that scale.
+
+* Ubuntu 16.04
+* MySQL 5.7
+* PHP 7.0
 
 ## Installation
 
-Because it’s written purely in [Bash](https://en.wikipedia.org/wiki/Bash_(Unix_shell)) (Unix shell), SlickStack [SS] has no dependencies and works on any Ubuntu Linux machine. Unlike heavier provisioning tools like EasyEngine or Ansible, there are no third party languages required such as Python, meaning a lighter and simpler approach to launching WordPress servers.
+Because it’s written purely in [Bash](https://en.wikipedia.org/wiki/Bash_(Unix_shell)) (Unix shell), SlickStack [ss] has no dependencies and works on any Ubuntu Linux machine. Unlike heavier provisioning tools like EasyEngine or Ansible, there are no third party languages required such as Python, meaning a lighter and simpler approach to launching WordPress servers.
 
 The below installation steps presume that you've already spun up a dedicated Ubuntu 16.04 VPS server (KVM) with at least 2GB RAM memory and that you are logged in via SSH.
 
@@ -36,9 +40,9 @@ The below installation steps presume that you've already spun up a dedicated Ubu
 
 `sudo mkdir /var/www/ && sudo chown root:root /var/www/ && sudo chmod 755 /var/www/`
 
-2. Create [/var/www/ss-config](http://mirrors.slickstack.io/ss-config-sample.txt) and input all SlickStack [SS] variables.
+2. Create [/var/www/ss-config](http://mirrors.slickstack.io/ss-config-sample.txt) and input all SlickStack [ss] variables.
 
-3. Run the SlickStack [SS] installation:
+3. Run the SlickStack [ss] installation:
 
 `sudo wget -O ss slick.fyi && sudo chmod 755 ss && sudo bash ss`
 
