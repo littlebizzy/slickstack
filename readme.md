@@ -115,3 +115,9 @@ Before the likes of Google and Amazon and Shopify and Wix take over the entire w
 * **But shouldn't configs be outside the public root?** There's lots of "should" and theorizing in computer programming, but one reason for the success of WordPress is its pragmatism and user-friendliness. There's plenty to criticize about WordPress from the perspective of things like "12-factor apps" but let's remember that WordPress was around before many of these guidelines and even after better approaches have been founded, WordPress is still the king of CMS software for a reason.
 
 * **Why ss-config-sample and not ss-config-example?** Because we aim to mirror WordPress Core as much as possible. Because the misnomer has existed in WordPress since the beginning, the WP Core team has [no intention](https://core.trac.wordpress.org/ticket/43827) of changing it.
+
+## Thanks
+
+* [Alex Georgiou](https://www.alexgeorgiou.gr)
+* [rtCamp](https://rtcamp.com)
+* [Roots](https://roots.io)
