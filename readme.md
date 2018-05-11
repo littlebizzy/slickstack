@@ -125,3 +125,7 @@ Before the likes of Google and Amazon and Shopify and Wix take over the entire w
 * [Alex Georgiou](https://www.alexgeorgiou.gr)
 * [rtCamp](https://rtcamp.com)
 * [Roots](https://roots.io)
+
+## Ref
+
+* https://www.alexgeorgiou.gr/wp-cli-www-data-user-permissions-linux/
