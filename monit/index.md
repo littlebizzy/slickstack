@@ -2,11 +2,22 @@
 
 <h3>slickstack / monit</h3>
 
-<p>Various config files and templates for Monit 5.23 to be used with SlickStack.</p>
-
-<a href="monitrc-5.16-default.txt">monitrc-5.16-default.txt</a><br>
-<a href="monitrc.txt">monitrc.txt</a><br>
-
+<ul>
+  <li><a href="monitrc-5.16-default.txt">monitrc-5.16-default.txt</a></li>
+  <li><a href="monitrc.txt">monitrc.txt</a></li>
+</ul>
+  
 <h5>Related files:</h5>
 
-<a href="monit-5.23.0-linux-x64.tar.gz">monit-5.23.0-linux-x64.tar.gz</a><br>
+<ul>
+  <li><a href="monit-5.23.0-linux-x64.tar.gz">monit-5.23.0-linux-x64.tar.gz</a></li>
+  <li><a href="monit-5.24.0-linux-x64.tar.gz">monit-5.24.0-linux-x64.tar.gz</a></li>
+  <li><a href="monit-5.25.0-linux-x64.tar.gz">monit-5.25.0-linux-x64.tar.gz</a></li>
+  <li><a href="monit-5.25.1-linux-x64.tar.gz">monit-5.25.1-linux-x64.tar.gz</a></li>
+</ul>
+
+<h5>Links:</h5>
+
+<ul>
+  <li>https://mmonit.com/monit/dist/</li>
+</ul>
