@@ -29,6 +29,9 @@ SlickStack [ss] works best on VPS servers with KVM virtualization that have at l
 * Ubuntu 16.04
 * MySQL 5.7
 * PHP 7.0
+* WordPress 4.9.5
+* WP Lite 4.9.5
+* WP-CLI 1.5.1
 
 ## Installation
 
