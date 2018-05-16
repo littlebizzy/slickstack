@@ -16,7 +16,7 @@
   <li><a href="monit-5.25.1-linux-x64.tar.gz">monit-5.25.1-linux-x64.tar.gz</a></li>
 </ul>
 
-<h5>Links:</h5>
+<h5>Related links:</h5>
 
 <ul>
   <li>https://mmonit.com/monit/dist/</li>
