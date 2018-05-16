@@ -19,5 +19,5 @@
 <h5>Related links:</h5>
 
 <ul>
-  <li>https://mmonit.com/monit/dist/</li>
+  <li><a href="https://mmonit.com/monit/dist/">https://mmonit.com/monit/dist/</a></li>
 </ul>
