@@ -380,14 +380,14 @@ send "y\r"
 ## end of script ##
 EOF
 
-## run expect script
+## run expect script ##
 expect ~/secure_our_mysql.sh
 
 ## cleanup ##
 rm -v ~/secure_our_mysql.sh
 
 ## uninstall expect ##
-#sudo apt-get -qq purge expect > /dev/null # Uninstall Expect, commented out in case you need Expect
+# apt-get -qq purge expect > /dev/null # Uninstall Expect, commented out in case you need Expect
 
 ## confirm secured ##
 echo "Congratulations, MySQL 5.7 is installed and secured. Onward!"
@@ -396,7 +396,7 @@ echo "Congratulations, MySQL 5.7 is installed and secured. Onward!"
 #### install wordpress (latest version) ####
 ############################################
 
-## download latest versions ##
+## download latest version ##
 cd /var/www/html/
 wget --no-cache http://wordpress.org/latest.tar.gz
 
@@ -404,14 +404,14 @@ wget --no-cache http://wordpress.org/latest.tar.gz
 tar xfz latest.tar.gz
 rsync -raqIp wordpress/* ./
 
-## delete junk ##
+## cleanup ##
 rm -rf wordpress
 rm -f latest.tar.gz
 
 ## install wplite mu-plugins ##
 source /var/www/ss-muplugs
 
-## create temp directory ##
+## create temp directory if doesn't exist (will not overwrite) ##
 mkdir /var/www/html/wp-content/temp
 
 ###############
@@ -447,9 +447,9 @@ chown root:root /etc/redis/redis.conf
 /etc/init.d/redis-server restart
 /etc/init.d/php7.0-fpm restart
 
-###############
-#### monit ####
-###############
+#######################
+#### install monit ####
+#######################
 
 # skip for now
 
@@ -497,9 +497,9 @@ rm -R -f /tmp/user-rules.txt* /tmp/user.rules*
 /etc/init.d/ufw force-reload
 /etc/init.d/ufw restart
 
-##########################
-#### restart services ####
-##########################
+###############################
+#### complete installation ####
+###############################
 
 ## update and upgrade repos ##
 DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt-get -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" update
