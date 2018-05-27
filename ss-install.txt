@@ -276,12 +276,15 @@ chown root:root /etc/nginx/sites-available/default
 ## restart nginx ##
 /etc/init.d/nginx restart
 
-##########################
-#### install php 7.0 #####
-##########################
+######################################
+#### install php 7.0 and php 7.2 #####
+######################################
 
-## install php and extensions ##
+## install php 7.0 and extensions ##
 DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install php7.0 php7.0-fpm php7.0-mysql php7.0-curl php7.0-zip php7.0-gd php7.0-mcrypt php7.0-mbstring php7.0-bcmath php7.0-xml php7.0-json php7.0-soap
+
+## install php 7.2 and extensions ##
+DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install php7.2 php7.2-fpm php7.2-mysql php7.2-curl php7.2-zip php7.2-gd php7.2-mbstring php7.2-bcmath php7.2-xml php7.2-json php7.2-soap
 
 ## delete tmp files ##
 rm -R -f /tmp/php-ini.txt* /tmp/php.ini*
@@ -293,6 +296,12 @@ cd /tmp/
 wget --no-cache http://mirrors.slickstack.io/php/php-ini.txt
 wget --no-cache http://mirrors.slickstack.io/php/php-fpm-conf.txt
 wget --no-cache http://mirrors.slickstack.io/php/www-conf.txt
+# wget --no-cache http://mirrors.slickstack.io/php/7.0/php-ini.txt
+# wget --no-cache http://mirrors.slickstack.io/php/7.0/php-fpm-conf.txt
+# wget --no-cache http://mirrors.slickstack.io/php/7.0/www-conf.txt
+# wget --no-cache http://mirrors.slickstack.io/php/7.2/php-ini.txt
+# wget --no-cache http://mirrors.slickstack.io/php/7.2/php-fpm-conf.txt
+# wget --no-cache http://mirrors.slickstack.io/php/7.2/www-conf.txt
 
 ## rename files ##
 mv php-ini.txt php.ini
@@ -315,6 +324,9 @@ chown root:root /etc/php/7.0/cli/php.ini
 chown root:root /etc/php/7.0/fpm/php.ini
 chown root:root /etc/php/7.0/fpm/php-fpm.conf
 chown root:root /etc/php/7.0/fpm/pool.d/www.conf
+
+## set default php version ##
+update-alternatives --set php /usr/bin/php7.0
 
 ## restart php ##
 /etc/init.d/php7.0-fpm restart
