@@ -31,32 +31,39 @@ server {
     root                   /var/www/html;
     index                  index.php;
 
-    #### SKIP FASTCGI CACHE ####
+    #### FASTCGI CACHE ####
     set $skip_cache 0;
+    
     ## post requests should always skip the cache
     if ($request_method = POST) {
         set $skip_cache 1;
     }
+    
     ## query strings should always skip the cache
     if ($query_string != "") {
         set $skip_cache 1;
     }
+    
     ## sensitive wordpress urls should always skip the cache
     if ($request_uri ~* "index.php|wp-.*.php|/wp-admin.*|/login.*|/cart.*|/checkout.*|/account.*|/my-.*|/dashboard.*|/order.*|/view.*|/profile.*|/settings.*|/contact.*") {
         set $skip_cache 1;
     }
+    
     ## logged in users or recent commenters etc should always skip the cache
     if ($http_cookie ~* "wordpress_logged_in|wp-postpass|woocommerce_items_in_cart|woocommerce_cart_hash|comment_author") {
         set $skip_cache 1;
     }
+    
     ## woocommerce cart actions should always skip the cache
     # if ($arg_add-to-cart != "") {
     #    set $skip_cache 1;
     # }
+    
     ## woocommerce shoppers should always skip the cache
     # if ($http_cookie ~* "cookie_woocommerce_items_in_cart") {
     #    set $skip_cache 1;
     # }
+    
     ## woocommerce shoppers should always skip the cache
     # if ($cookie_woocommerce_items_in_cart != "0") {
     #    set $skip_cache 1;
@@ -86,6 +93,7 @@ server {
         try_files $uri =404;
         fastcgi_split_path_info ^(.+\.php)(/.+)$;
         fastcgi_pass unix:/run/php/php7.0-fpm.sock;
+	# fastcgi_pass unix:/run/php/php7.2-fpm.sock;
         fastcgi_index index.php;
         fastcgi_cache WORDPRESS;
         fastcgi_cache_valid 200 301 404 60m;
@@ -112,6 +120,7 @@ server {
         try_files $uri =404;
         fastcgi_split_path_info ^(.+\.php)(/.+)$;
         fastcgi_pass unix:/run/php/php7.0-fpm.sock;
+	# fastcgi_pass unix:/run/php/php7.2-fpm.sock;
         fastcgi_index index.php;
         fastcgi_cache WORDPRESS;
         fastcgi_cache_valid 200 301 404 60m;
@@ -132,20 +141,40 @@ server {
         # first try physical files, then directories, otherwise query the wordpress php index
         try_files $uri $uri/ /index.php?$args;
         allow all;
+	access_log off;
         log_not_found off;
-        access_log off;
     }
 
     #### XML-RPC ####
     location = /xmlrpc.php {
         ## block any attempted attacks or access
         deny all;
+	access_log off;
+	log_not_found off;
+    }
+    
+    #### WP-LINKS-OPML ####
+    location = /wp-links-opml.php {
+        ## block any attempted attacks or access
+        deny all;
+	access_log off;
+	log_not_found off;
+    }
+    
+    #### WP-TRACKBACK ####
+    location = /wp-trackback.php {
+        ## block any attempted attacks or access
+        deny all;
+	access_log off;
+	log_not_found off;
     }
 
     #### WP-CONFIG ####
     location = /wp-config.php {
         ## block any attempted attacks or access
         deny all;
+	access_log off;
+	log_not_found off;
     }
     
     #### MONIT ####
@@ -161,18 +190,24 @@ server {
     location = /.git/config {
         ## block any attempted attacks or access
         deny all;
+	access_log off;
+	log_not_found off;
     }
 
     #### WP INFO ####
     location ~* (license|licence|readme)\.(html|txt) {
         ## block any attempted attacks or access
         deny all;
+	access_log off;
+	log_not_found off;
     }
 
     #### WP DIRS ####
     location ~* /(?:uploads|wp-content|wp-includes)/.*\.php$ {
         ## block any attempted attacks or access
         deny all;
+	access_log off;
+	log_not_found off;
     }
 
     #### RESOURCE RENDER ####
@@ -184,8 +219,8 @@ server {
     #### STATIC RESOURCES ####
     location ~* \.(ogg|ogv|svg|svgz|eot|otf|woff|mp4|ttf|css|rss|atom|js|jpg|jpeg|gif|png|ico|zip|tgz|gz|rar|bz2|doc|xls|ppt|tar|mid|midi|wav|bmp|rtf)$ {
         expires max;
-        log_not_found off;
         access_log off;
+	log_not_found off;
     }
 
 }
