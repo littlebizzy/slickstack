@@ -8,35 +8,43 @@
 #### purpose: cleans slickstack junk and unsafe files #####
 ###########################################################
 
-## delete slickstack installer file ##
-# rm -f /var/www/ss
+## delete slickstack leftovers ##
+rm -f /var/www/ss
+rm -f /var/www/config-OLD
 
-## delete junk ubuntu files ##
+############################
+#### cleanup junk files ####
+############################
+
+## delete ubuntu junk files ##
+# rm -f /tmp/systemd-*
+
+## delete nginx junk files ##
 rm -f /var/www/html/index.nginx-debian.html
+find /var/www/html/ -name "nginx.conf" -type f -delete
 
-## delete unused and expired logs ##
+## delete apache junk files ##
+find /var/www/html/ -name "*.htaccess" -type f -delete
+
+## cleanup all log files ##
+find /var/log/ -name "*.gz" -type f -delete
 rm -R -f /var/log/fpm-php.www.log*
 rm -R -f /var/log/php7.0-fpm.log*
-find /var/log/ -name "*.gz" -type f -delete
-
-## delete redundant nginx config files ##
-rm -R -f /var/www/html/nginx.conf
 
 ## delete phpinfo files ##
-rm -R -f /var/www/html/i.php
-rm -R -f /var/www/html/info.php
-rm -R -f /var/www/html/phpinfo.php
+rm -f /var/www/html/i.php
+rm -f /var/www/html/info.php
+rm -f /var/www/html/phpinfo.php
 
-## delete unsafe wordpress files ##
+## delete wordpresss junk files ##
 rm -R -f /var/www/html/readme.html
-
-## delete junk wordpress files ##
 rm -R -f /var/www/html/wp-links-opml.php
 rm -R -f /var/www/html/wp-trackback.php
 rm -R -f /var/www/html/xmlrpc.php
 
-## find and delete apache file extensions ##
-find /var/www/html/ -name "*.htaccess" -type f -delete
+#################################
+#### cleanup file extensions ####
+#################################
 
 ## delete unsafe file extensions ##
 find /var/www/html/ -name "*.exe" -type f -delete
@@ -72,11 +80,19 @@ find /var/www/html/ -name "*.vxd" -type f -delete
 find /var/www/html/ -name "*.rb" -type f -delete
 find /var/www/html/ -name "*.htc" -type f -delete
 
+###########################
+#### cleanup wp-config ####
+###########################
+
 ## delete cache enable lines in wp-config.php that conflict with fastcgi cache ##
 sed -i '/WP_CACHE/d' /var/www/html/wp-config.php
 sed -i '/wp_cache/d' /var/www/html/wp-config.php
 
-## delete junk wordpress plugins ##
+###################################
+#### cleanup wordpress plugins ####
+###################################
+
+## delete stock wordpress plugins ##
 rm -R -f /var/www/html/wp-content/mu-plugins/hello.php
 rm -R -f /var/www/html/wp-content/plugins/hello.php
 
@@ -105,6 +121,8 @@ rm -R -f /var/www/html/wp-content/plugins/increase-upload-file-size-maximum-exec
 ## delete vendor specific plugins ##
 rm -R -f /var/www/html/wp-content/mu-plugins/godaddy-email-marketing-sign-up-forms*
 rm -R -f /var/www/html/wp-content/plugins/godaddy-email-marketing-sign-up-forms*
+rm -R -f /var/www/html/wp-content/mu-plugins/wp-site-migrate*
+rm -R -f /var/www/html/wp-content/plugins/wp-site-migrate*
 
 ## delete deprecated plugins ##
 rm -R -f /var/www/html/wp-content/mu-plugins/woothemes-updater*
