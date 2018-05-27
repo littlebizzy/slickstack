@@ -46,8 +46,9 @@ source /var/www/ss-perms
 ## fix dpkg ##
 DEBIAN_FRONTEND=noninteractive dpkg --configure -a --force-confold
 
-## update repos ##
+## update and upgrade repos ##
 DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt-get -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" update
+DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt-get -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" upgrade
 
 ## install linux utilities ##
 DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt-get -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install zip unzip
@@ -272,9 +273,9 @@ chown root:root /etc/nginx/sites-available/default
 ## restart nginx ##
 /etc/init.d/nginx restart
 
-##############
-#### php #####
-##############
+##########################
+#### install php 7.0 #####
+##########################
 
 ## install php and extensions ##
 DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt-get -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install php7.0 php7.0-fpm php7.0-mysql php7.0-curl php7.0-zip php7.0-gd php7.0-mcrypt php7.0-mbstring php7.0-bcmath php7.0-xml php7.0-json php7.0-soap
@@ -315,30 +316,85 @@ chown root:root /etc/php/7.0/fpm/pool.d/www.conf
 ## restart php ##
 /etc/init.d/php7.0-fpm restart
 
-###############
-#### mysql ####
-###############
+###########################
+#### install mysql 5.7 ####
+###########################
 
 ## set noninteractive ##
-## export DEBIAN_FRONTEND=noninteractive
-## store mysql root password prior to installation ##
-## echo "mysql-server mysql-server/root_password password "$dbpassroot"" | debconf-set-selections
-## echo "mysql-server mysql-server/root_password_again password "$dbpassroot"" | debconf-set-selections
-## debconf-set-selections <<< "mysql-server-5.7 mysql-server/root_password password "$dbpassroot""
-## debconf-set-selections <<< "mysql-server-5.7 mysql-server/root_password_again password "$dbpassroot""
-## continue with the mysql installation ##
-## DEBIAN_FRONTEND=noninteractive apt-get --yes --option Dpkg::Options::="--force-confold" install mysql-server
+export DEBIAN_FRONTEND=noninteractive;
 
-# echo "mysql-server mysql-server/root_password password "$dbpassroot"" | debconf-set-selections
-# echo "mysql-server mysql-server/root_password_again password "$dbpassroot"" | debconf-set-selections
-# apt-get install -y mysql-server
+## store mysql root password ##
+## http://serverfault.com/a/830352/344471 ##
+echo debconf mysql-server/root_password password ${dbrootpass} | debconf-set-selections
+echo debconf mysql-server/root_password_again password ${dbrootpass} | debconf-set-selections
+# echo "mysql-server-5.7 mysql-server/root_password password ${dbrootpass}" | debconf-set-selections
+# echo "mysql-server-5.7 mysql-server/root_password_again password ${dbrootpass}" | debconf-set-selections
+# debconf-set-selections <<< "mysql-server-5.7 mysql-server/root_password password ${dbrootpass}"
+# debconf-set-selections <<< "mysql-server-5.7 mysql-server/root_password_again password ${dbrootpass}"
 
-## secure mysql 5.7 ##
-# source /var/www/mysql-secure
+## install mysql 5.7 ##
+DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt-get -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install mysql-server-5.7 
 
-###################
-#### wordpress ####
-###################
+## confirm installed ##
+echo "MySQL 5.7 is installed, now we will secure it."
+
+##########################
+#### secure mysql 5.7 ####
+##########################
+
+## install expect ##
+DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt-get -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install expect
+
+## build expect script ##
+tee ~/secure_our_mysql.sh > /dev/null << EOF
+spawn $(which mysql_secure_installation)
+
+## re-enter root password ##
+expect "Enter password for user root:"
+send "${dbrootpass}\r"
+
+## skip the validate password plugin ##
+expect "Press y|Y for Yes, any other key for No:"
+send "n\r"
+
+## skip change root password ##
+expect "Change the password for root ? ((Press y|Y for Yes, any other key for No) :"
+send "n\r"
+
+## remove anonymous users ##
+expect "Remove anonymous users? (Press y|Y for Yes, any other key for No) :"
+send "y\r"
+
+## disable remote connections ##
+expect "Disallow root login remotely? (Press y|Y for Yes, any other key for No) :"
+send "y\r"
+
+## remote test database ##
+expect "Remove test database and access to it? (Press y|Y for Yes, any other key for No) :"
+send "y\r"
+
+## reload privileges ##
+expect "Reload privilege tables now? (Press y|Y for Yes, any other key for No) :"
+send "y\r"
+
+## end of script ##
+EOF
+
+## run expect script
+expect ~/secure_our_mysql.sh
+
+## cleanup ##
+rm -v ~/secure_our_mysql.sh
+
+## uninstall expect ##
+#sudo apt-get -qq purge expect > /dev/null # Uninstall Expect, commented out in case you need Expect
+
+## confirm secured ##
+echo "Congratulations, MySQL 5.7 is installed and secured. Onward!"
+
+############################################
+#### install wordpress (latest version) ####
+############################################
 
 ## download latest versions ##
 cd /var/www/html/
