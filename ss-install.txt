@@ -429,9 +429,9 @@ source /var/www/ss-muplugs
 ## create temp directory if doesn't exist (will not overwrite) ##
 mkdir /var/www/html/wp-content/temp
 
-###############
-#### redis ####
-###############
+#############################
+#### install redis 4.0.9 ####
+#############################
 
 ## install redis-server ##
 DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install redis-server
@@ -439,12 +439,20 @@ DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/u
 ## install php-redis ##
 DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install php-redis
 
+## enable redis ##
+systemctl enable redis-server
+
+###############################
+#### configure redis 4.0.9 ####
+###############################
+
 ## delete tmp files ##
 rm -R -f /tmp/redis-conf.txt /tmp/redis.conf
 
 ## download latest versions ##
 cd /tmp/
 wget --no-cache http://mirrors.slickstack.io/redis/redis-conf.txt
+# wget --no-cache http://mirrors.slickstack.io/redis/4.0.9/redis-conf.txt
 
 ## rename files ##
 mv redis-conf.txt redis.conf
