@@ -11,12 +11,16 @@
 ## slickstack config ##
 source /var/www/ss-config
 
-## create user group if does not exist ##
+## create wordpress group if does not exist ##
 addgroup wordpress
 
-## add user and nginx to group ##
+## add sftp user and nginx user to wordpress group ##
 adduser $user wordpress
 adduser www-data wordpress
+
+## reset sudoers permissions ##
+chown root:root /etc/sudoers
+chmod 440 /etc/sudoers
 
 ## slickstack file permissions ##
 chown root:root /var/www/1-cron-often
@@ -85,22 +89,15 @@ mkdir -p /var/log/nginx
 mkdir -p /var/log/php-fpm
 mkdir -p /var/log/mysql
 
-## make log files if do not exist ##
-if [ ! -f "/var/log/php-fpm/error.log" ]; then touch "/var/log/php-fpm/error.log"; fi
-
-## reset log permissions ##
-chown -R www-data:www-data /var/log/nginx/access.log
-chown -R www-data:www-data /var/log/nginx/error.log
-# chown -R www-data:www-data /var/log/php7.0-fpm.log
-chown -R www-data:www-data /var/log/php-fpm/error.log
-chown -R www-data:www-data /var/log/monit.log
+## reset nginx permissions ##
+chown root:root /etc/nginx/nginx.conf
+chown root:root /etc/nginx/fastcgi.conf
 chmod -R 755 /var/log/nginx/access.log
 chmod -R 755 /var/log/nginx/error.log
-# chmod -R 755 /var/log/php7.0-fpm.log
-chmod -R 755 /var/log/php-fpm/error.log
-chmod -R 755 /var/log/monit.log
+chown -R www-data:www-data /var/log/nginx/access.log
+chown -R www-data:www-data /var/log/nginx/error.log
 
-## reset ssl permissions ##
+## reset openssl permissions ##
 chown root:root /etc/ssl/nginx.crt
 chown root:root /etc/ssl/nginx.key
 chown root:root /etc/ssl/nginx.pem
@@ -108,20 +105,10 @@ chmod -R 700 /etc/ssl/nginx.crt
 chmod -R 700 /etc/ssl/nginx.key
 chmod -R 700 /etc/ssl/nginx.pem
 
-## reset config permissions ##
+## reset ssh/sftp permissions ##
 chown root:root /etc/ssh/sshd_config
-chown root:root /etc/nginx/nginx.conf
-chown root:root /etc/nginx/fastcgi.conf
-chown root:root /etc/php/7.0/fpm/php.ini
-chown root:root /etc/php/7.0/fpm/php-fpm.conf
-chown root:root /etc/php/7.0/cli/php.ini
-chown root:root /etc/mysql/my.cnf
-chown root:root /etc/mysql/mysql.cnf
-chown root:root /etc/mysql/mysql.conf.d/mysqld.cnf
-chown root:root /etc/monit/monitrc
-chmod -R 700 /etc/monit/monitrc
 
-## wp-cli permissions ##
+## reset wp-cli permissions ##
 ## https://github.com/wp-cli/wp-cli/issues/3181 ##
 ## https://github.com/wp-cli/wp-cli/issues/1241 ##
 ## https://www.alexgeorgiou.gr/wp-cli-www-data-user-permissions-linux/ ##
@@ -129,6 +116,38 @@ chown root:root /usr/local/bin/
 chown www-data:www-data /usr/local/bin/wp
 chmod 6775 /usr/local/bin/wp
 
-## sudoers permissions ##
-chown root:root /etc/sudoers
-chmod 440 /etc/sudoers
+## create php files if do not exist ##
+mkdir /var/run/php
+if [ ! -f "/var/log/php-fpm/error.log" ]; then touch "/var/log/php-fpm/error.log"; fi
+
+## reset php permissions ##
+# chown www-data:www-data /var/run/php
+chown root:root /etc/php/7.0/fpm/php.ini
+chown root:root /etc/php/7.0/fpm/php-fpm.conf
+chown root:root /etc/php/7.0/cli/php.ini
+# chmod -R 755 /var/log/php7.0-fpm.log
+chmod -R 755 /var/log/php-fpm/error.log
+# chown -R www-data:www-data /var/log/php7.0-fpm.log
+chown -R www-data:www-data /var/log/php-fpm/error.log
+
+## create mysql files if do not exist ##
+mkdir /var/run/mysqld
+
+## reset mysql permissions ##
+chown mysql:mysql /var/run/mysqld
+chown root:root /etc/mysql/my.cnf
+chown root:root /etc/mysql/mysql.cnf
+chown root:root /etc/mysql/mysql.conf.d/mysqld.cnf
+
+## create redis files if do not exist ##
+mkdir /var/run/redis
+
+## reset redis permissions ##
+chown redis:redis /var/run/redis
+chown redis:redis /etc/redis/redis.conf
+
+## reset monit permissions ##
+chown root:root /etc/monit/monitrc
+chmod -R 700 /etc/monit/monitrc
+chown -R www-data:www-data /var/log/monit.log
+chmod -R 755 /var/log/monit.log
