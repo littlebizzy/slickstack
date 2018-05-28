@@ -439,7 +439,7 @@ source /var/www/ss-muplugs
 mkdir /var/www/html/wp-content/temp
 
 #############################
-#### install redis 4.0.9 ####
+#### install redis 3.0.6 ####
 #############################
 
 ## install redis-server ##
@@ -448,33 +448,31 @@ DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/u
 ## install php-redis ##
 DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install php-redis
 
-## enable redis ##
-systemctl enable redis-server
+## start redis ##
+/etc/init.d/redis-server start
 
 ###############################
-#### configure redis 4.0.9 ####
+#### configure redis 3.0.6 ####
 ###############################
 
 ## delete tmp files ##
-rm -R -f /tmp/redis-conf.txt /tmp/redis.conf
+# rm -R -f /tmp/redis-conf.txt /tmp/redis.conf
 
 ## download latest versions ##
-cd /tmp/
-wget --no-cache http://mirrors.slickstack.io/redis/redis-conf.txt
+# cd /tmp/
+# wget --no-cache http://mirrors.slickstack.io/redis/redis-conf.txt
 # wget --no-cache http://mirrors.slickstack.io/redis/4.0.9/redis-conf.txt
 
 ## rename files ##
-mv redis-conf.txt redis.conf
+# mv redis-conf.txt redis.conf
 
 ## copy files to destinations ##
-cp -R -f --no-preserve=mode,ownership /tmp/redis.conf /etc/redis/redis.conf
+# cp -R -f --no-preserve=mode,ownership /tmp/redis.conf /etc/redis/redis.conf
 
 ## delete tmp files ##
-rm -R -f /tmp/redis-conf.txt /tmp/redis.conf
+# rm -R -f /tmp/redis-conf.txt /tmp/redis.conf
 
 ## reset permissions ##
-rm -R -f /var/run/redis
-mkdir /var/run/redis
 chown redis:redis /var/run/redis
 chown redis:redis /etc/redis/redis.conf
 
