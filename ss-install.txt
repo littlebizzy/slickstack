@@ -59,9 +59,9 @@ DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/u
 ## install git ##
 DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install git
 
-###############
-#### users ####
-###############
+#########################
+#### configure users ####
+#########################
 
 ## reset root ssh/sftp password ##
 # echo root:$rootpass | /usr/sbin/chpasswd
@@ -77,9 +77,9 @@ chage -E -1 -m 0 -M -1 -I -1 -W 99999 root
 # /usr/sbin/useradd $user
 # echo $user:$userpass | /usr/sbin/chpasswd
 
-##########################
-#### sudoers (visudo) ####
-##########################
+####################################
+#### configure sudoers (visudo) ####
+####################################
 
 ## delete tmp files ##
 rm -R -f /tmp/sudoers.txt sudoers
@@ -104,9 +104,9 @@ rm -R -f /tmp/sudoers.txt sudoers
 chown root:root /etc/sudoers
 chmod 440 /etc/sudoers
 
-##################
-#### ssh/sftp ####
-##################
+############################
+#### configure ssh/sftp ####
+############################
 
 ## delete tmp files ##
 rm -R -f /tmp/sshd-config.txt sshd_config
@@ -134,16 +134,16 @@ chown root:root /etc/ssh/sshd_config
 ## restart ssh ##
 /etc/init.d/ssh restart
 
-##################
-#### timezone ####
-##################
+############################
+#### configure timezone ####
+############################
 
 ## set UTC timezone ##
 timedatectl set-timezone UTC
 
-#################
-#### crontab ####
-#################
+#########################
+#### install crontab ####
+#########################
 
 ## delete tmp files ##
 # rm -R -f /tmp/crontab.txt /tmp/root
@@ -166,9 +166,9 @@ chown root:root /var/spool/cron/crontabs/root
 ## reload crontab ##
 /etc/init.d/cron reload
 
-###############
-### wp-cli ####
-###############
+#######################
+### install wp-cli ####
+#######################
 
 ## download latest versions ##
 cd /tmp/
@@ -192,9 +192,9 @@ chmod 6775 /usr/local/bin/wp
 chown www-data:www-data /home/wp-completion.bash
 chmod 6775 /home/wp-completion.bash
 
-#############
-#### ssl ####
-#############
+#########################
+#### install openssl ####
+#########################
 
 ## generate ssl certificate ##
 openssl req -new -x509 -nodes -days 730 -newkey rsa:2048 -keyout /etc/ssl/nginx.key -out /etc/ssl/nginx.crt -subj "/C=${country}/ST=${state}/L=${city}/O=${company}/OU=${dept}/CN=${domain}"
@@ -203,9 +203,9 @@ openssl req -new -x509 -nodes -days 730 -newkey rsa:2048 -keyout /etc/ssl/nginx.
 chown root:root /etc/ssl/nginx.key
 chown root:root /etc/ssl/nginx.crt
 
-###############
-#### nginx ####
-###############
+########################################
+#### install nginx (latest version) ####
+########################################
 
 ## update repos ##
 DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" update
@@ -219,9 +219,9 @@ DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/u
 ## install nginx-extras ##
 DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install nginx-extras
 
-######################
-#### nginx config ####
-######################
+#########################
+#### configure nginx ####
+#########################
 
 ## delete tmp files ##
 rm -R -f /tmp/nginx-conf.txt /tmp/nginx-conf /tmp/nginx.conf
@@ -242,9 +242,9 @@ rm -R -f /tmp/nginx-conf.txt /tmp/nginx.conf
 ## reset permissions ##
 chown root:root /etc/nginx/nginx.conf
 
-######################
-#### nginx server ####
-######################
+######################################
+#### configure nginx server block ####
+######################################
 
 ## delete tmp files ##
 rm -R -f /tmp/default.txt /tmp/default /tmp/server-block.txt /tmp/server-block /tmp/server-block-ssl.txt /tmp/server-block-ssl
