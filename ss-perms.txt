@@ -5,7 +5,7 @@
 #### link: https://slickstack.io ##########################
 #### mirror: http://mirrors.slickstack.io/ss-perms.txt ####
 #### path: /var/www/ss-perms ##############################
-#### purpose: resets all slickstack permissions ###########
+#### purpose: resets all permissions ######################
 ###########################################################
 
 ## slickstack config ##
@@ -14,7 +14,7 @@ source /var/www/ss-config
 ## create wordpress group if does not exist ##
 addgroup wordpress
 
-## add sftp user and nginx user to wordpress group ##
+## add sftp user and nginx user to the wordpress group ##
 adduser $user wordpress
 adduser www-data wordpress
 
@@ -59,12 +59,12 @@ chmod 755 /var/www/ss-perms
 chmod 755 /var/www/ss-update
 chmod 755 /var/www/ss-worker
 
-## slickstack directory permissions ##
+## reset parent directory permissions ##
 chown root:root /var/www
 chmod 755 /var/www
 chmod 755 /var/www/html
 
-## wordpress permissions ##
+## reset wordpress permissions ##
 chown -R $user:wordpress /var/www/html
 chown -R www-data:wordpress /var/www/html/wp-content/mu-plugins
 chown -R www-data:wordpress /var/www/html/wp-content/temp
@@ -78,18 +78,16 @@ chmod 775 /var/www/html/wp-content/temp
 chmod 660 /var/www/html/wp-config.php
 chmod -R g+s /var/www/html/
 
-## nginx cache permissions ##
-chown www-data:root /etc/nginx/cache
-chmod 775 /etc/nginx/cache
-find /etc/nginx/cache/ -type d -exec chmod 777 {} \;
-find /etc/nginx/cache/ -type f -exec chmod 777 {} \;
-
-## make log directories if do not exist ##
+## create log directories if do not exist ##
 mkdir -p /var/log/nginx
 mkdir -p /var/log/php-fpm
 mkdir -p /var/log/mysql
 
 ## reset nginx permissions ##
+chown www-data:root /etc/nginx/cache
+chmod 775 /etc/nginx/cache
+find /etc/nginx/cache/ -type d -exec chmod 777 {} \;
+find /etc/nginx/cache/ -type f -exec chmod 777 {} \;
 chown root:root /etc/nginx/nginx.conf
 chown root:root /etc/nginx/fastcgi.conf
 chmod -R 755 /var/log/nginx/access.log
