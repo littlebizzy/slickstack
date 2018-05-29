@@ -442,9 +442,9 @@ source /var/www/ss-muplugs
 ## create temp directory if doesn't exist (will not overwrite) ##
 mkdir /var/www/html/wp-content/temp
 
-#############################
-#### install redis 3.0.6 ####
-#############################
+########################################
+#### install redis (latest version) ####
+########################################
 
 ## install redis-server ##
 DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install redis-server
@@ -455,34 +455,31 @@ DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/u
 ## start redis ##
 /etc/init.d/redis-server start
 
-###############################
-#### configure redis 3.0.6 ####
-###############################
+##########################################
+#### configure redis (latest version) ####
+##########################################
 
+## *OLD WAY* ##
 ## delete tmp files ##
 # rm -R -f /tmp/redis-conf.txt /tmp/redis.conf
-
 ## download latest versions ##
 # cd /tmp/
 # wget --no-cache http://mirrors.slickstack.io/redis/redis-conf.txt
 # wget --no-cache http://mirrors.slickstack.io/redis/4.0.9/redis-conf.txt
-
 ## rename files ##
 # mv redis-conf.txt redis.conf
-
 ## copy files to destinations ##
 # cp -R -f --no-preserve=mode,ownership /tmp/redis.conf /etc/redis/redis.conf
-
 ## delete tmp files ##
 # rm -R -f /tmp/redis-conf.txt /tmp/redis.conf
 
 ## configure redis as cache ##
-# sed -i "/maxmemory/c\maxmemory 512mb" /etc/redis/redis.conf
-# sed -i "/maxmemory-policy/c\maxmemory-policy allkeys-lru" /etc/redis/redis.conf
+sed -i '/maxmemory.*bytes.*/c\maxmemory 512mb' /etc/redis/redis.conf
+sed -i '/maxmemory-policy noeviction/c\maxmemory-policy allkeys-lru' /etc/redis/redis.conf
 
 ## reset permissions ##
-chown redis:redis /var/run/redis
 chown redis:redis /etc/redis/redis.conf
+chown redis:redis /var/run/redis
 
 ## restart services ##
 /etc/init.d/redis-server restart
