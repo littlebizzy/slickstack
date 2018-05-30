@@ -55,6 +55,7 @@ The below installation steps presume that you've already spun up a dedicated Ubu
 
 After completing the installation steps above, your `/var/www/` directory should look like this:
 
+    /var/www/0-crontab
     /var/www/1-cron-often
     /var/www/2-cron-regular
     /var/www/3-cron-hourly
@@ -62,6 +63,7 @@ After completing the installation steps above, your `/var/www/` directory should
     /var/www/5-cron-weekly
     /var/www/6-cron-monthly
     /var/www/7-cron-sometimes
+    /var/www/cache/
     /var/www/html/
     /var/www/ss-check
     /var/www/ss-clean
