@@ -15,8 +15,6 @@
 5. [Comparison](#comparison)
 6. [Philosophy](#philosophy)
 7. [FAQ](#faq)
-8. [Thanks](#thanks)
-9. [Links](#links)
 
 ## Abstract
 
