@@ -65,6 +65,7 @@ After completing the installation steps above, your `/var/www/` directory should
     /var/www/7-cron-sometimes
     /var/www/cache/
     /var/www/html/
+    /var/www/logs/
     /var/www/ss-check
     /var/www/ss-clean
     /var/www/ss-config
