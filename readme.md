@@ -26,17 +26,20 @@ While there are [clear benefits](https://medium.com/capital-one-developers/bashi
 
 SlickStack [ss] works best on VPS servers with KVM virtualization that have at least 2GB RAM from quality network providers such as Vultr, DigitalOcean, Linode, and other non-AWS networks. The underlying LEMP configuration is meant specifically for single-site WordPress installations, and does not support [Multisite](https://codex.wordpress.org/Create_A_Network) installs. SlickStack [ss] supports WordPress, WooCommerce, bbPress, and BuddyPress "out of the box" with pre-optimized settings that scale.
 
-* Ubuntu 16.04
+* Ubuntu 18.04
+* Nginx 1.14.0
+* PHP 7.2
 * MySQL 5.7
-* PHP 7.0
 * WordPress (latest version)
 * WP-CLI 1.5.1
+* Redis 4.0.9
+* Monit 5.25.2
 
 ## Installation
 
 Because it’s written purely in [Bash](https://en.wikipedia.org/wiki/Bash_(Unix_shell)) (Unix shell), SlickStack [ss] has no dependencies and works on any Ubuntu Linux machine. Unlike heavier provisioning tools like EasyEngine or Ansible, there are no third party languages required such as Python, meaning a lighter and simpler approach to launching WordPress servers.
 
-The below installation steps presume that you've already spun up a dedicated Ubuntu 16.04 VPS server (KVM) with at least 2GB RAM memory and that you are logged in via SSH.
+The below installation steps presume that you've already spun up a dedicated Ubuntu 18.04 VPS server (KVM) with at least 2GB RAM memory and that you are logged in via SSH.
 
 1. Create Nginx directory:
 
