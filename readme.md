@@ -84,7 +84,7 @@ After completing the installation steps above, your `/var/www/` directory should
     /var/www/ss-update
     /var/www/ss-worker
     
-...and your `/var/www/html/` directory should look like this:    
+...likewise, your `/var/www/html/` (WordPress) directory should look like this:    
     
     /var/www/html/wp-admin/
     /var/www/html/wp-includes/
