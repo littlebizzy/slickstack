@@ -34,6 +34,8 @@ SlickStack [ss] works best on VPS servers with KVM virtualization that have at l
 * WP-CLI 1.5.1
 * Redis 4.0.9
 * Monit 5.25.2
+* Git 2.17.0
+* UFW 0.35
 
 ## Installation
 
