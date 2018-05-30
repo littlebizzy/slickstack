@@ -15,6 +15,8 @@
 5. [Comparison](#comparison)
 6. [Philosophy](#philosophy)
 7. [FAQ](#faq)
+8. [Thanks](#thanks)
+9. [Links](#links)
 
 ## Abstract
 
@@ -133,6 +135,8 @@ Before the likes of Google and Amazon and Shopify and Wix take over the entire w
 * **But shouldn't configs be outside the public root?** There's lots of "should" and theorizing in computer programming, but one reason for the success of WordPress is its pragmatism and user-friendliness. There's plenty to criticize about WordPress from the perspective of things like "12-factor apps" but let's remember that WordPress was around before many of these guidelines and even after better approaches have been founded, WordPress is still the king of CMS software for a reason.
 
 * **Why ss-config-sample and not ss-config-example?** Because we aim to mirror WordPress Core as much as possible. Because the misnomer has existed in WordPress since the beginning, the WP Core team has [no intention](https://core.trac.wordpress.org/ticket/43827) of changing it.
+
+* **Why don't you use TMPFS or similar?** For stability reasons, we don't use any tpmfs (memory-based storage) for caching or otherwise, as it introduces more instability, possible data loss, and doesn't necessarily improve performance. What people people don't realize is Linux already uses tmpfs for its own purposes, and already stores many "requests" in RAM. Best to let the operating system do its thing, and we optimize the software packages installed.
 
 ## Thanks
 
