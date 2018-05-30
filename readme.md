@@ -59,7 +59,7 @@ The below installation steps presume that you've already spun up a dedicated Ubu
 
 ## Structure
 
-After completing the installation steps above, your `/var/www/` directory should look like this:
+After completing the installation steps above, your `/var/www/` directory should look like below. Keep in mind that you should never alter the crontab file on any SlickStack [ss] server, nor should you edit/modify any files appearing in the below list with the exception of `ss-config` (this does not apply to WordPress files found under `/var/www/html`) ...
 
     /var/www/0-crontab
     /var/www/1-cron-often
