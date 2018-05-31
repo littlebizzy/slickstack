@@ -81,16 +81,39 @@ chmod 775 /var/www/html/wp-content/temp
 chmod 660 /var/www/html/wp-config.php
 chmod -R g+s /var/www/html/
 
-## create log directories if do not exist ##
+## ensure all log directories exist ##
 mkdir /var/www/logs
-chown www-data:www-data /var/www/logs
-chmod 775 /var/www/logs
 ## old ##
 mkdir -p /var/log/nginx
 mkdir -p /var/log/php-fpm
 mkdir -p /var/log/mysql
 
-## create fastcgi cache directory if does not exist ##
+## ensure all log files exist ##
+if [ ! -f "/var/www/logs/error.log" ]; then touch "/var/www/logs/error.log"; fi
+if [ ! -f "/var/www/logs/nginx.log" ]; then touch "/var/www/logs/nginx.log"; fi
+if [ ! -f "/var/www/logs/mysql.log" ]; then touch "/var/www/logs/mysql.log"; fi
+if [ ! -f "/var/www/logs/redis.log" ]; then touch "/var/www/logs/redis.log"; fi
+if [ ! -f "/var/www/logs/monit.log" ]; then touch "/var/www/logs/monit.log"; fi
+## old ##
+mkdir /var/run/php
+if [ ! -f "/var/log/php-fpm/error.log" ]; then touch "/var/log/php-fpm/error.log"; fi
+
+## reset all log permissions ##
+chown -R www-data:www-data /var/www/logs
+chmod -R 775 /var/www/logs
+## old ##
+chmod -R 755 /var/log/nginx/access.log
+chmod -R 755 /var/log/nginx/error.log
+chown -R www-data:www-data /var/log/nginx/access.log
+chown -R www-data:www-data /var/log/nginx/error.log
+# chmod -R 755 /var/log/php7.0-fpm.log
+chmod -R 755 /var/log/php-fpm/error.log
+# chown -R www-data:www-data /var/log/php7.0-fpm.log
+chown -R www-data:www-data /var/log/php-fpm/error.log
+chown -R www-data:www-data /var/log/monit.log
+chmod -R 755 /var/log/monit.log
+
+## ensure nginx fastcgi cache directory exists ##
 mkdir /var/www/cache
 
 ## reset nginx permissions ##
@@ -102,10 +125,7 @@ find /etc/nginx/cache/ -type d -exec chmod 777 {} \;
 find /etc/nginx/cache/ -type f -exec chmod 777 {} \;
 chown root:root /etc/nginx/nginx.conf
 chown root:root /etc/nginx/fastcgi.conf
-chmod -R 755 /var/log/nginx/access.log
-chmod -R 755 /var/log/nginx/error.log
-chown -R www-data:www-data /var/log/nginx/access.log
-chown -R www-data:www-data /var/log/nginx/error.log
+
 
 ## reset openssl permissions ##
 chown root:root /etc/ssl/nginx.crt
@@ -126,19 +146,11 @@ chown root:root /usr/local/bin/
 chown www-data:www-data /usr/local/bin/wp
 chmod 6775 /usr/local/bin/wp
 
-## create php files if do not exist ##
-mkdir /var/run/php
-if [ ! -f "/var/log/php-fpm/error.log" ]; then touch "/var/log/php-fpm/error.log"; fi
-
 ## reset php permissions ##
 # chown www-data:www-data /var/run/php
 chown root:root /etc/php/7.0/fpm/php.ini
 chown root:root /etc/php/7.0/fpm/php-fpm.conf
 chown root:root /etc/php/7.0/cli/php.ini
-# chmod -R 755 /var/log/php7.0-fpm.log
-chmod -R 755 /var/log/php-fpm/error.log
-# chown -R www-data:www-data /var/log/php7.0-fpm.log
-chown -R www-data:www-data /var/log/php-fpm/error.log
 
 ## create mysql files if do not exist ##
 mkdir /var/run/mysqld
@@ -159,5 +171,3 @@ chown redis:redis /etc/redis/redis.conf
 ## reset monit permissions ##
 chown root:root /etc/monit/monitrc
 chmod -R 700 /etc/monit/monitrc
-chown -R www-data:www-data /var/log/monit.log
-chmod -R 755 /var/log/monit.log
