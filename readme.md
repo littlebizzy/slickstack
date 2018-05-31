@@ -12,8 +12,8 @@
 2. [Compatibility](#compatibility)
 3. [Installation](#installation)
 4. [Structure](#structure)
-5. [Comparison](#comparison)
-6. [Philosophy](#philosophy)
+5. [Philosophy](#philosophy)
+6. [Comparison](#comparison)
 7. [FAQ](#faq)
 
 ## Abstract
