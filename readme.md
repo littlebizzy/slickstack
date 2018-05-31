@@ -87,8 +87,8 @@ After completing the installation steps above, your `/var/www/` directory should
 ...likewise, your `/var/www/html/` (WordPress) directory should look like this:    
     
     /var/www/html/wp-admin/
-    /var/www/html/wp-includes/
     /var/www/html/wp-content/
+    /var/www/html/wp-includes/
     /var/www/html/wp-...
 
 ## Philosophy
