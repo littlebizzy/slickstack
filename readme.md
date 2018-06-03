@@ -1,4 +1,4 @@
-# SlickStack [ss] - "Alpha" - USE AT YOUR OWN RISK!!!
+# SlickStack [ss] - "Alpha"
 
 > SlickStack is a free LEMP stack automation script written in Bash designed to enhance and simplify WordPress provisioning, performance, and security.
 
@@ -30,7 +30,7 @@ SlickStack [ss] works best on VPS servers with KVM virtualization that have at l
 
 * Ubuntu 18.04
 * Nginx 1.14.0 - custom `nginx.conf` + `server block`
-* PHP 7.2 - custom `php.ini`
+* PHP 7.2 - custom `php.ini` + `php-fpm.conf` + `www.conf`
 * MySQL 5.7
 * WordPress (latest version) - optional `wplite` optimization
 * WP-CLI 1.5.1
