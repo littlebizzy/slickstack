@@ -30,9 +30,9 @@ SlickStack [ss] works best on VPS servers with KVM virtualization that have at l
 
 * Ubuntu 18.04
 * Nginx 1.14.0 - custom `nginx.conf` + `server block`
-* PHP 7.2 - custom `php.ini` + `php-fpm.conf` + `www.conf`
+* PHP-FPM 7.2 - custom `php.ini` + `php-fpm.conf` + `www.conf`
 * MySQL 5.7
-* WordPress (latest version) - optional `wplite` optimization
+* WordPress (latest version) - optional `wplite` optimized configuration
 * WP-CLI 1.5.1
 * Redis 4.0.9 - tweak `redis.conf`
 * Monit 5.25.2
