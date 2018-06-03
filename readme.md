@@ -99,7 +99,9 @@ Outside of the so-called [Application Layer](https://en.wikipedia.org/wiki/Appli
 
 While this shift is exciting, there is now a massive and growing disconnect between these emerging technologies and the humans that are expected to implement or benefit from them. Typical small business owners (SMBs), along with independent agencies or freelancers, now face a virtually impossible learning curve if they wish to maintain not only a competitive "webdev" edge, but even to keep up with basic standards in website security, etc.
 
-> "The innovation that this industry talks about so much is bullshit. Anybody can innovate. Don't do this big, 'Think different' innovation thing. Screw that; it's meaningless ... all that hype - that's not where the real work is. The real work is in the details."
+> "The innovation that this industry talks about so much is bullshit. Anybody can innovate. Don't do this big, 'Think Different' innovation thing. Screw that; it's meaningless ... all that hype - that's not where the real work is...
+>
+>The real work is in the details."
 >
 > — **Linus Torvalds**
 
