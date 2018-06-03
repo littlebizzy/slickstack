@@ -105,6 +105,14 @@ While this shift is exciting, there is now a massive and growing disconnect betw
 
 Telling these sorts of people to learn how to use Configuration Management (CM) tools like Ansible — or hire somebody who does — completely misses the point; it's the equivalent of telling someone who doesn't speak Spanish to go study Latin to better prepare for their exam, which happens to be tomorrow. Meanwhile, there's a cheeky student (e.g. Shopify or Wix) across the way, trying to sell them the answers (which look a bit shoddy).
 
+While Silicon Valley bigwigs and corporate players pump out new terms (and services) on a daily basis -- such as Configuration Management (CM) -- the typical small business website is still trying to figure out how to make their contact forms work correctly. The "legacy" shared web hosting monopolies -- think EIG/GoDaddy -- also have little motivation to education their audience, as perpetuating confusion seems to be a core pillar of their business model.
+
+Before the likes of Google and Amazon and Shopify and Wix take over the entire web and turn it into Wall Street-backed website builders that feed into their private ecosystems, SlickStack hopes to bridge the knowledge gap between emerging technology and old-school web development to empower SMBs to achieve top notch website performance and security by offering a "controlled" LEMP-stack environment with limited options that is perfectly suited to the world's most popular open-source CMS: WordPress.
+
+TL;DR: while "the wheel" might not need re-inventing, it can surely [always be improved](https://www.scientificamerican.com/article/greener-tires/).
+
+--
+
 IDEALISM / SHOWBOATING ####                  GRAND CANYON OF DISCONNECT                 PRAGMATISM / SIMPLICITY ####
 ###########################                                                             ############################
 
@@ -115,12 +123,6 @@ Typical SMB owner thought process:
 * What cache/security plugin is the best?
 * When is my freelancer going to reply?
 * @#$%! THIS... BACK TO SHOPIFY!
-
-TL;DR: while "the wheel" might not need re-inventing, it surely [can be improved](https://www.scientificamerican.com/article/greener-tires/).
-
-That is, while Silicon Valley bigwigs and corporate players pump out new terms and services on a daily basis -- like Configuration Management (CM) -- the typical small business website is still trying to figure out how to make their contact forms work correctly. The "old guard" shared web hosting monopoly -- think EIG/GoDaddy -- also has little motivation to education their audience, as perpetuating confusion seems to be a core pillar of their business model.
-
-Before the likes of Google and Amazon and Shopify and Wix take over the entire web and turn it into Wall Street-backed website builders that feed into their private ecosystems, SlickStack hopes to bridge the knowledge gap between emerging technology and old-school web development to empower SMBs to achieve top notch website performance and security by offering a "controlled" LEMP-stack environment with limited options that is perfectly suited to the world's most popular open-source CMS: WordPress.
 
 ## Comparison
 
