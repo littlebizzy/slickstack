@@ -99,6 +99,10 @@ Outside of the so-called [Application Layer](https://en.wikipedia.org/wiki/Appli
 
 While this shift is exciting, there is now a massive and growing disconnect between these emerging technologies and the humans that are expected to implement or benefit from them. Typical small business owners (SMBs), along with independent agencies or freelancers, now face a virtually impossible learning curve if they wish to maintain not only a competitive "webdev" edge, but even to keep up with basic standards in website security, etc.
 
+> "The innovation that this industry talks about so much is bullshit. Anybody can innovate. Don't do this big, 'Think different' innovation thing. Screw that; it's meaningless ... all that hype - that's not where the real work is. The real work is in the details."
+>
+> — **Linus Torvalds**
+
 Telling these sorts of people to learn how to use Configuration Management (CM) tools like Ansible — or hire somebody who does — completely misses the point; it's the equivalent of telling someone who doesn't speak Spanish to go study Latin to better prepare for their exam, which happens to be tomorrow. Meanwhile, there's a cheeky student (e.g. Shopify or Wix) trying to sell them the answers (which look a bit shoddy).
 
 IDEALISM / SHOWBOATING ####                  GRAND CANYON OF DISCONNECT                 PRAGMATISM / SIMPLICITY ####
