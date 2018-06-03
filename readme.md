@@ -1,6 +1,4 @@
-# NOT READY YET!!! USE AT YOUR OWN RISK!!!
-
-# SlickStack [ss]
+# SlickStack [ss] - "Alpha" - USE AT YOUR OWN RISK!!!
 
 > SlickStack is a free LEMP stack automation script written in Bash designed to enhance and simplify WordPress provisioning, performance, and security.
 
