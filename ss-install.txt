@@ -409,6 +409,17 @@ rm -v ~/secure_our_mysql.sh
 ## confirm secured ##
 echo "Congratulations, MySQL 5.7 is installed and secured. Onward!"
 
+###############################
+#### setup mysql 5.7 users ####
+###############################
+
+mysql -uroot -p${dbrootpass} -e "CREATE DATABASE ${dbname};"
+mysql -uroot -p${dbrootpass} -e "CREATE USER '${dbuser}'@'localhost' IDENTIFIED BY '${dbuserpass}';"
+mysql -uroot -p${dbrootpass} -e "CREATE USER '${dbuser}'@'127.0.0.1' IDENTIFIED BY '${dbuserpass}';"
+mysql -uroot -p${dbrootpass} -e "GRANT ALL PRIVILEGES ON ${dbname}.* TO '${dbuser}'@'localhost';"
+mysql -uroot -p${dbrootpass} -e "GRANT ALL PRIVILEGES ON ${dbname}.* TO '${dbuser}'@'127.0.0.1';"
+mysql -uroot -p${dbrootpass} -e "FLUSH PRIVILEGES;"
+
 ############################################
 #### install wordpress (latest version) ####
 ############################################
