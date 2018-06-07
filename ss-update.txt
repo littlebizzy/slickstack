@@ -82,6 +82,26 @@ rm -R -f /tmp/user-rules.txt* /tmp/user.rules*
 
 DEBIAN_FRONTEND=noninteractive dpkg --configure -a --force-confold
 
+#####################################
+#### regenerate openssl pem file ####
+#####################################
+
+## delete tmp files ##
+rm -R -f /tmp/nginx.crt* /tmp/nginx.key* /tmp/nginx.pem*
+
+## regenerate pem file ##
+cp -R -f -d --no-preserve=mode,ownership /etc/ssl/nginx.crt /tmp/nginx.crt
+cp -R -f -d --no-preserve=mode,ownership /etc/ssl/nginx.key /tmp/nginx.key
+cat /tmp/nginx.crt /tmp/nginx.key > /tmp/nginx.pem
+cp -R -f -d --no-preserve=mode,ownership /tmp/nginx.pem /etc/ssl/nginx.pem
+
+## delete tmp files ##
+rm -R -f /tmp/nginx.crt* /tmp/nginx.key* /tmp/nginx.pem*
+
+## reset permissions ##
+chown root:root /etc/ssl/nginx.crt /etc/ssl/nginx.key /etc/ssl/nginx.pem
+chmod -R 700 /etc/ssl/nginx.crt /etc/ssl/nginx.key /etc/ssl/nginx.pem
+
 ######################
 #### upgrade lemp ####
 ######################
