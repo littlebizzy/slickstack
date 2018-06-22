@@ -92,6 +92,25 @@ After completing the installation steps above, your `/var/www/` directory should
     /var/www/html/wp-content/
     /var/www/html/wp-includes/
     /var/www/html/wp-...
+    
+...and if deploying as `wplite` your `/var/www/html/wp-content/mu-plugins` directory should look like this:
+
+    /var/www/html/wp-content/mu-plugins/0-autoloader
+    /var/www/html/wp-content/mu-plugins/cf-littlebizzy
+    /var/www/html/wp-content/mu-plugins/delete-expired-transients-littlebizzy
+    /var/www/html/wp-content/mu-plugins/disable-embeds-littlebizzy
+    /var/www/html/wp-content/mu-plugins/disable-emojis-littlebizzy
+    /var/www/html/wp-content/mu-plugins/disable-empty-trash-littlebizzy
+    /var/www/html/wp-content/mu-plugins/disable-image-compression-littlebizzy
+    /var/www/html/wp-content/mu-plugins/disable-xml-rpc-littlebizzy
+    /var/www/html/wp-content/mu-plugins/error-log-monitor
+    /var/www/html/wp-content/mu-plugins/force-strong-hashing-littlebizzy
+    /var/www/html/wp-content/mu-plugins/header-cleanup-littlebizzy
+    /var/www/html/wp-content/mu-plugins/index-autoload-littlebizzy
+    /var/www/html/wp-content/mu-plugins/nginx-cache
+    /var/www/html/wp-content/mu-plugins/remove-query-strings-littlebizzy
+    /var/www/html/wp-content/mu-plugins/server-status-littlebizzy
+    /var/www/html/wp-content/mu-plugins/virtual-robotstxt-littlebizzy
 
 ## Philosophy
 
