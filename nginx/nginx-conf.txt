@@ -6,23 +6,17 @@
 #### purpose: nginx configuration file ############################
 ###################################################################
 
-## do not change the below username unless you know what you are doing ##
 user www-data;
-## should be 1 per CPU core, or simply "auto" is fine for newer Nginx versions ##
 worker_processes auto;
-## do not change the below pid unless you know what you are doing ##
+worker_rlimit_nofile 100000;
 pid /var/run/nginx.pid;
-## must include all of the nginx modules to function correctly ##
+
+## includes ##
 include /etc/nginx/modules-enabled/*.conf;
 
-### EVENTS ###
-
 events {
-    ## debated but can be 1024 x number of CPU cores (2048 is enough for most single-site servers) ##
-    worker_connections 2048;
-    ## allow multiple connections for better performance ##
+    worker_connections 4096;
     multi_accept on;
-    ## event polling recommended for most linux servers ##
     use epoll;
 }
 
