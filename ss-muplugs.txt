@@ -204,7 +204,33 @@ rm -R -f /tmp/server-status-littlebizzy*
 rm -R -f /tmp/virtual-robotstxt*
 rm -R -f /tmp/virtual-robotstxt-littlebizzy*
 
+########################################################
+#### install slickstack defined constants mu-plugin ####
+########################################################
 
+## delete tmp files ##
+rm -R -f /tmp/0-ss* /tmp/1-ss* /tmp/2-ss*
+
+## delete conflicting wp-config defined constants ##
+sed -i '/CLOUDFLARE_API_KEY/d' /var/www/html/wp-config.php
+sed -i '/CLOUDFLARE_API_EMAIL/d' /var/www/html/wp-config.php
+
+## download latest versions ##
+cd /tmp/
+wget --no-cache http://mirrors.slickstack.io/mu-plugins/1-ss-defined-constants.txt
+
+## replace placeholders with slickstack variables ##
+sed -i "s/@CLOUDFLAREAPIKEY/${cloudflareapikey}/g" /tmp/1-ss-defined-constants.txt
+sed -i "s/@CLOUDFLAREAPIEMAIL/${cloudflareapiemail}/g" /tmp/1-ss-defined-constants.txt
+
+## rename files ##
+mv /tmp/1-ss-defined-constants.txt /tmp/1-ss-defined-constants.php
+
+## copy files to destinations ##
+cp -R -f -d --no-preserve=mode,ownership /tmp/1-ss-defined-constants.php /var/www/html/wp-content/mu-plugins/1-ss-defined-constants.php
+
+## delete tmp files ##
+rm -R -f /tmp/0-ss* /tmp/1-ss* /tmp/2-ss*
 
 ################################################
 #### reset permissions and restart services ####
