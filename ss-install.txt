@@ -465,15 +465,31 @@ wget --no-cache http://mirrors.slickstack.io/wordpress/wp-config.txt
 
 ## replace placeholders with variables ##
 sed -i "s/@DBNAME/${dbname}/g" /tmp/wp-config.txt
+sed -i "s/@DBUSER/${dbuser}/g" /tmp/wp-config.txt
+sed -i "s/@DBPASSWORD/${dbuserpass}/g" /tmp/wp-config.txt
+sed -i "s/@DBNAME/${dbname}/g" /tmp/wp-config.txt
+sed -i "s/@TABLEPREFIX/${dbprefix}/g" /tmp/wp-config.txt
+# sed -i "s/@DBHOST/${dbhost}/g" /tmp/wp-config.txt
 # sed -i "s/@DBCHARSET/${dbcharset}/g" /tmp/wp-config.txt
 # sed -i "s/@DBCOLLATE/${dbcollate}/g" /tmp/wp-config.txt
 
-## enable or disable fastcgi cache ##
-## set skip_cache default to 0 only if fastcgi cache enabled in ss-config ##
+## replace debug placeholers ##
+if [[ "$production" == "yes" ]]
+then sed -i "s/@WPDEBUG/false/g" /tmp/wp-config.txt
+else sed -i "s/@WPDEBUG/true/g" /tmp/wp-config.txt
+fi
+
+## replace debug placeholers ##
 # if [[ "$production" == "yes" ]]
-# then sed -i "s/@DEBUG/false/g" /tmp/wp-config.txt
-# else sed -i "s/@DEBUG/true/g" /tmp/wp-config.txt
+# then sed -i "s/@WPDEBUGLOG/false/g" /tmp/wp-config.txt
+# else sed -i "s/@WPDEBUGLOG/true/g" /tmp/wp-config.txt
 # fi
+
+## replace debug placeholers ##
+if [[ "$production" == "yes" ]]
+then sed -i "s/@WPDEBUGDISPLAY/false/g" /tmp/wp-config.txt
+else sed -i "s/@WPDEBUGDISPLAY/true/g" /tmp/wp-config.txt
+fi
 
 ## rename files ##
 mv /tmp/wp-config.txt /tmp/wp-config.php
