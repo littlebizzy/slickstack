@@ -1,6 +1,7 @@
 <h3>mirrors / mu-plugins</h3>
 
-<a href="autoloader.txt">autoloader.txt</a><br>
+<li><a href="autoloader.txt">autoloader.txt</a></li>
+<li><a href="xxx-notices.txt">xxx-notices.txt</a></li>
 
 <h5>Related files:</h5>
 
