@@ -30,6 +30,12 @@ server {
     ssl_certificate_key    /etc/ssl/nginx.key;
     root                   /var/www/html;
     index                  index.php;
+    
+    ## redirect */index.php requests
+    ## https://stackoverflow.com/a/21813759/1718491
+    if ($request_uri ~* "^(.*/)index\.php$") {
+        return 301 $1;
+    }
 
     #### FASTCGI CACHE ####
     ## set to either 1/0 to skip fastcgi cache by default ##
