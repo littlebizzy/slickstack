@@ -95,7 +95,7 @@ After completing the installation steps above, your `/var/www/` directory should
     
 ...and if deploying as `wplite` your `/var/www/html/wp-content/mu-plugins` directory should look like this:
 
-    /var/www/html/wp-content/mu-plugins/0-autoloader
+    /var/www/html/wp-content/mu-plugins/autoloader.php
     /var/www/html/wp-content/mu-plugins/cf-littlebizzy
     /var/www/html/wp-content/mu-plugins/delete-expired-transients-littlebizzy
     /var/www/html/wp-content/mu-plugins/disable-embeds-littlebizzy
@@ -107,10 +107,12 @@ After completing the installation steps above, your `/var/www/` directory should
     /var/www/html/wp-content/mu-plugins/force-strong-hashing-littlebizzy
     /var/www/html/wp-content/mu-plugins/header-cleanup-littlebizzy
     /var/www/html/wp-content/mu-plugins/index-autoload-littlebizzy
-    /var/www/html/wp-content/mu-plugins/nginx-cache
+    /var/www/html/wp-content/mu-plugins/plugin-blacklist-littlebizzy
+    /var/www/html/wp-content/mu-plugins/purge-them-all-littlebizzy
     /var/www/html/wp-content/mu-plugins/remove-query-strings-littlebizzy
     /var/www/html/wp-content/mu-plugins/server-status-littlebizzy
     /var/www/html/wp-content/mu-plugins/virtual-robotstxt-littlebizzy
+    /var/www/html/wp-content/mu-plugins/xxx-notices.php
 
 ## Philosophy
 
