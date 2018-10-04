@@ -49,11 +49,11 @@ The below installation steps presume that you've already spun up a dedicated Ubu
 
 `sudo mkdir /var/www/ && sudo chown root:root /var/www/ && sudo chmod 755 /var/www/`
 
-2. Create [/var/www/ss-config](http://mirrors.slickstack.io/ss-config-sample.txt) and input all SlickStack [ss] variables:
+2. Create `/var/www/ss-config` and input all SlickStack [ss] variables:
 
 `sudo nano /var/www/ss-config`
 
-`(configure as desired)`
+[*configure as desired*](http://mirrors.slickstack.io/ss-config-sample.txt)
 
 3. Run the SlickStack [ss] installation:
 
