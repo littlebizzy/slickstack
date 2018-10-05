@@ -49,12 +49,21 @@ chown root:root /var/www/ss-check
 chmod -R 700 /var/www/ss-check
 # chown root:root /etc/gai.conf
 
+## update plugin blacklist ##
+rm -R -f /tmp/blacklist*
+cd /tmp/
+wget --no-cache http://mirrors.slickstack.io/wordpress/blacklist.txt
+rm -R -f /var/www/html/wp-content/blacklist.txt
+cp -f -d --no-preserve=mode,ownership /tmp/blacklist.txt /var/www/html/wp-content/blacklist.txt
+rm -R -f /tmp/blacklist*
+chown www-data:wordpress /var/www/html/wp-content/blacklist.txt
+chmod 664 /var/www/html/wp-content/blacklist.txt
+
 ############################
 #### various TEMP tasks ####
 ############################
 
 ## TEMP change error log path ##
-# sed -i '/error_log/c\error_log = /var/www/logs/error.log' /etc/php/7.0/fpm/php-fpm.conf
 # sed -i '/error_log/c\error_log = /var/www/logs/error.log' /etc/php/7.2/fpm/php-fpm.conf
 # sed -i "s#/var/log/php-fpm/error.log#/var/www/logs/error.log#g" /var/www/html/wp-config.php
 
