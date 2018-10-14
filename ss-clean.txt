@@ -57,6 +57,13 @@ find /var/www/html/ -name "*.ini.php" -type f -delete
 sed -i '/INI_SET/d' /var/www/html/wp-config.php
 sed -i '/ini_set/d' /var/www/html/wp-config.php
 
+## delete config files ##
+# find /var/www/html/ -name "*.conf" -type f -delete
+# find /var/www/html/ -name "*.config" -type f -delete
+
+## delete sql files ##
+# find /var/www/html/ -name "*.sql" -type f -delete
+
 ## delete unsafe/unecessary debug logs ##
 # rm -R -f /var/www/html/wp-content/debug*.log
 # rm -R -f /var/www/html/wp-content/debug.log*
@@ -66,16 +73,27 @@ find /var/log/ -name "*.gz" -type f -delete
 rm -R -f /var/log/fpm-php.www.log*
 rm -R -f /var/log/php7.0-fpm.log*
 
-## delete phpinfo files ##
+## html index files ##
+rm -f /var/www/html/index.htm
+rm -f /var/www/html/index.html
+
+## unnecessary favicons ##
+rm -f /var/www/html/favicon.gif
+
+## delete crossdomain files ##
+## https://sethsec.blogspot.com/2014/03/exploiting-misconfigured-crossdomainxml.html ##
+rm -f /var/www/html/crossdomain.xml
+
+## delete obvious phpinfo files ##
 rm -f /var/www/html/i.php
 rm -f /var/www/html/info.php
-rm -f /var/www/html/phpinfo.php
-rm -f /var/www/html/test.php
+rm -f /var/www/html/phpinfo*.php
+rm -f /var/www/html/test*.php
 
 ## delete obvious adminer/phpmyadmin files ##
 rm -f /var/www/html/adminer.php
-rm -f /var/www/html/phpmyadmin.php
-rm -f /var/www/html/phpMyAdmin.php
+rm -f /var/www/html/phpmyadmin*.php
+rm -f /var/www/html/phpMyAdmin*.php
 
 ## delete wordpresss junk files ##
 rm -R -f /var/www/html/readme*.html
@@ -335,12 +353,19 @@ rm -R -f /var/www/html/wp-content/plugins/googleanalytics
 rm -R -f /var/www/html/wp-content/mu-plugins/mailchimp-forms-by-mailmunch*
 rm -R -f /var/www/html/wp-content/plugins/mailchimp-forms-by-mailmunch*
 
-## delete bloated security plugins ##
+#########################################
+#### delete bloated security plugins ####
+#########################################
+
+## sucuri ##
 rm -R -f /var/www/html/wp-content/mu-plugins/sucuri-scanner*
 rm -R -f /var/www/html/wp-content/plugins/sucuri-scanner*
+rm -R -f /var/www/html/wp-content/uploads/sucuri*
+## wordfence ##
 rm -R -f /var/www/html/wp-content/mu-plugins/wordfence*
 rm -R -f /var/www/html/wp-content/plugins/wordfence*
 rm -R -f /var/www/html/wordfence-waf.php*
+## all-in-one security ##
 rm -R -f /var/www/html/wp-content/mu-plugins/all-in-one-wp-security-and-firewall*
 rm -R -f /var/www/html/wp-content/plugins/all-in-one-wp-security-and-firewall*
 
@@ -350,7 +375,11 @@ rm -R -f /var/www/html/wp-content/plugins/wordpress-firewall-2*
 rm -R -f /var/www/html/wp-content/mu-plugins/bad-behavior*
 rm -R -f /var/www/html/wp-content/plugins/bad-behavior*
 
-## delete dashboard-hijacking plugins ##
+############################################
+#### delete dashboard-hijacking plugins ####
+############################################
+
+## wp smush pro ##
 rm -R -f /var/www/html/wp-content/mu-plugins/wp-smush-pro*
 rm -R -f /var/www/html/wp-content/plugins/wp-smush-pro*
 
@@ -358,45 +387,72 @@ rm -R -f /var/www/html/wp-content/plugins/wp-smush-pro*
 # rm -R -f /var/www/html/wp-content/mu-plugins/shortpixel-image-optimiser
 # rm -R -f /var/www/html/wp-content/plugins/shortpixel-image-optimiser
 
-## delete bloated image compression plugins ##
-# rm -R -f /var/www/html/wp-content/ewww*
+##################################################
+#### delete bloated image compression plugins ####
+##################################################
+
+## eww image optimizer (local) ##
 rm -R -f /var/www/html/wp-content/mu-plugins/ewww-image-optimizer*
 rm -R -f /var/www/html/wp-content/plugins/ewww-image-optimizer*
-# rm -R -f /var/www/html/wp-content/mu-plugins/ewww-image-optimizer-cloud
-# rm -R -f /var/www/html/wp-content/plugins/ewww-image-optimizer-cloud
-rm -R -f /var/www/html/wp-content/mu-plugins/wp-smushit*
-rm -R -f /var/www/html/wp-content/plugins/wp-smushit*
-# rm -R -f /var/www/html/wp-content/mu-plugins/optimus
-# rm -R -f /var/www/html/wp-content/plugins/optimus
-rm -R -f /var/www/html/wp-content/mu-plugins/way2enjoy-compress-images*
-rm -R -f /var/www/html/wp-content/plugins/way2enjoy-compress-images*
-# rm -R -f /var/www/html/wp-content/mu-plugins/shortpixel-image-optimiser
-# rm -R -f /var/www/html/wp-content/plugins/shortpixel-image-optimiser
+
+## wp smush pro ##
 rm -R -f /var/www/html/wp-content/mu-plugins/wp-smush-pro*
 rm -R -f /var/www/html/wp-content/plugins/wp-smush-pro*
+
+## wp smushit ##
+rm -R -f /var/www/html/wp-content/mu-plugins/wp-smushit*
+rm -R -f /var/www/html/wp-content/plugins/wp-smushit*
+
+## way2enjoy ##
+rm -R -f /var/www/html/wp-content/mu-plugins/way2enjoy-compress-images*
+rm -R -f /var/www/html/wp-content/plugins/way2enjoy-compress-images*
+
+## eww image optimizer (cloud) ##
+# rm -R -f /var/www/html/wp-content/mu-plugins/ewww-image-optimizer-cloud
+# rm -R -f /var/www/html/wp-content/plugins/ewww-image-optimizer-cloud
+
+## optimus ##
+# rm -R -f /var/www/html/wp-content/mu-plugins/optimus
+# rm -R -f /var/www/html/wp-content/plugins/optimus
+
+## shortpixel ##
+# rm -R -f /var/www/html/wp-content/mu-plugins/shortpixel-image-optimiser
+# rm -R -f /var/www/html/wp-content/plugins/shortpixel-image-optimiser
+
 
 ## delete redundant/pointless seo plugins ##
 # rm -R -f /var/www/html/wp-content/mu-plugins/seo-optimized-images
 # rm -R -f /var/www/html/wp-content/plugins/seo-optimized-images
 
-## delete remote management plugins ##
-rm -R -f /var/www/html/wp-content/managewp*
+##########################################
+#### delete remote management plugins ####
+##########################################
+
+## managewp ##
 rm -R -f /var/www/html/wp-content/mu-plugins/0-worker*
 rm -R -f /var/www/html/wp-content/plugins/0-worker*
 rm -R -f /var/www/html/wp-content/mu-plugins/worker
 rm -R -f /var/www/html/wp-content/plugins/worker
-rm -R -f /var/www/html/wp-content/mu-plugins/iwp-client*
-rm -R -f /var/www/html/wp-content/plugins/iwp-client*
-rm -R -f /var/www/html/wp-content/mu-plugins/wpremote*
-rm -R -f /var/www/html/wp-content/plugins/wpremote*
+rm -R -f /var/www/html/wp-content/managewp*
+
+## mainwp ##
 rm -R -f /var/www/html/wp-content/mu-plugins/mainwp*
 rm -R -f /var/www/html/wp-content/plugins/mainwp*
 rm -R -f /var/www/html/wp-content/mu-plugins/mainwp-child*
 rm -R -f /var/www/html/wp-content/plugins/mainwp-child*
+
+## wpmudev ##
 rm -R -f /var/www/html/wp-content/mu-plugins/wpmudev-updates*
 rm -R -f /var/www/html/wp-content/plugins/wpmudev-updates*
+
+## ithemes ##
 rm -R -f /var/www/html/wp-content/mu-plugins/ithemes-sync*
 rm -R -f /var/www/html/wp-content/plugins/ithemes-sync*
+
+rm -R -f /var/www/html/wp-content/mu-plugins/iwp-client*
+rm -R -f /var/www/html/wp-content/plugins/iwp-client*
+rm -R -f /var/www/html/wp-content/mu-plugins/wpremote*
+rm -R -f /var/www/html/wp-content/plugins/wpremote*
 
 ## delete plugins where several better (free) wp.org options available ##
 rm -R -f /var/www/html/wp-content/mu-plugins/wp-vi-duplicate-posts*
@@ -404,43 +460,80 @@ rm -R -f /var/www/html/wp-content/plugins/wp-vi-duplicate-posts*
 # rm -R -f /var/www/html/wp-content/mu-plugins/google-analytics-dashboard-for-wp*
 # rm -R -f /var/www/html/wp-content/plugins/google-analytics-dashboard-for-wp*
 
-## delete plugins that cause thrashing ##
+#############################################
+#### delete plugins that cause thrashing ####
+#############################################
+
+## wc cancel order ##
 rm -R -f /var/www/html/wp-content/mu-plugins/wc-cancel-order
 rm -R -f /var/www/html/wp-content/plugins/wc-cancel-order
+
+## broken link checker ##
 rm -R -f /var/www/html/wp-content/mu-plugins/broken-link-checker*
 rm -R -f /var/www/html/wp-content/plugins/broken-link-checker*
+
 rm -R -f /var/www/html/wp-content/mu-plugins/myrp*
 rm -R -f /var/www/html/wp-content/plugins/myrp*
+
+## linkman ##
 rm -R -f /var/www/html/wp-content/mu-plugins/linkman*
 rm -R -f /var/www/html/wp-content/plugins/linkman*
+
+## fuzzy seo booster ##
 rm -R -f /var/www/html/wp-content/mu-plugins/fuzzy-seo-booster*
 rm -R -f /var/www/html/wp-content/plugins/fuzzy-seo-booster*
+
+## wp postviews ##
 rm -R -f /var/www/html/wp-content/mu-plugins/wp-postviews*
 rm -R -f /var/www/html/wp-content/plugins/wp-postviews*
+
+## tweet blender ##
 rm -R -f /var/www/html/wp-content/mu-plugins/tweet-blender*
 rm -R -f /var/www/html/wp-content/plugins/tweet-blender*
 rm -R -f /var/www/html/wp-content/mu-plugins/seo-alrp*
 rm -R -f /var/www/html/wp-content/plugins/seo-alrp*
+
+## similar posts ##
 rm -R -f /var/www/html/wp-content/mu-plugins/similar-posts*
 rm -R -f /var/www/html/wp-content/plugins/similar-posts*
+
+## ajax thumbnail rebuild ##
 rm -R -f /var/www/html/wp-content/mu-plugins/ajax-thumbnail-rebuild*
 rm -R -f /var/www/html/wp-content/plugins/ajax-thumbnail-rebuild*
+
+## shopbop widget ##
 rm -R -f /var/www/html/wp-content/mu-plugins/shopbop-widget*
 rm -R -f /var/www/html/wp-content/plugins/shopbop-widget*
 
-## delete related posts plugins that cause thrashing ##
+###########################################################
+#### delete related posts plugins that cause thrashing ####
+###########################################################
+
+## dynamic related posts ##
 rm -R -f /var/www/html/wp-content/mu-plugins/dynamic-related-posts*
 rm -R -f /var/www/html/wp-content/plugins/dynamic-related-posts*
+
+## yarpp ##
 rm -R -f /var/www/html/wp-content/mu-plugins/yet-another-related-posts-plugin*
 rm -R -f /var/www/html/wp-content/plugins/yet-another-related-posts-plugin*
+
+## contextual related posts ##
 rm -R -f /var/www/html/wp-content/mu-plugins/contextual-related-posts*
 rm -R -f /var/www/html/wp-content/plugins/contextual-related-posts*
+
+## related posts ##
 # rm -R -f /var/www/html/wp-content/mu-plugins/related-posts-by-zemanta*
 # rm -R -f /var/www/html/wp-content/plugins/related-posts-by-zemanta*
+
+## similar posts ##
 # rm -R -f /var/www/html/wp-content/mu-plugins/similar-posts
 # rm -R -f /var/www/html/wp-content/plugins/similar-posts
 
-## delete language translation plugins that cause thrashing ##
+##################################################################
+#### delete language translation plugins that cause thrashing ####
+##################################################################
+
+## qtranslate-x ##
 # rm -R -f /var/www/html/wp-content/mu-plugins/qtranslate-x*
 # rm -R -f /var/www/html/wp-content/plugins/qtranslate-x*
 
@@ -452,6 +545,7 @@ rm -R -f /var/www/html/wp-content/codeguard_backups*
 ## delete folders containing backup files ##
 rm -R -f /var/www/html/wp-content/envato-backups*
 rm -R -f /var/www/html/wp-snapshots*
+rm -R -f /var/www/html/wp-content/managewp*
 rm -R -f /var/www/html/wp-content/ai1wm-backups*
 rm -R -f /var/www/html/wp-content/aiowps_backups*
 rm -R -f /var/www/html/wp-content/backup-*
@@ -468,6 +562,8 @@ rm -R -f /var/www/html/wp-content/uploads/pb_backupbuddy*
 rm -R -f /var/www/html/wp-content/uploads/snapshots*
 rm -R -f /var/www/html/wp-content/uploads/fw-backup*
 rm -R -f /var/www/html/wp-content/backups-dup-pro*
+rm -R -f /var/www/html/wp-content/uploads/sucuri*
+# rm -R -f /var/www/html/wp-content/uploads/ithemes-security*
 
 ## delete unsafe/slow/redundant backup plugins ##
 rm -R -f /var/www/html/wp-content/mu-plugins/blogvault-real-time-backup*
@@ -512,19 +608,34 @@ rm -R -f /var/www/html/wp-content/mu-plugins/0-mu-wp-time-capsule.php
 # rm -R -f /var/www/html/wp-content/plugins/woocommerce-jetpack*
 # rm -R -f /var/www/html/wp-content/plugins/icegram
 
-## delete extensive logging plugins ##
+########################################
+#### delete bloated logging plugins ####
+########################################
+
+## wp statistics ##
 rm -R -f /var/www/html/wp-content/mu-plugins/wp-statistics*
 rm -R -f /var/www/html/wp-content/plugins/wp-statistics*
+
+## wp slimstat ##
 rm -R -f /var/www/html/wp-content/mu-plugins/wp-slimstat*
 rm -R -f /var/www/html/wp-content/plugins/wp-slimstat*
+
+## wp rankie ##
 rm -R -f /var/www/html/wp-content/mu-plugins/wp-rankie*
 rm -R -f /var/www/html/wp-content/plugins/wp-rankie*
+
 rm -R -f /var/www/html/wp-content/mu-plugins/visitors-traffic-real-time-statistics*
 rm -R -f /var/www/html/wp-content/plugins/visitors-traffic-real-time-statistics*
+
+## wassup ##
 rm -R -f /var/www/html/wp-content/mu-plugins/wassup*
 rm -R -f /var/www/html/wp-content/plugins/wassup*
+
+## hotspots ##
 rm -R -f /var/www/html/wp-content/mu-plugins/hotspots*
 rm -R -f /var/www/html/wp-content/plugins/hotspots*
+
+## simple history ##
 rm -R -f /var/www/html/wp-content/mu-plugins/simple-history*
 rm -R -f /var/www/html/wp-content/plugins/simple-history*
 rm -R -f /var/www/html/wp-content/mu-plugins/sucuri-scanner*
@@ -532,18 +643,32 @@ rm -R -f /var/www/html/wp-content/plugins/sucuri-scanner*
 rm -R -f /var/www/html/wp-content/mu-plugins/wordfence*
 rm -R -f /var/www/html/wp-content/plugins/wordfence*
 rm -R -f /var/www/html/wordfence-waf.php*
+rm -R -f /var/www/html/wp-content/wflogs*
+
+## limit login attempts ##
 rm -R -f /var/www/html/wp-content/mu-plugins/limit-login-attempts*
 rm -R -f /var/www/html/wp-content/plugins/limit-login-attempts*
+
+## login lockdown ##
 rm -R -f /var/www/html/wp-content/mu-plugins/login-lockdown*
 rm -R -f /var/www/html/wp-content/plugins/login-lockdown*
+
+## wp limit login attempts ##
 rm -R -f /var/www/html/wp-content/mu-plugins/wp-limit-login-attempts*
 rm -R -f /var/www/html/wp-content/plugins/wp-limit-login-attempts*
+
+## aryo activity log ##
 rm -R -f /var/www/html/wp-content/mu-plugins/aryo-activity-log*
 rm -R -f /var/www/html/wp-content/plugins/aryo-activity-log*
+
+## gtmetrix ##
 rm -R -f /var/www/html/wp-content/mu-plugins/gtmetrix-for-wordpress*
 rm -R -f /var/www/html/wp-content/plugins/gtmetrix-for-wordpress*
+
+## stream ##
 rm -R -f /var/www/html/wp-content/mu-plugins/stream
 rm -R -f /var/www/html/wp-content/plugins/stream
+
 # rm -R -f /var/www/html/wp-content/mu-plugins/404-to-301*
 # rm -R -f /var/www/html/wp-content/plugins/404-to-301*
 # rm -R -f /var/www/html/wp-content/mu-plugins/seo-booster
