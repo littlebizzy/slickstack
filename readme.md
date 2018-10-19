@@ -161,7 +161,7 @@ Typical SMB owner thought process:
 | Monitoring App | Monit | N/A | None | None | None | None | None |
 |  |  |  |  |  |  |  |  |
 
-Others: Moss.sh, Webinoly, VestaCP, OneInStack, OpenResty
+Others: Moss.sh, Webinoly, VestaCP, OneInStack, OpenResty, ServerPilot, RunCloud
 
 ## FAQ
 
