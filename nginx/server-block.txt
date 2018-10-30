@@ -142,7 +142,18 @@ server {
     
     #### ROBOTS.TXT ####
     location = /robots.txt {
+        ## first try physical files, then directories, otherwise query the wordpress php index
+	## required when using plugins like Virtual Robots.txt
+        try_files $uri $uri/ /index.php?$args;
+        allow all;
+	access_log off;
+        log_not_found off;
+    }
+    
+    #### ADS.TXT ####
+    location = /ads.txt {
         # first try physical files, then directories, otherwise query the wordpress php index
+	## required when using plugins like Virtual Ads.txt
         try_files $uri $uri/ /index.php?$args;
         allow all;
 	access_log off;
