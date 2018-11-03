@@ -1,0 +1,21 @@
+#!/bin/bash
+
+###########################################################
+#### author: slickstack ###################################
+#### link: https://slickstack.io ##########################
+#### mirror: http://mirrors.slickstack.io/ss-dump.txt #####
+#### path: /var/www/ss-dump ###############################
+#### purpose: dumps database to /var/www/mysql.sql ########
+###########################################################
+
+## slickstack config ##
+source /var/www/ss-config
+
+## dump database to root sftp folder ##
+## mysql 5.7 command format ##
+## https://dev.mysql.com/doc/refman/5.7/en/mysqldump.html ##
+mysqldump --user=root --password=${dbrootpass} --host=localhost --protocol=tcp --port=3306 --dump-date --flush-privileges --force ${dbname} > /var/www/mysql.sql
+
+## reset permissions ##
+chown root:root /var/www/mysql.sql
+chmod 664 /var/www/mysql.sql
