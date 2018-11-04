@@ -84,11 +84,13 @@ After completing the installation steps above, your `/var/www/` directory should
     /var/www/ss-clean
     /var/www/ss-config
     /var/www/ss-config-sample
+    /var/www/ss-dump
     /var/www/ss-install
     /var/www/ss-muplugs
     /var/www/ss-perms
     /var/www/ss-update
     /var/www/ss-worker
+    /var/www/wp.sql
     
 ...likewise, your `/var/www/html/` (WordPress) directory should look like this:    
     
