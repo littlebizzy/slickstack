@@ -59,26 +59,39 @@ chmod 755 /var/www/ss-perms
 chmod 755 /var/www/ss-update
 chmod 755 /var/www/ss-worker
 
-## reset parent directory permissions ##
+## (root user/group) everything in /var/www ##
 chown root:root /var/www
 chmod 755 /var/www
-chmod 755 /var/www/html
 
-## create temp directory if does not exist ##
-mkdir /var/www/html/wp-content/temp
-
-## reset wordpress permissions ##
+## (non-root sftp user/group) everything in /var/www/html ##
 chown -R $user:wordpress /var/www/html
-chown -R www-data:wordpress /var/www/html/wp-content/mu-plugins
-chown -R www-data:wordpress /var/www/html/wp-content/temp
-# chown -R www-data:wordpress /var/www/html/wp-content/cache
+chmod 755 /var/www/html
 find /var/www/html/ -type d -exec chmod 775 {} \;
 find /var/www/html/ -type f -not -path "*var/www/html/uploads*" -exec chmod 664 {} \;
 find /var/www/html/uploads/ -not -name "*.jpg" -not -name "*.jpeg" -not -name "*.png" -not -name "*.bmp" -not -name "*.webp" -not -name "*.gif" -not -name "*.tiff" -not -name "*.mp4" -not -name "*.vid" -type f -exec chmod 664 {} \;
+
+## cache directory ##
+# chown -R www-data:wordpress /var/www/html/wp-content/cache
 # find /var/www/html/wp-content/cache/ -type d -exec chmod 777 {} \;
 # find /var/www/html/wp-content/cache/ -type f -exec chmod 777 {} \;
+
+## (nginx server user/group) everything in /var/www/html/wp-content/mu-plugins ##
+chown -R www-data:wordpress /var/www/html/wp-content/mu-plugins
+
+## wordpress temp ##
+mkdir /var/www/html/wp-content/temp
+chown -R www-data:wordpress /var/www/html/wp-content/temp
 chmod 775 /var/www/html/wp-content/temp
+
+## plugin blacklist ##
+chown -R www-data:www-data /var/www/html/wp-content/blacklist.txt
+chmod 660 /var/www/html/wp-content/blacklist.txt
+
+## wp-config ##
+# chown -R www-data:www-data /var/www/html/wp-config.php
 chmod 660 /var/www/html/wp-config.php
+
+## misc ##
 chmod -R g+s /var/www/html/
 
 ## ensure all log directories exist ##
