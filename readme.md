@@ -117,6 +117,7 @@ After completing the installation steps above, your `/var/www/` directory should
     /var/www/html/wp-content/mu-plugins/purge-them-all-littlebizzy
     /var/www/html/wp-content/mu-plugins/remove-query-strings-littlebizzy
     /var/www/html/wp-content/mu-plugins/server-status-littlebizzy
+    /var/www/html/wp-content/mu-plugins/sftp-details-littlebizzy
     /var/www/html/wp-content/mu-plugins/virtual-robotstxt-littlebizzy
     /var/www/html/wp-content/mu-plugins/xxx-notices.php
 
