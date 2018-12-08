@@ -22,7 +22,7 @@ While there are [clear benefits](https://medium.com/capital-one-developers/bashi
 
 ## Compatibility
 
-SlickStack [ss] works best on VPS servers with KVM virtualization that have at least 2GB RAM from quality network providers such as Vultr, DigitalOcean, Linode, and other non-AWS networks. The underlying LEMP configuration is meant specifically for single-site WordPress installations, and does not support [Multisite](https://codex.wordpress.org/Create_A_Network) installs. SlickStack [ss] supports WordPress, WooCommerce, bbPress, and BuddyPress "out of the box" with pre-optimized settings that scale.
+SlickStack [ss] works best on VPS servers with KVM virtualization that have at least 2GB RAM from quality network providers such as Linode, Vultr, DigitalOcean, and other non-AWS networks. The underlying LEMP configuration is meant specifically for single-site WordPress installations, and does not support [Multisite](https://codex.wordpress.org/Create_A_Network) installs. SlickStack [ss] supports WordPress, WooCommerce, bbPress, and BuddyPress "out of the box" with pre-optimized settings that scale.
 
 *Updated October 4, 2018*
 
@@ -99,18 +99,18 @@ After completing the installation steps above, your `/var/www/` directory should
 
     /var/www/html/wp-content/mu-plugins/autoloader.php
     /var/www/html/wp-content/mu-plugins/cf-littlebizzy
+    /var/www/html/wp-content/mu-plugins/clear-caches-littlebizzy
     /var/www/html/wp-content/mu-plugins/delete-expired-transients-littlebizzy
     /var/www/html/wp-content/mu-plugins/disable-embeds-littlebizzy
     /var/www/html/wp-content/mu-plugins/disable-emojis-littlebizzy
     /var/www/html/wp-content/mu-plugins/disable-empty-trash-littlebizzy
     /var/www/html/wp-content/mu-plugins/disable-image-compression-littlebizzy
     /var/www/html/wp-content/mu-plugins/disable-xml-rpc-littlebizzy
-    /var/www/html/wp-content/mu-plugins/error-log-monitor
     /var/www/html/wp-content/mu-plugins/force-strong-hashing-littlebizzy
     /var/www/html/wp-content/mu-plugins/header-cleanup-littlebizzy
     /var/www/html/wp-content/mu-plugins/index-autoload-littlebizzy
+    /var/www/html/wp-content/mu-plugins/log-monitor-littlebizzy
     /var/www/html/wp-content/mu-plugins/plugin-blacklist-littlebizzy
-    /var/www/html/wp-content/mu-plugins/purge-them-all-littlebizzy
     /var/www/html/wp-content/mu-plugins/remove-query-strings-littlebizzy
     /var/www/html/wp-content/mu-plugins/server-status-littlebizzy
     /var/www/html/wp-content/mu-plugins/sftp-details-littlebizzy
