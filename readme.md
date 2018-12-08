@@ -45,21 +45,11 @@ Because it’s written purely in [Bash](https://en.wikipedia.org/wiki/Bash_(Unix
 
 The below installation steps presume that you've already spun up a dedicated Ubuntu 18.04 VPS server (KVM) with at least 2GB RAM memory and that you are logged in via SSH.
 
-1. Create Nginx directory:
+1. `sudo mkdir /var/www/ && sudo chown root:root /var/www/ && sudo chmod 755 /var/www/`
 
-`sudo mkdir /var/www/ && sudo chown root:root /var/www/ && sudo chmod 755 /var/www/`
+2. `sudo nano /var/www/ss-config`  [*configure as desired*](http://mirrors.slickstack.io/ss-config-sample.txt)
 
-2. Create `/var/www/ss-config` and input all SlickStack [ss] variables:
-
-`sudo nano /var/www/ss-config`
-
-[*configure as desired*](http://mirrors.slickstack.io/ss-config-sample.txt)
-
-3. Run the SlickStack [ss] installation:
-
-`cd /var/www/`
-
-`sudo wget -O ss slick.fyi && sudo chmod 755 ss && sudo bash ss`
+3. `cd /var/www/ && sudo wget -O ss slick.fyi && sudo chmod 755 ss && sudo bash ss`
 
 ## Structure
 
