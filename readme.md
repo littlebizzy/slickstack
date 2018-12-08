@@ -28,9 +28,9 @@ SlickStack [ss] works best on VPS servers with KVM virtualization that have at l
 
 * Ubuntu 18.04 - (cloud provider repo)
 * Nginx 1.15.0 - custom `nginx.conf` + `server block`
-* PHP-FPM 7.2+ - custom `php.ini` + `php-fpm.conf` + `www.conf`
-* MySQL 5.7+
-* WordPress (latest version) - optional `wplite` optimized configuration (mu-plugins)
+* PHP-FPM 7.2 - custom `php.ini` + `php-fpm.conf` + `www.conf`
+* MySQL 5.7 - 
+* WordPress (latest version) - optional `wplite` optimized configuration (re: `mu-plugins`)
 * WP-CLI 1.5.1
 * Redis 4.0.9 - tweak `redis.conf`
 * Monit 5.25.1
@@ -50,6 +50,8 @@ The below installation steps presume that you've already spun up a dedicated Ubu
 2. `sudo nano /var/www/ss-config`  [*configure as desired*](http://mirrors.slickstack.io/ss-config-sample.txt)
 
 3. `cd /var/www/ && sudo wget -O ss slick.fyi && sudo chmod 755 ss && sudo bash ss`
+
+From this point forward, you can manage your SlickStack [ss] server by using the `sudo bash` command on any one of the included *ss-* scripts located within the `/var/www/` directory. If desired, you can also safely re-install the entire stack using the installation steps above without encountering any conflicts or data loss.
 
 ## Structure
 
