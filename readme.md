@@ -51,7 +51,7 @@ The below installation steps presume that you've already spun up a dedicated Ubu
 
 3. `cd /var/www/ && sudo wget -O ss slick.fyi && sudo chmod 755 ss && sudo bash ss`
 
-From this point forward, you can manage your SlickStack [ss] server by using the `sudo bash` command on any one of the included *ss-* scripts located within the `/var/www/` directory. If desired, you can also safely re-install the entire stack using the installation steps above without encountering any conflicts or data loss.
+From this point forward, you can manage your SlickStack [ss] server by using the `sudo bash` command on any one of the included **ss** scripts located within the `/var/www/` directory as needed. However, in most cases there shouldn't be any need for much management as the server will intelligently run various cron jobs which connect to this GitHub repo (or whichever fork of this repo that your team has setup... be sure to alter all Bash source links). If desired, you can also safely re-install the entire stack using the installation steps above without encountering any conflicts or data loss.
 
 ## Structure
 
