@@ -55,7 +55,7 @@ From this point forward, you can manage your SlickStack [ss] server by using the
 
 ## Structure
 
-After completing the installation steps above, your `/var/www/` directory should look exactly as below. Keep in mind that you should never alter the crontab file on any SlickStack [ss] server, nor should you edit/modify any files appearing in the below list with the exception of `ss-config` (this does not apply to WordPress files found under `/var/www/html`) ...
+After completing the installation steps above, your `/var/www/` directory should look exactly as below. Keep in mind that you should never alter the crontab file on any SlickStack [ss] server, nor should you edit/modify any files appearing in the below list with the exception of `ss-config` (this does not apply to WordPress files found under `/var/www/html/`) ...
 
     /var/www/0-crontab
     /var/www/1-cron-often
@@ -87,7 +87,7 @@ After completing the installation steps above, your `/var/www/` directory should
     /var/www/html/wp-includes/
     /var/www/html/wp-...
     
-...and if deploying as `wplite` your `/var/www/html/wp-content/mu-plugins` directory should look like this:
+...and if deploying as `wplite` your `/var/www/html/wp-content/mu-plugins/` directory should look like this:
 
     /var/www/html/wp-content/mu-plugins/autoloader.php
     /var/www/html/wp-content/mu-plugins/clear-caches
