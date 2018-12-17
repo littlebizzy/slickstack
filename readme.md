@@ -61,10 +61,12 @@ After completing the installation steps above, your `/var/www/` directory should
     /var/www/1-cron-often
     /var/www/2-cron-regular
     /var/www/3-cron-hourly
-    /var/www/4-cron-daily
-    /var/www/5-cron-weekly
-    /var/www/6-cron-monthly
-    /var/www/7-cron-sometimes
+    /var/www/4-cron-quarter-daily
+    /var/www/5-cron-half-daily
+    /var/www/6-cron-daily
+    /var/www/7-cron-weekly
+    /var/www/8-cron-monthly
+    /var/www/9-cron-sometimes
     /var/www/cache/
     /var/www/html/
     /var/www/logs/
