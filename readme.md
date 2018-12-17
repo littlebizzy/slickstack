@@ -55,7 +55,7 @@ From this point forward, you can manage your SlickStack [ss] server by using the
 
 ## Structure
 
-After completing the installation steps above, your `/var/www/` directory should look exactly as below. Keep in mind that you should never alter the crontab file on any SlickStack [ss] server, nor should you edit/modify any files appearing in the below list with the exception of `ss-config` (this does not apply to WordPress files found under `/var/www/html/`) ...
+After completing the installation steps above, your `/var/www/` directory should look exactly as below. Keep in mind that you should never directly modify the crontab on any SlickStack [ss] server, nor should you modify any files appearing in the below list with the exception of `ss-config` (this does not apply to WordPress files found under `/var/www/html/`) ...
 
     /var/www/0-crontab
     /var/www/1-cron-often
@@ -90,27 +90,27 @@ After completing the installation steps above, your `/var/www/` directory should
 ...and if deploying as `wplite` your `/var/www/html/wp-content/mu-plugins/` directory should look like this:
 
     /var/www/html/wp-content/mu-plugins/autoloader.php
-    /var/www/html/wp-content/mu-plugins/clear-caches
-    /var/www/html/wp-content/mu-plugins/cloudflare
-    /var/www/html/wp-content/mu-plugins/custom-functions
-    /var/www/html/wp-content/mu-plugins/delete-expired-transients
-    /var/www/html/wp-content/mu-plugins/disable-embeds
-    /var/www/html/wp-content/mu-plugins/disable-emojis
-    /var/www/html/wp-content/mu-plugins/disable-empty-trash
-    /var/www/html/wp-content/mu-plugins/disable-gutenberg
-    /var/www/html/wp-content/mu-plugins/disable-image-compression
-    /var/www/html/wp-content/mu-plugins/disable-post-via-email
-    /var/www/html/wp-content/mu-plugins/disable-xml-rpc
-    /var/www/html/wp-content/mu-plugins/error-log-monitor
-    /var/www/html/wp-content/mu-plugins/force-strong-hashing
-    /var/www/html/wp-content/mu-plugins/header-cleanup
-    /var/www/html/wp-content/mu-plugins/index-autoload
-    /var/www/html/wp-content/mu-plugins/limit-heartbeat
-    /var/www/html/wp-content/mu-plugins/plugin-blacklist
-    /var/www/html/wp-content/mu-plugins/remove-query-strings
-    /var/www/html/wp-content/mu-plugins/server-status
-    /var/www/html/wp-content/mu-plugins/sftp-details
-    /var/www/html/wp-content/mu-plugins/virtual-robotstxt
+    /var/www/html/wp-content/mu-plugins/clear-caches/
+    /var/www/html/wp-content/mu-plugins/cloudflare/
+    /var/www/html/wp-content/mu-plugins/custom-functions/
+    /var/www/html/wp-content/mu-plugins/delete-expired-transients/
+    /var/www/html/wp-content/mu-plugins/disable-embeds/
+    /var/www/html/wp-content/mu-plugins/disable-emojis/
+    /var/www/html/wp-content/mu-plugins/disable-empty-trash/
+    /var/www/html/wp-content/mu-plugins/disable-gutenberg/
+    /var/www/html/wp-content/mu-plugins/disable-image-compression/
+    /var/www/html/wp-content/mu-plugins/disable-post-via-email/
+    /var/www/html/wp-content/mu-plugins/disable-xml-rpc/
+    /var/www/html/wp-content/mu-plugins/error-log-monitor/
+    /var/www/html/wp-content/mu-plugins/force-strong-hashing/
+    /var/www/html/wp-content/mu-plugins/header-cleanup/
+    /var/www/html/wp-content/mu-plugins/index-autoload/
+    /var/www/html/wp-content/mu-plugins/limit-heartbeat/
+    /var/www/html/wp-content/mu-plugins/plugin-blacklist/
+    /var/www/html/wp-content/mu-plugins/remove-query-strings/
+    /var/www/html/wp-content/mu-plugins/server-status/
+    /var/www/html/wp-content/mu-plugins/sftp-details/
+    /var/www/html/wp-content/mu-plugins/virtual-robotstxt/
     /var/www/html/wp-content/mu-plugins/xxx-notices.php
 
 ## Philosophy
