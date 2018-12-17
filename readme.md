@@ -90,23 +90,27 @@ After completing the installation steps above, your `/var/www/` directory should
 ...and if deploying as `wplite` your `/var/www/html/wp-content/mu-plugins` directory should look like this:
 
     /var/www/html/wp-content/mu-plugins/autoloader.php
-    /var/www/html/wp-content/mu-plugins/cf-littlebizzy
-    /var/www/html/wp-content/mu-plugins/clear-caches-littlebizzy
-    /var/www/html/wp-content/mu-plugins/delete-expired-transients-littlebizzy
-    /var/www/html/wp-content/mu-plugins/disable-embeds-littlebizzy
-    /var/www/html/wp-content/mu-plugins/disable-emojis-littlebizzy
-    /var/www/html/wp-content/mu-plugins/disable-empty-trash-littlebizzy
-    /var/www/html/wp-content/mu-plugins/disable-image-compression-littlebizzy
-    /var/www/html/wp-content/mu-plugins/disable-xml-rpc-littlebizzy
-    /var/www/html/wp-content/mu-plugins/force-strong-hashing-littlebizzy
-    /var/www/html/wp-content/mu-plugins/header-cleanup-littlebizzy
-    /var/www/html/wp-content/mu-plugins/index-autoload-littlebizzy
-    /var/www/html/wp-content/mu-plugins/log-monitor-littlebizzy
-    /var/www/html/wp-content/mu-plugins/plugin-blacklist-littlebizzy
-    /var/www/html/wp-content/mu-plugins/remove-query-strings-littlebizzy
-    /var/www/html/wp-content/mu-plugins/server-status-littlebizzy
-    /var/www/html/wp-content/mu-plugins/sftp-details-littlebizzy
-    /var/www/html/wp-content/mu-plugins/virtual-robotstxt-littlebizzy
+    /var/www/html/wp-content/mu-plugins/clear-caches
+    /var/www/html/wp-content/mu-plugins/cloudflare
+    /var/www/html/wp-content/mu-plugins/custom-functions
+    /var/www/html/wp-content/mu-plugins/delete-expired-transients
+    /var/www/html/wp-content/mu-plugins/disable-embeds
+    /var/www/html/wp-content/mu-plugins/disable-emojis
+    /var/www/html/wp-content/mu-plugins/disable-empty-trash
+    /var/www/html/wp-content/mu-plugins/disable-gutenberg
+    /var/www/html/wp-content/mu-plugins/disable-image-compression
+    /var/www/html/wp-content/mu-plugins/disable-post-via-email
+    /var/www/html/wp-content/mu-plugins/disable-xml-rpc
+    /var/www/html/wp-content/mu-plugins/error-log-monitor
+    /var/www/html/wp-content/mu-plugins/force-strong-hashing
+    /var/www/html/wp-content/mu-plugins/header-cleanup
+    /var/www/html/wp-content/mu-plugins/index-autoload
+    /var/www/html/wp-content/mu-plugins/limit-heartbeat
+    /var/www/html/wp-content/mu-plugins/plugin-blacklist
+    /var/www/html/wp-content/mu-plugins/remove-query-strings
+    /var/www/html/wp-content/mu-plugins/server-status
+    /var/www/html/wp-content/mu-plugins/sftp-details
+    /var/www/html/wp-content/mu-plugins/virtual-robotstxt
     /var/www/html/wp-content/mu-plugins/xxx-notices.php
 
 ## Philosophy
