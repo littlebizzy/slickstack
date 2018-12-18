@@ -13,23 +13,16 @@ source /var/www/ss-config
 
 ## delete tmp files ##
 rm -R -f /tmp/0-crontab*
-rm -R -f /tmp/1-cron-often*
-rm -R -f /tmp/2-cron-regular*
-rm -R -f /tmp/3-cron-hourly*
-rm -R -f /tmp/4-cron-daily*
-rm -R -f /tmp/5-cron-weekly*
-rm -R -f /tmp/6-cron-monthly*
-rm -R -f /tmp/7-cron-sometimes*
-# rm -R -f /tmp/ss-check*
-rm -R -f /tmp/ss-clean*
-rm -R -f /tmp/ss-config*
-rm -R -f /tmp/ss-config-sample*
-rm -R -f /tmp/ss-dump*
-rm -R -f /tmp/ss-install*
-rm -R -f /tmp/ss-muplugs*
-rm -R -f /tmp/ss-perms*
-rm -R -f /tmp/ss-update*
-rm -R -f /tmp/ss-worker*
+rm -R -f /tmp/1-cron*
+rm -R -f /tmp/2-cron*
+rm -R -f /tmp/3-cron*
+rm -R -f /tmp/4-cron*
+rm -R -f /tmp/5-cron*
+rm -R -f /tmp/6-cron*
+rm -R -f /tmp/7-cron*
+rm -R -f /tmp/8-cron*
+rm -R -f /tmp/9-cron*
+rm -R -f /tmp/ss*
 
 ## download latest versions ##
 cd /tmp/
@@ -37,11 +30,19 @@ wget --no-cache http://mirrors.slickstack.io/0-crontab.txt
 wget --no-cache http://mirrors.slickstack.io/1-cron-often.txt
 wget --no-cache http://mirrors.slickstack.io/2-cron-regular.txt
 wget --no-cache http://mirrors.slickstack.io/3-cron-hourly.txt
+wget --no-cache http://mirrors.slickstack.io/4-cron-quarter-daily.txt
 wget --no-cache http://mirrors.slickstack.io/4-cron-daily.txt
+wget --no-cache http://mirrors.slickstack.io/5-cron-half-daily.txt
 wget --no-cache http://mirrors.slickstack.io/5-cron-weekly.txt
+wget --no-cache http://mirrors.slickstack.io/6-cron-daily.txt
 wget --no-cache http://mirrors.slickstack.io/6-cron-monthly.txt
+wget --no-cache http://mirrors.slickstack.io/7-cron-weekly.txt
 wget --no-cache http://mirrors.slickstack.io/7-cron-sometimes.txt
-# wget --no-cache http://mirrors.slickstack.io/ss-check.txt
+wget --no-cache http://mirrors.slickstack.io/8-cron-monthly.txt
+wget --no-cache http://mirrors.slickstack.io/9-cron-sometimes.txt
+
+## do not wget ss-check ##
+## (accomplished by ss-worker script) ##
 wget --no-cache http://mirrors.slickstack.io/ss-clean.txt
 wget --no-cache http://mirrors.slickstack.io/ss-config-sample.txt
 wget --no-cache http://mirrors.slickstack.io/ss-dump.txt
@@ -57,11 +58,19 @@ mv 0-crontab.txt 0-crontab
 mv 1-cron-often.txt 1-cron-often
 mv 2-cron-regular.txt 2-cron-regular
 mv 3-cron-hourly.txt 3-cron-hourly
+mv 4-cron-quarter-daily.txt 4-cron-quarter-daily
 mv 4-cron-daily.txt 4-cron-daily
+mv 5-cron-half-daily.txt 5-cron-half-daily
 mv 5-cron-weekly.txt 5-cron-weekly
+mv 6-cron-daily.txt 6-cron-daily
 mv 6-cron-monthly.txt 6-cron-monthly
+mv 7-cron-weekly.txt 7-cron-weekly
 mv 7-cron-sometimes.txt 7-cron-sometimes
-# mv ss-check.txt ss-check
+mv 8-cron-monthly.txt 8-cron-monthly
+mv 9-cron-sometimes.txt 9-cron-sometimes
+
+## do not rename ss-check ##
+## (accmoplished by ss-worker script) ##
 mv ss-clean.txt ss-clean
 mv ss-config-sample.txt ss-config-sample
 mv ss-dump.txt ss-dump
@@ -76,11 +85,18 @@ cp -R -d --remove-destination --preserve=timestamps --no-preserve=mode,ownership
 cp -R -d --remove-destination --preserve=timestamps --no-preserve=mode,ownership /tmp/1-cron-often /var/www/1-cron-often
 cp -R -d --remove-destination --preserve=timestamps --no-preserve=mode,ownership /tmp/2-cron-regular /var/www/2-cron-regular
 cp -R -d --remove-destination --preserve=timestamps --no-preserve=mode,ownership /tmp/3-cron-hourly /var/www/3-cron-hourly
+cp -R -d --remove-destination --preserve=timestamps --no-preserve=mode,ownership /tmp/4-cron-quarter-daily /var/www/4-cron-quarter-daily
 cp -R -d --remove-destination --preserve=timestamps --no-preserve=mode,ownership /tmp/4-cron-daily /var/www/4-cron-daily
+cp -R -d --remove-destination --preserve=timestamps --no-preserve=mode,ownership /tmp/5-cron-half-daily /var/www/5-cron-half-daily
 cp -R -d --remove-destination --preserve=timestamps --no-preserve=mode,ownership /tmp/5-cron-weekly /var/www/5-cron-weekly
+cp -R -d --remove-destination --preserve=timestamps --no-preserve=mode,ownership /tmp/6-cron-daily /var/www/6-cron-daily
 cp -R -d --remove-destination --preserve=timestamps --no-preserve=mode,ownership /tmp/6-cron-monthly /var/www/6-cron-monthly
-cp -R -d --remove-destination --preserve=timestamps --no-preserve=mode,ownership /tmp/7-cron-sometimes /var/www/7-cron-sometimes
-# cp -R -d --remove-destination --preserve=timestamps --no-preserve=mode,ownership /tmp/ss-check /var/www/ss-check
+cp -R -d --remove-destination --preserve=timestamps --no-preserve=mode,ownership /tmp/7-cron-weekly /var/www/7-cron-weekly
+cp -R -d --remove-destination --preserve=timestamps --no-preserve=mode,ownership /tmp/8-cron-monthly /var/www/8-cron-monthly
+cp -R -d --remove-destination --preserve=timestamps --no-preserve=mode,ownership /tmp/9-cron-sometimes /var/www/9-cron-sometimes
+
+## do not copy ss-check ##
+## (accomplished by ss-worker script) ##
 cp -R -d --remove-destination --preserve=timestamps --no-preserve=mode,ownership /tmp/ss-clean /var/www/ss-clean
 cp -R -d --remove-destination --preserve=timestamps --no-preserve=mode,ownership /tmp/ss-config-sample /var/www/ss-config-sample
 cp -R -d --remove-destination --preserve=timestamps --no-preserve=mode,ownership /tmp/ss-dump /var/www/ss-dump
@@ -90,17 +106,24 @@ cp -R -d --remove-destination --preserve=timestamps --no-preserve=mode,ownership
 cp -R -d --remove-destination --preserve=timestamps --no-preserve=mode,ownership /tmp/ss-update /var/www/ss-update
 cp -R -d --remove-destination --preserve=timestamps --no-preserve=mode,ownership /tmp/ss-worker /var/www/ss-worker
 
-## reset permissions ##
+###########################
+#### reset permissions ####
+###########################
+
 ## chown files ##
 chown root:root /var/www/0-crontab
-chown root:root /var/www/1-cron-often
-chown root:root /var/www/2-cron-regular
-chown root:root /var/www/3-cron-hourly
-chown root:root /var/www/4-cron-daily
-chown root:root /var/www/5-cron-weekly
-chown root:root /var/www/6-cron-monthly
-chown root:root /var/www/7-cron-sometimes
-# chown root:root /var/www/ss-check
+chown root:root /var/www/1-cron*
+chown root:root /var/www/2-cron*
+chown root:root /var/www/3-cron*
+chown root:root /var/www/4-cron*
+chown root:root /var/www/5-cron*
+chown root:root /var/www/6-cron*
+chown root:root /var/www/7-cron*
+chown root:root /var/www/8-cron*
+chown root:root /var/www/9-cron*
+
+## do not chown ss-check ##
+## (accomplished by ss-worker script) ##
 chown root:root /var/www/ss-clean
 chown root:root /var/www/ss-config-sample
 chown root:root /var/www/ss-dump
@@ -109,15 +132,21 @@ chown root:root /var/www/ss-muplugs
 chown root:root /var/www/ss-perms
 chown root:root /var/www/ss-update
 chown root:root /var/www/ss-worker
+
 ## chmod files ##
 chmod 755 /var/www/0-crontab
-chmod 755 /var/www/1-cron-often
-chmod 755 /var/www/2-cron-regular
-chmod 755 /var/www/3-cron-hourly
-chmod 755 /var/www/4-cron-daily
-chmod 755 /var/www/5-cron-weekly
-chmod 755 /var/www/6-cron-monthly
-chmod 755 /var/www/7-cron-sometimes
+chmod 755 /var/www/1-cron*
+chmod 755 /var/www/2-cron*
+chmod 755 /var/www/3-cron*
+chmod 755 /var/www/4-cron*
+chmod 755 /var/www/5-cron*
+chmod 755 /var/www/6-cron*
+chmod 755 /var/www/7-cron*
+chmod 755 /var/www/8-cron*
+chmod 755 /var/www/9-cron*
+
+## do not chmod ss-check ##
+## (accomplished by ss-worker script) ##
 chmod 755 /var/www/ss-clean
 chmod 755 /var/www/ss-config-sample
 chmod 755 /var/www/ss-dump
@@ -129,19 +158,13 @@ chmod 755 /var/www/ss-worker
 
 ## delete tmp files ##
 rm -R -f /tmp/0-crontab*
-rm -R -f /tmp/1-cron-often*
-rm -R -f /tmp/2-cron-regular*
-rm -R -f /tmp/3-cron-hourly*
-rm -R -f /tmp/4-cron-daily*
-rm -R -f /tmp/5-cron-weekly*
-rm -R -f /tmp/6-cron-monthly*
-rm -R -f /tmp/7-cron-sometimes*
-# rm -R -f /tmp/ss-check*
-rm -R -f /tmp/ss-clean*
-rm -R -f /tmp/ss-config-sample*
-rm -R -f /tmp/ss-dump*
-rm -R -f /tmp/ss-install*
-rm -R -f /tmp/ss-muplugs*
-rm -R -f /tmp/ss-perms*
-rm -R -f /tmp/ss-update*
-rm -R -f /tmp/ss-worker*
+rm -R -f /tmp/1-cron*
+rm -R -f /tmp/2-cron*
+rm -R -f /tmp/3-cron*
+rm -R -f /tmp/4-cron*
+rm -R -f /tmp/5-cron*
+rm -R -f /tmp/6-cron*
+rm -R -f /tmp/7-cron*
+rm -R -f /tmp/8-cron*
+rm -R -f /tmp/9-cron*
+rm -R -f /tmp/ss*
