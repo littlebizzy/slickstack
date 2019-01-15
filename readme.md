@@ -95,6 +95,7 @@ After completing the installation steps above, your `/var/www/` directory should
     /var/www/html/wp-content/mu-plugins/clear-caches/
     /var/www/html/wp-content/mu-plugins/cloudflare/
     /var/www/html/wp-content/mu-plugins/custom-functions/
+    /var/www/html/wp-content/mu-plugins/dashboard-cleanup/
     /var/www/html/wp-content/mu-plugins/delete-expired-transients/
     /var/www/html/wp-content/mu-plugins/disable-embeds/
     /var/www/html/wp-content/mu-plugins/disable-emojis/
