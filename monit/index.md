@@ -1,11 +1,13 @@
-<h3>slickstack / monit</h3>
+<h5>Monit configuration files:</h5>
 
 <ul>
-  <li><a href="monitrc-5.16-default.txt">monitrc-5.16-default.txt</a></li>
   <li><a href="monitrc.txt">monitrc.txt</a></li>
+  <li><a href="monitrc-5.25.2.txt">monitrc-5.25.2.txt</a></li>
+  <li><a href="monitrc-5.25.1.txt">monitrc-5.25.1.txt</a></li>
+  <li><a href="monitrc-5.25.0.txt">monitrc-5.25.0.txt</a></li>
 </ul>
   
-<h5>Related files:</h5>
+<h5>Related archives:</h5>
 
 <ul>
   <li><a href="monit-5.25.2-linux-x64.tar.gz">monit-5.25.2-linux-x64.tar.gz</a></li>
