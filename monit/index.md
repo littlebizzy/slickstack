@@ -1,5 +1,3 @@
-<p><em>SlickStack is a free LEMP stack automation script written in bash designed to enhance and simplify WordPress provisioning, performance, and security.</em></p>
-
 <h3>slickstack / monit</h3>
 
 <ul>
@@ -10,10 +8,19 @@
 <h5>Related files:</h5>
 
 <ul>
-  <li><a href="monit-5.23.0-linux-x64.tar.gz">monit-5.23.0-linux-x64.tar.gz</a></li>
-  <li><a href="monit-5.24.0-linux-x64.tar.gz">monit-5.24.0-linux-x64.tar.gz</a></li>
-  <li><a href="monit-5.25.0-linux-x64.tar.gz">monit-5.25.0-linux-x64.tar.gz</a></li>
+  <li><a href="monit-5.25.2-linux-x64.tar.gz">monit-5.25.2-linux-x64.tar.gz</a></li>
   <li><a href="monit-5.25.1-linux-x64.tar.gz">monit-5.25.1-linux-x64.tar.gz</a></li>
+  <li><a href="monit-5.25.0-linux-x64.tar.gz">monit-5.25.0-linux-x64.tar.gz</a></li>
+  <li><a href="monit-5.24.0-linux-x64.tar.gz">monit-5.24.0-linux-x64.tar.gz</a></li>
+  <li><a href="monit-5.23.0-linux-x64.tar.gz">monit-5.23.0-linux-x64.tar.gz</a></li>
+  <li><a href="monit-5.22.0-linux-x64.tar.gz">monit-5.22.0-linux-x64.tar.gz</a></li>
+  <li><a href="monit-5.21.0-linux-x64.tar.gz">monit-5.21.0-linux-x64.tar.gz</a></li>
+  <li><a href="monit-5.20.0-linux-x64.tar.gz">monit-5.20.0-linux-x64.tar.gz</a></li>
+  <li><a href="monit-5.19.0-linux-x64.tar.gz">monit-5.19.0-linux-x64.tar.gz</a></li>
+  <li><a href="monit-5.18.0-linux-x64.tar.gz">monit-5.18.0-linux-x64.tar.gz</a></li>
+  <li><a href="monit-5.17.1-linux-x64.tar.gz">monit-5.17.1-linux-x64.tar.gz</a></li>
+  <li><a href="monit-5.17.0-linux-x64.tar.gz">monit-5.17.0-linux-x64.tar.gz</a></li>
+  <li><a href="monit-5.16.0-linux-x64.tar.gz">monit-5.16.0-linux-x64.tar.gz</a></li>
 </ul>
 
 <h5>Related links:</h5>
