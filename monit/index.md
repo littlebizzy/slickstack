@@ -26,5 +26,6 @@
 <h5>Related links:</h5>
 
 <ul>
-  <li><a href="https://mmonit.com/monit/dist/">https://mmonit.com/monit/dist/</a></li>
+  <li>https://mmonit.com/monit/dist/</li>
+  <li>https://bitbucket.org/tildeslash/monit/downloads/</li>
 </ul>
