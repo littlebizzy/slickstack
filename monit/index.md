@@ -1,13 +1,25 @@
-<h5>Monit configuration files:</h5>
+<h3>Monit</h3>
+
+<h5>Configuration files:</h5>
 
 <ul>
   <li><a href="monitrc.txt">monitrc.txt</a></li>
   <li><a href="monitrc-5.25.2.txt">monitrc-5.25.2.txt</a></li>
   <li><a href="monitrc-5.25.1.txt">monitrc-5.25.1.txt</a></li>
   <li><a href="monitrc-5.25.0.txt">monitrc-5.25.0.txt</a></li>
+  <li><a href="monitrc-5.24.0.txt">monitrc-5.24.0.txt</a></li>
+  <li><a href="monitrc-5.23.0.txt">monitrc-5.23.0.txt</a></li>
+  <li><a href="monitrc-5.22.0.txt">monitrc-5.22.0.txt</a></li>
+  <li><a href="monitrc-5.21.0.txt">monitrc-5.21.0.txt</a></li>
+  <li><a href="monitrc-5.20.0.txt">monitrc-5.20.0.txt</a></li>
+  <li><a href="monitrc-5.19.0.txt">monitrc-5.19.0.txt</a></li>
+  <li><a href="monitrc-5.18.0.txt">monitrc-5.18.0.txt</a></li>
+  <li><a href="monitrc-5.17.1.txt">monitrc-5.17.1.txt</a></li>
+  <li><a href="monitrc-5.17.0.txt">monitrc-5.17.0.txt</a></li>
+  <li><a href="monitrc-5.16.0.txt">monitrc-5.16.0.txt</a></li>
 </ul>
   
-<h5>Related archives:</h5>
+<h5>Related downloads:</h5>
 
 <ul>
   <li><a href="monit-5.25.2-linux-x64.tar.gz">monit-5.25.2-linux-x64.tar.gz</a></li>
