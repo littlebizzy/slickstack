@@ -11,3 +11,7 @@
 <ul>
 <li><a href="wp-cli.phar">wp-cli.phar</a></li>
 </ul>
+
+<h5>Related links:</h5>
+
+* https://github.com/wp-cli/wp-cli/releases
