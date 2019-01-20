@@ -14,4 +14,5 @@
 
 <h5>Related links:</h5>
 
+* https://wp-cli.org
 * https://github.com/wp-cli/wp-cli/releases
