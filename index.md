@@ -1,6 +1,4 @@
-<p><em>SlickStack is a free LEMP stack automation script written in bash designed to enhance and simplify WordPress provisioning, performance, and security.</em></p>
-
-<h3>slickstack / config</h3>
+<h2>LEMP Files</h2>
 
 <ul>
 <li><a href="monit/">/monit/</a></li>
@@ -14,7 +12,7 @@
 <li><a href="wp-cli/">/wp-cli/</a></li>
 </ul>
 
-<h3>slickstack / crons</h3>
+<h2>Cron Jobs</h2>
 
 <ul>
 <li><a href="1-cron-often.txt">1-cron-often.txt</a></li>
@@ -26,7 +24,7 @@
 <li><a href="7-cron-sometimes.txt">7-cron-sometimes.txt</a></li>
 </ul>
 
-<h3>slickstack / scripts</h3>
+<h2>Scripts</h2>
 
 <ul>
 <li><a href="ss-check.txt">ss-check.txt</a></li>
@@ -39,7 +37,7 @@
 <li><a href="ss-worker.txt">ss-worker.txt</a></li>
 </ul>
 
-<h3>slickstack / meta</h3>
+<h2>Meta Data</h2>
 
 <ul>
 <li><a href="readme.md">readme.md</a></li>
