@@ -31,6 +31,8 @@
 
 ### Scripts
 
+---
+
 * <a href="ss-check.txt">ss-check.txt</a>
 * <a href="ss-clean.txt">ss-clean.txt</a>
 * <a href="ss-config-sample.txt">ss-config-sample.txt</a>
@@ -42,6 +44,8 @@
 * <a href="ss-worker.txt">ss-worker.txt</a>
 
 ### Meta Data
+
+---
 
 <ul>
 <li><a href="readme.md">readme.md</a></li>
