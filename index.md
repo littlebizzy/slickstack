@@ -12,22 +12,18 @@
 <li><a href="wp-cli/">/wp-cli/</a></li>
 </ul>
 
-<h2>Cron Jobs</h2>
+### Cron Jobs
 
 * <a href="0-crontab.txt">0-crontab.txt</a>
 * <a href="1-cron-often.txt">1-cron-often.txt</a>
+* <a href="2-cron-regular.txt">2-cron-regular.txt</a>
+* <a href="3-cron-hourly.txt">3-cron-hourly.txt</a>
+* <a href="4-cron-daily.txt">4-cron-daily.txt</a>
+* <a href="5-cron-weekly.txt">5-cron-weekly.txt</a>
+* <a href="6-cron-monthly.txt">6-cron-monthly.txt</a>
+* <a href="7-cron-sometimes.txt">7-cron-sometimes.txt
 
-<ul>
-<li><</li>
-<li><a href="2-cron-regular.txt">2-cron-regular.txt</a></li>
-<li><a href="3-cron-hourly.txt">3-cron-hourly.txt</a></li>
-<li><a href="4-cron-daily.txt">4-cron-daily.txt</a></li>
-<li><a href="5-cron-weekly.txt">5-cron-weekly.txt</a></li>
-<li><a href="6-cron-monthly.txt">6-cron-monthly.txt</a></li>
-<li><a href="7-cron-sometimes.txt">7-cron-sometimes.txt</a></li>
-</ul>
-
-<h2>Scripts</h2>
+#### Scripts
 
 <ul>
 <li><a href="ss-check.txt">ss-check.txt</a></li>
