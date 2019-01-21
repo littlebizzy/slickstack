@@ -29,7 +29,7 @@
 * <a href="8-cron-monthly.txt">8-cron-monthly.txt</a>
 * <a href="9-cron-sometimes.txt">9-cron-sometimes.txt</a>
 
-### Scripts
+### Core Scripts
 
 ---
 
@@ -43,7 +43,7 @@
 * <a href="ss-update.txt">ss-update.txt</a>
 * <a href="ss-worker.txt">ss-worker.txt</a>
 
-### Meta Data
+### Meta Files
 
 ---
 
