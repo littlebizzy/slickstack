@@ -1,5 +1,9 @@
-<p>SlickStack is a free LEMP stack automation script written in bash designed to enhance and simplify WordPress provisioning, performance, and security.</p>
-
-<h3>mirrors / wordpress</h3>
+## WordPress
 
 <a href="wp-config.txt">wp-config.txt</a><br>
+
+### Related Links:
+
+* https://wordpress.org/download/releases/
+* https://github.com/WordPress/WordPress
+* https://codex.wordpress.org/Editing_wp-config.php
