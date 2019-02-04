@@ -2,7 +2,7 @@
 
 ---
 
-### Custom Files <i class="far fa-cog"></i>
+### Custom Files <span class="h3icon"><i class="fas fa-cog"></i></span>
 
 * <a href="blacklist.txt">blacklist.txt</a>
 * <a href="wordpress.zip">wordpress.zip</a>
