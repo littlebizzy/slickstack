@@ -2,6 +2,8 @@
 
 ---
 
+### Custom Files <i class="far fa-cog"></i>
+
 * <a href="blacklist.txt">blacklist.txt</a>
 * <a href="wordpress.zip">wordpress.zip</a>
 * <a href="wp-config.txt">wp-config.txt</a>
