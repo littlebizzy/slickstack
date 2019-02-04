@@ -1,5 +1,8 @@
 # WordPress
 
+* <a href="blacklist.txt">blacklist.txt</a>
+* <a href="wordpress-4.6.0.zip">wordpress-4.6.0.zip</a>
+* <a href="wordpress-4.6.1.zip">wordpress-4.6.1.zip</a>
 * <a href="wordpress.zip">wordpress.zip</a>
 * <a href="wp-config.txt">wp-config.txt</a>
 
