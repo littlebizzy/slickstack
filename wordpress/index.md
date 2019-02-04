@@ -8,7 +8,7 @@
 * <a href="wordpress.zip">wordpress.zip</a>
 * <a href="wp-config.txt">wp-config.txt</a>
 
-### Default Files<span class="h3icon"><i class="far fa-file-code"></i></span>
+### Default Files<span class="h3icon"><i class="fas fa-cog"></i></span>
 
 * <a href="wordpress-4.6.0.zip">wordpress-4.6.0.zip</a>
 * <a href="wordpress-4.6.1.zip">wordpress-4.6.1.zip</a>
