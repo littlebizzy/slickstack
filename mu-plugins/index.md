@@ -1,9 +1,9 @@
-<h3>mirrors / mu-plugins</h3>
+MU (Must-Use) Plugins
 
-<li><a href="autoloader.txt">autoloader.txt</a></li>
-<li><a href="xxx-notices.txt">xxx-notices.txt</a></li>
+* <a href="autoloader.txt">autoloader.txt</a>
+* <a href="xxx-notices.txt">xxx-notices.txt</a>
 
-<h5>Related files:</h5>
+### Related Files
 
 <li><a href="cloudflare.zip">cloudflare.zip</a></li>
 <li><a href="disable-embeds.zip">disable-embeds.zip</a></li>
