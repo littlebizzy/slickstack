@@ -1,12 +1,8 @@
-<p>SlickStack is a free LEMP stack automation script written in bash designed to enhance and simplify WordPress provisioning, performance, and security.</p>
+# Redis (Object Cache)
 
-<h3>slickstack / redis</h3>
+---
 
-<ul>
-  <li><a href="redis-conf.txt">redis-conf.txt</a></li>
-</ul>
-
-<h5>default confs:</h5>
+* <a href="redis-conf.txt">redis-conf.txt</a>
 
 <ul>
   <li><a href="redis-conf-3.0.6-default.txt">redis-conf-3.0.6-default.txt</a></li>
