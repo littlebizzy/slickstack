@@ -1,5 +1,7 @@
 # WP-CLI
 
+---
+
 <ul>
 <li>(none)</li>
 </ul>
