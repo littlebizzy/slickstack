@@ -18,7 +18,7 @@
 * <a href="wordpress-4.6.13.zip">wordpress-4.6.13.zip</a>
 * <a href="wp-config-sample-4.7.10.txt">wp-config-sample-4.7.10.txt</a>
 
-### Related Links<span class="h3icon"><i class="fas fa-external-link-alt"></i></span>
+### Related Links<span class="h3icon"><i class="fas fa-link"></i></span>
 
 * <a href="https://github.com/WordPress/WordPress">https://github.com/WordPress/WordPress</a>
 * <a href="https://wordpress.org/download/releases/">https://wordpress.org/download/releases/</a>
