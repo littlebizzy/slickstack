@@ -1,9 +1,10 @@
-## WordPress
+# WordPress
 
-<a href="wp-config.txt">wp-config.txt</a><br>
+* <a href="wordpress.zip">wordpress.zip</a>
+* <a href="wp-config.txt">wp-config.txt</a>
 
 ### Related Links:
 
-* https://wordpress.org/download/releases/
-* https://github.com/WordPress/WordPress
-* https://codex.wordpress.org/Editing_wp-config.php
+* <a href="https://wordpress.org/download/releases/">https://wordpress.org/download/releases/</a>
+* <a href="https://github.com/WordPress/WordPress">https://github.com/WordPress/WordPress</a>
+* <a href="https://codex.wordpress.org/Editing_wp-config.php">https://codex.wordpress.org/Editing_wp-config.php</a>
