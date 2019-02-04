@@ -1,6 +1,6 @@
-<p>SlickStack is a free LEMP stack automation script written in bash designed to enhance and simplify WordPress provisioning, performance, and security.</p>
+# Ubuntu
 
-<h3>mirrors / ubuntu</h3>
+---
 
 <a href="crontab.txt">crontab.txt</a><br>
 <a href="gai-conf-16.04-default.txt">gai-conf-16.04-default.txt</a><br>
