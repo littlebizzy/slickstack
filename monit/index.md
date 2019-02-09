@@ -4,7 +4,7 @@
 
 ### Custom Files
 
-* <a href="monitrc.txt">monitrc.txt</a></li>
+* <a href="monitrc.txt">monitrc.txt</a>
 
 ### Default Files
 
