@@ -1,4 +1,4 @@
-# LEMP Stack Automation (Mirrors)
+# SlickStack Mirrors
 
 ---
 
