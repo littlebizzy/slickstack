@@ -4,7 +4,7 @@
 
 ### Custom Files
 
-* <a href="wp-cli.phar">wp-cli.phar</a></li>
+* <a href="wp-cli.phar">wp-cli.phar</a>
 
 ### Default Files
 
