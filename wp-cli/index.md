@@ -2,17 +2,15 @@
 
 ---
 
-<ul>
-<li>(none)</li>
-</ul>
+### Custom Files
 
-<h5>Related files:</h5>
+* <a href="wp-cli.phar">wp-cli.phar</a></li>
 
-<ul>
-<li><a href="wp-cli.phar">wp-cli.phar</a></li>
-</ul>
+### Default Files
 
-<h5>Related links:</h5>
+* (coming soon)
 
-* https://wp-cli.org
-* https://github.com/wp-cli/wp-cli/releases
+### Related Links
+
+* <a href="https://wp-cli.org">https://wp-cli.org</a>
+* <a href="https://github.com/wp-cli/wp-cli/releases">https://github.com/wp-cli/wp-cli/releases</a>
