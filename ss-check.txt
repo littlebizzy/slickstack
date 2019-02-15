@@ -1,18 +1,22 @@
 #!/bin/bash
 
 ###########################################################
-#### author: SlickStack ###################################
+#### author: SlickStack [ss] ##############################
 #### link: https://slickstack.io ##########################
 #### mirror: http://mirrors.slickstack.io/ss-check.txt ####
 #### path: /var/www/ss-check ##############################
 #### destination: n/a #####################################
 #### purpose: retrieves various SlickStack files ##########
+#### version: n/a #########################################
 ###########################################################
 
-## slickstack config ##
+## [ss] config ##
 source /var/www/ss-config
 
-## delete tmp files ##
+######################################
+#### delete temp SlickStack files ####
+######################################
+
 rm -R -f /tmp/0-crontab*
 rm -R -f /tmp/1-cron*
 rm -R -f /tmp/2-cron*
@@ -23,27 +27,28 @@ rm -R -f /tmp/6-cron*
 rm -R -f /tmp/7-cron*
 rm -R -f /tmp/8-cron*
 rm -R -f /tmp/9-cron*
-rm -R -f /tmp/ss*
+rm -R -f /tmp/ss-*
 
-## download latest versions ##
+###########################################
+#### retrieve various SlickStack files ####
+###########################################
+
+## retrieve [ss] cron jobs ##
 cd /tmp/
 wget --no-cache http://mirrors.slickstack.io/0-crontab.txt
 wget --no-cache http://mirrors.slickstack.io/1-cron-often.txt
 wget --no-cache http://mirrors.slickstack.io/2-cron-regular.txt
 wget --no-cache http://mirrors.slickstack.io/3-cron-hourly.txt
 wget --no-cache http://mirrors.slickstack.io/4-cron-quarter-daily.txt
-wget --no-cache http://mirrors.slickstack.io/4-cron-daily.txt
 wget --no-cache http://mirrors.slickstack.io/5-cron-half-daily.txt
-wget --no-cache http://mirrors.slickstack.io/5-cron-weekly.txt
 wget --no-cache http://mirrors.slickstack.io/6-cron-daily.txt
-wget --no-cache http://mirrors.slickstack.io/6-cron-monthly.txt
 wget --no-cache http://mirrors.slickstack.io/7-cron-weekly.txt
-wget --no-cache http://mirrors.slickstack.io/7-cron-sometimes.txt
 wget --no-cache http://mirrors.slickstack.io/8-cron-monthly.txt
 wget --no-cache http://mirrors.slickstack.io/9-cron-sometimes.txt
 
-## do not wget ss-check ##
-## (accomplished by ss-worker script) ##
+## retrieve [ss] scripts ##
+## DO NOT RETRIEVE ss-check (done by ss-worker) ##
+cd /tmp/
 wget --no-cache http://mirrors.slickstack.io/ss-clean.txt
 wget --no-cache http://mirrors.slickstack.io/ss-config-sample.txt
 wget --no-cache http://mirrors.slickstack.io/ss-dump.txt
@@ -53,25 +58,25 @@ wget --no-cache http://mirrors.slickstack.io/ss-perms.txt
 wget --no-cache http://mirrors.slickstack.io/ss-update.txt
 wget --no-cache http://mirrors.slickstack.io/ss-worker.txt
 
-## rename all files ##
+##########################################
+#### rename and move SlickStack files ####
+##########################################
+
+## rename [ss] cron jobs ##
 cd /tmp/
 mv 0-crontab.txt 0-crontab
 mv 1-cron-often.txt 1-cron-often
 mv 2-cron-regular.txt 2-cron-regular
 mv 3-cron-hourly.txt 3-cron-hourly
 mv 4-cron-quarter-daily.txt 4-cron-quarter-daily
-mv 4-cron-daily.txt 4-cron-daily
 mv 5-cron-half-daily.txt 5-cron-half-daily
-mv 5-cron-weekly.txt 5-cron-weekly
 mv 6-cron-daily.txt 6-cron-daily
-mv 6-cron-monthly.txt 6-cron-monthly
 mv 7-cron-weekly.txt 7-cron-weekly
-mv 7-cron-sometimes.txt 7-cron-sometimes
 mv 8-cron-monthly.txt 8-cron-monthly
 mv 9-cron-sometimes.txt 9-cron-sometimes
 
-## do not rename ss-check ##
-## (accmoplished by ss-worker script) ##
+## rename [ss] scripts ##
+cd /tmp/
 mv ss-clean.txt ss-clean
 mv ss-config-sample.txt ss-config-sample
 mv ss-dump.txt ss-dump
@@ -81,37 +86,33 @@ mv ss-perms.txt ss-perms
 mv ss-update.txt ss-update
 mv ss-worker.txt ss-worker
 
-# copy files to destinations ##
-cp -R -d --remove-destination --preserve=timestamps --no-preserve=mode,ownership /tmp/0-crontab /var/www/0-crontab
-cp -R -d --remove-destination --preserve=timestamps --no-preserve=mode,ownership /tmp/1-cron-often /var/www/1-cron-often
-cp -R -d --remove-destination --preserve=timestamps --no-preserve=mode,ownership /tmp/2-cron-regular /var/www/2-cron-regular
-cp -R -d --remove-destination --preserve=timestamps --no-preserve=mode,ownership /tmp/3-cron-hourly /var/www/3-cron-hourly
-cp -R -d --remove-destination --preserve=timestamps --no-preserve=mode,ownership /tmp/4-cron-quarter-daily /var/www/4-cron-quarter-daily
-cp -R -d --remove-destination --preserve=timestamps --no-preserve=mode,ownership /tmp/4-cron-daily /var/www/4-cron-daily
-cp -R -d --remove-destination --preserve=timestamps --no-preserve=mode,ownership /tmp/5-cron-half-daily /var/www/5-cron-half-daily
-cp -R -d --remove-destination --preserve=timestamps --no-preserve=mode,ownership /tmp/5-cron-weekly /var/www/5-cron-weekly
-cp -R -d --remove-destination --preserve=timestamps --no-preserve=mode,ownership /tmp/6-cron-daily /var/www/6-cron-daily
-cp -R -d --remove-destination --preserve=timestamps --no-preserve=mode,ownership /tmp/6-cron-monthly /var/www/6-cron-monthly
-cp -R -d --remove-destination --preserve=timestamps --no-preserve=mode,ownership /tmp/7-cron-weekly /var/www/7-cron-weekly
-cp -R -d --remove-destination --preserve=timestamps --no-preserve=mode,ownership /tmp/8-cron-monthly /var/www/8-cron-monthly
-cp -R -d --remove-destination --preserve=timestamps --no-preserve=mode,ownership /tmp/9-cron-sometimes /var/www/9-cron-sometimes
+## copy [ss] cron jobs to destinations ##
+cp -R -f -d --no-preserve=mode,ownership /tmp/0-crontab /var/www/0-crontab
+cp -R -f -d --no-preserve=mode,ownership /tmp/1-cron-often /var/www/1-cron-often
+cp -R -f -d --no-preserve=mode,ownership /tmp/2-cron-regular /var/www/2-cron-regular
+cp -R -f -d --no-preserve=mode,ownership /tmp/3-cron-hourly /var/www/3-cron-hourly
+cp -R -f -d --no-preserve=mode,ownership /tmp/4-cron-quarter-daily /var/www/4-cron-quarter-daily
+cp -R -f -d --no-preserve=mode,ownership /tmp/5-cron-half-daily /var/www/5-cron-half-daily
+cp -R -f -d --no-preserve=mode,ownership /tmp/6-cron-daily /var/www/6-cron-daily
+cp -R -f -d --no-preserve=mode,ownership /tmp/7-cron-weekly /var/www/7-cron-weekly
+cp -R -f -d --no-preserve=mode,ownership /tmp/8-cron-monthly /var/www/8-cron-monthly
+cp -R -f -d --no-preserve=mode,ownership /tmp/9-cron-sometimes /var/www/9-cron-sometimes
 
-## do not copy ss-check ##
-## (accomplished by ss-worker script) ##
-cp -R -d --remove-destination --preserve=timestamps --no-preserve=mode,ownership /tmp/ss-clean /var/www/ss-clean
-cp -R -d --remove-destination --preserve=timestamps --no-preserve=mode,ownership /tmp/ss-config-sample /var/www/ss-config-sample
-cp -R -d --remove-destination --preserve=timestamps --no-preserve=mode,ownership /tmp/ss-dump /var/www/ss-dump
-cp -R -d --remove-destination --preserve=timestamps --no-preserve=mode,ownership /tmp/ss-install /var/www/ss-install
-cp -R -d --remove-destination --preserve=timestamps --no-preserve=mode,ownership /tmp/ss-muplugs /var/www/ss-muplugs
-cp -R -d --remove-destination --preserve=timestamps --no-preserve=mode,ownership /tmp/ss-perms /var/www/ss-perms
-cp -R -d --remove-destination --preserve=timestamps --no-preserve=mode,ownership /tmp/ss-update /var/www/ss-update
-cp -R -d --remove-destination --preserve=timestamps --no-preserve=mode,ownership /tmp/ss-worker /var/www/ss-worker
+## copy [ss] scripts to destinations ##
+cp -R -f -d --no-preserve=mode,ownership /tmp/ss-clean /var/www/ss-clean
+cp -R -f -d --no-preserve=mode,ownership /tmp/ss-config-sample /var/www/ss-config-sample
+cp -R -f -d --no-preserve=mode,ownership /tmp/ss-dump /var/www/ss-dump
+cp -R -f -d --no-preserve=mode,ownership /tmp/ss-install /var/www/ss-install
+cp -R -f -d --no-preserve=mode,ownership /tmp/ss-muplugs /var/www/ss-muplugs
+cp -R -f -d --no-preserve=mode,ownership /tmp/ss-perms /var/www/ss-perms
+cp -R -f -d --no-preserve=mode,ownership /tmp/ss-update /var/www/ss-update
+cp -R -f -d --no-preserve=mode,ownership /tmp/ss-worker /var/www/ss-worker
 
-###########################
-#### reset permissions ####
-###########################
+###########################################
+#### reset SlickStack file permissions ####
+###########################################
 
-## chown files ##
+## chown [ss] cron jobs ##
 chown root:root /var/www/0-crontab
 chown root:root /var/www/1-cron*
 chown root:root /var/www/2-cron*
@@ -123,8 +124,7 @@ chown root:root /var/www/7-cron*
 chown root:root /var/www/8-cron*
 chown root:root /var/www/9-cron*
 
-## do not chown ss-check ##
-## (accomplished by ss-worker script) ##
+## chown [ss] scripts ##
 chown root:root /var/www/ss-clean
 chown root:root /var/www/ss-config-sample
 chown root:root /var/www/ss-dump
@@ -134,7 +134,7 @@ chown root:root /var/www/ss-perms
 chown root:root /var/www/ss-update
 chown root:root /var/www/ss-worker
 
-## chmod files ##
+## chmod [ss] cron jobs ##
 chmod 755 /var/www/0-crontab
 chmod 755 /var/www/1-cron*
 chmod 755 /var/www/2-cron*
@@ -146,8 +146,7 @@ chmod 755 /var/www/7-cron*
 chmod 755 /var/www/8-cron*
 chmod 755 /var/www/9-cron*
 
-## do not chmod ss-check ##
-## (accomplished by ss-worker script) ##
+## chmod [ss] scripts ##
 chmod 755 /var/www/ss-clean
 chmod 755 /var/www/ss-config-sample
 chmod 755 /var/www/ss-dump
@@ -157,7 +156,10 @@ chmod 755 /var/www/ss-perms
 chmod 755 /var/www/ss-update
 chmod 755 /var/www/ss-worker
 
-## delete tmp files ##
+######################################
+#### delete temp SlickStack files ####
+######################################
+
 rm -R -f /tmp/0-crontab*
 rm -R -f /tmp/1-cron*
 rm -R -f /tmp/2-cron*
@@ -168,4 +170,4 @@ rm -R -f /tmp/6-cron*
 rm -R -f /tmp/7-cron*
 rm -R -f /tmp/8-cron*
 rm -R -f /tmp/9-cron*
-rm -R -f /tmp/ss*
+rm -R -f /tmp/ss-*
