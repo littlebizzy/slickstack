@@ -10,6 +10,7 @@
 * <a href="nginx/">/nginx/</a>
 * <a href="php/">/php/</a>
 * <a href="redis/">/redis/</a>
+* <a href="starter-themes/">/starter-themes/</a>
 * <a href="ubuntu/">/ubuntu/</a>
 * <a href="wordpress/">/wordpress/</a>
 * <a href="wp-cli/">/wp-cli/</a>
