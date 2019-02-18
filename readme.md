@@ -2,7 +2,7 @@
 
 > SlickStack is a free LEMP stack automation script written in Bash designed to enhance and simplify WordPress provisioning, performance, and security.
 
-&#10142; No email please! See the SlickStack public mirrors directory: **http://mirrors.slickstack.io**
+&#10142; Browse the SlickStack public mirrors: **http://mirrors.slickstack.io**
 
 ## Table Of Contents
 
@@ -24,20 +24,19 @@ While there are [clear benefits](https://medium.com/capital-one-developers/bashi
 
 SlickStack [ss] works best on VPS servers with KVM virtualization that have at least 2GB RAM from quality network providers such as Linode, Vultr, DigitalOcean, and other non-AWS networks. The underlying LEMP configuration is meant specifically for single-site WordPress installations, and does not support [Multisite](https://codex.wordpress.org/Create_A_Network) installs. SlickStack [ss] supports WordPress, WooCommerce, bbPress, and BuddyPress "out of the box" with pre-optimized settings that scale.
 
-*Updated October 4, 2018*
+*Last updated Feb 18, 2019*
 
-* Ubuntu 18.04 - (cloud provider repo)
-* Nginx 1.15.0 - custom `nginx.conf` + `server block`
+* Ubuntu 18.04 - custom `crontab` + `gai.conf` + `sshd_config` + `sudoers`
+* Nginx 1.15.8 - custom `nginx.conf` + `server block` + `fastcgi-cache.conf`
 * PHP-FPM 7.2 - custom `php.ini` + `php-fpm.conf` + `www.conf`
-* MySQL 5.7 - 
-* WordPress (latest version) - optional `wplite` optimized configuration (re: `mu-plugins`)
-* WP-CLI 1.5.1
-* Redis 4.0.9 - tweak `redis.conf`
-* Monit 5.25.1
-* Git 2.17.1
-* UFW 0.35 - custom firewall rules
-
-Default ports: 80 (HTTP), 443 (HTTPS), 6969 (SSH)
+* MySQL 5.7 - default config (will be customized slightly in future)
+* WordPress (latest version) - optional `wplite` optimized configuration (adds custom `mu-plugins`)
+* WP-CLI 1.5.1 - default config
+* Redis 4.0.9 - custom `redis.conf`
+* Monit 5.25.12 - custom `monitrc`
+* Git 2.17.1 - default config
+* UFW 0.35 - custom `ufw` + `ufw.conf` + `user-rules`
+* PORTS: 80 (HTTP), 443 (HTTPS), 6969 (SSH)
 
 ## Installation
 
