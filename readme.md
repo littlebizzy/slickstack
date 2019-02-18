@@ -97,6 +97,7 @@ After completing the installation steps above, your `/var/www/` directory should
     /var/www/html/wp-content/mu-plugins/custom-functions/
     /var/www/html/wp-content/mu-plugins/dashboard-cleanup/
     /var/www/html/wp-content/mu-plugins/delete-expired-transients/
+    /var/www/html/wp-content/mu-plugins/disable-attachment-pages/
     /var/www/html/wp-content/mu-plugins/disable-embeds/
     /var/www/html/wp-content/mu-plugins/disable-emojis/
     /var/www/html/wp-content/mu-plugins/disable-empty-trash/
@@ -109,6 +110,7 @@ After completing the installation steps above, your `/var/www/` directory should
     /var/www/html/wp-content/mu-plugins/header-cleanup/
     /var/www/html/wp-content/mu-plugins/index-autoload/
     /var/www/html/wp-content/mu-plugins/limit-heartbeat/
+    /var/www/html/wp-content/mu-plugins/minify-html/
     /var/www/html/wp-content/mu-plugins/plugin-blacklist/
     /var/www/html/wp-content/mu-plugins/remove-query-strings/
     /var/www/html/wp-content/mu-plugins/server-status/
