@@ -28,15 +28,16 @@ SlickStack [ss] works best on VPS servers with KVM virtualization that have at l
 
 * **Ubuntu 18.04** - custom `crontab` + `gai.conf` + `sshd_config` + `sudoers`
 * **Nginx 1.15.8** - custom `nginx.conf` + `server block` + `fastcgi-cache.conf`
-* PHP-FPM 7.2 - custom `php.ini` + `php-fpm.conf` + `www.conf`
-* MySQL 5.7 - default config (will be customized slightly in future)
-* WordPress (latest version) - optional `wplite` optimized configuration (adds custom `mu-plugins`)
-* WP-CLI 1.5.1 - default config
-* Redis 4.0.9 - custom `redis.conf`
-* Monit 5.25.12 - custom `monitrc`
-* Git 2.17.1 - default config
-* UFW 0.35 - custom `ufw` + `ufw.conf` + `user-rules`
-* PORTS: 80 (HTTP), 443 (HTTPS), 6969 (SSH)
+* **MySQL 5.7** - default config (will be customized slightly in future)
+* **PHP-FPM 7.2** - custom `php.ini` + `php-fpm.conf` + `www.conf`
+* **WordPress (latest version)** - optional `wplite` optimized configuration (adds custom `mu-plugins`)
+* **WP-CLI 1.5.1** - default config
+* **Redis 4.0.9** - custom `redis.conf`
+* **Monit 5.25.12** - custom `monitrc`
+* **Git 2.17.1** - default config
+* **UFW 0.35** - custom `ufw` + `ufw.conf` + `user-rules`
+
+Default Ports: 80 (HTTP), 443 (HTTPS), 6969 (SSH)
 
 ## Installation
 
@@ -54,7 +55,7 @@ The below installation steps presume that you've already spun up a dedicated Ubu
 
 From this point forward, you can manage your SlickStack [ss] server by simply using the `sudo bash` command on any one of the included **ss** scripts located within the `/var/www/` directory, as needed. However, in most cases there shouldn't be any need for much hands-on management as the server will intelligently run various cron jobs which connect to this GitHub repo (or whichever fork of this repo that your team has setup... be sure to modify all `wget` source links).
 
-If desired, you can also safely re-install the entire stack (`sudo bash /var/www/ss-install`) using the steps above without causing any conflicts or data loss (the installation is [idempotent](https://en.wikipedia.org/wiki/Idempotence).
+You can also safely re-install the entire stack using `sudo bash /var/www/ss-install` (skip the above steps) without causing any conflicts or data loss (the installation process is [idempotent](https://en.wikipedia.org/wiki/Idempotence).
 
 ## Structure
 
