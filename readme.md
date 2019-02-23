@@ -138,21 +138,6 @@ While Silicon Valley "gurus" and corporations pump out new buzzwords (and SaaS s
 
 Before the likes of Google and Amazon and Shopify and Wix take over the entire web and turn it into Wall Street-backed website builders that feed into their private ecosystems, SlickStack hopes to bridge the knowledge gap between emerging technology and old-school web development to empower SMBs to achieve top notch website performance and security by offering a "controlled" LEMP-stack environment with limited options that is perfectly suited to the world's most popular open-source CMS: WordPress.
 
-TL;DR: while "the wheel" might not need re-inventing, it can surely [always be improved](https://www.scientificamerican.com/article/greener-tires/).
-
---
-
-IDEALISM / SHOWBOATING ####                  GRAND CANYON OF DISCONNECT                 PRAGMATISM / SIMPLICITY ####
-###########################                                                             ############################
-
-Typical SMB owner thought process:
-
-* Why is my website loading so slowly?
-* Which web hosting company should I choose?
-* What cache/security plugin is the best?
-* When is my freelancer going to reply?
-* @#$%! THIS... BACK TO SHOPIFY!
-
 ## Comparison
 
 | ... | SlickStack | Ansible | Puppet | Salt | Chef | EasyEngine | Trellis | AnsiPress | VVV | VCCW | Centminmod | VPSSIM |
