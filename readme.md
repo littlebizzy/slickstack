@@ -134,14 +134,16 @@ Thus, before the likes of Google and Amazon and Shopify and Wix take over the en
 
 ## Comparison
 
-| ... | SlickStack | Ansible | Puppet | Salt | Chef | EasyEngine | Trellis | AnsiPress | VVV | VCCW | Centminmod | VPSSIM |
+| ... | SlickStack | EasyEngine | ServerPilot | Runcloud | Ansible | Puppet | Salt | Chef | Trellis | AnsiPress | VVV | VCCW | Centminmod | VPSSIM |
 |:---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| Dependencies | (Unix) | Python | Ruby | Python | Python | Python | Ansible | Ansible | Vagrant | Vagrant | (Unix) | (Unix) |
-| Standard Shell Commands | Yes | No | No | No | No | No | No | No | No | No | Yes | Yes |
+| 100% Free | Yes | Yes | No | No |
+| Dependencies | None | Python | Ruby | Python | Python | Python | Ansible | Ansible | Vagrant | Vagrant | (Unix) | (Unix) |
+| Direct Management | Yes | Yes | No | No |
+| Shell Commands | Yes | No | No | No | No | No | No | No | No | No | Yes | Yes |
 | WordPress Focus | Yes | No | No | No | No | Yes | Yes | No | Yes | Yes | No | Yes |
-| Single Sites Focus | Yes | N/A | No | No | N/A | N/A | No |
+| Single Site Focus | Yes | N/A | No | No | N/A | N/A | No |
 | Email APIs | Yes | N/A | N/A | N/A | No | No | No | No | No | No |
-| Monitoring App | Monit | N/A | None | None | None | None | None |
+| Monitoring | Monit | N/A | None | None | None | None | None |
 |  |  |  |  |  |  |  |  |
 
 Others: Moss.sh, Webinoly, VestaCP, OneInStack, OpenResty, ServerPilot, RunCloud
