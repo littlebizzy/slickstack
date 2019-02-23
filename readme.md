@@ -52,7 +52,7 @@ The below installation steps presume that you've already spun up a dedicated Ubu
 
 After a successful install, always `sudo reboot` your server.
 
-From this point forward, you can manage your SlickStack [ss] server by using the `sudo bash` command on any one of the included **ss** scripts located within the `/var/www/` directory as needed. However, in most cases there shouldn't be any need for much management as the server will intelligently run various cron jobs which connect to this GitHub repo (or whichever fork of this repo that your team has setup... be sure to modify all `wget` source links). If desired, you can also safely re-install the entire stack (`sudo bash /var/www/ss-install`) using the installation steps above without causing any conflicts or data loss.
+From this point forward, you can manage your SlickStack [ss] server by using the `sudo bash` command on any one of the included **ss** scripts located within the `/var/www/` directory as needed. However, in most cases there shouldn't be any need for much management as the server will intelligently run various cron jobs which connect to this GitHub repo (or whichever fork of this repo that your team has setup... be sure to modify all `wget` source links). If desired, you can also safely re-install the entire stack (`sudo bash /var/www/ss-install`) using the steps above without causing any conflicts or data loss (the installation is [idempotent](https://en.wikipedia.org/wiki/Idempotence).
 
 ## Structure
 
