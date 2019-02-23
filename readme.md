@@ -59,7 +59,7 @@ You can also safely re-install SlickStack [ss] using `sudo bash ss-install` with
 
 ## Structure
 
-After completing the installation steps above, your `/var/www/` directory should look exactly as below. Keep in mind that you should never directly modify the crontab on any SlickStack [ss] server, nor should you modify any files appearing below, with the exception of `ss-config`; this does not apply to "WordPress" files found under `/var/www/html/`...
+After completing the installation steps above, your `/var/www/` directory should look exactly as below. Keep in mind that you should never directly modify the crontab on any SlickStack [ss] server, nor should you modify any of the files appearing below with the exception of `ss-config` (this does not apply to "WordPress" files found under `/var/www/html/`)...
 
     /var/www/0-crontab
     /var/www/1-cron-often
