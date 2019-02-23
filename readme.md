@@ -26,8 +26,8 @@ SlickStack [ss] works best on VPS servers with KVM virtualization that have at l
 
 *Last updated Feb 18, 2019*
 
-* Ubuntu 18.04 - custom `crontab` + `gai.conf` + `sshd_config` + `sudoers`
-* Nginx 1.15.8 - custom `nginx.conf` + `server block` + `fastcgi-cache.conf`
+* **Ubuntu 18.04** - custom `crontab` + `gai.conf` + `sshd_config` + `sudoers`
+* **Nginx 1.15.8** - custom `nginx.conf` + `server block` + `fastcgi-cache.conf`
 * PHP-FPM 7.2 - custom `php.ini` + `php-fpm.conf` + `www.conf`
 * MySQL 5.7 - default config (will be customized slightly in future)
 * WordPress (latest version) - optional `wplite` optimized configuration (adds custom `mu-plugins`)
@@ -40,7 +40,7 @@ SlickStack [ss] works best on VPS servers with KVM virtualization that have at l
 
 ## Installation
 
-Because it’s written purely in [Bash](https://en.wikipedia.org/wiki/Bash_(Unix_shell)) (Unix shell), SlickStack [ss] has no dependencies and works on any Ubuntu Linux machine. Unlike heavier provisioning tools like EasyEngine or Ansible, there are no third party languages required such as Python, meaning a lighter and simpler approach to launching WordPress servers.
+Because it’s written purely in [Bash](https://en.wikipedia.org/wiki/Bash_(Unix_shell)) (Unix shell), SlickStack [ss] has no dependencies and works on any [Ubuntu Linux](https://www.ubuntu.com) machine. Unlike heavier provisioning tools like EasyEngine or Ansible, there are no third party languages required such as Python, meaning a lighter and simpler approach to launching WordPress servers.
 
 The below installation steps presume that you've already spun up a dedicated Ubuntu 18.04 VPS server (KVM) with at least 2GB RAM memory and that you are logged in via SSH.
 
@@ -50,9 +50,11 @@ The below installation steps presume that you've already spun up a dedicated Ubu
 
 3. `cd /var/www/ && sudo wget -O ss slick.fyi && sudo chmod 755 ss && sudo bash ss`
 
-After a successful install, always `sudo reboot` your server.
+**Note:** After a successful installation, always `sudo reboot` your server.
 
-From this point forward, you can manage your SlickStack [ss] server by using the `sudo bash` command on any one of the included **ss** scripts located within the `/var/www/` directory as needed. However, in most cases there shouldn't be any need for much management as the server will intelligently run various cron jobs which connect to this GitHub repo (or whichever fork of this repo that your team has setup... be sure to modify all `wget` source links). If desired, you can also safely re-install the entire stack (`sudo bash /var/www/ss-install`) using the steps above without causing any conflicts or data loss (the installation is [idempotent](https://en.wikipedia.org/wiki/Idempotence).
+From this point forward, you can manage your SlickStack [ss] server by simply using the `sudo bash` command on any one of the included **ss** scripts located within the `/var/www/` directory, as needed. However, in most cases there shouldn't be any need for much hands-on management as the server will intelligently run various cron jobs which connect to this GitHub repo (or whichever fork of this repo that your team has setup... be sure to modify all `wget` source links).
+
+If desired, you can also safely re-install the entire stack (`sudo bash /var/www/ss-install`) using the steps above without causing any conflicts or data loss (the installation is [idempotent](https://en.wikipedia.org/wiki/Idempotence).
 
 ## Structure
 
