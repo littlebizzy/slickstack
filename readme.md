@@ -53,13 +53,13 @@ The below installation steps presume that you've already spun up a dedicated Ubu
 
 **Note:** After a successful installation, always `sudo reboot` your server.
 
-From this point forward, you can manage your SlickStack [ss] server by simply using the `sudo bash` command on any one of the included **ss** scripts located within the `/var/www/` directory, as needed. However, in most cases there shouldn't be any need for much hands-on management as the server will intelligently run various cron jobs which connect to this GitHub repo (or whichever fork of this repo that your team has setup... be sure to modify all `wget` source links).
+From this point forward, you can manage your SlickStack [ss] server by simply using the `sudo bash` command on any one of the included **ss** scripts located within the `/var/www/` directory, as needed. However, in most cases there shouldn't be any need for much hands-on management as the server will intelligently run various cron jobs which connect to this GitHub repo (or whichever fork of this repo that your team has setup... be sure to modify all `wget` sources).
 
 You can also safely re-install SlickStack [ss] using `sudo bash ss-install` without causing any conflicts or data loss; the installation process is completely [idempotent](https://en.wikipedia.org/wiki/Idempotence).
 
 ## Structure
 
-After completing the installation steps above, your `/var/www/` directory should look exactly as below. Keep in mind that you should never directly modify the crontab on any SlickStack [ss] server, nor should you modify any files appearing in the below list with the exception of `ss-config` (this does not apply to WordPress files found under `/var/www/html/`) ...
+After completing the installation steps above, your `/var/www/` directory should look exactly as below. Keep in mind that you should never directly modify the crontab on any SlickStack [ss] server, nor should you modify any files appearing below, with the exception of `ss-config`; this does not apply to "WordPress" files found under `/var/www/html/`...
 
     /var/www/0-crontab
     /var/www/1-cron-often
