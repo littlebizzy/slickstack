@@ -24,13 +24,13 @@ While there are [clear benefits](https://medium.com/capital-one-developers/bashi
 
 SlickStack [ss] works best on VPS servers with KVM virtualization that have at least 2GB RAM from quality network providers such as Linode, Vultr, DigitalOcean, and other non-AWS networks. The underlying LEMP configuration is meant specifically for single-site WordPress installations, and does not support [Multisite](https://codex.wordpress.org/Create_A_Network) installs. SlickStack [ss] supports WordPress, WooCommerce, bbPress, and BuddyPress "out of the box" with pre-optimized settings that scale.
 
-*Last updated Feb 18, 2019*
+*Last updated Feb 26, 2019*
 
 * **Ubuntu 18.04** - custom `crontab` + `gai.conf` + `sshd_config` + `sudoers`
 * **Nginx 1.15.8** - custom `nginx.conf` + `server block` + `fastcgi-cache.conf`
 * **MySQL 5.7** - default config (will be customized slightly in future)
 * **PHP-FPM 7.2** - custom `php.ini` + `php-fpm.conf` + `www.conf`
-* **WordPress (latest version)** - optional `wplite` optimized configuration (adds custom `mu-plugins`)
+* **WordPress 5.0.3** - optional `wplite` pre-optimized configuration (adds custom `mu-plugins`)
 * **WP-CLI 1.5.1** - default config
 * **Redis 4.0.9** - custom `redis.conf`
 * **Monit 5.25.12** - custom `monitrc`
