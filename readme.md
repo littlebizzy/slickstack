@@ -33,7 +33,7 @@ Default Ports: 80 (HTTP), 443 (HTTPS), 6969 (SSH)
 
 Because it’s written purely in [Bash](https://en.wikipedia.org/wiki/Bash_(Unix_shell)) (Unix shell), SlickStack [ss] has no dependencies and works on any [Ubuntu Linux](https://www.ubuntu.com) machine. Unlike heavier provisioning tools like EasyEngine or Ansible, there are no third party languages required such as Python or Docker, meaning a lighter and simpler approach to launching WordPress servers.
 
-The below installation steps assume that you've already spun up a dedicated Ubuntu VPS server (KVM) with at least 2GB RAM memory and that you are now logged in via SSH:
+The below installation steps assume that you've already spun up a dedicated Ubuntu Linux VPS server (KVM) with at least 2GB RAM memory and that you are now logged in via SSH:
 
 1. `sudo mkdir /var/www/ && sudo chown root:root /var/www/ && sudo chmod 755 /var/www/`
 
@@ -41,7 +41,7 @@ The below installation steps assume that you've already spun up a dedicated Ubun
 
 3. `cd /var/www/ && sudo wget -O ss slick.fyi && sudo chmod 755 ss && sudo bash ss`
 
-**Note:** After a successful installation, always `sudo reboot` your server.
+4. `sudo reboot`
 
 From this point forward, you can manage your SlickStack [ss] server by simply using the `sudo bash` command on any one of the included **ss** scripts located within the `/var/www/` directory, as needed. However, in most cases there shouldn't be any need for much hands-on management as the server will intelligently run various cron jobs which connect to this GitHub repo (or whichever fork of this repo that your team has setup... be sure to modify all `wget` sources).
 
