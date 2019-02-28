@@ -16,6 +16,11 @@ SlickStack [ss] works best on VPS servers with KVM virtualization that have at l
 
 *Last updated Feb 26, 2019*
 
+| Column 1       | Column 2     | Column 3     |
+| :------------- | :----------: | -----------: |
+|  Cell Contents | More Stuff   | And Again    |
+| You Can Also   | Put Pipes In | Like this \| |
+
 * **Ubuntu 18.04 (LTS)** - custom `crontab` + `gai.conf` + `sshd_config` + `sudoers`
 * **Nginx 1.15.8** - custom `nginx.conf` + `server block` + `fastcgi-cache.conf`
 * **MySQL 5.7** - default config (will be customized slightly in future)
