@@ -16,7 +16,7 @@ SlickStack [ss] works best on VPS servers with KVM virtualization that have at l
 
 *Last updated Feb 26, 2019*
 
-* **Ubuntu 18.04** - custom `crontab` + `gai.conf` + `sshd_config` + `sudoers`
+* **Ubuntu 18.04 (LTS)** - custom `crontab` + `gai.conf` + `sshd_config` + `sudoers`
 * **Nginx 1.15.8** - custom `nginx.conf` + `server block` + `fastcgi-cache.conf`
 * **MySQL 5.7** - default config (will be customized slightly in future)
 * **PHP-FPM 7.2** - custom `php.ini` + `php-fpm.conf` + `www.conf`
@@ -31,9 +31,9 @@ Default Ports: 80 (HTTP), 443 (HTTPS), 6969 (SSH)
 
 ## Installation
 
-Because it’s written purely in [Bash](https://en.wikipedia.org/wiki/Bash_(Unix_shell)) (Unix shell), SlickStack [ss] has no dependencies and works on any [Ubuntu Linux](https://www.ubuntu.com) machine. Unlike heavier provisioning tools like EasyEngine or Ansible, there are no third party languages required such as Python, meaning a lighter and simpler approach to launching WordPress servers.
+Because it’s written purely in [Bash](https://en.wikipedia.org/wiki/Bash_(Unix_shell)) (Unix shell), SlickStack [ss] has no dependencies and works on any [Ubuntu Linux](https://www.ubuntu.com) machine. Unlike heavier provisioning tools like EasyEngine or Ansible, there are no third party languages required such as Python or Docker, meaning a lighter and simpler approach to launching WordPress servers.
 
-The below installation steps presume that you've already spun up a dedicated Ubuntu 18.04 VPS server (KVM) with at least 2GB RAM memory and that you are logged in via SSH.
+The below installation steps assume that you've already spun up a dedicated Ubuntu VPS server (KVM) with at least 2GB RAM memory and that you are now logged in via SSH:
 
 1. `sudo mkdir /var/www/ && sudo chown root:root /var/www/ && sudo chmod 755 /var/www/`
 
