@@ -16,18 +16,18 @@ SlickStack [ss] works best on VPS servers with KVM virtualization that have at l
 
 *Last updated Feb 26, 2019*
 
-| LEMP module | Version | What has been customized? |
+| Module | Version | What has been customized? |
 | :------------- | :----------: | :----------: |
 | **Ubuntu (LTS)** | 18.04 | custom `crontab` + `gai.conf` + `sshd_config` + `sudoers` |
-| **Nginx 1.15.8** | custom `nginx.conf` + `server block` + `fastcgi-cache.conf` |
-| **MySQL 5.7** | default config (will be customized slightly in future) |
-| **PHP-FPM 7.2** | custom `php.ini` + `php-fpm.conf` + `www.conf` |
-| **WordPress 5.0.3** | optional `wplite` pre-optimized configuration (adds custom `mu-plugins`) |
-| **WP-CLI 1.5.1** | default config |
-| **Redis 4.0.9** | custom `redis.conf` |
-| **Monit 5.25.12** | custom `monitrc` |
-| **Git 2.17.1** | default config |
-| **UFW 0.35** | custom `ufw` + `ufw.conf` + `user-rules` |
+| **Nginx** | 1.15.8 | custom `nginx.conf` + `server block` + `fastcgi-cache.conf` |
+| **MySQL** | 5.7 | default config (will be customized slightly in future) |
+| **PHP-FPM** | 7.2 | custom `php.ini` + `php-fpm.conf` + `www.conf` |
+| **WordPress** | 5.0.3 | optional `wplite` pre-optimized configuration (adds custom `mu-plugins`) |
+| **WP-CLI** | 1.5.1 | default config |
+| **Redis** | 4.0.9 | custom `redis.conf` |
+| **Monit** | 5.25.12 | custom `monitrc` |
+| **Git** | 2.17.1 | default config |
+| **UFW** | 0.35 | custom `ufw` + `ufw.conf` + `user-rules` |
 
 Default Ports: 80 (HTTP), 443 (HTTPS), 6969 (SSH)
 
