@@ -16,9 +16,9 @@ SlickStack [ss] works best on VPS servers with KVM virtualization that have at l
 
 *Last updated Feb 26, 2019*
 
-| *LEMP module* | *What has been customized?* |
-| :------------- | :----------: |
-| **Ubuntu 18.04 (LTS)** | custom `crontab` + `gai.conf` + `sshd_config` + `sudoers` |
+| LEMP module | Version | What has been customized? |
+| :------------- | :----------: | :----------: |
+| **Ubuntu (LTS)** | 18.04 | custom `crontab` + `gai.conf` + `sshd_config` + `sudoers` |
 | **Nginx 1.15.8** | custom `nginx.conf` + `server block` + `fastcgi-cache.conf` |
 | **MySQL 5.7** | default config (will be customized slightly in future) |
 | **PHP-FPM 7.2** | custom `php.ini` + `php-fpm.conf` + `www.conf` |
