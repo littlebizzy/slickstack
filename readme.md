@@ -12,22 +12,22 @@ While there are [clear benefits](https://medium.com/capital-one-developers/bashi
 
 ## Compatibility
 
-SlickStack [ss] works best on VPS servers with KVM virtualization that have at least 2GB RAM from quality network providers such as DigitalOcean, Linode, Vultr, and Amazon Lightsail. The underlying LEMP configuration is meant specifically for single-site WordPress installations, and does not support [Multisite](https://codex.wordpress.org/Create_A_Network) installations. SlickStack [ss] supports WordPress, WooCommerce, bbPress, and BuddyPress "out of the box" with pre-optimized settings that scale.
+SlickStack [ss] works best on VPS servers with KVM virtualization that have at least 2GB RAM from quality network providers such as DigitalOcean, Linode, Vultr, and Amazon Lightsail. The underlying LEMP configuration is meant specifically for single-site WordPress installations, and does not support WordPress [Multisite](https://codex.wordpress.org/Create_A_Network) installations. SlickStack [ss] supports WordPress, WooCommerce, bbPress, and BuddyPress "out of the box" with pre-optimized settings that scale.
 
 *Last updated Mar 5, 2019*
 
-| Module | Current Version | What has been customized? |
+| LEMP Module | Current Version | What has been customized? |
 | :------------- | :----------: | :----------: |
-| **Ubuntu (LTS)** | 18.04 | custom `crontab` + `gai.conf` + `sshd_config` + `sudoers` |
-| **Nginx** | 1.15.8 | custom `nginx.conf` + `server block` + `fastcgi-cache.conf` |
+| **Ubuntu** | 18.04 (LTS) | `crontab` + `gai.conf` + `sshd_config` + `sudoers` |
+| **Nginx** | 1.15.8 | `nginx.conf` + `server block` + `fastcgi-cache.conf` |
 | **MySQL** | 5.7 | default config (will be customized slightly in future) |
-| **PHP-FPM** | 7.2 | custom `php.ini` + `php-fpm.conf` + `www.conf` |
+| **PHP-FPM** | 7.2 | `php.ini` + `php-fpm.conf` + `www.conf` |
 | **WordPress** | 5.0.3 | optional `wplite` pre-optimized configuration (adds custom `mu-plugins`) |
 | **WP-CLI** | 1.5.1 | default config |
-| **Redis** | 4.0.9 | custom `redis.conf` |
-| **Monit** | 5.25.12 | custom `monitrc` |
+| **Redis** | 4.0.9 | `redis.conf` |
+| **Monit** | 5.25.12 | `monitrc` |
 | **Git** | 2.17.1 | default config |
-| **UFW Firewall** | 0.35 | custom `ufw` + `ufw.conf` + `user-rules` |
+| **UFW** | 0.35 | `ufw` + `ufw.conf` + `user-rules` |
 
 Default Ports: 80 (HTTP), 443 (HTTPS), 6969 (SSH)
 
