@@ -2,6 +2,8 @@
 
 SlickStack is a free LEMP stack automation script written in Bash designed to enhance and simplify WordPress provisioning, performance, and security.
 
+&#10142; NEW! SlickStack is now "HTTPS Only" and includes our popular Force HTTPS plugin...
+
 &#10142; Browse the SlickStack public mirrors: **http://mirrors.slickstack.io**
 
 ## Abstract
