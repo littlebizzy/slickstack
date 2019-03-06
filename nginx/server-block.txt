@@ -1,10 +1,10 @@
-#####################################################################
-#### author: slickstack #############################################
-#### link: https://slickstack.io ####################################
-#### mirror: http://mirrors.slickstack.io/nginx/server-block.txt ####
-#### path: /etc/nginx/sites-available/default #######################
-#### purpose: nginx server block (no ssl) ###########################
-#####################################################################
+#########################################################################
+#### author: slickstack #################################################
+#### link: https://slickstack.io ########################################
+#### mirror: http://mirrors.slickstack.io/nginx/server-block-ssl.txt ####
+#### path: /etc/nginx/sites-available/default ###########################
+#### purpose: nginx server block (ssl) ##################################
+#########################################################################
 
 ## this catch-all server block redirects all erroneous traffic to the canonical domain ##
 server {
@@ -15,17 +15,19 @@ server {
     server_name            _;
     ssl_certificate        /etc/ssl/nginx.crt;
     ssl_certificate_key    /etc/ssl/nginx.key;
-    return 301             http://@DOMAIN$request_uri;
+    return 301             https://@DOMAIN$request_uri;
 }
 
 ## this server block is the canonical domain ##
 server {
-    listen                 80;
-    listen                 [::]:80 ipv6only=on;
+    listen                 443 ssl;
+    listen                 [::]:443 ssl ipv6only=on;
     server_name            @DOMAIN;
     if ($http_host != "@DOMAIN") {
         return 301             $scheme://@DOMAIN$request_uri;
     }
+    ssl_certificate        /etc/ssl/nginx.crt;
+    ssl_certificate_key    /etc/ssl/nginx.key;
     root                   /var/www/html;
     index                  index.php;
     
@@ -35,7 +37,7 @@ server {
         return 301 $1;
     }
 
-    #### SKIP FASTCGI CACHE ####
+    #### FASTCGI CACHE ####
     ## set to either 1/0 to skip fastcgi cache by default ##
     set $skip_cache @FASTCGI;
     
@@ -43,6 +45,7 @@ server {
     if ($request_method = POST) {
         set $skip_cache 1;
     }
+    
     ## query strings should always skip the cache
     if ($query_string != "") {
         set $skip_cache 1;
@@ -96,8 +99,9 @@ server {
         include /etc/nginx/fastcgi.conf;
         try_files $uri =404;
         fastcgi_split_path_info ^(.+\.php)(/.+)$;
-        # fastcgi_pass unix:/run/php/php7.0-fpm.sock;
+        ## fastcgi_pass unix:/var/run/php/php7.2-fpm.sock
 	fastcgi_pass unix:/run/php/php7.2-fpm.sock;
+	fastcgi_read_timeout 300;
         fastcgi_index index.php;
         fastcgi_cache WORDPRESS;
         fastcgi_cache_valid 200 301 404 @CACHEVALID;
@@ -123,8 +127,9 @@ server {
         include /etc/nginx/fastcgi.conf;
         try_files $uri =404;
         fastcgi_split_path_info ^(.+\.php)(/.+)$;
-        # fastcgi_pass unix:/run/php/php7.0-fpm.sock;
+        ## fastcgi_pass unix:/var/run/php/php7.2-fpm.sock
 	fastcgi_pass unix:/run/php/php7.2-fpm.sock;
+	fastcgi_read_timeout 300;
         fastcgi_index index.php;
         fastcgi_cache WORDPRESS;
         fastcgi_cache_valid 200 301 404 @CACHEVALID;
@@ -134,7 +139,7 @@ server {
 
     #### FAVICON ####
     location = /favicon.ico {
-        ## 204 is better than 404 if favicon not found
+        ## 204 is better than 404 if not found
         try_files $uri =204;
         access_log off;
         log_not_found off;
@@ -159,7 +164,7 @@ server {
 	access_log off;
         log_not_found off;
     }
-
+    
     #### WP-CONFIG ####
     location = /wp-config.php {
         deny all;
@@ -220,7 +225,6 @@ server {
 
     #### GIT CONFIG ####
     location = /.git/config {
-        ## block any attempted attacks or access
         deny all;
 	access_log off;
 	log_not_found off;
