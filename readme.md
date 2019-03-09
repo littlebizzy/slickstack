@@ -118,27 +118,27 @@ After completing the installation steps above, your `/var/www/` directory should
     
 ## Defined Constants
 
-The included `mu-plugins` that SlickStack [ss] bundles as part of a so-called `wplite` boilerplate support the following defined constants (add these to the Custom Functions file under `/wp-content/functions.php` and customize as desired):
+The included [Must Use plugins](http://mirrors.slickstack.io/mu-plugins/) that SlickStack [ss] bundles as part of a so-called `wplite` boilerplate support the following defined constants (add these to the Custom Functions file under `/wp-content/functions.php` and customize as desired):
 
-    define('CLEAR_CACHES', true);
-    define('CLEAR_CACHES_NGINX', true);
-    define('CLEAR_CACHES_NGINX_PATH', '/var/www/cache');
-    define('CLEAR_CACHES_OBJECT', true);
-    define('CLEAR_CACHES_OPCACHE', true);
-    define('CLOUDFLARE', true);
-    define('CLOUDFLARE_API_EMAIL', 'user@example.com');
-    define('CLOUDFLARE_API_KEY', '123456789');
-    define('CUSTOM_FUNCTIONS', true);
-    define('DASHBOARD_CLEANUP, true);
-    define('DASHBOARD_CLEANUP_ADD_PLUGIN_TABS', true);
-    define('DASHBOARD_CLEANUP_EVENTS_AND_NEWS', true);
-    define('DASHBOARD_CLEANUP_LINK_MANAGER_MENU', true);
-    define('DASHBOARD_CLEANUP_QUICK_DRAFT', true);
-    define('DASHBOARD_CLEANUP_THANKS_FOOTER', true);
-    define('DASHBOARD_CLEANUP_WELCOME_TO_WORDPRESS', true);
-    define('DASHBOARD_CLEANUP_WOOCOMMERCE_CONNECT_STORE', true);
-    define('DASHBOARD_CLEANUP_WOOCOMMERCE_PRODUCTS_BLOCK', true);
-    define('DASHBOARD_CLEANUP_WP_ORG_SHORTCUT_LINKS', true); 
+    define('CLEAR_CACHES', true); // default = true
+    define('CLEAR_CACHES_NGINX', true); // default = true
+    define('CLEAR_CACHES_NGINX_PATH', '/var/www/cache'); // default = /var/www/cache
+    define('CLEAR_CACHES_OBJECT', true); // default = true
+    define('CLEAR_CACHES_OPCACHE', true); // default = true
+    define('CLOUDFLARE', true); // default = true
+    define('CLOUDFLARE_API_EMAIL', 'user@example.com'); // *must be unique*
+    define('CLOUDFLARE_API_KEY', '123456789'); // *must be unique*
+    define('CUSTOM_FUNCTIONS', true); // default = true
+    define('DASHBOARD_CLEANUP, true); // default = true
+    define('DASHBOARD_CLEANUP_ADD_PLUGIN_TABS', true); // default = true
+    define('DASHBOARD_CLEANUP_EVENTS_AND_NEWS', true); // default = true
+    define('DASHBOARD_CLEANUP_LINK_MANAGER_MENU', true); // default = true
+    define('DASHBOARD_CLEANUP_QUICK_DRAFT', true); // default = true
+    define('DASHBOARD_CLEANUP_THANKS_FOOTER', true); // default = true
+    define('DASHBOARD_CLEANUP_WELCOME_TO_WORDPRESS', true); // default = true
+    define('DASHBOARD_CLEANUP_WOOCOMMERCE_CONNECT_STORE', true); // default = true
+    define('DASHBOARD_CLEANUP_WOOCOMMERCE_PRODUCTS_BLOCK', true); // default = true
+    define('DASHBOARD_CLEANUP_WP_ORG_SHORTCUT_LINKS', true); // default = true
     define('DELETE_EXPIRED_TRANSIENTS', true); // default = true
     define('DELETE_EXPIRED_TRANSIENTS_HOURS', '6'); // default = 6
     define('DELETE_EXPIRED_TRANSIENTS_MAX_EXECUTION_TIME', '10'); // default = 10
@@ -151,49 +151,49 @@ The included `mu-plugins` that SlickStack [ss] bundles as part of a so-called `w
     define('DISABLE_GUTENBERG', true); // default = true
     define('DISABLE_IMAGE_COMPRESSION', true); // default = true
     define('DISABLE_POST_VIA_EMAIL', true); // default = true
-    define('DISABLE_JQUERY_MIGRATE', true);
-    define('DISABLE_POST_VIA_EMAIL', true);
-    define('DISABLE_XML_RPC', true);
-    define('FORCE_HTTPS', true);
-    define('FORCE_HTTPS_EXTERNAL_LINKS', false);
-    define('FORCE_HTTPS_EXTERNAL_RESOURCES', true);
-    define('FORCE_HTTPS_INTERNAL_LINKS', true);
-    define('FORCE_HTTPS_INTERNAL_RESOURCES', true);
-    define('FORCE_STRONG_HASHING', true);
-    define('HEADER_CLEANUP', true);
-    define('INDEX_AUTOLOAD', true);
-    define('INDEX_AUTOLOAD_REGENERATE', false);
-    define('LIMIT_HEARTBEAT', true);
-    define('LIMIT_HEARTBEAT_DISABLE_DASHBOARD', false);
-    define('LIMIT_HEARTBEAT_DISABLE_EDITOR', false);
-    define('LIMIT_HEARTBEAT_DISABLE_FRONTEND', true);
-    define('LIMIT_HEARTBEAT_INTERVAL_DASHBOARD', 600);
-    define('LIMIT_HEARTBEAT_INTERVAL_EDITOR', 30);
-    define('LIMIT_HEARTBEAT_INTERVAL_FRONTEND', 300);
-    define('MINIFY_HTML', true);
-    define('MINIFY_HTML_INLINE_STYLES', true);
-    define('MINIFY_HTML_INLINE_STYLES_COMMENTS', true);
-    define('MINIFY_HTML_REMOVE_COMMENTS', true);
-    define('MINIFY_HTML_REMOVE_CONDITIONALS', true);
-    define('MINIFY_HTML_REMOVE_EXTRA_SPACING', true);
-    define('MINIFY_HTML_REMOVE_HTML5_SELF_CLOSING', false);
-    define('MINIFY_HTML_REMOVE_LINE_BREAKS', true);
-    define('MINIFY_HTML_INLINE_SCRIPTS', false);
-    define('MINIFY_HTML_INLINE_SCRIPTS_COMMENTS', false);
-    define('MINIFY_HTML_UTF8_SUPPORT', true);
-    define('PLUGIN_BLACKLIST', true);
-    define('REMOVE_QUERY_STRINGS', true);
-    define('REMOVE_QUERY_STRINGS_ARGS', 'v,ver,version');
-    define('SERVER_STATUS', true);
-    define('SERVER_STATUS_DISPLAY', 'widefat');
-    define('SFTP_DETAILS', true);
-    define('SFTP_DETAILS_SERVER', '123.123.123.123');
-    define('SFTP_DETAILS_USER', 'username');
-    define('SFTP_DETAILS_PASSWORD', 'password');
-    define('SFTP_DETAILS_PORT', '6969');
-    define('SFTP_DETAILS_ROOT_DIR', '/var/www');
-    define('SFTP_DETAILS_PUBLIC_DIR', '/var/www/html');
-    define('VIRTUAL_ROBOTSTXT', true);
+    define('DISABLE_JQUERY_MIGRATE', true); // default = true
+    define('DISABLE_POST_VIA_EMAIL', true); // default = true
+    define('DISABLE_XML_RPC', true); // default = true
+    define('FORCE_HTTPS', true); // default = true
+    define('FORCE_HTTPS_EXTERNAL_LINKS', false); // default = false
+    define('FORCE_HTTPS_EXTERNAL_RESOURCES', true); // default = true
+    define('FORCE_HTTPS_INTERNAL_LINKS', true); // default = true
+    define('FORCE_HTTPS_INTERNAL_RESOURCES', true); // default = true
+    define('FORCE_STRONG_HASHING', true); // default = true
+    define('HEADER_CLEANUP', true); // default = true
+    define('INDEX_AUTOLOAD', true); // default = true
+    define('INDEX_AUTOLOAD_REGENERATE', false); // default = false
+    define('LIMIT_HEARTBEAT', true); // default = true
+    define('LIMIT_HEARTBEAT_DISABLE_DASHBOARD', false); // default = false
+    define('LIMIT_HEARTBEAT_DISABLE_EDITOR', false); // default = false
+    define('LIMIT_HEARTBEAT_DISABLE_FRONTEND', true); // default = true
+    define('LIMIT_HEARTBEAT_INTERVAL_DASHBOARD', 600); // default = 600
+    define('LIMIT_HEARTBEAT_INTERVAL_EDITOR', 30); // default = 30
+    define('LIMIT_HEARTBEAT_INTERVAL_FRONTEND', 300); // default = 300
+    define('MINIFY_HTML', true); // default = true
+    define('MINIFY_HTML_INLINE_STYLES', true); // default = true
+    define('MINIFY_HTML_INLINE_STYLES_COMMENTS', true); // default = true
+    define('MINIFY_HTML_REMOVE_COMMENTS', true); // default = true
+    define('MINIFY_HTML_REMOVE_CONDITIONALS', true); // default = true
+    define('MINIFY_HTML_REMOVE_EXTRA_SPACING', true); // default = true
+    define('MINIFY_HTML_REMOVE_HTML5_SELF_CLOSING', false); // default = false
+    define('MINIFY_HTML_REMOVE_LINE_BREAKS', true); // default = true
+    define('MINIFY_HTML_INLINE_SCRIPTS', false); // default = false
+    define('MINIFY_HTML_INLINE_SCRIPTS_COMMENTS', false); // default = false
+    define('MINIFY_HTML_UTF8_SUPPORT', true); // default = true
+    define('PLUGIN_BLACKLIST', true); // default = true
+    define('REMOVE_QUERY_STRINGS', true); // default = true
+    define('REMOVE_QUERY_STRINGS_ARGS', 'v,ver,version'); // default = v,ver,version
+    define('SERVER_STATUS', true); // default = true
+    define('SERVER_STATUS_DISPLAY', 'widefat'); // default = none
+    define('SFTP_DETAILS', true); // default = true
+    define('SFTP_DETAILS_SERVER', '123.123.123.123'); // *must be unique*
+    define('SFTP_DETAILS_USER', 'username'); // *must be unique*
+    define('SFTP_DETAILS_PASSWORD', 'password'); // *must be unique*
+    define('SFTP_DETAILS_PORT', '6969'); // default = 6969
+    define('SFTP_DETAILS_ROOT_DIR', '/var/www'); // default = /var/www
+    define('SFTP_DETAILS_PUBLIC_DIR', '/var/www/html'); // default = /var/www/html
+    define('VIRTUAL_ROBOTSTXT', true); // default = true
 
 ## Philosophy
 
