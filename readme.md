@@ -120,8 +120,80 @@ After completing the installation steps above, your `/var/www/` directory should
 
 The included `mu-plugins` that SlickStack [ss] bundles as part of a so-called `wplite` boilerplate support the following defined constants (add these to the Custom Functions file under `/wp-content/functions.php` and customize as desired):
 
+    define('CLEAR_CACHES', true);
+    define('CLEAR_CACHES_NGINX', true);
+    define('CLEAR_CACHES_NGINX_PATH', '/var/www/cache');
+    define('CLEAR_CACHES_OBJECT', true);
+    define('CLEAR_CACHES_OPCACHE', true);
+    define('CLOUDFLARE', true);
+    define('CLOUDFLARE_API_EMAIL', 'user@example.com');
+    define('CLOUDFLARE_API_KEY', '123456789');
+    define('CUSTOM_FUNCTIONS', true);
+    define('DASHBOARD_CLEANUP, true);
+    define('DASHBOARD_CLEANUP_ADD_PLUGIN_TABS', true);
+    define('DASHBOARD_CLEANUP_EVENTS_AND_NEWS', true);
+    define('DASHBOARD_CLEANUP_LINK_MANAGER_MENU', true);
+    define('DASHBOARD_CLEANUP_QUICK_DRAFT', true);
+    define('DASHBOARD_CLEANUP_THANKS_FOOTER', true);
+    define('DASHBOARD_CLEANUP_WELCOME_TO_WORDPRESS', true);
+    define('DASHBOARD_CLEANUP_WOOCOMMERCE_CONNECT_STORE', true);
+    define('DASHBOARD_CLEANUP_WOOCOMMERCE_PRODUCTS_BLOCK', true);
+    define('DASHBOARD_CLEANUP_WP_ORG_SHORTCUT_LINKS', true); 
+    define('DELETE_EXPIRED_TRANSIENTS', true); // default = true
+    define('DELETE_EXPIRED_TRANSIENTS_HOURS', '6'); // default = 6
+    define('DELETE_EXPIRED_TRANSIENTS_MAX_EXECUTION_TIME', '10'); // default = 10
+    define('DELETE_EXPIRED_TRANSIENTS_MAX_BATCH_RECORDS', '50'); // default = 50
+    define('DISABLE_ATTACHMENT_PAGES', true); // default = true
+    define('DISABLE_EMBEDS', true); // default = true
+    define('DISABLE_EMBEDS_ALLOWED_SOURCES', 'twitter,facebook,youtube,soundcloud,scribd,etc'); // default = none
     define('DISABLE_EMOJIS', true); // default = true
+    define('DISABLE_EMPTY_TRASH', true); // default = true
     define('DISABLE_GUTENBERG', true); // default = true
+    define('DISABLE_IMAGE_COMPRESSION', true); // default = true
+    define('DISABLE_POST_VIA_EMAIL', true); // default = true
+    define('DISABLE_JQUERY_MIGRATE', true);
+    define('DISABLE_POST_VIA_EMAIL', true);
+    define('DISABLE_XML_RPC', true);
+    define('FORCE_HTTPS', true);
+    define('FORCE_HTTPS_EXTERNAL_LINKS', false);
+    define('FORCE_HTTPS_EXTERNAL_RESOURCES', true);
+    define('FORCE_HTTPS_INTERNAL_LINKS', true);
+    define('FORCE_HTTPS_INTERNAL_RESOURCES', true);
+    define('FORCE_STRONG_HASHING', true);
+    define('HEADER_CLEANUP', true);
+    define('INDEX_AUTOLOAD', true);
+    define('INDEX_AUTOLOAD_REGENERATE', false);
+    define('LIMIT_HEARTBEAT', true);
+    define('LIMIT_HEARTBEAT_DISABLE_DASHBOARD', false);
+    define('LIMIT_HEARTBEAT_DISABLE_EDITOR', false);
+    define('LIMIT_HEARTBEAT_DISABLE_FRONTEND', true);
+    define('LIMIT_HEARTBEAT_INTERVAL_DASHBOARD', 600);
+    define('LIMIT_HEARTBEAT_INTERVAL_EDITOR', 30);
+    define('LIMIT_HEARTBEAT_INTERVAL_FRONTEND', 300);
+    define('MINIFY_HTML', true);
+    define('MINIFY_HTML_INLINE_STYLES', true);
+    define('MINIFY_HTML_INLINE_STYLES_COMMENTS', true);
+    define('MINIFY_HTML_REMOVE_COMMENTS', true);
+    define('MINIFY_HTML_REMOVE_CONDITIONALS', true);
+    define('MINIFY_HTML_REMOVE_EXTRA_SPACING', true);
+    define('MINIFY_HTML_REMOVE_HTML5_SELF_CLOSING', false);
+    define('MINIFY_HTML_REMOVE_LINE_BREAKS', true);
+    define('MINIFY_HTML_INLINE_SCRIPTS', false);
+    define('MINIFY_HTML_INLINE_SCRIPTS_COMMENTS', false);
+    define('MINIFY_HTML_UTF8_SUPPORT', true);
+    define('PLUGIN_BLACKLIST', true);
+    define('REMOVE_QUERY_STRINGS', true);
+    define('REMOVE_QUERY_STRINGS_ARGS', 'v,ver,version');
+    define('SERVER_STATUS', true);
+    define('SERVER_STATUS_DISPLAY', 'widefat');
+    define('SFTP_DETAILS', true);
+    define('SFTP_DETAILS_SERVER', '123.123.123.123');
+    define('SFTP_DETAILS_USER', 'username');
+    define('SFTP_DETAILS_PASSWORD', 'password');
+    define('SFTP_DETAILS_PORT', '6969');
+    define('SFTP_DETAILS_ROOT_DIR', '/var/www');
+    define('SFTP_DETAILS_PUBLIC_DIR', '/var/www/html');
+    define('VIRTUAL_ROBOTSTXT', true);
 
 ## Philosophy
 
@@ -150,6 +222,8 @@ Thus, before the likes of Google and Amazon and Shopify and Wix take over the en
 Others: Moss.sh, Webinoly, VestaCP, OneInStack, OpenResty, ServerPilot, RunCloud
 
 ## FAQ
+
+* **Can I use your technical SEO features on non-SlickStack sites?** Yes, you can. If you or your client has a WordPress website on a web host somewhere and can't move it to a SlickStack server for the time being, you can still make use of all our `mu-plugins` (micro plugins) that are included in SlickStack by simply installing them one-by-one. Or you can install "less" plugins by installing the "parent" plugins instead, such as Speed Demon, SEO Genius, Security Guard.
 
 * **Why don't use you env-vars?** Teams who use GitHub repos to develop their sites (e.g. dev/stage/production branches) have started using env-vars with systems like Roots Trellis so that their entire codebase can be safely open-source. However, this requires defining the env-vars within the server stack (hidden from public root) so it's not so friendly for many agencies. Since our goal is to support "typical" agencies with mostly frontend knowledge, we felt that reflecting the WordPress setup was a simpler approach and so if using SlickStack there will be two config files (ss-config and wp-config.php)
 
