@@ -89,34 +89,36 @@ After completing the installation steps above, your `/var/www/` directory should
     /var/www/html/wp-includes/
     /var/www/html/wp-...
     
-...and if deploying as `wplite` your `/var/www/html/wp-content/mu-plugins/` directory should look like this:
+## Must Use Plugins (WPLite Boilerplate)
+    
+If you choose to deploy a SlickStack [ss] server using our free WPLite boilerplate, the installation process will include several [Must Use plugins](http://mirrors.slickstack.io/mu-plugins/) inside your WordPress structure:
 
-    /var/www/html/wp-content/mu-plugins/autoloader.php
-    /var/www/html/wp-content/mu-plugins/clear-caches/
-    /var/www/html/wp-content/mu-plugins/cloudflare/
-    /var/www/html/wp-content/mu-plugins/custom-functions/
-    /var/www/html/wp-content/mu-plugins/dashboard-cleanup/
-    /var/www/html/wp-content/mu-plugins/delete-expired-transients/
-    /var/www/html/wp-content/mu-plugins/disable-attachment-pages/
-    /var/www/html/wp-content/mu-plugins/disable-embeds/
-    /var/www/html/wp-content/mu-plugins/disable-emojis/
-    /var/www/html/wp-content/mu-plugins/disable-empty-trash/
-    /var/www/html/wp-content/mu-plugins/disable-gutenberg/
-    /var/www/html/wp-content/mu-plugins/disable-image-compression/
-    /var/www/html/wp-content/mu-plugins/disable-post-via-email/
-    /var/www/html/wp-content/mu-plugins/disable-xml-rpc/
-    /var/www/html/wp-content/mu-plugins/error-log-monitor/
-    /var/www/html/wp-content/mu-plugins/force-strong-hashing/
-    /var/www/html/wp-content/mu-plugins/header-cleanup/
-    /var/www/html/wp-content/mu-plugins/index-autoload/
-    /var/www/html/wp-content/mu-plugins/limit-heartbeat/
-    /var/www/html/wp-content/mu-plugins/minify-html/
-    /var/www/html/wp-content/mu-plugins/plugin-blacklist/
-    /var/www/html/wp-content/mu-plugins/remove-query-strings/
-    /var/www/html/wp-content/mu-plugins/server-status/
-    /var/www/html/wp-content/mu-plugins/sftp-details/
-    /var/www/html/wp-content/mu-plugins/virtual-robotstxt/
-    /var/www/html/wp-content/mu-plugins/xxx-notices.php
+* [Autoloader](https://github.com/littlebizzy/autoloader): Enables standard WordPress plugins contained in a folder to be placed in the mu-plugins directory and loaded prior to others (forked from Bedrock).
+* Clear Caches:
+* CloudFlare:
+* Custom Functions:
+* Dashboard Cleanup:
+* Delete Expired Transients:
+* Disable Attachment Pages:
+* Disable Embeds:
+* Disable Emojis:
+* Disable Empty Trash:
+* Disable Gutenberg:
+* Disable Image Compression:
+* Disable Post Via Email:
+* Disable XML-RPC:
+* Error Log Monitor:
+* Force Strong Hashing:
+* Header Cleanup:
+* Index Autoload:
+* Limit Heartbeat:
+* Minify HTML:
+* Plugin Blacklist:
+* Remove Query Strings:
+* Server Status:
+* SFTP Details:
+* Virtual Robotstxt:
+* XXX Notices:
     
 ## Defined Constants
 
