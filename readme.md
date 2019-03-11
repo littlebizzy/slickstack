@@ -94,8 +94,8 @@ After completing the installation steps above, your `/var/www/` directory should
 If you choose to deploy a SlickStack [ss] server using our free WPLite boilerplate, the installation process will include several [Must Use plugins](http://mirrors.slickstack.io/mu-plugins/) inside your WordPress structure:
 
 * [Autoloader](https://github.com/littlebizzy/autoloader): Enables standard WordPress plugins contained in a folder to be placed in the mu-plugins directory and loaded prior to others (forked from Bedrock).
-* Clear Caches:
-* CloudFlare:
+* Clear Caches: The easiest way to clear caches including WordPress cache, PHP Opcache, Nginx cache, Transient cache, Varnish cache, and object cache (e.g. Redis).
+* CloudFlare: Easily connect your WordPress website to free optimization features from CloudFlare, including one-click options to purge cache and enable dev mode.
 * Custom Functions:
 * Dashboard Cleanup:
 * Delete Expired Transients:
