@@ -91,10 +91,10 @@ After completing the installation steps above, your `/var/www/` directory should
     
 ## Must Use Plugins (WPLite Boilerplate)
     
-If you choose to deploy a SlickStack [ss] server using our free WPLite boilerplate, the installation process will include several [Must Use plugins](http://mirrors.slickstack.io/mu-plugins/) inside your WordPress structure:
+If you choose to deploy a SlickStack [ss] server using our free WPLite boilerplate, the installation process will include several [Must Use plugins](http://mirrors.slickstack.io/mu-plugins/) inside your WordPress structure. If you do not wish for these Must Use plugins to be installed, and want a default "vanilla" WordPress installation, choose "wordpress" instead of "wplite" when setting up your ss-config file during the SlickStack setup process:
 
 * [Autoloader](https://github.com/littlebizzy/autoloader): Enables standard WordPress plugins contained in a folder to be placed in the mu-plugins directory and loaded prior to others (forked from Bedrock).
-* Clear Caches: The easiest way to clear caches including WordPress cache, PHP Opcache, Nginx cache, Transient cache, Varnish cache, and object cache (e.g. Redis).
+* [Clear Caches](https://github.com/littlebizzy/clear-caches): The easiest way to clear caches including WordPress cache, PHP Opcache, Nginx cache, Transient cache, Varnish cache, and object cache (e.g. Redis).
 * CloudFlare: Easily connect your WordPress website to free optimization features from CloudFlare, including one-click options to purge cache and enable dev mode.
 * Custom Functions:
 * Dashboard Cleanup:
@@ -124,14 +124,22 @@ If you choose to deploy a SlickStack [ss] server using our free WPLite boilerpla
 
 The included [Must Use plugins](http://mirrors.slickstack.io/mu-plugins/) that SlickStack [ss] bundles as part of a so-called `wplite` boilerplate support the following defined constants (add these to the Custom Functions file under `/wp-content/functions.php` and customize as desired):
 
+    /* Plugin Meta */
+    define('AUTOMATIC_UPDATE_PLUGINS', false); // default = false (only supported by LittleBizzy plugins)
+    define('DISABLE_NAG_NOTICES', true); // default = true (only supported by LittleBizzy plugins)
+
+    /* Clear Caches Functions */
     define('CLEAR_CACHES', true); // default = true
     define('CLEAR_CACHES_NGINX', true); // default = true
     define('CLEAR_CACHES_NGINX_PATH', '/var/www/cache'); // default = /var/www/cache
     define('CLEAR_CACHES_OBJECT', true); // default = true
     define('CLEAR_CACHES_OPCACHE', true); // default = true
+    
+    /* CloudFlare Functions */
     define('CLOUDFLARE', true); // default = true
     define('CLOUDFLARE_API_EMAIL', 'user@example.com'); // *must be unique*
     define('CLOUDFLARE_API_KEY', '123456789'); // *must be unique*
+    
     define('CUSTOM_FUNCTIONS', true); // default = true
     define('DASHBOARD_CLEANUP, true); // default = true
     define('DASHBOARD_CLEANUP_ADD_PLUGIN_TABS', true); // default = true
