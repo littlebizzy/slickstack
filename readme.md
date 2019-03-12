@@ -23,11 +23,11 @@ SlickStack [ss] works best on VPS servers with KVM virtualization that have at l
 | LEMP Module | Current Version | What does SlickStack [ss] customize? |
 | :------------- | :----------: | :----------: |
 | **Ubuntu** | 18.04 (LTS) | `crontab` + `gai.conf` + `sshd_config` + `sudoers` |
-| **Nginx** | 1.15.8 | `nginx.conf` + `server block` |
+| **Nginx (Extras)** | 1.15.8 | `nginx.conf` + `server block` |
 | **FastCGI Cache** | 1.15.8 | `fastcgi-cache.conf` |
 | **OpenSSL** | 1.1.0g | default config |
 | **MySQL** | 5.7.25 | default config (will be customized slightly in future) |
-| **PHP-FPM** | 7.2.15 | `php.ini` + `php-fpm.conf` + `www.conf` |
+| **PHPnginx extr-FPM** | 7.2.15 | `php.ini` + `php-fpm.conf` + `www.conf` |
 | **Zend OPcache** | 7.2.15 | (same as above) |
 | **WordPress** | 5.0.3 | optional `wplite` pre-optimized configuration (adds custom `mu-plugins`) |
 | **WP-CLI** | 1.5.1 | default config |
@@ -239,6 +239,14 @@ Others: Moss.sh, Webinoly, VestaCP, OneInStack, OpenResty, ServerPilot, RunCloud
 ## FAQ
 
 * **Can I use your technical SEO features on non-SlickStack sites?** Yes, you can. If you or your client has a WordPress website on a web host somewhere and can't move it to a SlickStack server for the time being, you can still make use of all our `mu-plugins` (micro plugins) that are included in SlickStack by simply installing them one-by-one. Or you can install "less" plugins by installing the "parent" plugins instead, such as Speed Demon, SEO Genius, Security Guard.
+
+* **What is the complete list of Nginx modules that are installed?** 
+
+    nginx -V
+    nginx version: nginx/1.15.8
+    built with OpenSSL 1.1.0g  2 Nov 2017
+    TLS SNI support enabled
+    configure arguments: --with-cc-opt='-g -O2 -fdebug-prefix-map=/build/nginx-hFnDHF/nginx-1.15.8=. -fstack-protector-strong -Wformat -Werror=format-security -fPIC -Wdate-time -D_FORTIFY_SOURCE=2' --with-ld-opt='-Wl,-Bsymbolic-functions -Wl,-z,relro -Wl,-z,now -fPIC' --prefix=/usr/share/nginx --conf-path=/etc/nginx/nginx.conf --http-log-path=/var/log/nginx/access.log --error-log-path=/var/log/nginx/error.log --lock-path=/var/lock/nginx.lock --pid-path=/run/nginx.pid --modules-path=/usr/lib/nginx/modules --http-client-body-temp-path=/var/lib/nginx/body --http-fastcgi-temp-path=/var/lib/nginx/fastcgi --http-proxy-temp-path=/var/lib/nginx/proxy --http-scgi-temp-path=/var/lib/nginx/scgi --http-uwsgi-temp-path=/var/lib/nginx/uwsgi --with-compat --with-debug --with-pcre-jit --with-http_ssl_module --with-http_stub_status_module --with-http_realip_module --with-http_auth_request_module --with-http_v2_module --with-http_dav_module --with-http_slice_module --with-threads --with-http_addition_module --with-http_flv_module --with-http_geoip_module=dynamic --with-http_gunzip_module --with-http_gzip_static_module --with-http_image_filter_module=dynamic --with-http_mp4_module --with-http_perl_module=dynamic --with-http_random_index_module --with-http_secure_link_module --with-http_sub_module --with-http_xslt_module=dynamic --with-mail=dynamic --with-mail_ssl_module --with-stream=dynamic --with-stream_ssl_module --with-stream_ssl_preread_module --add-dynamic-module=/build/nginx-hFnDHF/nginx-1.15.8/debian/modules/http-headers-more-filter --add-dynamic-module=/build/nginx-hFnDHF/nginx-1.15.8/debian/modules/http-auth-pam --add-dynamic-module=/build/nginx-hFnDHF/nginx-1.15.8/debian/modules/http-cache-purge --add-dynamic-module=/build/nginx-hFnDHF/nginx-1.15.8/debian/modules/http-dav-ext --add-dynamic-module=/build/nginx-hFnDHF/nginx-1.15.8/debian/modules/http-ndk --add-dynamic-module=/build/nginx-hFnDHF/nginx-1.15.8/debian/modules/http-echo --add-dynamic-module=/build/nginx-hFnDHF/nginx-1.15.8/debian/modules/http-fancyindex --add-dynamic-module=/build/nginx-hFnDHF/nginx-1.15.8/debian/modules/nchan --add-dynamic-module=/build/nginx-hFnDHF/nginx-1.15.8/debian/modules/http-lua --add-dynamic-module=/build/nginx-hFnDHF/nginx-1.15.8/debian/modules/rtmp --add-dynamic-module=/build/nginx-hFnDHF/nginx-1.15.8/debian/modules/http-uploadprogress --add-dynamic-module=/build/nginx-hFnDHF/nginx-1.15.8/debian/modules/http-upstream-fair --add-dynamic-module=/build/nginx-hFnDHF/nginx-1.15.8/debian/modules/http-subs-filter
 
 * **Why don't use you env-vars?** Teams who use GitHub repos to develop their sites (e.g. dev/stage/production branches) have started using env-vars with systems like Roots Trellis so that their entire codebase can be safely open-source. However, this requires defining the env-vars within the server stack (hidden from public root) so it's not so friendly for many agencies. Since our goal is to support "typical" agencies with mostly frontend knowledge, we felt that reflecting the WordPress setup was a simpler approach and so if using SlickStack there will be two config files (ss-config and wp-config.php)
 
