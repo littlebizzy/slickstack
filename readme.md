@@ -143,7 +143,10 @@ The included [Must Use plugins](http://mirrors.slickstack.io/mu-plugins/) that S
     define('CLOUDFLARE_API_EMAIL', 'user@example.com'); // *must be unique*
     define('CLOUDFLARE_API_KEY', '123456789'); // *must be unique*
     
+    /* Custom Functions Functions */
     define('CUSTOM_FUNCTIONS', true); // default = true
+    
+    /* Dashboard Cleanup Functions */
     define('DASHBOARD_CLEANUP, true); // default = true
     define('DASHBOARD_CLEANUP_ADD_PLUGIN_TABS', true); // default = true
     define('DASHBOARD_CLEANUP_EVENTS_AND_NEWS', true); // default = true
@@ -154,30 +157,59 @@ The included [Must Use plugins](http://mirrors.slickstack.io/mu-plugins/) that S
     define('DASHBOARD_CLEANUP_WOOCOMMERCE_CONNECT_STORE', true); // default = true
     define('DASHBOARD_CLEANUP_WOOCOMMERCE_PRODUCTS_BLOCK', true); // default = true
     define('DASHBOARD_CLEANUP_WP_ORG_SHORTCUT_LINKS', true); // default = true
+    
+    /* Delete Expired Transients Functions */
     define('DELETE_EXPIRED_TRANSIENTS', true); // default = true
     define('DELETE_EXPIRED_TRANSIENTS_HOURS', '6'); // default = 6
     define('DELETE_EXPIRED_TRANSIENTS_MAX_EXECUTION_TIME', '10'); // default = 10
     define('DELETE_EXPIRED_TRANSIENTS_MAX_BATCH_RECORDS', '50'); // default = 50
+    
+    /* Disable Attachment Pages Functions */
     define('DISABLE_ATTACHMENT_PAGES', true); // default = true
+    
+    /* Disable Embeds Functions */
     define('DISABLE_EMBEDS', true); // default = true
-    define('DISABLE_EMBEDS_ALLOWED_SOURCES', 'twitter,facebook,youtube,soundcloud,scribd,etc'); // default = none
+    define('DISABLE_EMBEDS_ALLOWED_SOURCES', 'twitter,facebook,youtube,soundcloud,etc'); // default = none
+    
+    /* Disable Emojis Functions */
     define('DISABLE_EMOJIS', true); // default = true
+    
+    /* Disable Empty Trash Functions */
     define('DISABLE_EMPTY_TRASH', true); // default = true
+    
+    /* Disable Gutenberg Functions */
     define('DISABLE_GUTENBERG', true); // default = true
+    
+    /* Disable Image Compression Functions */
     define('DISABLE_IMAGE_COMPRESSION', true); // default = true
-    define('DISABLE_POST_VIA_EMAIL', true); // default = true
+    
+    /* Disable jQuery Migrate Functions */
     define('DISABLE_JQUERY_MIGRATE', true); // default = true
+    
+    /* Disable Post Via Email Functions */
     define('DISABLE_POST_VIA_EMAIL', true); // default = true
+    
+    /* Disable XML-RPC Functions */
     define('DISABLE_XML_RPC', true); // default = true
+    
+    /* Force HTTPS Functions */
     define('FORCE_HTTPS', true); // default = true
     define('FORCE_HTTPS_EXTERNAL_LINKS', false); // default = false
     define('FORCE_HTTPS_EXTERNAL_RESOURCES', true); // default = true
     define('FORCE_HTTPS_INTERNAL_LINKS', true); // default = true
     define('FORCE_HTTPS_INTERNAL_RESOURCES', true); // default = true
+    
+    /* Force Strong Hashing Functions */
     define('FORCE_STRONG_HASHING', true); // default = true
+    
+    /* Header Cleanup Functions */
     define('HEADER_CLEANUP', true); // default = true
+    
+    /* Index Autoload Functions */
     define('INDEX_AUTOLOAD', true); // default = true
     define('INDEX_AUTOLOAD_REGENERATE', false); // default = false
+    
+    /* Limit Heartbeat Functions */
     define('LIMIT_HEARTBEAT', true); // default = true
     define('LIMIT_HEARTBEAT_DISABLE_DASHBOARD', false); // default = false
     define('LIMIT_HEARTBEAT_DISABLE_EDITOR', false); // default = false
@@ -185,6 +217,8 @@ The included [Must Use plugins](http://mirrors.slickstack.io/mu-plugins/) that S
     define('LIMIT_HEARTBEAT_INTERVAL_DASHBOARD', 600); // default = 600
     define('LIMIT_HEARTBEAT_INTERVAL_EDITOR', 30); // default = 30
     define('LIMIT_HEARTBEAT_INTERVAL_FRONTEND', 300); // default = 300
+    
+    /* Minify HTML Functions */
     define('MINIFY_HTML', true); // default = true
     define('MINIFY_HTML_INLINE_STYLES', true); // default = true
     define('MINIFY_HTML_INLINE_STYLES_COMMENTS', true); // default = true
@@ -196,11 +230,19 @@ The included [Must Use plugins](http://mirrors.slickstack.io/mu-plugins/) that S
     define('MINIFY_HTML_INLINE_SCRIPTS', false); // default = false
     define('MINIFY_HTML_INLINE_SCRIPTS_COMMENTS', false); // default = false
     define('MINIFY_HTML_UTF8_SUPPORT', true); // default = true
+    
+    /* Plugin Blacklist Functions */
     define('PLUGIN_BLACKLIST', true); // default = true
+    
+    /* Remove Query Strings Functions */
     define('REMOVE_QUERY_STRINGS', true); // default = true
     define('REMOVE_QUERY_STRINGS_ARGS', 'v,ver,version'); // default = v,ver,version
+    
+    /* Server Status Functions */
     define('SERVER_STATUS', true); // default = true
     define('SERVER_STATUS_DISPLAY', 'widefat'); // default = none
+    
+    /* SFTP Details Functions */
     define('SFTP_DETAILS', true); // default = true
     define('SFTP_DETAILS_SERVER', '123.123.123.123'); // *must be unique*
     define('SFTP_DETAILS_USER', 'username'); // *must be unique*
@@ -208,6 +250,8 @@ The included [Must Use plugins](http://mirrors.slickstack.io/mu-plugins/) that S
     define('SFTP_DETAILS_PORT', '6969'); // default = 6969
     define('SFTP_DETAILS_ROOT_DIR', '/var/www'); // default = /var/www
     define('SFTP_DETAILS_PUBLIC_DIR', '/var/www/html'); // default = /var/www/html
+    
+    /* Virtual Robots.txt Functions */
     define('VIRTUAL_ROBOTSTXT', true); // default = true
 
 ## Philosophy
