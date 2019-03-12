@@ -75,12 +75,24 @@ http {
     #### HTTP HEADERS ####
     ######################
     
+    ## powered by SlickStack ##
     add_header X-Powered-By "SlickStack";
+    
+    ## FastCGI Cache status ##
     add_header X-FastCGI-Cache $upstream_cache_status;
+    
+    ## HSTS (HTTPS) cache for one month ##
+    ## do not preload https://hstspreload.org ##
+    ## do not include subdomains ##
+    add_header Strict-Transport-Security "max-age=2628000" always;
+    
+    ## various security headers ##
     add_header X-Frame-Options SAMEORIGIN;
     add_header X-Content-Type-Options nosniff;
     add_header X-XSS-Protection "1; mode=block";
     add_header Referrer-Policy "strict-origin-when-cross-origin";
+    
+    ## remove deprecated caching headers ##
     more_clear_headers "Pragma";
     more_clear_headers "Expires";
     more_clear_headers "Cache-Control";
