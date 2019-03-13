@@ -54,6 +54,8 @@ The below installation steps assume that you've already spun up a dedicated Ubun
 
 4. `sudo reboot`
 
+**NOTE: SlickStack [ss] requires CloudFlare to be activated on your domain before SSL (HTTPS) will be recognized as a fully secure and CA-signed domain, because of its integration with OpenSSL. See below FAQ for more information.**
+
 From this point forward, you can manage your SlickStack [ss] server by simply using the `sudo bash` command on any one of the included **ss** scripts located within the `/var/www/` directory, as needed. However, in most cases there shouldn't be any need for much hands-on management as the server will intelligently run various cron jobs which connect to this GitHub repo (or whichever fork of this repo that your team has setup... be sure to modify all `wget` sources).
 
 You can also safely re-install SlickStack [ss] using `sudo bash ss-install` without causing any conflicts or data loss; the installation process is completely [idempotent](https://en.wikipedia.org/wiki/Idempotence).
@@ -287,6 +289,10 @@ Others: Moss.sh, Webinoly, VestaCP, OneInStack, OpenResty, ServerPilot, RunCloud
 **Can I use your technical SEO features on non-SlickStack sites?**
 
 Yes, you can. If you or your client has a WordPress website on a web host somewhere and can't move it to a SlickStack server for the time being, you can still make use of all our `mu-plugins` (micro plugins) that are included in SlickStack by simply installing them one-by-one. Or you can install "less" plugins by installing the "parent" plugins instead, such as Speed Demon, SEO Genius, Security Guard.
+
+**Why do you use OpenSSL instead of Let's Encrypt?** 
+
+This is largely a decision that is based on LittleBizzy's web hosting approach, which requires our clients to be behind CloudFlare. As the fastest DNS resolver in the world, it simply doesn't make any sense right now NOT to use CloudFlare, especially since its completely free. By using OpenSSL, which is included in Ubuntu Linux, it means easier installation and configuration, and it never expires either. In contrast, Let's Encrypt is much more complicated to setup and maintain, and their certificates expire constantly after 90 days, meaning your server management software must constantly renew it and manage it. There is really no point in our view to introduce more potential conflicts and failures into SlickStack, when OpenSSL pairs perfectly with CloudFlare's free SSL network, soon to be the largest SSL provider in the world. By using self-signed certs, SlickStack [ss] also avoids the potential of Man-In-The-Middle attacks, meaning even stronger security. This decision might change in the future, but for now we will only be supporting OpenSSL self-signed certicates and assuming an integration with CloudFlare.
 
 **What is the complete list of Nginx modules that are installed?** 
 
