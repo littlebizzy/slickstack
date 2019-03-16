@@ -568,11 +568,31 @@ DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/u
 #### configure redis (latest apt version) ####
 ##############################################
 
+## delete tmp files ##
+rm -R -f /tmp/redis-conf* /tmp/redis.conf*
+
+## download latest versions ##
+cd /tmp/
+wget --no-cache http://mirrors.slickstack.io/redis/redis-conf.txt
+
 ## configure redis for object caching ##
-sed -i '/maxmemory.*bytes.*/c\maxmemory 512mb' /etc/redis/redis.conf
-sed -i '/maxmemory-policy noeviction/c\maxmemory-policy allkeys-lru' /etc/redis/redis.conf
+# sed -i '/maxmemory.*bytes.*/c\maxmemory 512mb' /etc/redis/redis.conf
+# sed -i '/maxmemory-policy noeviction/c\maxmemory-policy allkeys-lru' /etc/redis/redis.conf
+
+## rename files ##
+mv redis-conf.txt redis.conf
+
+## copy files to destinations ##
+cp -R -f --no-preserve=mode,ownership /tmp/redis.conf /etc/redis/redis.conf
+
+## delete tmp files ##
+rm -R -f /tmp/redis-conf* /tmp/redis.conf*
+
+## create redis log file if does not exist ##
+mkdir /var/www/logs/redis.log
 
 ## reset permissions ##
+chown www-data:www-data /var/www/logs/redis.log
 chown redis:redis /etc/redis/redis.conf
 chown redis:redis /var/run/redis
 
