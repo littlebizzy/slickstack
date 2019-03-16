@@ -1,21 +1,18 @@
 ####################################################################################
-#### author: slickstack ############################################################
+#### author: SlickStack ############################################################
 #### link: https://slickstack.io ###################################################
 #### mirror: http://mirrors.slickstack.io/redis/4.0.9/redis-conf.txt ###############
 #### default: https://raw.githubusercontent.com/antirez/redis/4.0.9/redis.conf #####
 #### path: /etc/redis/redis.conf ###################################################
-#### purpose: redis configuration file #############################################
-#### version: 4.0.9 ################################################################
+#### purpose: Redis configuration file #############################################
+#### version: Redis 4.0.9 ##########################################################
 ####################################################################################
-
-## start redis like this:
-## redis-server /etc/redis/redis.conf
 
 ## optional includes
 # include /path/to/local.conf
 # include /path/to/other.conf
 
-## load modules
+## optional load modules
 # loadmodule /path/to/my_module.so
 # loadmodule /path/to/other_module.so
 
@@ -37,7 +34,7 @@ always-show-logo no
 
 #### logging ####
 loglevel notice
-logfile /var/log/redis/error.log
+logfile /var/www/logs/redis.log
 # syslog-enabled no
 # syslog-ident redis
 # syslog-facility local0
@@ -68,6 +65,8 @@ repl-disable-tcp-nodelay no
 slave-priority 100
 # min-slaves-to-write 3
 # min-slaves-max-lag 10
+# slave-announce-ip 5.5.5.5
+# slave-announce-port 1234
 
 #### security ####
 # requirepass foobared
@@ -79,16 +78,21 @@ maxmemory 512mb
 maxmemory-policy allkeys-lru
 # maxmemory-samples 5
 
+#### lazy freeing ####
+lazyfree-lazy-eviction no
+lazyfree-lazy-expire no
+lazyfree-lazy-server-del no
+slave-lazy-flush no
+
 #### append only mode ####
 appendonly no
 appendfilename "appendonly.aof"
-# appendfsync always
 appendfsync everysec
-# appendfsync no
 no-appendfsync-on-rewrite no
 auto-aof-rewrite-percentage 100
 auto-aof-rewrite-min-size 64mb
 aof-load-truncated yes
+aof-use-rdb-preamble no
 
 #### lua scripting ####
 lua-time-limit 5000
@@ -100,6 +104,10 @@ lua-time-limit 5000
 # cluster-slave-validity-factor 10
 # cluster-migration-barrier 1
 # cluster-require-full-coverage yes
+# cluster-slave-no-failover no
+# cluster-announce-ip 10.1.1.5
+# cluster-announce-port 6379
+# cluster-announce-bus-port 6380
 
 #### slow log ####
 slowlog-log-slower-than 10000
@@ -114,8 +122,8 @@ notify-keyspace-events ""
 #### advanced config ####
 hash-max-ziplist-entries 512
 hash-max-ziplist-value 64
-list-max-ziplist-entries 512
-list-max-ziplist-value 64
+list-max-ziplist-size -2
+list-compress-depth 0
 set-max-intset-entries 512
 zset-max-ziplist-entries 128
 zset-max-ziplist-value 64
@@ -124,5 +132,17 @@ activerehashing yes
 client-output-buffer-limit normal 0 0 0
 client-output-buffer-limit slave 256mb 64mb 60
 client-output-buffer-limit pubsub 32mb 8mb 60
+# client-query-buffer-limit 1gb
+# proto-max-bulk-len 512mb
 hz 10
 aof-rewrite-incremental-fsync yes
+# lfu-log-factor 10
+# lfu-decay-time 1
+
+#### active defragmentation ####
+# activedefrag yes
+# active-defrag-ignore-bytes 100mb
+# active-defrag-threshold-lower 10
+# active-defrag-threshold-upper 100
+# active-defrag-cycle-min 25
+# active-defrag-cycle-max 75
