@@ -567,6 +567,9 @@ DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/u
 ## install php-redis ##
 DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install php-redis
 
+## start redis-server ##
+/etc/init.d/redis-server start
+
 ##############################################
 #### configure redis (latest apt version) ####
 ##############################################
@@ -596,7 +599,7 @@ sed -i '/dir /c\dir /tmp' /etc/redis/redis.conf
 
 ## create redis log file if does not exist ##
 if [ ! -f "/var/www/logs/redis.log" ]; then touch "/var/www/logs/redis.log"; fi
-mkdir /var/run/redis
+# mkdir /var/run/redis
 
 ## reset permissions ##
 chown redis:redis /var/www/logs/redis.log
@@ -607,8 +610,8 @@ chmod 775 /etc/redis/redis.conf
 chmod 775 /var/run/redis
 
 ## restart services ##
-/etc/init.d/php7.2-fpm restart
 /etc/init.d/redis-server restart
+/etc/init.d/php7.2-fpm restart
 
 ############################################
 #### install monit (latest apt version) ####
