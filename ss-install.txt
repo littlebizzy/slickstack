@@ -567,51 +567,34 @@ DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/u
 ## install php-redis ##
 DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install php-redis
 
-## create redis log file if does not exist ##
-mkdir /var/www/logs/redis.log
-if [ ! -f "/var/www/logs/redis.log" ]; then touch "/var/www/logs/redis.log"; fi
-mkdir /var/run/redis
-mkdir /var/run/redis/redis-server.pid
-
-## reset permissions ##
-chown redis:redis /var/www/logs/redis.log
-chown redis:redis /etc/redis/redis.conf
-chown redis:redis /var/run/redis
-chown redis:redis /var/run/redis/redis-server.pid
-chmod 775 /var/www/logs/redis.log
-chmod 775 /etc/redis/redis.conf
-chmod 775 /var/run/redis
-chmod 775 /var/run/redis/redis-server.pid
-
-## start redis ##
-/etc/init.d/redis-server start
-
 ##############################################
 #### configure redis (latest apt version) ####
 ##############################################
 
 ## delete tmp files ##
-rm -R -f /tmp/redis-conf* /tmp/redis.conf*
+# rm -R -f /tmp/redis-conf* /tmp/redis.conf*
 
 ## download latest versions ##
-cd /tmp/
-wget --no-cache http://mirrors.slickstack.io/redis/redis-conf.txt
-
-## configure redis for object caching ##
-# sed -i '/maxmemory.*bytes.*/c\maxmemory 512mb' /etc/redis/redis.conf
-# sed -i '/maxmemory-policy noeviction/c\maxmemory-policy allkeys-lru' /etc/redis/redis.conf
+# cd /tmp/
+# wget --no-cache http://mirrors.slickstack.io/redis/redis-conf.txt
 
 ## rename files ##
-mv redis-conf.txt redis.conf
+# mv redis-conf.txt redis.conf
 
 ## copy files to destinations ##
-cp -R -f --no-preserve=mode,ownership /tmp/redis.conf /etc/redis/redis.conf
+# cp -R -f --no-preserve=mode,ownership /tmp/redis.conf /etc/redis/redis.conf
 
 ## delete tmp files ##
-rm -R -f /tmp/redis-conf* /tmp/redis.conf*
+# rm -R -f /tmp/redis-conf* /tmp/redis.conf*
+
+## configure redis for object caching ##
+sed -i '/maxmemory.*bytes.*/c\maxmemory 512mb' /etc/redis/redis.conf
+sed -i '/maxmemory-policy noeviction/c\maxmemory-policy allkeys-lru' /etc/redis/redis.conf
+sed -i '/always-show-logo yes/c\always-show-logo no' /etc/redis/redis.conf
+sed -i '/logfile/c\logfile /var/www/logs/redis.log' /etc/redis/redis.conf
+sed -i '/dir /c\dir /tmp' /etc/redis/redis.conf
 
 ## create redis log file if does not exist ##
-mkdir /var/www/logs/redis.log
 if [ ! -f "/var/www/logs/redis.log" ]; then touch "/var/www/logs/redis.log"; fi
 mkdir /var/run/redis
 
