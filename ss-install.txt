@@ -552,46 +552,6 @@ cp -R -f --no-preserve=mode,ownership /tmp/wp-config.php /var/www/html/wp-config
 ## delete tmp files ##
 rm -R -f /tmp/wp-config*
 
-##############################################################
-#### install redis-server (latest apt version) ###############
-#### install php-redis a.k.a. predis (latest apt version) ####
-##############################################################
-
-## purge redis-server ##
-DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" purge redis-server
-
-## purge php-redis ##
-DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" purge php-redis
-
-## install redis-server ##
-DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install redis-server
-
-## install php-redis ##
-DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install php-redis
-
-################################
-#### configure redis-server ####
-################################
-
-## configure redis for object caching ##
-sed -i '/maxmemory.*bytes.*/c\maxmemory 256mb' /etc/redis/redis.conf
-sed -i '/maxmemory-policy noeviction/c\maxmemory-policy allkeys-lru' /etc/redis/redis.conf
-sed -i '/always-show-logo yes/c\always-show-logo no' /etc/redis/redis.conf
-# sed -i '/logfile/c\logfile /var/www/logs/redis.log' /etc/redis/redis.conf
-# sed -i '/dir /c\dir /tmp' /etc/redis/redis.conf
-
-## create redis log file if does not exist ##
-# if [ ! -f "/var/www/logs/redis.log" ]; then touch "/var/www/logs/redis.log"; fi
-# mkdir /var/run/redis
-
-## reset permissions ##
-# chown redis:redis /var/www/logs/redis.log
-chown redis:redis /etc/redis/redis.conf
-chown redis:redis /var/run/redis
-# chmod 775 /var/www/logs/redis.log
-chmod 775 /etc/redis/redis.conf
-chmod 775 /var/run/redis
-
 ############################################
 #### install monit (latest apt version) ####
 ############################################
@@ -650,16 +610,56 @@ cp -R -f -d --no-preserve=mode,ownership /tmp/user.rules /etc/ufw/user.rules
 rm -R -f /tmp/ufw-conf.txt* /tmp/ufw.conf*
 rm -R -f /tmp/user-rules.txt* /tmp/user.rules*
 
+##############################################################
+#### install redis-server (latest apt version) ###############
+#### install php-redis a.k.a. predis (latest apt version) ####
+##############################################################
+
+## purge redis-server ##
+DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" purge redis-server
+
+## purge php-redis ##
+DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" purge php-redis
+
+## install redis-server ##
+DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install redis-server
+
+## install php-redis ##
+DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install php-redis
+
+################################
+#### configure redis-server ####
+################################
+
+## configure redis for object caching ##
+sed -i '/maxmemory.*bytes.*/c\maxmemory 256mb' /etc/redis/redis.conf
+sed -i '/maxmemory-policy noeviction/c\maxmemory-policy allkeys-lru' /etc/redis/redis.conf
+sed -i '/always-show-logo yes/c\always-show-logo no' /etc/redis/redis.conf
+# sed -i '/logfile/c\logfile /var/www/logs/redis.log' /etc/redis/redis.conf
+# sed -i '/dir /c\dir /tmp' /etc/redis/redis.conf
+
+## create redis log file if does not exist ##
+# if [ ! -f "/var/www/logs/redis.log" ]; then touch "/var/www/logs/redis.log"; fi
+# mkdir /var/run/redis
+
+## reset permissions ##
+# chown redis:redis /var/www/logs/redis.log
+chown redis:redis /etc/redis/redis.conf
+chown redis:redis /var/run/redis
+# chmod 775 /var/www/logs/redis.log
+chmod 775 /etc/redis/redis.conf
+chmod 775 /var/run/redis
+
 ###############################
 #### complete installation ####
 ###############################
 
 ## update and upgrade repos ##
-DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" update
-DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" upgrade
+# DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" update
+# DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" upgrade
 
 ## autoremove ##
-DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" autoremove
+# DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" autoremove
 
 ## fix dpkg ##
 DEBIAN_FRONTEND=noninteractive dpkg --configure -a --force-confold
