@@ -22,6 +22,8 @@ SlickStack [ss] works best on VPS servers with KVM virtualization that have at l
 
 *Last updated Mar 16, 2019*
 
+Note: WP-CLI is now functional, although many commands might conflict with SlickStack so be careful. Also, Monit is installed, but is currently non-functional. Git is installed, but is not really tested yet.
+
 | LEMP Module | Current Version | What does SlickStack [ss] customize? |
 | :------------- | :----------: | :----------: |
 | **Ubuntu** | 18.04 (LTS) | `crontab` + `gai.conf` + `sshd_config` + `sudoers` |
