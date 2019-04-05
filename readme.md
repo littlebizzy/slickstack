@@ -8,7 +8,9 @@ SlickStack is a free LEMP stack automation script written in Bash designed to en
 
 &#10142; **NEW!** SlickStack now includes a Redis-based `object-cache.php` by default...
 
-&#10142; Browse the SlickStack public mirrors: **http://mirrors.slickstack.io**
+&#10142; Browse the SlickStack public mirrors: http://mirrors.slickstack.io
+
+&#10142; Need more help? [**$40 SlickStack setup service**](https://www.littlebizzy.com/services/slickstack-setup)
 
 ## Abstract
 
