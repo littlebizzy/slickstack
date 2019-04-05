@@ -10,7 +10,7 @@ SlickStack is a free LEMP stack automation script written in Bash designed to en
 
 &#10142; Browse the SlickStack public mirrors: http://mirrors.slickstack.io
 
-&#10142; Need more help? [**$40 SlickStack setup service**](https://www.littlebizzy.com/services/slickstack-setup)
+&#10142; Need more help? [**$40 SlickStack setup service**](https://www.littlebizzy.com/services/slickstack-setup) (includes CloudFlare, DNS records, free SSL, and site migration)
 
 ## Abstract
 
