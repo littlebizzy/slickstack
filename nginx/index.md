@@ -1,6 +1,6 @@
 # Nginx (Server)
 
----
+----
 
 ### Custom Files
 
@@ -12,3 +12,7 @@
 ### Default Files
 
 * (coming soon)
+
+----
+
+*Last updated: Apr 28, 2019*
