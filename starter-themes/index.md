@@ -1,4 +1,6 @@
-# WordPress Starter Themes
+# Starter Themes (WordPress)
+
+----
 
 ### Custom Files
 
@@ -17,3 +19,7 @@
 * <a href="https://themble.com/bones/">https://themble.com/bones/</a>
 * <a href="https://understrap.com/">https://understrap.com/</a>
 * <a href="https://woocommerce.com/storefront/">https://woocommerce.com/storefront/</a>
+
+----
+
+*Last updated: Apr 28, 2019*
