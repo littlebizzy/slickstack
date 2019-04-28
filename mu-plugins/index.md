@@ -1,6 +1,6 @@
 # MU (Must-Use) Plugins
 
----
+----
 
 ### Custom Files
 
@@ -39,5 +39,5 @@
 
 ----
 
-*Last updated Apr 27, 2019*
+*Last updated: Apr 28, 2019*
 
