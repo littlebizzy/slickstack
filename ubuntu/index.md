@@ -13,10 +13,10 @@
 
 ### Default Files
 
-* <a href="gai-conf-16.04.txt">gai-conf-18.04.txt</a>
-* <a href="ufw-16.04.txt">ufw-18.04.txt</a>
-* <a href="ufw-conf-16.04.txt">ufw-conf-18.04.txt</a>
-* <a href="user-rules-16.04.txt">user-rules-18.04.txt</a>
+* <a href="gai-conf-18.04.txt">gai-conf-18.04.txt</a>
+* <a href="ufw-18.04.txt">ufw-18.04.txt</a>
+* <a href="ufw-conf-18.04.txt">ufw-conf-18.04.txt</a>
+* <a href="user-rules-18.04.txt">user-rules-18.04.txt</a>
 * <a href="gai-conf-16.04.txt">gai-conf-16.04.txt</a>
 * <a href="ufw-16.04.txt">ufw-16.04.txt</a>
 * <a href="ufw-conf-16.04.txt">ufw-conf-16.04.txt</a>
