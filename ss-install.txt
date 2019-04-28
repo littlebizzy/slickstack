@@ -1,21 +1,25 @@
 #!/bin/bash
 
-###############################################################
-#### author: SlickStack #######################################
-#### link: https://slickstack.io ##############################
-#### mirror: http://mirrors.slickstack.io/ss-install.txt ######
-#### path: /var/www/ss-install ################################
-#### destination: n/a #########################################
-#### purpose: installs SlickStack LEMP server (idempotent) ####
-#### version: SlickStack alpha ss3c ###########################
-###############################################################
+#############################################################
+#### author: SlickStack #####################################
+#### link: https://slickstack.io ############################
+#### mirror: http://mirrors.slickstack.io/ss-install.txt ####
+#### path: /var/www/ss-install ##############################
+#### destination: n/a #######################################
+#### purpose: installs SlickStack server (idempotent) #######
+#### ss version: SlickStack alpha ss4a ######################
+#### module version: n/a ####################################
+#############################################################
 
-## slickstack config ##
+## include SlickStack variables ##
 source /var/www/ss-config
 
 ##################
 #### ss-check ####
 ##################
+
+## MESSAGE: explain ss-check ##
+echo -e "\e[36mRetrieving latest SlickStack files and copying them to local server...\e[0m"
 
 ## delete tmp files ##
 rm -R -f /tmp/ss-check*
@@ -41,9 +45,12 @@ chmod 755 /var/www/ss-check
 source /var/www/ss-check
 source /var/www/ss-perms
 
-###############
-#### repos ####
-###############
+##################################################
+#### install modules from latest Ubuntu repos ####
+##################################################
+
+## MESSAGE: explain repos ##
+echo -e "\e[36mInstalling various SlickStack modules from most recent Ubuntu repos...\e[0m"
 
 ## fix dpkg ##
 DEBIAN_FRONTEND=noninteractive dpkg --configure -a --force-confold
@@ -64,9 +71,12 @@ DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/u
 ## install git ##
 DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install git
 
-#########################
-#### configure users ####
-#########################
+###########################################################
+#### configure Ubuntu users, permissions, and defaults ####
+###########################################################
+
+## MESSAGE: explain repos ##
+echo -e "\e[36mConfiguring users, permissions and Ubuntu defaults...\e[0m"
 
 ## reset root ssh/sftp password ##
 echo root:$rootpass | /usr/sbin/chpasswd
@@ -116,6 +126,9 @@ chmod 440 /etc/sudoers
 #### configure ssh/sftp ####
 ############################
 
+## MESSAGE: explain repos ##
+echo -e "\e[36mConfiguring various SSH (SFTP) settings and permissions...\e[0m"
+
 ## delete tmp files ##
 rm -R -f /tmp/sshd-config.txt sshd_config
 
@@ -153,6 +166,9 @@ timedatectl set-timezone UTC
 #### install crontab ####
 #########################
 
+## MESSAGE: explain repos ##
+echo -e "\e[36mInstalling the SlickStack crontab file to Ubuntu crontab...\e[0m"
+
 ## delete tmp files ##
 # rm -R -f /tmp/crontab.txt /tmp/root
 ## download latest versions ##
@@ -177,6 +193,9 @@ chown root:root /var/spool/cron/crontabs/root
 #######################
 ### install wp-cli ####
 #######################
+
+## MESSAGE: explain repos ##
+echo -e "\e[36mInstalling the WP-CLI module directly from SlickStack mirrors...\e[0m"
 
 ## uninstall current wp-cli versions ##
 rm -R -f /usr/local/bin/wp
@@ -220,6 +239,9 @@ source /home/${sudo}/.bashrc
 #########################
 #### install openssl ####
 #########################
+
+## MESSAGE: explain repos ##
+echo -e "\e[36mConfiguring various OpenSSL settings and permissions...\e[0m"
 
 ## generate ssl certificate ##
 openssl req -new -x509 -nodes -days 730 -newkey rsa:2048 -keyout /etc/ssl/nginx.key -out /etc/ssl/nginx.crt -subj "/C=${country}/ST=${state}/L=${city}/O=${company}/OU=${dept}/CN=${domain}"
@@ -674,3 +696,6 @@ source /var/www/ss-perms
 /etc/init.d/redis-server restart
 /etc/init.d/ufw force-reload
 /etc/init.d/ufw restart
+
+## confirm installation complete ##
+echo -e "\e[36mSlickStack installation complete! Please reboot server and ensure CloudFlare is activated.\e[0m"
