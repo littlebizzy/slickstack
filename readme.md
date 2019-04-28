@@ -22,7 +22,7 @@ While there are [clear benefits](https://medium.com/capital-one-developers/bashi
 
 SlickStack [ss] works best on VPS servers with KVM virtualization that have at least 2GB RAM from quality network providers such as DigitalOcean, Linode, Vultr, and Amazon Lightsail. The underlying LEMP stack configuration is meant specifically for single-site WordPress installations, and does not support [Multisite](https://codex.wordpress.org/Create_A_Network) installations. SlickStack [ss] supports WordPress, WooCommerce, bbPress, and BuddyPress "out of the box" with optimized settings that scale.
 
-*Last updated Mar 16, 2019*
+*Last updated: Apr 28, 2019*
 
 Note: WP-CLI is now functional, although many commands might conflict with SlickStack so be careful. Also, Monit is installed, but is currently non-functional. Git is installed, but is not really tested yet.
 
@@ -33,14 +33,14 @@ Note: WP-CLI is now functional, although many commands might conflict with Slick
 | **FastCGI Cache** | 1.15.8 | `fastcgi-cache.conf` |
 | **OpenSSL** | 1.1.0g | default config |
 | **MySQL** | 5.7.25 | default config (will be customized slightly in future) |
-| **PHP-FPM** | 7.2.15 | `php.ini` + `php-fpm.conf` + `www.conf` |
-| **Zend/OPcache** | 3.2.0/7.2.15 | (same as above) |
+| **PHP-FPM** | 7.2.17 | `php.ini` + `php-fpm.conf` + `www.conf` |
+| **Zend/OPcache** | 3.2.0/7.2.17 | (same as above) |
 | **WordPress** | 5.1.1 | optional `wplite` pre-optimized configuration (adds custom `mu-plugins`) |
-| **WP-CLI** | 1.5.1 | default config |
+| **WP-CLI** | 2.1.0 | default config |
 | **Redis** | 4.0.9 | `redis.conf` |
-| **Monit** | 5.25.12 | `monitrc` |
+| **Monit** | 5.25.1 | `monitrc` |
 | **Git** | 2.17.1 | default config |
-| **UFW Firewall** | 0.35 | `ufw` + `ufw.conf` + `user-rules` |
+| **UFW Firewall** | 0.36 | `ufw` + `ufw.conf` + `user-rules` |
 
 Default Ports: 80 (HTTP), 443 (HTTPS), 6969 (SSH)
 
