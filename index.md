@@ -1,8 +1,8 @@
-# SlickStack Mirrors
+# Public Mirrors (SlickStack)
 
----
+----
 
-### LEMP Modules
+### Core Modules
 
 * <a href="monit/">/monit/</a>
 * <a href="mu-plugins/">/mu-plugins/</a>
@@ -27,7 +27,7 @@
 * <a href="ss-update.txt">ss-update.txt</a>
 * <a href="ss-worker.txt">ss-worker.txt</a>
 
-### Cron Jobs
+### Core Cron Jobs
 
 * <a href="0-crontab.txt">0-crontab.txt</a>
 * <a href="1-cron-often.txt">1-cron-often.txt</a>
@@ -40,7 +40,11 @@
 * <a href="8-cron-monthly.txt">8-cron-monthly.txt</a>
 * <a href="9-cron-sometimes.txt">9-cron-sometimes.txt</a>
 
-### Meta Files
+### Core Meta Files
 
 * <a href="readme.md">readme.md</a>
 * <a href="license.md">license.md</a>
+
+----
+
+*Last updated: Apr 28, 2019*
