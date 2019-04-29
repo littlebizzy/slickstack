@@ -8,7 +8,7 @@
 * <a href="mu-plugins/">/mu-plugins/</a>
 * <a href="mysql/">/mysql/</a>
 * <a href="nginx/">/nginx/</a>
-* <a href="php/">/php/</a>
+* <a href="php-fpm/">/php-fpm/</a>
 * <a href="redis/">/redis/</a>
 * <a href="starter-themes/">/starter-themes/</a>
 * <a href="ubuntu/">/ubuntu/</a>
