@@ -24,6 +24,18 @@
 * <a href="/php-fpm/php-fpm-conf-7.2.15.txt">php-fpm-conf-7.2.15.txt</a>
 * <a href="/php-fpm/php-fpm-conf-7.2.16.txt">php-fpm-conf-7.2.16.txt</a>
 * <a href="/php-fpm/php-fpm-conf-7.2.17.txt">php-fpm-conf-7.2.17.txt</a>
+* <a href="/php-fpm/php-ini-7.2.6.txt">php-ini-7.2.6.txt</a>
+* <a href="/php-fpm/php-ini-7.2.7.txt">php-ini-7.2.7.txt</a>
+* <a href="/php-fpm/php-ini-7.2.8.txt">php-ini-7.2.8.txt</a>
+* <a href="/php-fpm/php-ini-7.2.9.txt">php-ini-7.2.9.txt</a>
+* <a href="/php-fpm/php-ini-7.2.10.txt">php-ini-7.2.10.txt</a>
+* <a href="/php-fpm/php-ini-7.2.11.txt">php-ini-7.2.11.txt</a>
+* <a href="/php-fpm/php-ini-7.2.12.txt">php-ini-7.2.12.txt</a>
+* <a href="/php-fpm/php-ini-7.2.13.txt">php-ini-7.2.13.txt</a>
+* <a href="/php-fpm/php-ini-7.2.14.txt">php-ini-7.2.14.txt</a>
+* <a href="/php-fpm/php-ini-7.2.15.txt">php-ini-7.2.15.txt</a>
+* <a href="/php-fpm/php-ini-7.2.16.txt">php-ini-7.2.16.txt</a>
+* <a href="/php-fpm/php-ini-7.2.17.txt">php-ini-7.2.17.txt</a>
 
 ### Related Links
 
