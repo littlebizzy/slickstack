@@ -12,7 +12,7 @@
 
 ### Default Files
 
-*Raw files straight from the vendor's original release (e.g. official repo), not altered by Ubuntu or other providers.*
+*Raw files straight from the vendor's original release (e.g. official repo), not altered by Ubuntu or other providers, included here for reference and documentation purposes only.*
 
 * <a href="/php-fpm/php-fpm-conf-7.2.6.txt">php-fpm-conf-7.2.6.txt</a>
 * <a href="/php-fpm/php-fpm-conf-7.2.7.txt">php-fpm-conf-7.2.7.txt</a>
