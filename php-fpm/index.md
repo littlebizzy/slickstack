@@ -10,7 +10,12 @@
 
 ### Default Files
 
-* (coming soon)
+* <a href="/php-fpm/php-fpm-conf-7.2.6.txt">php-fpm-conf-7.2.6.txt</a>
+
+### Related Links
+
+* https://raw.githubusercontent.com/php/php-src/PHP-7.2.6/sapi/fpm/php-fpm.conf.in
+* https://raw.githubusercontent.com/php/php-src/php-7.2.6/php.ini-production
 
 ----
 
