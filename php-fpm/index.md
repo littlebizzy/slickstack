@@ -4,16 +4,13 @@
 
 ### Custom Files
 
-* (coming soon)
+* <a href="/php-fpm/php-fpm-conf.txt">php-fpm-conf.txt</a>
+* <a href="/php-fpm/php-ini.txt">php-ini.txt</a>
+* <a href="/php-fpm/www-conf.txt">www-conf.txt</a>
 
 ### Default Files
 
-* <a href="/php-fpm/7.2/php.ini">7.2 / php.ini</a>
-* <a href="/php-fpm/7.2/php-fpm.conf">7.2 / php-fpm.conf</a>
-* <a href="/php-fpm/7.2/www.conf">7.2 / www.conf</a>
-* <a href="/php-fpm/7.0/php.ini">7.0 / php.ini</a>
-* <a href="/php-fpm/7.0/php-fpm.conf">7.0 / php-fpm.conf</a>
-* <a href="/php-fpm/7.0/www.conf">7.0 / www.conf</a>
+* (coming soon)
 
 ----
 
