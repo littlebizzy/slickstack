@@ -19,6 +19,11 @@
 * <a href="/php-fpm/php-fpm-conf-7.2.10.txt">php-fpm-conf-7.2.10.txt</a>
 * <a href="/php-fpm/php-fpm-conf-7.2.11.txt">php-fpm-conf-7.2.11.txt</a>
 * <a href="/php-fpm/php-fpm-conf-7.2.12.txt">php-fpm-conf-7.2.12.txt</a>
+* <a href="/php-fpm/php-fpm-conf-7.2.13.txt">php-fpm-conf-7.2.13.txt</a>
+* <a href="/php-fpm/php-fpm-conf-7.2.14.txt">php-fpm-conf-7.2.14.txt</a>
+* <a href="/php-fpm/php-fpm-conf-7.2.15.txt">php-fpm-conf-7.2.15.txt</a>
+* <a href="/php-fpm/php-fpm-conf-7.2.16.txt">php-fpm-conf-7.2.16.txt</a>
+* <a href="/php-fpm/php-fpm-conf-7.2.17.txt">php-fpm-conf-7.2.17.txt</a>
 
 ### Related Links
 
