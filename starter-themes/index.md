@@ -4,7 +4,7 @@
 
 ### Custom Files
 
-* coming soon
+* (coming soon)
 
 ### Default Files
 
@@ -15,11 +15,12 @@
 
 ### Related Links
 
-* <a href="https://roots.io/sage/">https://roots.io/sage/</a>
-* <a href="https://themble.com/bones/">https://themble.com/bones/</a>
-* <a href="https://understrap.com/">https://understrap.com/</a>
-* <a href="https://woocommerce.com/storefront/">https://woocommerce.com/storefront/</a>
+* <a href="https://roots.io/sage/">roots.io/sage</a>
+* <a href="https://themble.com/bones/">themble.com/bones</a>
+* a href="https://themehybrid.com/themes/mythic">themehybrid.com/themes/mythic</a>
+* <a href="https://understrap.com/">understrap.com</a>
+* <a href="https://woocommerce.com/storefront/">woocommerce.com/storefront</a>
 
 ----
 
-*Last updated: Apr 28, 2019*
+*Last updated: May 1, 2019*
