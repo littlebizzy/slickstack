@@ -9,6 +9,7 @@
 ### Default Files
 
 * <a href="bones-1.07.zip">bones-1.07.zip</a>
+* <a href="mythic-1.1.0.zip">mythic-1.1.0.zip</a>
 * <a href="sage-9.0.9.zip">sage-9.0.9.zip</a>
 * <a href="storefront-2.4.3.zip">storefront-2.4.3.zip</a>
 * <a href="understrap-0.9.1.zip">understrap-0.9.1.zip</a>
