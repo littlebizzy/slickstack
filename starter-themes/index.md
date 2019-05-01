@@ -18,7 +18,7 @@
 
 * <a href="https://roots.io/sage/">roots.io/sage</a>
 * <a href="https://themble.com/bones/">themble.com/bones</a>
-* a href="https://themehybrid.com/themes/mythic">themehybrid.com/themes/mythic</a>
+* <a href="https://themehybrid.com/themes/mythic">themehybrid.com/themes/mythic</a>
 * <a href="https://understrap.com/">understrap.com</a>
 * <a href="https://woocommerce.com/storefront/">woocommerce.com/storefront</a>
 
