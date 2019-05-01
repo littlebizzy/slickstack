@@ -1,3 +1,7 @@
+// ---
+// redirect_from: "/php/"
+// ---
+//
 # PHP-FPM
 
 ----
