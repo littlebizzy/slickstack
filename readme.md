@@ -41,6 +41,7 @@ Note: WP-CLI is now functional, although many commands might conflict with Slick
 | **Monit** | 5.25.1 | `monitrc` |
 | **Git** | 2.17.1 | default config |
 | **UFW Firewall** | 0.36 | `ufw` + `ufw.conf` + `user-rules` |
+| **ClamAV** | 0.100.x | default config |
 
 Default Ports: 80 (HTTP), 443 (HTTPS), 6969 (SSH)
 
