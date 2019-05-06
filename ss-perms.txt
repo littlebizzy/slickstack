@@ -7,7 +7,7 @@
 #### path: /var/www/ss-perms ##############################
 #### destination: n/a #####################################
 #### purpose: resets all file and server permissions ######
-#### ss version: SlickStack alpha ss4a ####################
+#### ss version: SlickStack alpha ss4b ####################
 #### module version: n/a ##################################
 ###########################################################
 
@@ -113,49 +113,24 @@ chmod -R g+s /var/www/html/
 mkdir /var/www/logs
 
 ## ensure all log files exist ##
+if [ ! -f "/var/www/logs/clamav.log" ]; then touch "/var/www/logs/clamav.log"; fi
 if [ ! -f "/var/www/logs/error.log" ]; then touch "/var/www/logs/error.log"; fi
-if [ ! -f "/var/www/logs/nginx.log" ]; then touch "/var/www/logs/nginx.log"; fi
-if [ ! -f "/var/www/logs/mysql.log" ]; then touch "/var/www/logs/mysql.log"; fi
-if [ ! -f "/var/www/logs/redis.log" ]; then touch "/var/www/logs/redis.log"; fi
 if [ ! -f "/var/www/logs/monit.log" ]; then touch "/var/www/logs/monit.log"; fi
+if [ ! -f "/var/www/logs/mysql.log" ]; then touch "/var/www/logs/mysql.log"; fi
+if [ ! -f "/var/www/logs/nginx.log" ]; then touch "/var/www/logs/nginx.log"; fi
+if [ ! -f "/var/www/logs/redis.log" ]; then touch "/var/www/logs/redis.log"; fi
 
-## reset permissions ##
+## reset log permissions ##
 chown -R www-data:www-data /var/www/logs
 chown -R redis:redis /var/www/logs/redis.log
 chmod -R 775 /var/www/logs
 
 #### reset Redis permissions ####
-
-## create redis log file if does not exist ##
-mkdir /var/www/logs/redis.log
-if [ ! -f "/var/www/logs/redis.log" ]; then touch "/var/www/logs/redis.log"; fi
 mkdir /var/run/redis
-
-## reset permissions ##
-chown redis:redis /var/www/logs/redis.log
 chown redis:redis /etc/redis/redis.conf
-
-
-## old ##
-# mkdir -p /var/log/nginx
-# mkdir -p /var/log/php-fpm
-# mkdir -p /var/log/mysql
 
 ## old ##
 mkdir /var/run/php
-# if [ ! -f "/var/log/php-fpm/error.log" ]; then touch "/var/log/php-fpm/error.log"; fi
-
-## old ##
-# chmod -R 755 /var/log/nginx/access.log
-# chmod -R 755 /var/log/nginx/error.log
-# chown -R www-data:www-data /var/log/nginx/access.log
-# chown -R www-data:www-data /var/log/nginx/error.log
-# chmod -R 755 /var/log/php7.0-fpm.log
-# chmod -R 755 /var/log/php-fpm/error.log
-# chown -R www-data:www-data /var/log/php7.0-fpm.log
-# chown -R www-data:www-data /var/log/php-fpm/error.log
-# chown -R www-data:www-data /var/log/monit.log
-# chmod -R 755 /var/log/monit.log
 
 ###############################
 ## reset Nginx permissions ####
