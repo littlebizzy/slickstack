@@ -4,6 +4,7 @@
 
 ### Core Modules
 
+* <a href="clamav/">/clamav/</a>
 * <a href="monit/">/monit/</a>
 * <a href="mu-plugins/">/mu-plugins/</a>
 * <a href="mysql/">/mysql/</a>
