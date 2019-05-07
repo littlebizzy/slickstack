@@ -1,4 +1,4 @@
-# ClamAV (Antivirus + Malware Scan)
+# ClamAV (Antivirus)
 
 ----
 
