@@ -1,22 +1,22 @@
 #!/bin/bash
 
-#############################################################
-#### author: SlickStack #####################################
-#### link: https://slickstack.io ############################
-#### mirror: http://mirrors.slickstack.io/ss-install.txt ####
-#### path: /var/www/ss-install ##############################
-#### destination: n/a #######################################
-#### purpose: installs SlickStack server (idempotent) #######
-#### ss version: SlickStack alpha ss4a ######################
-#### module version: n/a ####################################
-#############################################################
+################################################################################
+#### author: SlickStack ########################################################
+#### link: https://slickstack.io ###############################################
+#### mirror: http://mirrors.slickstack.io/ss-install.txt #######################
+#### path: /var/www/ss-install #################################################
+#### destination: n/a ##########################################################
+#### purpose: installs SlickStack server (idempotent) ##########################
+#### ss version: SlickStack alpha ss4b #########################################
+#### module version: n/a #######################################################
+################################################################################
 
-## include SlickStack variables ##
+## include SlickStack configuration ##
 source /var/www/ss-config
 
-##################
-#### ss-check ####
-##################
+################################################################################
+#### ss-check ##################################################################
+################################################################################
 
 ## MESSAGE: explain ss-check ##
 echo -e "\e[36mRetrieving latest SlickStack files and copying them to local server...\e[0m"
@@ -45,9 +45,9 @@ chmod 755 /var/www/ss-check
 source /var/www/ss-check
 source /var/www/ss-perms
 
-##################################################
-#### install modules from latest Ubuntu repos ####
-##################################################
+################################################################################
+#### install modules from latest Ubuntu repos ##################################
+################################################################################
 
 ## MESSAGE: explain repos ##
 echo -e "\e[36mInstalling various SlickStack modules from most recent Ubuntu repos...\e[0m"
@@ -55,8 +55,10 @@ echo -e "\e[36mInstalling various SlickStack modules from most recent Ubuntu rep
 ## fix dpkg ##
 DEBIAN_FRONTEND=noninteractive dpkg --configure -a --force-confold
 
-## update and upgrade repos ##
+## update repo cache ##
 DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" update
+
+## upgrade existing repos ##
 DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" upgrade
 
 ## autoremove ##
@@ -65,15 +67,18 @@ DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/u
 ## install update-manager-core ##
 DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install update-manager-core
 
-## install linux utilities ##
+## install Linux utilities ##
 DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install zip unzip
 
-## install git ##
+## install Git ##
 DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install git
 
-###########################################################
-#### configure Ubuntu users, permissions, and defaults ####
-###########################################################
+## install ClamAV ##
+DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install clamav
+
+################################################################################
+#### Configure Ubuntu: Users, Permissions, Defaults ############################
+################################################################################
 
 ## MESSAGE: explain repos ##
 echo -e "\e[36mConfiguring users, permissions and Ubuntu defaults...\e[0m"
@@ -95,9 +100,12 @@ echo $user:$userpass | /usr/sbin/chpasswd
 ## set default editor to nano ##
 update-alternatives --set editor /bin/nano
 
-####################################
-#### configure sudoers (visudo) ####
-####################################
+## set UTC timezone ##
+timedatectl set-timezone UTC
+
+################################################################################
+#### Configure Ubuntu: Sudoers (a.k.a. Visudo) #################################
+################################################################################
 
 ## delete tmp files ##
 rm -R -f /tmp/sudoers.txt sudoers
@@ -122,9 +130,9 @@ rm -R -f /tmp/sudoers.txt sudoers
 chown root:root /etc/sudoers
 chmod 440 /etc/sudoers
 
-############################
-#### configure ssh/sftp ####
-############################
+################################################################################
+#### Configure Ubuntu: SSH (SFTP) ##############################################
+################################################################################
 
 ## MESSAGE: explain repos ##
 echo -e "\e[36mConfiguring various SSH (SFTP) settings and permissions...\e[0m"
@@ -155,16 +163,9 @@ chown root:root /etc/ssh/sshd_config
 ## restart ssh ##
 /etc/init.d/ssh restart
 
-############################
-#### configure timezone ####
-############################
-
-## set UTC timezone ##
-timedatectl set-timezone UTC
-
-#########################
-#### install crontab ####
-#########################
+################################################################################
+#### install crontab ###########################################################
+################################################################################
 
 ## MESSAGE: explain repos ##
 echo -e "\e[36mInstalling the SlickStack crontab file to Ubuntu crontab...\e[0m"
@@ -190,9 +191,9 @@ chown root:root /var/spool/cron/crontabs/root
 ## reload crontab ##
 /etc/init.d/cron reload
 
-#######################
-### install wp-cli ####
-#######################
+################################################################################
+### install wp-cli #############################################################
+################################################################################
 
 ## MESSAGE: explain repos ##
 echo -e "\e[36mInstalling the WP-CLI module directly from SlickStack mirrors...\e[0m"
@@ -236,9 +237,9 @@ source /home/wp-completion.bash' >> /home/${sudo}/.bashrc
 ## e.g. source ~/.bashrc ##
 source /home/${sudo}/.bashrc
 
-#########################
-#### install openssl ####
-#########################
+################################################################################
+#### Configure OpenSSL (via Ubuntu) ############################################
+################################################################################
 
 ## MESSAGE: explain repos ##
 echo -e "\e[36mConfiguring various OpenSSL settings and permissions...\e[0m"
@@ -250,9 +251,9 @@ openssl req -new -x509 -nodes -days 730 -newkey rsa:2048 -keyout /etc/ssl/nginx.
 chown root:root /etc/ssl/nginx.key
 chown root:root /etc/ssl/nginx.crt
 
-########################################
-#### install nginx (latest version) ####
-########################################
+################################################################################
+#### Install Nginx-Extras (Current Ubuntu Repo Version) ########################
+################################################################################
 
 ## update repos ##
 DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" update
@@ -266,9 +267,9 @@ DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/u
 ## install nginx-extras ##
 DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install nginx-extras
 
-#########################
-#### configure nginx ####
-#########################
+################################################################################
+#### Configure Nginx-Extras ####################################################
+################################################################################
 
 ## delete tmp files ##
 rm -R -f /tmp/nginx-conf.txt /tmp/nginx-conf /tmp/nginx.conf
@@ -298,9 +299,9 @@ mkdir /var/www/cache
 chown www-data:www-data /var/www/cache
 chown root:root /etc/nginx/nginx.conf
 
-######################################
-#### configure nginx server block ####
-######################################
+################################################################################
+#### Configure Server Block (Nginx-Extras) #####################################
+################################################################################
 
 ## delete tmp files ##
 rm -R -f /tmp/default.txt /tmp/default /tmp/server-block.txt /tmp/server-block /tmp/server-block-ssl.txt /tmp/server-block-ssl
@@ -342,9 +343,9 @@ chown root:root /etc/nginx/sites-available/default
 ## restart nginx ##
 /etc/init.d/nginx restart
 
-##############################
+################################################################################
 #### install php-fpm 7.2 #####
-##############################
+################################################################################
 
 ## purge php 7.0 and extensions ##
 DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" purge php7.0
@@ -418,9 +419,9 @@ DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/u
 ## confirm installed ##
 echo "MySQL 5.7 is installed, now we will secure it."
 
-##########################
-#### secure mysql 5.7 ####
-##########################
+################################################################################
+#### Configure MySQL ###########################################################
+################################################################################
 
 ## install expect ##
 DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install expect
@@ -508,9 +509,9 @@ source /var/www/ss-muplugs
 ## create temp directory if doesn't exist (will not overwrite) ##
 mkdir /var/www/html/wp-content/temp
 
-#############################
-#### configure wordpress ####
-#############################
+################################################################################
+#### Configure WordPress #######################################################
+################################################################################
 
 ## delete tmp files ##
 rm -R -f /tmp/wp-config*
@@ -595,9 +596,9 @@ chmod 0700 /etc/monit/monitrc
 ## restart monit ##
 /etc/init.d/monit restart
 
-#####################
-#### install ufw ####
-#####################
+################################################################################
+#### Configure UFW Firewall ####################################################
+################################################################################
 
 ## delete tmp files ##
 rm -R -f /tmp/ufw-conf.txt* /tmp/ufw.conf*
@@ -653,9 +654,9 @@ DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/u
 ## install php-redis ##
 DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install php-redis
 
-################################
-#### configure redis-server ####
-################################
+################################################################################
+#### Configure Redis-Server ####################################################
+################################################################################
 
 ## configure redis for object caching ##
 sed -i '/maxmemory.*bytes.*/c\maxmemory 256mb' /etc/redis/redis.conf
