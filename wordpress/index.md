@@ -4,7 +4,7 @@
 
 ### Custom Files
 
-*Live configuration files used by current SlickStack installation that may be altered by LittleBizzy or Ubuntu for better performance.*
+*Live configuration files and boilerplates used by current SlickStack installation that may be altered by LittleBizzy or Ubuntu for better performance.*
 
 * <a href="blacklist.txt">blacklist.txt</a>
 * <a href="object-cache.txt">object-cache.txt</a>
