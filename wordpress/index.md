@@ -4,7 +4,7 @@
 
 ### Custom Files
 
-*Files used by current SlickStack installation that may be altered by LittleBizzy or Ubuntu for better performance.*
+*Live configuration files used by current SlickStack installation that may be altered by LittleBizzy or Ubuntu for better performance.*
 
 * <a href="blacklist.txt">blacklist.txt</a>
 * <a href="object-cache.txt">object-cache.txt</a>
@@ -15,22 +15,39 @@
 
 *Raw files straight from the vendor’s original release (e.g. official repo), not altered by Ubuntu or other providers, included here for reference and documentation purposes only.*
 
+* <a href="wp-config-sample-5.1.1.txt">wp-config-sample-5.1.1.txt</a>
 * <a href="wordpress-5.1.1.zip">wordpress-5.1.1.zip</a>
+* <a href="wp-config-sample-5.1.0.txt">wp-config-sample-5.1.0.txt</a>
 * <a href="wordpress-5.1.0.zip">wordpress-5.1.0.zip</a>
+* <a href="wp-config-sample-5.0.4.txt">wp-config-sample-5.0.4.txt</a>
 * <a href="wordpress-5.0.4.zip">wordpress-5.0.4.zip</a>
+* <a href="wp-config-sample-5.0.3.txt">wp-config-sample-5.0.3.txt</a>
 * <a href="wordpress-5.0.3.zip">wordpress-5.0.3.zip</a>
+* <a href="wp-config-sample-5.0.2.txt">wp-config-sample-5.0.2.txt</a>
 * <a href="wordpress-5.0.2.zip">wordpress-5.0.2.zip</a>
+* <a href="wp-config-sample-5.0.1.txt">wp-config-sample-5.0.1.txt</a>
 * <a href="wordpress-5.0.1.zip">wordpress-5.0.1.zip</a>
+* <a href="wp-config-sample-5.0.0.txt">wp-config-sample-5.0.0.txt</a>
 * <a href="wordpress-5.0.0.zip">wordpress-5.0.0.zip</a>
+* <a href="wp-config-sample-4.9.9.txt">wp-config-sample-4.9.9.txt</a>
 * <a href="wordpress-4.9.9.zip">wordpress-4.9.9.zip</a>
+* <a href="wp-config-sample-4.9.8.txt">wp-config-sample-4.9.8.txt</a>
 * <a href="wordpress-4.9.8.zip">wordpress-4.9.8.zip</a>
+* <a href="wp-config-sample-4.9.7.txt">wp-config-sample-4.9.7.txt</a>
 * <a href="wordpress-4.9.7.zip">wordpress-4.9.7.zip</a>
+* <a href="wp-config-sample-4.9.6.txt">wp-config-sample-4.9.6.txt</a>
 * <a href="wordpress-4.9.6.zip">wordpress-4.9.6.zip</a>
+* <a href="wp-config-sample-4.9.5.txt">wp-config-sample-4.9.5.txt</a>
 * <a href="wordpress-4.9.5.zip">wordpress-4.9.5.zip</a>
+* <a href="wp-config-sample-4.9.4.txt">wp-config-sample-4.9.4.txt</a>
 * <a href="wordpress-4.9.4.zip">wordpress-4.9.4.zip</a>
+* <a href="wp-config-sample-4.9.3.txt">wp-config-sample-4.9.3.txt</a>
 * <a href="wordpress-4.9.3.zip">wordpress-4.9.3.zip</a>
+* <a href="wp-config-sample-4.9.2.txt">wp-config-sample-4.9.2.txt</a>
 * <a href="wordpress-4.9.2.zip">wordpress-4.9.2.zip</a>
+* <a href="wp-config-sample-4.9.1.txt">wp-config-sample-4.9.1.txt</a>
 * <a href="wordpress-4.9.1.zip">wordpress-4.9.1.zip</a>
+* <a href="wp-config-sample-4.9.0.txt">wp-config-sample-4.9.0.txt</a>
 * <a href="wordpress-4.9.0.zip">wordpress-4.9.0.zip</a>
 * <a href="wp-config-sample-4.8.8.txt">wp-config-sample-4.8.8.txt</a>
 * <a href="wordpress-4.8.8.zip">wordpress-4.8.8.zip</a>
@@ -88,9 +105,6 @@
 * <a href="wordpress-4.6.1.zip">wordpress-4.6.1.zip</a>
 * <a href="wp-config-sample-4.6.0.txt">wp-config-sample-4.6.0.txt</a>
 * <a href="wordpress-4.6.0.zip">wordpress-4.6.0.zip</a>
-
-
-
 
 ### Related Links
 
