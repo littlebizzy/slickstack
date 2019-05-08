@@ -4,6 +4,8 @@
 
 ### Custom Files
 
+*Live configuration files and boilerplates used by current SlickStack installation that may be altered by LittleBizzy or Ubuntu for better performance.*
+
 * <a href="autoloader.txt">autoloader.txt</a>
 * <a href="clear-caches.zip">clear-caches.zip</a>
 * <a href="cloudflare.zip">cloudflare.zip</a>
@@ -35,9 +37,10 @@
 
 ### Default Files
 
+*Raw files from the vendor’s original release (e.g. official repo), not altered by other providers, included for reference and documentation purposes.*
+
 * (n/a)
 
 ----
 
 *Last updated: May 8, 2019*
-
