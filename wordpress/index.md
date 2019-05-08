@@ -8,7 +8,7 @@
 
 * <a href="blacklist.txt">blacklist.txt</a>
 * <a href="object-cache.txt">object-cache.txt</a>
-* <a href="wordpress.zip">WordPress 5.1.1 (ZIP)</a>
+* <a href="wordpress.zip">wordpress.zip</a>
 * <a href="wp-config.txt">wp-config.txt</a>
 
 ### Default Files
