@@ -4,6 +4,8 @@
 
 ### Custom Files
 
+*Live configuration files and boilerplates used by current SlickStack installation that may be altered by LittleBizzy or Ubuntu for better performance.*
+
 * <a href="gai-conf.txt">gai-conf.txt</a>
 * <a href="sshd-config.txt">sshd-config.txt</a>
 * <a href="sudoers.txt">sudoers.txt</a>
@@ -12,6 +14,8 @@
 * <a href="user-rules.txt">user-rules.txt</a>
 
 ### Default Files
+
+*Raw files from the vendor’s original release (e.g. official repo), not altered by other providers, included for reference and documentation purposes.*
 
 * <a href="gai-conf-18.04.txt">gai-conf-18.04.txt</a>
 * <a href="ufw-18.04.txt">ufw-18.04.txt</a>
@@ -24,4 +28,4 @@
 
 ----
 
-*Last updated: Apr 28, 2019*
+*Last updated: May 8, 2019*
