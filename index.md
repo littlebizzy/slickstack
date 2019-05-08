@@ -4,6 +4,8 @@
 
 ### Core Modules
 
+*Main modules of SlickStack's optimized WordPress LEMP stack, including Ubuntu LTS, Nginx, MySQL, PHP-FPM, Redis, and several LittleBizzy MU plugins.*
+
 * <a href="clamav/">/clamav/</a>
 * <a href="monit/">/monit/</a>
 * <a href="mu-plugins/">/mu-plugins/</a>
