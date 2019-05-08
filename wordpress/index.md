@@ -13,7 +13,7 @@
 
 ### Default Files
 
-*Raw files straight from the vendor’s original release (e.g. official repo), not altered by Ubuntu or other providers, included here for reference and documentation purposes only.*
+*Raw files from the vendor’s original release (e.g. official repo), not altered by other providers, included for reference and documentation purposes.*
 
 * <a href="wp-config-sample-5.1.1.txt">wp-config-sample-5.1.1.txt</a>
 * <a href="wordpress-5.1.1.zip">wordpress-5.1.1.zip</a>
