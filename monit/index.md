@@ -4,9 +4,13 @@
 
 ### Custom Files
 
+*Live configuration files and boilerplates used by current SlickStack installation that may be altered by LittleBizzy or Ubuntu for better performance.*
+
 * <a href="monitrc.txt">monitrc.txt</a>
 
 ### Default Files
+
+*Raw files from the vendor’s original release (e.g. official repo), not altered by other providers, included for reference and documentation purposes.*
 
 * <a href="monitrc-5.25.2.txt">monitrc-5.25.2.txt</a>
 * <a href="monitrc-5.25.1.txt">monitrc-5.25.1.txt</a>
@@ -42,5 +46,4 @@
 
 ----
 
-*Last updated: Apr 28, 2019*
-
+*Last updated: May 8, 2019*
