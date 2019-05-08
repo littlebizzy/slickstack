@@ -4,9 +4,13 @@
 
 ### Custom Files
 
+*Live configuration files and boilerplates used by current SlickStack installation that may be altered by LittleBizzy or Ubuntu for better performance.*
+
 * <a href="redis-conf.txt">redis-conf.txt</a>
 
 ### Default Files
+
+*Raw files from the vendor’s original release (e.g. official repo), not altered by other providers, included for reference and documentation purposes.*
 
 * <a href="redis-conf-3.0.6-default.txt">redis-conf-3.0.6-default.txt</a>
 * <a href="redis-conf-3.0.7-default.txt">redis-conf-3.0.7-default.txt</a>
@@ -35,4 +39,4 @@
 
 ----
 
-*Last updated: Apr 28, 2019*
+*Last updated: May 8, 2019*
