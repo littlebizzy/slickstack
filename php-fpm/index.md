@@ -8,7 +8,7 @@
 
 ### Custom Files
 
-*Files used by current SlickStack installation that may be altered by LittleBizzy or Ubuntu for better performance.*
+*Live configuration files and boilerplates used by current SlickStack installation that may be altered by LittleBizzy or Ubuntu for better performance.*
 
 * <a href="/php-fpm/php-fpm-conf.txt">php-fpm-conf.txt</a>
 * <a href="/php-fpm/php-ini.txt">php-ini.txt</a>
@@ -16,7 +16,7 @@
 
 ### Default Files
 
-*Raw files straight from the vendor's original release (e.g. official repo), not altered by Ubuntu or other providers, included here for reference and documentation purposes only.*
+*Raw files from the vendor’s original release (e.g. official repo), not altered by other providers, included for reference and documentation purposes.*
 
 * <a href="/php-fpm/php-fpm-conf-7.2.6.txt">php-fpm-conf-7.2.6.txt</a>
 * <a href="/php-fpm/php-fpm-conf-7.2.7.txt">php-fpm-conf-7.2.7.txt</a>
@@ -50,4 +50,4 @@
 
 ----
 
-*Last updated: Apr 29, 2019*
+*Last updated: May 8, 2019*
