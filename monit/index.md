@@ -1,3 +1,7 @@
+---
+title: Monit (Public Mirrors)
+---
+
 # Monit (Stack Monitoring)
 
 ----
