@@ -1,5 +1,7 @@
 ---
 title: Starter Themes (Public Mirrors)
+redirect_from:
+  - /starterthemes/
 ---
 
 # Starter Themes (WordPress)
