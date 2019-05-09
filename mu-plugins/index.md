@@ -1,3 +1,7 @@
+---
+title: MU Plugins (Public Mirrors)
+---
+
 # MU (Must-Use) Plugins
 
 ----
