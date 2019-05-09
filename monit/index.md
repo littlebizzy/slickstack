@@ -41,9 +41,11 @@
 
 ### Related Links
 
+*Links and resources related to the above module that may help users understand its functionality, or how it interacts with other LEMP stack modules.*
+
 * <a href="https://mmonit.com/monit/dist/">https://mmonit.com/monit/dist/</a>
 * <a href="https://bitbucket.org/tildeslash/monit/downloads/">https://bitbucket.org/tildeslash/monit/downloads/</a>
 
 ----
 
-*Last updated: May 8, 2019*
+*Last updated: May 9, 2019*
