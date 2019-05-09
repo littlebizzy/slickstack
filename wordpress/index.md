@@ -1,3 +1,9 @@
+---
+title: WordPress (Public Mirrors)
+redirect_from:
+  - /wp/
+---
+
 # WordPress (CMS)
 
 ----
