@@ -2,6 +2,7 @@
 title: MU Plugins (Public Mirrors)
 redirect_from:
   - /muplugins/
+  - /mu-plugs/
   - /muplugs/
 ---
 
