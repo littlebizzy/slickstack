@@ -1,3 +1,9 @@
+---
+title: WP-CLI (Public Mirrors)
+redirect_from:
+  - /wpcli/
+---
+
 # WP-CLI
 
 ----
