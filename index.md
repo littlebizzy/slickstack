@@ -20,6 +20,8 @@
 
 ### Core Scripts
 
+*Bash scripts that perform SlickStack's main functions as an "active" LEMP environment, which are called via cron jobs, and can also be run manually.*
+
 * <a href="ss-check.txt">ss-check.txt</a>
 * <a href="ss-clean.txt">ss-clean.txt</a>
 * <a href="ss-config-sample.txt">ss-config-sample.txt</a>
