@@ -1,3 +1,7 @@
+---
+title: Nginx (Public Mirrors)
+---
+
 # Nginx (Server)
 
 ----
