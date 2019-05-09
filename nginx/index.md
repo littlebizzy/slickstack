@@ -8,7 +8,6 @@
 
 * <a href="fastcgi-cache-conf.txt">fastcgi-cache-conf.txt</a>
 * <a href="nginx-conf.txt">nginx-conf.txt</a>
-* <a href="server-block.txt">server-block.txt</a>
 * <a href="server-block-ssl.txt">server-block-ssl.txt</a>
 
 ### Default Files
@@ -19,4 +18,4 @@
 
 ----
 
-*Last updated: May 8, 2019*
+*Last updated: May 9, 2019*
