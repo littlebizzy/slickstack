@@ -1,6 +1,6 @@
-[//]: # ---
-[//]: # redirect_from: "/php/"
-[//]: # ---
+---
+redirect_from: "/php/"
+---
 
 # PHP-FPM
 
