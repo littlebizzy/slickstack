@@ -20,6 +20,8 @@
 
 ### Related Links
 
+*Links and resources related to the above module that may help users understand its functionality, or how it interacts with other LEMP stack modules.*
+
 * <a href="https://roots.io/sage/">roots.io/sage</a>
 * <a href="https://themble.com/bones/">themble.com/bones</a>
 * <a href="https://themehybrid.com/themes/mythic">themehybrid.com/themes/mythic</a>
@@ -28,4 +30,4 @@
 
 ----
 
-*Last updated: May 8, 2019*
+*Last updated: May 9, 2019*
