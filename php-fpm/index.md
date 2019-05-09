@@ -1,6 +1,7 @@
 ---
-title: My other awesome post
+title: PHP-FPM (Public Mirrors)
 redirect_from: /php
+redirect_from: /php/
 ---
 
 # PHP-FPM
