@@ -49,9 +49,11 @@
 
 ### Core Meta Files
 
+*Various meta files that are not part of SlickStack's functionality but provide key information about licensing, general "readme" summary files, etc.*
+
 * <a href="readme.md">readme.md</a>
 * <a href="license.md">license.md</a>
 
 ----
 
-*Last updated: May 7, 2019*
+*Last updated: May 9, 2019*
