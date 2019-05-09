@@ -1,5 +1,8 @@
 ---
 title: MU Plugins (Public Mirrors)
+redirect_from:
+  - /muplugins/
+  - /muplugs/
 ---
 
 # MU (Must-Use) Plugins
