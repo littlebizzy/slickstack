@@ -1,3 +1,7 @@
+---
+title: Ubuntu (Public Mirrors)
+---
+
 # Ubuntu LTS (Linux OS)
 
 ----
