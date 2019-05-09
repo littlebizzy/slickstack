@@ -1,3 +1,7 @@
+---
+title: Redis (Public Mirrors)
+---
+
 # Redis (Object Cache)
 
 ----
