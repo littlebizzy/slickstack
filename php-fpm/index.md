@@ -1,7 +1,8 @@
 ---
 title: PHP-FPM (Public Mirrors)
-redirect_from: /php
-redirect_from: /php/
+redirect_from:
+  - /php
+  - /php/
 ---
 
 # PHP-FPM
