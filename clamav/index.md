@@ -16,7 +16,7 @@
 
 ### Related Links
 
-*Links and resources related to the above module that may help end users understand functionality, or how the module interacts with other LEMP modules.*
+*Links and resources related to the above module that may help users understand its functionality, or how it interacts with other LEMP stack modules.*
 
 * <a href="https://www.clamav.net/documentation">https://www.clamav.net/documentation</a>
 
