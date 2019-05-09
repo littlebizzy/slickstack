@@ -1,5 +1,7 @@
 ---
 title: Ubuntu (Public Mirrors)
+redirect_from:
+  - /linux/
 ---
 
 # Ubuntu LTS (Linux OS)
