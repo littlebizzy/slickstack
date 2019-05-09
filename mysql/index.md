@@ -1,3 +1,7 @@
+---
+title: MySQL (Public Mirrors)
+---
+
 # MySQL (Database)
 
 ----
