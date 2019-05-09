@@ -108,10 +108,12 @@
 
 ### Related Links
 
+*Links and resources related to the above module that may help users understand its functionality, or how it interacts with other LEMP stack modules.*
+
 * <a href="https://github.com/WordPress/WordPress">https://github.com/WordPress/WordPress</a>
 * <a href="https://wordpress.org/download/releases/">https://wordpress.org/download/releases/</a>
 * <a href="https://codex.wordpress.org/Editing_wp-config.php">https://codex.wordpress.org/Editing_wp-config.php</a>
 
 ----
 
-*Last updated: May 8, 2019*
+*Last updated: May 9, 2019*
