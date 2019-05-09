@@ -34,6 +34,8 @@
 
 ### Core Cron Jobs
 
+*These cron jobs are the most critical part of SlickStack's setup, as they allow your LEMP stack to receive updates to modules and scripts via GitHub.*
+
 * <a href="0-crontab.txt">0-crontab.txt</a>
 * <a href="1-cron-often.txt">1-cron-often.txt</a>
 * <a href="2-cron-regular.txt">2-cron-regular.txt</a>
