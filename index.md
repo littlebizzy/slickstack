@@ -1,3 +1,9 @@
+---
+title: SlickStack (Public Mirrors)
+redirect_from:
+  - /index.html
+---
+
 # Public Mirrors (SlickStack)
 
 ----
