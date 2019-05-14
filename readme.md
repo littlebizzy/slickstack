@@ -14,7 +14,7 @@ SlickStack is a free LEMP stack automation script written in Bash designed to en
 
 &#10142; Browse the SlickStack public mirrors: http://mirrors.slickstack.io
 
-&#10142; Need more help? [**$40 SlickStack setup service**](https://www.littlebizzy.com/services/slickstack-setup) (includes CloudFlare, DNS records, free SSL, and site migration)
+&#10142; Need more help? [**$40 SlickStack setup service**](https://www.littlebizzy.com/services/slickstack-setup) is being offered by LittleBizzy for a limited time only! Includes CloudFlare setup, DNS records setup, free SSL forever, and complete site migration onto your own private VPS server in any datacenter world-wide... choose from the Vultr, DigitalOcean, Linode, SSDNodes, or AWS Lightsail cloud networks. Includes free customer support for 30 days only, does not include DNSSEC setup, email API setup, or other services not mentioned here. Contact LittleBizzy for more details (real Sales inquiries only, please).
 
 ## Abstract
 
@@ -26,7 +26,7 @@ While there are [clear benefits](https://medium.com/capital-one-developers/bashi
 
 SlickStack [ss] works best on VPS servers with KVM virtualization that have at least 2GB RAM from quality network providers such as DigitalOcean, Linode, Vultr, and Amazon Lightsail. The underlying LEMP stack configuration is meant specifically for single-site WordPress installations, and does not support [Multisite](https://codex.wordpress.org/Create_A_Network) installations. SlickStack [ss] supports WordPress, WooCommerce, bbPress, and BuddyPress "out of the box" with optimized settings that scale.
 
-*Last updated: May 7, 2019*
+*Last updated: May 14, 2019*
 
 Note: WP-CLI is now functional, although many commands might conflict with SlickStack so be careful. Also, Monit is installed, but is currently non-functional. Git is installed, but is not really tested yet.
 
