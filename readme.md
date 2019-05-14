@@ -2,9 +2,11 @@
 
 SlickStack is a free LEMP stack automation script written in Bash designed to enhance and simplify WordPress provisioning, performance, and security.
 
-&#10142; **NEW!** SlickStack now bundles the lighweight ClamAV malware scanner...
+&#10142; **NEW!** SlickStack now achieves a 100% [Google PageSpeed](https://developers.google.com/speed/pagespeed/insights/?url=https%3A%2F%2Fslickstack.io%2F) score...
 
-&#10142; **NEW!** SlickStack websites now receive an "A" grade from [SecurityHeaders.com](https://securityheaders.com/?q=https%3A%2F%2Fwww.littlebizzy.com&followRedirects=on) for HTTP headers...
+&#10142; **NEW!** SlickStack now bundles the lighweight ClamAV malware scanner (`ss-scan`)...
+
+&#10142; **NEW!** SlickStack websites now receive an "A" grade from [SecurityHeaders.com](https://securityheaders.com/?q=https%3A%2F%2Fslickstack.io%2F&followRedirects=on) for HTTP headers...
 
 &#10142; **NEW!** SlickStack is now "HTTPS Only" and includes our popular Force HTTPS mu-plugin...
 
@@ -40,7 +42,7 @@ Note: WP-CLI is now functional, although many commands might conflict with Slick
 | **WordPress** | 5.1.1 | optional `wplite` pre-optimized configuration (adds custom `mu-plugins`) |
 | **WP-CLI** | 2.1.0 | default config |
 | **Redis** | 4.0.9 | `redis.conf` |
-| **Monit** | 5.25.1 | `monitrc` |
+| **~Monit~** | ~5.25.1~ | `monitrc` |
 | **Git** | 2.17.1 | default config |
 | **UFW Firewall** | 0.36 | `ufw` + `ufw.conf` + `user-rules` |
 | **ClamAV** | 0.100.x | `freshclam.conf` |
