@@ -24,8 +24,8 @@ title: Nginx (Public Mirrors)
 
 *Links and resources related to the above module that may help users understand its functionality, or how it interacts with other LEMP stack modules.*
 
-* (coming soon)
+* <a href="https://www.nginx.com/resources/wiki/start/topics/recipes/wordpress/">https://www.nginx.com/resources/wiki/start/topics/recipes/wordpress/</a>
 
 ----
 
-*Last updated: May 9, 2019*
+*Last updated: May 17, 2019*
