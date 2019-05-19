@@ -5,25 +5,30 @@
 #### link: https://slickstack.io ###################################################################
 #### mirror: http://mirrors.slickstack.io/ss-install.txt ###########################################
 #### path: /var/www/ss-install #####################################################################
-#### destination: n/a ##############################################################################
+#### destination: n/a (not a boilerplate) ##########################################################
 #### purpose: installs SlickStack server (idempotent) ##############################################
 #### ss version: SlickStack alpha ss4b #############################################################
 #### module version: n/a ###########################################################################
 ####################################################################################################
 
+## SS-CONFIG MUST BE CONFIGURED BEFORE RUNNING THIS INSTALL SCRIPT ##
 ## include SlickStack configuration ##
 source /var/www/ss-config
 
 ####################################################################################################
-#### Retrieve latest SlickStack core files (ss-check) ##############################################
+#### retrieve latest SlickStack core files (ss-check) ##############################################
 ####################################################################################################
 
-## MESSAGE: explain ss-check ##
+## MESSAGE ##
 echo -e "\e[36mRetrieving latest SlickStack files and copying them to local server...\e[0m"
 
-## download latest version of ss-check ##
+## download latest versions ##
 wget --no-cache --no-cookies -O /tmp/ss-check.txt http://mirrors.slickstack.io/ss-check.txt
+
+## rename files ##
 mv /tmp/ss-check.txt /tmp/ss-check
+
+## copy to destinations ##
 cp -R -f -d --no-preserve=mode,ownership /tmp/ss-check /var/www/ss-check
 
 ## reset permissions ##
@@ -35,10 +40,10 @@ source /var/www/ss-check
 source /var/www/ss-perms
 
 ####################################################################################################
-#### install modules from latest Ubuntu repos ######################################################
+#### install SlickStack (LEMP+) modules from latest Ubuntu repos ###################################
 ####################################################################################################
 
-## MESSAGE: explain repos ##
+## MESSAGE ##
 echo -e "\e[36mInstalling various SlickStack modules from most recent Ubuntu repos...\e[0m"
 
 ## fix dpkg ##
@@ -66,10 +71,10 @@ DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/u
 DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install clamav
 
 ####################################################################################################
-#### Configure Ubuntu: Users, Permissions, Defaults ################################################
+#### configure Ubuntu users, permissions, and defaults #############################################
 ####################################################################################################
 
-## MESSAGE: explain repos ##
+## MESSAGE ##
 echo -e "\e[36mConfiguring users, permissions and Ubuntu defaults...\e[0m"
 
 ## reset root ssh/sftp password ##
@@ -96,14 +101,16 @@ timedatectl set-timezone UTC
 #### Configure Ubuntu: Sudoers (a.k.a. Visudo) #####################################################
 ####################################################################################################
 
-## download latest version ##
+## download latest versions ##
 wget --no-cache --no-cookies -O /tmp/sudoers.txt http://mirrors.slickstack.io/ubuntu/sudoers.txt
 
 ## replace variables ##
 sed -i "s/@SUDO/${sudo}/g" /tmp/sudoers.txt
 
-## finalize ##
+## rename files ##
 mv /tmp/sudoers.txt /tmp/sudoers
+
+## copy to destinations ##
 cp -R -f -d --no-preserve=mode,ownership /tmp/sudoers /etc/sudoers
 
 ## reset permissions ##
