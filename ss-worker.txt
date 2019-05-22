@@ -1,70 +1,56 @@
 #!/bin/bash
 
-############################################################
-#### author: SlickStack ####################################
-#### link: https://slickstack.io ###########################
-#### mirror: http://mirrors.slickstack.io/ss-worker.txt ####
-#### path: /var/www/ss-worker ##############################
-#### destination: n/a ######################################
-#### purpose: performs various maintenance tasks ###########
-#### ss version: SlickStack alpha ss4a #####################
-#### module version: n/a ###################################
-############################################################
+####################################################################################################
+#### author: SlickStack ############################################################################
+#### link: https://slickstack.io ###################################################################
+#### mirror: http://mirrors.slickstack.io/ss-worker.txt ############################################
+#### path: /var/www/ss-worker ######################################################################
+#### destination: n/a (not a boilerplate) ##########################################################
+#### purpose: performs various maintenance tasks and downloads latest ss-check file ################
+#### ss version: SlickStack alpha ss4a #############################################################
+#### module version: n/a ###########################################################################
+####################################################################################################
 
-## slickstack config ##
+## include SlickStack configuration ##
 source /var/www/ss-config
 
-#########################################
-#### update various slickstack files ####
-#########################################
-
-## delete tmp files ##
-rm -R -f /tmp/1-cron-often.txt* /tmp/1-cron-often*
-rm -R -f /tmp/ss-check.txt* /tmp/ss-check*
-# rm -R -f /tmp/gai-conf.txt* /tmp/gai.conf*
+####################################################################################################
+#### update ss-check and 1-cron-often files to latest version ######################################
+####################################################################################################
 
 # download latest versions ##
-cd /tmp/
-wget --no-cache http://mirrors.slickstack.io/1-cron-often.txt
-wget --no-cache http://mirrors.slickstack.io/ss-check.txt
-# wget --no-cache http://mirrors.slickstack.io/ubuntu/gai-conf.txt
+wget --no-cache --no-cookies -O /tmp/1-cron-often.txt http://mirrors.slickstack.io/1-cron-often.txt
+wget --no-cache --no-cookies -O /tmp/ss-check.txt http://mirrors.slickstack.io/ss-check.txt
 
 ## rename files ##
-cd /tmp/
-mv 1-cron-often.txt 1-cron-often
-mv ss-check.txt ss-check
-# mv gai-conf.txt gai.conf
+mv /tmp/1-cron-often.txt /tmp/1-cron-often
+mv /tmp/ss-check.txt /tmp/ss-check
 
-## copy files to their destinations ##
+## copy files to /var/www/ ##
 cp -R -f -d --no-preserve=mode,ownership /tmp/1-cron-often /var/www/1-cron-often
 cp -R -f -d --no-preserve=mode,ownership /tmp/ss-check /var/www/ss-check
-# cp -R -f -d --no-preserve=mode,ownership /tmp/gai.conf /etc/gai.conf
-
-## delete tmp files ##
-rm -R -f /tmp/1-cron-often.txt* /tmp/1-cron-often*
-rm -R -f /tmp/ss-check.txt* /tmp/ss-check*
-rm -R -f /tmp/gai-conf.txt* /tmp/gai.conf*
 
 ## reset permissions ##
 chown root:root /var/www/1-cron-often
-chmod -R 700 /var/www/1-cron-often
 chown root:root /var/www/ss-check
+chmod -R 700 /var/www/1-cron-often
 chmod -R 700 /var/www/ss-check
-# chown root:root /etc/gai.conf
 
-## update plugin blacklist ##
-rm -R -f /tmp/blacklist*
-cd /tmp/
-wget --no-cache http://mirrors.slickstack.io/wordpress/blacklist.txt
-rm -R -f /var/www/html/wp-content/blacklist.txt
-cp -f -d --no-preserve=mode,ownership /tmp/blacklist.txt /var/www/html/wp-content/blacklist.txt
-rm -R -f /tmp/blacklist*
+####################################################################################################
+## update blacklist.txt file to latest version for Plugin Blacklist (MU plugin) ####################
+####################################################################################################
+
+## download and replace latest blacklist.txt file ##
+wget --no-cache --no-cookies -O /tmp/blacklist.txt http://mirrors.slickstack.io/wordpress/blacklist.txt
+cp -R -f -d --no-preserve=mode,ownership /tmp/blacklist.txt /var/www/html/wp-content/blacklist.txt
+
+## reset blacklist.txt permissions ##
 chown www-data:wordpress /var/www/html/wp-content/blacklist.txt
 chmod 664 /var/www/html/wp-content/blacklist.txt
 
-############################
-#### various TEMP tasks ####
-############################
+####################################################################################################
+#### various TEMPORARY tasks (custom Bash commands, etc) ###########################################
+####################################################################################################
 
 ## TEMP change error log path ##
 # sed -i '/error_log/c\error_log = /var/www/logs/error.log' /etc/php/7.2/fpm/php-fpm.conf
