@@ -438,6 +438,7 @@ For stability reasons, we don't use any tpmfs (memory-based storage) for caching
 * [Roots](https://roots.io)
 * [Centminmod](https://centminmod.com)
 * [Alex Georgiou](https://www.alexgeorgiou.gr)
+* [Janis Elsts](https://w-shadow.com) -- author of Error Log Monitor plugin
 
 ## Ref
 
