@@ -1,124 +1,91 @@
 #!/bin/bash
 
-#############################################################
-#### author: SlickStack #####################################
-#### link: https://slickstack.io ############################
-#### mirror: http://mirrors.slickstack.io/ss-muplugs.txt ####
-#### path: /var/www/ss-muplugs ##############################
-#### destination: n/a #######################################
-#### purpose: installs various WordPress mu-plugins #########
-#### ss version: SlickStack alpha ss4a ######################
-#### module version: n/a ####################################
-#############################################################
+####################################################################################################
+#### author: SlickStack ############################################################################
+#### link: https://slickstack.io ###################################################################
+#### mirror: http://mirrors.slickstack.io/ss-muplugs.txt ###########################################
+#### path: /var/www/ss-muplugs #####################################################################
+#### destination: n/a (not a boilerplate) ##########################################################
+#### purpose: installs "WPLite" MU plugins and SlickStack Notices (idempotent) #####################
+#### ss version: SlickStack alpha ss4a #############################################################
+#### module version: n/a ###########################################################################
+####################################################################################################
 
-## slickstack config ##
+## include SlickStack configuration ##
 source /var/www/ss-config
 
 ## ensure mu-plugins directory exists ##
 mkdir /var/www/html/wp-content/mu-plugins
 
-######################################################
-#### install slickstack mu-plugins and autoloader ####
-######################################################
+####################################################################################################
+#### install Autoloader script, "WPLite" MU plugins, and SlickStack (XXX) Notices ##################
+####################################################################################################
 
-## delete tmp files (mu-plugins) ##
-rm -R -f /tmp/autoloader*
-rm -R -f /tmp/cloudflare*
-rm -R -f /tmp/clear-caches*
-rm -R -f /tmp/custom-functions*
-rm -R -f /tmp/dashboard-cleanup*
-rm -R -f /tmp/delete-expired-transients*
-rm -R -f /tmp/disable-attachment-pages*
-rm -R -f /tmp/disable-embeds*
-rm -R -f /tmp/disable-emojis*
-rm -R -f /tmp/disable-empty-trash*
-rm -R -f /tmp/disable-gutenberg*
-rm -R -f /tmp/disable-image-compression*
-rm -R -f /tmp/disable-post-via-email*
-rm -R -f /tmp/disable-xml-rpc*
-rm -R -f /tmp/error-log-monitor*
-rm -R -f /tmp/force-https*
-rm -R -f /tmp/force-strong-hashing*
-rm -R -f /tmp/header-cleanup*
-rm -R -f /tmp/index-autoload*
-rm -R -f /tmp/limit-heartbeat*
-rm -R -f /tmp/maintenance-mode*
-rm -R -f /tmp/minify-html*
-rm -R -f /tmp/object-cache*
-rm -R -f /tmp/plugin-blacklist*
-rm -R -f /tmp/remove-query-strings*
-rm -R -f /tmp/server-status*
-rm -R -f /tmp/sftp-details*
-rm -R -f /tmp/virtual-robotstxt*
+## download latest mu-plugins files ##
+wget --no-cache --no-cookies -O /tmp/autoloader.txt http://mirrors.slickstack.io/mu-plugins/autoloader.txt
+wget --no-cache --no-cookies -O /tmp/clear-caches.zip http://mirrors.slickstack.io/mu-plugins/clear-caches.zip
+wget --no-cache --no-cookies -O /tmp/cloudflare.zip http://mirrors.slickstack.io/mu-plugins/cloudflare.zip
+wget --no-cache --no-cookies -O /tmp/custom-functions.zip http://mirrors.slickstack.io/mu-plugins/custom-functions.zip
+wget --no-cache --no-cookies -O /tmp/dashboard-cleanup.zip http://mirrors.slickstack.io/mu-plugins/dashboard-cleanup.zip
+wget --no-cache --no-cookies -O /tmp/delete-expired-transients.zip http://mirrors.slickstack.io/mu-plugins/delete-expired-transients.zip
+wget --no-cache --no-cookies -O /tmp/disable-attachment-pages.zip http://mirrors.slickstack.io/mu-plugins/disable-attachment-pages.zip
+wget --no-cache --no-cookies -O /tmp/disable-embeds.zip http://mirrors.slickstack.io/mu-plugins/disable-embeds.zip
+wget --no-cache --no-cookies -O /tmp/disable-emojis.zip http://mirrors.slickstack.io/mu-plugins/disable-emojis.zip
+wget --no-cache --no-cookies -O /tmp/disable-empty-trash.zip http://mirrors.slickstack.io/mu-plugins/disable-empty-trash.zip
+wget --no-cache --no-cookies -O /tmp/disable-gutenberg.zip http://mirrors.slickstack.io/mu-plugins/disable-gutenberg.zip
+wget --no-cache --no-cookies -O /tmp/disable-image-compression.zip http://mirrors.slickstack.io/mu-plugins/disable-image-compression.zip
+wget --no-cache --no-cookies -O /tmp/disable-post-via-email.zip http://mirrors.slickstack.io/mu-plugins/disable-post-via-email.zip
+wget --no-cache --no-cookies -O /tmp/disable-xml-rpc.zip http://mirrors.slickstack.io/mu-plugins/disable-xml-rpc.zip
+wget --no-cache --no-cookies -O /tmp/error-log-monitor.zip http://mirrors.slickstack.io/mu-plugins/error-log-monitor.zip
+wget --no-cache --no-cookies -O /tmp/force-https.zip http://mirrors.slickstack.io/mu-plugins/force-https.zip
+wget --no-cache --no-cookies -O /tmp/force-strong-hashing.zip http://mirrors.slickstack.io/mu-plugins/force-strong-hashing.zip
+wget --no-cache --no-cookies -O /tmp/header-cleanup.zip http://mirrors.slickstack.io/mu-plugins/header-cleanup.zip
+wget --no-cache --no-cookies -O /tmp/index-autoload.zip http://mirrors.slickstack.io/mu-plugins/index-autoload.zip
+wget --no-cache --no-cookies -O /tmp/limit-heartbeat.zip http://mirrors.slickstack.io/mu-plugins/limit-heartbeat.zip
+wget --no-cache --no-cookies -O /tmp/maintenance-mode.zip http://mirrors.slickstack.io/mu-plugins/maintenance-mode.zip
+wget --no-cache --no-cookies -O /tmp/minify-html.zip http://mirrors.slickstack.io/mu-plugins/minify-html.zip
+wget --no-cache --no-cookies -O /tmp/plugin-blacklist.zip http://mirrors.slickstack.io/mu-plugins/plugin-blacklist.zip
+wget --no-cache --no-cookies -O /tmp/remove-query-strings.zip http://mirrors.slickstack.io/mu-plugins/remove-query-strings.zip
+wget --no-cache --no-cookies -O /tmp/server-status.zip http://mirrors.slickstack.io/mu-plugins/server-status.zip
+wget --no-cache --no-cookies -O /tmp/sftp-details.zip http://mirrors.slickstack.io/mu-plugins/sftp-details.zip
+wget --no-cache --no-cookies -O /tmp/virtual-robotstxt.zip http://mirrors.slickstack.io/mu-plugins/virtual-robotstxt.zip
+wget --no-cache --no-cookies -O /tmp/xxx-notices.txt http://mirrors.slickstack.io/mu-plugins/xxx-notices.txt
 
-## download latest mu-plugins ##
-cd /tmp/
-wget --no-cache http://mirrors.slickstack.io/mu-plugins/autoloader.txt
-wget --no-cache http://mirrors.slickstack.io/mu-plugins/clear-caches.zip
-wget --no-cache http://mirrors.slickstack.io/mu-plugins/cloudflare.zip
-wget --no-cache http://mirrors.slickstack.io/mu-plugins/custom-functions.zip
-wget --no-cache http://mirrors.slickstack.io/mu-plugins/dashboard-cleanup.zip
-wget --no-cache http://mirrors.slickstack.io/mu-plugins/delete-expired-transients.zip
-wget --no-cache http://mirrors.slickstack.io/mu-plugins/disable-attachment-pages.zip
-wget --no-cache http://mirrors.slickstack.io/mu-plugins/disable-embeds.zip
-wget --no-cache http://mirrors.slickstack.io/mu-plugins/disable-emojis.zip
-wget --no-cache http://mirrors.slickstack.io/mu-plugins/disable-empty-trash.zip
-wget --no-cache http://mirrors.slickstack.io/mu-plugins/disable-gutenberg.zip
-wget --no-cache http://mirrors.slickstack.io/mu-plugins/disable-image-compression.zip
-wget --no-cache http://mirrors.slickstack.io/mu-plugins/disable-post-via-email.zip
-wget --no-cache http://mirrors.slickstack.io/mu-plugins/disable-xml-rpc.zip
-wget --no-cache http://mirrors.slickstack.io/mu-plugins/error-log-monitor.zip
-wget --no-cache http://mirrors.slickstack.io/mu-plugins/force-https.zip
-wget --no-cache http://mirrors.slickstack.io/mu-plugins/force-strong-hashing.zip
-wget --no-cache http://mirrors.slickstack.io/mu-plugins/header-cleanup.zip
-wget --no-cache http://mirrors.slickstack.io/mu-plugins/index-autoload.zip
-wget --no-cache http://mirrors.slickstack.io/mu-plugins/limit-heartbeat.zip
-wget --no-cache http://mirrors.slickstack.io/mu-plugins/maintenance-mode.zip
-wget --no-cache http://mirrors.slickstack.io/mu-plugins/minify-html.zip
-wget --no-cache http://mirrors.slickstack.io/mu-plugins/plugin-blacklist.zip
-wget --no-cache http://mirrors.slickstack.io/mu-plugins/remove-query-strings.zip
-wget --no-cache http://mirrors.slickstack.io/mu-plugins/server-status.zip
-wget --no-cache http://mirrors.slickstack.io/mu-plugins/sftp-details.zip
-wget --no-cache http://mirrors.slickstack.io/mu-plugins/virtual-robotstxt.zip
-wget --no-cache http://mirrors.slickstack.io/mu-plugins/xxx-notices.txt
-
-## download latest drop-in plugins ##
-wget --no-cache http://mirrors.slickstack.io/wordpress/object-cache.txt
+## download latest drop-in plugins files ##
+wget --no-cache --no-cookies -O /tmp/object-cache.txt http://mirrors.slickstack.io/wordpress/object-cache.txt
 
 ## rename files ##
-cd /tmp/
-mv autoloader.txt autoloader.php
-mv object-cache.txt object-cache.php
-mv xxx-notices.txt xxx-notices.php
+mv /tmp/autoloader.txt /tmp/autoloader.php
+mv /tmp/object-cache.txt /tmp/object-cache.php
+mv /tmp/xxx-notices.txt /tmp/xxx-notices.php
 
 ## unzip files ##
-cd /tmp/
-unzip /tmp/clear-caches.zip
-unzip /tmp/cloudflare.zip
-unzip /tmp/custom-functions.zip
-unzip /tmp/dashboard-cleanup.zip
-unzip /tmp/delete-expired-transients.zip
-unzip /tmp/disable-attachment-pages.zip
-unzip /tmp/disable-embeds.zip
-unzip /tmp/disable-emojis.zip
-unzip /tmp/disable-empty-trash.zip
-unzip /tmp/disable-gutenberg.zip
-unzip /tmp/disable-image-compression.zip
-unzip /tmp/disable-post-via-email.zip
-unzip /tmp/disable-xml-rpc.zip
-unzip /tmp/error-log-monitor.zip
-unzip /tmp/force-https.zip
-unzip /tmp/force-strong-hashing.zip
-unzip /tmp/header-cleanup.zip
-unzip /tmp/index-autoload.zip
-unzip /tmp/limit-heartbeat.zip
-unzip /tmp/maintenance-mode.zip
-unzip /tmp/minify-html.zip
-unzip /tmp/plugin-blacklist.zip
-unzip /tmp/remove-query-strings.zip
-unzip /tmp/server-status.zip
-unzip /tmp/sftp-details.zip
-unzip /tmp/virtual-robotstxt.zip
+unzip /tmp/clear-caches.zip -d /tmp
+unzip /tmp/cloudflare.zip -d /tmp
+unzip /tmp/custom-functions.zip -d /tmp
+unzip /tmp/dashboard-cleanup.zip -d /tmp
+unzip /tmp/delete-expired-transients.zip -d /tmp
+unzip /tmp/disable-attachment-pages.zip -d /tmp
+unzip /tmp/disable-embeds.zip -d /tmp
+unzip /tmp/disable-emojis.zip -d /tmp
+unzip /tmp/disable-empty-trash.zip -d /tmp
+unzip /tmp/disable-gutenberg.zip -d /tmp
+unzip /tmp/disable-image-compression.zip -d /tmp
+unzip /tmp/disable-post-via-email.zip -d /tmp
+unzip /tmp/disable-xml-rpc.zip -d /tmp
+unzip /tmp/error-log-monitor.zip -d /tmp
+unzip /tmp/force-https.zip -d /tmp
+unzip /tmp/force-strong-hashing.zip -d /tmp
+unzip /tmp/header-cleanup.zip -d /tmp
+unzip /tmp/index-autoload.zip -d /tmp
+unzip /tmp/limit-heartbeat.zip -d /tmp
+unzip /tmp/maintenance-mode.zip -d /tmp
+unzip /tmp/minify-html.zip -d /tmp
+unzip /tmp/plugin-blacklist.zip -d /tmp
+unzip /tmp/remove-query-strings.zip -d /tmp
+unzip /tmp/server-status.zip -d /tmp
+unzip /tmp/sftp-details.zip -d /tmp
+unzip /tmp/virtual-robotstxt.zip -d /tmp
 
 ## delete plugins instances ##
 rm -R -f /var/www/html/wp-content/plugins/autoloader*
@@ -221,39 +188,9 @@ rm -R -f /var/www/html/wp-content/object-cache*
 ## copy drop-ins to the wp-content directory ##
 cp -R -f -d --no-preserve=mode,ownership /tmp/object-cache.php /var/www/html/wp-content/object-cache.php
 
-## delete tmp files ##
-rm -R -f /tmp/autoloader*
-rm -R -f /tmp/cloudflare*
-rm -R -f /tmp/clear-caches*
-rm -R -f /tmp/custom-functions*
-rm -R -f /tmp/dashboard-cleanup*
-rm -R -f /tmp/delete-expired-transients*
-rm -R -f /tmp/disable-attachment-pages*
-rm -R -f /tmp/disable-embeds*
-rm -R -f /tmp/disable-emojis*
-rm -R -f /tmp/disable-empty-trash*
-rm -R -f /tmp/disable-gutenberg*
-rm -R -f /tmp/disable-image-compression*
-rm -R -f /tmp/disable-post-via-email*
-rm -R -f /tmp/disable-xml-rpc*
-rm -R -f /tmp/error-log-monitor*
-rm -R -f /tmp/force-https*
-rm -R -f /tmp/force-strong-hashing*
-rm -R -f /tmp/header-cleanup*
-rm -R -f /tmp/index-autoload*
-rm -R -f /tmp/limit-heartbeat*
-rm -R -f /tmp/maintenance-mode*
-rm -R -f /tmp/minify-html*
-rm -R -f /tmp/object-cache*
-rm -R -f /tmp/plugin-blacklist*
-rm -R -f /tmp/remove-query-strings*
-rm -R -f /tmp/server-status*
-rm -R -f /tmp/sftp-details*
-rm -R -f /tmp/virtual-robotstxt*
-
-#####################################################################
-#### (re)input relevant variables to /var/www/html/wp-config.php ####
-#####################################################################
+####################################################################################################
+#### (re)input relevant variables to /var/www/html/wp-config.php ###################################
+####################################################################################################
 
 ## delete old sftp details configuration lines ##
 sed -i '/SFTP_DETAILS_SERVER/d' /var/www/html/wp-config.php
@@ -273,9 +210,9 @@ sed -i "s/@CLOUDFLAREAPIEMAIL/${cloudflareapiemail}/g" /var/www/html/wp-config.p
 #### ## source Bash completion file for WP-CLI ##
 ##### source /home/wp-completion.bash' >> /home/${sudo}/.bashrc
 
-################################################
-#### reset permissions and restart services ####
-################################################
+####################################################################################################
+#### reset permissions and restart services ########################################################
+####################################################################################################
 
 ## reset mu-plugins permissions ##
 chown -R www-data:wordpress /var/www/html/wp-content/mu-plugins
