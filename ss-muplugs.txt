@@ -6,23 +6,25 @@
 #### mirror: http://mirrors.slickstack.io/ss-muplugs.txt ###########################################
 #### path: /var/www/ss-muplugs #####################################################################
 #### destination: n/a (not a boilerplate) ##########################################################
-#### purpose: installs "WPLite" MU plugins and SlickStack Notices (idempotent) #####################
-#### ss version: SlickStack alpha ss4a #############################################################
+#### purpose: installs various MU plugins and drop-in plugins (idempotent) #########################
+#### ss version: SlickStack alpha ss4b #############################################################
 #### module version: n/a ###########################################################################
 ####################################################################################################
 
 ## include SlickStack configuration ##
 source /var/www/ss-config
 
-## ensure mu-plugins directory exists ##
+## ensure mu-plugins directory exists (will not overwrite if exists already) ##
 mkdir /var/www/html/wp-content/mu-plugins
 
 ####################################################################################################
-#### install Autoloader script, "WPLite" MU plugins, and SlickStack (XXX) Notices ##################
+#### download latest Autoloader script, MU plugins, and drop-in plugins ############################
 ####################################################################################################
 
-## download latest mu-plugins files ##
+## download latest Autoloader files ##
 wget --no-cache --no-cookies -O /tmp/autoloader.txt http://mirrors.slickstack.io/mu-plugins/autoloader.txt
+
+## download latest "WPLite" MU plugins files ##
 wget --no-cache --no-cookies -O /tmp/clear-caches.zip http://mirrors.slickstack.io/mu-plugins/clear-caches.zip
 wget --no-cache --no-cookies -O /tmp/cloudflare.zip http://mirrors.slickstack.io/mu-plugins/cloudflare.zip
 wget --no-cache --no-cookies -O /tmp/custom-functions.zip http://mirrors.slickstack.io/mu-plugins/custom-functions.zip
@@ -49,15 +51,21 @@ wget --no-cache --no-cookies -O /tmp/remove-query-strings.zip http://mirrors.sli
 wget --no-cache --no-cookies -O /tmp/server-status.zip http://mirrors.slickstack.io/mu-plugins/server-status.zip
 wget --no-cache --no-cookies -O /tmp/sftp-details.zip http://mirrors.slickstack.io/mu-plugins/sftp-details.zip
 wget --no-cache --no-cookies -O /tmp/virtual-robotstxt.zip http://mirrors.slickstack.io/mu-plugins/virtual-robotstxt.zip
+
+## download latest SlickStack ("XXX") Notices files ##
 wget --no-cache --no-cookies -O /tmp/xxx-notices.txt http://mirrors.slickstack.io/mu-plugins/xxx-notices.txt
 
-## download latest drop-in plugins files ##
+## download latest drop-in plugins files (e.g. object cache) ##
 wget --no-cache --no-cookies -O /tmp/object-cache.txt http://mirrors.slickstack.io/wordpress/object-cache.txt
+
+####################################################################################################
+#### rename and unzip various downloaded files #####################################################
+####################################################################################################
 
 ## rename files ##
 mv /tmp/autoloader.txt /tmp/autoloader.php
-mv /tmp/object-cache.txt /tmp/object-cache.php
 mv /tmp/xxx-notices.txt /tmp/xxx-notices.php
+mv /tmp/object-cache.txt /tmp/object-cache.php
 
 ## unzip files ##
 unzip /tmp/clear-caches.zip -d /tmp
@@ -87,12 +95,16 @@ unzip /tmp/server-status.zip -d /tmp
 unzip /tmp/sftp-details.zip -d /tmp
 unzip /tmp/virtual-robotstxt.zip -d /tmp
 
-## delete plugins instances ##
+####################################################################################################
+#### delete previously existing or potentially conflicting plugins #################################
+####################################################################################################
+
+## delete plugins instances (conflicting namespaces or previous namespaces) ##
 rm -R -f /var/www/html/wp-content/plugins/autoloader*
 rm -R -f /var/www/html/wp-content/plugins/clear-caches*
 rm -R -f /var/www/html/wp-content/plugins/cloudflare*
-rm -R -f /var/www/html/wp-content/plugins/cf-littlebizzy*
-rm -R -f /var/www/html/wp-content/plugins/custom-functions*
+rm -R -f /var/www/html/wp-content/plugins/cf-littlebizzy* ## previous CloudFlare namespace
+# rm -R -f /var/www/html/wp-content/plugins/custom-functions* ## don't delete others until ours is working 100% perfect
 rm -R -f /var/www/html/wp-content/plugins/dashboard-cleanup*
 rm -R -f /var/www/html/wp-content/plugins/delete-expired-transients*
 rm -R -f /var/www/html/wp-content/plugins/disable-attachment-pages*
@@ -111,48 +123,26 @@ rm -R -f /var/www/html/wp-content/plugins/index-autoload*
 rm -R -f /var/www/html/wp-content/plugins/limit-heartbeat*
 rm -R -f /var/www/html/wp-content/plugins/maintenance-mode*
 rm -R -f /var/www/html/wp-content/plugins/minify-html*
-rm -R -f /var/www/html/wp-content/plugins/object-cache*
+rm -R -f /var/www/html/wp-content/plugins/object-cache* ## because you never know...
 rm -R -f /var/www/html/wp-content/plugins/plugin-blacklist*
+rm -R -f /var/www/html/wp-content/plugins/purge-them-all* ## previous Clear Caches namespace
 rm -R -f /var/www/html/wp-content/plugins/remove-query-strings*
 rm -R -f /var/www/html/wp-content/plugins/server-status*
 rm -R -f /var/www/html/wp-content/plugins/sftp-details*
 rm -R -f /var/www/html/wp-content/plugins/virtual-robotstxt*
 rm -R -f /var/www/html/wp-content/plugins/xxx-notices*
 
-## delete mu-plugins instances ##
-rm -R -f /var/www/html/wp-content/mu-plugins/*
-rm -R -f /var/www/html/wp-content/mu-plugins/autoloader*
-rm -R -f /var/www/html/wp-content/mu-plugins/clear-caches*
-rm -R -f /var/www/html/wp-content/mu-plugins/cloudflare*
-rm -R -f /var/www/html/wp-content/mu-plugins/cf-littlebizzy*
-rm -R -f /var/www/html/wp-content/mu-plugins/custom-functions*
-rm -R -f /var/www/html/wp-content/mu-plugins/dashboard-cleanup*
-rm -R -f /var/www/html/wp-content/mu-plugins/delete-expired-transients*
-rm -R -f /var/www/html/wp-content/mu-plugins/disable-attachment-pages*
-rm -R -f /var/www/html/wp-content/mu-plugins/disable-embeds*
-rm -R -f /var/www/html/wp-content/mu-plugins/disable-emojis*
-rm -R -f /var/www/html/wp-content/mu-plugins/disable-empty-trash*
-rm -R -f /var/www/html/wp-content/mu-plugins/disable-gutenberg*
-rm -R -f /var/www/html/wp-content/mu-plugins/disable-image-compression*
-rm -R -f /var/www/html/wp-content/mu-plugins/disable-post-via-email*
-rm -R -f /var/www/html/wp-content/mu-plugins/disable-xml-rpc*
-rm -R -f /var/www/html/wp-content/mu-plugins/error-log-monitor*
-rm -R -f /var/www/html/wp-content/mu-plugins/force-https*
-rm -R -f /var/www/html/wp-content/mu-plugins/force-strong-hashing*
-rm -R -f /var/www/html/wp-content/mu-plugins/header-cleanup*
-rm -R -f /var/www/html/wp-content/mu-plugins/index-autoload*
-rm -R -f /var/www/html/wp-content/mu-plugins/limit-heartbeat*
-rm -R -f /var/www/html/wp-content/mu-plugins/maintenance-mode*
-rm -R -f /var/www/html/wp-content/mu-plugins/minify-html*
-rm -R -f /var/www/html/wp-content/mu-plugins/object-cache*
-rm -R -f /var/www/html/wp-content/mu-plugins/plugin-blacklist*
-rm -R -f /var/www/html/wp-content/mu-plugins/remove-query-strings*
-rm -R -f /var/www/html/wp-content/mu-plugins/server-status*
-rm -R -f /var/www/html/wp-content/mu-plugins/sftp-details*
-rm -R -f /var/www/html/wp-content/mu-plugins/virtual-robotstxt*
-rm -R -f /var/www/html/wp-content/mu-plugins/xxx-notices*
+## delete drop-in plugin instances (conflicting namespaces or previous namespaces) ##
+rm -R -f /var/www/html/wp-content/object-cache*
 
-## copy mu-plugins to the mu-plugins directory ##
+## delete all existing MU plugins ##
+rm -R -f /var/www/html/wp-content/mu-plugins/*
+
+####################################################################################################
+#### copy all MU plugins and drop-in plugins files to their destinations ###########################
+####################################################################################################
+
+## copy MU plugins files to /var/www/wp-content/mu-plugins/ ##
 cp -R -f -d --no-preserve=mode,ownership /tmp/autoloader.php /var/www/html/wp-content/mu-plugins/autoloader.php
 cp -R -f -d --no-preserve=mode,ownership /tmp/clear-caches /var/www/html/wp-content/mu-plugins/clear-caches
 cp -R -f -d --no-preserve=mode,ownership /tmp/cloudflare /var/www/html/wp-content/mu-plugins/cloudflare
@@ -182,14 +172,11 @@ cp -R -f -d --no-preserve=mode,ownership /tmp/sftp-details /var/www/html/wp-cont
 cp -R -f -d --no-preserve=mode,ownership /tmp/virtual-robotstxt /var/www/html/wp-content/mu-plugins/virtual-robotstxt
 cp -R -f -d --no-preserve=mode,ownership /tmp/xxx-notices.php /var/www/html/wp-content/mu-plugins/xxx-notices.php
 
-## delete drop-in plugin instances ##
-rm -R -f /var/www/html/wp-content/object-cache*
-
-## copy drop-ins to the wp-content directory ##
+## copy drop-in plugins files to /var/www/wp-content/ ##
 cp -R -f -d --no-preserve=mode,ownership /tmp/object-cache.php /var/www/html/wp-content/object-cache.php
 
 ####################################################################################################
-#### (re)input relevant variables to /var/www/html/wp-config.php ###################################
+#### input required MU plugins variables to /var/www/html/wp-config.php ############################
 ####################################################################################################
 
 ## delete old sftp details configuration lines ##
@@ -214,7 +201,7 @@ sed -i "s/@CLOUDFLAREAPIEMAIL/${cloudflareapiemail}/g" /var/www/html/wp-config.p
 #### reset permissions and restart services ########################################################
 ####################################################################################################
 
-## reset mu-plugins permissions ##
+## reset MU plugins permissions ##
 chown -R www-data:wordpress /var/www/html/wp-content/mu-plugins
 find /var/www/html/wp-content/mu-plugins/ -type d -exec chmod 775 {} \;
 find /var/www/html/wp-content/mu-plugins/ -type f -exec chmod 664 {} \;
