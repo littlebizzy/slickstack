@@ -5,7 +5,7 @@
 #### path: n/a (boilerplate) #######################################################################
 #### destination: /etc/nginx/sites-available/default (after install) ###############################
 #### purpose: Nginx server block file boilerplate ##################################################
-#### ss version: SlickStack alpha ss4b #############################################################
+#### ss version: SlickStack alpha ss4c #############################################################
 #### module version: Nginx (Extras) 1.15.8 #########################################################
 ####################################################################################################
 
@@ -29,10 +29,6 @@ server {
     if ($http_host != "@DOMAIN") {
         return 301             $scheme://@DOMAIN$request_uri;
     }
-    # ssl_certificate        /etc/ssl/nginx.crt; # now set in nginx.conf
-    # ssl_certificate_key    /etc/ssl/nginx.key; # now set in nginx.conf
-    # root                   /var/www/html; # now set in nginx.conf
-    # index                  index.php; # now set in nginx.conf
     
     ## redirect */index.php requests
     ## https://stackoverflow.com/a/21813759/1718491
@@ -126,9 +122,8 @@ server {
     #### HIDDEN FILES ####
     location ~ /\. {
         ## block any attempted attacks or access
-        deny all;
-        access_log off;
-        log_not_found off;
+	log_not_found off;
+	deny all;
     }
 
     #### BRUTE FORCE PROTECTION ####
@@ -154,49 +149,40 @@ server {
 ####################################################################################################
 
     location = /favicon.ico {
-        ## 204 is better than 404 if not found
+        ## 204 error better than 404 error if not found ##
         try_files $uri =204;
-        access_log off;
         log_not_found off;
     }
     
 ####################################################################################################
-#### Server Block: Robots.txt Settings #############################################################
+#### Server Block: Robots.txt Settings (Optimized For Virtual Robots.txt MU Plugin) ################
 ####################################################################################################
     
-    #### ROBOTS.TXT ####
     location = /robots.txt {
-        ## first try physical files, then directories, otherwise query the wordpress php index
-	## required when using plugins like Virtual Robots.txt
+        ## first try files, then directories, otherwise query index.php ##
         try_files $uri $uri/ /index.php?$args;
-        allow all;
-	access_log off;
         log_not_found off;
+	allow all;
     }
     
 ####################################################################################################
 #### Server Block: Ads.txt Settings ################################################################
 ####################################################################################################
     
-    #### ADS.TXT ####
     location = /ads.txt {
-        # first try physical files, then directories, otherwise query the wordpress php index
-	## required when using plugins like Virtual Ads.txt
+        ## first try files, then directories, otherwise query index.php ##
         try_files $uri $uri/ /index.php?$args;
-        allow all;
-	access_log off;
         log_not_found off;
+	allow all;
     }
     
 ####################################################################################################
 #### Server Block: WP-Config Settings ##############################################################
 ####################################################################################################
     
-    #### WP-CONFIG ####
-    location = /wp-config.php {
-        deny all;
-	access_log off;
+    location = /wp-config*.php {
 	log_not_found off;
+	deny all;
     }
     
 ####################################################################################################
@@ -205,44 +191,38 @@ server {
 
     #### XML-RPC ####
     location = /xmlrpc.php {
-        deny all;
-	access_log off;
 	log_not_found off;
+	deny all;
     }
     
     #### WP-MAIL ####
     location = /wp-mail.php {
-        deny all;
-	access_log off;
 	log_not_found off;
+	deny all;
     }
     
     #### WP-LINKS-OPML ####
     location = /wp-links-opml.php {
-        deny all;
-	access_log off;
 	log_not_found off;
+	deny all;
     }
     
     #### WP-TRACKBACK ####
     location = /wp-trackback.php {
-        deny all;
-	access_log off;
 	log_not_found off;
+	deny all;
     }
     
     #### WP INFO ####
     location ~* (license|licence|readme)\.(html|txt) {
-        deny all;
-	access_log off;
 	log_not_found off;
+	deny all;
     }
     
     #### WP-DEBUG ####
     location ~ /wp-content/debug\.log {
-        deny all;
-	access_log off;
 	log_not_found off;
+	deny all;
     }
     
     #### MONIT PANEL ####
