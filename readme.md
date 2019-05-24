@@ -159,17 +159,24 @@ The included [Must Use plugins](http://mirrors.slickstack.io/mu-plugins/) that S
     /* Custom Functions Functions */
     define('CUSTOM_FUNCTIONS', true); // default = true
     
-    /* Dashboard Cleanup Functions */
-    define('DASHBOARD_CLEANUP, true); // default = true
+    /** Dashboard Cleanup Functions (v1.1.2) */
+    define('DASHBOARD_CLEANUP', true); // default = true
     define('DASHBOARD_CLEANUP_ADD_PLUGIN_TABS', true); // default = true
+    define('DASHBOARD_CLEANUP_ADD_THEME_TABS', true); // default = true
+    define('DASHBOARD_CLEANUP_CSS_ADMIN_NOTICE', true); // default = true
+    define('DASHBOARD_CLEANUP_DISABLE_SEARCH', true); // default = true
     define('DASHBOARD_CLEANUP_EVENTS_AND_NEWS', true); // default = true
+    define('DASHBOARD_CLEANUP_IMPORT_EXPORT_MENU', true); // default = true
     define('DASHBOARD_CLEANUP_LINK_MANAGER_MENU', true); // default = true
     define('DASHBOARD_CLEANUP_QUICK_DRAFT', true); // default = true
     define('DASHBOARD_CLEANUP_THANKS_FOOTER', true); // default = true
     define('DASHBOARD_CLEANUP_WELCOME_TO_WORDPRESS', true); // default = true
     define('DASHBOARD_CLEANUP_WOOCOMMERCE_CONNECT_STORE', true); // default = true
+    define('DASHBOARD_CLEANUP_WOOCOMMERCE_FOOTER_TEXT', true); // default = true
+    define('DASHBOARD_CLEANUP_WOOCOMMERCE_MARKETPLACE_SUGGESTIONS', true); // default = true
     define('DASHBOARD_CLEANUP_WOOCOMMERCE_PRODUCTS_BLOCK', true); // default = true
-    define('DASHBOARD_CLEANUP_WP_ORG_SHORTCUT_LINKS', true); // default = true
+    define('DASHBOARD_CLEANUP_WOOCOMMERCE_TRACKER', true); // default = true
+    define('DASHBOARD_CLEANUP_WP_ORG_SHORTCUT_LINKS', true);  // default = true
     
     /* Delete Expired Transients Functions */
     define('DELETE_EXPIRED_TRANSIENTS', true); // default = true
@@ -434,11 +441,12 @@ For stability reasons, we don't use any tpmfs (memory-based storage) for caching
 
 ## Thanks
 
-* [rtCamp](https://rtcamp.com)
-* [Roots](https://roots.io)
-* [Centminmod](https://centminmod.com)
-* [Alex Georgiou](https://www.alexgeorgiou.gr)
+* [rtCamp](https://rtcamp.com) -- various inspiration
+* [Roots](https://roots.io) -- various inspiration and original author of Autoloader script
+* [Centminmod](https://centminmod.com) -- various inspiration
+* [Alex Georgiou](https://www.alexgeorgiou.gr) -- feedback on WP-CLI configuration
 * [Janis Elsts](https://w-shadow.com) -- author of Error Log Monitor plugin
+* [PressJitsu](http://pressjitsu.com) -- various inspuration and original author of Object Cache script
 
 ## Ref
 
