@@ -9,6 +9,10 @@
 #### module version: Nginx (Extras) 1.15.8 #########################################################
 ####################################################################################################
 
+## NGINX CONFIG OPTIMIZED FOR BEST PERFORMANCE (NON-CLUSTERED HIGH TRAFFIC) ##
+## Ref: https://gist.github.com/denji/8359866 ##
+
+## Nginx server user ##
 user www-data;
 
 ####################################################################################################
@@ -26,6 +30,7 @@ include /etc/nginx/modules-enabled/*.conf;
 
 events {
     ## https://serverfault.com/a/791055/144798 ##
+    ## https://gist.github.com/v0lkan/90fcb83c86918732b894#gistcomment-2832040 ##
     worker_connections 8192;
     multi_accept on;
     use epoll;
@@ -46,9 +51,9 @@ http {
 #### Nginx: Open File Cache Settings ###############################################################
 ####################################################################################################
     
-    open_file_cache max=5000 inactive=15s;
+    open_file_cache max=200000 inactive=20s;
     open_file_cache_valid 30s;
-    open_file_cache_min_uses 1;
+    open_file_cache_min_uses 2;
     open_file_cache_errors on;
 	
 ####################################################################################################
