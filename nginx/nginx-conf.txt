@@ -15,6 +15,10 @@
 ## Ref: https://serverfault.com/a/791055/144798 ##
 ## Ref: https://gist.github.com/v0lkan/90fcb83c86918732b894#gistcomment-2832040 ##
 ## Ref: https://www.programering.com/a/MDM2YTNwATk.html ##
+## Ref: https://www.maxcdn.com/blog/accept-encoding-its-vary-important/ ##
+## Ref: https://support.cloudflare.com/hc/en-us/articles/200168086-Does-CloudFlare-gzip-resources- ##
+## Ref: https://security.stackexchange.com/questions/65625/current-state-of-breach-gzip-ssl-attack ##
+## Ref: https://hstspreload.org
     
 ## Nginx server user ##
 user www-data;
@@ -44,7 +48,6 @@ events {
 #### Nginx: Miscellaneous Settings #################################################################
 ####################################################################################################
     
-    # charset utf-8;
     log_not_found off;
     sendfile on;
     # server_names_hash_bucket_size 64;
@@ -99,27 +102,17 @@ http {
     fastcgi_read_timeout 60;
     
 ####################################################################################################
-#### Nginx: HTTP Headers Settings ##################################################################
+#### Nginx: HTTP Headers Settings (Optimized For Use With CloudFlare) ##############################
 ####################################################################################################
     
-    ## powered by SlickStack ##
     add_header X-Powered-By "SlickStack";
-    
-    ## FastCGI Cache status ##
     add_header X-FastCGI-Cache $upstream_cache_status;
-    
-    ## HSTS (HTTPS) cache for one month ##
-    ## do not preload https://hstspreload.org ##
-    ## do not include subdomains ##
     add_header Strict-Transport-Security "max-age=2628000" always;
-    
-    ## various security headers ##
     add_header X-Frame-Options SAMEORIGIN;
     add_header X-Content-Type-Options nosniff;
     add_header X-XSS-Protection "1; mode=block";
     add_header Referrer-Policy "strict-origin-when-cross-origin";
-    
-    ## remove deprecated caching headers ##
+    charset utf-8;
     more_clear_headers "Pragma";
     more_clear_headers "Expires";
     
@@ -171,9 +164,7 @@ http {
     gzip on;
     ## never send uncompressed (vary) content ##
     ## CloudFlare will convert it for browsers that request it ##
-    ## https://www.maxcdn.com/blog/accept-encoding-its-vary-important/ ##
-    ## https://support.cloudflare.com/hc/en-us/articles/200168086-Does-CloudFlare-gzip-resources- ##
-    ## https://security.stackexchange.com/questions/65625/current-state-of-breach-gzip-ssl-attack ##
+
     gzip_vary off;
     # also popular: gzip_proxied expired no-cache no-store private auth;
     gzip_proxied any;
