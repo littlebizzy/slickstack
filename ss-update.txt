@@ -1,43 +1,48 @@
 #!/bin/bash
 
-############################################################
-#### author: SlickStack ####################################
-#### link: https://slickstack.io ###########################
-#### mirror: http://mirrors.slickstack.io/ss-update.txt ####
-#### path: /var/www/ss-update ##############################
-#### destination: n/a ######################################
-#### purpose: updates all SlickStack modules (only) ########
-#### ss version: SlickStack alpha ss4a #####################
-#### module version: n/a ###################################
-############################################################
+####################################################################################################
+#### author: SlickStack ############################################################################
+#### link: https://slickstack.io ###################################################################
+#### mirror: http://mirrors.slickstack.io/ss-update.txt ############################################
+#### path: /var/www/ss-update ######################################################################
+#### destination: n/a (not a boilerplate) ##########################################################
+#### purpose: updates all SlickStack modules (only) via the latest Ubuntu packages #################
+#### ss version: SlickStack alpha ss4c #############################################################
+#### module version: n/a ###########################################################################
+####################################################################################################
 
 ## dpkg default = confold for unattended updates ##
 ## but better to run this script manually ##
 # DEBIAN_FRONTEND=noninteractive dpkg --configure -a --force-confold
 
-################################
-#### update Ubuntu packages ####
-################################
+####################################################################################################
+#### update / upgrade all installed Ubuntu packages ################################################
+####################################################################################################
 
-## update repos ##
+## update repo cache ##
 DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" update
 
-## upgrade packages ##
+## upgrade all installed packages ##
 DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" upgrade
 
 ## autoremove packages ##
 DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" autoremove
 
 ## autoclean packages ##
-# DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" autoclean
+DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" autoclean
 
 ## restart services ##
 /etc/init.d/nginx restart
 /etc/init.d/php7.2-fpm restart
 /etc/init.d/redis-server restart
+/etc/init.d/ufw force-reload
+/etc/init.d/ufw restart
 # /etc/init.d/mysql restart
 # /etc/init.d/monit restart
 
-## reboot ##
+## message alert ##
+echo -e "\e[36mSlickStack modules (Ubuntu packages) update/upgrade complete! Please reboot server.\e[0m"
+
+## reboot server ##
 ## BETTER TO RUN THIS SCRIPT MANUALLY AND REBOOT MANUALLY ##
 # awaiting better snippet here
