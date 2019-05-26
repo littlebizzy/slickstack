@@ -18,14 +18,15 @@ source /var/www/ss-config
 #### Reset Permissions: Ubuntu Users, Groups, Etc ##################################################
 ####################################################################################################
 
-## create wordpress group if does not exist ##
+## create group if does not exist ##
 addgroup wordpress
 
-## add sftp user and nginx user to the wordpress group ##
+## add SFTP (non-sudo) user and Nginx server user to the group ##
 adduser $user wordpress
 adduser www-data wordpress
 
-## reset sudoers permissions ##
+## reset permissions ##
+chown root:root /etc/ssh/sshd_config
 chown root:root /etc/sudoers
 chmod 440 /etc/sudoers
 
@@ -33,15 +34,12 @@ chmod 440 /etc/sudoers
 #### Reset Permissions: SlickStack Core Files (Cron Jobs + Scripts) ################################
 ####################################################################################################
 
-## slickstack file permissions ##
+chown root:root /var/www
 chown root:root /var/www/*cron*
 chown root:root /var/www/ss*
-chmod 755 /var/www/*cron*
-chmod 755 /var/www/ss*
-
-## (root user/group) everything in /var/www ##
-chown root:root /var/www
 chmod 755 /var/www
+chmod 664 /var/www/*cron*
+chmod 664 /var/www/ss*
 
 ####################################################################################################
 #### Reset Permissions: WordPress Core Files #######################################################
@@ -97,9 +95,13 @@ if [ ! -f "/var/www/logs/mysql.log" ]; then touch "/var/www/logs/mysql.log"; fi
 if [ ! -f "/var/www/logs/nginx.log" ]; then touch "/var/www/logs/nginx.log"; fi
 if [ ! -f "/var/www/logs/redis.log" ]; then touch "/var/www/logs/redis.log"; fi
 
-## reset log permissions ##
+## reset permissions ##
 chown -R www-data:www-data /var/www/logs
 chown -R clamav:clamav /var/www/logs/clamav.log*
+# chown -R www-data:www-data /var/www/logs/error.log*
+# chown -R monit:monit /var/www/logs/monit.log*
+# chown -R mysql:mysql /var/www/logs/mysql.log*
+# chown -R www-data:www-data /var/www/logs/nginx.log*
 chown -R redis:redis /var/www/logs/redis.log*
 chmod -R 775 /var/www/logs
 
@@ -107,7 +109,6 @@ chmod -R 775 /var/www/logs
 ## Reset Permissions: Nginx Files ##################################################################
 ####################################################################################################
 
-## reset Nginx permissions ##
 chown root:root /etc/nginx/nginx.conf
 chown root:root /etc/nginx/fastcgi.conf
 
@@ -118,7 +119,7 @@ chown root:root /etc/nginx/fastcgi.conf
 ## create cache directory (will not overwrite if exists already) ##
 mkdir /var/www/cache
 
-## reset FastCGI Cache permissions ##
+## reset permissions ##
 chown www-data:www-data /var/www/cache
 chmod 775 /var/www/cache
 
@@ -126,16 +127,12 @@ chmod 775 /var/www/cache
 ## Reset Permissions: OpenSSL (Nginx) Files ########################################################
 ####################################################################################################
 
-## reset openssl permissions ##
 chown root:root /etc/ssl/nginx.crt
 chown root:root /etc/ssl/nginx.key
 chown root:root /etc/ssl/nginx.pem
 chmod -R 700 /etc/ssl/nginx.crt
 chmod -R 700 /etc/ssl/nginx.key
 chmod -R 700 /etc/ssl/nginx.pem
-
-## reset ssh/sftp permissions ##
-chown root:root /etc/ssh/sshd_config
 
 ####################################################################################################
 ## Reset Permissions: PHP-FPM Files ################################################################
@@ -170,11 +167,14 @@ chown root:root /etc/mysql/mysql.conf.d/mysqld.cnf
 ## create Redis directory (will not overwrite if exists already) ##
 mkdir /var/run/redis
 
-## reset redis permissions ##
+## reset permissions ##
 chown redis:redis /var/run/redis
 chown redis:redis /etc/redis/redis.conf
 
-## reset monit permissions ##
+####################################################################################################
+## Reset Permissions: Monit Files ##################################################################
+####################################################################################################
+
 chown root:root /etc/monit/monitrc
 chmod -R 700 /etc/monit/monitrc
 
