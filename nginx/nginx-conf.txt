@@ -20,6 +20,11 @@
 ## Ref: https://security.stackexchange.com/questions/65625/current-state-of-breach-gzip-ssl-attack ##
 ## Ref: https://hstspreload.org
 ## Ref: http://nginx.org/en/docs/http/ngx_http_gzip_module.html
+## Ref: https://easyengine.io/tutorials/nginx/optimization
+## Ref: https://www.nginx.com/blog/tuning-nginx/
+## Ref: https://www.freshblurbs.com/blog/2015/11/28/high-load-nginx-config.html
+## Ref: https://www.slashroot.in/nginx-web-server-performance-tuning-how-to-do-it
+## Ref: https://www.ruby-forum.com/t/why-set-keepalive-timeout-to-a-short-period-when-nginx-is-great-at-handling-them/244810/6
 
 ####################################################################################################
 #### Nginx: General Settings (Pre-Optimized For Traffic Scaling) ###################################
@@ -52,9 +57,10 @@ http {
     tcp_nopush on;
     tcp_nodelay on;
     log_not_found off;
-    server_tokens off;
-    # server_names_hash_bucket_size 64;
+    server_names_hash_bucket_size 64;
+    server_names_hash_max_size 512;
     server_name_in_redirect off;
+    types_hash_max_size 2048;
 
 ####################################################################################################
 #### Nginx: FastCGI Cache Settings #################################################################
@@ -65,7 +71,9 @@ http {
     fastcgi_cache_use_stale error timeout invalid_header updating http_500;
     fastcgi_ignore_headers Cache-Control Expires Set-Cookie;
     fastcgi_cache_lock on;
-
+    # fastcgi_buffers 8 16k;
+    # fastcgi_buffer_size 32k;
+    
 ####################################################################################################
 #### Nginx: Open File Cache Settings ###############################################################
 ####################################################################################################
@@ -76,17 +84,13 @@ http {
     open_file_cache_errors on;
 	
 ####################################################################################################
-#### Nginx: Buffers Settings #######################################################################
+#### Nginx: Other Buffers Settings #################################################################
 ####################################################################################################
     
     client_body_buffer_size 16K;
     client_header_buffer_size 4k;
     client_max_body_size 512M;
-    # fastcgi_buffers 8 16k;
-    # fastcgi_buffer_size 32k;
     large_client_header_buffers 4 32k;
-    types_hash_max_size 2048;
-    # ssl_buffer_size 16k;
 
 ####################################################################################################
 #### Nginx: Timeout Settings #######################################################################
@@ -95,7 +99,7 @@ http {
     client_body_timeout 15;
     client_header_timeout 15;
     keepalive_timeout 15;
-    # keepalive_requests 100000;
+    keepalive_requests 1024;
     send_timeout 15;
     reset_timedout_connection on;
     fastcgi_read_timeout 60;
@@ -114,11 +118,11 @@ http {
     charset utf-8;
     more_clear_headers "Pragma";
     more_clear_headers "Expires";
-    
     ## Cache-Control provided by CloudFlare for static files ##
     ## not needed for web pages using FastCGI Cache ##
     ## helps avoid outdated web page content ##
     more_clear_headers "Cache-Control";
+    server_tokens off;
     
 ####################################################################################################
 #### Nginx: SSL Settings (Optimized For Use With CloudFlare) #######################################
@@ -137,6 +141,7 @@ http {
     # ssl_session_timeout 1d;
     # ssl_stapling off;
     # ssl_stapling_verify off;
+    # ssl_buffer_size 16k;
 
 ####################################################################################################
 #### Nginx: MIME Types Settings ####################################################################
