@@ -26,7 +26,7 @@ While there are [clear benefits](https://medium.com/capital-one-developers/bashi
 
 SlickStack [ss] works best on VPS servers with KVM virtualization that have at least 2GB RAM from quality network providers such as DigitalOcean, Linode, Vultr, and Amazon Lightsail. The underlying LEMP stack configuration is meant specifically for single-site WordPress installations, and does not support [Multisite](https://codex.wordpress.org/Create_A_Network) installations. SlickStack [ss] supports WordPress, WooCommerce, bbPress, and BuddyPress "out of the box" with optimized settings that scale.
 
-*Last updated: May 14, 2019*
+*Last updated: May 26, 2019*
 
 Note: WP-CLI is now functional, although many commands might conflict with SlickStack so be careful. Also, Monit is installed, but is currently non-functional. Git is installed, but is not really tested yet.
 
@@ -39,7 +39,7 @@ Note: WP-CLI is now functional, although many commands might conflict with Slick
 | **MySQL** | 5.7.25 | default config (will be customized slightly in future) |
 | **PHP-FPM** | 7.2.17 | `php.ini` + `php-fpm.conf` + `www.conf` |
 | **Zend/OPcache** | 3.2.0/7.2.17 | (same as above) |
-| **WordPress** | 5.1.1 | optional `wplite` pre-optimized configuration (adds custom `mu-plugins`) |
+| **WordPress** | 5.2.1 | optional `wplite` pre-optimized configuration (adds custom `mu-plugins`) |
 | **WP-CLI** | 2.1.0 | default config |
 | **Redis** | 4.0.9 | `redis.conf` |
 | **~Monit~** | ~5.25.1~ | `monitrc` |
@@ -305,6 +305,10 @@ Others: Moss.sh, Webinoly, VestaCP, OneInStack, OpenResty, ServerPilot, RunCloud
 **Can I use your technical SEO features on non-SlickStack sites?**
 
 Yes, you can. If you or your client has a WordPress website on a web host somewhere and can't move it to a SlickStack server for the time being, you can still make use of all our `mu-plugins` (micro plugins) that are included in SlickStack by simply installing them one-by-one. Or you can install "less" plugins by installing the "parent" plugins instead, such as Speed Demon, SEO Genius, Security Guard.
+
+**What version of WordPress does SlickStack install?**
+
+Generally it installs the latest (current) version of WordPress, as long its not a major version. In other words, since our goal is stability and security, SlickStack will always bundle the most recent "minor" version of WordPress. So if the latest release of WordPress over at WordPress.org is currently 5.2.0 then SlickStack will usually wait to bundle version 5.2.1 because these minor versions (as per semantic versioning standards) means that several bugs and patches have now been fixed. So in this scenario if 5.2.1 is not yet available, then SlickStack will install 5.1.1 because its the latest stable "minor" patched release.
 
 **Why do you use OpenSSL instead of Let's Encrypt?** 
 
