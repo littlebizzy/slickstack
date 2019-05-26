@@ -11,6 +11,8 @@
 #### module version: n/a ###########################################################################
 ####################################################################################################
 
+## Ref: https://unix.stackexchange.com/a/203372/353848 ##
+
 ## include SlickStack configuration ##
 source /var/www/ss-config
 
@@ -38,47 +40,37 @@ chown root:root /var/www
 chown root:root /var/www/*cron*
 chown root:root /var/www/ss*
 chmod 755 /var/www
-chmod 664 /var/www/*cron*
-chmod 664 /var/www/ss*
+chmod 700 /var/www/*cron*
+chmod 700 /var/www/ss*
 
 ####################################################################################################
-#### Reset Permissions: WordPress Core Files #######################################################
+#### Reset Permissions: WordPress Files (WP Core + SlickStack) #####################################
 ####################################################################################################
 
-## (non-root sftp user/group) everything in /var/www/html ##
+## create directories (will not overwrite if they exist already)
+mkdir /var/www/html/wp-content/temp
+
+## chown ##
 chown -R $user:wordpress /var/www/html
+# chown -R www-data:www-data /var/www/html/wp-config.php
+chown -R www-data:wordpress /var/www/html/wp-content/temp
+chown -R www-data:wordpress /var/www/html/wp-content/mu-plugins
+chown -R www-data:wordpress /var/www/html/wp-content/uploads
+chown -R www-data:www-data /var/www/html/wp-content/blacklist.txt
+chown -R www-data:wordpress /var/www/html/wp-content/object-cache.php
+
+## chmod ##
 chmod 755 /var/www/html
+chmod -R g+s /var/www/html/
+chmod 660 /var/www/html/wp-config.php
+chmod 775 /var/www/html/wp-content/temp
+chmod 775 /var/www/html/wp-content/uploads
+chmod 400 /var/www/html/wp-content/blacklist.txt
+chmod 664 /var/www/html/wp-content/object-cache.php
+
 find /var/www/html/ -type d -exec chmod 775 {} \;
 find /var/www/html/ -type f -not -path "*var/www/html/wp-content/uploads*" -exec chmod 664 {} \;
 find /var/www/html/wp-content/uploads/ -not -name "*.jpg" -not -name "*.jpeg" -not -name "*.png" -not -name "*.bmp" -not -name "*.webp" -not -name "*.gif" -not -name "*.tiff" -not -name "*.mp4" -not -name "*.vid" -type f -exec chmod 664 {} \;
-
-## cache directory ##
-# chown -R www-data:wordpress /var/www/html/wp-content/cache
-# find /var/www/html/wp-content/cache/ -type d -exec chmod 777 {} \;
-# find /var/www/html/wp-content/cache/ -type f -exec chmod 777 {} \;
-
-## (nginx server user/group) everything in /var/www/html/wp-content/mu-plugins ##
-chown -R www-data:wordpress /var/www/html/wp-content/mu-plugins
-
-## wordpress temp ##
-mkdir /var/www/html/wp-content/temp
-chown -R www-data:wordpress /var/www/html/wp-content/temp
-chmod 775 /var/www/html/wp-content/temp
-
-## reset permissions: plugin blacklist ##
-chown -R www-data:www-data /var/www/html/wp-content/blacklist.txt
-chmod 400 /var/www/html/wp-content/blacklist.txt
-
-## reset permissions: object cache ##
-chown -R www-data:wordpress /var/www/html/wp-content/object-cache.php
-chmod 664 /var/www/html/wp-content/object-cache.php
-
-## wp-config ##
-# chown -R www-data:www-data /var/www/html/wp-config.php
-chmod 660 /var/www/html/wp-config.php
-
-## misc ##
-chmod -R g+s /var/www/html/
 
 ####################################################################################################
 #### Reset Permissions: Log Files (Optimized For SlickStack) #######################################
