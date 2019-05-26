@@ -7,23 +7,20 @@
 #### path: /var/www/ss-clean #######################################################################
 #### destination: n/a (not a boilerplate) ##########################################################
 #### purpose: cleans up various junk files and unsafe or unsupported files #########################
-#### ss version: SlickStack alpha ss4b #############################################################
+#### ss version: SlickStack alpha ss4c #############################################################
 #### module version: n/a ###########################################################################
 ####################################################################################################
 
-## delete slickstack leftovers ##
-rm -R -f /var/www/ss
-rm -R -f /var/www/monit.log
+## SS-CLEAN DOES NOT PERFORM ANY CLAMAV MALWARE SCANNING (USE SS-SCAN INSTEAD) ##
 
 ####################################################################################################
-#### cleanup Ubuntu packages and various junk files ################################################
+#### cleanup Ubuntu files and various junk files outside the public root ###########################
 ####################################################################################################
 
-## cleanup ubuntu packages/dependencies ##
+## autoremove Ubuntu packages ##
 DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" autoremove
-# DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" autoclean
 
-## delete ubuntu junk files ##
+## delete Ubuntu junk files ##
 # rm -f /tmp/systemd-*
 # rm -f /var/tmp/systemd-*
 # find /var/backups/ -name "*.gz" -type f -delete
@@ -40,43 +37,22 @@ rm -R -f /var/log/php7.2-fpm.log*
 rm -R -f /var/log/php-fpm/*
 rm -R -f /var/log/monit.log*
 
-## delete outdated or unused WordPress core files ##
-rm -R -f /var/www/html/wp-links-opml*.php* ## wordpresss junk files
-rm -R -f /var/www/html/wp-mail*.php* ## wordpresss junk files
-rm -R -f /var/www/html/wp-trackback*.php* ## wordpresss junk files
-rm -R -f /var/www/html/xmlrpc*.php* ## wordpresss junk files
-
-## delete leftover plugin junk file types ##
-find /var/www/html/ -name "adminer*.version*" -type f -delete ## Adminer plugin config
-find /var/www/html/ -name "php_errorlog*" -type f -delete ## Adminer plugin config
-
-## delete nginx junk files ##
-rm -f /var/www/html/index.nginx-debian*.html
-find /var/www/html/ -name "nginx.conf" -type f -delete
-# find /var/www/html/ -name "*.conf" -type f -delete
-
-## delete old nginx SlickStack cache ##
+## delete old SlickStack cache ##
 rm -R -f /etc/nginx/cache*
+
+####################################################################################################
+#### cleanup /var/www/ #############################################################################
+####################################################################################################
+
+## delete SlickStack leftovers ##
+rm -R -f /var/www/ss
+rm -R -f /var/www/monit.log
 
 ## delete slickstack junk files ##
 find /var/www/ -name "*.save*" -type f -delete
 
-## delete apache junk files ##
-find /var/www/html/ -name "*.htaccess" -type f -delete
-
-## delete php.ini hijacking ##
-find /var/www/html/ -name "*.user.ini" -type f -delete
-find /var/www/html/ -name "*.ini" -type f -delete
-find /var/www/html/ -name "*.ini.php" -type f -delete
-sed -i '/INI_SET/d' /var/www/html/wp-config.php
-sed -i '/ini_set/d' /var/www/html/wp-config.php
-
-## delete unsafe/unecessary debug logs ##
-# rm -R -f /var/www/html/wp-content/debug*.log
-# rm -R -f /var/www/html/wp-content/debug.log*
-
 ####################################################################################################
-#### cleanup known malware filenames (overly common filenames should not be deleted) ###############
+#### cleanup /var/www/html/ ########################################################################
 ####################################################################################################
 
 ## delete known malware file names ##
@@ -119,10 +95,6 @@ rm -R -f /var/www/html/wp.php
 # find /var/www/html/ -name "wp_api.php*" -type f -delete ## not malware but possibly exploitable SSO script
 ## find /var/www/html/ -name "http.php" -type f -delete ## exists in WP Core under /wp-includes/
 # find /var/www/html/ -name "stats.php" -type f -delete ## conflicts with some themes
-
-####################################################################################################
-#### cleanup unsafe and unsupported file extensions ################################################
-####################################################################################################
 
 ## delete unsafe file extensions ##
 find /var/www/html/ -name "*.exe" -type f -delete
@@ -179,9 +151,30 @@ find /var/www/html/ -name "*.wpress" -type f -delete ## All In One Migration arc
 ## various delete types ##
 find /var/www/html/ -name ".DS_Store*" -type f -delete ## camera files?
 
-####################################################################################################
-#### cleanup /var/www/html/ ########################################################################
-####################################################################################################
+## delete apache junk files ##
+find /var/www/html/ -name "*.htaccess" -type f -delete
+
+## delete php.ini hijacking ##
+find /var/www/html/ -name "*.user.ini" -type f -delete
+find /var/www/html/ -name "*.ini" -type f -delete
+find /var/www/html/ -name "*.ini.php" -type f -delete
+sed -i '/INI_SET/d' /var/www/html/wp-config.php
+sed -i '/ini_set/d' /var/www/html/wp-config.php
+
+## delete leftover plugin junk file types ##
+find /var/www/html/ -name "adminer*.version*" -type f -delete ## Adminer plugin config
+find /var/www/html/ -name "php_errorlog*" -type f -delete ## Adminer plugin config
+
+## delete nginx junk files ##
+rm -f /var/www/html/index.nginx-debian*.html
+find /var/www/html/ -name "nginx.conf" -type f -delete
+# find /var/www/html/ -name "*.conf" -type f -delete
+
+## delete outdated or unused WordPress core files ##
+rm -R -f /var/www/html/wp-links-opml*.php* ## wordpresss junk files
+rm -R -f /var/www/html/wp-mail*.php* ## wordpresss junk files
+rm -R -f /var/www/html/wp-trackback*.php* ## wordpresss junk files
+rm -R -f /var/www/html/xmlrpc*.php* ## wordpresss junk files
 
 ## delete obvious database access points ##
 rm -R -f /var/www/html/adminer
@@ -264,6 +257,11 @@ rm -R -f /var/www/html/wp-snapshots*
 
 ## no cache folder in SlickStack ##
 rm -R -f /var/www/html/wp-content/cache*
+
+
+## delete unsafe/unecessary debug logs ##
+# rm -R -f /var/www/html/wp-content/debug*.log
+# rm -R -f /var/www/html/wp-content/debug.log*
 
 ## cleanup various files ##
 rm -R -f /var/www/html/wp-content/advanced-cache.php* ## ss conflicts
