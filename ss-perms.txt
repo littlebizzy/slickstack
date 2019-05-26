@@ -1,18 +1,22 @@
 #!/bin/bash
 
-###########################################################
-#### author: SlickStack ###################################
-#### link: https://slickstack.io ##########################
-#### mirror: http://mirrors.slickstack.io/ss-perms.txt ####
-#### path: /var/www/ss-perms ##############################
-#### destination: n/a #####################################
-#### purpose: resets all file and server permissions ######
-#### ss version: SlickStack alpha ss4b ####################
-#### module version: n/a ##################################
-###########################################################
+####################################################################################################
+#### author: SlickStack ############################################################################
+#### link: https://slickstack.io ###################################################################
+#### mirror: http://mirrors.slickstack.io/ss-perms.txt #############################################
+#### path: /var/www/ss-perms #######################################################################
+#### destination: n/a (not a boilerplate) ##########################################################
+#### purpose: resets all file and user permissions across the entire server ########################
+#### ss version: SlickStack alpha ss4c #############################################################
+#### module version: n/a ###########################################################################
+####################################################################################################
 
-## slickstack config ##
+## include SlickStack configuration ##
 source /var/www/ss-config
+
+####################################################################################################
+#### Reset Permissions: Ubuntu Users, Groups, Etc ##################################################
+####################################################################################################
 
 ## create wordpress group if does not exist ##
 addgroup wordpress
@@ -25,50 +29,23 @@ adduser www-data wordpress
 chown root:root /etc/sudoers
 chmod 440 /etc/sudoers
 
+####################################################################################################
+#### Reset Permissions: SlickStack Core Files (Cron Jobs + Scripts) ################################
+####################################################################################################
+
 ## slickstack file permissions ##
-chown root:root /var/www/1-cron-often
-chown root:root /var/www/2-cron-regular
-chown root:root /var/www/3-cron-hourly
-chown root:root /var/www/4-cron-quarter-daily
-chown root:root /var/www/5-cron-half-daily
-chown root:root /var/www/6-cron-daily
-chown root:root /var/www/7-cron-weekly
-chown root:root /var/www/8-cron-monthly
-chown root:root /var/www/9-cron-sometimes
-
-chown root:root /var/www/ss-check
-chown root:root /var/www/ss-clean
-chown root:root /var/www/ss-config
-chown root:root /var/www/ss-config-sample
-chown root:root /var/www/ss-install
-chown root:root /var/www/ss-muplugs
-chown root:root /var/www/ss-perms
-chown root:root /var/www/ss-update
-chown root:root /var/www/ss-worker
-
-chmod 755 /var/www/1-cron-often
-chmod 755 /var/www/2-cron-regular
-chmod 755 /var/www/3-cron-hourly
-chmod 755 /var/www/4-cron-quarter-daily
-chmod 755 /var/www/5-cron-half-daily
-chmod 755 /var/www/6-cron-daily
-chmod 755 /var/www/7-cron-weekly
-chmod 755 /var/www/8-cron-monthly
-chmod 755 /var/www/9-cron-sometimes
-
-chmod 755 /var/www/ss-check
-chmod 755 /var/www/ss-clean
-chmod 660 /var/www/ss-config
-chmod 755 /var/www/ss-config-sample
-chmod 755 /var/www/ss-install
-chmod 755 /var/www/ss-muplugs
-chmod 755 /var/www/ss-perms
-chmod 755 /var/www/ss-update
-chmod 755 /var/www/ss-worker
+chown root:root /var/www/*cron*
+chown root:root /var/www/ss*
+chmod 755 /var/www/*cron*
+chmod 755 /var/www/ss*
 
 ## (root user/group) everything in /var/www ##
 chown root:root /var/www
 chmod 755 /var/www
+
+####################################################################################################
+#### Reset Permissions: WordPress Core Files #######################################################
+####################################################################################################
 
 ## (non-root sftp user/group) everything in /var/www/html ##
 chown -R $user:wordpress /var/www/html
@@ -105,11 +82,11 @@ chmod 660 /var/www/html/wp-config.php
 ## misc ##
 chmod -R g+s /var/www/html/
 
-###############################
-#### reset log permissions ####
-###############################
+####################################################################################################
+#### Reset Permissions: Log Files (Optimized For SlickStack) #######################################
+####################################################################################################
 
-## ensure log directory exists ##
+## create logs directory (will not overwrite if exists already) ##
 mkdir /var/www/logs
 
 ## ensure all log files exist ##
@@ -126,25 +103,28 @@ chown -R clamav:clamav /var/www/logs/clamav.log*
 chown -R redis:redis /var/www/logs/redis.log*
 chmod -R 775 /var/www/logs
 
-#### reset Redis permissions ####
-mkdir /var/run/redis
-chown redis:redis /etc/redis/redis.conf
+####################################################################################################
+## Reset Permissions: Nginx Files ##################################################################
+####################################################################################################
 
-## old ##
-mkdir /var/run/php
-
-###############################
-## reset Nginx permissions ####
-###############################
-
-## ensure nginx fastcgi cache directory exists ##
-mkdir /var/www/cache
-
-## reset nginx permissions ##
-chown www-data:www-data /var/www/cache
-chmod 775 /var/www/cache
+## reset Nginx permissions ##
 chown root:root /etc/nginx/nginx.conf
 chown root:root /etc/nginx/fastcgi.conf
+
+####################################################################################################
+## Reset Permissions: FastCGI Cache (Nginx) Files ##################################################
+####################################################################################################
+
+## create cache directory (will not overwrite if exists already) ##
+mkdir /var/www/cache
+
+## reset FastCGI Cache permissions ##
+chown www-data:www-data /var/www/cache
+chmod 775 /var/www/cache
+
+####################################################################################################
+## Reset Permissions: OpenSSL (Nginx) Files ########################################################
+####################################################################################################
 
 ## reset openssl permissions ##
 chown root:root /etc/ssl/nginx.crt
@@ -157,13 +137,12 @@ chmod -R 700 /etc/ssl/nginx.pem
 ## reset ssh/sftp permissions ##
 chown root:root /etc/ssh/sshd_config
 
-## reset wp-cli permissions ##
-## https://github.com/wp-cli/wp-cli/issues/3181 ##
-## https://github.com/wp-cli/wp-cli/issues/1241 ##
-## https://www.alexgeorgiou.gr/wp-cli-www-data-user-permissions-linux/ ##
-chown root:root /usr/local/bin/
-chown www-data:www-data /usr/local/bin/wp
-chmod 6775 /usr/local/bin/wp
+####################################################################################################
+## Reset Permissions: PHP-FPM Files ################################################################
+####################################################################################################
+
+## old ##
+mkdir /var/run/php
 
 ## reset php permissions ##
 # chown www-data:www-data /var/run/php
@@ -174,13 +153,21 @@ chown root:root /etc/php/7.2/cli/php.ini
 ## create mysql files if do not exist ##
 mkdir /var/run/mysqld
 
-## reset mysql permissions ##
+####################################################################################################
+## Reset Permissions: MySQL Files ##################################################################
+####################################################################################################
+
+## reset MySQL permissions ##
 chown mysql:mysql /var/run/mysqld
 chown root:root /etc/mysql/my.cnf
 chown root:root /etc/mysql/mysql.cnf
 chown root:root /etc/mysql/mysql.conf.d/mysqld.cnf
 
-## create redis files if do not exist ##
+####################################################################################################
+## Reset Permissions: Redis Files ##################################################################
+####################################################################################################
+
+## create Redis directory (will not overwrite if exists already) ##
 mkdir /var/run/redis
 
 ## reset redis permissions ##
@@ -190,3 +177,15 @@ chown redis:redis /etc/redis/redis.conf
 ## reset monit permissions ##
 chown root:root /etc/monit/monitrc
 chmod -R 700 /etc/monit/monitrc
+
+####################################################################################################
+## Reset Permissions: WP-CLI Files #################################################################
+####################################################################################################
+
+## reset WP-CLI permissions ##
+## https://github.com/wp-cli/wp-cli/issues/3181 ##
+## https://github.com/wp-cli/wp-cli/issues/1241 ##
+## https://www.alexgeorgiou.gr/wp-cli-www-data-user-permissions-linux/ ##
+chown root:root /usr/local/bin/
+chown www-data:www-data /usr/local/bin/wp
+chmod 6775 /usr/local/bin/wp
