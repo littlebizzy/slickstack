@@ -306,13 +306,29 @@ Others: Moss.sh, Webinoly, VestaCP, OneInStack, OpenResty, ServerPilot, RunCloud
 
 Yes, you can. If you or your client has a WordPress website on a web host somewhere and can't move it to a SlickStack server for the time being, you can still make use of all our `mu-plugins` (micro plugins) that are included in SlickStack by simply installing them one-by-one. Or you can install "less" plugins by installing the "parent" plugins instead, such as Speed Demon, SEO Genius, Security Guard.
 
+**Why do you use Ubuntu instead of other distros?**
+
+Many geeky distro fanboys love to hate on Ubuntu for one reason or another, but the truth remains that besides RedHat, Ubuntu has been the only stand out and dominant Linux distro for many years now. They have beyond proven themselves when it comes to regularl and reliable versioning and release schedules, and incredible package maintenance. Ubuntu has their finger on the pulse of industry changes and has a solid idea of what packages should be included -- and what versions of those packages. Their unique and impressive focus on stability makes them a perfect OS to base a LEMP stack script on. Their decisions end up widely impacting the greater web hosting and web dev community, and they have a corporate sponsor that is financially stable, while still maintaining and promoting a truly open source community that is the perfect answer to avoiding Big Tech monopolies.
+
+More: https://slickstack.io/features/ubuntu/
+
 **What version of WordPress does SlickStack install?**
 
 Generally it installs the latest (current) version of WordPress, as long its not a major version. In other words, since our goal is stability and security, SlickStack will always bundle the most recent "minor" version of WordPress. So if the latest release of WordPress over at WordPress.org is currently 5.2.0 then SlickStack will usually wait to bundle version 5.2.1 because these minor versions (as per semantic versioning standards) means that several bugs and patches have now been fixed. So in this scenario if 5.2.1 is not yet available, then SlickStack will install 5.1.1 because its the latest stable "minor" patched release.
 
+More: https://slickstack.io/features/wordpress/
+
+**Why do you use MySQL instead of MariaDB?**
+
+The original reason for the MariaDB fork was because a handful of engineers feared that Oracle would neglect MySQL after they acquired Sun Microsystems in favor of the Oracle Database systems. This turned out to be far from true, and MySQL has maintained its market dominance without blinking an eye, while continue to be open source. While its true that MariaDB is more transparent about bug patches, and perhaps is more open source minded, the argument that MariaDB has better performance is really just not true when you compare typical WordPress hosting scenarios. Plus, MySQL continues to come out with new revolutionary features that the smaller team at MariaDB will likely find it impossible to compete with. Ultimately, the point is that Ubuntu still ships with MySQL being the default on their distributions, and until that changes, we will be sticking with MySQL. Our goal is stability and trusting the "upstream" stack as much as possible, which means not fixing things that aren't broken. We fully expect many companies might be moving back to MySQL in the next few years as well... time will tell.
+
+More: https://slickstack.io/features/mysql/
+
 **Why do you use OpenSSL instead of Let's Encrypt?** 
 
 This is largely a decision that is based on LittleBizzy's web hosting approach, which requires our clients to be behind CloudFlare. As the fastest DNS resolver in the world, it simply doesn't make any sense right now NOT to use CloudFlare, especially since its completely free. By using OpenSSL, which is included in Ubuntu Linux, it means easier installation and configuration, and it never expires either. In contrast, Let's Encrypt is much more complicated to setup and maintain, and their certificates expire constantly after 90 days, meaning your server management software must constantly renew it and manage it. There is really no point in our view to introduce more potential conflicts and failures into SlickStack, when OpenSSL pairs perfectly with CloudFlare's free SSL network, soon to be the largest SSL provider in the world. By using self-signed certs, SlickStack [ss] also avoids the potential of Man-In-The-Middle attacks, meaning even stronger security. This decision might change in the future, but for now we will only be supporting OpenSSL self-signed certicates and assuming an integration with CloudFlare.
+
+More: https://slickstack.io/features/openssl/
 
 **What is the complete list of Nginx modules that are installed?** 
 
