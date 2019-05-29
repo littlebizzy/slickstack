@@ -38,7 +38,7 @@ SlickStack [ss] works best on VPS servers with KVM virtualization that have at l
 | **PHP-FPM** | 7.2.17 | `php.ini` + `php-fpm.conf` + `www.conf` |
 | **Zend OPcache** | 3.2.0/7.2.17 | (same as above) |
 | **WordPress** | 5.2.1 | optional `wplite` pre-optimized configuration (adds custom `mu-plugins`) |
-| **WP-CLI** | 2.1.0 | default config |
+| **WP-CLI** | 2.2.0 | default config |
 | **Redis** | 4.0.9 | `redis.conf` |
 | **Git** | 2.17.1 | default config |
 | **UFW Firewall** | 0.36 | `ufw` + `ufw.conf` + `user-rules` |
