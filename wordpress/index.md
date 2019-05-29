@@ -12,10 +12,10 @@ redirect_from:
 
 *Live configuration files and boilerplates used by current SlickStack installation that may be altered by LittleBizzy or Ubuntu for better performance.*
 
-* <a href="blacklist.txt">blacklist.txt</a>
-* <a href="object-cache.txt">object-cache.txt</a>
 * <a href="wordpress.zip">wordpress.zip</a>
 * <a href="wp-config.txt">wp-config.txt</a>
+* <a href="object-cache.txt">object-cache.txt</a>
+* <a href="blacklist.txt">blacklist.txt</a>
 
 ### Default Files
 
@@ -127,4 +127,4 @@ redirect_from:
 
 ----
 
-*Last updated: May 26, 2019*
+*Last updated: May 29, 2019*
