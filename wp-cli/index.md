@@ -38,6 +38,7 @@ redirect_from:
 
 * <a href="https://wp-cli.org">https://wp-cli.org</a>
 * <a href="https://github.com/wp-cli/wp-cli/releases">https://github.com/wp-cli/wp-cli/releases</a>
+* <a href="https://raw.githubusercontent.com/wp-cli/wp-cli/v2.2.0/utils/wp-completion.bash">https://raw.githubusercontent.com/wp-cli/wp-cli/v2.2.0/utils/wp-completion.bash</a>
 
 ----
 
