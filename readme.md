@@ -31,13 +31,13 @@ SlickStack [ss] works best on VPS servers with KVM virtualization that have at l
 | LEMP Module | Current Version | What does SlickStack [ss] customize? |
 | :------------- | :----------: | :----------: |
 | **Ubuntu** | 18.04 (LTS) | `crontab` + `gai.conf` + `sshd_config` + `sudoers` |
-| **Nginx (Extras)** | 1.15.8 | `nginx.conf` + `server block` |
+| **Nginx (Extras)** | 1.15.8 | `nginx.conf` + `default` (server block) |
 | **FastCGI Cache** | 1.15.8 | `fastcgi-cache.conf` |
 | **OpenSSL** | 1.1.0g | default config |
 | **MySQL** | 5.7.25 | default config (will be customized slightly in future) |
 | **PHP-FPM** | 7.2.17 | `php.ini` + `php-fpm.conf` + `www.conf` |
-| **Zend OPcache** | 3.2.0/7.2.17 | (same as above) |
-| **WordPress** | 5.2.1 | optional `wplite` pre-optimized configuration (adds custom `mu-plugins`) |
+| **Zend / OPcache** | 3.2.0 / 7.2.17 | (same as PHP-FPM) |
+| **WordPress** | 5.2.1 | several `mu-plugins` by LittleBizzy |
 | **WP-CLI** | 2.2.0 | default config |
 | **Redis** | 4.0.9 | `redis.conf` |
 | **Git** | 2.17.1 | default config |
