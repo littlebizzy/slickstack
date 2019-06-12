@@ -47,14 +47,14 @@ redirect_from:
 
 *Raw files from the vendor’s original release (e.g. official repo), not altered by other providers, included for reference and documentation purposes.*
 
-* (n/a)
+* (coming soon)
 
 ### Related Links
 
 *Links and resources related to the above module that may help users understand its functionality, or how it interacts with other LEMP stack modules.*
 
-* (coming soon)
+* <a href="https://www.littlebizzy.com/plugins">https://www.littlebizzy.com/plugins</a>
 
 ----
 
-*Last updated: May 9, 2019*
+*Last updated: June 12, 2019*
