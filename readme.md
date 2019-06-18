@@ -41,7 +41,7 @@ Currently, SlickStack [ss] is meant for a single origin server with a `localhost
 | **MySQL** | 5.7.25 | default config (will be customized slightly in future) |
 | **PHP-FPM** | 7.2.17 | `php.ini` + `php-fpm.conf` + `www.conf` |
 | **Zend / OPcache** | 3.2.0 / 7.2.17 | (same as PHP-FPM) |
-| **WordPress** | 5.2.1 | several `mu-plugins` by LittleBizzy |
+| **WordPress** | 5.2.2 | several `mu-plugins` by LittleBizzy |
 | **WP-CLI** | 2.2.0 | default config |
 | **Redis** | 4.0.9 | `redis.conf` |
 | **Git** | 2.17.1 | default config |
