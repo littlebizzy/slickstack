@@ -1,9 +1,3 @@
----
-title: WordPress (Public Mirrors)
-redirect_from:
-  - /wp/
----
-
 # WordPress (CMS)
 
 ----
@@ -21,6 +15,8 @@ redirect_from:
 
 *Raw files from the vendor’s original release (e.g. official repo), not altered by other providers, included for reference and documentation purposes.*
 
+* <a href="wordpress-5.2.2.zip">wordpress-5.2.2.zip</a>
+* <a href="wp-config-sample-5.2.2.txt">wp-config-sample-5.2.2.txt</a>
 * <a href="wordpress-5.2.1.zip">wordpress-5.2.1.zip</a>
 * <a href="wp-config-sample-5.2.1.txt">wp-config-sample-5.2.1.txt</a>
 * <a href="wordpress-5.2.0.zip">wordpress-5.2.0.zip</a>
@@ -127,4 +123,4 @@ redirect_from:
 
 ----
 
-*Last updated: May 29, 2019*
+*Last updated: June 19, 2019*
