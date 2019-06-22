@@ -44,6 +44,7 @@ title: Starter Themes (Public Mirrors)
 * <a href="https://themble.com/bones/">themble.com/bones</a>
 * <a href="https://github.com/squibbleFish/theme-bones">https://github.com/squibbleFish/theme-bones</a>
 * <a href="https://themehybrid.com/themes/mythic">themehybrid.com/themes/mythic</a>
+* <a href="https://github.com/justintadlock/mythic">https://github.com/justintadlock/mythic</a>
 * <a href="https://understrap.com/">understrap.com</a>
 * <a href="https://woocommerce.com/storefront/">woocommerce.com/storefront</a>
 
