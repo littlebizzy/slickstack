@@ -21,6 +21,9 @@ title: Starter Themes (Public Mirrors)
 * <a href="bones-1.05.zip">bones-1.05.zip</a>
 * <a href="bones-1.04.zip">bones-1.04.zip</a>
 * <a href="mythic-1.1.0.zip">mythic-1.1.0.zip</a>
+* <a href="mythic-1.0.2.zip">mythic-1.0.2.zip</a>
+* <a href="mythic-1.0.1.zip">mythic-1.0.1.zip</a>
+* <a href="mythic-1.0.0.zip">mythic-1.0.0.zip</a>
 * <a href="sage-9.0.9.zip">sage-9.0.9.zip</a>
 * <a href="sage-9.0.8.zip">sage-9.0.8.zip</a>
 * <a href="sage-9.0.7.zip">sage-9.0.7.zip</a>
