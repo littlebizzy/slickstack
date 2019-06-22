@@ -40,13 +40,13 @@ title: Starter Themes (Public Mirrors)
 
 *Links and resources related to the above module that may help users understand its functionality, or how it interacts with other LEMP stack modules.*
 
-* <a href="https://roots.io/sage/">roots.io/sage</a>
-* <a href="https://themble.com/bones/">themble.com/bones</a>
+* <a href="https://roots.io/sage/">https://roots.io/sage/</a>
+* <a href="https://themble.com/bones/">https://themble.com/bones/</a>
 * <a href="https://github.com/squibbleFish/theme-bones">https://github.com/squibbleFish/theme-bones</a>
-* <a href="https://themehybrid.com/themes/mythic">themehybrid.com/themes/mythic</a>
+* <a href="https://themehybrid.com/themes/mythic">https://themehybrid.com/themes/mythic</a>
 * <a href="https://github.com/justintadlock/mythic">https://github.com/justintadlock/mythic</a>
-* <a href="https://understrap.com/">understrap.com</a>
-* <a href="https://woocommerce.com/storefront/">woocommerce.com/storefront</a>
+* <a href="https://understrap.com">https://understrap.com</a>
+* <a href="https://woocommerce.com/storefront/">https://woocommerce.com/storefront/</a>
 
 ----
 
