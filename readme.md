@@ -1,6 +1,8 @@
-# SlickStack [ss] - "Alpha ss4a"
+# SlickStack [ss] - "Alpha ss5a"
 
 SlickStack is a free LEMP stack automation script written in Bash designed to enhance and simplify WordPress provisioning, performance, and security.
+
+* **NEW!** SlickStack now does `include_once` on the Custom Functions (MU plugin) file `/var/www/html/wp-content/functions.php` inside wp-config.php meaning much more stable and reliable PHP fuctionality...
 
 * **NEW!** SlickStack now achieves a 100% [Google PageSpeed](https://developers.google.com/speed/pagespeed/insights/?url=https%3A%2F%2Fslickstack.io%2F) score...
 
