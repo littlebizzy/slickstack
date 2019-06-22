@@ -11,6 +11,7 @@ title: SlickStack (Public Mirrors)
 *Main modules of SlickStack's optimized WordPress LEMP stack, including Ubuntu LTS, Nginx, MySQL, PHP-FPM, Redis, and several LittleBizzy MU plugins.*
 
 * <a href="clamav/">/clamav/</a>
+* <a href="git/">/git/</a>
 * <a href="mu-plugins/">/mu-plugins/</a>
 * <a href="mysql/">/mysql/</a>
 * <a href="nginx/">/nginx/</a>
@@ -32,6 +33,7 @@ title: SlickStack (Public Mirrors)
 * <a href="ss-install.txt">ss-install.txt</a>
 * <a href="ss-muplugs.txt">ss-muplugs.txt</a>
 * <a href="ss-perms.txt">ss-perms.txt</a>
+* <a href="ss-scan.txt">ss-scan.txt</a>
 * <a href="ss-update.txt">ss-update.txt</a>
 * <a href="ss-worker.txt">ss-worker.txt</a>
 
@@ -59,4 +61,4 @@ title: SlickStack (Public Mirrors)
 
 ----
 
-*Last updated: Jun 1, 2019*
+*Last updated: Jun 22, 2019*
