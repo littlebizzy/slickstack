@@ -1,7 +1,5 @@
 ---
 title: Starter Themes (Public Mirrors)
-redirect_from:
-  - /starterthemes/
 ---
 
 # Starter Themes (WordPress)
@@ -21,6 +19,14 @@ redirect_from:
 * <a href="bones-1.07.zip">bones-1.07.zip</a>
 * <a href="mythic-1.1.0.zip">mythic-1.1.0.zip</a>
 * <a href="sage-9.0.9.zip">sage-9.0.9.zip</a>
+* <a href="sage-9.0.8.zip">sage-9.0.8.zip</a>
+* <a href="sage-9.0.7.zip">sage-9.0.7.zip</a>
+* <a href="sage-9.0.6.zip">sage-9.0.6.zip</a>
+* <a href="sage-9.0.5.zip">sage-9.0.5.zip</a>
+* <a href="sage-9.0.4.zip">sage-9.0.4.zip</a>
+* <a href="sage-9.0.3.zip">sage-9.0.3.zip</a>
+* <a href="sage-9.0.2.zip">sage-9.0.2.zip</a>
+* <a href="sage-9.0.1.zip">sage-9.0.1.zip</a>
 * <a href="storefront-2.4.3.zip">storefront-2.4.3.zip</a>
 * <a href="understrap-0.9.1.zip">understrap-0.9.1.zip</a>
 
@@ -36,4 +42,4 @@ redirect_from:
 
 ----
 
-*Last updated: May 9, 2019*
+*Last updated: June 22, 2019*
