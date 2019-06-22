@@ -17,6 +17,9 @@ title: Starter Themes (Public Mirrors)
 *Raw files from the vendor’s original release (e.g. official repo), not altered by other providers, included for reference and documentation purposes.*
 
 * <a href="bones-1.07.zip">bones-1.07.zip</a>
+* <a href="bones-1.06.zip">bones-1.06.zip</a>
+* <a href="bones-1.05.zip">bones-1.05.zip</a>
+* <a href="bones-1.04.zip">bones-1.04.zip</a>
 * <a href="mythic-1.1.0.zip">mythic-1.1.0.zip</a>
 * <a href="sage-9.0.9.zip">sage-9.0.9.zip</a>
 * <a href="sage-9.0.8.zip">sage-9.0.8.zip</a>
@@ -36,6 +39,7 @@ title: Starter Themes (Public Mirrors)
 
 * <a href="https://roots.io/sage/">roots.io/sage</a>
 * <a href="https://themble.com/bones/">themble.com/bones</a>
+* <a href="https://github.com/squibbleFish/theme-bones">https://github.com/squibbleFish/theme-bones</a>
 * <a href="https://themehybrid.com/themes/mythic">themehybrid.com/themes/mythic</a>
 * <a href="https://understrap.com/">understrap.com</a>
 * <a href="https://woocommerce.com/storefront/">woocommerce.com/storefront</a>
