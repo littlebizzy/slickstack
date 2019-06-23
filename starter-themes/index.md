@@ -33,7 +33,13 @@ title: Starter Themes (Public Mirrors)
 * <a href="sage-9.0.3.zip">sage-9.0.3.zip</a>
 * <a href="sage-9.0.2.zip">sage-9.0.2.zip</a>
 * <a href="sage-9.0.1.zip">sage-9.0.1.zip</a>
+* <a href="storefront-2.5.0.zip">storefront-2.5.0.zip</a>
+* <a href="storefront-2.4.6.zip">storefront-2.4.6.zip</a>
+* <a href="storefront-2.4.5.zip">storefront-2.4.5.zip</a>
+* <a href="storefront-2.4.4.zip">storefront-2.4.4.zip</a>
 * <a href="storefront-2.4.3.zip">storefront-2.4.3.zip</a>
+* <a href="storefront-2.4.2.zip">storefront-2.4.2.zip</a>
+* <a href="storefront-2.4.1.zip">storefront-2.4.1.zip</a>
 * <a href="understrap-0.9.1.zip">understrap-0.9.1.zip</a>
 
 ### Related Links
@@ -47,7 +53,8 @@ title: Starter Themes (Public Mirrors)
 * <a href="https://github.com/justintadlock/mythic">https://github.com/justintadlock/mythic</a>
 * <a href="https://understrap.com">https://understrap.com</a>
 * <a href="https://woocommerce.com/storefront/">https://woocommerce.com/storefront/</a>
+* <a href="https://github.com/woocommerce/storefront">https://github.com/woocommerce/storefront</a>
 
 ----
 
-*Last updated: June 22, 2019*
+*Last updated: June 23, 2019*
