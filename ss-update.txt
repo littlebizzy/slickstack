@@ -7,16 +7,14 @@
 #### path: /var/www/ss-update ######################################################################
 #### destination: n/a (not a boilerplate) ##########################################################
 #### purpose: updates all SlickStack modules (only) via the latest Ubuntu packages #################
-#### ss version: SlickStack alpha ss4c #############################################################
+#### ss version: SlickStack alpha ss5a #############################################################
 #### module version: n/a ###########################################################################
 ####################################################################################################
 
-## dpkg default = confold for unattended updates ##
-## but better to run this script manually ##
-# DEBIAN_FRONTEND=noninteractive dpkg --configure -a --force-confold
+## YOU CAN SAFELY RUN THIS SCRIPT WITH NO EFFECT TO SLICKSTACK CONFIGURATION ##
 
 ####################################################################################################
-#### update / upgrade all installed Ubuntu packages ################################################
+#### update + upgrade + autoremove + autoclean all Ubuntu packages #################################
 ####################################################################################################
 
 ## update repo cache ##
@@ -31,6 +29,10 @@ DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/u
 ## autoclean packages ##
 DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" autoclean
 
+####################################################################################################
+#### restart services and confirm script has finished running ######################################
+####################################################################################################
+
 ## restart services ##
 /etc/init.d/nginx restart
 /etc/init.d/php7.2-fpm restart
@@ -43,6 +45,9 @@ DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/u
 ## message alert ##
 echo -e "\e[36mSlickStack modules (Ubuntu packages) update/upgrade complete! Please reboot server.\e[0m"
 
-## reboot server ##
+####################################################################################################
+#### reboot server (optional setting in ss-config for automatic monthly updates) ###################
+####################################################################################################
+
 ## BETTER TO RUN THIS SCRIPT MANUALLY AND REBOOT MANUALLY ##
-# awaiting better snippet here
+# awaiting better reboot snippet here
