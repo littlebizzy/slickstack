@@ -110,7 +110,7 @@ After completing the installation steps above, your `/var/www/` directory should
     
 ## MU (Must Use) Plugins
     
-If you choose to deploy a SlickStack [ss] server using our free WPLite boilerplate, the installation process will include several [Must Use plugins](http://mirrors.slickstack.io/mu-plugins/) inside your WordPress structure (`/var/www/html/wp-content/mu-plugins/`). If you do not wish for these Must Use plugins to be installed, and want a default "vanilla" WordPress installation, choose "wordpress" instead of "wplite" when setting up your ss-config file during the SlickStack setup process:
+If you choose to deploy a SlickStack [ss] server using our free WPLite boilerplate, the installation process will include several [Must Use plugins](http://mirrors.slickstack.io/mu-plugins/) inside your WordPress structure (`/var/www/html/wp-content/mu-plugins/`) that are maintained by LittleBizzy. If you do not wish for these Must Use plugins to be installed, and want a default "vanilla" WordPress installation, choose "wordpress" instead of "wplite" when setting up your ss-config file during the SlickStack setup process:
 
 * [**Autoloader**](https://github.com/littlebizzy/autoloader): Enables standard WordPress plugins contained in a folder to be placed in the mu-plugins directory and loaded prior to others (forked from Bedrock).
 * [**Clear Caches**](https://github.com/littlebizzy/clear-caches): The easiest way to clear caches including WordPress cache, PHP Opcache, Nginx cache, Transient cache, Varnish cache, and object cache (e.g. Redis).
