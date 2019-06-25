@@ -4,7 +4,7 @@
 #### mirror: http://mirrors.slickstack.io/ubuntu/sysctl.txt ########################################
 #### path: /etc/sysctl.conf ########################################################################
 #### destination: n/a (not a boilerplate) ##########################################################
-#### purpose: Ubuntu kernel configuration file (symlink = /etc/sysctl.d/99-sysctl.conf #############
+#### purpose: Ubuntu kernel configuration file (symlink = /etc/sysctl.d/99-sysctl.conf) ############
 #### ss version: SlickStack alpha ss5a #############################################################
 #### module version: Ubuntu 18.04 LTS ##############################################################
 ####################################################################################################
@@ -30,6 +30,10 @@
 # kernel.domainname = example.com
 # kernel.printk = 3 4 1 3
 
+####################################################################################################
+#### network + IP address settings #################################################################
+####################################################################################################
+
 # net.ipv4.conf.default.rp_filter=1
 # net.ipv4.conf.all.rp_filter=1
 # net.ipv4.tcp_syncookies=1
@@ -45,17 +49,85 @@
 # net.ipv6.conf.all.accept_source_route = 0
 net.ipv6.conf.all.accept_ra = 2
 
-## disable ipv6
-## after saving or editing this file
-## reload settings with: sudo sysctl -p
-## confirm with: cat /proc/sys/net/ipv6/conf/all/disable_ipv6
-# net.ipv6.conf.all.disable_ipv6 = 1
-# net.ipv6.conf.default.disable_ipv6 = 1
-# net.ipv6.conf.lo.disable_ipv6 = 1
-# net.ipv6.conf.eth0.disable_ipv6 = 1
+## number of times SYNACKs for passive TCP connections (copied from EasyEngine) ##
+net.ipv4.tcp_synack_retries = 2
 
-## avoid Redis warnings ##
+## allowed local port range (copied from EasyEngine) ##
+net.ipv4.ip_local_port_range = 2000 65535
+
+## protect against TCP Time-Wait (copied from EasyEngine) ##
+net.ipv4.tcp_rfc1337 = 1
+
+## decrease the time default value for tcp_fin_timeout connection (copied from EasyEngine) ##
+net.ipv4.tcp_fin_timeout = 15
+
+## decrease the keepalive connection timeouts (copied from EasyEngine) ##
+net.ipv4.tcp_keepalive_time = 300
+net.ipv4.tcp_keepalive_probes = 5
+net.ipv4.tcp_keepalive_intvl = 15
+
+## increase buffer-space allocatable measured in (4096 bytes) units of pages (copied from EasyEngine) ## 
+net.ipv4.tcp_mem = 65536 131072 262144
+net.ipv4.udp_mem = 65536 131072 262144
+
+## increase the read-buffer space allocatable (copied from EasyEngine) ##
+net.ipv4.tcp_rmem = 8192 87380 16777216
+net.ipv4.udp_rmem_min = 16384
+
+## increase the write-buffer-space allocatable (copied from EasyEngine) ##
+net.ipv4.tcp_wmem = 8192 65536 16777216
+net.ipv4.udp_wmem_min = 16384
+
+## increase the tcp-time-wait buckets pool size to prevent simple DOS attacks (copied from EasyEngine) ##
+net.ipv4.tcp_max_tw_buckets = 1440000
+net.ipv4.tcp_tw_recycle = 1
+net.ipv4.tcp_tw_reuse = 1
+
+####################################################################################################
+#### various settings ##############################################################################
+####################################################################################################
+
+## maximum open files in cache (set to upper limit) ##
+fs.file-max = 2097152
+
+## time before kernel considers migrating a proccess to another core ##
+# kernel.sched_migration_cost_ns = 5000000
+
+# kernel.sched_autogroup_enabled = 0
+
+####################################################################################################
+#### virtual machine settings ######################################################################
+####################################################################################################
+
+## minimize disk swapping (rely more on RAM memory etc) ##
+vm.swappiness = 10
+vm.dirty_ratio = 60
+vm.dirty_background_ratio = 2
+
+## avoid Redis warnings (set this to = 1) ##
 vm.overcommit_memory = 1
 
-## increase incoming connections ##
+####################################################################################################
+#### net core settings #############################################################################
+####################################################################################################
+
+## incoming connections backlog (copied from EasyEngine) ##
+net.core.netdev_max_backlog = 65536
+
+## incoming connections (copied from EasyEngine) ##
 net.core.somaxconn = 4096
+
+## wmem settings (copied from EasyEngine) ##
+net.core.wmem_default = 31457280
+net.core.wmem_max = 12582912
+
+## rmem settings (copied from EasyEngine) ##
+net.core.rmem_default = 31457280
+net.core.rmem_max = 12582912
+
+## option memory settings (copied from EasyEngine) ##
+net.core.optmem_max = 25165824
+
+## netdev budget settings ##
+# net.core.netdev_budget = 50000
+# net.core.netdev_budget_usecs = 5000
