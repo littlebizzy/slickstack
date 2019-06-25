@@ -36,21 +36,21 @@ Currently, SlickStack [ss] is meant for a single origin server with a `localhost
 
 *Last updated: Jun 25, 2019*
 
-| LEMP Module | Current Version | What does SlickStack [ss] customize? |
-| :------------- | :----------: | :----------: |
-| **Ubuntu** | 18.04 (LTS) | `crontab` + `gai.conf` + `sshd_config` + `sudoers` + `sysctl.conf` |
-| **Nginx (Extras)** | 1.15.8 | `nginx.conf` + `default` (server block) |
-| **FastCGI Cache** | 1.15.8 | `fastcgi-cache.conf` |
-| **OpenSSL** | 1.1.0g | default config |
-| **MySQL** | 5.7.25 | default config (will be customized slightly in future) |
-| **PHP-FPM** | 7.2.17 | `php.ini` + `php-fpm.conf` + `www.conf` |
-| **Zend / OPcache** | 3.2.0 / 7.2.17 | (same as PHP-FPM) |
-| **WordPress** | 5.2.2 | several `mu-plugins` by LittleBizzy |
-| **WP-CLI** | 2.2.0 | default config |
-| **Redis** | 4.0.9 | `redis.conf` |
-| **Git** | 2.17.1 | default config |
-| **UFW Firewall** | 0.36 | `ufw` + `ufw.conf` + `user-rules` |
-| **ClamAV** | 0.100.x | `freshclam.conf` |
+| LEMP Module | Mirrors | Version | What does SlickStack [ss] customize? |
+| :------------- | :----------: | :----------: | :----------: |
+| **Ubuntu** | [click here](http://mirrors.slickstack.io/ubuntu/) | 18.04 (LTS) | `crontab` + `gai.conf` + `sshd_config` + `sudoers` + `sysctl.conf` |
+| **Nginx (Extras)** | [click here](http://mirrors.slickstack.io/nginx/) | 1.15.8 | `nginx.conf` + `default` (server block) |
+| **FastCGI Cache** | (Nginx) | 1.15.8 | `fastcgi-cache.conf` |
+| **OpenSSL** | (Nginx) | 1.1.0g | default config |
+| **MySQL** | [click here](http://mirrors.slickstack.io/mysql/) | 5.7.25 | default config (will be customized slightly in future) |
+| **PHP-FPM** | [click here](http://mirrors.slickstack.io/php-fpm/) | 7.2.17 | `php.ini` + `php-fpm.conf` + `www.conf` |
+| **Zend / OPcache** | (PHP-FPM) | 3.2.0 / 7.2.17 | (same as PHP-FPM) |
+| **WordPress** | [click here](http://mirrors.slickstack.io/wordpress/) | 5.2.2 | several `mu-plugins` by LittleBizzy |
+| **WP-CLI** | [click here](http://mirrors.slickstack.io/wp-cli/) | 2.2.0 | default config |
+| **Redis** | [click here](http://mirrors.slickstack.io/redis/) | 4.0.9 | `redis.conf` |
+| **Git** | [click here](http://mirrors.slickstack.io/git/) | 2.17.1 | default config |
+| **UFW Firewall** | (Ubuntu) | 0.36 | `ufw` + `ufw.conf` + `user-rules` |
+| **ClamAV** | [click here](http://mirrors.slickstack.io/clamav/) | 0.100.x | `freshclam.conf` |
 
 Default Ports: 80 (HTTP), 443 (HTTPS), 6969 (SSH)
 
