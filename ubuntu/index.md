@@ -35,7 +35,7 @@ title: Ubuntu (Public Mirrors)
 
 *Links and resources related to the above module that may help users understand its functionality, or how it interacts with other LEMP stack modules.*
 
-* (coming soon)
+* <a href="http://manpages.ubuntu.com/manpages/bionic/man5/gai.conf.5.html">http://manpages.ubuntu.com/manpages/bionic/man5/gai.conf.5.html</a>
 
 ----
 
