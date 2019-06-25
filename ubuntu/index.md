@@ -10,10 +10,10 @@ title: Ubuntu (Public Mirrors)
 
 *Live configuration files and boilerplates used by current SlickStack installation that may be altered by LittleBizzy or Ubuntu for better performance.*
 
-* <a href="99-sysctl.txt">99-sysctl.txt</a>
 * <a href="gai-conf.txt">gai-conf.txt</a>
 * <a href="sshd-config.txt">sshd-config.txt</a>
 * <a href="sudoers.txt">sudoers.txt</a>
+* <a href="sysctl.txt">sysctl.txt</a>
 * <a href="ufw.txt">ufw.txt</a>
 * <a href="ufw-conf.txt">ufw-conf.txt</a>
 * <a href="user-rules.txt">user-rules.txt</a>
