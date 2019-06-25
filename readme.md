@@ -34,11 +34,11 @@ Currently, SlickStack [ss] is meant for a single origin server with a `localhost
 
 ## Core Modules
 
-*Last updated: June 20, 2019*
+*Last updated: Jun 25, 2019*
 
 | LEMP Module | Current Version | What does SlickStack [ss] customize? |
 | :------------- | :----------: | :----------: |
-| **Ubuntu** | 18.04 (LTS) | `crontab` + `gai.conf` + `sshd_config` + `sudoers` |
+| **Ubuntu** | 18.04 (LTS) | `crontab` + `gai.conf` + `sshd_config` + `sudoers` + `sysctl.conf` |
 | **Nginx (Extras)** | 1.15.8 | `nginx.conf` + `default` (server block) |
 | **FastCGI Cache** | 1.15.8 | `fastcgi-cache.conf` |
 | **OpenSSL** | 1.1.0g | default config |
