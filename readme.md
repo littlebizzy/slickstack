@@ -45,7 +45,8 @@ Currently, SlickStack [ss] is meant for a single origin server with a `localhost
 | **MySQL** | [click here](http://mirrors.slickstack.io/mysql/) | 5.7.25 | default config (will be customized slightly in future) |
 | **PHP-FPM** | [click here](http://mirrors.slickstack.io/php-fpm/) | 7.2.17 | `php.ini` + `php-fpm.conf` + `www.conf` |
 | **Zend / OPcache** | (PHP-FPM) | 3.2.0 / 7.2.17 | (same as PHP-FPM) |
-| **WordPress** | [click here](http://mirrors.slickstack.io/wordpress/) | 5.2.2 | several `mu-plugins` by LittleBizzy |
+| **WordPress** | [click here](http://mirrors.slickstack.io/wordpress/) | 5.2.2 | some WP Core junk files are removed |
+| **MU Plugins** | [click here](http://mirrors.slickstack.io/mu-plugins/) | N/A | several `mu-plugins` by LittleBizzy |
 | **WP-CLI** | [click here](http://mirrors.slickstack.io/wp-cli/) | 2.2.0 | default config |
 | **Redis** | [click here](http://mirrors.slickstack.io/redis/) | 4.0.9 | `redis.conf` |
 | **Git** | [click here](http://mirrors.slickstack.io/git/) | 2.17.1 | default config |
@@ -112,7 +113,7 @@ After completing the installation steps above, your `/var/www/` directory should
     
 ## MU (Must Use) Plugins
     
-If you choose to deploy a SlickStack [ss] server using our free WPLite boilerplate, the installation process will include several [Must Use plugins](http://mirrors.slickstack.io/mu-plugins/) inside your WordPress structure (`/var/www/html/wp-content/mu-plugins/`) that are maintained by LittleBizzy. If you do not wish for these Must Use plugins to be installed, and want a default "vanilla" WordPress installation, choose "wordpress" instead of "wplite" when setting up your `ss-config` file during setup:
+If you choose to deploy a SlickStack [ss] server using our free WPLite boilerplate, the installation process will include several [Must Use plugins](https://wordpress.org/support/article/must-use-plugins/) inside your WordPress structure (`/var/www/html/wp-content/mu-plugins/`) that are maintained by LittleBizzy. If you do not wish for these Must Use plugins to be installed, and want a default "vanilla" WordPress installation, choose "wordpress" instead of "wplite" when setting up your `ss-config` options:
 
 * [**Autoloader**](https://github.com/littlebizzy/autoloader): Enables standard WordPress plugins contained in a folder to be placed in the mu-plugins directory and loaded prior to others (forked from Bedrock).
 * [**Clear Caches**](https://github.com/littlebizzy/clear-caches): The easiest way to clear caches including WordPress cache, PHP Opcache, Nginx cache, Transient cache, Varnish cache, and object cache (e.g. Redis).
