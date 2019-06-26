@@ -146,24 +146,27 @@ If you choose to deploy a SlickStack [ss] server using our free WPLite boilerpla
 
 The included Must Use plugins that SlickStack [ss] bundles as part of the `wplite` boilerplate support the following defined constants. Some of them are hard-coded in the `wp-config.php` file in order to optimize performance, however they can otherwise be customized using the Custom Functions file at `/wp-content/functions.php` ... please note that some of these are "planned" and not yet functional, we are hurrying to update the documentation accordingly.
 
-    /* Plugin Meta */
-    define('AUTOMATIC_UPDATE_PLUGINS', false); // default = false (only supported by LittleBizzy plugins)
-    define('DISABLE_NAG_NOTICES', true); // default = true (only supported by LittleBizzy plugins)
+    /** Plugin Meta (Limited Support) */
+    define('AUTOMATIC_UPDATE_PLUGINS', false); // default = false
+    define('DISABLE_NAG_NOTICES', false); // default = false
 
-    /* Clear Caches Functions */
+    /** Clear Caches Functions (v1.2.1) */
     define('CLEAR_CACHES', true); // default = true
     define('CLEAR_CACHES_NGINX', true); // default = true
     define('CLEAR_CACHES_NGINX_PATH', '/var/www/cache'); // default = /var/www/cache
     define('CLEAR_CACHES_OBJECT', true); // default = true
     define('CLEAR_CACHES_OPCACHE', true); // default = true
     
-    /* CloudFlare Functions */
+    /** CloudFlare Functions (v1.5.0) */
     define('CLOUDFLARE', true); // default = true
-    define('CLOUDFLARE_API_EMAIL', 'user@example.com'); // *must be unique*
-    define('CLOUDFLARE_API_KEY', '123456789'); // *must be unique*
-    
-    /* Custom Functions Functions */
-    define('CUSTOM_FUNCTIONS', true); // default = true
+    define('CLOUDFLARE_API_KEY', '@CLOUDFLAREAPIKEY'); // *must be unique*
+    define('CLOUDFLARE_API_EMAIL', '@CLOUDFLAREAPIEMAIL'); // *must be unique*
+    // define('CLOUDFLARE_WIDGET_DNS', true); // default = true
+    // define('CLOUDFLARE_WIDGET_ANALYTICS', true); // default = true
+
+    /** Custom Functions Functions (v1.0.0) */
+    // define('CUSTOM_FUNCTIONS', true); // default = true
+    // define('CUSTOM_FUNCTIONS_PATH', '/var/www/html/wp-content/functions.php'); // default = /var/www/html/wp-content/functions.php
     
     /** Dashboard Cleanup Functions (v1.1.2) */
     define('DASHBOARD_CLEANUP', true); // default = true
