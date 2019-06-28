@@ -17,7 +17,7 @@
 source /var/www/ss-config
 
 ## check latest ss-config build ID and stop ss-install if it appears outdated ##
-if [[ "$SLICKSTACK_BUILD" != "JUL2019A" ]];
+if [[ "$SLICKSTACK_BUILD" != "JUL2019B" ]];
     then echo -e "\e[93mYour ss-config file is outdated. Please rebuild it and run ss-install again.\e[0m" >&2
     exit 1
 fi
@@ -383,9 +383,9 @@ update-alternatives --set php /usr/bin/php7.2
 ## restart php ##
 /etc/init.d/php7.2-fpm restart
 
-###########################
-#### install mysql 5.7 ####
-###########################
+####################################################################################################
+#### Install MySQL 5.7 #############################################################################
+####################################################################################################
 
 ## set noninteractive ##
 export DEBIAN_FRONTEND=noninteractive;
@@ -498,13 +498,11 @@ source /var/www/ss-muplugs
 #### Configure WordPress ###########################################################################
 ####################################################################################################
 
-# if [ -z "${WP_CONFIG_SOURCE}" ];
-# then wget --no-cache --no-cookies -O /tmp/wp-config.txt http://mirrors.slickstack.io/wordpress/wp-config.txt
-# else wget --no-check-certificate --no-cache --no-cookies -O /tmp/wp-config.txt "${WP_CONFIG_SOURCE}"
-# fi
-
-## download latest versions ##
-wget --no-cache --no-cookies -O /tmp/wp-config.txt http://mirrors.slickstack.io/wordpress/wp-config.txt
+## retrieve wp-config.php boilerplate ##
+if [ -z "${WP_CONFIG_SOURCE}" ];
+then wget --no-cache --no-cookies -O /tmp/wp-config.txt http://mirrors.slickstack.io/wordpress/wp-config.txt
+else wget --no-check-certificate --no-cache --no-cookies -O /tmp/wp-config.txt "${WP_CONFIG_SOURCE}"
+fi
 
 ## replace placeholders with variables ##
 sed -i "s/@DBNAME/${dbname}/g" /tmp/wp-config.txt
