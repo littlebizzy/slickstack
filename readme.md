@@ -2,6 +2,8 @@
 
 SlickStack is a free LEMP stack automation script written in Bash designed to enhance and simplify WordPress provisioning, performance, and security.
 
+* **NEW!** SlickStack now supports custom `wp-config.php` boilerplates using `WP_CONFIG_SOURCE` variable... make sure that your custom boilerplate is using the variables supported in the latest `ss-config` and `ss-install` builds!
+
 * **NEW!** SlickStack `ss-install` now verifies that `ss-config` is up-to-date before running the installation...
 
 * **NEW!** SlickStack now supports custom plugin blacklists using `PLUGIN_BLACKLIST_SOURCE` variable...
