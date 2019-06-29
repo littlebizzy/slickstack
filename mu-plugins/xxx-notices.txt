@@ -15,13 +15,16 @@ Prefix: SSNTCS
 function slickstack_admin_notices() { ?>
 
 <div class="notice notice-warning">
-<p><strong>June 15, 2019:</strong> Starting immediately, <a href="https://www.littlebizzy.com/hosting" target="_blank">managed hosting plans</a> at LittleBizzy.com are quite a bit cheaper, starting at just <strong>$39/mo</strong> -- and SFTP and SSL setup are now included 100% free in all hosting plans (along with free migration, free malware removal, and more). We are also handing over control of CloudFlare to any client who wants it, and removing premium CloudFlare "upgrades" from our hosting plans (if you want features like Dedicated SSL Certificates or CloudFlare Pro, you can now pay for them within your own CloudFlare account, at a cheaper overall rate). For any client who still needs help with DNS records, we will still be right there ready to help you with DNS at anytime just as before -- all you need to do is add <em>support@littlebizzy.com</em> to your CloudFlare account settings as an "Admin" team member, and we can help you out anytime. This new approach is much simpler, much cheaper, and allows us to scale our hosting more easily while both empowering and assisting our clients in a way that just makes more sense. Thanks for your feedback and support! <a href="https://www.littlebizzy.com/blog/hosting-plans-slashed" target="_blank">Read More &raquo;</a></p>
+<p><strong>June 29, 2019:</strong> We've temporarily disallowed the Tracking Code Manager plugin by IntellyWP because it was causing fatal errors browser redirect loops... the plugin appears semi-abandoned, but we are hoping to whitelist it again if the author can release some patches to the fatal errors it was causing. A reliable alternative for loading many different tracking codes is Google Tag Manager, but always try to load GTM in the footer, not header, for better performance. You can also choose to load tracking scripts for non-Admin users or logged-out users only, to avoid tracking your staff or customers. Using GTM may also help your company more easily abide by legal compliance rules such as the GDPR in Europe, or otherwise. The important thing is to remove scripts from your GTM settings when you no longer need them, otherwise it adds lots of "bloat" to your website and can hurt your frontend performance and loading speeds.</p>
 
-<p><em>This message will disappear automatically after a few days, thank you.</em></p>
+<p><em>This message will disappear automatically after a few days, thank you. -- SlickStack</em></p>
 </div>
 
 <?php }
-// add_action('admin_notices', 'slickstack_admin_notices');
+
+if(current_user_can('administrator')) {
+    add_action('admin_notices', 'slickstack_admin_notices');
+}
 
 /** Toolbar Shortcuts */
 function slickstack_menu() {
@@ -43,4 +46,6 @@ $wp_admin_bar->add_menu(array('parent' => $menu_id, 'title' => __('Free Plugins'
 $wp_admin_bar->add_menu(array('parent' => $menu_id, 'title' => __('DevOps Services'), 'id' => 'slickstack-services', 'href' => 'https://www.littlebizzy.com/services', 'meta' => array('target' => '_blank')));
 }
 
-add_action('admin_bar_menu', 'slickstack_menu', 25);
+if(current_user_can('administrator')) {
+    add_action('admin_bar_menu', 'slickstack_menu', 25);
+}
