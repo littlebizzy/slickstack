@@ -1,51 +1,53 @@
 <?php
 /*
-Plugin Name: XXX Notices
+Plugin Name: XXX SlickStack
 Plugin URI: https://www.littlebizzy.com/faq/slickstack-notices
 Description: Occasional notices designed to appear in the WP Admin Dashboard that mention important changes regarding the SlickStack environment (white-labeled).
 Version: 0.0.0
-Author: LittleBizzy
-Author URI: https://www.littlebizzy.com
+Author: SlickStack
+Author URI: https://slickstack.io
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
-Prefix: SSNTCS
+Prefix: SSCOMM
 */
 
-/** Admin Notices */
-function slickstack_admin_notices() { ?>
+/** FUTURE VERSIONS WILL BE WHITE-LABELED SO YOU CAN HIDE THE SLICKSTACK AND LITTLEBIZZY BRANDING */
 
-<div class="notice notice-warning">
-<p><strong>June 29, 2019:</strong> We've temporarily disallowed the Tracking Code Manager plugin by IntellyWP because it was causing fatal errors browser redirect loops... the plugin appears semi-abandoned, but we are hoping to whitelist it again if the author can release some patches to the fatal errors it was causing. A reliable alternative for loading many different tracking codes is Google Tag Manager, but always try to load GTM in the footer, not header, for better performance. You can also choose to load tracking scripts for non-Admin users or logged-out users only, to avoid tracking your staff or customers. Using GTM may also help your company more easily abide by legal compliance rules such as the GDPR in Europe, or otherwise. The important thing is to remove scripts from your GTM settings when you no longer need them, otherwise it adds lots of "bloat" to your website and can hurt your frontend performance and loading speeds.</p>
+/** SlickStack Admin Notices */
+add_action('admin_notices', 'slickstack_admin_notices');
 
-<p><em>This message will disappear automatically after a few days, thank you. -- SlickStack</em></p>
-</div>
+function slickstack_admin_notices() {
+    $current_user = wp_get_current_user();
+    if(current_user_can('manage_options')) { ?>
 
-<?php }
+    <div class="notice notice-warning">
+    <p><strong>June 29, 2019:</strong> We've temporarily disallowed the <strong>Tracking Code Manager</strong> plugin by <em>IntellyWP</em> because it was causing fatal errors and browser redirect loops. One of the best alternatives would be using a <a href="https://wordpress.org/plugins/metronet-tag-manager/" target="_blank">Google Tag Manager</a> plugin, as you can input an unlimited number of tracking scripts. When possible, always load tracking scripts in your site footer, not the header, for better performance and loading speeds. Using a WordPress plugin to do this is usually best, because you can also choose to not track certain users (e.g. Admins or logged-in customers) to avoid inaccurate statistics. Using GTM also might allow your company to better follow legal compliance rules such as the GDPR in Europe. Always keep in mind that every script, and every tracking feature that you add will cause your site to slow down more, so minimizing tracking is a good idea.</p>
+    <p><em>This message will disappear automatically after a few days, thank you. — SlickStack</em></p>
+    </div>
 
-//if(current_user_can('administrator')) {
-  //  add_action('admin_notices', 'slickstack_admin_notices');
-//}
-
-/** Toolbar Shortcuts */
-function slickstack_menu() {
-
-global $wp_admin_bar;
-$menu_id = 'slickstack';
-$wp_admin_bar->add_menu(array('id' => $menu_id, 'title' => __('LittleBizzy'), 'href' => '/'));
-$wp_admin_bar->add_menu(array('parent' => $menu_id, 'title' => __('Client Login'), 'id' => 'slickstack-account', 'href' => 'https://www.littlebizzy.com/account', 'meta' => array('target' => '_blank')));
-$wp_admin_bar->add_menu(array('parent' => $menu_id, 'title' => __('CodeGuard Login'), 'id' => 'slickstack-codeguard', 'href' => 'https://www.codeguard.com/login', 'meta' => array('target' => '_blank')));
-$wp_admin_bar->add_menu(array('parent' => $menu_id, 'title' => __('New Support Ticket'), 'id' => 'slickstack-support', 'href' => 'https://www.littlebizzy.com/contact', 'meta' => array('target' => '_blank')));
-$wp_admin_bar->add_menu(array('parent' => $menu_id, 'title' => __('Facebook Chat'), 'id' => 'slickstack-messenger', 'href' => 'https://m.me/littlebizzy', 'meta' => array('target' => '_blank')));
-$wp_admin_bar->add_menu(array('parent' => $menu_id, 'title' => __('Telegram Channel'), 'id' => 'slickstack-telegram', 'href' => 'https://t.me/littlebizzy', 'meta' => array('target' => '_blank')));
-$wp_admin_bar->add_menu(array('parent' => $menu_id, 'title' => __('FAQ'), 'id' => 'slickstack-faq', 'href' => 'https://www.littlebizzy.com/faq', 'meta' => array('target' => '_blank')));
-$wp_admin_bar->add_menu(array('parent' => $menu_id, 'title' => __('Disallowed Plugins'), 'id' => 'slickstack-blacklist', 'href' => 'http://mirrors.slickstack.io/wordpress/blacklist.txt', 'meta' => array('target' => '_blank')));
-$wp_admin_bar->add_menu(array('parent' => $menu_id, 'title' => __('Recommended Plugins'), 'id' => 'slickstack-rec-plugins', 'href' => 'https://www.littlebizzy.com/faq/recommended-plugins', 'meta' => array('target' => '_blank')));
-$wp_admin_bar->add_menu(array('parent' => $menu_id, 'title' => __('Recommended Themes'), 'id' => 'slickstack-rec-themes', 'href' => 'https://www.littlebizzy.com/faq/recommended-themes', 'meta' => array('target' => '_blank')));
-$wp_admin_bar->add_menu(array('parent' => $menu_id, 'title' => __('User Guide'), 'id' => 'slickstack-guide', 'href' => 'https://www.littlebizzy.com/guide', 'meta' => array('target' => '_blank')));
-$wp_admin_bar->add_menu(array('parent' => $menu_id, 'title' => __('Free Plugins'), 'id' => 'slickstack-plugins', 'href' => 'https://www.littlebizzy.com/plugins', 'meta' => array('target' => '_blank')));
-$wp_admin_bar->add_menu(array('parent' => $menu_id, 'title' => __('DevOps Services'), 'id' => 'slickstack-services', 'href' => 'https://www.littlebizzy.com/services', 'meta' => array('target' => '_blank')));
+    <?php } else { }
 }
 
-//if(current_user_can('administrator')) {
- //   add_action('admin_bar_menu', 'slickstack_menu', 25);
-//}
+/** SlickStack Toolbar Shortcuts */
+add_action('admin_bar_menu', 'slickstack_menu', 25);
+
+function slickstack_menu() {
+    $current_user = wp_get_current_user();
+    if(current_user_can('manage_options')) {
+        global $wp_admin_bar;
+        $menu_id = 'slickstack';
+        $wp_admin_bar->add_menu(array('id' => $menu_id, 'title' => __('LittleBizzy'), 'href' => '/'));
+        $wp_admin_bar->add_menu(array('parent' => $menu_id, 'title' => __('Client Login'), 'id' => 'slickstack-account', 'href' => 'https://www.littlebizzy.com/account', 'meta' => array('target' => '_blank')));
+        $wp_admin_bar->add_menu(array('parent' => $menu_id, 'title' => __('CodeGuard Login'), 'id' => 'slickstack-codeguard', 'href' => 'https://www.codeguard.com/login', 'meta' => array('target' => '_blank')));
+        $wp_admin_bar->add_menu(array('parent' => $menu_id, 'title' => __('New Support Ticket'), 'id' => 'slickstack-support', 'href' => 'https://www.littlebizzy.com/contact', 'meta' => array('target' => '_blank')));
+        $wp_admin_bar->add_menu(array('parent' => $menu_id, 'title' => __('Facebook Chat'), 'id' => 'slickstack-messenger', 'href' => 'https://m.me/littlebizzy', 'meta' => array('target' => '_blank')));
+        $wp_admin_bar->add_menu(array('parent' => $menu_id, 'title' => __('Telegram Channel'), 'id' => 'slickstack-telegram', 'href' => 'https://t.me/littlebizzy', 'meta' => array('target' => '_blank')));
+        $wp_admin_bar->add_menu(array('parent' => $menu_id, 'title' => __('FAQ'), 'id' => 'slickstack-faq', 'href' => 'https://www.littlebizzy.com/faq', 'meta' => array('target' => '_blank')));
+        $wp_admin_bar->add_menu(array('parent' => $menu_id, 'title' => __('Disallowed Plugins'), 'id' => 'slickstack-blacklist', 'href' => 'http://mirrors.slickstack.io/wordpress/blacklist.txt', 'meta' => array('target' => '_blank')));
+        $wp_admin_bar->add_menu(array('parent' => $menu_id, 'title' => __('Recommended Plugins'), 'id' => 'slickstack-rec-plugins', 'href' => 'https://www.littlebizzy.com/faq/recommended-plugins', 'meta' => array('target' => '_blank')));
+        $wp_admin_bar->add_menu(array('parent' => $menu_id, 'title' => __('Recommended Themes'), 'id' => 'slickstack-rec-themes', 'href' => 'https://www.littlebizzy.com/faq/recommended-themes', 'meta' => array('target' => '_blank')));
+        $wp_admin_bar->add_menu(array('parent' => $menu_id, 'title' => __('User Guide'), 'id' => 'slickstack-guide', 'href' => 'https://www.littlebizzy.com/guide', 'meta' => array('target' => '_blank')));
+        $wp_admin_bar->add_menu(array('parent' => $menu_id, 'title' => __('Free Plugins'), 'id' => 'slickstack-plugins', 'href' => 'https://www.littlebizzy.com/plugins', 'meta' => array('target' => '_blank')));
+        $wp_admin_bar->add_menu(array('parent' => $menu_id, 'title' => __('DevOps Services'), 'id' => 'slickstack-services', 'href' => 'https://www.littlebizzy.com/services', 'meta' => array('target' => '_blank')));
+    } else { }
+}
