@@ -17,7 +17,7 @@
 source /var/www/ss-config
 
 ## check latest ss-config build ID and stop ss-install if it appears outdated ##
-if [[ "$SLICKSTACK_BUILD" != "JUL2019E" ]];
+if [[ "$SLICKSTACK_BUILD" != "JUL2019F" ]];
     then echo -e "\e[93mYour ss-config file is outdated. Please rebuild it and run ss-install again.\e[0m" >&2
     exit 1
 fi
@@ -277,9 +277,9 @@ DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/u
 wget --no-cache --no-cookies -O /tmp/nginx-conf.txt http://mirrors.slickstack.io/nginx/nginx-conf.txt
 
 ## replace placeholders with slickstack variables ##
-sed -i "s/@CACHEMEMORY/${cachememory}/g" /tmp/nginx-conf.txt
-sed -i "s/@CACHEINACTIVE/${cacheinactive}/g" /tmp/nginx-conf.txt
-sed -i "s/@CACHEMAXSIZE/${cachemaxsize}/g" /tmp/nginx-conf.txt
+sed -i "s/@CACHEMEMORY/${FASTCGI_CACHE_MEMORY}/g" /tmp/nginx-conf.txt
+sed -i "s/@CACHEINACTIVE/${FASTCGI_CACHE_INACTIVE}/g" /tmp/nginx-conf.txt
+sed -i "s/@CACHEMAXSIZE/${FASTCGI_CACHE_MAX_SIZE}/g" /tmp/nginx-conf.txt
 
 ## rename files ##
 mv /tmp/nginx-conf.txt /tmp/nginx.conf
@@ -314,7 +314,7 @@ mv /tmp/server-block-ssl.txt /tmp/default.txt
 
 ## replace @DOMAIN placeholder with slickstack variable ##
 sed -i "s/@DOMAIN/${domain}/g" /tmp/default.txt
-sed -i "s/@CACHEVALID/${cachevalid}/g" /tmp/default.txt
+sed -i "s/@CACHEVALID/${FASTCGI_CACHE_VALID}/g" /tmp/default.txt
 
 ## enable or disable fastcgi cache ##
 ## set skip_cache default to 0 only if fastcgi cache enabled in ss-config ##
