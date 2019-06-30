@@ -490,13 +490,6 @@ rm -R -f latest.tar.gz*
 rm -R -f wordpress.zip*
 
 ####################################################################################################
-#### Install WPLite MU Plugins (for WordPress) #####################################################
-####################################################################################################
-
-## install wplite mu-plugins ##
-source /var/www/ss-muplugs
-
-####################################################################################################
 #### Configure WordPress ###########################################################################
 ####################################################################################################
 
@@ -566,21 +559,50 @@ rm -R -f /tmp/wp-config*
 mkdir /var/www/html/wp-content/temp
 
 ####################################################################################################
-#### install monit (latest apt version) ############################################################
+#### install redis-server (latest apt version) #####################################################
+#### install php-redis a.k.a. predis (latest apt version) ##########################################
 ####################################################################################################
 
-# ## install monit ##
-# DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install monit
+## purge redis-server ##
+DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" purge redis-server
 
-## configure monit settings ##
-# sed -i 's@/var/log/monit.log@/var/www/logs/monit.log@' /etc/monit/monitrc
+## purge php-redis ##
+DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" purge php-redis
+
+## install redis-server ##
+DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install redis-server
+
+## install php-redis ##
+DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install php-redis
+
+####################################################################################################
+#### Configure Redis-Server ########################################################################
+####################################################################################################
+
+## configure redis for object caching ##
+sed -i '/maxmemory.*bytes.*/c\maxmemory 256mb' /etc/redis/redis.conf
+sed -i '/maxmemory-policy noeviction/c\maxmemory-policy allkeys-lru' /etc/redis/redis.conf
+sed -i '/always-show-logo yes/c\always-show-logo no' /etc/redis/redis.conf
+# sed -i '/logfile/c\logfile /var/www/logs/redis.log' /etc/redis/redis.conf
+# sed -i '/dir /c\dir /tmp' /etc/redis/redis.conf
+
+## create redis log file if does not exist ##
+# if [ ! -f "/var/www/logs/redis.log" ]; then touch "/var/www/logs/redis.log"; fi
+# mkdir /var/run/redis
 
 ## reset permissions ##
-# chown root:root /etc/monit/monitrc
-# chmod 0700 /etc/monit/monitrc 
+# chown redis:redis /var/www/logs/redis.log
+chown redis:redis /etc/redis/redis.conf
+chown redis:redis /var/run/redis
+# chmod 775 /var/www/logs/redis.log
+chmod 775 /etc/redis/redis.conf
+chmod 775 /var/run/redis
 
-## restart monit ##
-# /etc/init.d/monit restart
+####################################################################################################
+#### Install MU Plugins (WordPress) After PHP-FPM And Redis Configuration Complete #################
+####################################################################################################
+
+source /var/www/ss-muplugs
 
 ####################################################################################################
 #### Configure UFW Firewall ########################################################################
@@ -624,46 +646,6 @@ rm -R -f /tmp/ufw-conf.txt* /tmp/ufw.conf*
 rm -R -f /tmp/user-rules.txt* /tmp/user.rules*
 
 ####################################################################################################
-#### install redis-server (latest apt version) #####################################################
-#### install php-redis a.k.a. predis (latest apt version) ##########################################
-####################################################################################################
-
-## purge redis-server ##
-DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" purge redis-server
-
-## purge php-redis ##
-DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" purge php-redis
-
-## install redis-server ##
-DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install redis-server
-
-## install php-redis ##
-DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install php-redis
-
-####################################################################################################
-#### Configure Redis-Server ########################################################################
-####################################################################################################
-
-## configure redis for object caching ##
-sed -i '/maxmemory.*bytes.*/c\maxmemory 256mb' /etc/redis/redis.conf
-sed -i '/maxmemory-policy noeviction/c\maxmemory-policy allkeys-lru' /etc/redis/redis.conf
-sed -i '/always-show-logo yes/c\always-show-logo no' /etc/redis/redis.conf
-# sed -i '/logfile/c\logfile /var/www/logs/redis.log' /etc/redis/redis.conf
-# sed -i '/dir /c\dir /tmp' /etc/redis/redis.conf
-
-## create redis log file if does not exist ##
-# if [ ! -f "/var/www/logs/redis.log" ]; then touch "/var/www/logs/redis.log"; fi
-# mkdir /var/run/redis
-
-## reset permissions ##
-# chown redis:redis /var/www/logs/redis.log
-chown redis:redis /etc/redis/redis.conf
-chown redis:redis /var/run/redis
-# chmod 775 /var/www/logs/redis.log
-chmod 775 /etc/redis/redis.conf
-chmod 775 /var/run/redis
-
-####################################################################################################
 #### Configure ClamAV ##############################################################################
 ####################################################################################################
 
@@ -675,6 +657,23 @@ chmod 775 /var/run/redis
 sed -i '/LogRotate/c\LogRotate true' /etc/clamav/freshclam.conf
 sed -i '/Checks/c\Checks 2' /etc/clamav/freshclam.conf
 sed -i '/MaxAttempts/c\MaxAttempts 3' /etc/clamav/freshclam.conf
+
+####################################################################################################
+#### install monit (latest apt version) ############################################################
+####################################################################################################
+
+# ## install monit ##
+# DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install monit
+
+## configure monit settings ##
+# sed -i 's@/var/log/monit.log@/var/www/logs/monit.log@' /etc/monit/monitrc
+
+## reset permissions ##
+# chown root:root /etc/monit/monitrc
+# chmod 0700 /etc/monit/monitrc 
+
+## restart monit ##
+# /etc/init.d/monit restart
 
 ####################################################################################################
 #### Finish SlickStack Installation ################################################################
