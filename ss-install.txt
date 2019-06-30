@@ -17,7 +17,7 @@
 source /var/www/ss-config
 
 ## check latest ss-config build ID and stop ss-install if it appears outdated ##
-if [[ "$SLICKSTACK_BUILD" != "JUL2019F" ]];
+if [[ "$SLICKSTACK_BUILD" != "JUL2019H" ]];
     then echo -e "\e[93mYour ss-config file is outdated. Please rebuild it and run ss-install again.\e[0m" >&2
     exit 1
 fi
@@ -85,14 +85,14 @@ DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/u
 echo -e "\e[36mConfiguring users, permissions and Ubuntu defaults...\e[0m"
 
 ## reset root ssh/sftp password ##
-echo root:$rootpass | /usr/sbin/chpasswd
+echo root:$ROOT_PASSWORD | /usr/sbin/chpasswd
 
 ## ensure root password never expires ##
 chage -E -1 -m 0 -M -1 -I -1 -W 99999 root
 
 ## add sudo ssh/sftp user ##
-adduser --disabled-password --gecos "" $sudo
-echo $sudo:$sudopass | /usr/sbin/chpasswd
+adduser --disabled-password --gecos "" $SUDO_USER
+echo $SUDO_USER:$SUDO_PASSWORD | /usr/sbin/chpasswd
 
 ## add non-sudo sftp user (chroot jail) ##
 adduser --disabled-password --gecos "" $user
@@ -112,7 +112,7 @@ timedatectl set-timezone UTC
 wget --no-cache --no-cookies -O /tmp/sudoers.txt http://mirrors.slickstack.io/ubuntu/sudoers.txt
 
 ## replace variables ##
-sed -i "s/@SUDO/${sudo}/g" /tmp/sudoers.txt
+sed -i "s/@SUDO/${SUDO_USER}/g" /tmp/sudoers.txt
 
 ## rename files ##
 mv /tmp/sudoers.txt /tmp/sudoers
@@ -135,7 +135,7 @@ echo -e "\e[36mConfiguring various SSH (SFTP) settings and permissions...\e[0m"
 wget --no-cache --no-cookies -O /tmp/sshd-config.txt http://mirrors.slickstack.io/ubuntu/sshd-config.txt
 
 ## replace variables ##
-sed -i "s/@SUDO/${sudo}/g" /tmp/sshd-config.txt
+sed -i "s/@SUDO/${SUDO_USER}/g" /tmp/sshd-config.txt
 sed -i "s/@USER/${user}/g" /tmp/sshd-config.txt
 
 ## rename files ##
@@ -207,8 +207,8 @@ rm -R -f /usr/local/bin/wp
 rm -R -f /home/wp-completion.bash
 rm -R -f /var/www/html/.wp-cli
 rm -R -f /var/www/html/wp-cli
-sed -i '/WP-CLI/d' /home/${sudo}/.bashrc
-sed -i '/wp-completion/d' /home/${sudo}/.bashrc
+sed -i '/WP-CLI/d' /home/${SUDO_USER}/.bashrc
+sed -i '/wp-completion/d' /home/${SUDO_USER}/.bashrc
 
 ## download latest versions ##
 wget --no-cache --no-cookies -O /tmp/wp-cli.phar http://mirrors.slickstack.io/wp-cli/wp-cli.phar
@@ -234,11 +234,11 @@ chmod 6775 /home/wp-completion.bash
 ## https://stackoverflow.com/questions/49668542/create-a-script-that-adds-lines-of-code-to-bashrc-then-reloads-the-terminal ##
 echo '
 ## source Bash completion file for WP-CLI ##
-source /home/wp-completion.bash' >> /home/${sudo}/.bashrc
+source /home/wp-completion.bash' >> /home/${SUDO_USER}/.bashrc
 
 ## reload sudo .bashrc ##
 ## e.g. source ~/.bashrc ##
-source /home/${sudo}/.bashrc
+source /home/${SUDO_USER}/.bashrc
 
 ####################################################################################################
 #### Configure OpenSSL (via Ubuntu) ################################################################
