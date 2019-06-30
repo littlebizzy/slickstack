@@ -7,7 +7,7 @@
 *Live configuration files and boilerplates used by current SlickStack installation that may be altered by LittleBizzy or Ubuntu for better performance.*
 
 * <a href="classicpress.zip">classicpress.zip</a>
-* <a href="wp-config.txt">wp-config.txt</a>
+* <a href="http://mirrors.slickstack.io/wordpress/wp-config.txt">wp-config.txt</a>
 
 ### Default Files
 
