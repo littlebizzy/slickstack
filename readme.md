@@ -2,7 +2,7 @@
 
 SlickStack is a free LEMP stack automation script written in Bash designed to enhance and simplify WordPress provisioning, performance, and security.
 
-* **NEW!** SlickStack now supports custom `wp-config.php` boilerplates using `WP_CONFIG_SOURCE` variable... make sure that your custom boilerplate is using the variables supported in the latest `ss-config` and `ss-install` builds!
+* **NEW!** SlickStack now supports custom `wp-config.php` boilerplates using `WP_CONFIG_SOURCE` variable... make sure that your boilerplate is using variables supported in the latest `ss-config` and `ss-install` builds...
 
 * **NEW!** SlickStack `ss-install` now verifies that `ss-config` is up-to-date before running the installation...
 
@@ -193,58 +193,58 @@ The included Must Use plugins that SlickStack [ss] bundles as part of the `wplit
     define('DASHBOARD_CLEANUP_WOOCOMMERCE_TRACKER', true); // default = true
     define('DASHBOARD_CLEANUP_WP_ORG_SHORTCUT_LINKS', true);  // default = true
     
-    /* Delete Expired Transients Functions */
+    /** Delete Expired Transients Functions */
     define('DELETE_EXPIRED_TRANSIENTS', true); // default = true
     define('DELETE_EXPIRED_TRANSIENTS_HOURS', '6'); // default = 6
     define('DELETE_EXPIRED_TRANSIENTS_MAX_EXECUTION_TIME', '10'); // default = 10
     define('DELETE_EXPIRED_TRANSIENTS_MAX_BATCH_RECORDS', '50'); // default = 50
     
-    /* Disable Attachment Pages Functions */
-    define('DISABLE_ATTACHMENT_PAGES', true); // default = true
+    /** Disable Attachment Pages Functions */
+    // define('DISABLE_ATTACHMENT_PAGES', true); // default = true
     
-    /* Disable Embeds Functions */
+    /** Disable Embeds Functions (v1.3.0) */
     define('DISABLE_EMBEDS', true); // default = true
     define('DISABLE_EMBEDS_ALLOWED_SOURCES', 'twitter,facebook,youtube,soundcloud,etc'); // default = none
     
-    /* Disable Emojis Functions */
-    define('DISABLE_EMOJIS', true); // default = true
+    /** Disable Emojis Functions */
+    // define('DISABLE_EMOJIS', true); // default = true
     
-    /* Disable Empty Trash Functions */
-    define('DISABLE_EMPTY_TRASH', true); // default = true
+    /** Disable Empty Trash Functions */
+    // define('DISABLE_EMPTY_TRASH', true); // default = true
     
-    /* Disable Gutenberg Functions */
+    /** Disable Gutenberg Functions (v1.1.0) */
     define('DISABLE_GUTENBERG', true); // default = true
     
     /* Disable Image Compression Functions */
-    define('DISABLE_IMAGE_COMPRESSION', true); // default = true
+    // define('DISABLE_IMAGE_COMPRESSION', true); // default = true
     
-    /* Disable jQuery Migrate Functions */
-    define('DISABLE_JQUERY_MIGRATE', true); // default = true
+    /** Disable jQuery Migrate Functions */
+    // define('DISABLE_JQUERY_MIGRATE', true); // default = true
     
-    /* Disable Post Via Email Functions */
-    define('DISABLE_POST_VIA_EMAIL', true); // default = true
+    /** Disable Post Via Email Functions */
+    // define('DISABLE_POST_VIA_EMAIL', true); // default = true
     
-    /* Disable XML-RPC Functions */
-    define('DISABLE_XML_RPC', true); // default = true
+    /** Disable XML-RPC Functions */
+    // define('DISABLE_XML_RPC', true); // default = true
     
-    /* Force HTTPS Functions */
+    /** Force HTTPS Functions (v1.4.0) */
     define('FORCE_HTTPS', true); // default = true
     define('FORCE_HTTPS_EXTERNAL_LINKS', false); // default = false
     define('FORCE_HTTPS_EXTERNAL_RESOURCES', true); // default = true
     define('FORCE_HTTPS_INTERNAL_LINKS', true); // default = true
     define('FORCE_HTTPS_INTERNAL_RESOURCES', true); // default = true
     
-    /* Force Strong Hashing Functions */
-    define('FORCE_STRONG_HASHING', true); // default = true
+    /** Force Strong Hashing Functions */
+    // define('FORCE_STRONG_HASHING', true); // default = true
     
-    /* Header Cleanup Functions */
-    define('HEADER_CLEANUP', true); // default = true
+    /** Header Cleanup Functions */
+    // define('HEADER_CLEANUP', true); // default = true
     
-    /* Index Autoload Functions */
-    define('INDEX_AUTOLOAD', true); // default = true
+    /** Index Autoload Functions (v1.1.1) */
+    // define('INDEX_AUTOLOAD', true); // default = true
     define('INDEX_AUTOLOAD_REGENERATE', false); // default = false
     
-    /* Limit Heartbeat Functions */
+    /** Limit Heartbeat Functions (v1.1.0) */
     define('LIMIT_HEARTBEAT', true); // default = true
     define('LIMIT_HEARTBEAT_DISABLE_DASHBOARD', false); // default = false
     define('LIMIT_HEARTBEAT_DISABLE_EDITOR', false); // default = false
@@ -253,7 +253,7 @@ The included Must Use plugins that SlickStack [ss] bundles as part of the `wplit
     define('LIMIT_HEARTBEAT_INTERVAL_EDITOR', 30); // default = 30
     define('LIMIT_HEARTBEAT_INTERVAL_FRONTEND', 300); // default = 300
     
-    /* Minify HTML Functions */
+    /** Minify HTML Functions (v1.0.1) */
     define('MINIFY_HTML', true); // default = true
     define('MINIFY_HTML_INLINE_STYLES', true); // default = true
     define('MINIFY_HTML_INLINE_STYLES_COMMENTS', true); // default = true
