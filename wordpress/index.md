@@ -15,13 +15,6 @@
 
 *Raw files from the vendor’s original release (e.g. official repo), not altered by other providers, included for reference and documentation purposes.*
 
-* <a href="classicpress-1.0.1.zip">classicpress-1.0.1.zip</a>
-* <a href="wp-config-sample-1.0.1.txt">wp-config-sample-1.0.1.txt</a>
-* <a href="classicpress-1.0.0.zip">classicpress-1.0.0.zip</a>
-* <a href="wp-config-sample-1.0.0.txt">wp-config-sample-1.0.0.txt</a>
-
-----
-
 * <a href="wordpress-5.2.2.zip">wordpress-5.2.2.zip</a>
 * <a href="wp-config-sample-5.2.2.txt">wp-config-sample-5.2.2.txt</a>
 * <a href="wordpress-5.2.1.zip">wordpress-5.2.1.zip</a>
@@ -127,8 +120,6 @@
 * <a href="https://wordpress.org/download/releases/">https://wordpress.org/download/releases/</a>
 * <a href="https://codex.wordpress.org/Editing_wp-config.php">https://codex.wordpress.org/Editing_wp-config.php</a>
 * <a href="https://raw.githubusercontent.com/WordPress/WordPress/5.2.1/wp-config-sample.php">https://raw.githubusercontent.com/WordPress/WordPress/5.2.1/wp-config-sample.php</a>
-* <a href="https://github.com/ClassicPress/ClassicPress-release/releases/tag/1.0.0">https://github.com/ClassicPress/ClassicPress-release/releases/tag/1.0.0</a>
-<a href="https://raw.githubusercontent.com/ClassicPress/ClassicPress-release/1.0.1/wp-config-sample.php">https://raw.githubusercontent.com/ClassicPress/ClassicPress-release/1.0.1/wp-config-sample.php</a>
 
 ----
 
