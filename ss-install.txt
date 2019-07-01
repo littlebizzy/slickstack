@@ -523,17 +523,35 @@ sed -i "s/@TABLEPREFIX/${dbprefix}/g" /tmp/wp-config.txt
 ## replace placeholders with variables ##
 sed -i "s/@DOMAIN/${domain}/g" /tmp/wp-config.txt
 
-## replace sftp details placeholders ##
-sed -i "s/@SFTPDETAILSSERVER/${userserver}/g" /tmp/wp-config.txt
-sed -i "s/@SFTPDETAILSUSER/${user}/g" /tmp/wp-config.txt
-sed -i "s/@SFTPDETAILSPASSWORD/${userpass}/g" /tmp/wp-config.txt
-sed -i "s/@SFTPDETAILSPORT/${userport}/g" /tmp/wp-config.txt
-sed -i "s#@SFTPDETAILSROOT#${userroot}#g" /tmp/wp-config.txt
-sed -i "s#@SFTPDETAILSPUBLIC#${userpublic}#g" /tmp/wp-config.txt
+####################################################################################################
+#### input required MU plugins variables to /var/www/html/wp-config.php ############################
+####################################################################################################
 
-## replace cloudflare placeholders ##
-sed -i "s/@CLOUDFLAREAPIKEY/${CLOUDFLARE_API_KEY}/g" /tmp/wp-config.txt
-sed -i "s/@CLOUDFLAREAPIEMAIL/${CLOUDFLARE_API_EMAIL}/g" /tmp/wp-config.txt
+## replace SFTP Details placeholders ##
+if [ -z "${SFTP_USER}" ]; 
+then sed -i "s/@SFTPDETAILSUSER/${SFTP_USER}/g" /var/www/html/wp-config.php
+else sed -i "s/@SFTPDETAILSUSER/${user}/g" /var/www/html/wp-config.php
+fi
+
+if [ -z "${SFTP_PASSWORD}" ]; 
+then sed -i "s/@SFTPDETAILSPASSWORD/${SFTP_PASSWORD}/g" /var/www/html/wp-config.php
+else sed -i "s/@SFTPDETAILSPASSWORD/${userpass}/g" /var/www/html/wp-config.php
+fi
+
+## replace CloudFlare placeholders ##
+if [ -z "${CLOUDFLARE_API_KEY}" ]; 
+then sed -i "s/@CLOUDFLAREAPIKEY/${CLOUDFLARE_API_KEY}/g" /tmp/wp-config.txt
+else sed -i "s/@CLOUDFLAREAPIKEY/${cloudflareapikey}/g" /tmp/wp-config.txt
+fi
+
+if [ -z "${CLOUDFLARE_API_EMAIL}" ]; 
+then sed -i "s/@CLOUDFLAREAPIEMAIL/${CLOUDFLARE_API_EMAIL}/g" /tmp/wp-config.txt
+else sed -i "s/@CLOUDFLAREAPIEMAIL/${cloudflareapiemail}/g" /tmp/wp-config.txt
+fi
+
+####################################################################################################
+#### generate WordPress salt keys for /var/www/html/wp-config.php ##################################
+####################################################################################################
 
 ## replace salt keys ##
 sed -i "s/@AUTHKEY/$(openssl rand -hex 48)/g" /tmp/wp-config.txt
