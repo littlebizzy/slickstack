@@ -7,11 +7,12 @@
 #### path: /var/www/ss-clean #######################################################################
 #### destination: n/a (not a boilerplate) ##########################################################
 #### purpose: cleans up various junk files and unsafe or unsupported files #########################
-#### ss version: SlickStack alpha ss5a #############################################################
+#### ss version: SlickStack alpha ss6a #############################################################
 #### module version: n/a ###########################################################################
 ####################################################################################################
 
 ## SS-CLEAN DOES NOT PERFORM ANY CLAMAV MALWARE SCANNING (USE SS-SCAN INSTEAD) ##
+## SS-CLEAN ONLY PERFORMS FILE DELETION TASKS AND NOTHING ELSE ##
 
 ## include SlickStack configuration ##
 source /var/www/ss-config
@@ -19,12 +20,6 @@ source /var/www/ss-config
 ####################################################################################################
 #### cleanup Ubuntu files and various junk files outside the public root ###########################
 ####################################################################################################
-
-## purge monit (removed from SlickStack) ##
-DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" purge monit
-
-## autoremove Ubuntu packages ##
-DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" autoremove
 
 ## delete Ubuntu junk files ##
 # rm -f /tmp/systemd-*
@@ -240,14 +235,6 @@ rm -R -f /var/www/html/web.config*
 rm -R -f /var/www/html/wordfence-waf* ## ss conflicts, bloated, creates instability (WordFence)
 rm -R -f /var/www/html/yandex*.html  ## junk domain verification files
 rm -R -f /var/www/html/wp-snapshots*
-
-####################################################################################################
-#### cleanup /var/www/html/wp-config.php ###########################################################
-####################################################################################################
-
-## delete cache enable lines in wp-config.php that conflict with fastcgi cache ##
-# sed -i '/WP_CACHE/d' /var/www/html/wp-config.php
-# sed -i '/wp_cache/d' /var/www/html/wp-config.php
 
 ####################################################################################################
 #### cleanup /var/www/html/wp-content/ #############################################################
