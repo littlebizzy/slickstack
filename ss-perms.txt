@@ -60,12 +60,17 @@ then chown -R $SFTP_USER:wordpress /var/www/html
 else chown -R $user:wordpress /var/www/html
 fi
 
+## ensure files exist ##
+if [ ! -f "/var/www/html/wp-content/blacklist.txt" ]; then touch "/var/www/html/wp-content/blacklist.txt"; fi
+if [ ! -f "/var/www/html/wp-content/functions.php" ]; then touch "/var/www/html/wp-content/functions.php"; fi
+
 # chown -R www-data:www-data /var/www/html/wp-config.php
 chown -R www-data:wordpress /var/www/html/wp-content/temp
 chown -R www-data:wordpress /var/www/html/wp-content/mu-plugins
 chown -R www-data:wordpress /var/www/html/wp-content/uploads
 chown -R www-data:www-data /var/www/html/wp-content/blacklist.txt
 chown -R www-data:wordpress /var/www/html/wp-content/object-cache.php
+chown -R www-data:wordpress /var/www/html/wp-content/functions.php
 
 ## chmod ##
 chmod 755 /var/www/html
@@ -75,6 +80,7 @@ chmod 775 /var/www/html/wp-content/temp
 chmod 775 /var/www/html/wp-content/uploads
 chmod 400 /var/www/html/wp-content/blacklist.txt
 chmod 664 /var/www/html/wp-content/object-cache.php
+chmod 664 /var/www/html/wp-content/functions.php
 
 find /var/www/html/ -type d -exec chmod 775 {} \;
 find /var/www/html/ -type f -not -path "*var/www/html/wp-content/uploads*" -exec chmod 664 {} \;
