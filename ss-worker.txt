@@ -7,7 +7,7 @@
 #### path: /var/www/ss-worker ######################################################################
 #### destination: n/a (not a boilerplate) ##########################################################
 #### purpose: performs various maintenance tasks and downloads latest ss-check file ################
-#### ss version: SlickStack alpha ss5a #############################################################
+#### ss version: SlickStack alpha ss6a #############################################################
 #### module version: n/a ###########################################################################
 ####################################################################################################
 
@@ -15,15 +15,16 @@
 source /var/www/ss-config
 
 ####################################################################################################
-#### delete any previous / leftover temporary files ################################################
+#### delete any previous + leftover temporary files ################################################
 ####################################################################################################
 
-rm -R -f /tmp/*cron*
 rm -R -f /tmp/ss*
+rm -R -f /tmp/*cron*
 rm -R -f /tmp/blacklist*
+rm -R -f /tmp/wp-config*
 
 ####################################################################################################
-#### update ss-check and 1-cron-often files to latest version ######################################
+#### update the ss-check file to latest version (improves stability by separating) #################
 ####################################################################################################
 
 # download latest versions ##
@@ -42,24 +43,22 @@ cp -R -f -d --no-preserve=mode,ownership /tmp/ss-check /var/www/ss-check
 #### reset permissions #############################################################################
 ####################################################################################################
 
-chown root:root /var/www/*cron*
 chown root:root /var/www/ss*
-chmod 700 /var/www/*cron*
+chown root:root /var/www/*cron*
 chmod 700 /var/www/ss*
+chmod 700 /var/www/*cron*
 
 ####################################################################################################
 ## update blacklist.txt file to latest version for Plugin Blacklist (MU plugin) ####################
 ####################################################################################################
 
-## download and replace latest blacklist.txt file ##
-# wget --no-cache --no-cookies -O /tmp/blacklist.txt http://mirrors.slickstack.io/wordpress/blacklist.txt
-
+## download latest blacklist (or custom blacklist) ##
 if [ -z "${PLUGIN_BLACKLIST_SOURCE}" ];
 then wget --no-cache --no-cookies -O /tmp/blacklist.txt http://mirrors.slickstack.io/wordpress/blacklist.txt
 else wget --no-check-certificate --no-cache --no-cookies -O /tmp/blacklist.txt "${PLUGIN_BLACKLIST_SOURCE}"
 fi
 
-## move blacklist.txt to /var/www/html/wp-content ##
+## move blacklist.txt to /var/www/html/wp-content/ ##
 cp -R -f -d --no-preserve=mode,ownership /tmp/blacklist.txt /var/www/html/wp-content/blacklist.txt
 
 ## reset permissions ##
@@ -67,12 +66,13 @@ chown www-data:wordpress /var/www/html/wp-content/blacklist.txt
 chmod 664 /var/www/html/wp-content/blacklist.txt
 
 ####################################################################################################
-#### delete any previous / leftover temporary files ################################################
+#### delete any previous + leftover temporary files ################################################
 ####################################################################################################
 
-rm -R -f /tmp/*cron*
 rm -R -f /tmp/ss*
+rm -R -f /tmp/*cron*
 rm -R -f /tmp/blacklist*
+rm -R -f /tmp/wp-config*
 
 ####################################################################################################
 #### various TEMPORARY tasks (custom Bash commands, etc) ###########################################
@@ -81,6 +81,6 @@ rm -R -f /tmp/blacklist*
 ## uncomment for approximately ~45 minutes for urgent MU plugins updates ##
 # source /var/www/ss-muplugs
 
-## change error log path (sed replace example) ##
+## change error log path (sed replace line example) ##
 # sed -i '/error_log/c\error_log = /var/www/logs/error.log' /etc/php/7.2/fpm/php-fpm.conf
 # sed -i "s#/var/log/php-fpm/error.log#/var/www/logs/error.log#g" /var/www/html/wp-config.php
