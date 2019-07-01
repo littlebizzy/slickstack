@@ -96,35 +96,18 @@ DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/u
 echo -e "\e[36mConfiguring users, permissions and Ubuntu defaults...\e[0m"
 
 ## root ssh password ##
-if [ -z "${ROOT_PASSWORD}" ]; 
-then echo root:$ROOT_PASSWORD | /usr/sbin/chpasswd
-else echo root:$rootpass | /usr/sbin/chpasswd
-fi
+echo root:$ROOT_PASSWORD | /usr/sbin/chpasswd
 
 ## ensure root password never expires ##
 chage -E -1 -m 0 -M -1 -I -1 -W 99999 root
 
 ## sudo ssh user ##
-if [ -z "${SUDO_USER}" ]; 
-then adduser --disabled-password --gecos "" $SUDO_USER
-else adduser --disabled-password --gecos "" $sudo
-fi
-
-if [ -z "${SUDO_USER}" ]; 
-then echo $SUDO_USER:$SUDO_PASSWORD | /usr/sbin/chpasswd
-else echo $sudo:$sudopass | /usr/sbin/chpasswd
-fi
+adduser --disabled-password --gecos "" $SUDO_USER
+echo $SUDO_USER:$SUDO_PASSWORD | /usr/sbin/chpasswd
 
 ## sftp user (chroot jail) ##
-if [ -z "${SFTP_USER}" ]; 
-then adduser --disabled-password --gecos "" $SFTP_USER
-else adduser --disabled-password --gecos "" $user
-fi
-
-if [ -z "${SFTP_USER}" ]; 
-then echo $SFTP_USER:$SFTP_PASSWORD | /usr/sbin/chpasswd
-else echo $user:$userpass | /usr/sbin/chpasswd
-fi
+adduser --disabled-password --gecos "" $SFTP_USER
+echo $SFTP_USER:$SFTP_PASSWORD | /usr/sbin/chpasswd
 
 ## set default editor to nano ##
 update-alternatives --set editor /bin/nano
@@ -163,15 +146,8 @@ echo -e "\e[36mConfiguring various SSH (SFTP) settings and permissions...\e[0m"
 wget --no-cache --no-cookies -O /tmp/sshd-config.txt http://mirrors.slickstack.io/ubuntu/sshd-config.txt
 
 ## replace variables ##
-if [ -z "${SUDO_USER}" ]; 
-then sed -i "s/@SUDO/${SUDO_USER}/g" /tmp/sshd-config.txt
-else sed -i "s/@SUDO/${sudo}/g" /tmp/sshd-config.txt
-fi
-
-if [ -z "${SFTP_USER}" ]; 
-then sed -i "s/@USER/${SFTP_USER}/g" /tmp/sshd-config.txt
-else sed -i "s/@USER/${user}/g" /tmp/sshd-config.txt
-fi
+sed -i "s/@SUDO/${SUDO_USER}/g" /tmp/sshd-config.txt
+sed -i "s/@USER/${SFTP_USER}/g" /tmp/sshd-config.txt
 
 ## rename files ##
 mv /tmp/sshd-config.txt /tmp/sshd_config
@@ -312,20 +288,9 @@ DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/u
 wget --no-cache --no-cookies -O /tmp/nginx-conf.txt http://mirrors.slickstack.io/nginx/nginx-conf.txt
 
 ## replace placeholders with slickstack variables ##
-if [ -z "${FASTCGI_CACHE_MEMORY}" ]; 
-then sed -i "s/@CACHEMEMORY/${FASTCGI_CACHE_MEMORY}/g" /tmp/nginx-conf.txt
-else sed -i "s/@CACHEMEMORY/${cachememory}/g" /tmp/nginx-conf.txt
-fi
-
-if [ -z "${FASTCGI_CACHE_INACTIVE}" ]; 
-then sed -i "s/@CACHEMEMORY/${FASTCGI_CACHE_INACTIVE}/g" /tmp/nginx-conf.txt
-else sed -i "s/@CACHEMEMORY/${cacheinactive}/g" /tmp/nginx-conf.txt
-fi
-
-if [ -z "${FASTCGI_CACHE_MAX_SIZE}" ]; 
-then sed -i "s/@CACHEMAXSIZE/${FASTCGI_CACHE_MAX_SIZE}/g" /tmp/nginx-conf.txt
-else sed -i "s/@CACHEMAXSIZE/${cachemaxsize}/g" /tmp/nginx-conf.txt
-fi
+sed -i "s/@CACHEMEMORY/${FASTCGI_CACHE_MEMORY}/g" /tmp/nginx-conf.txt
+sed -i "s/@CACHEMEMORY/${FASTCGI_CACHE_INACTIVE}/g" /tmp/nginx-conf.txt
+sed -i "s/@CACHEMAXSIZE/${FASTCGI_CACHE_MAX_SIZE}/g" /tmp/nginx-conf.txt
 
 ## rename files ##
 mv /tmp/nginx-conf.txt /tmp/nginx.conf
@@ -349,31 +314,16 @@ rm -R -f /tmp/default.txt /tmp/default /tmp/server-block.txt /tmp/server-block /
 
 ## download latest versions ##
 cd /tmp/
-# if [[ "$ssl" == "yes" ]]
-# then wget --no-cache http://mirrors.slickstack.io/nginx/server-block-ssl.txt
-# mv /tmp/server-block-ssl.txt /tmp/default.txt
-# else wget --no-cache http://mirrors.slickstack.io/nginx/server-block.txt
-# mv /tmp/server-block.txt /tmp/default.txt
-# fi
 wget --no-cache --no-cookies -O /tmp/server-block-ssl.txt http://mirrors.slickstack.io/nginx/server-block-ssl.txt
 mv /tmp/server-block-ssl.txt /tmp/default.txt
 
 ## replace @DOMAIN placeholder with slickstack variable ##
 sed -i "s/@DOMAIN/${domain}/g" /tmp/default.txt
-
-if [ -z "${FASTCGI_CACHE_VALID}" ]; 
-then sed -i "s/@CACHEVALID/${FASTCGI_CACHE_VALID}/g" /tmp/default.txt
-else sed -i "s/@CACHEVALID/${cachevalid}/g" /tmp/default.txt
-fi
+sed -i "s/@CACHEVALID/${FASTCGI_CACHE_VALID}/g" /tmp/default.txt
 
 ## enable or disable fastcgi cache ##
 ## set skip_cache default to 0 only if fastcgi cache enabled in ss-config ##
 if [[ "$FASTCGI_CACHE" == "true" ]]
-then sed -i "s/@FASTCGI/0/g" /tmp/default.txt
-else sed -i "s/@FASTCGI/1/g" /tmp/default.txt
-fi
-
-if [[ "$cache" == "fastcgi" ]]
 then sed -i "s/@FASTCGI/0/g" /tmp/default.txt
 else sed -i "s/@FASTCGI/1/g" /tmp/default.txt
 fi
@@ -572,26 +522,12 @@ sed -i "s/@DOMAIN/${domain}/g" /tmp/wp-config.txt
 ####################################################################################################
 
 ## replace SFTP Details placeholders ##
-if [ -z "${SFTP_USER}" ]; 
-then sed -i "s/@SFTPDETAILSUSER/${SFTP_USER}/g" /var/www/html/wp-config.php
-else sed -i "s/@SFTPDETAILSUSER/${user}/g" /var/www/html/wp-config.php
-fi
-
-if [ -z "${SFTP_PASSWORD}" ]; 
-then sed -i "s/@SFTPDETAILSPASSWORD/${SFTP_PASSWORD}/g" /var/www/html/wp-config.php
-else sed -i "s/@SFTPDETAILSPASSWORD/${userpass}/g" /var/www/html/wp-config.php
-fi
+sed -i "s/@SFTPDETAILSUSER/${SFTP_USER}/g" /var/www/html/wp-config.php
+sed -i "s/@SFTPDETAILSPASSWORD/${SFTP_PASSWORD}/g" /var/www/html/wp-config.php
 
 ## replace CloudFlare placeholders ##
-if [ -z "${CLOUDFLARE_API_KEY}" ]; 
-then sed -i "s/@CLOUDFLAREAPIKEY/${CLOUDFLARE_API_KEY}/g" /tmp/wp-config.txt
-else sed -i "s/@CLOUDFLAREAPIKEY/${cloudflareapikey}/g" /tmp/wp-config.txt
-fi
-
-if [ -z "${CLOUDFLARE_API_EMAIL}" ]; 
-then sed -i "s/@CLOUDFLAREAPIEMAIL/${CLOUDFLARE_API_EMAIL}/g" /tmp/wp-config.txt
-else sed -i "s/@CLOUDFLAREAPIEMAIL/${cloudflareapiemail}/g" /tmp/wp-config.txt
-fi
+sed -i "s/@CLOUDFLAREAPIKEY/${CLOUDFLARE_API_KEY}/g" /tmp/wp-config.txt
+sed -i "s/@CLOUDFLAREAPIEMAIL/${CLOUDFLARE_API_EMAIL}/g" /tmp/wp-config.txt
 
 ####################################################################################################
 #### generate WordPress salt keys for /var/www/html/wp-config.php ##################################
