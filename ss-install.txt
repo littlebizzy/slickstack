@@ -27,7 +27,7 @@ source /var/www/ss-config
 # fi
 
 ## verify ss-config build matches ss-install build ##
-if [[ "$SLICKSTACK_BUILD" != "JUL2019K" ]];
+if [[ "$SLICKSTACK_BUILD" != "JUL2019L" ]];
     then echo -e "\e[93mYour ss-config file is outdated. Please rebuild it and run ss-install again.\e[0m" >&2
     exit 1
 fi
@@ -105,8 +105,8 @@ adduser --disabled-password --gecos "" $SUDO_USER
 echo $SUDO_USER:$SUDO_PASSWORD | /usr/sbin/chpasswd
 
 ## add non-sudo sftp user (chroot jail) ##
-adduser --disabled-password --gecos "" $user
-echo $user:$userpass | /usr/sbin/chpasswd
+adduser --disabled-password --gecos "" $SFTP_USER
+echo $SFTP_USER:$SFTP_PASSWORD | /usr/sbin/chpasswd
 
 ## set default editor to nano ##
 update-alternatives --set editor /bin/nano
@@ -146,7 +146,7 @@ wget --no-cache --no-cookies -O /tmp/sshd-config.txt http://mirrors.slickstack.i
 
 ## replace variables ##
 sed -i "s/@SUDO/${SUDO_USER}/g" /tmp/sshd-config.txt
-sed -i "s/@USER/${user}/g" /tmp/sshd-config.txt
+sed -i "s/@USER/${SFTP_USER}/g" /tmp/sshd-config.txt
 
 ## rename files ##
 mv /tmp/sshd-config.txt /tmp/sshd_config
