@@ -7,7 +7,7 @@
 #### path: /var/www/ss-dump ########################################################################
 #### destination: n/a (not a boilerplate) ##########################################################
 #### purpose: dumps the entire live MySQL database to /var/www/wp.sql ##############################
-#### ss version: SlickStack alpha ss5d #############################################################
+#### ss version: SlickStack alpha ss6a #############################################################
 #### module version: n/a ###########################################################################
 ####################################################################################################
 
@@ -19,5 +19,9 @@ source /var/www/ss-config
 mysqldump --user=root --password=${dbrootpass} --host=localhost --protocol=tcp --port=3306 --dump-date --flush-privileges --force ${dbname} > /var/www/wp.sql
 
 ## reset permissions ##
-chown $SFTP_USER:wordpress /var/www/wp.sql
+if [ -z "${$SFTP_USER}" ]; 
+then chown $SFTP_USER:wordpress /var/www/wp.sql
+else chown $user:wordpress /var/www/wp.sql
+fi
+
 chmod 664 /var/www/wp.sql
