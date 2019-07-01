@@ -6,8 +6,8 @@
 #### mirror: http://mirrors.slickstack.io/ss-perms.txt #############################################
 #### path: /var/www/ss-perms #######################################################################
 #### destination: n/a (not a boilerplate) ##########################################################
-#### purpose: resets all file and user permissions across the entire server ########################
-#### ss version: SlickStack alpha ss5d #############################################################
+#### purpose: resets all file and user permissions across entire SlickStack server #################
+#### ss version: SlickStack alpha ss6a #############################################################
 #### module version: n/a ###########################################################################
 ####################################################################################################
 
@@ -24,8 +24,11 @@ source /var/www/ss-config
 addgroup wordpress
 
 ## add SFTP (non-sudo) user and Nginx server user to the wordpress group ##
-adduser $SFTP_USER wordpress
-adduser $user wordpress
+if [ -z "${SFTP_USER}" ]; 
+then adduser $SFTP_USER wordpress
+else adduser $user wordpress
+fi
+
 adduser www-data wordpress
 
 ## reset Ubuntu system files permissions ##
@@ -52,8 +55,11 @@ chmod 700 /var/www/ss*
 mkdir /var/www/html/wp-content/temp
 
 ## chown ##
-chown -R $SFTP_USER:wordpress /var/www/html
-chown -R $user:wordpress /var/www/html
+if [ -z "${SFTP_USER}" ]; 
+then chown -R $SFTP_USER:wordpress /var/www/html
+else chown -R $user:wordpress /var/www/html
+fi
+
 # chown -R www-data:www-data /var/www/html/wp-config.php
 chown -R www-data:wordpress /var/www/html/wp-content/temp
 chown -R www-data:wordpress /var/www/html/wp-content/mu-plugins
