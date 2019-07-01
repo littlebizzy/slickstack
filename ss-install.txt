@@ -7,7 +7,7 @@
 #### path: /var/www/ss-install #####################################################################
 #### destination: n/a (not a boilerplate) ##########################################################
 #### purpose: installs all SlickStack server LEMP modules, etc (idempotent) ########################
-#### ss version: SlickStack alpha ss5a #############################################################
+#### ss version: SlickStack alpha ss6a #############################################################
 #### module version: n/a ###########################################################################
 ####################################################################################################
 
@@ -51,7 +51,7 @@ cp -R -f -d --no-preserve=mode,ownership /tmp/ss-check /var/www/ss-check
 
 ## reset permissions ##
 chown root:root /var/www/ss-check
-chmod 755 /var/www/ss-check
+chmod 700 /var/www/ss-check
 
 ## call scripts ##
 source /var/www/ss-check
@@ -95,19 +95,36 @@ DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/u
 ## MESSAGE ##
 echo -e "\e[36mConfiguring users, permissions and Ubuntu defaults...\e[0m"
 
-## reset root ssh/sftp password ##
-echo root:$ROOT_PASSWORD | /usr/sbin/chpasswd
+## root ssh password ##
+if [ -z "${ROOT_PASSWORD}" ]; 
+then echo root:$ROOT_PASSWORD | /usr/sbin/chpasswd
+else echo root:$rootpass | /usr/sbin/chpasswd
+fi
 
 ## ensure root password never expires ##
 chage -E -1 -m 0 -M -1 -I -1 -W 99999 root
 
-## add sudo ssh/sftp user ##
-adduser --disabled-password --gecos "" $SUDO_USER
-echo $SUDO_USER:$SUDO_PASSWORD | /usr/sbin/chpasswd
+## sudo ssh user ##
+if [ -z "${SUDO_USER}" ]; 
+then adduser --disabled-password --gecos "" $SUDO_USER
+else adduser --disabled-password --gecos "" $sudo
+fi
 
-## add non-sudo sftp user (chroot jail) ##
-adduser --disabled-password --gecos "" $SFTP_USER
-echo $SFTP_USER:$SFTP_PASSWORD | /usr/sbin/chpasswd
+if [ -z "${SUDO_USER}" ]; 
+then echo $SUDO_USER:$SUDO_PASSWORD | /usr/sbin/chpasswd
+else echo $sudo:$sudopass | /usr/sbin/chpasswd
+fi
+
+## sftp user (chroot jail) ##
+if [ -z "${SFTP_USER}" ]; 
+then adduser --disabled-password --gecos "" $SFTP_USER
+else adduser --disabled-password --gecos "" $user
+fi
+
+if [ -z "${SFTP_USER}" ]; 
+then echo $SFTP_USER:$SFTP_PASSWORD | /usr/sbin/chpasswd
+else echo $user:$userpass | /usr/sbin/chpasswd
+fi
 
 ## set default editor to nano ##
 update-alternatives --set editor /bin/nano
@@ -123,7 +140,10 @@ timedatectl set-timezone UTC
 wget --no-cache --no-cookies -O /tmp/sudoers.txt http://mirrors.slickstack.io/ubuntu/sudoers.txt
 
 ## replace variables ##
-sed -i "s/@SUDO/${SUDO_USER}/g" /tmp/sudoers.txt
+if [ -z "${SUDO_USER}" ]; 
+then sed -i "s/@SUDO/${SUDO_USER}/g" /tmp/sudoers.txt
+else sed -i "s/@SUDO/${sudo}/g" /tmp/sudoers.txt
+fi
 
 ## rename files ##
 mv /tmp/sudoers.txt /tmp/sudoers
@@ -146,8 +166,15 @@ echo -e "\e[36mConfiguring various SSH (SFTP) settings and permissions...\e[0m"
 wget --no-cache --no-cookies -O /tmp/sshd-config.txt http://mirrors.slickstack.io/ubuntu/sshd-config.txt
 
 ## replace variables ##
-sed -i "s/@SUDO/${SUDO_USER}/g" /tmp/sshd-config.txt
-sed -i "s/@USER/${SFTP_USER}/g" /tmp/sshd-config.txt
+if [ -z "${SUDO_USER}" ]; 
+then sed -i "s/@SUDO/${SUDO_USER}/g" /tmp/sshd-config.txt
+else sed -i "s/@SUDO/${sudo}/g" /tmp/sshd-config.txt
+fi
+
+if [ -z "${SFTP_USER}" ]; 
+then sed -i "s/@USER/${SFTP_USER}/g" /tmp/sshd-config.txt
+else sed -i "s/@USER/${user}/g" /tmp/sshd-config.txt
+fi
 
 ## rename files ##
 mv /tmp/sshd-config.txt /tmp/sshd_config
@@ -288,9 +315,20 @@ DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/u
 wget --no-cache --no-cookies -O /tmp/nginx-conf.txt http://mirrors.slickstack.io/nginx/nginx-conf.txt
 
 ## replace placeholders with slickstack variables ##
-sed -i "s/@CACHEMEMORY/${FASTCGI_CACHE_MEMORY}/g" /tmp/nginx-conf.txt
-sed -i "s/@CACHEINACTIVE/${FASTCGI_CACHE_INACTIVE}/g" /tmp/nginx-conf.txt
-sed -i "s/@CACHEMAXSIZE/${FASTCGI_CACHE_MAX_SIZE}/g" /tmp/nginx-conf.txt
+if [ -z "${FASTCGI_CACHE_MEMORY}" ]; 
+then sed -i "s/@CACHEMEMORY/${FASTCGI_CACHE_MEMORY}/g" /tmp/nginx-conf.txt
+else sed -i "s/@CACHEMEMORY/${cachememory}/g" /tmp/nginx-conf.txt
+fi
+
+if [ -z "${FASTCGI_CACHE_INACTIVE}" ]; 
+then sed -i "s/@CACHEMEMORY/${FASTCGI_CACHE_INACTIVE}/g" /tmp/nginx-conf.txt
+else sed -i "s/@CACHEMEMORY/${cacheinactive}/g" /tmp/nginx-conf.txt
+fi
+
+if [ -z "${FASTCGI_CACHE_MAX_SIZE}" ]; 
+then sed -i "s/@CACHEMAXSIZE/${FASTCGI_CACHE_MAX_SIZE}/g" /tmp/nginx-conf.txt
+else sed -i "s/@CACHEMAXSIZE/${cachemaxsize}/g" /tmp/nginx-conf.txt
+fi
 
 ## rename files ##
 mv /tmp/nginx-conf.txt /tmp/nginx.conf
@@ -325,11 +363,20 @@ mv /tmp/server-block-ssl.txt /tmp/default.txt
 
 ## replace @DOMAIN placeholder with slickstack variable ##
 sed -i "s/@DOMAIN/${domain}/g" /tmp/default.txt
-sed -i "s/@CACHEVALID/${FASTCGI_CACHE_VALID}/g" /tmp/default.txt
+
+if [ -z "${FASTCGI_CACHE_VALID}" ]; 
+then sed -i "s/@CACHEVALID/${FASTCGI_CACHE_VALID}/g" /tmp/default.txt
+else sed -i "s/@CACHEVALID/${cachevalid}/g" /tmp/default.txt
+fi
 
 ## enable or disable fastcgi cache ##
 ## set skip_cache default to 0 only if fastcgi cache enabled in ss-config ##
 if [[ "$FASTCGI_CACHE" == "true" ]]
+then sed -i "s/@FASTCGI/0/g" /tmp/default.txt
+else sed -i "s/@FASTCGI/1/g" /tmp/default.txt
+fi
+
+if [[ "$cache" == "fastcgi" ]]
 then sed -i "s/@FASTCGI/0/g" /tmp/default.txt
 else sed -i "s/@FASTCGI/1/g" /tmp/default.txt
 fi
@@ -562,6 +609,10 @@ sed -i "s/@AUTHSALT/$(openssl rand -hex 48)/g" /tmp/wp-config.txt
 sed -i "s/@SECUREAUTHSALT/$(openssl rand -hex 48)/g" /tmp/wp-config.txt
 sed -i "s/@LOGGEDINSALT/$(openssl rand -hex 48)/g" /tmp/wp-config.txt
 sed -i "s/@NONCESALT/$(openssl rand -hex 48)/g" /tmp/wp-config.txt
+
+####################################################################################################
+#### adjust debug settings for /var/www/html/wp-config.php #########################################
+####################################################################################################
 
 ## Replace Placeholders: Debug ##
 if [[ "$production" == "yes" ]]
