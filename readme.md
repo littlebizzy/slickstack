@@ -50,7 +50,7 @@ Currently, SlickStack [ss] is meant for a single origin server with a `localhost
 | **PHP-FPM** | [click here](http://mirrors.slickstack.io/php-fpm/) | 7.2.17 | `php.ini` + `php-fpm.conf` + `www.conf` |
 | **Zend / OPcache** | (PHP-FPM) | 3.2.0 / 7.2.17 | (same as PHP-FPM) |
 | **WordPress** | [click here](http://mirrors.slickstack.io/wordpress/) | 5.2.2 | some WP Core junk files are removed by `ss-clean` |
-| **ClassicPress†** | [click here](http://mirrors.slickstack.io/classicpress/) | 1.0.1 | (experimental hard fork of WordPress) |
+| **ClassicPress†** | [click here](http://mirrors.slickstack.io/classicpress/) | 1.0.1 | (some CP Core junk files are removed by `ss-clean`) |
 | **MU Plugins** | [click here](http://mirrors.slickstack.io/mu-plugins/) | N/A | several `mu-plugins` by LittleBizzy |
 | **WP-CLI** | [click here](http://mirrors.slickstack.io/wp-cli/) | 2.2.0 | default config |
 | **Redis** | [click here](http://mirrors.slickstack.io/redis/) | 4.0.9 | `redis.conf` |
