@@ -7,21 +7,18 @@
 #### path: /var/www/ss-dump ########################################################################
 #### destination: n/a (not a boilerplate) ##########################################################
 #### purpose: dumps the entire live MySQL database to /var/www/wp.sql ##############################
-#### ss version: SlickStack alpha ss6a #############################################################
-#### module version: n/a ###########################################################################
+#### ss version: SlickStack alpha ss6b #############################################################
+#### module version: MySQL 5.7+ ####################################################################
 ####################################################################################################
+
+## Ref: https://dev.mysql.com/doc/refman/5.7/en/mysqldump.html ##
 
 ## include SlickStack configuration ##
 source /var/www/ss-config
 
 ## dump live MySQL database to /var/www/wp.sql ##
-## MySQL 5.7 format: https://dev.mysql.com/doc/refman/5.7/en/mysqldump.html ##
-mysqldump --user=root --password=${dbrootpass} --host=localhost --protocol=tcp --port=3306 --dump-date --flush-privileges --force ${dbname} > /var/www/wp.sql
+mysqldump --user=root --password=${DB_PASSWORD_ROOT} --host=${DB_HOST} --protocol=tcp --port=3306 --dump-date --flush-privileges --force ${DB_NAME} > /var/www/wp.sql
 
 ## reset permissions ##
-if [ -z "${$SFTP_USER}" ]; 
-then chown $SFTP_USER:wordpress /var/www/wp.sql
-else chown $user:wordpress /var/www/wp.sql
-fi
-
+chown $SFTP_USER:wordpress /var/www/wp.sql
 chmod 664 /var/www/wp.sql
