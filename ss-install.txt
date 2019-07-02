@@ -7,7 +7,7 @@
 #### path: /var/www/ss-install #####################################################################
 #### destination: n/a (not a boilerplate) ##########################################################
 #### purpose: installs all SlickStack server LEMP modules, etc (idempotent) ########################
-#### ss version: SlickStack alpha ss6a #############################################################
+#### ss version: SlickStack alpha ss6b #############################################################
 #### module version: n/a ###########################################################################
 ####################################################################################################
 
@@ -29,7 +29,7 @@ source /var/www/ss-config
 # fi
 
 ## verify ss-config build matches ss-install build ##
-if [[ "$SLICKSTACK_BUILD" != "JUL2019N" ]];
+if [[ "$SLICKSTACK_BUILD" != "JUL2019P" ]];
     then echo -e "\e[93mYour ss-config file is outdated. Please rebuild it and run ss-install again.\e[0m" >&2
     exit 1
 fi
@@ -403,8 +403,17 @@ export DEBIAN_FRONTEND=noninteractive;
 
 ## store mysql root password ##
 ## http://serverfault.com/a/830352/344471 ##
-echo debconf mysql-server/root_password password ${dbrootpass} | debconf-set-selections
-echo debconf mysql-server/root_password_again password ${dbrootpass} | debconf-set-selections
+
+if [ -z "${DB_PASSWORD_ROOT}" ]; 
+then echo debconf mysql-server/root_password password ${DB_PASSWORD_ROOT} | debconf-set-selections
+else echo debconf mysql-server/root_password password ${dbrootpass} | debconf-set-selections
+fi
+
+if [ -z "${DB_PASSWORD_ROOT}" ]; 
+then echo debconf mysql-server/root_password_again password ${DB_PASSWORD_ROOT} | debconf-set-selections
+else echo debconf mysql-server/root_password_again password ${dbrootpass} | debconf-set-selections
+fi
+
 # echo "mysql-server-5.7 mysql-server/root_password password ${dbrootpass}" | debconf-set-selections
 # echo "mysql-server-5.7 mysql-server/root_password_again password ${dbrootpass}" | debconf-set-selections
 # debconf-set-selections <<< "mysql-server-5.7 mysql-server/root_password password ${dbrootpass}"
@@ -429,7 +438,10 @@ spawn $(which mysql_secure_installation)
 
 ## re-enter root password ##
 expect "Enter password for user root:"
-send "${dbrootpass}\r"
+if [ -z "${DB_PASSWORD_ROOT}" ]; 
+then send "${DB_PASSWORD_ROOT}\r"
+else send "${dbrootpass}\r"
+fi
 
 ## skip the validate password plugin ##
 expect "Press y|Y for Yes, any other key for No:"
@@ -474,12 +486,35 @@ echo "Congratulations, MySQL 5.7 is installed and secured. Onward!"
 #### setup mysql 5.7 users #########################################################################
 ####################################################################################################
 
-mysql -uroot -p${dbrootpass} -e "CREATE DATABASE ${dbname};"
-mysql -uroot -p${dbrootpass} -e "CREATE USER '${dbuser}'@'localhost' IDENTIFIED BY '${dbuserpass}';"
-mysql -uroot -p${dbrootpass} -e "CREATE USER '${dbuser}'@'127.0.0.1' IDENTIFIED BY '${dbuserpass}';"
-mysql -uroot -p${dbrootpass} -e "GRANT ALL PRIVILEGES ON ${dbname}.* TO '${dbuser}'@'localhost';"
-mysql -uroot -p${dbrootpass} -e "GRANT ALL PRIVILEGES ON ${dbname}.* TO '${dbuser}'@'127.0.0.1';"
-mysql -uroot -p${dbrootpass} -e "FLUSH PRIVILEGES;"
+if [ -z "${DB_PASSWORD_ROOT}" ]; 
+then mysql -uroot -p${DB_PASSWORD_ROOT} -e "CREATE DATABASE ${DB_NAME};"
+else mysql -uroot -p${dbrootpass} -e "CREATE DATABASE ${dbname};"
+fi
+
+if [ -z "${DB_PASSWORD_ROOT}" ]; 
+then mysql -uroot -p${DB_PASSWORD_ROOT} -e "CREATE USER '${DB_USER}'@'localhost' IDENTIFIED BY '${DB_PASSWORD}';"
+else mysql -uroot -p${dbrootpass} -e "CREATE USER '${dbuser}'@'localhost' IDENTIFIED BY '${dbuserpass}';"
+fi
+
+if [ -z "${DB_PASSWORD_ROOT}" ]; 
+then mysql -uroot -p${DB_PASSWORD_ROOT} -e "CREATE USER '${DB_USER}'@'127.0.0.1' IDENTIFIED BY '${DB_PASSWORD}';"
+else mysql -uroot -p${dbrootpass} -e "CREATE USER '${dbuser}'@'127.0.0.1' IDENTIFIED BY '${dbuserpass}';"
+fi
+
+if [ -z "${DB_PASSWORD_ROOT}" ]; 
+then mysql -uroot -p${DB_PASSWORD_ROOT} -e "GRANT ALL PRIVILEGES ON ${DB_NAME}.* TO '${DB_USER}'@'localhost';"
+else mysql -uroot -p${dbrootpass} -e "GRANT ALL PRIVILEGES ON ${dbname}.* TO '${dbuser}'@'localhost';"
+fi
+
+if [ -z "${DB_PASSWORD_ROOT}" ]; 
+then mysql -uroot -p${DB_PASSWORD_ROOT} -e "GRANT ALL PRIVILEGES ON ${DB_NAME}.* TO '${DB_USER}'@'127.0.0.1';"
+else mysql -uroot -p${dbrootpass} -e "GRANT ALL PRIVILEGES ON ${dbname}.* TO '${dbuser}'@'127.0.0.1';"
+fi
+
+if [ -z "${DB_PASSWORD_ROOT}" ]; 
+then mysql -uroot -p${DB_PASSWORD_ROOT} -e "FLUSH PRIVILEGES;"
+else mysql -uroot -p${dbrootpass} -e "FLUSH PRIVILEGES;"
+fi
 
 ####################################################################################################
 #### Install WordPress #############################################################################
@@ -508,15 +543,43 @@ then wget --no-cache --no-cookies -O /tmp/wp-config.txt http://mirrors.slickstac
 else wget --no-check-certificate --no-cache --no-cookies -O /tmp/wp-config.txt "${WP_CONFIG_SOURCE}"
 fi
 
-## replace placeholders with variables ##
-sed -i "s/@DBNAME/${dbname}/g" /tmp/wp-config.txt
-sed -i "s/@DBUSER/${dbuser}/g" /tmp/wp-config.txt
-sed -i "s/@DBPASSWORD/${dbuserpass}/g" /tmp/wp-config.txt
-sed -i "s/@DBNAME/${dbname}/g" /tmp/wp-config.txt
-sed -i "s/@TABLEPREFIX/${dbprefix}/g" /tmp/wp-config.txt
+## old ##
+# sed -i "s/@DBNAME/${dbname}/g" /tmp/wp-config.txt
+# sed -i "s/@DBUSER/${dbuser}/g" /tmp/wp-config.txt
+# sed -i "s/@DBPASSWORD/${dbuserpass}/g" /tmp/wp-config.txt
+# sed -i "s/@DBNAME/${dbname}/g" /tmp/wp-config.txt
+# sed -i "s/@TABLEPREFIX/${dbprefix}/g" /tmp/wp-config.txt
+###############
 # sed -i "s/@DBHOST/${dbhost}/g" /tmp/wp-config.txt
 # sed -i "s/@DBCHARSET/${dbcharset}/g" /tmp/wp-config.txt
 # sed -i "s/@DBCOLLATE/${dbcollate}/g" /tmp/wp-config.txt
+
+## new ##
+## replace placeholders with variables ##
+if [ -z "${DB_PASSWORD_ROOT}" ]; 
+then sed -i "s/@DBNAME/${DB_NAME}/g" /tmp/wp-config.txt
+else sed -i "s/@DBNAME/${dbname}/g" /tmp/wp-config.txt
+fi
+
+if [ -z "${DB_PASSWORD_ROOT}" ]; 
+then sed -i "s/@DBUSER/${DB_USER}/g" /tmp/wp-config.txt
+else sed -i "s/@DBUSER/${dbuser}/g" /tmp/wp-config.txt
+fi
+
+if [ -z "${DB_PASSWORD_ROOT}" ]; 
+then sed -i "s/@DBPASSWORD/${DB_PASSWORD}/g" /tmp/wp-config.txt
+else sed -i "s/@DBPASSWORD/${dbuserpass}/g" /tmp/wp-config.txt
+fi
+
+if [ -z "${DB_PASSWORD_ROOT}" ]; 
+then sed -i "s/@DBNAME/${DB_NAME}/g" /tmp/wp-config.txt
+else sed -i "s/@DBNAME/${dbname}/g" /tmp/wp-config.txt
+fi
+
+if [ -z "${DB_PASSWORD_ROOT}" ]; 
+then sed -i "s/@TABLEPREFIX/${DB_PREFIX}/g" /tmp/wp-config.txt
+else sed -i "s/@TABLEPREFIX/${dbprefix}/g" /tmp/wp-config.txt
+fi
 
 ## replace placeholders with variables ##
 sed -i "s/@DOMAIN/${domain}/g" /tmp/wp-config.txt
