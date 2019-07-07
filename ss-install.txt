@@ -38,7 +38,7 @@ source /var/www/ss-config
 # fi
 
 ## verify ss-config build matches ss-install build ##
-if [[ "$SLICKSTACK_BUILD" != "JUL2019Q" ]];
+if [[ "$SLICKSTACK_BUILD" != "JUL2019R" ]];
     then echo -e "\e[93mYour ss-config file is outdated. Please rebuild it and run ss-install again.\e[0m" >&2
     exit 1
 fi
@@ -271,7 +271,7 @@ source /home/${SUDO_USER}/.bashrc
 ## MESSAGE: explain repos ##
 echo -e "\e[36mConfiguring various OpenSSL settings and permissions...\e[0m"
 
-openssl req -new -x509 -nodes -days 730 -newkey rsa:2048 -keyout /etc/ssl/nginx.key -out /etc/ssl/nginx.crt -subj "/C=${SSL_COUNTRY}/ST=${SSL_STATE}/L=${SSL_CITY}/O=${SSL_COMPANY}/OU=${SSL_DEPT}/CN=${domain}"
+openssl req -new -x509 -nodes -days 730 -newkey rsa:2048 -keyout /etc/ssl/nginx.key -out /etc/ssl/nginx.crt -subj "/C=${SSL_COUNTRY}/ST=${SSL_STATE}/L=${SSL_CITY}/O=${SSL_COMPANY}/OU=${SSL_DEPT}/CN=${SITE_DOMAIN}"
 
 ## reset permissions ##
 chown root:root /etc/ssl/nginx.key
@@ -331,7 +331,7 @@ wget --no-cache --no-cookies -O /tmp/server-block-ssl.txt http://mirrors.slickst
 mv /tmp/server-block-ssl.txt /tmp/default.txt
 
 ## replace @DOMAIN placeholder with slickstack variable ##
-sed -i "s/@DOMAIN/${domain}/g" /tmp/default.txt
+sed -i "s/@DOMAIN/${SITE_DOMAIN}/g" /tmp/default.txt
 sed -i "s/@CACHEVALID/${FASTCGI_CACHE_VALID}/g" /tmp/default.txt
 
 ## enable or disable fastcgi cache ##
@@ -585,7 +585,7 @@ else sed -i "s/@TABLEPREFIX/${DB_PREFIX}/g" /tmp/wp-config.txt
 fi
 
 ## replace placeholders with variables ##
-sed -i "s/@DOMAIN/${domain}/g" /tmp/wp-config.txt
+sed -i "s/@DOMAIN/${SITE_DOMAIN}/g" /tmp/wp-config.txt
 
 ####################################################################################################
 #### input required MU plugins variables to /var/www/html/wp-config.php ############################
