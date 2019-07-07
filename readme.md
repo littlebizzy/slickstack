@@ -14,12 +14,6 @@ SlickStack is a free LEMP stack automation script written in Bash designed to en
 
 * **NEW!** SlickStack now does `include_once` within wp-config.php on the Custom Functions (MU plugin) file `/var/www/html/wp-content/functions.php` meaning much more reliable PHP functions...
 
-* **NEW!** SlickStack now bundles the lighweight ClamAV malware scanner (`ss-scan`)...
-
-* **NEW!** SlickStack is now "HTTPS Only" and includes our popular Force HTTPS mu-plugin...
-
-* **NEW!** SlickStack now includes a Redis-based `object-cache.php` by default...
-
 * Browse the SlickStack public mirrors: http://mirrors.slickstack.io
 
 * [**$40 SlickStack setup service**](https://www.littlebizzy.com/services/slickstack-setup) is being offered by LittleBizzy.com for a limited time only! Includes CloudFlare setup, DNS records setup, free SSL forever, and complete site migration onto your own private VPS server in any datacenter world-wide... choose from the Vultr, DigitalOcean, Linode, SSDNodes, or AWS Lightsail cloud networks. Includes free customer support for 30 days only, does not include DNSSEC setup, email API setup, or other services not mentioned here. Terms and conditions apply. Contact LittleBizzy for more details (real Sales inquiries only, please).
@@ -36,9 +30,11 @@ SlickStack [ss] works best on VPS servers with KVM virtualization that have at l
 
 Currently, SlickStack [ss] is meant for a single origin server with a `localhost` database, although remote databases should also work fine. Server "clustering" or "load balancing" has not been tested, and is not the goal here; complex enterprise-style configurations for WordPress are rarely needed (and can be expensive and difficult to manage), thus SlickStack [ss] aims to to provide a simple solution for the 99% of WordPress sites that don't need such.
 
+It should also be noted that SlickStack [ss] is HTTPS-only, meaning that HTTP sites are not supported. Because OpenSSL generates self-signed certificates, SlickStack [ss] servers require CloudFlare to be active in front of your server in order for SSL certificates to be properly CA-signed and loaded by your browser.
+
 ## Core Modules
 
-*Last updated: Jul 1, 2019*
+*Last updated: Jul 7, 2019*
 
 | LEMP Module | Mirrors | Version | What does SlickStack [ss] customize? |
 | :------------- | :----------: | :----------: | :----------: |
@@ -53,7 +49,7 @@ Currently, SlickStack [ss] is meant for a single origin server with a `localhost
 | **ClassicPress†** | [click here](http://mirrors.slickstack.io/classicpress/) | 1.0.1 | some CP Core junk files are removed by `ss-clean` |
 | **MU Plugins** | [click here](http://mirrors.slickstack.io/mu-plugins/) | N/A | several `mu-plugins` by LittleBizzy |
 | **WP-CLI** | [click here](http://mirrors.slickstack.io/wp-cli/) | 2.2.0 | default config |
-| **Redis** | [click here](http://mirrors.slickstack.io/redis/) | 4.0.9 | `redis.conf` |
+| **Redis (Object Cache)** | [click here](http://mirrors.slickstack.io/redis/) | 4.0.9 | `redis.conf` + `object-cache.php` |
 | **Git** | [click here](http://mirrors.slickstack.io/git/) | 2.17.1 | default config |
 | **UFW Firewall** | (Ubuntu) | 0.36 | `ufw` + `ufw.conf` + `user-rules` |
 | **ClamAV** | [click here](http://mirrors.slickstack.io/clamav/) | 0.100.x | `freshclam.conf` |
