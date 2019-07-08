@@ -38,7 +38,7 @@ source /var/www/ss-config
 # fi
 
 ## verify ss-config build matches ss-install build ##
-if [[ "$SLICKSTACK_BUILD" != "JUL2019U" ]];
+if [[ "$SLICKSTACK_BUILD" != "JUL2019V" ]];
     then echo -e "\e[93mYour ss-config file is outdated. Please rebuild it and run ss-install again.\e[0m" >&2
     exit 1
 fi
@@ -530,20 +530,32 @@ fi
 ####################################################################################################
 
 ## download latest version ##
-cd /var/www/html/
-wget --no-cache --no-cookies -O /var/www/html/wordpress.zip http://mirrors.slickstack.io/wordpress/wordpress.zip
+
+if [[ "$SLICKSTACK_APP" == "classicpress" ]];
+    then wget --no-cache --no-cookies -O /var/www/html/classicpress.zip http://mirrors.slickstack.io/classicpress/classicpress.zip
+    else wget --no-cache --no-cookies -O /var/www/html/wordpress.zip http://mirrors.slickstack.io/wordpress/wordpress.zip
+fi
 
 ## unzip files ##
-unzip /var/www/html/wordpress.zip
-rsync -raqIp /var/www/html/wordpress/* ./
+
+if [[ "$SLICKSTACK_APP" == "classicpress" ]];
+    then unzip /var/www/html/classicpress.zip
+    else unzip /var/www/html/wordpress.zip
+fi
+
+if [[ "$SLICKSTACK_APP" == "classicpress" ]];
+    then rsync -raqIp /var/www/html/classicpress/* ./
+    else rsync -raqIp /var/www/html/wordpress/* ./
+fi
 
 ## cleanup ##
 rm -R -f wordpress*
-rm -R -f latest.tar.gz*
 rm -R -f wordpress.zip*
+rm -R -f classicpress*
+rm -R -f classicpress.zip*
 
 ####################################################################################################
-#### Configure WordPress ###########################################################################
+#### Configure WordPress (or ClassicPress) #########################################################
 ####################################################################################################
 
 ## retrieve wp-config.php boilerplate ##
