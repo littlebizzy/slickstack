@@ -16,8 +16,6 @@ SlickStack is a free LEMP stack automation script written in Bash designed to en
 
 * Browse the SlickStack public mirrors: http://mirrors.slickstack.io
 
-* [**$40 SlickStack setup service**](https://www.littlebizzy.com/services/slickstack-setup) is being offered by LittleBizzy.com for a limited time only! Includes CloudFlare setup, DNS records setup, free SSL forever, and complete site migration onto your own private VPS server in any datacenter world-wide... choose from the Vultr, DigitalOcean, Linode, SSDNodes, or AWS Lightsail cloud networks. Includes free customer support for 30 days only, does not include DNSSEC setup, email API setup, or other services not mentioned here. Terms and conditions apply. Contact LittleBizzy for more details (real Sales inquiries only, please).
-
 ## Abstract
 
 Most of modern computing history can be traced back to one thing: [Unix](https://en.wikipedia.org/wiki/Unix). Indeed, one of the only things about web servers that hasn't changed much in several decades is the Unix shell (Bash) command language. Keeping the same pragmatism and simplicity in mind that inspired LittleBizzy's managed hosting, SlickStack [ss] is coded entirely in Bash.
