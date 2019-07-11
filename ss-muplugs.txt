@@ -14,14 +14,14 @@
 ## include SlickStack configuration ##
 source /var/www/ss-config
 
-## ensure mu-plugins directory exists (will not overwrite if exists already) ##
+## ensure MU Plugins directory exists (will not overwrite if exists already) ##
 mkdir -p /var/www/html/wp-content/mu-plugins
 
-## check if wplite (mu-plugins) desired otherwise exit ##
-# if [[ "$SLICKSTACK_APP" != "wplite" ]];
-#    then echo -e "\e[93mYour ss-config does not indicate wplite boilerplate, so we will skip installing mu-plugins.\e[0m" >&2
-#    exit 1
-# fi
+## check if MU Plugins are enabled otherwise exit ##
+if [[ "$SLICKSTACK_MUPLUGINS" == "false" ]];
+    then echo -e "\e[93mMU Plugins are disabled in ss-config, so we will skip installing them.\e[0m" >&2
+    exit 1
+fi
 
 ####################################################################################################
 #### delete any previous / leftover temporary files ################################################
@@ -58,7 +58,7 @@ rm -R -f /tmp/server-status*
 rm -R -f /tmp/sftp-details*
 rm -R -f /tmp/virtual-robotstxt*
 
-## delete SlickStack ("XXX") Notices temporary files ##
+## delete SlickStack Common (MU Plugin) temp files ##
 rm -R -f /tmp/xxx-notices*
 
 ## delete drop-in plugins temporary files ##
@@ -68,10 +68,10 @@ rm -R -f /tmp/object-cache*
 #### download latest Autoloader script, MU plugins, and drop-in plugins ############################
 ####################################################################################################
 
-## download latest Autoloader files ##
+## download latest Autoloader (MU Plugin) files ##
 wget --no-cache --no-cookies -O /tmp/autoloader.txt http://mirrors.slickstack.io/mu-plugins/autoloader.txt
 
-## download latest "WPLite" MU plugins files ##
+## download latest MU plugins files ##
 wget --no-cache --no-cookies -O /tmp/clear-caches.zip http://mirrors.slickstack.io/mu-plugins/clear-caches.zip
 wget --no-cache --no-cookies -O /tmp/cloudflare.zip http://mirrors.slickstack.io/mu-plugins/cloudflare.zip
 wget --no-cache --no-cookies -O /tmp/custom-functions.zip http://mirrors.slickstack.io/mu-plugins/custom-functions.zip
@@ -99,7 +99,7 @@ wget --no-cache --no-cookies -O /tmp/server-status.zip http://mirrors.slickstack
 wget --no-cache --no-cookies -O /tmp/sftp-details.zip http://mirrors.slickstack.io/mu-plugins/sftp-details.zip
 wget --no-cache --no-cookies -O /tmp/virtual-robotstxt.zip http://mirrors.slickstack.io/mu-plugins/virtual-robotstxt.zip
 
-## download latest SlickStack ("XXX") Notices files ##
+## download latest SlickStack Common (MU Plugin) files ##
 wget --no-cache --no-cookies -O /tmp/xxx-notices.txt http://mirrors.slickstack.io/mu-plugins/xxx-notices.txt
 
 ## download latest drop-in plugins files (e.g. object cache) ##
@@ -236,39 +236,13 @@ chown -R www-data:wordpress /var/www/html/wp-content/object-cache.php
 chmod 664 /var/www/html/wp-content/object-cache.php
 
 ####################################################################################################
-#### input required MU plugins variables to /var/www/html/wp-config.php ############################
-####################################################################################################
-
-## ACCOMPLISHED BY SS-INSTALL BUT RE-INCLUDED HERE TO ALLOW FOR MU PLUGINS RE-INSTALL ##
-
-## replace SFTP Details placeholders ##
-if [[ -z "$SFTP_USER" ]];
-then sed -i "s/@SFTPDETAILSUSER/${user}/g" /var/www/html/wp-config.php
-else sed -i "s/@SFTPDETAILSUSER/${SFTP_USER}/g" /var/www/html/wp-config.php
-fi
-
-if [[ -z "$SFTP_PASSWORD" ]];
-then sed -i "s/@SFTPDETAILSPASSWORD/${userpass}/g" /var/www/html/wp-config.php
-else sed -i "s/@SFTPDETAILSPASSWORD/${SFTP_PASSWORD}/g" /var/www/html/wp-config.php
-fi
-
-## replace CloudFlare placeholders ##
-if [[ -z "$CLOUDFLARE_API_KEY" ]];
-then sed -i "s/@CLOUDFLAREAPIKEY/${cloudflareapikey}/g" /var/www/html/wp-config.php
-else sed -i "s/@CLOUDFLAREAPIKEY/${CLOUDFLARE_API_KEY}/g" /var/www/html/wp-config.php
-fi
-
-if [[ -z "$CLOUDFLARE_API_EMAIL" ]];
-then sed -i "s/@CLOUDFLAREAPIEMAIL/${cloudflareapiemail}/g" /var/www/html/wp-config.php
-else sed -i "s/@CLOUDFLAREAPIEMAIL/${CLOUDFLARE_API_EMAIL}/g" /var/www/html/wp-config.php
-fi
-
-####################################################################################################
 #### modify other files (besides wp-config.php) used by MU plugins as needed #######################
 ####################################################################################################
 
 ## ensure the functions.php file exists (used by Custom Functions) ##
-if [ ! -f "/var/www/html/wp-content/functions.php" ]; then touch "/var/www/html/wp-content/functions.php" fi
+if [ ! -f /var/www/html/wp-content/functions.php ]; then
+    touch /var/www/html/wp-content/functions.php
+fi
 
 ####################################################################################################
 #### delete any previous / leftover temporary files ################################################
@@ -305,10 +279,10 @@ rm -R -f /tmp/server-status*
 rm -R -f /tmp/sftp-details*
 rm -R -f /tmp/virtual-robotstxt*
 
-## delete SlickStack ("XXX") Notices temporary files ##
+## delete SlickStack Common (MU Plugin) temp files ##
 rm -R -f /tmp/xxx-notices*
 
-## delete drop-in plugins temporary files ##
+## delete drop-in plugins temp files ##
 rm -R -f /tmp/object-cache*
 
 ####################################################################################################
