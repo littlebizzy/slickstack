@@ -26,7 +26,9 @@ title: Nginx (Public Mirrors)
 
 * <a href="https://www.nginx.com/resources/wiki/start/topics/recipes/wordpress/">https://www.nginx.com/resources/wiki/start/topics/recipes/wordpress/</a>
 * <a href="https://github.com/angristan/nginx-autoinstall">https://github.com/angristan/nginx-autoinstall</a>
+* <a href="https://wiki.openssl.org/index.php/SSL_and_TLS_Protocols">https://wiki.openssl.org/index.php/SSL_and_TLS_Protocols</a>
+* <a href="https://wiki.openssl.org/index.php/SSL/TLS_Client">https://wiki.openssl.org/index.php/SSL/TLS_Client</a>
 
 ----
 
-*Last updated: Jul 6, 2019*
+*Last updated: Jul 11, 2019*
