@@ -102,9 +102,10 @@ DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/u
 DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install clamav
 
 ## add custom PPAs (for Certbot) ##
-sudo add-apt-repository universe
-sudo add-apt-repository ppa:certbot/certbot
+DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" add-apt-repository universe
+DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" add-apt-repository ppa:certbot/certbot
 
+## update again after adding ppas ##
 DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" update
 
 ## install Certbot ##
@@ -284,13 +285,7 @@ echo -e "\e[36mConfiguring various OpenSSL settings and permissions...\e[0m"
 openssl req -new -x509 -nodes -days 730 -newkey rsa:2048 -keyout /etc/ssl/nginx.key -out /etc/ssl/nginx.crt -subj "/C=${SSL_COUNTRY}/ST=${SSL_STATE}/L=${SSL_CITY}/O=${SSL_COMPANY}/OU=${SSL_DEPT}/CN=${SITE_DOMAIN}"
 
 ## install Certbox SSL certificate ##
-## pending if statement to see if tld and domain are same then generate only single cert ##
-# certbot certonly -d ${SITE_TLD} -d ${SITE_DOMAIN}
-
-# certbot certonly --standalone -d ${SITE_DOMAIN} --register-unsafely-without-email --agree-tos
-# certbot certonly --webroot --agree-tos --email your-email address -d your-domain.com -w /var/www/your-domain.com/
-
-# certbot certonly --webroot --agree-tos --register-unsafely-without-email -d ${SITE_DOMAIN} -w /var/www/html/
+certbot certonly --webroot --agree-tos --register-unsafely-without-email -d ${SITE_DOMAIN} -w /var/www/html/
 
 ## reset permissions ##
 chown root:root /etc/ssl/nginx.key
