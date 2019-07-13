@@ -62,4 +62,4 @@ title: SlickStack (Public Mirrors)
 
 ----
 
-*Last updated: Jun 22, 2019*
+*Last updated: Jul 13, 2019*
