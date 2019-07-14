@@ -11,17 +11,27 @@
 #### module version: n/a ###########################################################################
 ####################################################################################################
 
+## Ref: https://linuxize.com/post/secure-apache-with-let-s-encrypt-on-ubuntu-18-04/
+## Ref: https://stackoverflow.com/a/57019299/1718491
+
 ## include SlickStack configuration ##
 source /var/www/ss-config
 
 ## MESSAGE: explain repos ##
 echo -e "\e[36mInstalling (or renewing) free SSL certificates from OpenSSL and Certbot...\e[0m"
 
+## ensure public Certbot verification folder exists ##
+## in future versions maybe hide this in a system folder (Nginx mask) ##
+mkdir -p /var/www/html/.well-known
+chown -R www-data:www-data /var/www/html/.well-known
+chmod -R g+s /var/www/html/.well-known
+chmod 755 /var/www/html/.well-known
+
 ## install OpenSSL certificate ##
 openssl req -new -x509 -nodes -days 730 -newkey rsa:2048 -keyout /etc/ssl/nginx.key -out /etc/ssl/nginx.crt -subj "/C=${SSL_COUNTRY}/ST=${SSL_STATE}/L=${SSL_CITY}/O=${SSL_COMPANY}/OU=${SSL_DEPT}/CN=${SITE_DOMAIN}"
 
 ## install Certbox SSL certificate ##
-certbot certonly --noninteractive --webroot --agree-tos --register-unsafely-without-email -d ${SITE_DOMAIN} -w /var/www/html/
+certbot certonly --noninteractive --agree-tos --register-unsafely-without-email -d ${SITE_DOMAIN} --webroot -w /var/www/html/
 
 ## reset permissions ##
 chown root:root /etc/ssl/nginx.key
