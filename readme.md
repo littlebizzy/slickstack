@@ -32,7 +32,7 @@ It should also be noted that SlickStack [ss] is HTTPS-only, meaning that HTTP si
 
 ## Core Modules
 
-*Last updated: Jul 7, 2019*
+*Last updated: Jul 17, 2019*
 
 | LEMP Module | Mirrors | Version | What does SlickStack [ss] customize? |
 | :------------- | :----------: | :----------: | :----------: |
@@ -40,6 +40,7 @@ It should also be noted that SlickStack [ss] is HTTPS-only, meaning that HTTP si
 | **Nginx (Extras)** | [click here](http://mirrors.slickstack.io/nginx/) | 1.15.8 | `nginx.conf` + `default` (server block) |
 | **FastCGI Cache** | (Nginx) | 1.15.8 | `fastcgi-cache.conf` |
 | **OpenSSL** | (Nginx) | 1.1.0g | default config |
+| **Certbot (Let's Encrypt)†** | | 0.23.0 | custom config |
 | **MySQL** | [click here](http://mirrors.slickstack.io/mysql/) | 5.7.25 | default config (will be customized slightly in future) |
 | **PHP-FPM** | [click here](http://mirrors.slickstack.io/php-fpm/) | 7.2.17 | `php.ini` + `php-fpm.conf` + `www.conf` |
 | **Zend / OPcache** | (PHP-FPM) | 3.2.0 / 7.2.17 | (same as PHP-FPM) |
@@ -52,7 +53,7 @@ It should also be noted that SlickStack [ss] is HTTPS-only, meaning that HTTP si
 | **UFW Firewall** | (Ubuntu) | 0.36 | `ufw` + `ufw.conf` + `user-rules` |
 | **ClamAV** | [click here](http://mirrors.slickstack.io/clamav/) | 0.100.x | `freshclam.conf` |
 
-†Not yet supported (ClassicPress = drop-in replacement for WordPress)
+†Not yet supported (pending)
 
 Default Ports: 80 (HTTP), 443 (HTTPS), 6969 (SSH)
 
