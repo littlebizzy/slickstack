@@ -14,6 +14,7 @@
 ## Ref: https://linuxize.com/post/secure-apache-with-let-s-encrypt-on-ubuntu-18-04/
 ## Ref: https://stackoverflow.com/a/57019299/1718491
 ## Ref: https://community.letsencrypt.org/t/how-often-should-i-run-the-cerbot-cron-job-to-update-the-certificates/18851
+## Ref: https://matthewlehner.net/lets-encrypt-with-nginx
 
 ## include SlickStack configuration ##
 source /var/www/ss-config
@@ -27,6 +28,9 @@ mkdir -p /var/www/html/.well-known
 chown -R www-data:www-data /var/www/html/.well-known
 chmod -R g+s /var/www/html/.well-known
 chmod 755 /var/www/html/.well-known
+
+## generate DH parameters ##
+openssl dhparam -out /etc/ssl/dhparam.pem 2048
 
 ## install OpenSSL certificate ##
 openssl req -new -x509 -nodes -days 3650 -newkey rsa:2048 -keyout /etc/ssl/nginx.key -out /etc/ssl/nginx.crt -subj "/C=${SSL_COUNTRY}/ST=${SSL_STATE}/L=${SSL_CITY}/O=${SSL_COMPANY}/OU=${SSL_DEPT}/CN=${SITE_DOMAIN}"
