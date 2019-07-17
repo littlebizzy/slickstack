@@ -2,22 +2,19 @@
 #### author: SlickStack ############################################################################
 #### link: https://slickstack.io ###################################################################
 #### mirror: http://mirrors.slickstack.io/nginx/nginx-conf.txt #####################################
-#### path: /etc/nginx/nginx.conf ###################################################################
-#### destination: n/a (not a boilerplate) ##########################################################
+#### path: n/a (boilerplate) #######################################################################
+#### destination: /etc/nginx/nginx.conf (after install) ############################################
 #### purpose: Nginx configuration file (server block configuration is separate) ####################
 #### ss version: SlickStack alpha ss4c #############################################################
 #### module version: Nginx (Extras) 1.15.8 #########################################################
 ####################################################################################################
 
-## NGINX CONFIG OPTIMIZED FOR BEST PERFORMANCE (NON-CLUSTERED HIGH TRAFFIC) ##
+## NGINX CONFIG OPTIMIZED FOR CLOUDFLARE + TRAFFIC SCALING (NON-CLUSTERED HIGH TRAFFIC) ##
 
-## Ref: https://gist.github.com/denji/8359866 ##
-## Ref: https://serverfault.com/a/791055/144798 ##
-## Ref: https://gist.github.com/v0lkan/90fcb83c86918732b894#gistcomment-2832040 ##
-## Ref: https://www.programering.com/a/MDM2YTNwATk.html ##
-## Ref: https://www.maxcdn.com/blog/accept-encoding-its-vary-important/ ##
-## Ref: https://support.cloudflare.com/hc/en-us/articles/200168086-Does-CloudFlare-gzip-resources- ##
-## Ref: https://security.stackexchange.com/questions/65625/current-state-of-breach-gzip-ssl-attack ##
+## Ref: https://gist.github.com/denji/8359866
+## Ref: https://serverfault.com/a/791055/144798
+## Ref: https://gist.github.com/v0lkan/90fcb83c86918732b894#gistcomment-2832040
+## Ref: https://www.programering.com/a/MDM2YTNwATk.html
 ## Ref: https://hstspreload.org
 ## Ref: http://nginx.org/en/docs/http/ngx_http_gzip_module.html
 ## Ref: https://easyengine.io/tutorials/nginx/optimization
@@ -39,7 +36,7 @@ worker_processes auto;
 worker_rlimit_nofile 65535;
 pid /run/nginx.pid;
 
-## include any Nginx modules ##
+## include Nginx modules ##
 include /etc/nginx/modules-enabled/*.conf;
 
 ####################################################################################################
@@ -67,7 +64,7 @@ http {
     types_hash_max_size 2048;
 
 ####################################################################################################
-#### Nginx: FastCGI Cache Settings #################################################################
+#### Nginx: FastCGI Cache Settings (Modify Using SS-Config + SS-Install Only) ######################
 ####################################################################################################
 
     fastcgi_cache_path /var/www/cache levels=1:2 keys_zone=WORDPRESS:@CACHEMEMORY inactive=@CACHEINACTIVE max_size=@CACHEMAXSIZE;
@@ -79,7 +76,7 @@ http {
     # fastcgi_buffer_size 32k;
     
 ####################################################################################################
-#### Nginx: Open File Cache Settings ###############################################################
+#### Nginx: Open File Cache Settings (Optimized For Traffic Scaling) ###############################################################
 ####################################################################################################
     
     open_file_cache max=200000 inactive=20s;
@@ -129,7 +126,7 @@ http {
     server_tokens off;
     
 ####################################################################################################
-#### Nginx: SSL Settings (Self-Signed OpenSSL Cert + CA-Signed Let's Encrypt Cert) #################
+#### Nginx: SSL Settings (Self-Signed OpenSSL + CA-Signed Let's Encrypt) ###########################
 ####################################################################################################
 
     ## Ref: https://gist.github.com/cecilemuller/a26737699a7e70a7093d4dc115915de8
@@ -159,7 +156,7 @@ http {
     # ssl_dhparam /etc/ssl/dhparam.pem;
     # ssl_prefer_server_ciphers on;
     ssl_ecdh_curve auto;
-    ssl_early_data off; ## supported by TLSv1.3 only
+    ssl_early_data off; ## TLSv1.3 only
     ssl_session_timeout 1d;
     ssl_session_cache shared:SSL:64m;
     ssl_session_tickets off;
@@ -188,17 +185,17 @@ http {
 #### Nginx: Gzip Settings (Optimized For CloudFlare) ###############################################
 ####################################################################################################
     
+    ## Ref: https://www.maxcdn.com/blog/accept-encoding-its-vary-important/
+    ## Ref: https://support.cloudflare.com/hc/en-us/articles/200168086-Does-CloudFlare-gzip-resources-
+    ## Ref: https://security.stackexchange.com/questions/65625/current-state-of-breach-gzip-ssl-attack
+
     gzip on;
-    ## no uncompressed (vary) content = CloudFlare will convert for browsers that request ##
-    gzip_vary off;
-    # also popular: gzip_proxied expired no-cache no-store private auth;
+    gzip_vary off; ## CloudFlare converts if browser requests
     gzip_proxied any;
     gzip_comp_level 5;
     gzip_min_length 1024;
     gzip_buffers 16 8k;
     gzip_http_version 1.1;
-    ## never gzip binary data like images
-    ## text/html is always included by default
     gzip_types
         application/atom+xml
         application/javascript
@@ -213,13 +210,14 @@ http {
         image/svg+xml
         image/x-icon
         text/css
+	text/html
         text/plain
         text/x-component
         text/xml
         text/javascript;
     
 ####################################################################################################
-#### Nginx: Rate Limiting Settings (Prevents Minor DDOS / Brute Force Attacks) #####################
+#### Nginx: Rate Limiting Settings (Prevents Minor DDOS + Brute Force Attacks) #####################
 ####################################################################################################
     
     limit_req_zone $binary_remote_addr zone=one:10m rate=1r/s;
@@ -234,7 +232,7 @@ http {
     root /var/www/html;
 
 ####################################################################################################
-#### Nginx: Include Virtual Hosts, Etc #############################################################
+#### Nginx: Include Server Blocks, Etc #############################################################
 ####################################################################################################
     
     include /etc/nginx/conf.d/*.conf;
