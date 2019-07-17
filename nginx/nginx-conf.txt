@@ -141,22 +141,22 @@ http {
     ## Ref: https://linuxize.com/post/secure-apache-with-let-s-encrypt-on-ubuntu-18-04/
     ## Ref: https://gist.github.com/plentz/6737338
     ## Ref: https://gist.github.com/konklone/6532544
+    ## Ref: https://ssl-config.mozilla.org
+    ## Ref: https://matthewlehner.net/lets-encrypt-with-nginx
     
     ## BELOW SSL SETTINGS WILL AFFECT BOTH OPENSSL AND LET'S ENCRYPT CERTS ##
     
     ssl_certificate /etc/ssl/nginx.crt;
     ssl_certificate_key /etc/ssl/nginx.key;
     
-    # ssl_certificate /etc/ssl/openssl.crt;
-    # ssl_certificate_key /etc/ssl/openssl.key;
-    # ssl_certificate /etc/ssl/fullchain.pem;
+    # ssl_certificate /etc/ssl/cert.pem;
     # ssl_certificate_key /etc/ssl/privkey.pem;
-    # ssl_certificate /etc/letsencrypt/live/@DOMAIN/fullchain.pem;
+    # ssl_certificate /etc/letsencrypt/live/@DOMAIN/cert.pem;
     # ssl_certificate_key /etc/letsencrypt/live/@DOMAIN/privkey.pem;
     
-    ssl_protocols TLSv1.2; ## TLSv1.3 only available in OpenSSL 1.1.1+
+    ssl_protocols TLSv1.2; ## TLSv1.3 in OpenSSL 1.1.1+
     # ssl_ciphers "EECDH+AESGCM:EDH+AESGCM:AES256+EECDH:AES256+EDH";
-    # ssl_dhparam /etc/ssl/dhparam.pem; ## openssl dhparam -out dhparam.pem 2048
+    # ssl_dhparam /etc/ssl/dhparam.pem;
     # ssl_prefer_server_ciphers on;
     ssl_ecdh_curve auto;
     ssl_early_data off; ## supported by TLSv1.3 only
@@ -166,9 +166,9 @@ http {
     ssl_buffer_size 16k;
     ssl_stapling off;
     ssl_stapling_verify off;
-    # ssl_trusted_certificate /path/path;
-    # resolver 1.1.1.1 8.8.8.8 valid=86400; ## valid for 24 hours
-    # resolver_timeout 15s;
+    # ssl_trusted_certificate /etc/letsencrypt/live/@DOMAIN/fullchain.pem;;
+    resolver 1.1.1.1 8.8.8.8 valid=86400s;
+    resolver_timeout 10s;
     
 ####################################################################################################
 #### Nginx: MIME File Types Settings ###############################################################
