@@ -94,11 +94,13 @@ After completing the installation steps above, your `/var/www/` directory should
     /var/www/cache/
     /var/www/html/
     /var/www/logs/
+    /var/www/meta/
     /var/www/ss-check
     /var/www/ss-clean
     /var/www/ss-config
     /var/www/ss-config-sample
     /var/www/ss-dump
+    /var/www/ss-encrypt
     /var/www/ss-install
     /var/www/ss-muplugs
     /var/www/ss-perms
