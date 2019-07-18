@@ -24,6 +24,7 @@
 ## Ref: https://www.ruby-forum.com/t/why-set-keepalive-timeout-to-a-short-period-when-nginx-is-great-at-handling-them/244810/6
 ## Ref: https://librenepal.com/article/remove-specific-cookies-with-nginx/
 ## Ref: https://stackoverflow.com/questions/5285940/correct-way-to-delete-cookies-server-side
+## Ref: https://www.infoq.com/presentations/nvme-cache/
 
 ## Future: attempt to invalidate cookies: tk_ai, tk_ni, tk_qs (Jetpack)
 
@@ -67,13 +68,26 @@ http {
 #### Nginx: FastCGI Cache Settings (Modify Using SS-Config + SS-Install Only) ######################
 ####################################################################################################
 
+    ## Ref: http://nginx.org/en/docs/http/ngx_http_fastcgi_module.html
+    ## Ref: https://www.scalescale.com/tips/nginx/configure-nginx-fastcgi-cache/
+    ## Ref: https://gist.github.com/ikennaokpala/5792a71cfae6818035eedc8abd9ae7b4
+    ## Ref: https://geekbacon.com/2018/12/26/fastest-wordpress-5-0-nginx-fastcgi-cache-php-7-3-mysql-8-0-and-redis/
+    ## Ref: https://websiteforstudents.com/improve-wordpress-performance-with-nginx-fastcgi-and-php-7-2-fpm-on-ubuntu-16-04-18-04-lts/
+    ## Ref: https://easyengine.io/tutorials/nginx/tweaking-fastcgi-buffers/
+    
     fastcgi_cache_path /var/www/cache levels=1:2 keys_zone=WORDPRESS:@CACHEMEMORY inactive=@CACHEINACTIVE max_size=@CACHEMAXSIZE;
     fastcgi_cache_key "$scheme$request_method$host$request_uri$rt_session";
     fastcgi_cache_use_stale error timeout invalid_header updating http_500;
     fastcgi_ignore_headers Cache-Control Expires Set-Cookie;
     fastcgi_cache_lock on;
-    # fastcgi_buffers 8 16k;
+    fastcgi_connect_timeout 60s;
+    fastcgi_read_timeout 60s;
+    fastcgi_send_timeout 60s;
+    fastcgi_buffering on;
+    # fastcgi_buffers 32 32k;
     # fastcgi_buffer_size 32k;
+    # fastcgi_busy_buffers_size 256k;
+    # fastcgi_temp_file_write_size 256k;
     
 ####################################################################################################
 #### Nginx: Open File Cache Settings (Optimized For Traffic Scaling) ###############################################################
@@ -103,7 +117,6 @@ http {
     keepalive_requests 1024;
     send_timeout 15;
     reset_timedout_connection on;
-    fastcgi_read_timeout 60;
     
 ####################################################################################################
 #### Nginx: HTTP Headers Settings (Optimized For CloudFlare) #######################################
