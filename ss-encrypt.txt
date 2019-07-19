@@ -15,6 +15,7 @@
 ## Ref: https://stackoverflow.com/a/57019299/1718491
 ## Ref: https://community.letsencrypt.org/t/how-often-should-i-run-the-cerbot-cron-job-to-update-the-certificates/18851
 ## Ref: https://matthewlehner.net/lets-encrypt-with-nginx
+## Ref: https://community.letsencrypt.org/t/how-to-get-crt-and-key-files-from-i-just-have-pem-files/7348/2
 
 ## include SlickStack configuration ##
 source /var/www/ss-config
@@ -38,6 +39,12 @@ openssl req -new -x509 -nodes -days 3650 -newkey rsa:2048 -keyout /etc/ssl/nginx
 ## install Certbox SSL certificate ##
 certbot certonly --noninteractive --agree-tos --register-unsafely-without-email -d ${SITE_DOMAIN} --webroot -w /var/www/html/
 
+## create symlinks so Nginx / Ubuntu can find the Certbot certs ##
+ln -s /etc/letsencrypt/live/${SITE_DOMAIN}/cert.pem /etc/ssl/cert.pem
+ln -s /etc/letsencrypt/live/${SITE_DOMAIN}/privkey.pem /etc/ssl/privkey.pem
+
 ## reset permissions ##
 chown root:root /etc/ssl/nginx.key
 chown root:root /etc/ssl/nginx.crt
+chown root:root /etc/ssl/cert.pem
+chown root:root /etc/ssl/privkey.pem
