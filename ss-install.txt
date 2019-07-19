@@ -39,8 +39,8 @@ source /var/www/ss-config
 # fi
 
 ## verify ss-config build matches ss-install build ##
-if [[ "$SLICKSTACK_BUILD" != "JUL2019VV" ]];
-    then echo -e "\e[93mYour ss-config file is outdated. Please rebuild it and run ss-install again.\e[0m" >&2
+if [[ "$SLICKSTACK_BUILD" != "JUL2019VV" ]]; then 
+    echo -e "\e[93mYour ss-config file is outdated. Please rebuild it and run ss-install again.\e[0m" >&2
     exit 1
 fi
 
@@ -309,13 +309,13 @@ sed -i "s/@CACHEMAXSIZE/${FASTCGI_CACHE_MAX_SIZE}/g" /tmp/nginx-conf.txt
 
 ## replace placeholders for SSL cert paths ##
 
-if [[ "$SLICKSTACK_SSL" == "certbot" ]] then 
+if [[ "$SLICKSTACK_SSL" == "certbot" ]]; then 
     sed -i "s#@SSL_CERT_PATH#/etc/ssl/cert.pem#g" /tmp/nginx-conf.txt
 else 
     sed -i "s#@SSL_CERT_PATH#/etc/ssl/nginx.crt#g" /tmp/nginx-conf.txt
 fi
 
-if [[ "$SLICKSTACK_SSL" == "certbot" ]] then 
+if [[ "$SLICKSTACK_SSL" == "certbot" ]]; then 
     sed -i "s#@SSL_KEY_PATH#/etc/ssl/privkey.pem#g" /tmp/nginx-conf.txt
 else 
     sed -i "s#@SSL_KEY_PATH#/etc/ssl/nginx.key#g" /tmp/nginx-conf.txt
@@ -352,9 +352,10 @@ sed -i "s/@CACHEVALID/${FASTCGI_CACHE_VALID}/g" /tmp/default.txt
 
 ## enable or disable fastcgi cache ##
 ## set skip_cache default to 0 only if fastcgi cache enabled in ss-config ##
-if [[ "$FASTCGI_CACHE" == "true" ]]
-then sed -i "s/@FASTCGI/0/g" /tmp/default.txt
-else sed -i "s/@FASTCGI/1/g" /tmp/default.txt
+if [[ "$FASTCGI_CACHE" == "false" ]]; then 
+    sed -i "s/@FASTCGI/1/g" /tmp/default.txt
+else 
+    sed -i "s/@FASTCGI/0/g" /tmp/default.txt
 fi
 
 ## rename files ##
@@ -436,14 +437,16 @@ export DEBIAN_FRONTEND=noninteractive;
 ## store mysql root password ##
 ## http://serverfault.com/a/830352/344471 ##
 
-if [[ -z "$DB_PASSWORD_ROOT" ]];
-then echo debconf mysql-server/root_password password ${dbrootpass} | debconf-set-selections
-else echo debconf mysql-server/root_password password ${DB_PASSWORD_ROOT} | debconf-set-selections
+if [[ -z "$DB_PASSWORD_ROOT" ]]; then 
+    echo debconf mysql-server/root_password password ${dbrootpass} | debconf-set-selections
+else 
+    echo debconf mysql-server/root_password password ${DB_PASSWORD_ROOT} | debconf-set-selections
 fi
 
-if [[ -z "$DB_PASSWORD_ROOT" ]];
-then echo debconf mysql-server/root_password_again password ${dbrootpass} | debconf-set-selections
-else echo debconf mysql-server/root_password_again password ${DB_PASSWORD_ROOT} | debconf-set-selections
+if [[ -z "$DB_PASSWORD_ROOT" ]]; then 
+    echo debconf mysql-server/root_password_again password ${dbrootpass} | debconf-set-selections
+else 
+    echo debconf mysql-server/root_password_again password ${DB_PASSWORD_ROOT} | debconf-set-selections
 fi
 
 # echo "mysql-server-5.7 mysql-server/root_password password ${dbrootpass}" | debconf-set-selections
@@ -470,9 +473,10 @@ spawn $(which mysql_secure_installation)
 
 ## re-enter root password ##
 expect "Enter password for user root:"
-if [[ -z "$DB_PASSWORD_ROOT" ]];
-then send "${dbrootpass}\r"
-else send "${DB_PASSWORD_ROOT}\r"
+if [[ -z "$DB_PASSWORD_ROOT" ]]; then 
+    send "${dbrootpass}\r"
+else 
+    send "${DB_PASSWORD_ROOT}\r"
 fi
 
 ## skip the validate password plugin ##
@@ -518,34 +522,40 @@ echo "Congratulations, MySQL 5.7 is installed and secured. Onward!"
 #### setup mysql 5.7 users #########################################################################
 ####################################################################################################
 
-if [[ -z "$DB_PASSWORD_ROOT" ]];
-then mysql -uroot -p${dbrootpass} -e "CREATE DATABASE ${dbname};"
-else mysql -uroot -p${DB_PASSWORD_ROOT} -e "CREATE DATABASE ${DB_NAME};"
+if [[ -z "$DB_PASSWORD_ROOT" ]]; then 
+    mysql -uroot -p${dbrootpass} -e "CREATE DATABASE ${dbname};"
+else 
+    mysql -uroot -p${DB_PASSWORD_ROOT} -e "CREATE DATABASE ${DB_NAME};"
 fi
 
-if [[ -z "$DB_PASSWORD_ROOT" ]];
-then mysql -uroot -p${dbrootpass} -e "CREATE USER '${dbuser}'@'localhost' IDENTIFIED BY '${dbuserpass}';"
-else mysql -uroot -p${DB_PASSWORD_ROOT} -e "CREATE USER '${DB_USER}'@'localhost' IDENTIFIED BY '${DB_PASSWORD}';"
+if [[ -z "$DB_PASSWORD_ROOT" ]]; then 
+    mysql -uroot -p${dbrootpass} -e "CREATE USER '${dbuser}'@'localhost' IDENTIFIED BY '${dbuserpass}';"
+else 
+    mysql -uroot -p${DB_PASSWORD_ROOT} -e "CREATE USER '${DB_USER}'@'localhost' IDENTIFIED BY '${DB_PASSWORD}';"
 fi
 
-if [[ -z "$DB_PASSWORD_ROOT" ]];
-then mysql -uroot -p${dbrootpass} -e "CREATE USER '${dbuser}'@'127.0.0.1' IDENTIFIED BY '${dbuserpass}';"
-else mysql -uroot -p${DB_PASSWORD_ROOT} -e "CREATE USER '${DB_USER}'@'127.0.0.1' IDENTIFIED BY '${DB_PASSWORD}';"
+if [[ -z "$DB_PASSWORD_ROOT" ]]; then 
+    mysql -uroot -p${dbrootpass} -e "CREATE USER '${dbuser}'@'127.0.0.1' IDENTIFIED BY '${dbuserpass}';"
+else 
+    mysql -uroot -p${DB_PASSWORD_ROOT} -e "CREATE USER '${DB_USER}'@'127.0.0.1' IDENTIFIED BY '${DB_PASSWORD}';"
 fi
 
-if [[ -z "$DB_PASSWORD_ROOT" ]];
-then mysql -uroot -p${dbrootpass} -e "GRANT ALL PRIVILEGES ON ${dbname}.* TO '${dbuser}'@'localhost';"
-else mysql -uroot -p${DB_PASSWORD_ROOT} -e "GRANT ALL PRIVILEGES ON ${DB_NAME}.* TO '${DB_USER}'@'localhost';"
+if [[ -z "$DB_PASSWORD_ROOT" ]]; then 
+    mysql -uroot -p${dbrootpass} -e "GRANT ALL PRIVILEGES ON ${dbname}.* TO '${dbuser}'@'localhost';"
+else 
+    mysql -uroot -p${DB_PASSWORD_ROOT} -e "GRANT ALL PRIVILEGES ON ${DB_NAME}.* TO '${DB_USER}'@'localhost';"
 fi
 
-if [[ -z "$DB_PASSWORD_ROOT" ]];
-then mysql -uroot -p${dbrootpass} -e "GRANT ALL PRIVILEGES ON ${dbname}.* TO '${dbuser}'@'127.0.0.1';"
-else mysql -uroot -p${DB_PASSWORD_ROOT} -e "GRANT ALL PRIVILEGES ON ${DB_NAME}.* TO '${DB_USER}'@'127.0.0.1';"
+if [[ -z "$DB_PASSWORD_ROOT" ]]; then 
+    mysql -uroot -p${dbrootpass} -e "GRANT ALL PRIVILEGES ON ${dbname}.* TO '${dbuser}'@'127.0.0.1';"
+else 
+    mysql -uroot -p${DB_PASSWORD_ROOT} -e "GRANT ALL PRIVILEGES ON ${DB_NAME}.* TO '${DB_USER}'@'127.0.0.1';"
 fi
 
-if [[ -z "$DB_PASSWORD_ROOT" ]];
-then mysql -uroot -p${dbrootpass} -e "FLUSH PRIVILEGES;"
-else mysql -uroot -p${DB_PASSWORD_ROOT} -e "FLUSH PRIVILEGES;"
+if [[ -z "$DB_PASSWORD_ROOT" ]]; then 
+    mysql -uroot -p${dbrootpass} -e "FLUSH PRIVILEGES;"
+else 
+    mysql -uroot -p${DB_PASSWORD_ROOT} -e "FLUSH PRIVILEGES;"
 fi
 
 ####################################################################################################
@@ -562,15 +572,17 @@ rm -R -f /var/www/html/classicpress*.zip*
 cd /var/www/html
 
 ## download latest version ##
-if [[ "$SLICKSTACK_APP" == "classicpress" ]];
-    then wget --no-cache --no-cookies -O /var/www/html/classicpress.zip http://mirrors.slickstack.io/classicpress/classicpress.zip
-    else wget --no-cache --no-cookies -O /var/www/html/wordpress.zip http://mirrors.slickstack.io/wordpress/wordpress.zip
+if [[ "$SLICKSTACK_APP" == "classicpress" ]]; then 
+    wget --no-cache --no-cookies -O /var/www/html/classicpress.zip http://mirrors.slickstack.io/classicpress/classicpress.zip
+else 
+    wget --no-cache --no-cookies -O /var/www/html/wordpress.zip http://mirrors.slickstack.io/wordpress/wordpress.zip
 fi
 
 ## unzip files ##
-if [[ "$SLICKSTACK_APP" == "classicpress" ]];
-    then unzip -o /var/www/html/classicpress.zip
-    else unzip -o /var/www/html/wordpress.zip
+if [[ "$SLICKSTACK_APP" == "classicpress" ]]; then 
+    unzip -o /var/www/html/classicpress.zip
+else 
+    unzip -o /var/www/html/wordpress.zip
 fi
 
 ## reset perms ##
@@ -580,9 +592,10 @@ chmod 775 /var/www/html/classicpress
 chmod 775 /var/www/html/wordpress
 
 ## unpack files ##
-if [[ "$SLICKSTACK_APP" == "classicpress" ]];
-    then rsync -raqIp /var/www/html/classicpress/* ./
-    else rsync -raqIp /var/www/html/wordpress/* ./
+if [[ "$SLICKSTACK_APP" == "classicpress" ]]; then 
+    rsync -raqIp /var/www/html/classicpress/* ./
+else 
+    rsync -raqIp /var/www/html/wordpress/* ./
 fi
 
 ## cleanup ##
@@ -596,9 +609,10 @@ rm -R -f /var/www/html/classicpress*.zip*
 ####################################################################################################
 
 ## retrieve wp-config.php boilerplate ##
-if [[ -z "$WP_CONFIG_SOURCE" ]];
-then wget --no-cache --no-cookies -O /tmp/wp-config.txt http://mirrors.slickstack.io/wordpress/wp-config.txt
-else wget --no-check-certificate --no-cache --no-cookies -O /tmp/wp-config.txt "$WP_CONFIG_SOURCE"
+if [[ -z "$WP_CONFIG_SOURCE" ]]; then 
+    wget --no-cache --no-cookies -O /tmp/wp-config.txt http://mirrors.slickstack.io/wordpress/wp-config.txt
+else 
+    wget --no-check-certificate --no-cache --no-cookies -O /tmp/wp-config.txt "$WP_CONFIG_SOURCE"
 fi
 
 ## old ##
@@ -613,24 +627,28 @@ fi
 
 ## new ##
 ## replace placeholders with variables ##
-if [[ -z "$DB_PASSWORD_ROOT" ]];
-then sed -i "s/@DBNAME/${dbname}/g" /tmp/wp-config.txt
-else sed -i "s/@DBNAME/${DB_NAME}/g" /tmp/wp-config.txt
+if [[ -z "$DB_PASSWORD_ROOT" ]]; then 
+    sed -i "s/@DBNAME/${dbname}/g" /tmp/wp-config.txt
+else 
+    sed -i "s/@DBNAME/${DB_NAME}/g" /tmp/wp-config.txt
 fi
 
-if [[ -z "$DB_PASSWORD_ROOT" ]];
-then sed -i "s/@DBUSER/${dbuser}/g" /tmp/wp-config.txt
-else sed -i "s/@DBUSER/${DB_USER}/g" /tmp/wp-config.txt
+if [[ -z "$DB_PASSWORD_ROOT" ]]; then 
+    sed -i "s/@DBUSER/${dbuser}/g" /tmp/wp-config.txt
+else 
+    sed -i "s/@DBUSER/${DB_USER}/g" /tmp/wp-config.txt
 fi
 
-if [[ -z "$DB_PASSWORD_ROOT" ]];
-then sed -i "s/@DBPASSWORD/${dbuserpass}/g" /tmp/wp-config.txt
-else sed -i "s/@DBPASSWORD/${DB_PASSWORD}/g" /tmp/wp-config.txt
+if [[ -z "$DB_PASSWORD_ROOT" ]]; then 
+    sed -i "s/@DBPASSWORD/${dbuserpass}/g" /tmp/wp-config.txt
+else 
+    sed -i "s/@DBPASSWORD/${DB_PASSWORD}/g" /tmp/wp-config.txt
 fi
 
-if [[ -z "$DB_PASSWORD_ROOT" ]];
-then sed -i "s/@TABLEPREFIX/${dbprefix}/g" /tmp/wp-config.txt
-else sed -i "s/@TABLEPREFIX/${DB_PREFIX}/g" /tmp/wp-config.txt
+if [[ -z "$DB_PASSWORD_ROOT" ]]; then 
+    sed -i "s/@TABLEPREFIX/${dbprefix}/g" /tmp/wp-config.txt
+else 
+    sed -i "s/@TABLEPREFIX/${DB_PREFIX}/g" /tmp/wp-config.txt
 fi
 
 ## replace placeholders with variables ##
@@ -668,15 +686,17 @@ sed -i "s/@NONCESALT/$(openssl rand -hex 48)/g" /tmp/wp-config.txt
 ####################################################################################################
 
 ## Replace Placeholders: Debug ##
-if [[ "$SLICKSTACK_TYPE" == "production" ]];
-    then sed -i "s/@DEBUGON/false/g" /tmp/wp-config.txt
-    else sed -i "s/@DEBUGON/true/g" /tmp/wp-config.txt
+if [[ "$SLICKSTACK_TYPE" == "production" ]]; then 
+    sed -i "s/@DEBUGON/false/g" /tmp/wp-config.txt
+else 
+    sed -i "s/@DEBUGON/true/g" /tmp/wp-config.txt
 fi
 
 ## Replace Placeholders: Debug ##
-if [[ "$SLICKSTACK_TYPE" == "production" ]];
-    then sed -i "s/@DEBUGDISPLAY/false/g" /tmp/wp-config.txt
-    else sed -i "s/@DEBUGDISPLAY/true/g" /tmp/wp-config.txt
+if [[ "$SLICKSTACK_TYPE" == "production" ]]; then 
+    sed -i "s/@DEBUGDISPLAY/false/g" /tmp/wp-config.txt
+else 
+    sed -i "s/@DEBUGDISPLAY/true/g" /tmp/wp-config.txt
 fi
 
 ## rename files ##
