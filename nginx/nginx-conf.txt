@@ -158,29 +158,26 @@ http {
     ## Ref: https://ssl-config.mozilla.org
     ## Ref: https://matthewlehner.net/lets-encrypt-with-nginx
     
-    ssl_certificate /etc/ssl/nginx.crt;
-    ssl_certificate_key /etc/ssl/nginx.key;
-    
-    # ssl_certificate @SSL_CERT_PATH;
-    # ssl_certificate_key @SSL_KEY_PATH;
-    #@# ssl_trusted_certificate /etc/ssl/chain.pem;
-    #@# ssl_stapling on;
-    #@# ssl_stapling_verify on;
-    #@# ssl_dhparam /etc/ssl/dhparam.pem;
-    
-    ## BELOW SSL SETTINGS WILL AFFECT BOTH OPENSSL AND LET'S ENCRYPT CERTS ##
-    
+    ssl_certificate @SSL_CERT_PATH;
+    ssl_certificate_key @SSL_KEY_PATH;
     ssl_protocols TLSv1.2; ## TLSv1.3 in OpenSSL 1.1.1+
-    # ssl_ciphers "EECDH+AESGCM:EDH+AESGCM:AES256+EECDH:AES256+EDH";
-    # ssl_prefer_server_ciphers on;
-    ssl_ecdh_curve auto;
     ssl_early_data off; ## TLSv1.3 only
+    ssl_ecdh_curve auto;
     ssl_session_timeout 1d;
     ssl_session_cache shared:SSL:64m;
     ssl_session_tickets off;
     ssl_buffer_size 16k;
     resolver 1.1.1.1 8.8.8.8 valid=86400s;
     resolver_timeout 10s;
+    
+    ## BELOW SSL SETTINGS WILL ONLY BE ENABLED FOR LET'S ENCRYPT CERTS ##
+    
+    #@@ # ssl_ciphers "EECDH+AESGCM:EDH+AESGCM:AES256+EECDH:AES256+EDH";
+    #@@ # ssl_trusted_certificate /etc/ssl/chain.pem;
+    #@@ # ssl_stapling on;
+    #@@ # ssl_stapling_verify on;
+    #@@ # ssl_dhparam /etc/ssl/dhparam.pem;
+    #@@ # ssl_prefer_server_ciphers on;
     
 ####################################################################################################
 #### Nginx: MIME File Types Settings ###############################################################
