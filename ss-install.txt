@@ -307,6 +307,20 @@ sed -i "s/@CACHEMEMORY/${FASTCGI_CACHE_MEMORY}/g" /tmp/nginx-conf.txt
 sed -i "s/@CACHEINACTIVE/${FASTCGI_CACHE_INACTIVE}/g" /tmp/nginx-conf.txt
 sed -i "s/@CACHEMAXSIZE/${FASTCGI_CACHE_MAX_SIZE}/g" /tmp/nginx-conf.txt
 
+## replace placeholders for SSL cert paths ##
+
+if [[ "$SLICKSTACK_SSL" == "certbot" ]] then 
+    sed -i "s#@SSL_CERT_PATH#/etc/ssl/cert.pem#g" /tmp/nginx-conf.txt
+else 
+    sed -i "s#@SSL_CERT_PATH#/etc/ssl/nginx.crt#g" /tmp/nginx-conf.txt
+fi
+
+if [[ "$SLICKSTACK_SSL" == "certbot" ]] then 
+    sed -i "s#@SSL_KEY_PATH#/etc/ssl/privkey.pem#g" /tmp/nginx-conf.txt
+else 
+    sed -i "s#@SSL_KEY_PATH#/etc/ssl/nginx.key#g" /tmp/nginx-conf.txt
+fi
+
 ## rename files ##
 mv /tmp/nginx-conf.txt /tmp/nginx.conf
 
