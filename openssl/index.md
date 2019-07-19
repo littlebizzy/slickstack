@@ -18,8 +18,8 @@
 
 *Links and resources related to the above module that may help users understand its functionality, or how it interacts with other LEMP stack modules.*
 
-* (coming soon)
+* <a href="https://github.com/openssl/openssl/blob/master/apps/openssl.cnf">https://github.com/openssl/openssl/blob/master/apps/openssl.cnf</a>
 
 ----
 
-*Last updated: Jul 17, 2019*
+*Last updated: Jul 19, 2019*
