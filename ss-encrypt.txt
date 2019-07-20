@@ -46,6 +46,13 @@ ln -s /etc/letsencrypt/live/${SITE_DOMAIN}/privkey.pem /etc/ssl/privkey.pem
 ln -s /etc/letsencrypt/live/${SITE_DOMAIN}/chain.pem /etc/ssl/chain.pem
 ln -s /etc/letsencrypt/live/${SITE_DOMAIN}/fullchain.pem /etc/ssl/fullchain.pem
 
+## tweak Nginx config if Certbot is chosen ##
+if [[ "$SLICKSTACK_SSL" == "certbot" ]]; then 
+    sed -i "s#@/etc/ssl/nginx.crt#/etc/ssl/cert.pem#g" /tmp/nginx-conf.txt
+    sed -i "s#@/etc/ssl/nginx.key#/etc/ssl/privkey.pem#g" /tmp/nginx-conf.txt
+    sed -i "s/#@@//g" /tmp/nginx-conf.txt
+fi
+
 ## reset permissions ##
 chown root:root /etc/ssl/nginx.key
 chown root:root /etc/ssl/nginx.crt
