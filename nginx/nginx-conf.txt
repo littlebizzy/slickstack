@@ -16,18 +16,16 @@
 ## Ref: https://gist.github.com/v0lkan/90fcb83c86918732b894#gistcomment-2832040
 ## Ref: https://www.programering.com/a/MDM2YTNwATk.html
 ## Ref: https://hstspreload.org
-## Ref: http://nginx.org/en/docs/http/ngx_http_gzip_module.html
 ## Ref: https://easyengine.io/tutorials/nginx/optimization
 ## Ref: https://www.nginx.com/blog/tuning-nginx/
 ## Ref: https://www.freshblurbs.com/blog/2015/11/28/high-load-nginx-config.html
 ## Ref: https://www.slashroot.in/nginx-web-server-performance-tuning-how-to-do-it
-## Ref: https://www.ruby-forum.com/t/why-set-keepalive-timeout-to-a-short-period-when-nginx-is-great-at-handling-them/244810/6
-## Ref: https://librenepal.com/article/remove-specific-cookies-with-nginx/
-## Ref: https://stackoverflow.com/questions/5285940/correct-way-to-delete-cookies-server-side
 ## Ref: https://www.infoq.com/presentations/nvme-cache/
 ## Ref: https://serverfault.com/a/707963/144798
 
 ## Future: attempt to invalidate cookies: tk_ai, tk_ni, tk_qs (Jetpack)
+## Ref: https://librenepal.com/article/remove-specific-cookies-with-nginx/
+## Ref: https://stackoverflow.com/questions/5285940/correct-way-to-delete-cookies-server-side
 
 ####################################################################################################
 #### Nginx: General Settings (Optimized For Traffic Scaling) #######################################
@@ -94,7 +92,7 @@ http {
     # fastcgi_temp_file_write_size 256k;
     
 ####################################################################################################
-#### Nginx: Open File Cache Settings (Optimized For Traffic Scaling) ###############################################################
+#### Nginx: Open File Cache Settings (Optimized For Traffic Scaling) ###############################
 ####################################################################################################
     
     open_file_cache max=200000 inactive=20s;
@@ -115,11 +113,14 @@ http {
 #### Nginx: Various Timeout Settings (Optimized For Traffic Scaling) ###############################
 ####################################################################################################
     
-    client_body_timeout 15;
-    client_header_timeout 15;
-    keepalive_timeout 15;
-    keepalive_requests 1024;
-    send_timeout 15;
+    ## Ref: http://nginx.org/en/docs/http/ngx_http_core_module.html
+    ## Ref: https://www.ruby-forum.com/t/why-set-keepalive-timeout-to-a-short-period-when-nginx-is-great-at-handling-them/244810/6
+
+    client_body_timeout 15s;
+    client_header_timeout 15s;
+    keepalive_timeout 15s;
+    keepalive_requests 1000;
+    send_timeout 15s;
     reset_timedout_connection on;
     
 ####################################################################################################
@@ -143,7 +144,7 @@ http {
     server_tokens off;
     
 ####################################################################################################
-#### Nginx: SSL Settings (Self-Signed OpenSSL + CA-Signed Let's Encrypt) ###########################
+#### Nginx: SSL Settings (Supports Self-Signed OpenSSL + CA-Signed Let's Encrypt) ##################
 ####################################################################################################
 
     ## Ref: https://gist.github.com/cecilemuller/a26737699a7e70a7093d4dc115915de8
