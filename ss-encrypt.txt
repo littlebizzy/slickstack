@@ -34,15 +34,12 @@ openssl req -new -x509 -nodes -days 3650 -newkey rsa:2048 -keyout /etc/ssl/nginx
 ## generate DH parameters ##
 openssl dhparam -out /etc/ssl/dhparam.pem 2048
 
+## restart services ##
+/etc/init.d/nginx restart
+
 ####################################################################################################
 #### Cerbot: Create Symlinks And Public Challenge Directory ########################################
 ####################################################################################################
-
-## create symlinks so Nginx / Ubuntu can find the Certbot certs ##
-ln -s /etc/letsencrypt/live/${SITE_DOMAIN}/cert.pem /etc/ssl/cert.pem &> /dev/null
-ln -s /etc/letsencrypt/live/${SITE_DOMAIN}/privkey.pem /etc/ssl/privkey.pem &> /dev/null
-ln -s /etc/letsencrypt/live/${SITE_DOMAIN}/chain.pem /etc/ssl/chain.pem &> /dev/null
-ln -s /etc/letsencrypt/live/${SITE_DOMAIN}/fullchain.pem /etc/ssl/fullchain.pem &> /dev/null
 
 ## ensure public Certbot verification folder exists ##
 ## in future versions maybe hide this in a system folder (Nginx mask) ##
@@ -51,22 +48,28 @@ chown -R www-data:www-data /var/www/html/.well-known
 chmod -R g+s /var/www/html/.well-known
 chmod 755 /var/www/html/.well-known
 
-## MESSAGE: explain repos ##
-echo -e "\e[36mELEVATOR MUSIC... since this is a virgin SlickStack installation and you have chosen Certbot instead of OpenSSL we will now attempt to generate a Lets Encrypt cert but for this to work correct your domain needs to have CloudFlare activated (in order to CA-sign the OpenSSL certificate)... hurry up and activate CloudFlare on this domain NOW and choose Full SSL if you haven't already and within 10 minutes this script will continue and attempt to finalize the Lets Encrypt cert... in the future you can make this easier by first installing SlickStack using OpenSSL and then changing to Certbot later on...\e[0m"
-
-## pause script for 10 minutes ##
-secs=$((10 * 60))
-while [ $secs -gt 0 ]; do
-   echo -ne "$secs\033[0K\r"
-   sleep 1
-   : $((secs--))
-done
+## if virgin SlickStack install and Cerbot has been chosen... ##
+if [ ! -f "/var/www/meta/.cherry" ] || [ "$SLICKSTACK_SSL" == "certbot" ]; then
+    secs=$((10 * 60))
+    echo -e "\e[36mELEVATOR MUSIC... since this is a virgin SlickStack installation and you have chosen Certbot instead of OpenSSL we will now attempt to generate a Lets Encrypt cert but for this to work correct your domain needs to have CloudFlare activated (in order to CA-sign the OpenSSL certificate)... hurry up and activate CloudFlare on this domain NOW and choose Full SSL if you haven't already and within 10 minutes this script will continue and attempt to finalize the Lets Encrypt cert... in the future you can make this easier by first installing SlickStack using OpenSSL and then changing to Certbot later on...\e[0m"
+    while [ $secs -gt 0 ]; do
+       echo -ne "$secs\033[0K\r"
+       sleep 1
+       : $((secs--))
+    done
+fi
 
 ## install Certbox SSL certificate ##
 certbot certonly --noninteractive --agree-tos --register-unsafely-without-email -d ${SITE_DOMAIN} --webroot -w /var/www/html/
 
+## create symlinks so Nginx / Ubuntu can find the Certbot certs ##
+ln -s /etc/letsencrypt/live/${SITE_DOMAIN}/cert.pem /etc/ssl/cert.pem &> /dev/null
+ln -s /etc/letsencrypt/live/${SITE_DOMAIN}/privkey.pem /etc/ssl/privkey.pem &> /dev/null
+ln -s /etc/letsencrypt/live/${SITE_DOMAIN}/chain.pem /etc/ssl/chain.pem &> /dev/null
+ln -s /etc/letsencrypt/live/${SITE_DOMAIN}/fullchain.pem /etc/ssl/fullchain.pem &> /dev/null
+
 ## tweak Nginx config if Certbot is chosen ##
-if [[ "$SLICKSTACK_SSL" == "certbot" ]]; then 
+if [ -d  "/etc/letsencrypt/live" ] || [ "$SLICKSTACK_SSL" == "certbot" ]; then
     sed -i "s#@/etc/ssl/nginx.crt#/etc/ssl/cert.pem#g" /etc/nginx/nginx.conf
     sed -i "s#@/etc/ssl/nginx.key#/etc/ssl/privkey.pem#g" /etc/nginx/nginx.conf
     sed -i "s/#@@//g" /etc/nginx/nginx.conf
