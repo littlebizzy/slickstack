@@ -24,6 +24,26 @@ source /var/www/ss-config
 ## MESSAGE: explain repos ##
 echo -e "\e[36mInstalling (or renewing) free SSL certificates from OpenSSL and Certbot...\e[0m"
 
+####################################################################################################
+#### OpenSSL: Create Self-Signed Certificate + DH Parameters #######################################
+####################################################################################################
+
+## install OpenSSL certificate ##
+openssl req -new -x509 -nodes -days 3650 -newkey rsa:2048 -keyout /etc/ssl/nginx.key -out /etc/ssl/nginx.crt -subj "/C=${SSL_COUNTRY}/ST=${SSL_STATE}/L=${SSL_CITY}/O=${SSL_COMPANY}/OU=${SSL_DEPT}/CN=${SITE_DOMAIN}"
+
+## generate DH parameters ##
+openssl dhparam -out /etc/ssl/dhparam.pem 2048
+
+####################################################################################################
+#### Cerbot: Create Symlinks And Public Challenge Directory ########################################
+####################################################################################################
+
+## create symlinks so Nginx / Ubuntu can find the Certbot certs ##
+ln -s /etc/letsencrypt/live/${SITE_DOMAIN}/cert.pem /etc/ssl/cert.pem &> /dev/null
+ln -s /etc/letsencrypt/live/${SITE_DOMAIN}/privkey.pem /etc/ssl/privkey.pem &> /dev/null
+ln -s /etc/letsencrypt/live/${SITE_DOMAIN}/chain.pem /etc/ssl/chain.pem &> /dev/null
+ln -s /etc/letsencrypt/live/${SITE_DOMAIN}/fullchain.pem /etc/ssl/fullchain.pem &> /dev/null
+
 ## ensure public Certbot verification folder exists ##
 ## in future versions maybe hide this in a system folder (Nginx mask) ##
 mkdir -p /var/www/html/.well-known
@@ -31,20 +51,8 @@ chown -R www-data:www-data /var/www/html/.well-known
 chmod -R g+s /var/www/html/.well-known
 chmod 755 /var/www/html/.well-known
 
-## generate DH parameters ##
-openssl dhparam -out /etc/ssl/dhparam.pem 2048
-
-## install OpenSSL certificate ##
-openssl req -new -x509 -nodes -days 3650 -newkey rsa:2048 -keyout /etc/ssl/nginx.key -out /etc/ssl/nginx.crt -subj "/C=${SSL_COUNTRY}/ST=${SSL_STATE}/L=${SSL_CITY}/O=${SSL_COMPANY}/OU=${SSL_DEPT}/CN=${SITE_DOMAIN}"
-
 ## install Certbox SSL certificate ##
 certbot certonly --noninteractive --agree-tos --register-unsafely-without-email -d ${SITE_DOMAIN} --webroot -w /var/www/html/
-
-## create symlinks so Nginx / Ubuntu can find the Certbot certs ##
-ln -s /etc/letsencrypt/live/${SITE_DOMAIN}/cert.pem /etc/ssl/cert.pem &> /dev/null
-ln -s /etc/letsencrypt/live/${SITE_DOMAIN}/privkey.pem /etc/ssl/privkey.pem &> /dev/null
-ln -s /etc/letsencrypt/live/${SITE_DOMAIN}/chain.pem /etc/ssl/chain.pem &> /dev/null
-ln -s /etc/letsencrypt/live/${SITE_DOMAIN}/fullchain.pem /etc/ssl/fullchain.pem &> /dev/null
 
 ## tweak Nginx config if Certbot is chosen ##
 if [[ "$SLICKSTACK_SSL" == "certbot" ]]; then 
