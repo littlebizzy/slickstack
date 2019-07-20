@@ -235,6 +235,58 @@ chown root:root /var/spool/cron/crontabs/root
 # chmod 664 /etc/sysctl.conf
 
 ####################################################################################################
+#### Install PHP-FPM 7.2 + Required Extensions #####################################################
+####################################################################################################
+
+## purge PHP 7.0 + PHP 7.1 ##
+DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" purge php7.0
+DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" purge php7.1
+
+## delete PHP 7.0 + PHP 7.1 files ##
+rm -R -f /etc/php/7.0*
+rm -R -f /etc/php/7.1*
+
+## purge PHP 7.2 (so we can install fresh) ##
+DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" purge php7.2
+
+## install PHP 7.2 and extensions ##
+DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install php7.2 php7.2-bcmath php7.2-curl php7.2-fpm php7.2-gd php7.2-imagick php7.2-json php7.2-mbstring php7.2-mysql php7.2-soap php7.2-xml php7.2-zip
+
+# better #
+# DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install php7.2-bcmath php7.2-curl php7.2-fpm php7.2-gd php7.2-imagick php7.2-json php7.2-mbstring php7.2-mysql php7.2-soap php7.2-xml php7.2-zip
+
+## download latest versions ##
+wget --no-cache --no-cookies -O /tmp/php-fpm-conf.txt http://mirrors.slickstack.io/php-fpm/php-fpm-conf.txt
+wget --no-cache --no-cookies -O /tmp/php-ini.txt http://mirrors.slickstack.io/php-fpm/php-ini.txt
+wget --no-cache --no-cookies -O /tmp/www-conf.txt http://mirrors.slickstack.io/php-fpm/www-conf.txt
+
+## rename files ##
+mv /tmp/php-fpm-conf.txt /tmp/php-fpm.conf
+mv /tmp/php-ini.txt /tmp/php.ini
+mv /tmp/www-conf.txt /tmp/www.conf
+
+## copy files to their destinations ##
+cp -R -f --no-preserve=mode,ownership /tmp/php-fpm.conf /etc/php/7.2/fpm/php-fpm.conf
+cp -R -f --no-preserve=mode,ownership /tmp/php.ini /etc/php/7.2/fpm/php.ini
+cp -R -f --no-preserve=mode,ownership /tmp/php.ini /etc/php/7.2/cli/php.ini
+cp -R -f --no-preserve=mode,ownership /tmp/www.conf /etc/php/7.2/fpm/pool.d/www.conf
+
+## customize php settings ##
+# sed -i '/error_log/c\error_log = /var/www/logs/error.log' /etc/php/7.2/fpm/php-fpm.conf
+
+## set default PHP version ##
+update-alternatives --set php /usr/bin/php7.2
+
+## reset permissions ##
+chown root:root /etc/php/7.2/fpm/php-fpm.conf
+chown root:root /etc/php/7.2/fpm/php.ini
+chown root:root /etc/php/7.2/cli/php.ini
+chown root:root /etc/php/7.2/fpm/pool.d/www.conf
+
+## restart services ##
+/etc/init.d/php7.2-fpm restart
+
+####################################################################################################
 ### Install WP-CLI #################################################################################
 ####################################################################################################
 
@@ -307,17 +359,6 @@ sed -i "s/@CACHEMEMORY/${FASTCGI_CACHE_MEMORY}/g" /tmp/nginx-conf.txt
 sed -i "s/@CACHEINACTIVE/${FASTCGI_CACHE_INACTIVE}/g" /tmp/nginx-conf.txt
 sed -i "s/@CACHEMAXSIZE/${FASTCGI_CACHE_MAX_SIZE}/g" /tmp/nginx-conf.txt
 
-## replace placeholders for SSL cert paths ##
-
-if [[ "$SLICKSTACK_SSL" == "certbot" ]]; then 
-    sed -i "s#@SSL_CERT_PATH#/etc/ssl/cert.pem#g" /tmp/nginx-conf.txt
-    sed -i "s#@SSL_KEY_PATH#/etc/ssl/privkey.pem#g" /tmp/nginx-conf.txt
-    sed -i "s/#@@//g" /tmp/nginx-conf.txt
-else 
-    sed -i "s#@SSL_CERT_PATH#/etc/ssl/nginx.crt#g" /tmp/nginx-conf.txt
-    sed -i "s#@SSL_KEY_PATH#/etc/ssl/nginx.key#g" /tmp/nginx-conf.txt
-fi
-
 ## rename files ##
 mv /tmp/nginx-conf.txt /tmp/nginx.conf
 
@@ -373,56 +414,6 @@ chown root:root /etc/nginx/sites-available/default
 
 ## include ss-encrypt script here ##
 source /var/www/ss-encrypt
-
-####################################################################################################
-#### install php-fpm 7.2 ###########################################################################
-####################################################################################################
-
-## purge php 7.0 and extensions ##
-DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" purge php7.0
-
-## delete PHP 7.0 files ##
-rm -R -f /etc/php/7.0*
-
-## purge php 7.2 and extensions ##
-DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" purge php7.2
-
-## install php 7.2 and extensions ##
-DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install php7.2 php7.2-bcmath php7.2-curl php7.2-fpm php7.2-gd php7.2-imagick php7.2-json php7.2-mbstring php7.2-mysql php7.2-soap php7.2-xml php7.2-zip
-
-# better #
-# DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install php7.2-bcmath php7.2-curl php7.2-fpm php7.2-gd php7.2-imagick php7.2-json php7.2-mbstring php7.2-mysql php7.2-soap php7.2-xml php7.2-zip
-
-## download latest versions ##
-wget --no-cache --no-cookies -O /tmp/php-fpm-conf.txt http://mirrors.slickstack.io/php-fpm/php-fpm-conf.txt
-wget --no-cache --no-cookies -O /tmp/php-ini.txt http://mirrors.slickstack.io/php-fpm/php-ini.txt
-wget --no-cache --no-cookies -O /tmp/www-conf.txt http://mirrors.slickstack.io/php-fpm/www-conf.txt
-
-## rename files ##
-mv /tmp/php-fpm-conf.txt /tmp/php-fpm.conf
-mv /tmp/php-ini.txt /tmp/php.ini
-mv /tmp/www-conf.txt /tmp/www.conf
-
-## copy files to their destinations ##
-cp -R -f --no-preserve=mode,ownership /tmp/php-fpm.conf /etc/php/7.2/fpm/php-fpm.conf
-cp -R -f --no-preserve=mode,ownership /tmp/php.ini /etc/php/7.2/fpm/php.ini
-cp -R -f --no-preserve=mode,ownership /tmp/php.ini /etc/php/7.2/cli/php.ini
-cp -R -f --no-preserve=mode,ownership /tmp/www.conf /etc/php/7.2/fpm/pool.d/www.conf
-
-## customize php settings ##
-# sed -i '/error_log/c\error_log = /var/www/logs/error.log' /etc/php/7.2/fpm/php-fpm.conf
-
-## reset permissions ##
-chown root:root /etc/php/7.2/fpm/php-fpm.conf
-chown root:root /etc/php/7.2/fpm/php.ini
-chown root:root /etc/php/7.2/cli/php.ini
-chown root:root /etc/php/7.2/fpm/pool.d/www.conf
-
-## set default php version ##
-update-alternatives --set php /usr/bin/php7.2
-
-## restart php ##
-/etc/init.d/php7.2-fpm restart
 
 ####################################################################################################
 #### Install MySQL 5.7 #############################################################################
