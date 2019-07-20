@@ -6,47 +6,40 @@
 #### mirror: http://mirrors.slickstack.io/ss-encrypt.txt ###########################################
 #### path: /var/www/ss-encrypt #####################################################################
 #### destination: n/a (not a boilerplate) ##########################################################
-#### purpose: generates or renews free SSL certificates via OpenSSL and Certbot ####################
+#### purpose: generates or renews free SSL certificates from OpenSSL and Certbot ###################
 #### ss version: SlickStack alpha ss6d #############################################################
 #### module version: n/a ###########################################################################
 ####################################################################################################
 
 ## Ref: https://linuxize.com/post/secure-apache-with-let-s-encrypt-on-ubuntu-18-04/
 ## Ref: https://stackoverflow.com/a/57019299/1718491
-## Ref: https://community.letsencrypt.org/t/how-often-should-i-run-the-cerbot-cron-job-to-update-the-certificates/18851
 ## Ref: https://matthewlehner.net/lets-encrypt-with-nginx
+## Ref: https://community.letsencrypt.org/t/how-often-should-i-run-the-cerbot-cron-job-to-update-the-certificates/18851
 ## Ref: https://community.letsencrypt.org/t/how-to-get-crt-and-key-files-from-i-just-have-pem-files/7348/2
 ## Ref: https://community.letsencrypt.org/t/certificate-path/24227
 
 ## include SlickStack configuration ##
 source /var/www/ss-config
 
-## MESSAGE: explain repos ##
-echo -e "\e[36mInstalling (or renewing) free SSL certificates from OpenSSL and Certbot...\e[0m"
+## MESSAGE ##
+echo -e "\e[36mInstalling (or renewing) free SSL certs from OpenSSL and Certbot...\e[0m"
 
 ####################################################################################################
 #### OpenSSL: Create Self-Signed Certificate + Generate DH Parameters ##############################
 ####################################################################################################
 
-## install OpenSSL certificate ##
+## create self-signed OpenSSL certificate ##
 openssl req -new -x509 -nodes -days 3650 -newkey rsa:2048 -keyout /etc/ssl/nginx.key -out /etc/ssl/nginx.crt -subj "/C=${SSL_COUNTRY}/ST=${SSL_STATE}/L=${SSL_CITY}/O=${SSL_COMPANY}/OU=${SSL_DEPT}/CN=${SITE_DOMAIN}"
 
 ## generate DH parameters ##
 openssl dhparam -out /etc/ssl/dhparam.pem 2048
 
-## restart services ##
+## restart services (OpenSSL + CloudFlare must be working before Certbot can validate) ##
 /etc/init.d/nginx restart
 
 ####################################################################################################
-#### Cerbot: Create Symlinks And Public Challenge Directory ########################################
+#### Cerbot: Reminder To Activate CloudFlare (10 Minute Pause For Virgin Installs) #################
 ####################################################################################################
-
-## ensure public Certbot verification folder exists ##
-## in future versions maybe hide this in a system folder (Nginx mask) ##
-mkdir -p /var/www/html/.well-known
-chown -R www-data:www-data /var/www/html/.well-known
-chmod -R g+s /var/www/html/.well-known
-chmod 755 /var/www/html/.well-known
 
 ## if virgin SlickStack install and Cerbot has been chosen... ##
 if [ ! -f "/var/www/meta/.cherry" ] || [ "$SLICKSTACK_SSL" == "certbot" ]; then
@@ -59,20 +52,36 @@ if [ ! -f "/var/www/meta/.cherry" ] || [ "$SLICKSTACK_SSL" == "certbot" ]; then
     done
 fi
 
-## install Certbox SSL certificate ##
+####################################################################################################
+#### Cerbot: Prepare Public Challenge Directory + Request Certificate ##############################
+####################################################################################################
+
+## ensure public Certbot verification folder exists ##
+## in future versions maybe hide this in a system folder (Nginx server block mask) ##
+mkdir -p /var/www/html/.well-known
+chown -R www-data:www-data /var/www/html/.well-known
+chmod -R g+s /var/www/html/.well-known
+chmod 755 /var/www/html/.well-known
+
+## create Certbot SSL certificate (depends on their remote API) ##
 certbot certonly --noninteractive --agree-tos --register-unsafely-without-email -d ${SITE_DOMAIN} --webroot -w /var/www/html/
 
-## create symlinks so Nginx / Ubuntu can find the Certbot certs ##
+####################################################################################################
+#### Cerbot: Create Symlinks + Modify Nginx Configuration ##########################################
+####################################################################################################
+
+## create symlinks for easier Nginx management ##
 ln -s /etc/letsencrypt/live/${SITE_DOMAIN}/cert.pem /etc/ssl/cert.pem &> /dev/null
 ln -s /etc/letsencrypt/live/${SITE_DOMAIN}/privkey.pem /etc/ssl/privkey.pem &> /dev/null
 ln -s /etc/letsencrypt/live/${SITE_DOMAIN}/chain.pem /etc/ssl/chain.pem &> /dev/null
 ln -s /etc/letsencrypt/live/${SITE_DOMAIN}/fullchain.pem /etc/ssl/fullchain.pem &> /dev/null
 
-## tweak Nginx config if Certbot is chosen ##
-if [ -d  "/etc/letsencrypt/live" ] || [ "$SLICKSTACK_SSL" == "certbot" ]; then
+## tweak Nginx config if Certbot succesful ##
+if [ -d  "/etc/letsencrypt/live" ] || [ -f  "/etc/ssl/cert.pem" ] || [ "$SLICKSTACK_SSL" == "certbot" ]; then
     sed -i "s#@/etc/ssl/nginx.crt#/etc/ssl/cert.pem#g" /etc/nginx/nginx.conf
     sed -i "s#@/etc/ssl/nginx.key#/etc/ssl/privkey.pem#g" /etc/nginx/nginx.conf
     sed -i "s/#@@//g" /etc/nginx/nginx.conf
+    /etc/init.d/nginx restart
 fi
 
 ####################################################################################################
