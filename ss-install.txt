@@ -348,7 +348,7 @@ DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/u
 DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install nginx-extras
 
 ####################################################################################################
-#### Configure Nginx-Extras ########################################################################
+#### Configure Nginx: FastCGI Cache Settings #######################################################
 ####################################################################################################
 
 ## download latest versions ##
@@ -371,6 +371,13 @@ mkdir -p /var/www/cache
 ## reset permissions ##
 chown www-data:www-data /var/www/cache
 chown root:root /etc/nginx/nginx.conf
+
+## TMPFS if desired ##
+# if [[ "$FASTCGI_CACHE_TMPFS" == "true" ]]; then 
+# mount -t tmpfs -o size=${FASTCGI_CACHE_MEMORY} tmpfs /var/www/cache
+## Then to make this configuration permanent, you can add the following line into /etc/fstab.
+# tmpfs /var/cache/nginx tmpfs defaults,size=256M 0 0
+# fi
 
 ####################################################################################################
 #### Configure Server Block (Nginx-Extras) #########################################################
