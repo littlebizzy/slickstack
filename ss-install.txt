@@ -562,47 +562,31 @@ fi
 #### Install WordPress #############################################################################
 ####################################################################################################
 
-## cleanup ##
+## cleanup files ##
 rm -R -f /var/www/html/wordpress*
-rm -R -f /var/www/html/wordpress*.zip*
 rm -R -f /var/www/html/classicpress*
-rm -R -f /var/www/html/classicpress*.zip*
 
-## change dir ##
+## change dir (temp fix) ##
 cd /var/www/html
 
 ## download latest version ##
 if [[ "$SLICKSTACK_APP" == "classicpress" ]]; then 
     wget --no-cache --no-cookies -O /var/www/html/classicpress.zip http://mirrors.slickstack.io/classicpress/classicpress.zip
-else 
-    wget --no-cache --no-cookies -O /var/www/html/wordpress.zip http://mirrors.slickstack.io/wordpress/wordpress.zip
-fi
-
-## unzip files ##
-if [[ "$SLICKSTACK_APP" == "classicpress" ]]; then 
     unzip -o /var/www/html/classicpress.zip
-else 
-    unzip -o /var/www/html/wordpress.zip
-fi
-
-## reset perms ##
-chown -R www-data:wordpress /var/www/html/classicpress
-chown -R www-data:wordpress /var/www/html/wordpress
-chmod 775 /var/www/html/classicpress
-chmod 775 /var/www/html/wordpress
-
-## unpack files ##
-if [[ "$SLICKSTACK_APP" == "classicpress" ]]; then 
+    chown -R www-data:wordpress /var/www/html/classicpress
+    chmod 775 /var/www/html/classicpress
     rsync -raqIp /var/www/html/classicpress/* ./
 else 
+    wget --no-cache --no-cookies -O /var/www/html/wordpress.zip http://mirrors.slickstack.io/wordpress/wordpress.zip
+    unzip -o /var/www/html/wordpress.zip
+    chown -R www-data:wordpress /var/www/html/wordpress
+    chmod 775 /var/www/html/wordpress
     rsync -raqIp /var/www/html/wordpress/* ./
 fi
 
-## cleanup ##
+## cleanup files ##
 rm -R -f /var/www/html/wordpress*
-rm -R -f /var/www/html/wordpress*.zip*
 rm -R -f /var/www/html/classicpress*
-rm -R -f /var/www/html/classicpress*.zip*
 
 ####################################################################################################
 #### Configure WordPress (or ClassicPress) #########################################################
