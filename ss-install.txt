@@ -372,12 +372,15 @@ mkdir -p /var/www/cache
 chown www-data:www-data /var/www/cache
 chown root:root /etc/nginx/nginx.conf
 
-## TMPFS if desired ##
-# if [[ "$FASTCGI_CACHE_TMPFS" == "true" ]]; then 
-# mount -t tmpfs -o size=${FASTCGI_CACHE_MEMORY} tmpfs /var/www/cache
-## Then to make this configuration permanent, you can add the following line into /etc/fstab.
-# tmpfs /var/cache/nginx tmpfs defaults,size=256M 0 0
-# fi
+####################################################################################################
+#### Configure Nginx: FastCGI Cache TMPFS Settings (Optional) ######################################
+####################################################################################################
+
+if [[ "$FASTCGI_CACHE_TMPFS" == "true" ]]; then
+    mount -t tmpfs -o size=${FASTCGI_CACHE_MEMORY} tmpfs /var/www/cache
+    sed -i '/tmpfs/d' /etc/fstab
+    echo "tmpfs /var/www/cache tmpfs defaults,size=${FASTCGI_CACHE_MEMORY} 0 0" >> /etc/fstab
+fi
 
 ####################################################################################################
 #### Configure Server Block (Nginx-Extras) #########################################################
