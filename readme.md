@@ -4,7 +4,7 @@ SlickStack is a free LEMP stack automation script written in Bash designed to en
 
 | Google PageSpeed | GTMetrix | Pingdom | Security Headers | Qualys SSL Labs |
 | :--------------: | :------: | :-----: | :--------------: | :-------------: |
-| [**100%**](https://developers.google.com/speed/pagespeed/insights/?url=https%3A%2F%2Fslickstack.io%2F) | [**100%**](https://gtmetrix.com/reports/slickstack.io/zpLMZ1eb) | [**A**](https://tools.pingdom.com/#5aeba9dea8000000) | [**A**](https://securityheaders.com/?q=https%3A%2F%2Fslickstack.io%2F&followRedirects=on) | [**A**](https://www.ssllabs.com/ssltest/analyze.html?d=slickstack.io&latest) |
+| [**A**](https://developers.google.com/speed/pagespeed/insights/?url=https%3A%2F%2Fslickstack.io%2F) | [**A**](https://gtmetrix.com/reports/slickstack.io/zpLMZ1eb) | [**A**](https://tools.pingdom.com/#5aeba9dea8000000) | [**A**](https://securityheaders.com/?q=https%3A%2F%2Fslickstack.io%2F&followRedirects=on) | [**A**](https://www.ssllabs.com/ssltest/analyze.html?d=slickstack.io&latest) |
 
 * **NEW!** SlickStack now supports loading FastCGI Cache as `tmpfs` (optional)...
 
@@ -17,8 +17,6 @@ SlickStack is a free LEMP stack automation script written in Bash designed to en
 * **NEW!** SlickStack now supports custom plugin blacklists using `PLUGIN_BLACKLIST_SOURCE` variable...
 
 * **NEW!** SlickStack now does `include_once` within wp-config.php on the Custom Functions (MU plugin) file `/var/www/html/wp-content/functions.php` meaning much more reliable PHP functions...
-
-* Browse the SlickStack public mirrors: http://mirrors.slickstack.io
 
 ## Abstract
 
