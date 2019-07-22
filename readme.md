@@ -52,7 +52,7 @@ It should also be noted that SlickStack [ss] is HTTPS-only, meaning that HTTP si
 | **ClassicPress** | [mirrors](http://mirrors.slickstack.io/classicpress/) | 1.0.1 | some CP Core junk files are removed by `ss-clean` |
 | **MU Plugins** | [mirrors](http://mirrors.slickstack.io/mu-plugins/) | N/A | several `mu-plugins` by LittleBizzy |
 | **WP-CLI** | [mirrors](http://mirrors.slickstack.io/wp-cli/) | 2.2.0 | default config |
-| **Redis (Object Cache)** | [mirrors](http://mirrors.slickstack.io/redis/) | 4.0.9 | `redis.conf` + `object-cache.php` |
+| **Redis (Obj. Cache)** | [mirrors](http://mirrors.slickstack.io/redis/) | 4.0.9 | `redis.conf` + `object-cache.php` |
 | **Git** | [mirrors](http://mirrors.slickstack.io/git/) | 2.17.1 | default config |
 | **UFW Firewall** | [mirrors](http://mirrors.slickstack.io/ufw-firewall/) | 0.36 | `ufw` + `ufw.conf` + `user-rules` |
 | **ClamAV** | [mirrors](http://mirrors.slickstack.io/clamav/) | 0.100.x | `freshclam.conf` |
