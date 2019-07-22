@@ -40,22 +40,22 @@ It should also be noted that SlickStack [ss] is HTTPS-only, meaning that HTTP si
 
 | LEMP Module | Mirrors | Version | What does SlickStack [ss] customize? |
 | :------------- | :----------: | :----------: | :----------: |
-| **Ubuntu** | [click here](http://mirrors.slickstack.io/ubuntu/) | 18.04 (LTS) | `crontab` + `gai.conf` + `sshd_config` + `sudoers` + `sysctl.conf` |
-| **Nginx (Extras)** | [click here](http://mirrors.slickstack.io/nginx/) | 1.15.8 | `nginx.conf` + `default` (server block) |
-| **FastCGI Cache** | [click here](http://mirrors.slickstack.io/fastcgi-cache/) | 1.15.8 | `fastcgi-cache.conf` |
-| **OpenSSL** | [click here](http://mirrors.slickstack.io/openssl/) | 1.1.0g | default config |
-| **Let's Encrypt†** | [click here](http://mirrors.slickstack.io/letsencrypt/) | 0.23.0 | custom config |
-| **MySQL** | [click here](http://mirrors.slickstack.io/mysql/) | 5.7.25 | default config (will be customized slightly in future) |
-| **PHP-FPM** | [click here](http://mirrors.slickstack.io/php-fpm/) | 7.2.17 | `php.ini` + `php-fpm.conf` + `www.conf` |
-| **Zend / OPcache** | [click here](http://mirrors.slickstack.io/opcache/) | 3.2.0 / 7.2.17 | (same as PHP-FPM) |
-| **WordPress** | [click here](http://mirrors.slickstack.io/wordpress/) | 5.2.2 | some WP Core junk files are removed by `ss-clean` |
-| **ClassicPress** | [click here](http://mirrors.slickstack.io/classicpress/) | 1.0.1 | some CP Core junk files are removed by `ss-clean` |
-| **MU Plugins** | [click here](http://mirrors.slickstack.io/mu-plugins/) | N/A | several `mu-plugins` by LittleBizzy |
-| **WP-CLI** | [click here](http://mirrors.slickstack.io/wp-cli/) | 2.2.0 | default config |
-| **Redis (Object Cache)** | [click here](http://mirrors.slickstack.io/redis/) | 4.0.9 | `redis.conf` + `object-cache.php` |
-| **Git** | [click here](http://mirrors.slickstack.io/git/) | 2.17.1 | default config |
-| **UFW Firewall** | [click here](http://mirrors.slickstack.io/ufw-firewall/) | 0.36 | `ufw` + `ufw.conf` + `user-rules` |
-| **ClamAV** | [click here](http://mirrors.slickstack.io/clamav/) | 0.100.x | `freshclam.conf` |
+| **Ubuntu** | [mirrors](http://mirrors.slickstack.io/ubuntu/) | 18.04 (LTS) | `crontab` + `gai.conf` + `sshd_config` + `sudoers` + `sysctl.conf` |
+| **Nginx (Extras)** | [mirrors](http://mirrors.slickstack.io/nginx/) | 1.15.8 | `nginx.conf` + `default` (server block) |
+| **FastCGI Cache** | [mirrors](http://mirrors.slickstack.io/fastcgi-cache/) | 1.15.8 | `fastcgi-cache.conf` |
+| **OpenSSL** | [mirrors](http://mirrors.slickstack.io/openssl/) | 1.1.0g | default config |
+| **Let's Encrypt†** | [mirrors](http://mirrors.slickstack.io/letsencrypt/) | 0.23.0 | custom config |
+| **MySQL** | [mirrors](http://mirrors.slickstack.io/mysql/) | 5.7.25 | default config (will be customized slightly in future) |
+| **PHP-FPM** | [mirrors](http://mirrors.slickstack.io/php-fpm/) | 7.2.17 | `php.ini` + `php-fpm.conf` + `www.conf` |
+| **Zend / OPcache** | [mirrors](http://mirrors.slickstack.io/opcache/) | 3.2.0 / 7.2.17 | (same as PHP-FPM) |
+| **WordPress** | [mirrors](http://mirrors.slickstack.io/wordpress/) | 5.2.2 | some WP Core junk files are removed by `ss-clean` |
+| **ClassicPress** | [mirrors](http://mirrors.slickstack.io/classicpress/) | 1.0.1 | some CP Core junk files are removed by `ss-clean` |
+| **MU Plugins** | [mirrors](http://mirrors.slickstack.io/mu-plugins/) | N/A | several `mu-plugins` by LittleBizzy |
+| **WP-CLI** | [mirrors](http://mirrors.slickstack.io/wp-cli/) | 2.2.0 | default config |
+| **Redis (Object Cache)** | [mirrors](http://mirrors.slickstack.io/redis/) | 4.0.9 | `redis.conf` + `object-cache.php` |
+| **Git** | [mirrors](http://mirrors.slickstack.io/git/) | 2.17.1 | default config |
+| **UFW Firewall** | [mirrors](http://mirrors.slickstack.io/ufw-firewall/) | 0.36 | `ufw` + `ufw.conf` + `user-rules` |
+| **ClamAV** | [mirrors](http://mirrors.slickstack.io/clamav/) | 0.100.x | `freshclam.conf` |
 
 †Not yet supported (pending)
 
@@ -493,4 +493,3 @@ For stability reasons, we don't use any tpmfs (memory-based storage) for caching
 ## Keywords
 
 slickstack, slick stack, nginx auto installer, optimize lemp stack, best wordpress stack, lemp install script, trellis wordpress, easy engine, lemp auto installer, nginx install script, stackscript
-
