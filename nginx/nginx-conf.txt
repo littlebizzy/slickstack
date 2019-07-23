@@ -11,22 +11,6 @@
 
 ## NGINX CONFIG OPTIMIZED FOR CLOUDFLARE + TRAFFIC SCALING (NON-CLUSTERED HIGH TRAFFIC) ##
 
-## Ref: https://gist.github.com/denji/8359866
-## Ref: https://serverfault.com/a/791055/144798
-## Ref: https://gist.github.com/v0lkan/90fcb83c86918732b894#gistcomment-2832040
-## Ref: https://www.programering.com/a/MDM2YTNwATk.html
-## Ref: https://hstspreload.org
-## Ref: https://easyengine.io/tutorials/nginx/optimization
-## Ref: https://www.nginx.com/blog/tuning-nginx/
-## Ref: https://www.freshblurbs.com/blog/2015/11/28/high-load-nginx-config.html
-## Ref: https://www.slashroot.in/nginx-web-server-performance-tuning-how-to-do-it
-## Ref: https://www.infoq.com/presentations/nvme-cache/
-## Ref: https://serverfault.com/a/707963/144798
-
-## Future: attempt to invalidate cookies: tk_ai, tk_ni, tk_qs (Jetpack)
-## Ref: https://librenepal.com/article/remove-specific-cookies-with-nginx/
-## Ref: https://stackoverflow.com/questions/5285940/correct-way-to-delete-cookies-server-side
-
 ####################################################################################################
 #### Nginx: General Settings (Optimized For Traffic Scaling) #######################################
 ####################################################################################################
@@ -52,30 +36,20 @@ events {
 ####################################################################################################
 #### Nginx: Miscellaneous Settings #################################################################
 ####################################################################################################
-    
+
 http {
     sendfile on;
     tcp_nopush on;
     tcp_nodelay on;
     log_not_found off;
+    server_name_in_redirect off;
     server_names_hash_bucket_size 64;
     server_names_hash_max_size 512;
-    server_name_in_redirect off;
     types_hash_max_size 2048;
 
 ####################################################################################################
 #### Nginx: FastCGI Cache Settings (Modify Using SS-Config + SS-Install Only) ######################
 ####################################################################################################
-
-    ## Ref: http://nginx.org/en/docs/http/ngx_http_fastcgi_module.html
-    ## Ref: https://www.scalescale.com/tips/nginx/configure-nginx-fastcgi-cache/
-    ## Ref: https://gist.github.com/ikennaokpala/5792a71cfae6818035eedc8abd9ae7b4
-    ## Ref: https://geekbacon.com/2018/12/26/fastest-wordpress-5-0-nginx-fastcgi-cache-php-7-3-mysql-8-0-and-redis/
-    ## Ref: https://websiteforstudents.com/improve-wordpress-performance-with-nginx-fastcgi-and-php-7-2-fpm-on-ubuntu-16-04-18-04-lts/
-    ## Ref: https://easyengine.io/tutorials/nginx/tweaking-fastcgi-buffers/
-    ## Ref: https://kb.virtubox.net/knowledgebase/improve-nginx-cache-performance-with-tmpfs/
-    ## Ref: https://stackoverflow.com/questions/19160737/nginx-fastcgi-cache-performance-disk-cached-vs-tmpfs-cached-vs-static-file
-    ## Ref: https://easyengine.io/wordpress-nginx/tutorials/single-site/fastcgi-cache-with-purging/
     
     fastcgi_cache_path /var/www/cache levels=1:2 keys_zone=WORDPRESS:@CACHEMEMORY inactive=@CACHEINACTIVE max_size=@CACHEMAXSIZE;
     fastcgi_cache_key "$scheme$request_method$host$request_uri$rt_session";
@@ -104,22 +78,19 @@ http {
 #### Nginx: Various Buffer Settings ################################################################
 ####################################################################################################
     
+    client_max_body_size 512M;
     client_body_buffer_size 16K;
     client_header_buffer_size 4k;
-    client_max_body_size 512M;
-    large_client_header_buffers 4 32k;
+    large_client_header_buffers 4 64k;
 
 ####################################################################################################
 #### Nginx: Various Timeout Settings (Optimized For Traffic Scaling) ###############################
 ####################################################################################################
     
-    ## Ref: http://nginx.org/en/docs/http/ngx_http_core_module.html
-    ## Ref: https://www.ruby-forum.com/t/why-set-keepalive-timeout-to-a-short-period-when-nginx-is-great-at-handling-them/244810/6
-
     client_body_timeout 15s;
     client_header_timeout 15s;
     keepalive_timeout 15s;
-    keepalive_requests 1000;
+    keepalive_requests 65535;
     send_timeout 15s;
     reset_timedout_connection on;
     
@@ -134,56 +105,36 @@ http {
     add_header X-Content-Type-Options nosniff;
     add_header X-XSS-Protection "1; mode=block";
     add_header Referrer-Policy "strict-origin-when-cross-origin";
-    charset utf-8;
-    more_clear_headers "Pragma";
-    more_clear_headers "Expires";
-    ## Cache-Control provided by CloudFlare for static files ##
-    ## not needed for web pages using FastCGI Cache ##
-    ## helps avoid outdated web page content ##
-    more_clear_headers "Cache-Control";
     server_tokens off;
+    more_clear_headers "Pragma"; ## outdated
+    more_clear_headers "Expires"; ## outdated
+    more_clear_headers "Cache-Control"; ## CloudFlare sends it for static files (and FastCGI Cache handles page caching)
+    charset utf-8;
     
 ####################################################################################################
 #### Nginx: SSL Settings (Supports Self-Signed OpenSSL + CA-Signed Let's Encrypt) ##################
 ####################################################################################################
 
-    ## Ref: http://nginx.org/en/docs/http/ngx_http_ssl_module.html
-    ## Ref: https://ssl-config.mozilla.org
-    ## Ref: https://gist.github.com/cecilemuller/a26737699a7e70a7093d4dc115915de8
-    ## Ref: https://tecadmin.net/enable-tls-with-nginx/
-    ## Ref: https://medium.com/codavel-blog/measuring-tls-1-3-performance-ee301b1e8774
-    ## Ref: https://github.com/mozilla/server-side-tls/issues/135
-    ## Ref: https://scotthelme.co.uk/https-cheat-sheet/
-    ## Ref: https://gist.github.com/plentz/6737338
-    ## Ref: https://gist.github.com/konklone/6532544
-    ## Ref: https://raymii.org/s/tutorials/Strong_SSL_Security_On_nginx.html
-    
     ssl_certificate /etc/ssl/nginx.crt;
     ssl_certificate_key /etc/ssl/nginx.key;
-    ssl_protocols TLSv1.2 TLSv1.3;
-    ssl_ciphers ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384;
-    ssl_prefer_server_ciphers off;
-    ssl_ecdh_curve auto;
-    ssl_dhparam /etc/ssl/dhparam.pem;
-    ssl_early_data off;
+    ssl_protocols TLSv1.2;
+    # ssl_ciphers ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384;
+    # ssl_prefer_server_ciphers off;
+    # ssl_ecdh_curve auto;
+    # ssl_dhparam /etc/ssl/dhparam.pem;
+    # ssl_early_data off;
+    # ssl_session_tickets off;
     ssl_session_timeout 1d;
     ssl_session_cache shared:SSL:64m;
-    ssl_session_tickets off;
     ssl_buffer_size 16k;
-    resolver 1.1.1.1 8.8.8.8 valid=86400s;
-    resolver_timeout 10s;
     
     ## BELOW SSL SETTINGS WILL ONLY BE ENABLED FOR LET'S ENCRYPT CERTS ##
     
-    ## Ref: https://community.letsencrypt.org/t/certificate-default-name-changes/57498/2
-    ## Ref: https://linuxize.com/post/secure-apache-with-let-s-encrypt-on-ubuntu-18-04/
-    ## Ref: https://matthewlehner.net/lets-encrypt-with-nginx
-    ## Ref: https://awhan.wordpress.com/2018/02/09/letsencrypt-fullchain-pem-is-cert-pem-chain-pem/
-    ## Ref: https://community.letsencrypt.org/t/will-does-the-letsencrypt-client-create-a-cert-chain-usable-with-ocsp-stapling/2072
-    
-    #@@# ssl_stapling on;
-    #@@# ssl_stapling_verify on;
-    #@@# ssl_trusted_certificate /etc/ssl/chain.pem; ## chain better than fullchain
+    #@@# # ssl_stapling on;
+    #@@# # ssl_stapling_verify on;
+    #@@# # ssl_trusted_certificate /etc/ssl/chain.pem; ## chain better than fullchain
+    #@@# # resolver 1.1.1.1 8.8.8.8 valid=86400s;
+    #@@# # resolver_timeout 10s;
     
 ####################################################################################################
 #### Nginx: MIME File Types Settings ###############################################################
@@ -202,21 +153,13 @@ http {
 ####################################################################################################
 #### Nginx: Gzip Settings (Optimized For CloudFlare) ###############################################
 ####################################################################################################
-    
-    ## Ref: https://nginx.org/en/docs/http/ngx_http_gzip_module.html
-    ## Ref: https://www.maxcdn.com/blog/accept-encoding-its-vary-important/
-    ## Ref: https://support.cloudflare.com/hc/en-us/articles/200168086-Does-CloudFlare-gzip-resources-
-    ## Ref: https://security.stackexchange.com/questions/65625/current-state-of-breach-gzip-ssl-attack
-    ## Ref: https://stackoverflow.com/a/37892065/1718491
-    ## Ref: https://coderwall.com/p/b4nbtw/gzip-compression-performance
-    ## Ref: https://royal.pingdom.com/can-gzip-compression-really-improve-web-performance/
 
     gzip on;
     gzip_vary off; ## CloudFlare converts if browser requests it (rare)
     gzip_proxied any;
-    gzip_comp_level 6;
+    gzip_comp_level 4;
     gzip_min_length 1024;
-    gzip_buffers 16 8k;
+    gzip_buffers 4 32k; ## better than 8 16k
     gzip_http_version 1.1;
     gzip_types
         application/atom+xml
@@ -259,3 +202,62 @@ http {
     include /etc/nginx/conf.d/*.conf;
     include /etc/nginx/sites-enabled/*;
 }
+
+####################################################################################################
+#### External References Used By SlickStack To Improve This Script #################################
+####################################################################################################
+
+## Future: attempt to invalidate cookies: tk_ai, tk_ni, tk_qs (Jetpack)
+## Ref: https://librenepal.com/article/remove-specific-cookies-with-nginx/
+## Ref: https://stackoverflow.com/questions/5285940/correct-way-to-delete-cookies-server-side
+
+## Ref: http://nginx.org/en/docs/http/ngx_http_core_module.html
+## Ref: https://gist.github.com/muhammadghazali/6c2b8c80d5528e3118613746e0041263
+## Ref: http://bitsandpieces.it/nginx-by-examples-the-basics
+## Ref: https://gist.github.com/denji/8359866
+## Ref: https://serverfault.com/a/791055/144798
+## Ref: https://gist.github.com/v0lkan/90fcb83c86918732b894#gistcomment-2832040
+## Ref: https://www.programering.com/a/MDM2YTNwATk.html
+## Ref: https://hstspreload.org
+## Ref: https://easyengine.io/tutorials/nginx/optimization
+## Ref: https://www.nginx.com/blog/tuning-nginx/
+## Ref: https://www.freshblurbs.com/blog/2015/11/28/high-load-nginx-config.html
+## Ref: https://www.slashroot.in/nginx-web-server-performance-tuning-how-to-do-it
+## Ref: https://www.infoq.com/presentations/nvme-cache/
+## Ref: https://serverfault.com/a/707963/144798
+## Ref: https://www.scalescale.com/tips/nginx/nginx-configuration-example/
+## Ref: https://haydenjames.io/nginx-tuning-tips-tls-ssl-https-ttfb-latency/
+## Ref: http://nginx.org/en/docs/http/ngx_http_fastcgi_module.html
+## Ref: https://www.scalescale.com/tips/nginx/configure-nginx-fastcgi-cache/
+## Ref: https://gist.github.com/ikennaokpala/5792a71cfae6818035eedc8abd9ae7b4
+## Ref: https://geekbacon.com/2018/12/26/fastest-wordpress-5-0-nginx-fastcgi-cache-php-7-3-mysql-8-0-and-redis/
+## Ref: https://websiteforstudents.com/improve-wordpress-performance-with-nginx-fastcgi-and-php-7-2-fpm-on-ubuntu-16-04-18-04-lts/
+## Ref: https://easyengine.io/tutorials/nginx/tweaking-fastcgi-buffers/
+## Ref: https://kb.virtubox.net/knowledgebase/improve-nginx-cache-performance-with-tmpfs/
+## Ref: https://stackoverflow.com/questions/19160737/nginx-fastcgi-cache-performance-disk-cached-vs-tmpfs-cached-vs-static-file
+## Ref: https://easyengine.io/wordpress-nginx/tutorials/single-site/fastcgi-cache-with-purging/
+## Ref: http://nginx.org/en/docs/http/ngx_http_ssl_module.html
+## Ref: https://ssl-config.mozilla.org
+## Ref: https://gist.github.com/cecilemuller/a26737699a7e70a7093d4dc115915de8
+## Ref: https://tecadmin.net/enable-tls-with-nginx/
+## Ref: https://medium.com/codavel-blog/measuring-tls-1-3-performance-ee301b1e8774
+## Ref: https://github.com/mozilla/server-side-tls/issues/135
+## Ref: https://scotthelme.co.uk/https-cheat-sheet/
+## Ref: https://gist.github.com/plentz/6737338
+## Ref: https://gist.github.com/konklone/6532544
+## Ref: https://raymii.org/s/tutorials/Strong_SSL_Security_On_nginx.html
+## Ref: http://nginx.org/en/docs/http/ngx_http_core_module.html
+## Ref: https://www.ruby-forum.com/t/why-set-keepalive-timeout-to-a-short-period-when-nginx-is-great-at-handling-them/244810/6
+## Ref: https://community.letsencrypt.org/t/certificate-default-name-changes/57498/2
+## Ref: https://linuxize.com/post/secure-apache-with-let-s-encrypt-on-ubuntu-18-04/
+## Ref: https://matthewlehner.net/lets-encrypt-with-nginx
+## Ref: https://awhan.wordpress.com/2018/02/09/letsencrypt-fullchain-pem-is-cert-pem-chain-pem/
+## Ref: https://community.letsencrypt.org/t/will-does-the-letsencrypt-client-create-a-cert-chain-usable-with-ocsp-stapling/2072
+## Ref: https://nginx.org/en/docs/http/ngx_http_gzip_module.html
+## Ref: https://www.maxcdn.com/blog/accept-encoding-its-vary-important/
+## Ref: https://support.cloudflare.com/hc/en-us/articles/200168086-Does-CloudFlare-gzip-resources-
+## Ref: https://security.stackexchange.com/questions/65625/current-state-of-breach-gzip-ssl-attack
+## Ref: https://stackoverflow.com/a/37892065/1718491
+## Ref: https://coderwall.com/p/b4nbtw/gzip-compression-performance
+## Ref: https://royal.pingdom.com/can-gzip-compression-really-improve-web-performance/
+## Ref: https://www.ruby-forum.com/t/why-set-keepalive-timeout-to-a-short-period-when-nginx-is-great-at-handling-them/244810/7
