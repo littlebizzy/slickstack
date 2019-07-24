@@ -39,7 +39,7 @@ source /var/www/ss-config
 # fi
 
 ## verify ss-config build matches ss-install build ##
-if [[ "$SLICKSTACK_BUILD" != "JUL2019VV" ]]; then 
+if [[ "$SLICKSTACK_BUILD" != "JUL2019W" ]]; then 
     echo -e "\e[93mYour ss-config file is outdated. Please rebuild it and run ss-install again.\e[0m" >&2
     exit 1
 fi
@@ -609,43 +609,16 @@ else
     wget --no-check-certificate --no-cache --no-cookies -O /tmp/wp-config.txt "$WP_CONFIG_SOURCE"
 fi
 
-## old ##
-# sed -i "s/@DBNAME/${dbname}/g" /tmp/wp-config.txt
-# sed -i "s/@DBUSER/${dbuser}/g" /tmp/wp-config.txt
-# sed -i "s/@DBPASSWORD/${dbuserpass}/g" /tmp/wp-config.txt
-# sed -i "s/@TABLEPREFIX/${dbprefix}/g" /tmp/wp-config.txt
-###############
-# sed -i "s/@DBHOST/${dbhost}/g" /tmp/wp-config.txt
-# sed -i "s/@DBCHARSET/${dbcharset}/g" /tmp/wp-config.txt
-# sed -i "s/@DBCOLLATE/${dbcollate}/g" /tmp/wp-config.txt
+## replace database placeholders ##
+sed -i "s/@DB_NAME/${DB_NAME}/g" /tmp/wp-config.txt
+sed -i "s/@DB_USER/${DB_USER}/g" /tmp/wp-config.txt
+sed -i "s/@DB_PASSWORD/${DB_PASSWORD}/g" /tmp/wp-config.txt
+sed -i "s/@DB_HOST/${DB_HOST}/g" /tmp/wp-config.txt
+sed -i "s/@DB_CHARSET/${DB_CHARSET}/g" /tmp/wp-config.txt
+sed -i "s/@DB_COLLATE/${DB_COLLATE}/g" /tmp/wp-config.txt
+sed -i "s/@DB_PREFIX/${DB_PREFIX}/g" /tmp/wp-config.txt
 
-## new ##
-## replace placeholders with variables ##
-if [[ -z "$DB_PASSWORD_ROOT" ]]; then 
-    sed -i "s/@DBNAME/${dbname}/g" /tmp/wp-config.txt
-else 
-    sed -i "s/@DBNAME/${DB_NAME}/g" /tmp/wp-config.txt
-fi
-
-if [[ -z "$DB_PASSWORD_ROOT" ]]; then 
-    sed -i "s/@DBUSER/${dbuser}/g" /tmp/wp-config.txt
-else 
-    sed -i "s/@DBUSER/${DB_USER}/g" /tmp/wp-config.txt
-fi
-
-if [[ -z "$DB_PASSWORD_ROOT" ]]; then 
-    sed -i "s/@DBPASSWORD/${dbuserpass}/g" /tmp/wp-config.txt
-else 
-    sed -i "s/@DBPASSWORD/${DB_PASSWORD}/g" /tmp/wp-config.txt
-fi
-
-if [[ -z "$DB_PASSWORD_ROOT" ]]; then 
-    sed -i "s/@TABLEPREFIX/${dbprefix}/g" /tmp/wp-config.txt
-else 
-    sed -i "s/@TABLEPREFIX/${DB_PREFIX}/g" /tmp/wp-config.txt
-fi
-
-## replace placeholders with variables ##
+## replace domain placeholders ##
 sed -i "s/@DOMAIN/${SITE_DOMAIN}/g" /tmp/wp-config.txt
 sed -i "s/@TLD/${SITE_TLD}/g" /tmp/wp-config.txt
 
