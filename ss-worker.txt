@@ -7,7 +7,7 @@
 #### path: /var/www/ss-worker ######################################################################
 #### destination: n/a (not a boilerplate) ##########################################################
 #### purpose: performs various maintenance tasks and downloads latest ss-check file ################
-#### ss version: SlickStack alpha ss6c #############################################################
+#### ss version: SlickStack alpha ss6f #############################################################
 #### module version: n/a ###########################################################################
 ####################################################################################################
 
@@ -52,9 +52,10 @@ chmod 700 /var/www/*cron*
 ####################################################################################################
 
 ## download latest blacklist (or custom blacklist) ##
-if [[ -z "$PLUGIN_BLACKLIST_SOURCE" ]];
-then wget --no-cache --no-cookies -O /tmp/blacklist.txt http://mirrors.slickstack.io/wordpress/blacklist.txt
-else wget --no-check-certificate --no-cache --no-cookies -O /tmp/blacklist.txt "$PLUGIN_BLACKLIST_SOURCE"
+if [[ -z "$PLUGIN_BLACKLIST_SOURCE" ]]; then 
+    wget --no-cache --no-cookies --tries=3 --timeout=15 -O /tmp/blacklist.txt http://mirrors.slickstack.io/wordpress/blacklist.txt
+else 
+    wget --no-cache --no-cookies --tries=3 --timeout=15 -O /tmp/blacklist.txt "$PLUGIN_BLACKLIST_SOURCE"
 fi
 
 ## move blacklist.txt to /var/www/html/wp-content/ ##
