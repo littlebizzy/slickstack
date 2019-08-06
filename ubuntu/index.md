@@ -8,7 +8,7 @@ title: Ubuntu (Public Mirrors)
 
 ### Custom Files
 
-*Live configuration files and boilerplates used by current SlickStack installation that may be altered by LittleBizzy or Ubuntu for better performance.*
+*Live configuration files and boilerplates used by current SlickStack installation that may be modified by LittleBizzy or Ubuntu for better performance.*
 
 * <a href="bash-aliases.txt">bash-aliases.txt</a>
 * <a href="gai-conf.txt">gai-conf.txt</a>
@@ -38,6 +38,8 @@ title: Ubuntu (Public Mirrors)
 
 * <a href="http://manpages.ubuntu.com/manpages/bionic/man5/gai.conf.5.html">http://manpages.ubuntu.com/manpages/bionic/man5/gai.conf.5.html</a>
 * <a href="https://wiki.ubuntu.com/UncomplicatedFirewall">https://wiki.ubuntu.com/UncomplicatedFirewall</a>
+
+
 
 ----
 
