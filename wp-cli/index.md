@@ -12,6 +12,7 @@ title: WP-CLI (Public Mirrors)
 
 * <a href="wp-cli.phar">wp-cli.phar</a>
 * <a href="wp-completion.txt">wp-completion.txt</a>
+* <a href="wp-cli.yml">wp-cli.yml</a>
 
 ### Default Files
 
