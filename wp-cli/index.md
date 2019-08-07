@@ -1,7 +1,5 @@
 ---
 title: WP-CLI (Public Mirrors)
-redirect_from:
-  - /wpcli/
 ---
 
 # WP-CLI
@@ -10,7 +8,7 @@ redirect_from:
 
 ### Custom Files
 
-*Live configuration files and boilerplates used by current SlickStack installation that may be altered by LittleBizzy or Ubuntu for better performance.*
+*Live configuration files and boilerplates used by current SlickStack installation that may be modified by LittleBizzy or Ubuntu for better performance.*
 
 * <a href="wp-cli.phar">wp-cli.phar</a>
 * <a href="wp-completion.txt">wp-completion.txt</a>
@@ -56,4 +54,4 @@ redirect_from:
 
 ----
 
-*Last updated: May 29, 2019*
+*Last updated: Aug 7, 2019*
