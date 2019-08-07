@@ -281,29 +281,36 @@ echo -e "\e[36mInstalling the WP-CLI module directly from SlickStack mirrors...\
 ## uninstall current wp-cli versions ##
 rm -R -f /usr/local/bin/wp
 rm -R -f /home/wp-completion.bash
+rm -R -f /var/www/meta/wp-completion.bash
+rm -R -f /var/www/meta/.wp-completion.bash
 rm -R -f /var/www/html/.wp-cli
 rm -R -f /var/www/html/wp-cli
 sed -i '/WP-CLI/d' /home/${SUDO_USER}/.bashrc
 sed -i '/wp-completion/d' /home/${SUDO_USER}/.bashrc
 
 ## download latest versions ##
-wget --no-cache --no-cookies -O /tmp/wp-cli.phar http://mirrors.slickstack.io/wp-cli/wp-cli.phar
-wget --no-cache --no-cookies -O /tmp/wp-completion.txt http://mirrors.slickstack.io/wp-cli/wp-completion.txt
+wget --no-cache --no-cookies --tries=3 --timeout=15 -O /tmp/wp-cli.phar http://mirrors.slickstack.io/wp-cli/wp-cli.phar
+wget --no-cache --no-cookies --tries=3 --timeout=15 -O /tmp/wp-completion.txt http://mirrors.slickstack.io/wp-cli/wp-completion.txt
 
 ## make files executable ##
 chmod +x /tmp/wp-cli.phar
 
 ## copy files to destinations ##
-mv -f /tmp/wp-cli.phar /usr/local/bin/wp
-mv -f /tmp/wp-completion.txt /home/wp-completion.bash
+cp -R -f -d --no-preserve=mode,ownership /tmp/wp-cli.phar /usr/local/bin/wp
+cp -R -f -d --no-preserve=mode,ownership /tmp/wp-completion.txt /var/www/meta/.wp-completion.bash
+cp -R -f -d --no-preserve=mode,ownership /tmp/wp-completion.txt /home/wp-completion.bash
 
 ## reset permissions ##
-## https://www.alexgeorgiou.gr/wp-cli-www-data-user-permissions-linux/ ##
+## Ref: https://www.alexgeorgiou.gr/wp-cli-www-data-user-permissions-linux/
 chown root:root /usr/local/bin/
 chown www-data:www-data /usr/local/bin/wp
-chmod 6775 /usr/local/bin/wp
 chown www-data:www-data /home/wp-completion.bash
+chown www-data:www-data /var/www/meta/.wp-completion.bash
+chmod 6775 /usr/local/bin/wp
 chmod 6775 /home/wp-completion.bash
+chmod 6775 /var/www/meta/.wp-completion.bash
+
+## future version will simply ensure that .bashrc sources /var/www/meta/.bash-aliases
 
 ## modify sudo user's .bashrc ##
 ## e.g. echo 'source /home/wp-completion.bash' >> ~/.bashrc ##
