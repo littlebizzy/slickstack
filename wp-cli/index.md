@@ -11,8 +11,8 @@ title: WP-CLI (Public Mirrors)
 *Live configuration files and boilerplates used by current SlickStack installation that may be modified by LittleBizzy or Ubuntu for better performance.*
 
 * <a href="wp-cli.phar">wp-cli.phar</a>
-* <a href="wp-completion.txt">wp-completion.txt</a>
 * <a href="wp-cli.yml">wp-cli.yml</a>
+* <a href="wp-completion.txt">wp-completion.txt</a>
 
 ### Default Files
 
