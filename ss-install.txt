@@ -272,38 +272,7 @@ chown root:root /etc/php/7.2/fpm/pool.d/www.conf
 /etc/init.d/php7.2-fpm restart
 
 ####################################################################################################
-### Install Bash Aliases (Supports Basic SlickStack Commands) ######################################
-####################################################################################################
-
-## MESSAGE: explain repos ##
-echo -e "\e[36mInstalling Bash aliases for basic SlickStack commands...\e[0m"
-
-## uninstall old ##
-rm -R -f /home/${SUDO_USER}/.bash-aliases
-rm -R -f /var/www/meta/.bash-aliases
-sed -i '/include Bash aliases/d' /home/${SUDO_USER}/.bashrc
-sed -i '#/var/www/meta#d' /home/${SUDO_USER}/.bashrc
-
-## download ##
-wget --no-cache --no-cookies --tries=3 --timeout=15 -O /tmp/bash-aliases.txt http://mirrors.slickstack.io/ubuntu/bash-aliases.txt
-
-## copy files ##
-cp -R -f -d --no-preserve=mode,ownership /tmp/bash-aliases.txt /var/www/meta/.bash-aliases
-
-## reset permissions ##
-chown root:root /var/www/meta/.bash-aliases
-chmod 6775 /var/www/meta/.bash-aliases
-
-## modify .bashrc file ##
-echo '
-## include Bash aliases ##
-source /var/www/meta/.bash-aliases' >> /home/${SUDO_USER}/.bashrc
-
-## reload .bashrc ##
-source /home/${SUDO_USER}/.bashrc
-
-####################################################################################################
-### Install WP-CLI #################################################################################
+### Prepare WP-CLI Configuration (Installation Completed Via Bash Aliases) #########################
 ####################################################################################################
 
 ## MESSAGE: explain repos ##
@@ -341,17 +310,35 @@ chmod 6775 /usr/local/bin/wp
 chmod 6775 /home/wp-completion.bash
 chmod 6775 /var/www/meta/.wp-completion.bash
 
-## future version will simply ensure that .bashrc sources /var/www/meta/.bash-aliases
+####################################################################################################
+### Install Bash Aliases (Supports Basic SlickStack Commands) + Finalize WP-CLI ####################
+####################################################################################################
 
-## modify sudo user's .bashrc ##
-## e.g. echo 'source /home/wp-completion.bash' >> ~/.bashrc ##
-## https://stackoverflow.com/questions/49668542/create-a-script-that-adds-lines-of-code-to-bashrc-then-reloads-the-terminal ##
+## MESSAGE: explain repos ##
+echo -e "\e[36mInstalling Bash aliases for basic SlickStack commands...\e[0m"
+
+## uninstall old ##
+rm -R -f /home/${SUDO_USER}/.bash-aliases
+rm -R -f /var/www/meta/.bash-aliases
+sed -i '/include Bash aliases/d' /home/${SUDO_USER}/.bashrc
+sed -i '#/var/www/meta#d' /home/${SUDO_USER}/.bashrc
+
+## download ##
+wget --no-cache --no-cookies --tries=3 --timeout=15 -O /tmp/bash-aliases.txt http://mirrors.slickstack.io/ubuntu/bash-aliases.txt
+
+## copy files ##
+cp -R -f -d --no-preserve=mode,ownership /tmp/bash-aliases.txt /var/www/meta/.bash-aliases
+
+## reset permissions ##
+chown root:root /var/www/meta/.bash-aliases
+chmod 6775 /var/www/meta/.bash-aliases
+
+## modify .bashrc file ##
 echo '
-## source Bash completion file for WP-CLI ##
-source /home/wp-completion.bash' >> /home/${SUDO_USER}/.bashrc
+## include Bash aliases ##
+source /var/www/meta/.bash-aliases' >> /home/${SUDO_USER}/.bashrc
 
-## reload sudo .bashrc ##
-## e.g. source ~/.bashrc ##
+## reload .bashrc ##
 source /home/${SUDO_USER}/.bashrc
 
 ####################################################################################################
