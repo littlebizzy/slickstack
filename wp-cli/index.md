@@ -50,7 +50,7 @@ title: WP-CLI (Public Mirrors)
 
 * <a href="https://wp-cli.org">WP-CLI homepage</a>
 * <a href="https://github.com/wp-cli/wp-cli/releases">WP-CLI releases (GitHub)</a>
-* <a href="https://raw.githubusercontent.com/wp-cli/wp-cli/v2.2.0/utils/wp-completion.bash">WP Completion v2.2.0 (raw file)</a>
+* <a href="https://raw.githubusercontent.com/wp-cli/wp-cli/v2.2.0/utils/wp-completion.bash">WP Completion v2.2.0 (raw file example)</a>
 
 ----
 
