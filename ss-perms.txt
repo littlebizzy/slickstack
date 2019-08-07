@@ -7,11 +7,8 @@
 #### path: /var/www/ss-perms #######################################################################
 #### destination: n/a (not a boilerplate) ##########################################################
 #### purpose: resets all file and user permissions across entire SlickStack server #################
-#### ss version: SlickStack alpha ss6c #############################################################
 #### module version: n/a ###########################################################################
 ####################################################################################################
-
-## Ref: https://unix.stackexchange.com/a/203372/353848 ##
 
 ## include SlickStack configuration ##
 source /var/www/ss-config
@@ -29,8 +26,6 @@ if [[ -z "$SFTP_USER" ]]; then
 else 
     adduser $SFTP_USER wordpress &> /dev/null
 fi
-
-
 
 adduser www-data wordpress &> /dev/null
 
@@ -216,3 +211,21 @@ chown redis:redis /etc/redis/redis.conf
 chown root:root /usr/local/bin/
 chown www-data:www-data /usr/local/bin/wp
 chmod 6775 /usr/local/bin/wp
+
+####################################################################################################
+## Convert All DOS File Formats To Unix File Formats ###############################################
+####################################################################################################
+
+find /var/www/html/ -type f -exec dos2unix -k -o -s {} \;
+
+####################################################################################################
+#### External References Used By SlickStack To Improve This Script #################################
+####################################################################################################
+
+## Ref: https://unix.stackexchange.com/a/203372/353848
+## Ref: https://stackoverflow.com/a/19284034/1718491
+## Ref: https://stackoverflow.com/a/11929475/1718491
+## Ref: https://unix.stackexchange.com/a/310437/353848
+## Ref: https://kb.iu.edu/d/acux
+## Ref: https://stackoverflow.com/q/2613800/1718491
+## Ref: https://www.darklaunch.com/php-normalize-newlines-line-endings-crlf-cr-lf-unix-windows-mac
