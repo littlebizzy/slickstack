@@ -38,15 +38,6 @@ mkdir -p /var/www/cache
 mkdir -p /var/www/logs
 mkdir -p /var/www/meta
 
-## reset file permissions ##
-chown root:root /var/www/*cron*
-chown root:root /var/www/ss*
-chown root:root /var/www/wp.sql
-chmod 6770 /var/www/*cron*
-chmod 6770 /var/www/ss*
-chmod 0700 /var/www/ss-config
-chmod 0775 /var/www/wp.sql
-
 ## reset folder permissions ##
 chown root:root /var/www
 chown www-data:www-data /var/www/cache
@@ -56,6 +47,15 @@ chmod 0775 /var/www
 chmod 6775 /var/www/cache
 chmod 6775 /var/www/logs
 chmod 6775 /var/www/meta
+
+## reset file permissions ##
+chown root:root /var/www/*cron*
+chown root:root /var/www/ss*
+chown root:root /var/www/wp.sql
+chmod 6770 /var/www/*cron*
+chmod 6770 /var/www/ss*
+chmod 0700 /var/www/ss-config
+chmod 0775 /var/www/wp.sql
 
 ####################################################################################################
 #### Reset Permissions: Public HTML Directory (WordPress) ##########################################
@@ -72,34 +72,6 @@ mkdir -p /var/www/html/wp-content/uploads
 mkdir -p /var/www/html/wp-content/upgrade
 mkdir -p /var/www/html/wp-includes
 
-## reset file permissions ##
-chown www-data:www-data /var/www/html/wp-content/blacklist.txt
-chown www-data:wordpress /var/www/html/wp-content/object-cache.php
-chown www-data:wordpress /var/www/html/wp-content/functions.php
-chmod 0400 /var/www/html/wp-content/blacklist.txt
-chmod 6775 /var/www/html/wp-content/object-cache.php
-chmod 6775 /var/www/html/wp-content/functions.php
-find /var/www/html/ -type f -not -path "*var/www/html/wp-content/uploads*" -exec chmod 664 {} \;
-find /var/www/html/wp-content/uploads/ -not -name "*.jpg" -not -name "*.jpeg" -not -name "*.png" -not -name "*.bmp" -not -name "*.webp" -not -name "*.gif" -not -name "*.tiff" -not -name "*.mp4" -not -name "*.vid" -type f -exec chmod 664 {} \;
-
-## reset folder permissions ##
-chown -R www-data:www-data /var/www/html
-chown -R www-data:wordpress /var/www/html/wp-content/temp
-chown -R www-data:wordpress /var/www/html/wp-content/mu-plugins
-chown -R www-data:wordpress /var/www/html/wp-content/uploads
-chmod -R 6775 /var/www/html
-chmod 0660 /var/www/html/wp-config.php
-chmod 6775 /var/www/html/wp-content/temp
-chmod 6775 /var/www/html/wp-content/uploads
-find /var/www/html/ -type d -exec chmod 775 {} \;
-
-## chown ##
-if [[ -z "$SFTP_USER" ]]; then 
-    chown -R $user:wordpress /var/www/html
-else 
-    chown -R $SFTP_USER:wordpress /var/www/html
-fi
-
 ## ensure files exist ##
 if [ ! -f "/var/www/html/wp-content/blacklist.txt" ]; then 
     touch "/var/www/html/wp-content/blacklist.txt"
@@ -108,6 +80,32 @@ fi
 if [ ! -f "/var/www/html/wp-content/functions.php" ]; then 
     touch "/var/www/html/wp-content/functions.php"
 fi
+
+## reset folder permissions ##
+# chown -R www-data:www-data /var/www/html
+
+if [[ -z "$SFTP_USER" ]]; then 
+    chown -R $user:wordpress /var/www/html
+else 
+    chown -R $SFTP_USER:wordpress /var/www/html
+fi
+
+chown -R www-data:wordpress /var/www/html/wp-content/temp
+chown -R www-data:wordpress /var/www/html/wp-content/mu-plugins
+chown -R www-data:wordpress /var/www/html/wp-content/uploads
+chmod -R 6775 /var/www/html
+find /var/www/html/ -type d -exec chmod 6775 {} \;
+
+## reset file permissions ##
+chown www-data:www-data /var/www/html/wp-content/blacklist.txt
+chown www-data:www-data /var/www/html/wp-content/object-cache.php
+chown www-data:www-data /var/www/html/wp-content/functions.php
+chmod 0660 /var/www/html/wp-config.php
+chmod 0400 /var/www/html/wp-content/blacklist.txt
+chmod 6775 /var/www/html/wp-content/object-cache.php
+chmod 6775 /var/www/html/wp-content/functions.php
+find /var/www/html/ -type f -not -path "*var/www/html/wp-content/uploads*" -exec chmod 0664 {} \;
+find /var/www/html/wp-content/uploads/ -not -name "*.jpg" -not -name "*.jpeg" -not -name "*.png" -not -name "*.bmp" -not -name "*.webp" -not -name "*.gif" -not -name "*.tiff" -not -name "*.mp4" -not -name "*.vid" -type f -exec chmod 0664 {} \;
 
 ####################################################################################################
 #### Reset Permissions: Various Log Files ##########################################################
