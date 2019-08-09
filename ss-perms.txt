@@ -35,15 +35,17 @@ chown root:root /etc/sudoers
 chmod 440 /etc/sudoers
 
 ####################################################################################################
-#### Reset Permissions: SlickStack Core Files (Cron Jobs + Scripts) ################################
+#### Reset Permissions: SlickStack Core Files (Cron Jobs + Scripts + MySQL Dump) ###################
 ####################################################################################################
 
 chown root:root /var/www
 chown root:root /var/www/*cron*
 chown root:root /var/www/ss*
-chmod 755 /var/www
-chmod 700 /var/www/*cron*
-chmod 700 /var/www/ss*
+chown root:root /var/www/wp.sql
+chmod 0775 /var/www
+chmod 6770 /var/www/*cron*
+chmod 6770 /var/www/ss*
+chmod 0775 /var/www/wp.sql
 
 ####################################################################################################
 #### Reset Permissions: WordPress Files (WP Core + SlickStack) #####################################
@@ -116,14 +118,14 @@ chown -R redis:redis /var/www/logs/redis.log*
 chmod -R 775 /var/www/logs
 
 ####################################################################################################
-## Reset Permissions: Nginx Files ##################################################################
+#### Reset Permissions: Nginx + FastCGI Cache Files ################################################
 ####################################################################################################
 
 chown root:root /etc/nginx/nginx.conf
 chown root:root /etc/nginx/fastcgi.conf
 
 ####################################################################################################
-## Reset Permissions: FastCGI Cache (Nginx) Files ##################################################
+#### Reset Permissions: FastCGI Cache (Nginx) Files ################################################
 ####################################################################################################
 
 ## create cache directory (will not overwrite if exists already) ##
@@ -134,7 +136,7 @@ chown www-data:www-data /var/www/cache
 chmod 775 /var/www/cache
 
 ####################################################################################################
-## Reset Permissions: SlickStack Meta Files ########################################################
+#### Reset Permissions: SlickStack Meta Files ######################################################
 ####################################################################################################
 
 ## create meta directory (will not overwrite if exists already) ##
@@ -145,26 +147,18 @@ chown www-data:www-data /var/www/meta
 chmod 775 /var/www/meta
 
 ####################################################################################################
-## Reset Permissions: OpenSSL (Nginx) Files ########################################################
+#### Reset Permissions: OpenSSL + Let's Encrypt (Certbot) Files ####################################
 ####################################################################################################
 
-if [[ -f "/etc/ssl/nginx.crt" ]]; then 
-    chown root:root /etc/ssl/nginx.crt
-    chmod -R 700 /etc/ssl/nginx.crt
-fi
-
-if [[ -f "/etc/ssl/nginx.key" ]]; then 
-    chown root:root /etc/ssl/nginx.key
-    chmod -R 700 /etc/ssl/nginx.key
-fi
-
-if [[ -f "/etc/ssl/nginx.pem" ]]; then 
-    chown root:root /etc/ssl/nginx.pem
-    chmod -R 700 /etc/ssl/nginx.pem
-fi
+chown root:root /etc/ssl/nginx.crt
+chmod -R 700 /etc/ssl/nginx.crt
+chown root:root /etc/ssl/nginx.key
+chmod -R 700 /etc/ssl/nginx.key
+chown root:root /etc/ssl/nginx.pem
+chmod -R 700 /etc/ssl/nginx.pem
 
 ####################################################################################################
-## Reset Permissions: PHP-FPM Files ################################################################
+#### Reset Permissions: PHP-FPM Files ##############################################################
 ####################################################################################################
 
 ## old ##
@@ -180,7 +174,7 @@ chown root:root /etc/php/7.2/cli/php.ini
 mkdir -p /var/run/mysqld
 
 ####################################################################################################
-## Reset Permissions: MySQL Files ##################################################################
+#### Reset Permissions: MySQL Files ################################################################
 ####################################################################################################
 
 ## reset MySQL permissions ##
@@ -190,7 +184,7 @@ chown root:root /etc/mysql/mysql.cnf
 chown root:root /etc/mysql/mysql.conf.d/mysqld.cnf
 
 ####################################################################################################
-## Reset Permissions: Redis Files ##################################################################
+#### Reset Permissions: Redis Files ################################################################
 ####################################################################################################
 
 ## create Redis directory (will not overwrite if exists already) ##
@@ -201,19 +195,16 @@ chown redis:redis /var/run/redis
 chown redis:redis /etc/redis/redis.conf
 
 ####################################################################################################
-## Reset Permissions: WP-CLI Files #################################################################
+#### Reset Permissions: WP-CLI Files ###############################################################
 ####################################################################################################
 
-## reset WP-CLI permissions ##
-## https://github.com/wp-cli/wp-cli/issues/3181 ##
-## https://github.com/wp-cli/wp-cli/issues/1241 ##
-## https://www.alexgeorgiou.gr/wp-cli-www-data-user-permissions-linux/ ##
+## always run WP-CLI as the www-data user (and allow SFTP user to run it) ##
 chown root:root /usr/local/bin/
 chown www-data:www-data /usr/local/bin/wp
 chmod 6775 /usr/local/bin/wp
 
 ####################################################################################################
-## Convert All DOS File Formats To Unix File Formats ###############################################
+#### Convert DOS File Formats To Unix File Formats (Requires Dos2Unix To Be Installed) #############
 ####################################################################################################
 
 find /var/www/html/ -type f -exec dos2unix -k -o -s {} \;
@@ -228,4 +219,10 @@ find /var/www/html/ -type f -exec dos2unix -k -o -s {} \;
 ## Ref: https://unix.stackexchange.com/a/310437/353848
 ## Ref: https://kb.iu.edu/d/acux
 ## Ref: https://stackoverflow.com/q/2613800/1718491
+## Ref: https://github.com/wp-cli/wp-cli/issues/3181
+## Ref: https://github.com/wp-cli/wp-cli/issues/1241
+## Ref: https://www.alexgeorgiou.gr/wp-cli-www-data-user-permissions-linux/
 ## Ref: https://www.darklaunch.com/php-normalize-newlines-line-endings-crlf-cr-lf-unix-windows-mac
+## Ref: https://serverfault.com/questions/344544/what-is-the-first-digit-for-in-4-digit-octal-unix-file-permission-notation
+## Ref: https://unix.stackexchange.com/questions/79395/how-does-the-sticky-bit-work
+## Ref: https://superuser.com/questions/684213/why-are-execute-permissions-along-with-write-permissions-needed-for-creating-a-f
