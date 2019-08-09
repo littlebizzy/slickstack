@@ -14,11 +14,12 @@
 source /var/www/ss-config
 
 ####################################################################################################
-#### delete any previous + leftover temporary files ################################################
+#### Delete Any Previous + Leftover Temporary Files ################################################
 ####################################################################################################
 
 rm -R -f /tmp/ss*
 rm -R -f /tmp/*cron*
+rm -R -f /tmp/blacklist*
 
 ####################################################################################################
 #### download latest SlickStack core files (does not install modules) ##############################
@@ -101,21 +102,38 @@ cp -R -f -d --no-preserve=mode,ownership /tmp/ss-update /var/www/ss-update
 cp -R -f -d --no-preserve=mode,ownership /tmp/ss-worker /var/www/ss-worker
 
 ####################################################################################################
-#### Reset Permissions: SlickStack Core Files (Cron Jobs + Scripts + MySQL Dump) ###################
+#### Reset Permissions: SlickStack Core Files ######################################################
 ####################################################################################################
 
-chown root:root /var/www
+## ensure directories exist (will not overwrite if exist already) ##
+mkdir -p /var/www
+mkdir -p /var/www/cache
+mkdir -p /var/www/logs
+mkdir -p /var/www/meta
+
+## reset file permissions ##
 chown root:root /var/www/*cron*
 chown root:root /var/www/ss*
 chown root:root /var/www/wp.sql
-chmod 0775 /var/www
 chmod 6770 /var/www/*cron*
 chmod 6770 /var/www/ss*
+chmod 0700 /var/www/ss-config
 chmod 0775 /var/www/wp.sql
 
+## reset folder permissions ##
+chown root:root /var/www
+chown www-data:www-data /var/www/cache
+chown www-data:www-data /var/www/logs
+chown www-data:www-data /var/www/meta
+chmod 0775 /var/www
+chmod 6775 /var/www/cache
+chmod 6775 /var/www/logs
+chmod 6775 /var/www/meta
+
 ####################################################################################################
-#### delete any previous / leftover temporary files ################################################
+#### Delete Any Previous + Leftover Temporary Files ################################################
 ####################################################################################################
 
 rm -R -f /tmp/ss*
 rm -R -f /tmp/*cron*
+rm -R -f /tmp/blacklist*
