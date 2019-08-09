@@ -14,8 +14,13 @@
 source /var/www/ss-config
 
 ####################################################################################################
-#### Reset Permissions: Ubuntu Users, Groups, Etc ##################################################
+#### Reset Permissions: Ubuntu System Files + Users + Groups #######################################
 ####################################################################################################
+
+## reset Ubuntu system files permissions ##
+chown root:root /etc/ssh/sshd_config
+chown root:root /etc/sudoers
+chmod 440 /etc/sudoers
 
 ## create wordpress group if does not exist ##
 addgroup wordpress &> /dev/null
@@ -23,13 +28,8 @@ adduser $user wordpress &> /dev/null
 adduser $SFTP_USER wordpress &> /dev/null
 adduser www-data wordpress &> /dev/null
 
-## reset Ubuntu system files permissions ##
-chown root:root /etc/ssh/sshd_config
-chown root:root /etc/sudoers
-chmod 440 /etc/sudoers
-
 ####################################################################################################
-#### Reset Permissions: SlickStack Core Files (Skip The Public HTML Directory Here) ################
+#### Reset Permissions: SlickStack Core Files ######################################################
 ####################################################################################################
 
 ## ensure directories exist (will not overwrite if exist already) ##
@@ -57,7 +57,7 @@ chmod 6775 /var/www/logs
 chmod 6775 /var/www/meta
 
 ####################################################################################################
-#### Reset Permissions: Public HTML Directory (WordPress Core, Etc) ################################
+#### Reset Permissions: Public HTML Directory (WordPress) ##########################################
 ####################################################################################################
 
 ## ensure directories exist (will not overwrite if exist already) ##
@@ -78,6 +78,8 @@ chown www-data:wordpress /var/www/html/wp-content/functions.php
 chmod 0400 /var/www/html/wp-content/blacklist.txt
 chmod 6775 /var/www/html/wp-content/object-cache.php
 chmod 6775 /var/www/html/wp-content/functions.php
+find /var/www/html/ -type f -not -path "*var/www/html/wp-content/uploads*" -exec chmod 664 {} \;
+find /var/www/html/wp-content/uploads/ -not -name "*.jpg" -not -name "*.jpeg" -not -name "*.png" -not -name "*.bmp" -not -name "*.webp" -not -name "*.gif" -not -name "*.tiff" -not -name "*.mp4" -not -name "*.vid" -type f -exec chmod 664 {} \;
 
 ## reset folder permissions ##
 chown -R www-data:www-data /var/www/html
@@ -88,8 +90,7 @@ chmod -R 6775 /var/www/html
 chmod 0660 /var/www/html/wp-config.php
 chmod 6775 /var/www/html/wp-content/temp
 chmod 6775 /var/www/html/wp-content/uploads
-
-
+find /var/www/html/ -type d -exec chmod 775 {} \;
 
 ## chown ##
 if [[ -z "$SFTP_USER" ]]; then 
@@ -107,17 +108,11 @@ if [ ! -f "/var/www/html/wp-content/functions.php" ]; then
     touch "/var/www/html/wp-content/functions.php"
 fi
 
-
-find /var/www/html/ -type d -exec chmod 775 {} \;
-find /var/www/html/ -type f -not -path "*var/www/html/wp-content/uploads*" -exec chmod 664 {} \;
-find /var/www/html/wp-content/uploads/ -not -name "*.jpg" -not -name "*.jpeg" -not -name "*.png" -not -name "*.bmp" -not -name "*.webp" -not -name "*.gif" -not -name "*.tiff" -not -name "*.mp4" -not -name "*.vid" -type f -exec chmod 664 {} \;
-
-
 ####################################################################################################
-#### Reset Permissions: SlickStack Log Files #######################################################
+#### Reset Permissions: Various Log Files ##########################################################
 ####################################################################################################
 
-## ensure various log files exist ##
+## ensure files exist ##
 if [ ! -f "/var/www/logs/clamav.log" ]; then touch "/var/www/logs/clamav.log"; fi
 if [ ! -f "/var/www/logs/error.log" ]; then touch "/var/www/logs/error.log"; fi
 if [ ! -f "/var/www/logs/mysql.log" ]; then touch "/var/www/logs/mysql.log"; fi
@@ -131,71 +126,41 @@ chown www-data:www-data /var/www/logs/nginx*.log*
 chown redis:redis /var/www/logs/redis*.log*
 
 ####################################################################################################
-#### Reset Permissions: Nginx + FastCGI Cache Files ################################################
+#### Reset Permissions: Various SlickStack (LEMP) Modules ##########################################
 ####################################################################################################
+
+mkdir -p /var/run/mysqld
+mkdir -p /var/run/php
+mkdir -p /var/run/redis
 
 chown root:root /etc/nginx/nginx.conf
 chown root:root /etc/nginx/fastcgi.conf
-
-####################################################################################################
-#### Reset Permissions: OpenSSL + Let's Encrypt (Certbot) Files ####################################
-####################################################################################################
-
 chown root:root /etc/ssl/nginx.crt
 chmod -R 700 /etc/ssl/nginx.crt
 chown root:root /etc/ssl/nginx.key
 chmod -R 700 /etc/ssl/nginx.key
 chown root:root /etc/ssl/nginx.pem
 chmod -R 700 /etc/ssl/nginx.pem
-
-####################################################################################################
-#### Reset Permissions: PHP-FPM Files ##############################################################
-####################################################################################################
-
-## old ##
-mkdir -p /var/run/php
-
-## reset php permissions ##
-# chown www-data:www-data /var/run/php
-chown root:root /etc/php/7.2/fpm/php.ini
-chown root:root /etc/php/7.2/fpm/php-fpm.conf
-chown root:root /etc/php/7.2/cli/php.ini
-
-## create mysql files if do not exist ##
-mkdir -p /var/run/mysqld
-
-####################################################################################################
-#### Reset Permissions: MySQL Files ################################################################
-####################################################################################################
-
-## reset MySQL permissions ##
 chown mysql:mysql /var/run/mysqld
 chown root:root /etc/mysql/my.cnf
 chown root:root /etc/mysql/mysql.cnf
 chown root:root /etc/mysql/mysql.conf.d/mysqld.cnf
-
-####################################################################################################
-#### Reset Permissions: Redis Files ################################################################
-####################################################################################################
-
-## create Redis directory (will not overwrite if exists already) ##
-mkdir -p /var/run/redis
-
-## reset permissions ##
-chown redis:redis /var/run/redis
-chown redis:redis /etc/redis/redis.conf
-
-####################################################################################################
-#### Reset Permissions: WP-CLI Files ###############################################################
-####################################################################################################
 
 ## always run WP-CLI as the www-data user (and allow SFTP user to run it) ##
 chown root:root /usr/local/bin/
 chown www-data:www-data /usr/local/bin/wp
 chmod 6775 /usr/local/bin/wp
 
+# chown www-data:www-data /var/run/php
+chown root:root /etc/php/7.2/fpm/php.ini
+chown root:root /etc/php/7.2/fpm/php-fpm.conf
+chown root:root /etc/php/7.2/cli/php.ini
+
+chown redis:redis /var/run/redis
+chown redis:redis /etc/redis/redis.conf
+
 ####################################################################################################
-#### Convert DOS File Formats To Unix File Formats (Requires Dos2Unix To Be Installed) #############
+#### Convert DOS Files To Unix Files (Requires Dos2Unix To Be Installed) ###########################
 ####################################################################################################
 
 # find /var/www/html/ -type f -exec dos2unix -k -o -s {} \;
