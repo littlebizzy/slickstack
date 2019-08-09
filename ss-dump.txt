@@ -6,27 +6,32 @@
 #### mirror: http://mirrors.slickstack.io/ss-dump.txt ##############################################
 #### path: /var/www/ss-dump ########################################################################
 #### destination: n/a (not a boilerplate) ##########################################################
-#### purpose: dumps the entire live MySQL database to /var/www/wp.sql ##############################
-#### ss version: SlickStack alpha ss6c #############################################################
+#### purpose: dumps the live MySQL database to /var/www/wp.sql (SFTP user can access) ##############
 #### module version: MySQL 5.7+ ####################################################################
 ####################################################################################################
-
-## Ref: https://dev.mysql.com/doc/refman/5.7/en/mysqldump.html ##
 
 ## include SlickStack configuration ##
 source /var/www/ss-config
 
+####################################################################################################
+#### Dump The Live MySQL Database ##################################################################
+####################################################################################################
+
 ## MESSAGE ##
 echo -e "\e[36mDumping the live MySQL database to /var/www/wp.sql for safe-keeping...\e[0m"
 
-## dump live MySQL database to /var/www/wp.sql ##
+## dump MySQL database to /var/www/wp.sql ##
 mysqldump --user=root --password="$DB_PASSWORD_ROOT" --host="$DB_HOST" --protocol=tcp --port=3306 --dump-date --flush-privileges --force "$DB_NAME" > /var/www/wp.sql
-mysqldump --user=root --password="$dbrootpass" --host=localhost --protocol=tcp --port=3306 --dump-date --flush-privileges --force "$dbname" > /var/www/wp.sql
 
-## reset permissions ##
-if [[ -z "$SFTP_USER" ]];
-then chown "$user":wordpress /var/www/wp.sql
-else chown "$SFTP_USER":wordpress /var/www/wp.sql
-fi
+####################################################################################################
+#### Reset Permissions: MySQL Database Dump File ###################################################
+####################################################################################################
 
-chmod 664 /var/www/wp.sql
+chown root:root /var/www/wp.sql
+chmod 0775 /var/www/wp.sql
+
+####################################################################################################
+#### External References Used By SlickStack To Improve This Script #################################
+####################################################################################################
+
+## Ref: https://dev.mysql.com/doc/refman/5.7/en/mysqldump.html ##
