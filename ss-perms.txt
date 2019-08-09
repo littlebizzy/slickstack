@@ -35,14 +35,36 @@ chown root:root /etc/sudoers
 chmod 440 /etc/sudoers
 
 ####################################################################################################
-#### Reset Permissions: SlickStack Core Files (Cron Jobs + Scripts + MySQL Dump) ###################
+#### Reset Permissions: SlickStack Core Files (Skip The Public HTML Directory Here) ################
 ####################################################################################################
 
-## ensure directories exist ##
+## ensure directories exist (will not overwrite if exist already) ##
+mkdir -p /var/www
 mkdir -p /var/www/cache
-mkdir -p /var/www/html
 mkdir -p /var/www/logs
 mkdir -p /var/www/meta
+
+## reset file permissions ##
+chown root:root /var/www/*cron*
+chown root:root /var/www/ss*
+chown root:root /var/www/wp.sql
+chmod 6770 /var/www/*cron*
+chmod 6770 /var/www/ss*
+chmod 0775 /var/www/wp.sql
+
+## reset folder permissions ##
+chown root:root /var/www
+chown www-data:www-data /var/www/cache
+chown www-data:www-data /var/www/logs
+chown www-data:www-data /var/www/meta
+chmod 0775 /var/www
+chmod 6775 /var/www/cache
+chmod 6775 /var/www/logs
+chmod 6775 /var/www/meta
+
+####################################################################################################
+#### Reset Permissions: SlickStack Log Files #######################################################
+####################################################################################################
 
 ## ensure various log files exist ##
 if [ ! -f "/var/www/logs/clamav.log" ]; then touch "/var/www/logs/clamav.log"; fi
@@ -51,34 +73,18 @@ if [ ! -f "/var/www/logs/mysql.log" ]; then touch "/var/www/logs/mysql.log"; fi
 if [ ! -f "/var/www/logs/nginx.log" ]; then touch "/var/www/logs/nginx.log"; fi
 if [ ! -f "/var/www/logs/redis.log" ]; then touch "/var/www/logs/redis.log"; fi
 
-## chown files ##
-chown root:root /var/www
-chown root:root /var/www/*cron*
-chown root:root /var/www/ss*
-chown root:root /var/www/wp.sql
-chown www-data:www-data /var/www/cache
-chown www-data:www-data /var/www/logs
 chown clamav:clamav /var/www/logs/clamav*.log*
 chown www-data:www-data /var/www/logs/error*.log*
 chown mysql:mysql /var/www/logs/mysql*.log*
 chown www-data:www-data /var/www/logs/nginx*.log*
 chown redis:redis /var/www/logs/redis*.log*
-chown www-data:www-data /var/www/meta
-
-## chmod files ##
-chmod 0775 /var/www
-chmod 6770 /var/www/*cron*
-chmod 6770 /var/www/ss*
-chmod 0775 /var/www/wp.sql
-chmod 6775 /var/www/cache
-chmod 6775 /var/www/logs
-chmod 6775 /var/www/meta
 
 ####################################################################################################
 #### Reset Permissions: WordPress Files (WP Core + SlickStack) #####################################
 ####################################################################################################
 
 ## ensure directories exist ##
+mkdir -p /var/www/html
 mkdir -p /var/www/html/wp-content/languages
 mkdir -p /var/www/html/wp-content/mu-plugins
 mkdir -p /var/www/html/wp-content/temp
