@@ -26,6 +26,7 @@ chmod 440 /etc/sudoers
 addgroup wordpress &> /dev/null
 adduser $user wordpress &> /dev/null
 adduser $SFTP_USER wordpress &> /dev/null
+adduser $SFTP_USER www-data &> /dev/null
 adduser www-data wordpress &> /dev/null
 
 ####################################################################################################
@@ -38,18 +39,20 @@ mkdir -p /var/www/cache
 mkdir -p /var/www/logs
 mkdir -p /var/www/meta
 
-## reset folder permissions ##
-chown root:root /var
-chown root:root /var/www ## chroot must be root:root
+## reset permissions for the chroot (SFTP) user's jailed directory ##
+chown root:root /var ## must be root:root
+chown root:root /var/www ## must be root:root
+chmod 0755 /var/www ## must be 0755
+
+## its ok if SFTP user access this stuff be www-data:www-data is the priority ##
 chown www-data:www-data /var/www/cache
 chown www-data:www-data /var/www/logs
 chown www-data:www-data /var/www/meta
-chmod 0755 /var/www ## chroot must be 0755
-chmod 6775 /var/www/cache
+chmod 6775 /var/www/cache ## 6755 also should work
 chmod 6775 /var/www/logs
 chmod 6775 /var/www/meta
 
-## reset file permissions ##
+## reset file permissions for the sudo/root SlickStack scripts ##
 chown root:root /var/www/*cron*
 chown root:root /var/www/ss*
 chown root:root /var/www/wp.sql
@@ -83,7 +86,8 @@ if [ ! -f "/var/www/html/wp-content/functions.php" ]; then
 fi
 
 ## reset folder permissions ##
-# chown -R www-data:www-data /var/www/html
+# sudo chown $SFTP_USER:wordpress -R /var/www/html* ## old
+# sudo chown $SFTP_USER:www-data -R /var/www/html* ## should use this one
 
 if [[ -z "$SFTP_USER" ]]; then 
     chown -R $user:wordpress /var/www/html
@@ -91,22 +95,22 @@ else
     chown -R $SFTP_USER:wordpress /var/www/html
 fi
 
-chown -R www-data:wordpress /var/www/html/wp-content/temp
-chown -R www-data:wordpress /var/www/html/wp-content/mu-plugins
-chown -R www-data:wordpress /var/www/html/wp-content/uploads
-chmod -R 6775 /var/www/html
+# chown -R www-data:wordpress /var/www/html/wp-content/temp
+# chown -R www-data:wordpress /var/www/html/wp-content/mu-plugins
+# chown -R www-data:wordpress /var/www/html/wp-content/uploads
+chmod 6775 /var/www/html
 find /var/www/html/ -type d -exec chmod 6775 {} \;
 
 ## reset file permissions ##
-chown www-data:www-data /var/www/html/wp-content/blacklist.txt
-chown www-data:www-data /var/www/html/wp-content/object-cache.php
-chown www-data:www-data /var/www/html/wp-content/functions.php
-chmod 0660 /var/www/html/wp-config.php
-chmod 0400 /var/www/html/wp-content/blacklist.txt
-chmod 6775 /var/www/html/wp-content/object-cache.php
-chmod 6775 /var/www/html/wp-content/functions.php
-find /var/www/html/ -type f -not -path "*var/www/html/wp-content/uploads*" -exec chmod 0664 {} \;
+# chown www-data:www-data /var/www/html/wp-content/blacklist.txt
+# chown www-data:www-data /var/www/html/wp-content/object-cache.php
+# chown www-data:www-data /var/www/html/wp-content/functions.php
+find /var/www/html/ -type f -not -path "*var/www/html/wp-content/uploads*" -exec chmod 6664 {} \;
 find /var/www/html/wp-content/uploads/ -not -name "*.jpg" -not -name "*.jpeg" -not -name "*.png" -not -name "*.bmp" -not -name "*.webp" -not -name "*.gif" -not -name "*.tiff" -not -name "*.mp4" -not -name "*.vid" -type f -exec chmod 0664 {} \;
+chmod 0660 /var/www/html/wp-config.php
+chmod 0440 /var/www/html/wp-content/blacklist.txt
+# chmod 6664 /var/www/html/wp-content/object-cache.php
+# chmod 6664 /var/www/html/wp-content/functions.php
 
 ####################################################################################################
 #### Reset Permissions: Various Log Files ##########################################################
