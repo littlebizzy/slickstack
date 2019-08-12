@@ -1,10 +1,12 @@
-# SlickStack [ss] - "Alpha ss6e"
+# SlickStack [ss] - "Alpha ss6f"
 
 SlickStack is a free LEMP stack automation script written in Bash designed to enhance and simplify WordPress provisioning, performance, and security.
 
 | Google PageSpeed | GTMetrix | Pingdom | Security Headers | Qualys SSL Labs |
 | :--------------: | :------: | :-----: | :--------------: | :-------------: |
 | [**A**](https://developers.google.com/speed/pagespeed/insights/?url=https%3A%2F%2Fslickstack.io%2F) | [**A**](https://gtmetrix.com/reports/slickstack.io/zpLMZ1eb) | [**A**](https://tools.pingdom.com/#5aeba9dea8000000) | [**A**](https://securityheaders.com/?q=https%3A%2F%2Fslickstack.io%2F&followRedirects=on) | [**A**](https://www.ssllabs.com/ssltest/analyze.html?d=slickstack.io&latest) |
+
+* **NEW!** SlickStack now supports custom SSH (SFTP) port numbers using the `SSH_PORT` variable in `ss-config`...
 
 * **NEW!** SlickStack now supports "disabling" our MU plugins via `ss-config` ... remember that currently, this means no CloudFlare, Clear Caches, and other valuable plugins, so be sure to setup your own if needed...
 
