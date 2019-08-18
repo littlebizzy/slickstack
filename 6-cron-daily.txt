@@ -6,8 +6,8 @@
 #### mirror: http://mirrors.slickstack.io/6-cron-daily.txt #########################################
 #### path: /var/www/6-cron-daily ###################################################################
 #### destination: n/a (not a boilerplate) ##########################################################
-#### purpose: SlickStack cron job "daily" (6/9) will run every 1 day ###############################
-#### module version: n/a ###########################################################################
+#### purpose: SlickStack cron job *daily* (6/9) will run every 1 day ###############################
+#### module version: Ubuntu 18.04 ##################################################################
 ####################################################################################################
 
 ## !!! DO NOT MODIFY THE CRONS OR CRONTAB... ADD CUSTOM SCRIPTS TO SS-CUSTOM INSTEAD. ##
@@ -16,41 +16,36 @@
 source /var/www/ss-config
 
 ####################################################################################################
-#### SlickStack Cron Job: "Daily" ##################################################################
+#### SlickStack Cron Job: Daily ####################################################################
 ####################################################################################################
 
-## scripts to run (include ss-muplugs + ss-scan here) ##
+## run ss-dump if set to daily ##
+if [[ "$SS_INTERVAL_DUMP" == "daily" ]]; then 
+    source /var/www/ss-dump
+fi
+
+## run ss-perms if set to daily ##
+if [[ "$SS_INTERVAL_PERMS" == "daily" ]]; then 
+    source /var/www/ss-perms
+fi
+
+## run ss-clean if set to daily ##
+if [[ "$SS_INTERVAL_CLEAN" == "daily" ]]; then 
+    source /var/www/ss-clean
+fi
+
+## run ss-muplugs if set to daily or if not defined (default) ##
+if [[ "$SS_INTERVAL_MUPLUGS" == "daily" || -z "$SS_INTERVAL_MUPLUGS" ]]; then 
+    source /var/www/ss-muplugs
+fi
+
+## run ss-scan if set to daily ##
+if [[ "$SS_INTERVAL_SCAN" == "daily" ]]; then 
+    source /var/www/ss-scan
+fi
+
+## TEMP ##
 source /var/www/ss-muplugs
-source /var/www/ss-scan
-
-# if [[ "$SS_INTERVAL_CHECK" == "daily" ]]; then 
-#    source /var/www/ss-check
-# fi
-
-## run ss-worker if interval set to "regular" or if not defined ##
-# if [[ "$SS_INTERVAL_WORKER" == "daily" ]]; then 
-#    source /var/www/ss-worker
-# fi
-
-# if [[ "$SS_INTERVAL_DUMP" == "daily" ]]; then 
-#    source /var/www/ss-dump
-# fi
-
-# if [[ "$SS_INTERVAL_PERMS" == "daily" ]]; then 
-#    source /var/www/ss-perms
-# fi
-
-# if [[ "$SS_INTERVAL_CLEAN" == "daily" ]]; then 
-#    source /var/www/ss-clean
-# fi
-
-# if [[ "$SS_INTERVAL_MUPLUGS" == "daily" || -z "$SS_INTERVAL_MUPLUGS" ]]; then 
-#    source /var/www/ss-muplugs
-# fi
-
-# if [[ "$SS_INTERVAL_SCAN" == "daily" ]]; then 
-#    source /var/www/ss-scan
-# fi
 
 ## delete lock files ##
 rm -R -f /tmp/6-cron-daily*.lock*
