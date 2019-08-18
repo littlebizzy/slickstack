@@ -23,6 +23,7 @@ title: MySQL (Public Mirrors)
 *Links and resources related to the above module that may help users understand its functionality, or how it interacts with other LEMP stack modules.*
 
 * (coming soon)
+* https://stackoverflow.com/questions/9192027/invalid-default-value-for-create-date-timestamp-field/29503517#29503517
 
 ----
 
