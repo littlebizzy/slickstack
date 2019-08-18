@@ -6,28 +6,36 @@
 #### mirror: http://mirrors.slickstack.io/2-cron-regular.txt #######################################
 #### path: /var/www/2-cron-regular #################################################################
 #### destination: n/a (not a boilerplate) ##########################################################
-#### purpose: SlickStack cron jobs "regular" (2/9) #################################################
-#### ss version: SlickStack alpha ss6a #############################################################
-#### module version: n/a ###########################################################################
+#### purpose: SlickStack cron job *regular* (2/9) will run every 30 minutes ########################
+#### module version: Ubuntu 18.04 ##################################################################
 ####################################################################################################
 
-## !!! DO NOT MODIFY THIS FILE. ADD TEMPORARY BASH SCRIPTS TO SS-WORKER INSTEAD. ##
+## !!! DO NOT MODIFY THE CRONS OR CRONTAB... ADD CUSTOM SCRIPTS TO SS-CUSTOM INSTEAD. ##
 
-## scripts to run (include ss-worker here) ##
+## include SlickStack configuration ##
+source /var/www/ss-config
+
+####################################################################################################
+#### SlickStack Cron Job: *Regular* ################################################################
+####################################################################################################
+
+## run ss-check if set to regular ##
+if [[ "$SS_INTERVAL_CHECK" == "regular" ]]; then 
+    source /var/www/ss-check
+fi
+
+## run ss-worker if set to regular or if not defined (default) ##
+if [[ "$SS_INTERVAL_WORKER" == "regular" || -z "$SS_INTERVAL_WORKER" ]]; then 
+    source /var/www/ss-worker
+fi
+
+## run ss-dump if set to regular ##
+if [[ "$SS_INTERVAL_DUMP" == "regular" ]]; then 
+    source /var/www/ss-dump
+fi
+
+## TEMP ##
 source /var/www/ss-worker
-
-# if [[ "$SS_INTERVAL_CHECK" == "regular" ]]; then 
-#    source /var/www/ss-check
-# fi
-
-## run ss-worker if interval set to "regular" or if not defined ##
-# if [[ "$SS_INTERVAL_WORKER" == "regular" || -z "$SS_INTERVAL_WORKER" ]]; then 
-#    source /var/www/ss-worker
-# fi
-
-# if [[ "$SS_INTERVAL_DUMP" == "regular" ]]; then 
-#    source /var/www/ss-dump
-# fi
 
 ## delete lock files ##
 rm -R -f /tmp/2-cron-regular*.lock*
