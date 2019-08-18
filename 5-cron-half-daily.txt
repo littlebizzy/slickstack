@@ -6,39 +6,33 @@
 #### mirror: http://mirrors.slickstack.io/5-cron-half-daily.txt ####################################
 #### path: /var/www/5-cron-half-daily ##############################################################
 #### destination: n/a (not a boilerplate) ##########################################################
-#### purpose: SlickStack cron jobs "half daily" (5/9) ##############################################
-#### module version: n/a ###########################################################################
+#### purpose: SlickStack cron job *half daily* (5/9) will run ever 12 hours ########################
+#### module version: Ubuntu 18.04 ##################################################################
 ####################################################################################################
 
-## !!! DO NOT MODIFY THIS FILE. ADD TEMPORARY BASH SCRIPTS TO SS-WORKER INSTEAD. ##
+## !!! DO NOT MODIFY THE CRONS OR CRONTAB... ADD CUSTOM SCRIPTS TO SS-CUSTOM INSTEAD. ##
 
-## scripts to run (include ss-clean here) ##
-source /var/www/ss-clean
+## include SlickStack configuration ##
+source /var/www/ss-config
 
-# if [[ "$SS_INTERVAL_CHECK" == "half-daily" ]]; then 
-#    source /var/www/ss-check
-# fi
+####################################################################################################
+#### SlickStack Cron Job: *Half Daily* #############################################################
+####################################################################################################
 
-## run ss-worker if interval set to "regular" or if not defined ##
-# if [[ "$SS_INTERVAL_WORKER" == "half-daily" ]]; then 
-#    source /var/www/ss-worker
-# fi
+## run ss-dump if set to half-daily ##
+if [[ "$SS_INTERVAL_DUMP" == "half-daily" ]]; then 
+    source /var/www/ss-dump
+fi
 
-# if [[ "$SS_INTERVAL_DUMP" == "half-daily" ]]; then 
-#    source /var/www/ss-dump
-# fi
+## run ss-perms if set to half-daily ##
+if [[ "$SS_INTERVAL_PERMS" == "half-daily" ]]; then 
+    source /var/www/ss-perms
+fi
 
-# if [[ "$SS_INTERVAL_PERMS" == "half-daily" ]]; then 
-#    source /var/www/ss-perms
-# fi
-
-# if [[ "$SS_INTERVAL_CLEAN" == "half-daily" || -z "$SS_INTERVAL_CLEAN" ]]; then 
-#    source /var/www/ss-clean
-# fi
-
-# if [[ "$SS_INTERVAL_SCAN" == "half-daily" ]]; then 
-#    source /var/www/ss-scan
-# fi
+## run ss-clean if set to half-daily or if not defined (default) ##
+if [[ "$SS_INTERVAL_CLEAN" == "half-daily" || -z "$SS_INTERVAL_CLEAN" ]]; then 
+    source /var/www/ss-clean
+fi
 
 ## delete lock files ##
 rm -R -f /tmp/5-cron-half-daily*.lock*
