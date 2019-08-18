@@ -1,10 +1,12 @@
-# SlickStack [ss] - "Alpha ss6f"
+# SlickStack [ss] - "Alpha ss7a"
 
 SlickStack is a free LEMP stack automation script written in Bash designed to enhance and simplify WordPress provisioning, performance, and security.
 
 | Google PageSpeed | GTMetrix | Pingdom | Security Headers | Qualys SSL Labs |
 | :--------------: | :------: | :-----: | :--------------: | :-------------: |
 | [**A**](https://developers.google.com/speed/pagespeed/insights/?url=https%3A%2F%2Fslickstack.io%2F) | [**A**](https://gtmetrix.com/reports/slickstack.io/zpLMZ1eb) | [**A**](https://tools.pingdom.com/#5aeba9dea8000000) | [**A**](https://securityheaders.com/?q=https%3A%2F%2Fslickstack.io%2F&followRedirects=on) | [**A**](https://www.ssllabs.com/ssltest/analyze.html?d=slickstack.io&latest) |
+
+* **NEW!** all SlickStack intervals (scheduled cron jobs) can be customized using `SS_INTERVAL` variables...
 
 * **NEW!** SlickStack can now convert DOS files to Unix format via `SLICKSTACK_DOS2UNIX` variable in `ss-config` that will run automatically whenever the `ss-perms` script is called (end of the script)...
 
