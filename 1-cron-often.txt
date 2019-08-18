@@ -6,28 +6,31 @@
 #### mirror: http://mirrors.slickstack.io/1-cron-often.txt #########################################
 #### path: /var/www/1-cron-often ###################################################################
 #### destination: n/a (not a boilerplate) ##########################################################
-#### purpose: SlickStack cron jobs "often" (1/9) ###################################################
-#### ss version: SlickStack alpha ss6a #############################################################
-#### module version: n/a ###########################################################################
+#### purpose: SlickStack cron job *often* (1/9) will run every 15 minutes ##########################
+#### module version: Ubuntu 18.04 ##################################################################
 ####################################################################################################
 
-## !!! DO NOT MODIFY THIS FILE. ADD TEMPORARY BASH SCRIPTS TO SS-WORKER INSTEAD. ##
+## !!! DO NOT MODIFY THE CRONS OR CRONTAB... ADD CUSTOM SCRIPTS TO SS-CUSTOM INSTEAD. ##
 
-## scripts to run (include ss-check here) ##
+## include SlickStack configuration ##
+source /var/www/ss-config
+
+####################################################################################################
+#### SlickStack Cron Job: *Often* ##################################################################
+####################################################################################################
+
+## run ss-check if set to often or if not defined (default) ##
+if [[ "$SS_INTERVAL_CHECK" == "often" || -z "$SS_INTERVAL_CHECK" ]]; then 
+    source /var/www/ss-check
+fi
+
+## run ss-dump if set to often ##
+if [[ "$SS_INTERVAL_DUMP" == "often" ]]; then 
+    source /var/www/ss-dump
+fi
+
+## TEMP ##
 source /var/www/ss-check
-
-## run ss-check if interval set to "often" or if not defined ##
-# if [[ "$SS_INTERVAL_CHECK" == "often" || -z "$SS_INTERVAL_CHECK" ]]; then 
-#    source /var/www/ss-check
-# fi
-
-# if [[ "$SS_INTERVAL_WORKER" == "often" ]]; then 
-#    source /var/www/ss-worker
-# fi
-
-# if [[ "$SS_INTERVAL_DUMP" == "often" ]]; then 
-#    source /var/www/ss-dump
-# fi
 
 ## delete lock files ##
 rm -R -f /tmp/1-cron-often*.lock*
