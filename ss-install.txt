@@ -7,52 +7,48 @@
 #### path: /var/www/ss-install #####################################################################
 #### destination: n/a (not a boilerplate) ##########################################################
 #### purpose: reinstalls the SlickStack server and all LEMP modules, etc (idempotent) ##############
-#### module version: n/a ###########################################################################
+#### module version: Ubuntu 18.04 ##################################################################
 ####################################################################################################
 
-## THE SS-CONFIG FILE MUST BE CONFIGURED BEFORE RUNNING THE SS-INSTALL SCRIPT ##
+## THE SS-CONFIG FILE MUST BE PROPERLY CONFIGURED BEFORE RUNNING THE SS-INSTALL SCRIPT ##
 
 ## include SlickStack configuration ##
 source /var/www/ss-config
 
-# Make sure correct Ubuntu version is installed
-# DEP_UBUNTU_VERSION="18.04"
-# UBUNTU_VERSION=`lsb_release -rs`
-# if [ "${DEP_UBUNTU_VERSION}" != "${UBUNTU_VERSION}" ]; then
-#         echo "Deployscript for Ubuntu ${DEP_UBUNTU_VERSION} only. This is ${UBUNTU_VERSION}."
-#         exit 1
-# fi
+## ensure correct Ubuntu version is installed ##
+UBUNTU_VERSION="lsb_release -rs"
+if [[ "${UBUNTU_VERSION}" != "18.04" ]]; then
+    echo -e "\e[93mDeployscript for Ubuntu ${DEP_UBUNTU_VERSION} only. This is ${UBUNTU_VERSION}.\e[0m" >&2
+    exit 1
+fi
 
-## verify ss-config build matches ss-install build ##
+## verify ss-config build matches ss-install compatibility ##
 if [[ "$SS_BUILD" != "AUG2019E" ]]; then 
     echo -e "\e[93mYour ss-config file is outdated. Please rebuild it and run ss-install again.\e[0m" >&2
     exit 1
 fi
 
-## backup the current database before proceeding ##
+## backup database before proceeding ##
 source /var/www/ss-dump
 
 ####################################################################################################
-#### retrieve latest SlickStack core files (ss-check) ##############################################
+#### Download Latest SlickStack Core Scripts + Cron Jobs (SS-Check) ################################
 ####################################################################################################
 
 ## MESSAGE ##
 echo -e "\e[36mRetrieving latest SlickStack files and copying them to local server...\e[0m"
 
 ## download latest versions ##
-wget --no-cache --no-cookies -O /tmp/ss-check.txt http://mirrors.slickstack.io/ss-check.txt
+wget --no-cache --no-cookies --tries=3 --timeout=15 -O /tmp/ss-check http://mirrors.slickstack.io/ss-check.txt
 
-## rename files ##
-mv /tmp/ss-check.txt /tmp/ss-check
-
-## copy to destinations ##
+## copy files to their destination ##
 cp -R -f -d --no-preserve=mode,ownership /tmp/ss-check /var/www/ss-check
 
 ## reset permissions ##
 chown root:root /var/www/ss-check
-chmod 700 /var/www/ss-check
+chmod 6770 /var/www/ss-check
 
-## call scripts ##
+## run scripts ##
 source /var/www/ss-check
 
 ####################################################################################################
@@ -863,3 +859,4 @@ echo -e "\e[36mSlickStack installation complete! Please reboot server and ensure
 ## Ref: https://gist.github.com/beardedinbinary/79d7ad34f9980f0a4c23 ##
 ## Ref: https://www.linuxbabe.com/security/letsencrypt-webroot-tls-certificate
 ## Ref: https://stackoverflow.com/questions/49668542/create-a-script-that-adds-lines-of-code-to-bashrc-then-reloads-the-terminal
+## Ref: https://peteris.rocks/blog/unattended-installation-of-wordpress-on-ubuntu-server/
