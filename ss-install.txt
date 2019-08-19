@@ -41,7 +41,7 @@ echo -e "\e[36mRetrieving latest SlickStack files and copying them to local serv
 ## download latest versions ##
 wget --no-cache --no-cookies --tries=3 --timeout=15 -O /tmp/ss-check http://mirrors.slickstack.io/ss-check.txt
 
-## copy files to their destination ##
+## copy files to their destinations ##
 cp -R -f -d --no-preserve=mode,ownership /tmp/ss-check /var/www/ss-check
 
 ## reset permissions ##
@@ -124,24 +124,21 @@ update-alternatives --set editor /bin/nano
 timedatectl set-timezone UTC
 
 ####################################################################################################
-#### Configure Ubuntu: Sudo Users (a.k.a. Visudo) ##################################################
+#### Configure Ubuntu: Root + Sudo Users (a.k.a. Sudoers) ##########################################
 ####################################################################################################
 
 ## download latest versions ##
-wget --no-cache --no-cookies -O /tmp/sudoers.txt http://mirrors.slickstack.io/ubuntu/sudoers.txt
+wget --no-cache --no-cookies --tries=3 --timeout=15 -O /tmp/sudoers http://mirrors.slickstack.io/ubuntu/sudoers.txt
 
 ## replace variables ##
-sed -i "s/@SUDO/${SUDO_USER}/g" /tmp/sudoers.txt
+sed -i "s/@SUDO/${SUDO_USER}/g" /tmp/sudoers
 
-## rename files ##
-mv /tmp/sudoers.txt /tmp/sudoers
-
-## copy to destinations ##
+## copy files to their destinations ##
 cp -R -f -d --no-preserve=mode,ownership /tmp/sudoers /etc/sudoers
 
 ## reset permissions ##
 chown root:root /etc/sudoers
-chmod 440 /etc/sudoers
+chmod 0440 /etc/sudoers
 
 ####################################################################################################
 #### Configure Ubuntu: SSH + SFTP User Permissions #################################################
