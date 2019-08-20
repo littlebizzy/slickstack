@@ -32,26 +32,6 @@ fi
 source /var/www/ss-dump
 
 ####################################################################################################
-#### Download Latest SlickStack Core Scripts + Cron Jobs (SS-Check) ################################
-####################################################################################################
-
-## MESSAGE ##
-echo -e "\e[36mRetrieving latest SlickStack files and copying them to local server...\e[0m"
-
-## download latest versions ##
-wget --no-cache --no-cookies --tries=3 --timeout=15 -O /tmp/ss-check http://mirrors.slickstack.io/ss-check.txt
-
-## copy files to their destinations ##
-cp -R -f -d --no-preserve=mode,ownership /tmp/ss-check /var/www/ss-check
-
-## reset permissions ##
-chown root:root /var/www/ss-check
-chmod 6770 /var/www/ss-check
-
-## run scripts ##
-source /var/www/ss-check
-
-####################################################################################################
 #### Configure Ubuntu: Create SlickStack Users + Set Various System Defaults #######################
 ####################################################################################################
 
@@ -77,6 +57,26 @@ update-alternatives --set editor /bin/nano
 
 ## set UTC timezone ##
 timedatectl set-timezone UTC
+
+####################################################################################################
+#### Download Latest SlickStack Core Scripts + Cron Jobs (SS-Check) ################################
+####################################################################################################
+
+## MESSAGE ##
+echo -e "\e[36mRetrieving latest SlickStack files and copying them to local server...\e[0m"
+
+## download latest versions ##
+wget --no-cache --no-cookies --tries=3 --timeout=15 -O /tmp/ss-check http://mirrors.slickstack.io/ss-check.txt
+
+## copy files to their destinations ##
+cp -R -f -d --no-preserve=mode,ownership /tmp/ss-check /var/www/ss-check
+
+## reset permissions ##
+chown root:root /var/www/ss-check
+chmod 6770 /var/www/ss-check
+
+## run scripts ##
+source /var/www/ss-check
 
 ####################################################################################################
 #### Configure Ubuntu: Root + Sudo User Permissions (a.k.a. Sudoers) ###############################
@@ -127,7 +127,7 @@ chmod 0440 /etc/ssh/sshd_config
 /etc/init.d/ssh restart
 
 ####################################################################################################
-#### Configure Ubuntu: Install SlickStack (Root) Crontab ###########################################
+#### Configure Ubuntu: Install SlickStack (Root) Crontab File ######################################
 ####################################################################################################
 
 ## MESSAGE ##
@@ -142,6 +142,20 @@ chmod 0600 /var/spool/cron/crontabs/root
 
 ## reload crontab ##
 /etc/init.d/cron reload
+
+####################################################################################################
+#### Configure Ubuntu: Optimize The System Kernel ##################################################
+####################################################################################################
+
+## download latest versions ##
+# wget --no-cache --no-cookies --tries=3 --timeout=15 -O /tmp/sysctl.conf http://mirrors.slickstack.io/ubuntu/sysctl.txt
+
+## copy files to their destinations ##
+# cp -R -f -d --no-preserve=mode,ownership /tmp/sysctl.conf /etc/sysctl.conf
+
+## reset permissions ##
+chown root:root /etc/sysctl.conf
+chmod 0664 /etc/sysctl.conf
 
 ####################################################################################################
 #### Configure SlickStack: Install Various Modules Via Default Ubuntu Packages #####################
@@ -187,20 +201,6 @@ DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/u
 
 ## install Certbot ##
 DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install certbot python-certbot-nginx
-
-####################################################################################################
-#### Configure Ubuntu: System Kernel ###############################################################
-####################################################################################################
-
-## download latest versions ##
-# wget --no-cache --no-cookies --tries=3 --timeout=15 -O /tmp/sysctl.conf http://mirrors.slickstack.io/ubuntu/sysctl.txt
-
-## copy files to their destinations ##
-# cp -R -f -d --no-preserve=mode,ownership /tmp/sysctl.conf /etc/sysctl.conf
-
-## reset permissions ##
-chown root:root /etc/sysctl.conf
-chmod 0664 /etc/sysctl.conf
 
 ####################################################################################################
 #### Install PHP-FPM 7.2 + Required Extensions #####################################################
@@ -333,7 +333,7 @@ source /var/www/meta/.bash-aliases' >> /home/${SUDO_USER}/.bashrc
 source /home/${SUDO_USER}/.bashrc
 
 ####################################################################################################
-#### Install Nginx-Extras (Current Ubuntu Repo Version) ############################################
+#### Configure Nginx: Install Nginx-Extras (Ubuntu Packages) #######################################
 ####################################################################################################
 
 ## update repos ##
@@ -349,7 +349,7 @@ DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/u
 DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install nginx-extras
 
 ####################################################################################################
-#### Configure Nginx: Nginx Configuration + FastCGI Cache Configuration ############################
+#### Configure Nginx: Optimize Nginx Configuration + FastCGI Cache Configuration ###################
 ####################################################################################################
 
 ## download latest versions ##
@@ -370,10 +370,7 @@ mkdir -p /var/www/cache
 chown www-data:www-data /var/www/cache
 chown root:root /etc/nginx/nginx.conf
 
-####################################################################################################
-#### Configure Nginx: FastCGI Cache TMPFS Settings (Optional) ######################################
-####################################################################################################
-
+## set TMPFS cache storage if enabled ##
 if [[ "$FASTCGI_CACHE_TMPFS" == "true" ]]; then
     mount -t tmpfs -o size=${FASTCGI_CACHE_MEMORY} tmpfs /var/www/cache
     sed -i '/tmpfs/d' /etc/fstab
@@ -383,7 +380,7 @@ else
 fi
 
 ####################################################################################################
-#### Configure Server Block (Nginx-Extras) #########################################################
+#### Configure Nginx: Setup The Server Block (Single Block) ########################################
 ####################################################################################################
 
 ## delete tmp files ##
