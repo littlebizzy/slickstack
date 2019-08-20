@@ -52,68 +52,23 @@ chmod 6770 /var/www/ss-check
 source /var/www/ss-check
 
 ####################################################################################################
-#### Install Various Packages Via Default Ubuntu Repos #############################################
-####################################################################################################
-
-## MESSAGE ##
-echo -e "\e[36mInstalling various SlickStack modules from most recent Ubuntu repos...\e[0m"
-
-## fix dpkg ##
-DEBIAN_FRONTEND=noninteractive dpkg --configure -a --force-confold
-
-## update repo cache ##
-DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" update
-
-## upgrade existing repos ##
-DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" upgrade
-
-## install update-manager-core ##
-DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install update-manager-core
-
-## install Linux utilities ##
-DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install zip unzip dos2unix
-
-## install Git ##
-DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install git
-
-## install ClamAV ##
-DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install clamav
-
-####################################################################################################
-#### Install Cerbot (Let's Encrypt) Packages Via PPA Repos #########################################
-####################################################################################################
-
-## install software-properties-common (for Certbot) ##
-DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install software-properties-common
-
-## add custom PPAs (for Certbot) ##
-DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" add-apt-repository universe
-DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" add-apt-repository ppa:certbot/certbot
-
-## update again after adding custom ppas ##
-DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" update
-
-## install Certbot ##
-DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install certbot python-certbot-nginx
-
-####################################################################################################
-#### configure Ubuntu users, permissions, and defaults #############################################
+#### Configure Ubuntu: Create SlickStack Users + Set Various System Defaults #######################
 ####################################################################################################
 
 ## MESSAGE ##
 echo -e "\e[36mConfiguring users, permissions and Ubuntu defaults...\e[0m"
 
-## root ssh password ##
+## set root password ##
 echo root:$ROOT_PASSWORD | /usr/sbin/chpasswd
 
 ## ensure root password never expires ##
 chage -E -1 -m 0 -M -1 -I -1 -W 99999 root
 
-## sudo ssh user ##
+## create sudo user ##
 adduser --disabled-password --gecos "" $SUDO_USER
 echo $SUDO_USER:$SUDO_PASSWORD | /usr/sbin/chpasswd
 
-## sftp user (chroot jail) ##
+## create sftp user ##
 adduser --disabled-password --gecos "" $SFTP_USER
 echo $SFTP_USER:$SFTP_PASSWORD | /usr/sbin/chpasswd
 
@@ -124,7 +79,7 @@ update-alternatives --set editor /bin/nano
 timedatectl set-timezone UTC
 
 ####################################################################################################
-#### Configure Ubuntu: Root + Sudo Users (a.k.a. Sudoers) ##########################################
+#### Configure Ubuntu: Root + Sudo User Permissions (a.k.a. Sudoers) ###############################
 ####################################################################################################
 
 ## download latest versions ##
@@ -172,7 +127,7 @@ chmod 0440 /etc/ssh/sshd_config
 /etc/init.d/ssh restart
 
 ####################################################################################################
-#### Configure Ubuntu: SlickStack (Root) Crontab ###################################################
+#### Configure Ubuntu: Install SlickStack (Root) Crontab ###########################################
 ####################################################################################################
 
 ## MESSAGE ##
@@ -187,6 +142,51 @@ chmod 0600 /var/spool/cron/crontabs/root
 
 ## reload crontab ##
 /etc/init.d/cron reload
+
+####################################################################################################
+#### Configure SlickStack: Install Various Modules Via Default Ubuntu Packages #####################
+####################################################################################################
+
+## MESSAGE ##
+echo -e "\e[36mInstalling various SlickStack modules from most recent Ubuntu repos...\e[0m"
+
+## fix dpkg ##
+DEBIAN_FRONTEND=noninteractive dpkg --configure -a --force-confold
+
+## update repo cache ##
+DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" update
+
+## upgrade existing repos ##
+DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" upgrade
+
+## install update-manager-core ##
+DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install update-manager-core
+
+## install Linux utilities ##
+DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install zip unzip dos2unix
+
+## install Git ##
+DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install git
+
+## install ClamAV ##
+DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install clamav
+
+####################################################################################################
+#### Install Cerbot (Let's Encrypt) Packages Via PPA Repos #########################################
+####################################################################################################
+
+## install software-properties-common (for Certbot) ##
+DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install software-properties-common
+
+## add custom PPAs (for Certbot) ##
+DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" add-apt-repository universe
+DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" add-apt-repository ppa:certbot/certbot
+
+## update again after adding custom ppas ##
+DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" update
+
+## install Certbot ##
+DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install certbot python-certbot-nginx
 
 ####################################################################################################
 #### Configure Ubuntu: System Kernel ###############################################################
