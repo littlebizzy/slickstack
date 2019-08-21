@@ -29,7 +29,9 @@ title: Nginx (Public Mirrors)
 * <a href="https://wiki.openssl.org/index.php/SSL_and_TLS_Protocols">https://wiki.openssl.org/index.php/SSL_and_TLS_Protocols</a>
 * <a href="https://wiki.openssl.org/index.php/SSL/TLS_Client">https://wiki.openssl.org/index.php/SSL/TLS_Client</a>
 * <a href="http://manpages.ubuntu.com/manpages/bionic/man1/ciphers.1ssl.html">http://manpages.ubuntu.com/manpages/bionic/man1/ciphers.1ssl.html</a>
+* https://launchpad.net/~nginx/+archive/ubuntu/development
+* https://libre-software.net/lemp/
 
 ----
 
-*Last updated: Jul 11, 2019*
+*Last updated: Aug 21, 2019*
