@@ -333,16 +333,16 @@ source /var/www/meta/.bash-aliases' >> /home/${SUDO_USER}/.bashrc
 source /home/${SUDO_USER}/.bashrc
 
 ####################################################################################################
-#### Configure Nginx: Install Nginx-Extras (Ubuntu Packages) #######################################
+#### Configure Nginx: Install Nginx-Extras Via Launchpad Nginx PPA #################################
 ####################################################################################################
 
-## update repos ##
+## update package cache ##
 DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" update
 
 ## add nginx mainline (dev) ppa ##
 DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/add-apt-repository --yes ppa:nginx/development
 
-## update repos ##
+## update package cache (again... not needed after Ubuntu 18.04 but to be sure) ##
 DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" update
 
 ## install nginx-extras ##
@@ -416,21 +416,18 @@ chown root:root /etc/nginx/sites-available/default
 /etc/init.d/nginx restart
 
 ####################################################################################################
-#### Install OpenSSL + Certbot (Let's Encrypt) Free SSL Certificates ###############################
+#### Install OpenSSL + Certbot (Let's Encrypt) Free SSL Certificates (SS-Encrypt) ##################
 ####################################################################################################
 
-## include ss-encrypt script here ##
+## run scripts ##
 source /var/www/ss-encrypt
 
 ####################################################################################################
-#### Install MySQL 5.7 #############################################################################
+#### Configure MySQL: Install MySQL 5.7 Via Ubuntu Packages ########################################
 ####################################################################################################
 
 ## set noninteractive ##
 export DEBIAN_FRONTEND=noninteractive;
-
-## store mysql root password ##
-## http://serverfault.com/a/830352/344471 ##
 
 if [[ -z "$DB_PASSWORD_ROOT" ]]; then 
     echo debconf mysql-server/root_password password ${dbrootpass} | debconf-set-selections
@@ -452,8 +449,8 @@ fi
 ## install mysql 5.7 ##
 DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install mysql-server-5.7 
 
-## confirm installed ##
-echo "MySQL 5.7 is installed, now we will secure it."
+## MESSAGE ##
+echo -e "\e[36mMySQL 5.7 is installed, now we will secure it...\e[0m"
 
 ####################################################################################################
 #### Configure MySQL ###############################################################################
@@ -835,3 +832,4 @@ echo -e "\e[36mSlickStack installation complete! Please reboot server and ensure
 ## Ref: https://www.linuxbabe.com/security/letsencrypt-webroot-tls-certificate
 ## Ref: https://stackoverflow.com/questions/49668542/create-a-script-that-adds-lines-of-code-to-bashrc-then-reloads-the-terminal
 ## Ref: https://peteris.rocks/blog/unattended-installation-of-wordpress-on-ubuntu-server/
+## Ref: https://serverfault.com/questions/783527/non-interactive-silent-install-of-mysql-5-7-on-ubuntu-16-04-lts/830352#830352
