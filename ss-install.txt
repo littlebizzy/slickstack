@@ -380,31 +380,22 @@ else
 fi
 
 ####################################################################################################
-#### Configure Nginx: Setup The Server Block (Single Block) ########################################
+#### Configure Nginx: Setup The Server Block (Single Block Only) ###################################
 ####################################################################################################
 
-## delete tmp files ##
-rm -R -f /tmp/default.txt /tmp/default /tmp/server-block.txt /tmp/server-block /tmp/server-block-ssl.txt /tmp/server-block-ssl
-
 ## download latest versions ##
-cd /tmp/
-wget --no-cache --no-cookies -O /tmp/server-block-ssl.txt http://mirrors.slickstack.io/nginx/server-block-ssl.txt
-mv /tmp/server-block-ssl.txt /tmp/default.txt
+wget --no-cache --no-cookies --tries=3 --timeout=15 -O /tmp/default http://mirrors.slickstack.io/nginx/server-block-ssl.txt
 
-## replace @DOMAIN placeholder with slickstack variable ##
-sed -i "s/@DOMAIN/${SITE_DOMAIN}/g" /tmp/default.txt
-sed -i "s/@CACHEVALID/${FASTCGI_CACHE_VALID}/g" /tmp/default.txt
+## replace variables ##
+sed -i "s/@DOMAIN/${SITE_DOMAIN}/g" /tmp/default
+sed -i "s/@CACHEVALID/${FASTCGI_CACHE_VALID}/g" /tmp/default
 
-## enable or disable fastcgi cache ##
-## set skip_cache default to 0 only if fastcgi cache enabled in ss-config ##
+## set FastCGI Cache if enabled ##
 if [[ "$FASTCGI_CACHE" == "false" ]]; then 
-    sed -i "s/@FASTCGI/1/g" /tmp/default.txt
+    sed -i "s/@FASTCGI/1/g" /tmp/default
 else 
-    sed -i "s/@FASTCGI/0/g" /tmp/default.txt
+    sed -i "s/@FASTCGI/0/g" /tmp/default
 fi
-
-## rename files ##
-mv /tmp/default.txt /tmp/default
 
 ## copy files to destinations ##
 cp -R -f --no-preserve=mode,ownership /tmp/default /etc/nginx/sites-available/default
@@ -412,7 +403,7 @@ cp -R -f --no-preserve=mode,ownership /tmp/default /etc/nginx/sites-available/de
 ## reset permissions ##
 chown root:root /etc/nginx/sites-available/default
 
-## restart nginx ##
+## restart services ##
 /etc/init.d/nginx restart
 
 ####################################################################################################
@@ -551,54 +542,40 @@ else
 fi
 
 ####################################################################################################
-#### Install WordPress #############################################################################
+#### Configure WordPress: Download + Unzip WordPress CMS ###########################################
 ####################################################################################################
 
 ## cleanup files ##
 rm -R -f /var/www/html/wordpress*
-rm -R -f /var/www/html/classicpress*
 
 ## change dir (temp fix) ##
 cd /var/www/html
 
 ## download latest version ##
-if [[ "$SLICKSTACK_APP" == "classicpress" ]]; then 
-    wget --no-cache --no-cookies -O /var/www/html/classicpress.zip http://mirrors.slickstack.io/classicpress/classicpress.zip
-    unzip -o /var/www/html/classicpress.zip
-    chown -R www-data:wordpress /var/www/html/classicpress
-    chmod 775 /var/www/html/classicpress
-    rm -R -f /var/www/html/wp-admin*
-    rm -R -f /var/www/html/wp-includes*
-    rm -R -f /var/www/html/wp*.php*
-    rm -R -f /var/www/html/index*.php*
-    rm -R -f /var/www/html/composer.json*
-    rsync -raqI /var/www/html/classicpress/* ./
-else 
-    wget --no-cache --no-cookies -O /var/www/html/wordpress.zip http://mirrors.slickstack.io/wordpress/wordpress.zip
-    unzip -o /var/www/html/wordpress.zip
-    chown -R www-data:wordpress /var/www/html/wordpress
-    chmod 775 /var/www/html/wordpress
-    rm -R -f /var/www/html/wp-admin*
-    rm -R -f /var/www/html/wp-includes*
-    rm -R -f /var/www/html/wp*.php*
-    rm -R -f /var/www/html/index*.php*
-    rm -R -f /var/www/html/composer.json*
-    rsync -raqI /var/www/html/wordpress/* ./
-fi
+wget --no-cache --no-cookies --tries=3 --timeout=15 -O /var/www/html/wordpress.zip http://mirrors.slickstack.io/wordpress/wordpress.zip
+unzip -o /var/www/html/wordpress.zip
+chown -R www-data:wordpress /var/www/html/wordpress
+chmod 775 /var/www/html/wordpress
+rm -R -f /var/www/html/wp-admin*
+rm -R -f /var/www/html/wp-includes*
+rm -R -f /var/www/html/wp*.php*
+rm -R -f /var/www/html/index*.php*
+rm -R -f /var/www/html/composer.json*
+rsync -raqI /var/www/html/wordpress/* ./
 
 ## cleanup files ##
 rm -R -f /var/www/html/wordpress*
 rm -R -f /var/www/html/classicpress*
 
 ####################################################################################################
-#### Configure WordPress (or ClassicPress) #########################################################
+#### Configure WordPress: Replace All Variables In WP-Config File ##################################
 ####################################################################################################
 
 ## retrieve wp-config.php boilerplate ##
 if [[ -z "$WP_CONFIG_SOURCE" ]]; then 
-    wget --no-cache --no-cookies -O /tmp/wp-config.txt http://mirrors.slickstack.io/wordpress/wp-config.txt
+    wget --no-cache --no-cookies --tries=3 --timeout=15 -O /tmp/wp-config.txt http://mirrors.slickstack.io/wordpress/wp-config.txt
 else 
-    wget --no-check-certificate --no-cache --no-cookies -O /tmp/wp-config.txt "$WP_CONFIG_SOURCE"
+    wget --no-check-certificate --no-cache --no-cookies --tries=3 --timeout=15 -O /tmp/wp-config.txt "$WP_CONFIG_SOURCE"
 fi
 
 ## replace database placeholders ##
