@@ -23,7 +23,7 @@ if [[ "${UBUNTU_VERSION}" != "18.04" ]]; then
 fi
 
 ## verify ss-config build matches ss-install compatibility ##
-if [[ "$SS_BUILD" != "AUG2019E" ]]; then 
+if [[ "$SS_BUILD" != "AUG2019F" ]]; then 
     echo -e "\e[93mYour ss-config file is outdated. Please rebuild it and run ss-install again.\e[0m" >&2
     exit 1
 fi
@@ -336,16 +336,16 @@ source /home/${SUDO_USER}/.bashrc
 #### Configure Nginx: Install Nginx-Extras Via Launchpad Nginx PPA #################################
 ####################################################################################################
 
-## update package cache ##
+## update Ubuntu package cache ##
 DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" update
 
-## add nginx mainline (dev) ppa ##
+## add Nginx mainline (dev) branch ppa ##
 DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/add-apt-repository --yes ppa:nginx/development
 
-## update package cache (again... not needed after Ubuntu 18.04 but to be sure) ##
+## update package cache (again... not needed after Ubuntu 18.04 but for fun) ##
 DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" update
 
-## install nginx-extras ##
+## install Nginx-Extras ##
 DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install nginx-extras
 
 ####################################################################################################
@@ -356,9 +356,9 @@ DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/u
 wget --no-cache --no-cookies --tries=3 --timeout=15 -O /tmp/nginx.conf http://mirrors.slickstack.io/nginx/nginx-conf.txt
 
 ## replace variables ##
-sed -i "s/@CACHEMEMORY/${FASTCGI_CACHE_MEMORY}/g" /tmp/nginx.conf
-sed -i "s/@CACHEINACTIVE/${FASTCGI_CACHE_INACTIVE}/g" /tmp/nginx.conf
-sed -i "s/@CACHEMAXSIZE/${FASTCGI_CACHE_MAX_SIZE}/g" /tmp/nginx.conf
+sed -i "s/@FASTCGI_CACHE_MEMORY/${FASTCGI_CACHE_MEMORY}/g" /tmp/nginx.conf
+sed -i "s/@FASTCGI_CACHE_INACTIVE/${FASTCGI_CACHE_INACTIVE}/g" /tmp/nginx.conf
+sed -i "s/@FASTCGI_CACHE_MAX_SIZE/${FASTCGI_CACHE_MAX_SIZE}/g" /tmp/nginx.conf
 
 ## copy files to their destinations ##
 cp -R -f --no-preserve=mode,ownership /tmp/nginx.conf /etc/nginx/nginx.conf
