@@ -1,4 +1,4 @@
-# SlickStack [ss] - "Alpha ss7a"
+# SlickStack [ss] - "Alpha ss7b"
 
 SlickStack is a free LEMP stack automation script written in Bash designed to enhance and simplify WordPress provisioning, performance, and security.
 
