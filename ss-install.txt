@@ -360,9 +360,9 @@ DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/u
 wget --no-cache --no-cookies --tries=3 --timeout=15 -O /tmp/nginx.conf http://mirrors.slickstack.io/nginx/nginx-conf.txt
 
 ## replace variables ##
-sed -i "s/@FASTCGI_CACHE_MEMORY/${FASTCGI_CACHE_MEMORY}/g" /tmp/nginx.conf
-sed -i "s/@FASTCGI_CACHE_INACTIVE/${FASTCGI_CACHE_INACTIVE}/g" /tmp/nginx.conf
-sed -i "s/@FASTCGI_CACHE_MAX_SIZE/${FASTCGI_CACHE_MAX_SIZE}/g" /tmp/nginx.conf
+sed -i "s/@FCGI_CACHE_MEMORY/${FCGI_CACHE_MEMORY}/g" /tmp/nginx.conf
+sed -i "s/@FCGI_CACHE_INACTIVE/${FCGI_CACHE_INACTIVE}/g" /tmp/nginx.conf
+sed -i "s/@FCGI_CACHE_MAX_SIZE/${FCGI_CACHE_MAX_SIZE}/g" /tmp/nginx.conf
 
 ## copy files to their destinations ##
 cp -R -f --no-preserve=mode,ownership /tmp/nginx.conf /etc/nginx/nginx.conf
@@ -375,10 +375,10 @@ chown www-data:www-data /var/www/cache
 chown root:root /etc/nginx/nginx.conf
 
 ## set TMPFS cache storage if enabled ##
-if [[ "$FASTCGI_CACHE_TMPFS" == "true" ]]; then
-    mount -t tmpfs -o size=${FASTCGI_CACHE_MEMORY} tmpfs /var/www/cache
+if [[ "$FCGI_CACHE_TMPFS" == "true" ]]; then
+    mount -t tmpfs -o size=${FCGI_CACHE_MEMORY} tmpfs /var/www/cache
     sed -i '/tmpfs/d' /etc/fstab
-    echo "tmpfs /var/www/cache tmpfs defaults,size=${FASTCGI_CACHE_MEMORY} 0 0" >> /etc/fstab
+    echo "tmpfs /var/www/cache tmpfs defaults,size=${FCGI_CACHE_MEMORY} 0 0" >> /etc/fstab
 else
     sed -i '/tmpfs/d' /etc/fstab
 fi
@@ -392,13 +392,13 @@ wget --no-cache --no-cookies --tries=3 --timeout=15 -O /tmp/default http://mirro
 
 ## replace variables ##
 sed -i "s/@DOMAIN/${SITE_DOMAIN}/g" /tmp/default
-sed -i "s/@CACHEVALID/${FASTCGI_CACHE_VALID}/g" /tmp/default
+sed -i "s/@CACHEVALID/${FCGI_CACHE_VALID}/g" /tmp/default
 
 ## set FastCGI Cache if enabled ##
-if [[ "$FASTCGI_CACHE" == "false" ]]; then 
-    sed -i "s/@FASTCGI/1/g" /tmp/default
+if [[ "$FCGI_CACHE" == "false" ]]; then 
+    sed -i "s/@FCGI_CACHE/1/g" /tmp/default
 else 
-    sed -i "s/@FASTCGI/0/g" /tmp/default
+    sed -i "s/@FCGI_CACHE/0/g" /tmp/default
 fi
 
 ## copy files to destinations ##
