@@ -315,17 +315,16 @@ Thus, before the likes of Google and Amazon and Shopify and Wix take over the en
 
 ## Comparison
 
-| ... | SlickStack | EasyEngine | ServerPilot | Runcloud | Ansible | Puppet | Salt | Chef | Trellis | AnsiPress | VVV | VCCW | Centminmod | VPSSIM |
-|:---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| 100% Free | Yes | Yes | No | No |
-| Dependencies | None | Python | Ruby | Python | Python | Python | Ansible | Ansible | Vagrant | Vagrant | (Unix) | (Unix) |
-| Direct Management | Yes | Yes | No | No |
-| Shell Commands | Yes | No | No | No | No | No | No | No | No | No | Yes | Yes |
-| WordPress Focus | Yes | No | No | No | No | Yes | Yes | No | Yes | Yes | No | Yes |
-| Single Site Focus | Yes | N/A | No | No | N/A | N/A | No |
-| Email APIs | Yes | N/A | N/A | N/A | No | No | No | No | No | No |
-| Monitoring | Monit | N/A | None | None | None | None | None |
-|  |  |  |  |  |  |  |  |
+| ...               | SlickStack | EasyEngine | ServerPilot | Runcloud | Ansible | Puppet |   Salt  |   Chef  | Trellis | AnsiPress |   VVV  |  VCCW  | Centminmod | VPSSIM |
+|-------------------|:----------:|:----------:|:-----------:|:--------:|:-------:|:------:|:-------:|:-------:|:-------:|:---------:|:------:|:------:|:----------:|:------:|
+| 100% Free         |     Yes    |     Yes    |      No     |    No    |    --   |   --   |    --   |    --   |    --   |     --    |   --   |   --   |     --     |   --   |
+| Dependencies      |    None    |   Python   |     Ruby    |  Python  |  Python | Python | Ansible | Ansible | Vagrant |  Vagrant  | (Unix) | (Unix) |      -     |   --   |
+| Direct Management |     Yes    |     Yes    |      No     |    No    |    --   |   --   |    --   |    --   |    --   |     --    |   --   |   --   |     --     |   --   |
+| Shell Commands    |     Yes    |     No     |      No     |    No    |    No   |   No   |    No   |    No   |    No   |     No    |   Yes  |   Yes  |     --     |   --   |
+| WordPress Focus   |     Yes    |     No     |      No     |    No    |    No   |   Yes  |   Yes   |    No   |   Yes   |    Yes    |   No   |   Yes  |     --     |   --   |
+| Single Site Focus |     Yes    |     N/A    |      No     |    No    |   N/A   |   N/A  |    No   |    --   |    --   |     --    |   --   |   --   |     --     |   --   |
+| Email APIs        |     Yes    |     N/A    |     N/A     |    N/A   |    No   |   No   |    No   |    No   |    No   |     No    |   --   |   --   |     --     |   --   |
+| Monitoring        |    Monit   |     N/A    |     None    |   None   |   None  |  None  |   None  |    --   |    --   |     --    |   --   |   --   |     --     |   --   |
 
 Others: Moss.sh, Webinoly, VestaCP, OneInStack, OpenResty, ServerPilot, RunCloud
 
