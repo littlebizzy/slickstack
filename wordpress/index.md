@@ -15,6 +15,8 @@
 
 *Raw files from the vendor’s original release (e.g. official repo), not altered by other providers, included for reference and documentation purposes.*
 
+* <a href="wordpress-5.2.3.zip">wordpress-5.2.3.zip</a>
+* <a href="wp-config-sample-5.2.3.txt">wp-config-sample-5.2.3.txt</a>
 * <a href="wordpress-5.2.2.zip">wordpress-5.2.2.zip</a>
 * <a href="wp-config-sample-5.2.2.txt">wp-config-sample-5.2.2.txt</a>
 * <a href="wordpress-5.2.1.zip">wordpress-5.2.1.zip</a>
@@ -123,4 +125,4 @@
 
 ----
 
-*Last updated: June 30, 2019*
+*Last updated: Sep 10, 2019*
