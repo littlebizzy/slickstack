@@ -10,19 +10,23 @@
 #### module version: Ubuntu 18.04 ##################################################################
 ####################################################################################################
 
-## THE SS-CONFIG FILE MUST BE PROPERLY CONFIGURED BEFORE RUNNING THE SS-INSTALL SCRIPT ##
+## SS-CONFIG FILE MUST BE PROPERLY CONFIGURED BEFORE RUNNING SS-INSTALL SCRIPT ##
 
 ## include SlickStack configuration ##
 source /var/www/ss-config
 
+####################################################################################################
+#### SlickStack: Compatibility Checks + Backup Live Database #######################################
+####################################################################################################
+
 ## ensure correct Ubuntu version is installed ##
 UBUNTU_VERSION=`lsb_release -rs`
 if [[ "${UBUNTU_VERSION}" != "18.04" ]]; then
-    echo -e "\e[93mSlickStack is designed for Ubuntu 18.04 only, but this server is running Ubuntu ${UBUNTU_VERSION}.\e[0m" >&2
+    echo -e "\e[93mSlickStack is designed for Ubuntu 18.04, but this server is running Ubuntu ${UBUNTU_VERSION}.\e[0m" >&2
     exit 1
 fi
 
-## verify ss-config build matches ss-install compatibility ##
+## ensure ss-config build version matches ss-install build version ##
 if [[ "$SS_BUILD" != "AUG2019G" ]]; then 
     echo -e "\e[93mYour ss-config file is outdated. Please rebuild it and run ss-install again.\e[0m" >&2
     exit 1
@@ -55,11 +59,11 @@ echo $SFTP_USER:$SFTP_PASSWORD | /usr/sbin/chpasswd
 ## set default editor to nano ##
 update-alternatives --set editor /bin/nano
 
-## set UTC timezone ##
+## set timezone (optional) ##
 timedatectl set-timezone UTC
 
 ####################################################################################################
-#### Download Latest SlickStack Core Scripts + Cron Jobs (SS-Check) ################################
+#### SlickStack: Download Latest Core Scripts + Cron Jobs (SS-Check) ###############################
 ####################################################################################################
 
 ## MESSAGE ##
