@@ -60,7 +60,7 @@ It should also be noted that SlickStack [ss] is HTTPS-only, meaning that HTTP si
 | **MySQL** | [mirrors](http://mirrors.slickstack.io/mysql/) | 5.7.25 | default config (will be customized slightly in future) |
 | **PHP-FPM** | [mirrors](http://mirrors.slickstack.io/php-fpm/) | 7.2.17 | `php.ini` + `php-fpm.conf` + `www.conf` |
 | **Zend / OPcache** | [mirrors](http://mirrors.slickstack.io/opcache/) | 3.2.0 / 7.2.17 | (same as PHP-FPM) |
-| **WordPress** | [mirrors](http://mirrors.slickstack.io/wordpress/) | 5.2.2 | some WP Core junk files are removed by `ss-clean` |
+| **WordPress** | [mirrors](http://mirrors.slickstack.io/wordpress/) | 5.2.3 | some WP Core junk files are removed by `ss-clean` |
 | **MU Plugins** | [mirrors](http://mirrors.slickstack.io/mu-plugins/) | N/A | several `mu-plugins` by LittleBizzy |
 | **WP-CLI** | [mirrors](http://mirrors.slickstack.io/wp-cli/) | 2.2.0 | default config |
 | **Redis (Obj Cache)** | [mirrors](http://mirrors.slickstack.io/redis/) | 4.0.9 | `redis.conf` + `object-cache.php` |
