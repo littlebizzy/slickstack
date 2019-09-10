@@ -48,7 +48,7 @@ It should also be noted that SlickStack [ss] is HTTPS-only, meaning that HTTP si
 
 ## Core Modules
 
-*Last updated: Aug 1, 2019*
+*Last updated: Sep 10, 2019*
 
 | LEMP Module | Mirrors | Version | What does SlickStack [ss] customize? |
 | :------------- | :----------: | :----------: | :----------: |
