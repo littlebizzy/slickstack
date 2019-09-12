@@ -4,6 +4,8 @@ SlickStack is a free LEMP stack automation script written in Bash designed to en
 
 ⮕ ⮕ ⮕ [ **Join us on Spectrum Chat 100% free (like Slack + Discourse in a single app)**](https://spectrum.chat/slickstack)
 
+❤️ September 12, 2019: Product Hunt launch, vote for us! https://www.producthunt.com/posts/slickstack
+
 **Alpha because core features are still changing and being "settled". Safe for production servers, if you're okay with this... if you run into any issues, re-installing is always a quick `sudo bash /var/www/ss-install` command away.*
 
 | Google PageSpeed | GTMetrix | Pingdom | Security Headers | Qualys SSL Labs |
