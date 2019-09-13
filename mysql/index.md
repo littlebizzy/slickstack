@@ -28,6 +28,8 @@ title: MySQL (Public Mirrors)
 * https://stackoverflow.com/questions/28606483/how-to-allow-empty-string-for-integer-in-mysql
 * https://stackoverflow.com/questions/43589048/mysql-need-to-allow-0000-00-00-000000-dates
 * https://stackoverflow.com/questions/36374335/error-in-mysql-when-setting-default-value-for-date-or-datetime
+* https://www.sitepoint.com/optimize-mysql-indexes-slow-queries-configuration/
+* https://dzone.com/articles/how-to-optimize-mysql-queries-for-speed-and-perfor
 
 ----
 
