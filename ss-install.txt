@@ -337,7 +337,7 @@ source /var/www/meta/.bash-aliases' >> /home/${SUDO_USER}/.bashrc
 source /home/${SUDO_USER}/.bashrc
 
 ####################################################################################################
-#### Configure Nginx: Install Nginx-Extras Via Launchpad Nginx PPA #################################
+#### SlickStack: Install Nginx Server (Single Server Block) + FastCGI Cache ########################
 ####################################################################################################
 
 ## update Ubuntu package cache ##
@@ -346,15 +346,11 @@ DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/u
 ## add Nginx mainline (dev) branch ppa ##
 DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/add-apt-repository --yes ppa:nginx/development
 
-## update package cache (again... not needed after Ubuntu 18.04 but for fun) ##
+## update package cache (again... not needed in Ubuntu 18.04+ but just for fun) ##
 DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" update
 
 ## install Nginx-Extras ##
 DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install nginx-extras
-
-####################################################################################################
-#### Configure Nginx: Optimize Nginx Configuration + FastCGI Cache Configuration ###################
-####################################################################################################
 
 ## download latest versions ##
 wget --no-cache --no-cookies --tries=3 --timeout=15 -O /tmp/nginx.conf http://mirrors.slickstack.io/nginx/nginx-conf.txt
@@ -383,10 +379,6 @@ else
     sed -i '/tmpfs/d' /etc/fstab
 fi
 
-####################################################################################################
-#### Configure Nginx: Setup The Server Block (Single Block Only) ###################################
-####################################################################################################
-
 ## download latest versions ##
 wget --no-cache --no-cookies --tries=3 --timeout=15 -O /tmp/default http://mirrors.slickstack.io/nginx/server-block-ssl.txt
 
@@ -411,14 +403,14 @@ chown root:root /etc/nginx/sites-available/default
 /etc/init.d/nginx restart
 
 ####################################################################################################
-#### Install OpenSSL + Certbot (Let's Encrypt) Free SSL Certificates (SS-Encrypt) ##################
+#### SlickStack: Install OpenSSL + Certbot (Let's Encrypt) Free SSL Certificates ###################
 ####################################################################################################
 
 ## run scripts ##
 source /var/www/ss-encrypt
 
 ####################################################################################################
-#### Configure MySQL: Install MySQL 5.7 Via Ubuntu Packages ########################################
+#### SlickStack: Install MySQL 5.7 (Single Database) + Configure Users #############################
 ####################################################################################################
 
 ## set noninteractive ##
@@ -446,10 +438,6 @@ DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/u
 
 ## MESSAGE ##
 echo -e "\e[36mMySQL 5.7 is installed, now we will secure it...\e[0m"
-
-####################################################################################################
-#### Configure MySQL ###############################################################################
-####################################################################################################
 
 ## install expect ##
 DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install expect
@@ -505,10 +493,7 @@ rm -v ~/secure_our_mysql.sh
 ## confirm secured ##
 echo "Congratulations, MySQL 5.7 is installed and secured. Onward!"
 
-####################################################################################################
-#### setup mysql 5.7 users #########################################################################
-####################################################################################################
-
+## setup MySQL users (via ss-config) ##
 if [[ -z "$DB_PASSWORD_ROOT" ]]; then 
     mysql -uroot -p${dbrootpass} -e "CREATE DATABASE ${dbname};"
 else 
@@ -680,9 +665,10 @@ chmod 775 /etc/redis/redis.conf
 chmod 775 /var/run/redis
 
 ####################################################################################################
-#### Install MU Plugins (WordPress) After PHP-FPM And Redis Configuration Complete #################
+#### SlickStack: Install MU Plugins (WordPress) After PHP-FPM And Redis Installed ##################
 ####################################################################################################
 
+## run scripts ##
 source /var/www/ss-muplugs
 
 ####################################################################################################
