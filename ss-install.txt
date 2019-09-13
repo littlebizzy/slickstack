@@ -546,7 +546,7 @@ else
 fi
 
 ####################################################################################################
-#### Configure WordPress: Download + Unzip WordPress CMS ###########################################
+#### SlickStack: Install WordPress CMS (Download + Unzip WordPress Archive) ########################
 ####################################################################################################
 
 ## cleanup files ##
@@ -572,7 +572,7 @@ rm -R -f /var/www/html/wordpress*
 rm -R -f /var/www/html/classicpress*
 
 ####################################################################################################
-#### Configure WordPress: Replace All Variables In WP-Config File ##################################
+#### SlickStack: Configure WP-Config File (WordPress Configuration) ################################
 ####################################################################################################
 
 ## retrieve wp-config.php boilerplate ##
@@ -602,10 +602,6 @@ fi
 sed -i "s/@DOMAIN/${SITE_DOMAIN}/g" /tmp/wp-config.txt
 sed -i "s/@TLD/${SITE_TLD}/g" /tmp/wp-config.txt
 
-####################################################################################################
-#### input required MU plugins variables to /var/www/html/wp-config.php ############################
-####################################################################################################
-
 ## replace SFTP Details placeholders ##
 sed -i "s/@SFTP_USER/${SFTP_USER}/g" /tmp/wp-config.txt
 sed -i "s/@SFTP_PASSWORD/${SFTP_PASSWORD}/g" /tmp/wp-config.txt
@@ -613,10 +609,6 @@ sed -i "s/@SFTP_PASSWORD/${SFTP_PASSWORD}/g" /tmp/wp-config.txt
 ## replace CloudFlare placeholders ##
 sed -i "s/@CLOUDFLARE_API_KEY/${CLOUDFLARE_API_KEY}/g" /tmp/wp-config.txt
 sed -i "s/@CLOUDFLARE_API_EMAIL/${CLOUDFLARE_API_EMAIL}/g" /tmp/wp-config.txt
-
-####################################################################################################
-#### generate WordPress salt keys for /var/www/html/wp-config.php ##################################
-####################################################################################################
 
 ## replace salt keys ##
 sed -i "s/@AUTHKEY/$(openssl rand -hex 48)/g" /tmp/wp-config.txt
@@ -627,10 +619,6 @@ sed -i "s/@AUTHSALT/$(openssl rand -hex 48)/g" /tmp/wp-config.txt
 sed -i "s/@SECUREAUTHSALT/$(openssl rand -hex 48)/g" /tmp/wp-config.txt
 sed -i "s/@LOGGEDINSALT/$(openssl rand -hex 48)/g" /tmp/wp-config.txt
 sed -i "s/@NONCESALT/$(openssl rand -hex 48)/g" /tmp/wp-config.txt
-
-####################################################################################################
-#### adjust debug settings for /var/www/html/wp-config.php #########################################
-####################################################################################################
 
 ## Replace Placeholders: Debug ##
 if [[ "$SS_TYPE" == "production" ]]; then 
@@ -752,23 +740,6 @@ sed -i '/Checks/c\Checks 2' /etc/clamav/freshclam.conf
 sed -i '/MaxAttempts/c\MaxAttempts 3' /etc/clamav/freshclam.conf
 
 ####################################################################################################
-#### install monit (latest apt version) ############################################################
-####################################################################################################
-
-# ## install monit ##
-# DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install monit
-
-## configure monit settings ##
-# sed -i 's@/var/log/monit.log@/var/www/logs/monit.log@' /etc/monit/monitrc
-
-## reset permissions ##
-# chown root:root /etc/monit/monitrc
-# chmod 0700 /etc/monit/monitrc 
-
-## restart monit ##
-# /etc/init.d/monit restart
-
-####################################################################################################
 #### Finish SlickStack Installation ################################################################
 ####################################################################################################
 
@@ -815,3 +786,4 @@ echo -e "\e[36mSlickStack installation complete! Please reboot server and ensure
 ## Ref: https://stackoverflow.com/questions/49668542/create-a-script-that-adds-lines-of-code-to-bashrc-then-reloads-the-terminal
 ## Ref: https://peteris.rocks/blog/unattended-installation-of-wordpress-on-ubuntu-server/
 ## Ref: https://serverfault.com/questions/783527/non-interactive-silent-install-of-mysql-5-7-on-ubuntu-16-04-lts/830352#830352
+## Ref: https://www.percona.com/blog/2016/10/18/upgrading-to-mysql-5-7-beware-of-the-new-strict-mode/
