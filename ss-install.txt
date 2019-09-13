@@ -661,42 +661,33 @@ mkdir -p /var/www/html/wp-content/uploads
 mkdir -p /var/www/html/wp-content/upgrade
 
 ####################################################################################################
-#### install redis-server (latest apt version) #####################################################
-#### install php-redis a.k.a. predis (latest apt version) ##########################################
+#### SlickStack: Install Redis-Server (Includes Redis-CLI) + PHP-Redis #############################
 ####################################################################################################
 
-## purge redis-server ##
+## purge redis-server + php-redis (if installed) ##
 DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" purge redis-server
-
-## purge php-redis ##
 DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" purge php-redis
 
-## install redis-server ##
+## install redis-server + php-redis ##
 DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install redis-server
-
-## install php-redis ##
 DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install php-redis
 
-####################################################################################################
-#### Configure Redis-Server ########################################################################
-####################################################################################################
-
-## configure redis for object caching ##
+## configure redis-server for object caching (only) ##
 sed -i '/maxmemory.*bytes.*/c\maxmemory 256mb' /etc/redis/redis.conf
 sed -i '/maxmemory-policy noeviction/c\maxmemory-policy allkeys-lru' /etc/redis/redis.conf
 sed -i '/always-show-logo yes/c\always-show-logo no' /etc/redis/redis.conf
 # sed -i '/logfile/c\logfile /var/www/logs/redis.log' /etc/redis/redis.conf
 # sed -i '/dir /c\dir /tmp' /etc/redis/redis.conf
 
-## create redis log file if does not exist ##
+## create log files if do not exist ##
 # if [ ! -f "/var/www/logs/redis.log" ]; then touch "/var/www/logs/redis.log"; fi
 # mkdir -p /var/run/redis
 
 ## reset permissions ##
-# chown redis:redis /var/www/logs/redis.log
+chown redis:redis /var/www/logs/redis.log
 chown redis:redis /etc/redis/redis.conf
 chown redis:redis /var/run/redis
-# chmod 775 /var/www/logs/redis.log
+chmod 6775 /var/www/logs/redis.log
 chmod 775 /etc/redis/redis.conf
 chmod 775 /var/run/redis
 
