@@ -151,21 +151,6 @@ chmod 0600 /var/spool/cron/crontabs/root
 /etc/init.d/cron reload
 
 ####################################################################################################
-#### Configure Ubuntu: Optimize The System Kernel ##################################################
-####################################################################################################
-
-## download latest versions ##
-wget --no-cache --no-cookies --tries=3 --timeout=15 -O /tmp/sysctl.conf http://mirrors.slickstack.io/ubuntu/sysctl.txt
-
-## copy files to their destinations ##
-# cp -R -f -d --no-preserve=mode,ownership /etc/sysctl.conf /etc/sysctl.conf.bak
-# cp -R -f -d --no-preserve=mode,ownership /tmp/sysctl.conf /etc/sysctl.conf
-
-## reset permissions ##
-chown root:root /etc/sysctl.conf
-chmod 0664 /etc/sysctl.conf
-
-####################################################################################################
 #### SlickStack: Install Various Modules Via Default Ubuntu Packages ###############################
 ####################################################################################################
 
@@ -725,6 +710,23 @@ rm -R -f /tmp/user-rules.txt* /tmp/user.rules*
 sed -i '/LogRotate/c\LogRotate true' /etc/clamav/freshclam.conf
 sed -i '/Checks/c\Checks 2' /etc/clamav/freshclam.conf
 sed -i '/MaxAttempts/c\MaxAttempts 3' /etc/clamav/freshclam.conf
+
+####################################################################################################
+#### Configure Ubuntu: Optimize The System Kernel ##################################################
+####################################################################################################
+
+## backup current Ubunt kernel file ##
+cp -R -f -d --no-preserve=mode,ownership /etc/sysctl.conf /etc/sysctl.conf.bak
+
+## download latest versions ##
+wget --no-cache --no-cookies --tries=3 --timeout=15 -O /tmp/sysctl.conf http://mirrors.slickstack.io/ubuntu/sysctl.txt
+
+## copy files to their destinations ##
+cp -R -f -d --no-preserve=mode,ownership /tmp/sysctl.conf /etc/sysctl.conf
+
+## reset permissions ##
+chown root:root /etc/sysctl.conf
+chmod 0664 /etc/sysctl.conf
 
 ####################################################################################################
 #### Finish SlickStack Installation ################################################################
