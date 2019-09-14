@@ -75,15 +75,19 @@ net.ipv4.conf.all.log_martians = 1
 #### Ubuntu Kernel: TCP + UDP Settings #############################################################
 ####################################################################################################
 
-# Uncomment the next line to enable TCP/IP SYN cookies
-# net.ipv4.tcp_syncookies = 1
-
-## number of times SYNACKs for passive TCP connections (copied from EasyEngine) ##
+## enable TCP/IP SYN cookies (SYN flood protection) ##
+net.ipv4.tcp_syncookies = 1
+net.ipv4.tcp_max_syn_backlog = 2048
 net.ipv4.tcp_synack_retries = 2
 
+## max number of TCP sockets not attached to any user file handle (held by system) ##
 net.ipv4.tcp_max_orphans = 60000
-net.ipv4.tcp_max_syn_backlog = 4096
+
+## disable TCP slow start (we are not a variable speed WAN) ##
 net.ipv4.tcp_slow_start_after_idle = 0
+
+
+
 
 ## protect against TCP Time-Wait (copied from EasyEngine) ##
 net.ipv4.tcp_rfc1337 = 1
@@ -157,6 +161,10 @@ net.core.netdev_budget_usecs = 5000
 #### External References Used By SlickStack To Improve This Script #################################
 ####################################################################################################
 
+## Ref: https://cromwell-intl.com/open-source/performance-tuning/tcp.html
+## Ref: https://gist.github.com/magnetikonline/2760f98f6bf654d5ad79
+## Ref: https://www.ndchost.com/wiki/server-administration/hardening-tcpip-syn-flood
+## Ref: https://serverfault.com/questions/705504/better-alternative-for-tcp-syncookies-in-linux
 ## Ref: https://www.litespeedtech.com/support/wiki/doku.php/litespeed_wiki:config:linux-kernel-tune
 ## Ref: https://www.broadcom.com/support/knowledgebase/1211161457978/how-can-i-improve-performance-using-3ware-controllers-with-the-l
 ## Ref: https://major.io/2008/08/07/reduce-disk-io-for-small-reads-using-memory/
