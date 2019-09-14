@@ -31,7 +31,8 @@ title: Nginx (Public Mirrors)
 * <a href="http://manpages.ubuntu.com/manpages/bionic/man1/ciphers.1ssl.html">http://manpages.ubuntu.com/manpages/bionic/man1/ciphers.1ssl.html</a>
 * https://launchpad.net/~nginx/+archive/ubuntu/development
 * https://libre-software.net/lemp/
+* https://www.lowendtalk.com/discussion/7289/nginx-php-fpm-unix-socket-or-tcp-ip-for-fastcgi-pass
 
 ----
 
-*Last updated: Aug 21, 2019*
+*Last updated: Sep 14, 2019*
