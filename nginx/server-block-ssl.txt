@@ -204,8 +204,16 @@ server {
 #### Server Block: Staging URI Settings (Supports WP-Staging, Etc) #################################
 ####################################################################################################
     
-    location /staging {
+    ## needs to be improved with mild caching etc ##
+    location /staging* {
         try_files $uri $uri/ /staging/index.php?$args;
+        ## PHP routing ##
+        include /etc/nginx/fastcgi.conf;
+        fastcgi_split_path_info ^(.+\.php)(/.+)$;
+        fastcgi_pass unix:/run/php/php7.2-fpm.sock;
+        fastcgi_read_timeout 300;
+        fastcgi_index index.php;
+        fastcgi_cache off;
     }
     
 ####################################################################################################
