@@ -30,6 +30,7 @@ title: MySQL (Public Mirrors)
 * https://stackoverflow.com/questions/36374335/error-in-mysql-when-setting-default-value-for-date-or-datetime
 * https://www.sitepoint.com/optimize-mysql-indexes-slow-queries-configuration/
 * https://dzone.com/articles/how-to-optimize-mysql-queries-for-speed-and-perfor
+* https://stackoverflow.com/questions/2317650/setting-global-sql-mode-in-mysql
 
 ----
 
