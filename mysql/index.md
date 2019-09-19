@@ -10,7 +10,7 @@ title: MySQL (Public Mirrors)
 
 *Live configuration files and boilerplates used by current SlickStack installation that may be altered by LittleBizzy or Ubuntu for better performance.*
 
-* (coming soon)
+* <a href="my-cnf.txt">my-cnf.txt</a>
 
 ### Default Files
 
@@ -34,4 +34,4 @@ title: MySQL (Public Mirrors)
 
 ----
 
-*Last updated: Sep 14, 2019*
+*Last updated: Sep 19, 2019*
