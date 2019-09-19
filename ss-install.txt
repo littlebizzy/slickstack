@@ -516,6 +516,25 @@ else
     mysql -uroot -p${DB_PASSWORD_ROOT} -e "FLUSH PRIVILEGES;"
 fi
 
+## cleanup leftover files ##
+rm -R -f /tmp/my.cnf
+
+## install custom my.cnf config file ##
+wget --no-cache --no-cookies --tries=3 --timeout=15 -O /tmp/my.cnf http://mirrors.slickstack.io/mysql/my-cnf.txt
+
+if [[ -z "$MYSQL_MODE" ]]; then 
+    sed -i "s/@MYSQL_MODE/STRICT_TRANS_TABLES,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION/g" /tmp/my.cnf
+else 
+    sed -i "s/@MYSQL_MODE/${MYSQL_MODE}/g" /tmp/my.cnf
+fi
+
+## copy files to their destinations ##
+cp -R -f -d --no-preserve=mode,ownership /tmp/my.cnf /etc/mysql/my.cnf
+
+## reset permissions ##
+chown root:root /etc/mysql/my.cnf
+chmod 0777 /etc/mysql/my.cnf
+
 ####################################################################################################
 #### SlickStack: Install WordPress CMS (Download + Unzip WordPress Archive) ########################
 ####################################################################################################
