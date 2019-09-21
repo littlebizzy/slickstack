@@ -8,7 +8,39 @@
 #### module version: Nginx 1.15+ ###################################################################
 ####################################################################################################
 
+## SLICKSTACK SUPPORTS HTTPS-ONLY NGINX SERVER BLOCKS WITH HSTS ENABLED BY DEFAULT ##
 
+####################################################################################################
+#### Nginx Server Block: Multisite Domain (Wildcard Subdomains) ####################################
+####################################################################################################
+
+server {
+        ##DM - uncomment following line for domain mapping	
+        #listen 80 default_server;
+	server_name example.com *.example.com ;
+	##DM - uncomment following line for domain mapping
+	#server_name_in_redirect off;
+
+	root /var/www/example.com/htdocs;
+	index index.php;
+
+	location / {
+		try_files $uri $uri/ /index.php?$args ;
+	}
+
+	location ~ .php$ {
+		try_files $uri =404;
+		include fastcgi_params;
+		fastcgi_pass 127.0.0.1:9000;
+	}
+
+	location ~* ^.+.(ogg|ogv|svg|svgz|eot|otf|woff|mp4|ttf|rss|atom|jpg|jpeg|gif|png|ico|zip|tgz|gz|rar|bz2|doc|xls|exe|ppt|tar|mid|midi|wav|bmp|rtf)$ {
+		access_log off;	log_not_found off; expires max;
+	}
+
+	location = /robots.txt { access_log off; log_not_found off; }
+	location ~ /. { deny  all; access_log off; log_not_found off; }
+}
 
 ####################################################################################################
 #### External References Used By SlickStack To Improve This Script #################################
