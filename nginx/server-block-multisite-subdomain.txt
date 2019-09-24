@@ -11,7 +11,7 @@
 ## SLICKSTACK SUPPORTS HTTPS-ONLY NGINX SERVER BLOCKS WITH HSTS ENABLED BY DEFAULT ##
 
 ####################################################################################################
-#### Nginx Server Block: Multisite Domain (Wildcard Subdomains) ####################################
+#### Nginx Server Block: WordPress Multisite (Subdomains) ##########################################
 ####################################################################################################
 
 server {
@@ -22,15 +22,25 @@ server {
 	server_name @SITE_TLD *.@SITE_TLD;
 	##DM - uncomment following line for domain mapping
 	#server_name_in_redirect off;
+	
+####################################################################################################
+#### Nginx Server Block: Index Settings ############################################################
+####################################################################################################
 
         ## redirect index.php requests ##
         if ($request_uri ~* "^(.*/)index\.php$") {
             return 301 $1;
         }
-
+	
 	location / {
-		try_files $uri $uri/ /index.php?$args ;
-	}
+        ## first try files, then directories, otherwise query index
+        try_files $uri $uri/ /index.php?$args;
+	## force trailing slashes on urls (do not enable for bbPress/BuddyPress sites)
+        # rewrite ^([^.]*[^/])$ $1/ permanent;
+        }
+
+
+
 
 	location ~ .php$ {
 		try_files $uri =404;
