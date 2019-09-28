@@ -27,7 +27,7 @@ if [[ "${UBUNTU_VERSION}" != "18.04" ]]; then
 fi
 
 ## ensure ss-config build version matches ss-install build version ##
-if [[ "$SS_BUILD" != "SEP2019D" ]]; then 
+if [[ "$SS_BUILD" != "SEP2019E" ]]; then 
     echo -e "\e[93mYour ss-config file is outdated. Please rebuild it and run ss-install again.\e[0m" >&2
     exit 1
 fi
@@ -522,10 +522,25 @@ rm -R -f /tmp/my.cnf
 ## install custom my.cnf config file ##
 wget --no-cache --no-cookies --tries=3 --timeout=15 -O /tmp/my.cnf http://mirrors.slickstack.io/mysql/my-cnf.txt
 
+## set MySQL mode ##
 if [[ -z "$MYSQL_MODE" ]]; then 
     sed -i "s/@MYSQL_MODE/STRICT_TRANS_TABLES,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION/g" /tmp/my.cnf
 else 
     sed -i "s/@MYSQL_MODE/${MYSQL_MODE}/g" /tmp/my.cnf
+fi
+
+## set InnoDB flush method ##
+if [[ -z "$INNODB_FLUSH_METHOD" ]]; then 
+    sed -i "s/@INNODB_FLUSH_METHOD/O_DIRECT/g" /tmp/my.cnf
+else 
+    sed -i "s/@INNODB_FLUSH_METHOD/${INNODB_FLUSH_METHOD}/g" /tmp/my.cnf
+fi
+
+## set InnoDB flush_log_at_trx_commit ##
+if [[ -z "$INNODB_FLUSH_LOG_AT_TRX_COMMIT" ]]; then 
+    sed -i "s/@INNODB_FLUSH_LOG_AT_TRX_COMMIT/1/g" /tmp/my.cnf
+else 
+    sed -i "s/@INNODB_FLUSH_LOG_AT_TRX_COMMIT/${INNODB_FLUSH_LOG_AT_TRX_COMMIT}/g" /tmp/my.cnf
 fi
 
 ## copy files to their destinations ##
