@@ -27,7 +27,7 @@ if [[ "${UBUNTU_VERSION}" != "18.04" ]]; then
 fi
 
 ## ensure ss-config build version matches ss-install build version ##
-if [[ "$SS_BUILD" != "SEP2019E" ]]; then 
+if [[ "$SS_BUILD" != "OCT2019A" ]]; then 
     echo -e "\e[93mYour ss-config file is outdated. Please rebuild it and run ss-install again.\e[0m" >&2
     exit 1
 fi
@@ -644,6 +644,62 @@ if [[ "$WP_MULTISITE" == "true" ]]; then
     sed -i "s/@WP_MULTISITE/true/g" /tmp/wp-config.txt
 else 
     sed -i "s/@WP_MULTISITE/false/g" /tmp/wp-config.txt
+fi
+
+## core auto updates ##
+if [[ -z "$WP_AUTO_UPDATE_CORE" ]]; then 
+    sed -i "s/@WP_AUTO_UPDATE_CORE/minor/g" /tmp/wp-config.txt
+else 
+    sed -i "s/@WP_AUTO_UPDATE_CORE/${WP_AUTO_UPDATE_CORE}/g" /tmp/wp-config.txt
+fi
+
+## autosave (drafts) ##
+if [[ -z "$WP_AUTOSAVE_INTERVAL" ]]; then 
+    sed -i "s/@WP_AUTOSAVE_INTERVAL/60/g" /tmp/wp-config.txt
+else 
+    sed -i "s/@WP_AUTOSAVE_INTERVAL/${WP_AUTOSAVE_INTERVAL}/g" /tmp/wp-config.txt
+fi
+
+## revisions ##
+if [[ -z "$WP_POST_REVISIONS" ]]; then 
+    sed -i "s/@WP_POST_REVISIONS/5/g" /tmp/wp-config.txt
+else 
+    sed -i "s/@WP_POST_REVISIONS/${WP_POST_REVISIONS}/g" /tmp/wp-config.txt
+fi
+
+## block external requests ##
+if [[ -z "$WP_HTTP_BLOCK_EXTERNAL" ]]; then 
+    sed -i "s/@WP_HTTP_BLOCK_EXTERNAL/false/g" /tmp/wp-config.txt
+else 
+    sed -i "s/@WP_HTTP_BLOCK_EXTERNAL/${WP_HTTP_BLOCK_EXTERNAL}/g" /tmp/wp-config.txt
+fi
+
+## allowed hosts ##
+if [[ -z "$WP_ACCESSIBLE_HOSTS" ]]; then 
+    sed -i "s/@WP_ACCESSIBLE_HOSTS/api.wordpress.org/g" /tmp/wp-config.txt
+else 
+    sed -i "s/@WP_ACCESSIBLE_HOSTS/${WP_ACCESSIBLE_HOSTS}/g" /tmp/wp-config.txt
+fi
+
+## file edits ##
+if [[ -z "$WP_DISALLOW_FILE_EDIT" ]]; then 
+    sed -i "s/@WP_DISALLOW_FILE_EDIT/false/g" /tmp/wp-config.txt
+else 
+    sed -i "s/@WP_DISALLOW_FILE_EDIT/${WP_DISALLOW_FILE_EDIT}/g" /tmp/wp-config.txt
+fi
+
+## file mods ##
+if [[ -z "$WP_DISALLOW_FILE_MODS" ]]; then 
+    sed -i "s/@WP_DISALLOW_FILE_MODS/false/g" /tmp/wp-config.txt
+else 
+    sed -i "s/@WP_DISALLOW_FILE_MODS/${WP_DISALLOW_FILE_MODS}/g" /tmp/wp-config.txt
+fi
+
+## file uploads ##
+if [[ -z "$WP_ALLOW_UNFILTERED_UPLOADS" ]]; then 
+    sed -i "s/@WP_ALLOW_UNFILTERED_UPLOADS/true/g" /tmp/wp-config.txt
+else 
+    sed -i "s/@WP_ALLOW_UNFILTERED_UPLOADS/${WP_ALLOW_UNFILTERED_UPLOADS}/g" /tmp/wp-config.txt
 fi
 
 ## rename files ##
