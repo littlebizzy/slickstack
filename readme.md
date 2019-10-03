@@ -1,16 +1,16 @@
-# SlickStack [ss] - "Alpha* ss8b"
+# SlickStack [ss] - "Alpha* ss8c"
 
 SlickStack is a free LEMP stack automation script written in Bash designed to enhance and simplify WordPress provisioning, performance, and security.
 
 ⮕ ⮕ ⮕ [ **Join us on Spectrum Chat 100% free (like Slack + Discourse in a single app)**](https://spectrum.chat/slickstack)
-
-❤️ September 12, 2019: Product Hunt launch, vote for us! https://www.producthunt.com/posts/slickstack
 
 **Alpha because core features are still changing and being "settled". Safe for production servers, if you're okay with this... if you run into any issues, re-installing is always a quick `sudo bash /var/www/ss-install` command away.*
 
 | Google PageSpeed | GTMetrix | Pingdom | Security Headers | Qualys SSL Labs | WebPageTest |
 | :--------------: | :------: | :-----: | :--------------: | :-------------: | :-------------: |
 | [**A**](https://developers.google.com/speed/pagespeed/insights/?url=https%3A%2F%2Fslickstack.io%2F) | [**A**](https://gtmetrix.com/reports/slickstack.io/zpLMZ1eb) | [**A**](https://tools.pingdom.com/#5aeba9dea8000000) | [**A**](https://securityheaders.com/?q=https%3A%2F%2Fslickstack.io%2F&followRedirects=on) | [**A**](https://www.ssllabs.com/ssltest/analyze.html?d=slickstack.io&latest) | [**A**](https://www.webpagetest.org/result/190920_68_a4a541db9847ce601ef264b41df9d0f3/) |
+
+* **NEW!** Many more constants from `wp-config` can now be adjusted in `ss-config` as desired, keep checking back to see more of these being added over the next several weeks...
 
 * **NEW!** Custom MySQL mode now supported using the `MYSQL_MODE` variable in `ss-config`...
 
