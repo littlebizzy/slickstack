@@ -38,12 +38,20 @@ server {
     }
     
 ####################################################################################################
-#### Nginx Server Block: Index Settings ############################################################
+#### Nginx Server Block: Indexing + Try Files Settings #############################################
 ####################################################################################################
     
     ## redirect index.php requests ##
     if ($request_uri ~* "^(.*/)index\.php$") {
         return 301 $1;
+    }
+    
+    ## try files order ##
+    location / {
+        ## first try files, then directories, otherwise query index
+        try_files $uri $uri/ /index.php?$args;
+	## force trailing slashes on urls (do not enable for bbPress/BuddyPress sites)
+        # rewrite ^([^.]*[^/])$ $1/ permanent;
     }
 
 ####################################################################################################
@@ -87,17 +95,6 @@ server {
     # if ($cookie_woocommerce_items_in_cart != "0") {
     #    set $skip_cache 1;
     # }
-
-####################################################################################################
-#### Server Block: Try Files Settings ##############################################################
-####################################################################################################
-
-    location / {
-        ## first try physical files, then directories, otherwise query the wordpress php index
-        try_files $uri $uri/ /index.php?$args;
-	## force trailing slashes on urls... do not enable for bbpress/buddypress
-        # rewrite ^([^.]*[^/])$ $1/ permanent;
-    }
 
 ####################################################################################################
 #### Server Block: PHP-FPM Routing Settings ########################################################
