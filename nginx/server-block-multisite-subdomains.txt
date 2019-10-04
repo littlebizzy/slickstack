@@ -4,14 +4,14 @@
 #### mirror: http://mirrors.slickstack.io/nginx/server-block-multisite-subdomains.txt ##############
 #### path: n/a (boilerplate) #######################################################################
 #### destination: /etc/nginx/sites-available/default (after install) ###############################
-#### purpose: Nginx server block boilerplate #######################################################
+#### purpose: Nginx server block boilerplate for WordPress Multisite installations #################
 #### module version: Nginx 1.15+ ###################################################################
 ####################################################################################################
 
 ## SLICKSTACK SUPPORTS HTTPS-ONLY NGINX SERVER BLOCKS WITH HSTS ENABLED BY DEFAULT ##
 
 ####################################################################################################
-#### Nginx Server Block: WordPress Multisite (Subdomains) ##########################################
+#### Server Block: WordPress Multisite (Subdomains Approach) #######################################
 ####################################################################################################
 
 server {
@@ -24,7 +24,7 @@ server {
 	#server_name_in_redirect off;
 	
 ####################################################################################################
-#### Nginx Server Block: Index Settings ############################################################
+#### Server Block: Indexing + Try Files Settings ###################################################
 ####################################################################################################
 
         ## redirect index.php requests ##
@@ -32,26 +32,154 @@ server {
             return 301 $1;
         }
 	
+	## try files order ##
 	location / {
-        ## first try files, then directories, otherwise query index
+        ## first try files, then directories, otherwise query index ##
         try_files $uri $uri/ /index.php?$args;
-	## force trailing slashes on urls (do not enable for bbPress/BuddyPress sites)
+	## force trailing slashes on urls (do not enable for bbPress/BuddyPress sites) ##
         # rewrite ^([^.]*[^/])$ $1/ permanent;
+        }
+	
+	## hidden files (block access) ##
+        location ~ /\. {
+        ## do not enable if using Certbot, Git, etc ##
+	    # deny all;
+        }
+	
+	## Certbot domain verification ##
+        location = /.well-known* {
+            allow all;
         }
 
 
+####################################################################################################
+#### Server Block: FastCGI Cache Settings ##########################################################
+####################################################################################################
 
+    ## set to either 1/0 to skip fastcgi cache by default ##
+    set $skip_cache @FCGI_CACHE;
+    
+    ## post requests should always skip the cache
+    if ($request_method = POST) {
+        set $skip_cache 1;
+    }
+    
+    ## query strings should always skip the cache
+    if ($query_string != "") {
+        set $skip_cache 1;
+    }
+    
+    ## sensitive wordpress urls should always skip the cache
+    if ($request_uri ~* "index.php|/account.*|/cart.*|/checkout.*|/contact.*|/dashboard.*|/login.*|/my-.*|/order.*|/profile.*|/register.*|/settings.*|/view.*|/wc-api.*|/wp-admin.*|wp-.*.php") {
+        set $skip_cache 1;
+    }
+    
+    ## logged in users or recent commenters etc should always skip the cache
+    if ($http_cookie ~* "wordpress_logged_in|wp-postpass|woocommerce_items_in_cart|woocommerce_cart_hash|comment_author") {
+        set $skip_cache 1;
+    }
+    
+    ## woocommerce cart actions should always skip the cache
+    # if ($arg_add-to-cart != "") {
+    #    set $skip_cache 1;
+    # }
+    
+    ## woocommerce shoppers should always skip the cache
+    # if ($http_cookie ~* "cookie_woocommerce_items_in_cart") {
+    #    set $skip_cache 1;
+    # }
+    
+    ## woocommerce shoppers should always skip the cache
+    # if ($cookie_woocommerce_items_in_cart != "0") {
+    #    set $skip_cache 1;
+    # }
 
-	location ~ .php$ {
-		try_files $uri =404;
-		include fastcgi_params;
-		fastcgi_pass 127.0.0.1:9000;
-	}
+####################################################################################################
+#### Server Block: PHP-FPM Routing + FastCGI Routing Settings ######################################
+####################################################################################################
 
-	location ~* ^.+.(ogg|ogv|svg|svgz|eot|otf|woff|mp4|ttf|rss|atom|jpg|jpeg|gif|png|ico|zip|tgz|gz|rar|bz2|doc|xls|exe|ppt|tar|mid|midi|wav|bmp|rtf)$ {
-		access_log off;	log_not_found off; expires max;
-	}
+    location ~ \.php$ {
+        set $rt_session "";
+        if ($http_cookie ~* "wp_woocommerce_session_[^=]*=([^%]+)%7C") {
+                set $rt_session wp_woocommerce_session_$1;
+        }	
+        if ($skip_cache = 0 ) {
+                more_clear_headers "Set-Cookie*";
+                set $rt_session "";
+        }
 
+        ## include /etc/nginx/fastcgi_params for older nginx versions
+        include /etc/nginx/fastcgi.conf;
+        try_files $uri =404;
+        fastcgi_split_path_info ^(.+\.php)(/.+)$;
+        ## fastcgi_pass unix:/var/run/php/php7.2-fpm.sock
+	fastcgi_pass unix:/run/php/php7.2-fpm.sock;
+	fastcgi_read_timeout 300;
+        fastcgi_index index.php;
+        fastcgi_cache WORDPRESS;
+        fastcgi_cache_valid 200 301 404 @CACHEVALID;
+        fastcgi_cache_bypass $skip_cache;
+        fastcgi_no_cache $skip_cache;
+        ## below line should not be needed
+        # include snippets/fastcgi-php.conf;
+    }
+    
+####################################################################################################
+#### Server Block: WP-Login Settings (Rate Limiting) ###############################################
+####################################################################################################
+
+    location = /wp-login.php {
+        ## limit access to one request per second per IP address
+        limit_req zone=one burst=1 nodelay;
+        ## we must re-include this routing for php-fpm ##
+        include /etc/nginx/fastcgi.conf;
+        try_files $uri =404;
+        fastcgi_split_path_info ^(.+\.php)(/.+)$;
+        ## fastcgi_pass unix:/var/run/php/php7.2-fpm.sock
+	fastcgi_pass unix:/run/php/php7.2-fpm.sock;
+	fastcgi_read_timeout 300;
+        fastcgi_index index.php;
+        fastcgi_cache WORDPRESS;
+        fastcgi_cache_valid 200 301 404 @CACHEVALID;
+        fastcgi_cache_bypass $skip_cache;
+        fastcgi_no_cache $skip_cache;
+    }
+    
+####################################################################################################
+#### Server Block: Staging URI Settings (Supports WP-Staging, Etc) #################################
+####################################################################################################
+    
+    location /staging* {
+        ## first try files, then directories, otherwise query index ##
+        try_files $uri $uri/ /staging/index.php?$args;
+        ## tweak FastCGI Cache (needs to be improved with mild cache settings) ##
+        include /etc/nginx/fastcgi.conf;
+        fastcgi_split_path_info ^(.+\.php)(/.+)$;
+        fastcgi_pass unix:/run/php/php7.2-fpm.sock;
+        fastcgi_read_timeout 300;
+        fastcgi_index index.php;
+        fastcgi_cache off;
+    }
+
+####################################################################################################
+#### Server Block: Static Resource Settings (Expiration Headers) ###################################
+####################################################################################################
+
+    ## CloudFlare (or CDNs) overwrite these headers ##
+    location ~* \.(atom|bmp|bz2|css|doc|docx|eot|gif|gz|ico|jpeg|jpg|js|mid|midi|mp4|ogg|ogv|otf|png|ppt|rar|rss|rtf|svg|svgz|tar|tgz|ttf|wav|woff|xls|zip)$ {
+        expires max;
+    }
+
+####################################################################################################
+#### Server Block: Browser Resource (Render) Settings ##############################################
+####################################################################################################
+
+    location ~ \.(eot|ttf|ttc|otf|woff|woff2|svg|css|js)$ {
+        ## avoid render security errors in certain browsers e.g. Firefox/IE ##
+        add_header Access-Control-Allow-Origin "*";
+	expires max;
+    }
+    
 ####################################################################################################
 #### Server Block: Favicon Settings ################################################################
 ####################################################################################################
@@ -66,27 +194,19 @@ server {
 ####################################################################################################
     
     location = /robots.txt {
-        ## first try files, then directories, otherwise query index.php ##
+        ## first try files, then directories, otherwise query index ##
         try_files $uri $uri/ /index.php?$args;
 	allow all;
     }
     
 ####################################################################################################
-#### Server Block: Ads.txt Settings ################################################################
+#### Server Block: Ads.txt Settings (Optimized For Virtual Ads.txt MU Plugin) ######################
 ####################################################################################################
     
     location = /ads.txt {
-        ## first try files, then directories, otherwise query index.php ##
+        ## first try files, then directories, otherwise query index ##
         try_files $uri $uri/ /index.php?$args;
 	allow all;
-    }
-    
-####################################################################################################
-#### Server Block: WP-Config Settings ##############################################################
-####################################################################################################
-    
-    location = /wp-config*.php {
-	deny all;
     }
     
 ####################################################################################################
@@ -97,6 +217,71 @@ server {
 	deny all;
     }
 
+####################################################################################################
+#### Server Block: Git Configuration Settings ######################################################
+####################################################################################################
+
+    location = /.git/config {
+        deny all;
+    }
+   
+####################################################################################################
+#### Server Block: Deny Access To Various (Unsafe + Unused) WordPress Core Files ###################
+####################################################################################################
+
+    ## WP directories ##
+    location ~* /(?:wp-includes|wp-content|mu-plugins|uploads)/.*\.php$ {
+        deny all;
+    }
+    
+    ## WP meta files ##
+    location ~* (license|licence|readme)\.(htm|html|txt) {
+	deny all;
+    }
+    
+    ## wp-config ##
+    location = /wp-config*.php {
+	deny all;
+    }
+    
+    ## XML-RPC ##
+    location = /xmlrpc.php {
+	deny all;
+    }
+    
+    ## wp-mail ##
+    location = /wp-mail.php {
+	deny all;
+    }
+    
+    ## wp-links-opml ##
+    location = /wp-links-opml.php {
+	deny all;
+    }
+    
+    ## wp-trackback ##
+    location = /wp-trackback.php {
+	deny all;
+    }
+    
+    ## WP debug logs ##
+    location ~ /wp-content/debug\.log {
+	deny all;
+    }
+
+####################################################################################################
+#### Server Block: Custom Settings For Popular Third-Party WordPress Plugins #######################
+####################################################################################################
+    
+    ## Easy Digital Downloads ##
+    location ~ ^/wp-content/uploads/edd/(.*?)\.zip$ {
+        rewrite / permanent;
+    }
+    
+    ## more coming soon... ##
+    
+    
+## DO NOT REMOVE THIS CURLY BRACKET ᕦ⊙෴⊙ᕤ ##
 }
 
 ####################################################################################################
