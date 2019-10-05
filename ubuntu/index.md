@@ -38,9 +38,10 @@ title: Ubuntu (Public Mirrors)
 
 * <a href="http://manpages.ubuntu.com/manpages/bionic/man5/gai.conf.5.html">http://manpages.ubuntu.com/manpages/bionic/man5/gai.conf.5.html</a>
 * <a href="https://wiki.ubuntu.com/UncomplicatedFirewall">https://wiki.ubuntu.com/UncomplicatedFirewall</a>
+* http://manpages.ubuntu.com/manpages/bionic/man3/DateTime::TimeZone::Catalog.3pm.html
 
 
 
 ----
 
-*Last updated: Aug 7, 2019*
+*Last updated: Oct 5, 2019*
