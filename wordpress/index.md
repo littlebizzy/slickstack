@@ -118,6 +118,8 @@
 
 *Links and resources related to the above module that may help users understand its functionality, or how it interacts with other LEMP stack modules.*
 
+* https://wpseek.com
+* http://hookr.io
 * <a href="https://github.com/WordPress/WordPress">https://github.com/WordPress/WordPress</a>
 * <a href="https://wordpress.org/download/releases/">https://wordpress.org/download/releases/</a>
 * <a href="https://codex.wordpress.org/Editing_wp-config.php">https://codex.wordpress.org/Editing_wp-config.php</a>
@@ -125,7 +127,8 @@
 * https://code.tutsplus.com/articles/new-wp-config-tweaks-you-probably-dont-know--wp-35396
 * https://gist.github.com/logichub/ef4bc9fc5961ba1c634a
 * https://wp-mix.com/wordpress-configuration-tricks/
+* https://codex.wordpress.org/Determining_Plugin_and_Content_Directories
 
 ----
 
-*Last updated: Oct 3, 2019*
+*Last updated: Oct 8, 2019*
