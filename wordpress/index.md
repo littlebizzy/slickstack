@@ -128,6 +128,7 @@
 * https://gist.github.com/logichub/ef4bc9fc5961ba1c634a
 * https://wp-mix.com/wordpress-configuration-tricks/
 * https://codex.wordpress.org/Determining_Plugin_and_Content_Directories
+* https://brooke.codes/2010/04/08/wordpress-theme-exists-and-wp_theme_dir/
 
 ----
 
