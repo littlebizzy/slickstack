@@ -7,17 +7,17 @@
 #### path: /var/www/ss-perms #######################################################################
 #### destination: n/a (not a boilerplate) ##########################################################
 #### purpose: resets all file and user permissions across entire SlickStack server #################
-#### module version: n/a ###########################################################################
+#### module version: Ubuntu 18.04 ##################################################################
 ####################################################################################################
 
 ## include SlickStack configuration ##
 source /var/www/ss-config
 
 ####################################################################################################
-#### Reset Permissions: Ubuntu System Files + Users + Groups #######################################
+#### Reset Permissions: Ubuntu (System Files + Users + Groups) #####################################
 ####################################################################################################
 
-## reset Ubuntu system files permissions ##
+## Ubuntu system files ##
 chown root:root /etc/ssh/sshd_config
 chown root:root /etc/sudoers
 chown root:root /var/spool/cron/crontabs/root
@@ -27,37 +27,29 @@ chmod 0440 /etc/sudoers
 chmod 0600 /var/spool/cron/crontabs/root
 chmod 0664 /etc/sysctl.conf
 
-## create wordpress group if does not exist ##
+## create wordpress group if does not exist and various SlickStack users/groups ##
 addgroup wordpress &> /dev/null
-adduser $user wordpress &> /dev/null
+adduser $user wordpress &> /dev/null ## deprecated soon
 adduser $SFTP_USER wordpress &> /dev/null
 adduser $SFTP_USER www-data &> /dev/null
 adduser www-data wordpress &> /dev/null
 
 ####################################################################################################
-#### Reset Permissions: SlickStack Core Files ######################################################
+#### Reset Permissions: SlickStack Core Files (Besides Public HTML Directory) ######################
 ####################################################################################################
 
-## ensure directories exist (will not overwrite if exist already) ##
+## ensure directories exist (will not overwrite) ##
 mkdir -p /var/www
 mkdir -p /var/www/cache
 mkdir -p /var/www/logs
 mkdir -p /var/www/meta
 
-## reset permissions for the chroot (SFTP) user's jailed directory ##
+## chroot (SFTP) user directory ##
 chown root:root /var ## must be root:root
 chown root:root /var/www ## must be root:root
 chmod 0755 /var/www ## must be 0755
 
-## its okay if the SFTP user accesses this stuff but www-data:www-data is the priority ##
-chown www-data:www-data /var/www/cache
-chown www-data:www-data /var/www/logs
-chown www-data:www-data /var/www/meta
-chmod 6775 /var/www/cache ## 6755 also should work
-chmod 6775 /var/www/logs ## 6755 also should work
-chmod 6775 /var/www/meta ## 6755 also should work
-
-## reset file permissions for scripts used by root/user users ##
+## SlickStack core scripts ##
 chown root:root /var/www/*cron* ## must be root:root
 chown root:root /var/www/ss* ## must be root:root
 chown www-data:www-data /var/www/wp.sql ## root:root should also work
@@ -66,11 +58,33 @@ chmod 6770 /var/www/ss* ## 4700 should also work
 chmod 0700 /var/www/ss-config
 chmod 6770 /var/www/wp.sql
 
+## its okay if the SFTP user accesses this stuff (but www-data access is the priority) ##
+chown www-data:www-data /var/www/cache ## must be www-data:www-data
+chown www-data:www-data /var/www/logs ## must be www-data:www-data
+chown www-data:www-data /var/www/meta ## must be www-data:www-data
+chmod 6775 /var/www/cache ## 6755 should also work
+chmod 6775 /var/www/logs ## 6755 should also work
+chmod 6775 /var/www/meta ## 6755 should also work
+
+## ensure log files exist ##
+if [ ! -f "/var/www/logs/clamav.log" ]; then touch "/var/www/logs/clamav.log"; fi
+if [ ! -f "/var/www/logs/error.log" ]; then touch "/var/www/logs/error.log"; fi
+if [ ! -f "/var/www/logs/mysql.log" ]; then touch "/var/www/logs/mysql.log"; fi
+if [ ! -f "/var/www/logs/nginx.log" ]; then touch "/var/www/logs/nginx.log"; fi
+if [ ! -f "/var/www/logs/redis.log" ]; then touch "/var/www/logs/redis.log"; fi
+
+## individual log files ##
+chown clamav:clamav /var/www/logs/clamav*.log*
+chown www-data:www-data /var/www/logs/error*.log*
+chown mysql:mysql /var/www/logs/mysql*.log*
+chown www-data:www-data /var/www/logs/nginx*.log*
+chown redis:redis /var/www/logs/redis*.log*
+
 ####################################################################################################
 #### Reset Permissions: Public HTML Directory (WordPress) ##########################################
 ####################################################################################################
 
-## ensure directories exist (will not overwrite if exist already) ##
+## ensure directories exist (will not overwrite) ##
 mkdir -p /var/www/html
 mkdir -p /var/www/html/wp-admin
 mkdir -p /var/www/html/wp-content
@@ -82,21 +96,14 @@ mkdir -p /var/www/html/wp-content/upgrade
 mkdir -p /var/www/html/wp-includes
 
 ## ensure files exist ##
-if [ ! -f "/var/www/html/wp-content/blacklist.txt" ]; then 
-    touch "/var/www/html/wp-content/blacklist.txt"
-fi
-    
-if [ ! -f "/var/www/html/wp-content/functions.php" ]; then 
-    touch "/var/www/html/wp-content/functions.php"
-fi
+if [ ! -f "/var/www/html/wp-content/blacklist.txt" ]; then touch "/var/www/html/wp-content/blacklist.txt"; fi
+if [ ! -f "/var/www/html/wp-content/functions.php" ]; then touch "/var/www/html/wp-content/functions.php"; fi
 
-## reset folder permissions ##
-# sudo chown $SFTP_USER:wordpress -R /var/www/html* ## old
-# sudo chown $SFTP_USER:www-data -R /var/www/html* ## should use this one
-
+## public files ##
 if [[ -z "$SFTP_USER" ]]; then 
     chown -R $user:wordpress /var/www/html
 else 
+    # chown -R $SFTP_USER:www-data /var/www/html
     chown -R $SFTP_USER:wordpress /var/www/html
 fi
 
@@ -118,24 +125,7 @@ chmod 0440 /var/www/html/wp-content/blacklist.txt
 # chmod 6664 /var/www/html/wp-content/functions.php
 
 ####################################################################################################
-#### Reset Permissions: Various Log Files ##########################################################
-####################################################################################################
-
-## ensure files exist ##
-if [ ! -f "/var/www/logs/clamav.log" ]; then touch "/var/www/logs/clamav.log"; fi
-if [ ! -f "/var/www/logs/error.log" ]; then touch "/var/www/logs/error.log"; fi
-if [ ! -f "/var/www/logs/mysql.log" ]; then touch "/var/www/logs/mysql.log"; fi
-if [ ! -f "/var/www/logs/nginx.log" ]; then touch "/var/www/logs/nginx.log"; fi
-if [ ! -f "/var/www/logs/redis.log" ]; then touch "/var/www/logs/redis.log"; fi
-
-chown clamav:clamav /var/www/logs/clamav*.log*
-chown www-data:www-data /var/www/logs/error*.log*
-chown mysql:mysql /var/www/logs/mysql*.log*
-chown www-data:www-data /var/www/logs/nginx*.log*
-chown redis:redis /var/www/logs/redis*.log*
-
-####################################################################################################
-#### Reset Permissions: Various SlickStack (LEMP) Modules ##########################################
+#### Reset Permissions: SlickStack (LEMP) Modules ##################################################
 ####################################################################################################
 
 mkdir -p /var/run/mysqld
@@ -172,6 +162,7 @@ chown redis:redis /etc/redis/redis.conf
 #### Convert DOS Files To Unix Files (Requires Dos2Unix To Be Installed) ###########################
 ####################################################################################################
 
+## might take a really long time if many files ##
 if [[ "$SS_DOS2UNIX" == "true" ]]; then 
     find /var/www/html/ -type f -exec dos2unix -k -o -s {} \;
 fi
@@ -187,11 +178,11 @@ redis-cli flushall
 ####################################################################################################
 
 ## Ref: https://unix.stackexchange.com/questions/203371/run-script-sh-vs-bash-script-sh-permission-denied/203372#203372
-## Ref: https://stackoverflow.com/a/19284034/1718491
-## Ref: https://stackoverflow.com/a/11929475/1718491
-## Ref: https://unix.stackexchange.com/a/310437/353848
+## Ref: https://stackoverflow.com/questions/14372645/convert-dos2unix-line-endings-for-all-files-in-a-directory/19284034#19284034
+## Ref: https://stackoverflow.com/questions/11929461/how-can-i-run-dos2unix-on-an-entire-directory/11929475#11929475
+## Ref: https://unix.stackexchange.com/questions/310432/bash-script-to-convert-all-files-of-a-given-type-from-unix-to-dos-format/310437#310437
 ## Ref: https://kb.iu.edu/d/acux
-## Ref: https://stackoverflow.com/q/2613800/1718491
+## Ref: https://stackoverflow.com/questions/2613800/how-to-convert-dos-windows-newline-crlf-to-unix-newline-lf-in-a-bash-script
 ## Ref: https://github.com/wp-cli/wp-cli/issues/3181
 ## Ref: https://github.com/wp-cli/wp-cli/issues/1241
 ## Ref: https://www.alexgeorgiou.gr/wp-cli-www-data-user-permissions-linux/
