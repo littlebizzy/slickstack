@@ -56,9 +56,10 @@ fi
 ## in future versions maybe hide this in a system folder (Nginx server block mask) ##
 mkdir -p /var/www/html/.well-known
 mkdir -p /var/www/html/.well-known/acme-challenge
-chown -R www-data:www-data /var/www/html/.well-known
-chmod -R g+s /var/www/html/.well-known
-chmod -R 755 /var/www/html/.well-known
+
+## this folder used by server for e.g. Cerbot but also SFTP for things like Stripe ##
+chown -R $SFTP_USER:www-data /var/www/html/.well-known
+chmod 6775 /var/www/html/.well-known
 
 ## request/renew Certbot SSL certificate (via their remote API) ##
 certbot certonly --noninteractive --agree-tos --register-unsafely-without-email -d ${SITE_DOMAIN} --webroot -w /var/www/html/
