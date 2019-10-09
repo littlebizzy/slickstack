@@ -129,7 +129,8 @@
 * https://wp-mix.com/wordpress-configuration-tricks/
 * https://codex.wordpress.org/Determining_Plugin_and_Content_Directories
 * https://brooke.codes/2010/04/08/wordpress-theme-exists-and-wp_theme_dir/
+* https://training.ithemes.com/webinar/hardcoding-the-wordpress-setup-process/
 
 ----
 
-*Last updated: Oct 8, 2019*
+*Last updated: Oct 9, 2019*
