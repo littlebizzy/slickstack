@@ -132,6 +132,7 @@
 * https://training.ithemes.com/webinar/hardcoding-the-wordpress-setup-process/
 * https://codex.wordpress.org/Option_Reference
 * http://wp-answers.com/demo/question/how-to-get-wordpress-time-zone-setting/
+* https://wpengineer.com/1164/my-hacksphp/
 
 ----
 
