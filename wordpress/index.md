@@ -131,7 +131,8 @@
 * https://brooke.codes/2010/04/08/wordpress-theme-exists-and-wp_theme_dir/
 * https://training.ithemes.com/webinar/hardcoding-the-wordpress-setup-process/
 * https://codex.wordpress.org/Option_Reference
+* http://wp-answers.com/demo/question/how-to-get-wordpress-time-zone-setting/
 
 ----
 
-*Last updated: Oct 9, 2019*
+*Last updated: Oct 12, 2019*
