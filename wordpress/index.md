@@ -10,6 +10,7 @@
 * <a href="wp-config.txt">wp-config.txt</a>
 * <a href="object-cache.txt">object-cache.txt</a>
 * <a href="blacklist.txt">blacklist.txt</a>
+* <a href="functions.txt">functions.txt</a>
 
 ### Default Files
 
