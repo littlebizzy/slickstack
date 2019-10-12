@@ -1,4 +1,4 @@
-# SlickStack [ss] - "Alpha* ss8c"
+# SlickStack [ss] - "Alpha* ss8d"
 
 SlickStack is a free LEMP stack automation script written in Bash designed to enhance and simplify WordPress provisioning, performance, and security.
 
@@ -9,6 +9,8 @@ SlickStack is a free LEMP stack automation script written in Bash designed to en
 | Google PageSpeed | GTMetrix | Pingdom | Security Headers | Qualys SSL Labs | WebPageTest |
 | :--------------: | :------: | :-----: | :--------------: | :-------------: | :-------------: |
 | [**A**](https://developers.google.com/speed/pagespeed/insights/?url=https%3A%2F%2Fslickstack.io%2F) | [**A**](https://gtmetrix.com/reports/slickstack.io/zpLMZ1eb) | [**A**](https://tools.pingdom.com/#5aeba9dea8000000) | [**A**](https://securityheaders.com/?q=https%3A%2F%2Fslickstack.io%2F&followRedirects=on) | [**A**](https://www.ssllabs.com/ssltest/analyze.html?d=slickstack.io&latest) | [**A**](https://www.webpagetest.org/result/190920_68_a4a541db9847ce601ef264b41df9d0f3/) |
+
+* **NEW!** Use the `CUSTOM_FUNCTIONS_SOURCE` variable to save time and wget custom `functions.php` file during install...
 
 * **NEW!** The `ss-purge` core script clears FastCGI Cache, OPcache, and Redis object cache in one go...
 
