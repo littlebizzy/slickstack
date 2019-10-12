@@ -237,8 +237,21 @@ chmod 664 /var/www/html/wp-content/object-cache.php
 #### modify other files (besides wp-config.php) used by MU plugins as needed #######################
 ####################################################################################################
 
-## ensure the functions.php file exists (used by Custom Functions) ##
-if [ ! -f /var/www/html/wp-content/functions.php ]; then touch /var/www/html/wp-content/functions.php; fi
+rm -R -f /tmp/functions*
+
+## retrieve custom functions.php file if defined (otherwise create a generic one) ##
+if [ ! -f /var/www/html/wp-content/functions.php ] && [ -z "$CUSTOM_FUNCTIONS_SOURCE" ]; then
+    wget --no-cache --no-cookies --tries=3 --timeout=15 -O /tmp/functions.php http://mirrors.slickstack.io/wordpress/functions.txt
+elif [ ! -f /var/www/html/wp-content/functions.php ] && [ -n "$CUSTOM_FUNCTIONS_SOURCE" ]; then
+    wget --no-check-certificate --no-cache --no-cookies --tries=3 --timeout=15 -O /tmp/functions.php "$CUSTOM_FUNCTIONS_SOURCE"
+fi
+
+## copy files and delete tmp files ##
+cp -R -f --no-preserve=mode,ownership /tmp/functions.php /var/www/html/wp-content/functions.php
+rm -R -f /tmp/functions*
+
+chown $SFTP_USER:wordpress /var/www/html/wp-content/functions.php
+chmod 6775 /var/www/html/wp-content/functions.php
 
 ## ensure blacklist.txt file exists ##
 # if [ ! -f /var/www/html/wp-content/blacklist.txt ]; then touch /var/www/html/wp-content/blacklist.txt; fi
