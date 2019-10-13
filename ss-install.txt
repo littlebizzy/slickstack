@@ -27,7 +27,7 @@ if [[ "${UBUNTU_VERSION}" != "18.04" ]]; then
 fi
 
 ## ensure ss-config build version matches ss-install build version ##
-if [[ "$SS_BUILD" != "OCT2019D" ]]; then 
+if [[ "$SS_BUILD" != "OCT2019E" ]]; then 
     echo -e "\e[93mYour ss-config file is outdated. Please rebuild it and run ss-install again.\e[0m" >&2
     exit 1
 fi
@@ -618,6 +618,13 @@ sed -i "s/@SFTP_PASSWORD/${SFTP_PASSWORD}/g" /tmp/wp-config.txt
 ## replace CloudFlare placeholders ##
 sed -i "s/@CLOUDFLARE_API_KEY/${CLOUDFLARE_API_KEY}/g" /tmp/wp-config.txt
 sed -i "s/@CLOUDFLARE_API_EMAIL/${CLOUDFLARE_API_EMAIL}/g" /tmp/wp-config.txt
+
+## CloudFlare DNS widget ##
+if [[ -z "$CLOUDFLARE_WIDGET_DNS" ]]; then 
+    sed -i "s/@CLOUDFLARE_WIDGET_DNS/true/g" /tmp/wp-config.txt
+else 
+    sed -i "s/@CLOUDFLARE_WIDGET_DNS/${CLOUDFLARE_WIDGET_DNS}/g" /tmp/wp-config.txt
+fi
 
 ## replace salt keys ##
 sed -i "s/@AUTHKEY/$(openssl rand -hex 48)/g" /tmp/wp-config.txt
