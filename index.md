@@ -10,20 +10,20 @@ title: SlickStack (Public Mirrors)
 
 *Main modules of SlickStack's optimized WordPress LEMP stack, including Ubuntu LTS, Nginx, MySQL, PHP-FPM, Redis, and several LittleBizzy MU plugins.*
 
-* <a href="clamav/">/clamav/</a>
-* <a href="fastcgi-cache/">/fastcgi-cache/</a>
-* <a href="git/">/git/</a>
+* <a href="clamav/">ClamAV</a>
+* <a href="git/">Git</a>
 * <a href="letsencrypt/">/letsencrypt/</a>
 * <a href="mu-plugins/">/mu-plugins/</a>
 * <a href="mysql/">/mysql/</a>
-* <a href="nginx/">/nginx/</a>
+* <a href="nginx/">Nginx</a>
+  * <a href="fastcgi-cache/">FastCGI Cache</a>
 * <a href="opcache/">/opcache/</a>
 * <a href="openssl/">/openssl/</a>
 * <a href="php-fpm/">/php-fpm/</a>
 * <a href="redis/">/redis/</a>
 * <a href="starter-themes/">/starter-themes/</a>
-* <a href="ubuntu/">/ubuntu/</a>
-* <a href="ufw-firewall/">/ufw-firewall/</a>
+* <a href="ubuntu/">Ubuntu LTS</a>
+  * <a href="ufw-firewall/">UFW Firewall</a>
 * <a href="wordpress/">/wordpress/</a>
 * <a href="wp-cli/">/wp-cli/</a>
 
