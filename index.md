@@ -14,18 +14,18 @@ title: SlickStack (Public Mirrors)
 * <a href="git/">Git</a>
 * <a href="letsencrypt/">/letsencrypt/</a>
 * <a href="mu-plugins/">/mu-plugins/</a>
-* <a href="mysql/">/mysql/</a>
+* <a href="mysql/">MySQL</a>
 * <a href="nginx/">Nginx</a>
   * <a href="fastcgi-cache/">FastCGI Cache</a>
-* <a href="opcache/">/opcache/</a>
-* <a href="openssl/">/openssl/</a>
-* <a href="php-fpm/">/php-fpm/</a>
+* <a href="php-fpm/">PHP-FPM</a>
+  * * <a href="opcache/">OPcache</a>
 * <a href="redis/">/redis/</a>
 * <a href="starter-themes/">/starter-themes/</a>
 * <a href="ubuntu/">Ubuntu LTS</a>
+  * <a href="openssl/">OpenSSL</a>
   * <a href="ufw-firewall/">UFW Firewall</a>
-* <a href="wordpress/">/wordpress/</a>
-* <a href="wp-cli/">/wp-cli/</a>
+* <a href="wordpress/">WordPress</a>
+* <a href="wp-cli/">WP-CLI</a>
 
 ### Core Scripts
 
