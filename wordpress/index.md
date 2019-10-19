@@ -11,10 +11,13 @@
 * <a href="object-cache.txt">object-cache.txt</a>
 * <a href="blacklist.txt">blacklist.txt</a>
 * <a href="functions.txt">functions.txt</a>
+* <a href="throwaway.zip">throwaway.zip</a>
 
 ### Default Files
 
 *Raw files from the vendor’s original release (e.g. official repo), not altered by other providers, included for reference and documentation purposes.*
+
+#### WordPress
 
 * <a href="wordpress-5.2.3.zip">wordpress-5.2.3.zip</a>
 * <a href="wp-config-sample-5.2.3.txt">wp-config-sample-5.2.3.txt</a>
@@ -115,6 +118,10 @@
 * <a href="wordpress-4.6.0.zip">wordpress-4.6.0.zip</a>
 * <a href="wp-config-sample-4.6.0.txt">wp-config-sample-4.6.0.txt</a>
 
+#### Throwaway Theme
+
+* <a href="throwaway-theme-1.0.0.zip">throwaway-theme-1.0.0.zip</a>
+
 ### Related Links
 
 *Links and resources related to the above module that may help users understand its functionality, or how it interacts with other LEMP stack modules.*
@@ -137,4 +144,4 @@
 
 ----
 
-*Last updated: Oct 12, 2019*
+*Last updated: Oct 19, 2019*
