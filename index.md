@@ -19,12 +19,12 @@ title: SlickStack (Public Mirrors)
   * <a href="opcache/">OPcache</a>
 * <a href="clamav/">ClamAV</a>
 * <a href="git/">Git</a>
-* <a href="letsencrypt/">/letsencrypt/</a>
+* <a href="letsencrypt/">Let's Encrypt (Certbot)</a>
 * <a href="mysql/">MySQL</a>
 * <a href="redis/">/redis/</a>
-* <a href="starter-themes/">/starter-themes/</a>
 * <a href="wordpress/">WordPress</a>
   * <a href="mu-plugins/">Must Use (MU) Plugins</a>
+  * <a href="starter-themes/">Starter Themes</a>
   * <a href="wp-cli/">WP-CLI</a>
 
 ### Core Scripts
