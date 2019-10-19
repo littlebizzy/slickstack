@@ -21,7 +21,7 @@ title: SlickStack (Public Mirrors)
 * <a href="git/">Git</a>
 * <a href="letsencrypt/">Let's Encrypt (Certbot)</a>
 * <a href="mysql/">MySQL</a>
-* <a href="redis/">/redis/</a>
+* <a href="redis/">Redis</a>
 * <a href="wordpress/">WordPress</a>
   * <a href="mu-plugins/">Must Use (MU) Plugins</a>
   * <a href="starter-themes/">Starter Themes</a>
