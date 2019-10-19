@@ -10,22 +10,22 @@ title: SlickStack (Public Mirrors)
 
 *Main modules of SlickStack's optimized WordPress LEMP stack, including Ubuntu LTS, Nginx, MySQL, PHP-FPM, Redis, and several LittleBizzy MU plugins.*
 
-* <a href="clamav/">ClamAV</a>
-* <a href="git/">Git</a>
-* <a href="letsencrypt/">/letsencrypt/</a>
-* <a href="mu-plugins/">/mu-plugins/</a>
-* <a href="mysql/">MySQL</a>
-* <a href="nginx/">Nginx</a>
-  * <a href="fastcgi-cache/">FastCGI Cache</a>
-* <a href="php-fpm/">PHP-FPM</a>
-  * * <a href="opcache/">OPcache</a>
-* <a href="redis/">/redis/</a>
-* <a href="starter-themes/">/starter-themes/</a>
 * <a href="ubuntu/">Ubuntu LTS</a>
   * <a href="openssl/">OpenSSL</a>
   * <a href="ufw-firewall/">UFW Firewall</a>
+* <a href="nginx/">Nginx</a>
+  * <a href="fastcgi-cache/">FastCGI Cache</a>
+* <a href="php-fpm/">PHP-FPM</a>
+  * <a href="opcache/">OPcache</a>
+* <a href="clamav/">ClamAV</a>
+* <a href="git/">Git</a>
+* <a href="letsencrypt/">/letsencrypt/</a>
+* <a href="mysql/">MySQL</a>
+* <a href="redis/">/redis/</a>
+* <a href="starter-themes/">/starter-themes/</a>
 * <a href="wordpress/">WordPress</a>
-* <a href="wp-cli/">WP-CLI</a>
+  * <a href="mu-plugins/">Must Use (MU) Plugins</a>
+  * <a href="wp-cli/">WP-CLI</a>
 
 ### Core Scripts
 
