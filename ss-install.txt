@@ -33,7 +33,7 @@ if [[ "${UBUNTU_VERSION}" != "18.04" ]]; then
 fi
 
 ## ensure ss-config build version matches ss-install build version ##
-if [[ "$SS_BUILD" != "OCT2019G" ]]; then 
+if [[ "$SS_BUILD" != "OCT2019H" ]]; then 
     echo -e "\e[93mYour ss-config file is outdated. Please rebuild it and run ss-install again.\e[0m" >&2
     exit 1
 fi
@@ -537,6 +537,15 @@ if [[ -z "$MYSQL_MODE" ]]; then
     sed -i "s/@MYSQL_MODE/STRICT_TRANS_TABLES,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION/g" /tmp/my.cnf
 else 
     sed -i "s/@MYSQL_MODE/${MYSQL_MODE}/g" /tmp/my.cnf
+fi
+
+## set InnoDB buffer pool size (supports "auto" or manual via ss-config) ##
+PERCENT_RAM_MB=$(free -m | awk 'NR==2{printf "%d", $2*0.50 }')
+
+if [[ "$INNODB_BUFFER_POOL_SIZE" == "auto" ]]; then 
+    sed -i "s/@INNODB_BUFFER_POOL_SIZE/${PERCENT_RAM_MB}M/g" /tmp/my.cnf
+else 
+    sed -i "s/@INNODB_BUFFER_POOL_SIZE/${INNODB_BUFFER_POOL_SIZE}/g" /tmp/my.cnf
 fi
 
 ## set InnoDB flush method ##
