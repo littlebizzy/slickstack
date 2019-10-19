@@ -15,13 +15,13 @@ title: SlickStack (Public Mirrors)
   * <a href="ufw-firewall/">UFW Firewall</a>
 * <a href="nginx/">Nginx</a>
   * <a href="fastcgi-cache/">FastCGI Cache</a>
+  * <a href="letsencrypt/">Let's Encrypt (Certbot)</a>
+* <a href="mysql/">MySQL</a>
+  * <a href="redis/">Redis</a>
 * <a href="php-fpm/">PHP-FPM</a>
   * <a href="opcache/">OPcache</a>
 * <a href="clamav/">ClamAV</a>
 * <a href="git/">Git</a>
-* <a href="letsencrypt/">Let's Encrypt (Certbot)</a>
-* <a href="mysql/">MySQL</a>
-* <a href="redis/">Redis</a>
 * <a href="wordpress/">WordPress</a>
   * <a href="mu-plugins/">Must Use (MU) Plugins</a>
   * <a href="starter-themes/">Starter Themes</a>
