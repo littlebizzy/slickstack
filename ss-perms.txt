@@ -24,14 +24,14 @@ source /var/www/ss-config
 ####################################################################################################
 
 ## Ubuntu system files ##
-chown root:root /etc/ssh/sshd_config
-chown root:root /etc/sudoers
-chown root:root /var/spool/cron/crontabs/root
-chown root:root /etc/sysctl.conf
-chmod 0440 /etc/ssh/sshd_config
-chmod 0440 /etc/sudoers
-chmod 0600 /var/spool/cron/crontabs/root
-chmod 0664 /etc/sysctl.conf
+chown root:root /etc/ssh/sshd_config &> /dev/null
+chown root:root /etc/sudoers &> /dev/null
+chown root:root /var/spool/cron/crontabs/root &> /dev/null
+chown root:root /etc/sysctl.conf &> /dev/null
+chmod 0440 /etc/ssh/sshd_config &> /dev/null
+chmod 0440 /etc/sudoers &> /dev/null
+chmod 0600 /var/spool/cron/crontabs/root &> /dev/null
+chmod 0664 /etc/sysctl.conf &> /dev/null
 
 ## create wordpress group if does not exist and various SlickStack users/groups ##
 addgroup wordpress &> /dev/null
@@ -54,26 +54,26 @@ mkdir -p /var/www/meta
 if [ ! -f "/var/www/wp.sql" ]; then touch "/var/www/wp.sql"; fi
 
 ## chroot (SFTP) user directory ##
-chown root:root /var ## must be root:root
-chown root:root /var/www ## must be root:root
-chmod 0755 /var/www ## must be 0755
+chown root:root /var &> /dev/null ## must be root:root
+chown root:root /var/www &> /dev/null ## must be root:root
+chmod 0755 /var/www &> /dev/null ## must be 0755
 
 ## SlickStack core scripts ##
-chown root:root /var/www/*cron* ## must be root:root
-chown root:root /var/www/ss* ## must be root:root
-chown www-data:www-data /var/www/wp.sql ## root:root should also work
-chmod 6770 /var/www/*cron* ## 4700 should also work
-chmod 6770 /var/www/ss* ## 4700 should also work
-chmod 0700 /var/www/ss-config
-chmod 6770 /var/www/wp.sql
+chown root:root /var/www/*cron* &> /dev/null ## must be root:root
+chown root:root /var/www/ss* &> /dev/null ## must be root:root
+chown www-data:www-data /var/www/wp.sql &> /dev/null ## root:root should also work
+chmod 6770 /var/www/*cron* &> /dev/null ## 4700 should also work
+chmod 6770 /var/www/ss* &> /dev/null ## 4700 should also work
+chmod 0700 /var/www/ss-config &> /dev/null
+chmod 6770 /var/www/wp.sql &> /dev/null
 
 ## its okay if the SFTP user accesses this stuff (but www-data access is the priority) ##
-chown www-data:www-data /var/www/cache ## must be www-data:www-data
-chown www-data:www-data /var/www/logs ## must be www-data:www-data
-chown www-data:www-data /var/www/meta ## must be www-data:www-data
-chmod 6775 /var/www/cache ## 6755 should also work
-chmod 6775 /var/www/logs ## 6755 should also work
-chmod 6775 /var/www/meta ## 6755 should also work
+chown www-data:www-data /var/www/cache &> /dev/null ## must be www-data:www-data
+chown www-data:www-data /var/www/logs &> /dev/null ## must be www-data:www-data
+chown www-data:www-data /var/www/meta &> /dev/null ## must be www-data:www-data
+chmod 6775 /var/www/cache &> /dev/null ## 6755 should also work
+chmod 6775 /var/www/logs &> /dev/null ## 6755 should also work
+chmod 6775 /var/www/meta &> /dev/null ## 6755 should also work
 
 ## ensure log files exist ##
 if [ ! -f "/var/www/logs/clamav.log" ]; then touch "/var/www/logs/clamav.log"; fi
@@ -83,11 +83,11 @@ if [ ! -f "/var/www/logs/nginx.log" ]; then touch "/var/www/logs/nginx.log"; fi
 if [ ! -f "/var/www/logs/redis.log" ]; then touch "/var/www/logs/redis.log"; fi
 
 ## individual log files ##
-chown clamav:clamav /var/www/logs/clamav*.log*
-chown www-data:www-data /var/www/logs/error*.log*
-chown mysql:mysql /var/www/logs/mysql*.log*
-chown www-data:www-data /var/www/logs/nginx*.log*
-chown redis:redis /var/www/logs/redis*.log*
+chown clamav:clamav /var/www/logs/clamav*.log* &> /dev/null
+chown www-data:www-data /var/www/logs/error*.log* &> /dev/null
+chown mysql:mysql /var/www/logs/mysql*.log* &> /dev/null
+chown www-data:www-data /var/www/logs/nginx*.log* &> /dev/null
+chown redis:redis /var/www/logs/redis*.log* &> /dev/null
 
 ####################################################################################################
 #### Reset Permissions: Public HTML Directory (WordPress) ##########################################
@@ -121,7 +121,7 @@ fi
 # chown -R www-data:wordpress /var/www/html/wp-content/temp
 # chown -R www-data:wordpress /var/www/html/wp-content/mu-plugins
 # chown -R www-data:wordpress /var/www/html/wp-content/uploads
-chmod 6775 /var/www/html
+chmod 6775 /var/www/html &> /dev/null
 find /var/www/html/ -type d -exec chmod 6775 {} \;
 
 ## reset file permissions ##
@@ -152,31 +152,31 @@ if [ ! -f "/etc/ssl/nginx.crt" ]; then touch "/etc/ssl/nginx.crt"; fi
 if [ ! -f "/etc/ssl/nginx.key" ]; then touch "/etc/ssl/nginx.key"; fi
 if [ ! -f "/etc/ssl/nginx.pem" ]; then touch "/etc/ssl/nginx.pem"; fi
 
-chown root:root /etc/nginx/nginx.conf
-chown root:root /etc/nginx/fastcgi.conf
-chown root:root /etc/ssl/nginx.crt
-chmod -R 700 /etc/ssl/nginx.crt
-chown root:root /etc/ssl/nginx.key
-chmod -R 700 /etc/ssl/nginx.key
-chown root:root /etc/ssl/nginx.pem
-chmod -R 700 /etc/ssl/nginx.pem
-chown mysql:mysql /var/run/mysqld
-chown root:root /etc/mysql/my.cnf
-chown root:root /etc/mysql/mysql.cnf
-chown root:root /etc/mysql/mysql.conf.d/mysqld.cnf
+chown root:root /etc/nginx/nginx.conf &> /dev/null
+chown root:root /etc/nginx/fastcgi.conf &> /dev/null
+chown root:root /etc/ssl/nginx.crt &> /dev/null
+chmod -R 700 /etc/ssl/nginx.crt &> /dev/null
+chown root:root /etc/ssl/nginx.key &> /dev/null
+chmod -R 700 /etc/ssl/nginx.key &> /dev/null
+chown root:root /etc/ssl/nginx.pem &> /dev/null
+chmod -R 700 /etc/ssl/nginx.pem &> /dev/null
+chown mysql:mysql /var/run/mysqld &> /dev/null
+chown root:root /etc/mysql/my.cnf &> /dev/null
+chown root:root /etc/mysql/mysql.cnf &> /dev/null
+chown root:root /etc/mysql/mysql.conf.d/mysqld.cnf &> /dev/null
 
 ## always run WP-CLI as the www-data user (and allow SFTP user to run it) ##
-chown root:root /usr/local/bin/
-chown www-data:www-data /usr/local/bin/wp
-chmod 6775 /usr/local/bin/wp
+chown root:root /usr/local/bin/ &> /dev/null
+chown www-data:www-data /usr/local/bin/wp &> /dev/null
+chmod 6775 /usr/local/bin/wp &> /dev/null
 
 # chown www-data:www-data /var/run/php
-chown root:root /etc/php/7.2/fpm/php.ini
-chown root:root /etc/php/7.2/fpm/php-fpm.conf
-chown root:root /etc/php/7.2/cli/php.ini
+chown root:root /etc/php/7.2/fpm/php.ini &> /dev/null
+chown root:root /etc/php/7.2/fpm/php-fpm.conf &> /dev/null
+chown root:root /etc/php/7.2/cli/php.ini &> /dev/null
 
-chown redis:redis /var/run/redis
-chown redis:redis /etc/redis/redis.conf
+chown redis:redis /var/run/redis &> /dev/null
+chown redis:redis /etc/redis/redis.conf &> /dev/null
 
 ####################################################################################################
 #### Convert DOS Files To Unix Files (Requires Dos2Unix To Be Installed) ###########################
