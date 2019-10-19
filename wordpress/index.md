@@ -19,6 +19,8 @@
 
 #### WordPress
 
+* <a href="wordpress-5.2.4.zip">wordpress-5.2.4.zip</a>
+* <a href="wp-config-sample-5.2.4.txt">wp-config-sample-5.2.4.txt</a>
 * <a href="wordpress-5.2.3.zip">wordpress-5.2.3.zip</a>
 * <a href="wp-config-sample-5.2.3.txt">wp-config-sample-5.2.3.txt</a>
 * <a href="wordpress-5.2.2.zip">wordpress-5.2.2.zip</a>
