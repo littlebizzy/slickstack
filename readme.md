@@ -64,7 +64,7 @@ It should also be noted that SlickStack [ss] is HTTPS-only, meaning that HTTP si
 
 ## Core Modules
 
-*Last updated: Sep 10, 2019*
+*Last updated: Oct 20, 2019*
 
 | LEMP Module | Mirrors | Version | What does SlickStack [ss] customize? |
 | :------------- | :----------: | :----------: | :----------: |
@@ -73,10 +73,10 @@ It should also be noted that SlickStack [ss] is HTTPS-only, meaning that HTTP si
 | **FastCGI Cache** | [mirrors](http://mirrors.slickstack.io/fastcgi-cache/) | 1.15.8 | `fastcgi-cache.conf` |
 | **OpenSSL** | [mirrors](http://mirrors.slickstack.io/openssl/) | 1.1.0g | default config |
 | **Let's Encrypt†** | [mirrors](http://mirrors.slickstack.io/letsencrypt/) | 0.23.0 | custom config |
-| **MySQL** | [mirrors](http://mirrors.slickstack.io/mysql/) | 5.7.25 | default config (will be customized slightly in future) |
-| **PHP-FPM** | [mirrors](http://mirrors.slickstack.io/php-fpm/) | 7.2.17 | `php.ini` + `php-fpm.conf` + `www.conf` |
+| **MySQL** | [mirrors](http://mirrors.slickstack.io/mysql/) | 5.7+ | default config (will be customized slightly in future) |
+| **PHP-FPM** | [mirrors](http://mirrors.slickstack.io/php-fpm/) | 7.2+ | `php.ini` + `php-fpm.conf` + `www.conf` |
 | **Zend / OPcache** | [mirrors](http://mirrors.slickstack.io/opcache/) | 3.2.0 / 7.2.17 | (same as PHP-FPM) |
-| **WordPress** | [mirrors](http://mirrors.slickstack.io/wordpress/) | 5.2.3 | some WP Core junk files are removed by `ss-clean` |
+| **WordPress** | [mirrors](http://mirrors.slickstack.io/wordpress/) | 5.2.4 | some WP Core junk files are removed by `ss-clean` |
 | **MU Plugins** | [mirrors](http://mirrors.slickstack.io/mu-plugins/) | N/A | several `mu-plugins` by LittleBizzy |
 | **WP-CLI** | [mirrors](http://mirrors.slickstack.io/wp-cli/) | 2.2.0 | default config |
 | **Redis (Obj Cache)** | [mirrors](http://mirrors.slickstack.io/redis/) | 4.0.9 | `redis.conf` + `object-cache.php` |
