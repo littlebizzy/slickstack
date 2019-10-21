@@ -20,72 +20,75 @@
 #### WordPress
 
 * <a href="wordpress-5.2.4.zip">wordpress-5.2.4.zip</a>
-* <a href="wp-config-sample-5.2.4.txt">wp-config-sample-5.2.4.txt</a>
 * <a href="wordpress-5.2.3.zip">wordpress-5.2.3.zip</a>
-* <a href="wp-config-sample-5.2.3.txt">wp-config-sample-5.2.3.txt</a>
 * <a href="wordpress-5.2.2.zip">wordpress-5.2.2.zip</a>
-* <a href="wp-config-sample-5.2.2.txt">wp-config-sample-5.2.2.txt</a>
 * <a href="wordpress-5.2.1.zip">wordpress-5.2.1.zip</a>
-* <a href="wp-config-sample-5.2.1.txt">wp-config-sample-5.2.1.txt</a>
 * <a href="wordpress-5.2.0.zip">wordpress-5.2.0.zip</a>
-* <a href="wp-config-sample-5.2.0.txt">wp-config-sample-5.2.0.txt</a>
 * <a href="wordpress-5.1.1.zip">wordpress-5.1.1.zip</a>
-* <a href="wp-config-sample-5.1.1.txt">wp-config-sample-5.1.1.txt</a>
 * <a href="wordpress-5.1.0.zip">wordpress-5.1.0.zip</a>
-* <a href="wp-config-sample-5.1.0.txt">wp-config-sample-5.1.0.txt</a>
 * <a href="wordpress-5.0.4.zip">wordpress-5.0.4.zip</a>
-* <a href="wp-config-sample-5.0.4.txt">wp-config-sample-5.0.4.txt</a>
 * <a href="wordpress-5.0.3.zip">wordpress-5.0.3.zip</a>
-* <a href="wp-config-sample-5.0.3.txt">wp-config-sample-5.0.3.txt</a>
 * <a href="wordpress-5.0.2.zip">wordpress-5.0.2.zip</a>
-* <a href="wp-config-sample-5.0.2.txt">wp-config-sample-5.0.2.txt</a>
 * <a href="wordpress-5.0.1.zip">wordpress-5.0.1.zip</a>
-* <a href="wp-config-sample-5.0.1.txt">wp-config-sample-5.0.1.txt</a>
 * <a href="wordpress-5.0.0.zip">wordpress-5.0.0.zip</a>
-* <a href="wp-config-sample-5.0.0.txt">wp-config-sample-5.0.0.txt</a>
 * <a href="wordpress-4.9.9.zip">wordpress-4.9.9.zip</a>
-* <a href="wp-config-sample-4.9.9.txt">wp-config-sample-4.9.9.txt</a>
 * <a href="wordpress-4.9.8.zip">wordpress-4.9.8.zip</a>
-* <a href="wp-config-sample-4.9.8.txt">wp-config-sample-4.9.8.txt</a>
 * <a href="wordpress-4.9.7.zip">wordpress-4.9.7.zip</a>
-* <a href="wp-config-sample-4.9.7.txt">wp-config-sample-4.9.7.txt</a>
 * <a href="wordpress-4.9.6.zip">wordpress-4.9.6.zip</a>
-* <a href="wp-config-sample-4.9.6.txt">wp-config-sample-4.9.6.txt</a>
 * <a href="wordpress-4.9.5.zip">wordpress-4.9.5.zip</a>
-* <a href="wp-config-sample-4.9.5.txt">wp-config-sample-4.9.5.txt</a>
 * <a href="wordpress-4.9.4.zip">wordpress-4.9.4.zip</a>
-* <a href="wp-config-sample-4.9.4.txt">wp-config-sample-4.9.4.txt</a>
 * <a href="wordpress-4.9.3.zip">wordpress-4.9.3.zip</a>
-* <a href="wp-config-sample-4.9.3.txt">wp-config-sample-4.9.3.txt</a>
 * <a href="wordpress-4.9.2.zip">wordpress-4.9.2.zip</a>
-* <a href="wp-config-sample-4.9.2.txt">wp-config-sample-4.9.2.txt</a>
 * <a href="wordpress-4.9.1.zip">wordpress-4.9.1.zip</a>
-* <a href="wp-config-sample-4.9.1.txt">wp-config-sample-4.9.1.txt</a>
 * <a href="wordpress-4.9.0.zip">wordpress-4.9.0.zip</a>
-* <a href="wp-config-sample-4.9.0.txt">wp-config-sample-4.9.0.txt</a>
 * <a href="wordpress-4.8.8.zip">wordpress-4.8.8.zip</a>
-* <a href="wp-config-sample-4.8.8.txt">wp-config-sample-4.8.8.txt</a>
 * <a href="wordpress-4.8.7.zip">wordpress-4.8.7.zip</a>
-* <a href="wp-config-sample-4.8.7.txt">wp-config-sample-4.8.7.txt</a>
 * <a href="wordpress-4.8.6.zip">wordpress-4.8.6.zip</a>
-* <a href="wp-config-sample-4.8.6.txt">wp-config-sample-4.8.6.txt</a>
 * <a href="wordpress-4.8.5.zip">wordpress-4.8.5.zip</a>
-* <a href="wp-config-sample-4.8.5.txt">wp-config-sample-4.8.5.txt</a>
 * <a href="wordpress-4.8.4.zip">wordpress-4.8.4.zip</a>
-* <a href="wp-config-sample-4.8.4.txt">wp-config-sample-4.8.4.txt</a>
 * <a href="wordpress-4.8.3.zip">wordpress-4.8.3.zip</a>
-* <a href="wp-config-sample-4.8.3.txt">wp-config-sample-4.8.3.txt</a>
 * <a href="wordpress-4.8.2.zip">wordpress-4.8.2.zip</a>
-* <a href="wp-config-sample-4.8.2.txt">wp-config-sample-4.8.2.txt</a>
 * <a href="wordpress-4.8.1.zip">wordpress-4.8.1.zip</a>
-* <a href="wp-config-sample-4.8.1.txt">wp-config-sample-4.8.1.txt</a>
 * <a href="wordpress-4.8.0.zip">wordpress-4.8.0.zip</a>
-* <a href="wp-config-sample-4.8.0.txt">wp-config-sample-4.8.0.txt</a>
 * <a href="wordpress-4.7.12.zip">wordpress-4.7.12.zip</a>
-* <a href="wp-config-sample-4.7.12.txt">wp-config-sample-4.7.12.txt</a>
 * <a href="wordpress-4.7.11.zip">wordpress-4.7.11.zip</a>
-* <a href="wp-config-sample-4.7.11.txt">wp-config-sample-4.7.11.txt</a>
 * <a href="wordpress-4.7.10.zip">wordpress-4.7.10.zip</a>
+
+### WP-Config
+
+* <a href="wp-config-sample-5.2.4.txt">wp-config-sample-5.2.4.txt</a>
+* <a href="wp-config-sample-5.2.3.txt">wp-config-sample-5.2.3.txt</a>
+* <a href="wp-config-sample-5.2.2.txt">wp-config-sample-5.2.2.txt</a>
+* <a href="wp-config-sample-5.2.1.txt">wp-config-sample-5.2.1.txt</a>
+* <a href="wp-config-sample-5.2.0.txt">wp-config-sample-5.2.0.txt</a>
+* <a href="wp-config-sample-5.1.1.txt">wp-config-sample-5.1.1.txt</a>
+* <a href="wp-config-sample-5.1.0.txt">wp-config-sample-5.1.0.txt</a>
+* <a href="wp-config-sample-5.0.4.txt">wp-config-sample-5.0.4.txt</a>
+* <a href="wp-config-sample-5.0.3.txt">wp-config-sample-5.0.3.txt</a>
+* <a href="wp-config-sample-5.0.2.txt">wp-config-sample-5.0.2.txt</a>
+* <a href="wp-config-sample-5.0.1.txt">wp-config-sample-5.0.1.txt</a>
+* <a href="wp-config-sample-5.0.0.txt">wp-config-sample-5.0.0.txt</a>
+* <a href="wp-config-sample-4.9.9.txt">wp-config-sample-4.9.9.txt</a>
+* <a href="wp-config-sample-4.9.8.txt">wp-config-sample-4.9.8.txt</a>
+* <a href="wp-config-sample-4.9.7.txt">wp-config-sample-4.9.7.txt</a>
+* <a href="wp-config-sample-4.9.6.txt">wp-config-sample-4.9.6.txt</a>
+* <a href="wp-config-sample-4.9.5.txt">wp-config-sample-4.9.5.txt</a>
+* <a href="wp-config-sample-4.9.4.txt">wp-config-sample-4.9.4.txt</a>
+* <a href="wp-config-sample-4.9.3.txt">wp-config-sample-4.9.3.txt</a>
+* <a href="wp-config-sample-4.9.2.txt">wp-config-sample-4.9.2.txt</a>
+* <a href="wp-config-sample-4.9.1.txt">wp-config-sample-4.9.1.txt</a>
+* <a href="wp-config-sample-4.9.0.txt">wp-config-sample-4.9.0.txt</a>
+* <a href="wp-config-sample-4.8.8.txt">wp-config-sample-4.8.8.txt</a>
+* <a href="wp-config-sample-4.8.7.txt">wp-config-sample-4.8.7.txt</a>
+* <a href="wp-config-sample-4.8.6.txt">wp-config-sample-4.8.6.txt</a>
+* <a href="wp-config-sample-4.8.5.txt">wp-config-sample-4.8.5.txt</a>
+* <a href="wp-config-sample-4.8.4.txt">wp-config-sample-4.8.4.txt</a>
+* <a href="wp-config-sample-4.8.3.txt">wp-config-sample-4.8.3.txt</a>
+* <a href="wp-config-sample-4.8.2.txt">wp-config-sample-4.8.2.txt</a>
+* <a href="wp-config-sample-4.8.1.txt">wp-config-sample-4.8.1.txt</a>
+* <a href="wp-config-sample-4.8.0.txt">wp-config-sample-4.8.0.txt</a>
+* <a href="wp-config-sample-4.7.12.txt">wp-config-sample-4.7.12.txt</a>
+* <a href="wp-config-sample-4.7.11.txt">wp-config-sample-4.7.11.txt</a>
 * <a href="wp-config-sample-4.7.10.txt">wp-config-sample-4.7.10.txt</a>
 * <a href="wordpress-4.7.9.zip">wordpress-4.7.9.zip</a>
 * <a href="wp-config-sample-4.7.9.txt">wp-config-sample-4.7.9.txt</a>
@@ -122,6 +125,7 @@
 
 #### Throwaway Theme
 
+* <a href="throwaway-theme-1.1.0.zip">throwaway-theme-1.1.0.zip</a>
 * <a href="throwaway-theme-1.0.0.zip">throwaway-theme-1.0.0.zip</a>
 
 ### Related Links
@@ -146,4 +150,4 @@
 
 ----
 
-*Last updated: Oct 20, 2019*
+*Last updated: Oct 21, 2019*
