@@ -33,7 +33,7 @@ if [[ "${UBUNTU_VERSION}" != "18.04" ]]; then
 fi
 
 ## ensure ss-config build version matches ss-install build version ##
-if [[ "$SS_BUILD" != "OCT2019J" ]]; then 
+if [[ "$SS_BUILD" != "OCT2019K" ]]; then 
     echo -e "\e[93mYour ss-config file is outdated. Please rebuild it and run ss-install again.\e[0m" >&2
     exit 1
 fi
@@ -223,15 +223,69 @@ DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/u
 ## install PHP 7.2 and extensions (php7.2 not needed when php7.2-fpm is used) ##
 DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install php7.2-bcmath php7.2-curl php7.2-fpm php7.2-gd php7.2-imagick php7.2-json php7.2-mbstring php7.2-mysql php7.2-soap php7.2-xml php7.2-zip
 
-## download latest versions ##
-wget --no-cache --no-cookies --tries=3 --timeout=15 -O /tmp/php-fpm-conf.txt http://mirrors.slickstack.io/php-fpm/php-fpm-conf.txt
-wget --no-cache --no-cookies --tries=3 --timeout=15 -O /tmp/php-ini.txt http://mirrors.slickstack.io/php-fpm/php-ini.txt
-wget --no-cache --no-cookies --tries=3 --timeout=15 -O /tmp/www-conf.txt http://mirrors.slickstack.io/php-fpm/www-conf.txt
+## delete tmp files ##
+rm -R -f /tmp/php-fpm*
+rm -R -f /tmp/php-ini*
+rm -R -f /tmp/www*
 
-## rename files ##
-mv /tmp/php-fpm-conf.txt /tmp/php-fpm.conf
-mv /tmp/php-ini.txt /tmp/php.ini
-mv /tmp/www-conf.txt /tmp/www.conf
+## download latest versions ##
+wget --no-cache --no-cookies --tries=3 --timeout=15 -O /tmp/php-fpm.conf http://mirrors.slickstack.io/php-fpm/php-fpm-conf.txt
+wget --no-cache --no-cookies --tries=3 --timeout=15 -O /tmp/php.ini http://mirrors.slickstack.io/php-fpm/php-ini.txt
+wget --no-cache --no-cookies --tries=3 --timeout=15 -O /tmp/www.conf http://mirrors.slickstack.io/php-fpm/www-conf.txt
+
+
+## set php.ini stuff ##
+
+## max execution time ##
+if [[ -z "$PHP_MAX_EXECUTION_TIME" ]]; then 
+    sed -i "s/@PHP_MAX_EXECUTION_TIME/60/g" /tmp/php.ini
+else 
+    sed -i "s/@PHP_MAX_EXECUTION_TIME/${PHP_MAX_EXECUTION_TIME}/g" /tmp/php.ini
+fi
+
+## max input time ##
+if [[ -z "$PHP_MAX_INPUT_TIME" ]]; then 
+    sed -i "s/@PHP_MAX_INPUT_TIME/60/g" /tmp/php.ini
+else 
+    sed -i "s/@PHP_MAX_INPUT_TIME/${PHP_MAX_INPUT_TIME}/g" /tmp/php.ini
+fi
+
+## memory limit ##
+if [[ -z "$PHP_MEMORY_LIMIT" ]]; then 
+    sed -i "s/@PHP_MEMORY_LIMIT/512M/g" /tmp/php.ini
+else 
+    sed -i "s/@PHP_MEMORY_LIMIT/${PHP_MEMORY_LIMIT}/g" /tmp/php.ini
+fi
+
+## max input vars ##
+if [[ -z "$PHP_MAX_INPUT_VARS" ]]; then 
+    sed -i "s/@PHP_MAX_INPUT_VARS/5000/g" /tmp/php.ini
+else 
+    sed -i "s/@PHP_MAX_INPUT_VARS/${PHP_MAX_INPUT_VARS}/g" /tmp/php.ini
+fi
+
+## max input nesting level ##
+if [[ -z "$PHP_MAX_INPUT_NESTING_LEVEL" ]]; then 
+    sed -i "s/@PHP_MAX_INPUT_NESTING_LEVEL/64/g" /tmp/php.ini
+else 
+    sed -i "s/@PHP_MAX_INPUT_NESTING_LEVEL/${PHP_MAX_INPUT_NESTING_LEVEL}/g" /tmp/php.ini
+fi
+
+## upload max filesize ##
+if [[ -z "$PHP_UPLOAD_MAX_FILESIZE" ]]; then 
+    sed -i "s/@PHP_UPLOAD_MAX_FILESIZE/512M/g" /tmp/php.ini
+else 
+    sed -i "s/@PHP_UPLOAD_MAX_FILESIZE/${PHP_UPLOAD_MAX_FILESIZE}/g" /tmp/php.ini
+fi
+
+## max file uploads ##
+if [[ -z "$PHP_MAX_FILE_UPLOADS" ]]; then 
+    sed -i "s/@PHP_MAX_FILE_UPLOADS/100/g" /tmp/php.ini
+else 
+    sed -i "s/@PHP_MAX_FILE_UPLOADS/${PHP_MAX_FILE_UPLOADS}/g" /tmp/php.ini
+fi
+
+
 
 ## copy files to their destinations ##
 cp -R -f --no-preserve=mode,ownership /tmp/php-fpm.conf /etc/php/7.2/fpm/php-fpm.conf
@@ -253,6 +307,11 @@ chown root:root /etc/php/7.2/fpm/pool.d/www.conf
 
 ## restart services ##
 /etc/init.d/php7.2-fpm restart
+
+## delete tmp files ##
+rm -R -f /tmp/php-fpm*
+rm -R -f /tmp/php-ini*
+rm -R -f /tmp/www*
 
 ####################################################################################################
 ### Prepare WP-CLI Configuration (Installation Completed Via Bash Aliases) #########################
