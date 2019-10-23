@@ -10,20 +10,26 @@
 
 [global]
 
+;; hard-coding error log settings reduces potential conflicts and server resource usage ;;
+;; enabling debug.log in WordPress itself (instead of PHP) is best practice ;;
+
 pid = /run/php/php7.2-fpm.pid
 error_log = /var/www/logs/error.log
-;syslog.facility = daemon
-;syslog.ident = php-fpm
 log_level = error
+syslog.facility = daemon
+syslog.ident = php-fpm
+
+;; because SlickStack does not use any containers we can safely daemonize PHP-FPM ;;
+
+daemonize = yes
+events.mechanism = epoll
 emergency_restart_threshold = 10
 emergency_restart_interval = 1m
 process_control_timeout = 10s
 ;process.max = 128
 ;process.priority = -19
-;daemonize = yes
 ;rlimit_files = 1024
 ;rlimit_core = 0
-;events.mechanism = epoll
 ;systemd_interval = 10
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -36,5 +42,14 @@ include=/etc/php/7.2/fpm/pool.d/*.conf
 ;;;; External References Used By SlickStack To Improve This Script ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+;; Ref: https://www.php.net/manual/en/install.fpm.configuration.php
 ;; Ref: https://ma.ttias.be/a-better-way-to-run-php-fpm/
+;; Ref: https://serversforhackers.com/c/div-configuring-php-fpm
+;; Ref: https://myjeeva.com/php-fpm-configuration-101.html
 ;; Ref: https://github.com/kerberos-io/web/issues/47
+;; Ref: https://serverfault.com/questions/917137/what-does-graceful-reload-actually-mean-with-php-fpm
+;; Ref: https://selivan.github.io/2016/10/25/php-fpm-502-error-on-reload.html
+;; Ref: https://github.com/voxpupuli/puppet-php/issues/395
+;; Ref: https://tkacz.pro/php-fpm-config-improvements/
+;; Ref: https://itresident.com/nginx/nginx-and-php-fpm-for-heavy-load-wordpress-web-server-with-high-traffic-2000-concurrent-connections/
+;; Ref: https://www.if-not-true-then-false.com/2011/nginx-and-php-fpm-configuration-and-optimizing-tips-and-tricks/
