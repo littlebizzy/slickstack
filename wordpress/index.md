@@ -17,7 +17,7 @@
 
 *Raw files from the vendor’s original release (e.g. official repo), not altered by other providers, included for reference and documentation purposes.*
 
-#### WordPress
+#### wordpress.zip
 
 * <a href="wordpress-5.2.4.zip">wordpress-5.2.4.zip</a>
 * <a href="wordpress-5.2.3.zip">wordpress-5.2.3.zip</a>
@@ -54,7 +54,7 @@
 * <a href="wordpress-4.7.11.zip">wordpress-4.7.11.zip</a>
 * <a href="wordpress-4.7.10.zip">wordpress-4.7.10.zip</a>
 
-### WP-Config
+#### wp-config.php
 
 * <a href="wp-config-sample-5.2.4.txt">wp-config-sample-5.2.4.txt</a>
 * <a href="wp-config-sample-5.2.3.txt">wp-config-sample-5.2.3.txt</a>
