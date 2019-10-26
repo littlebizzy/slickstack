@@ -2,7 +2,7 @@
 
 ----
 
-### Custom Files
+### Live Files
 
 *Live configuration files and boilerplates used by current SlickStack installation that may be altered by LittleBizzy or Ubuntu for better performance.*
 
@@ -13,11 +13,13 @@
 * <a href="functions.txt">functions.txt</a>
 * <a href="object-cache.txt">object-cache.txt</a>
 
-### Default Files
+### Release Files
 
 *Raw files from the vendor’s original release (e.g. official repo), not altered by other providers, included for reference and documentation purposes.*
 
 #### wordpress.zip
+
+----
 
 * <a href="wordpress-5.2.4.zip">wordpress-5.2.4.zip</a>
 * <a href="wordpress-5.2.3.zip">wordpress-5.2.3.zip</a>
