@@ -43,10 +43,11 @@
 
 *Links and resources related to the above module that may help users understand its functionality, or how it interacts with other LEMP stack modules.*
 
+* https://github.com/php/php-src/blob/php-7.2.24/php.ini-production
 * https://raw.githubusercontent.com/php/php-src/PHP-7.2.6/sapi/fpm/php-fpm.conf.in
 * https://raw.githubusercontent.com/php/php-src/php-7.2.6/php.ini-production
 * https://dev.to/robdwaller/how-php-type-declarations-actually-work-1mm5
 
 ----
 
-*Last updated: Sep 30, 2019*
+*Last updated: Oct 26, 2019*
