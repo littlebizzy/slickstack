@@ -55,8 +55,26 @@
 * <a href="wordpress-4.7.12.zip">wordpress-4.7.12.zip</a>
 * <a href="wordpress-4.7.11.zip">wordpress-4.7.11.zip</a>
 * <a href="wordpress-4.7.10.zip">wordpress-4.7.10.zip</a>
+* <a href="wordpress-4.7.9.zip">wordpress-4.7.9.zip</a>
+* <a href="wordpress-4.7.8.zip">wordpress-4.7.8.zip</a>
+* <a href="wordpress-4.7.7.zip">wordpress-4.7.7.zip</a>
+* <a href="wordpress-4.7.6.zip">wordpress-4.7.6.zip</a>
+* <a href="wordpress-4.7.5.zip">wordpress-4.7.5.zip</a>
+* <a href="wordpress-4.7.4.zip">wordpress-4.7.4.zip</a>
+* <a href="wordpress-4.7.3.zip">wordpress-4.7.3.zip</a>
+* <a href="wordpress-4.7.2.zip">wordpress-4.7.2.zip</a>
+* <a href="wordpress-4.7.1.zip">wordpress-4.7.1.zip</a>
+* <a href="wordpress-4.7.0.zip">wordpress-4.7.0.zip</a>
+* <a href="wordpress-4.6.13.zip">wordpress-4.6.13.zip</a>
+* <a href="wordpress-4.6.12.zip">wordpress-4.6.12.zip</a>
+* <a href="wordpress-4.6.11.zip">wordpress-4.6.11.zip</a>
+* <a href="wordpress-4.6.10.zip">wordpress-4.6.10.zip</a>
+* <a href="wordpress-4.6.1.zip">wordpress-4.6.1.zip</a>
+* <a href="wordpress-4.6.0.zip">wordpress-4.6.0.zip</a>
 
 #### wp-config.php
+
+----
 
 * <a href="wp-config-sample-5.2.4.txt">wp-config-sample-5.2.4.txt</a>
 * <a href="wp-config-sample-5.2.3.txt">wp-config-sample-5.2.3.txt</a>
@@ -92,40 +110,26 @@
 * <a href="wp-config-sample-4.7.12.txt">wp-config-sample-4.7.12.txt</a>
 * <a href="wp-config-sample-4.7.11.txt">wp-config-sample-4.7.11.txt</a>
 * <a href="wp-config-sample-4.7.10.txt">wp-config-sample-4.7.10.txt</a>
-* <a href="wordpress-4.7.9.zip">wordpress-4.7.9.zip</a>
 * <a href="wp-config-sample-4.7.9.txt">wp-config-sample-4.7.9.txt</a>
-* <a href="wordpress-4.7.8.zip">wordpress-4.7.8.zip</a>
 * <a href="wp-config-sample-4.7.8.txt">wp-config-sample-4.7.8.txt</a>
-* <a href="wordpress-4.7.7.zip">wordpress-4.7.7.zip</a>
 * <a href="wp-config-sample-4.7.7.txt">wp-config-sample-4.7.7.txt</a>
-* <a href="wordpress-4.7.6.zip">wordpress-4.7.6.zip</a>
 * <a href="wp-config-sample-4.7.6.txt">wp-config-sample-4.7.6.txt</a>
-* <a href="wordpress-4.7.5.zip">wordpress-4.7.5.zip</a>
 * <a href="wp-config-sample-4.7.5.txt">wp-config-sample-4.7.5.txt</a>
-* <a href="wordpress-4.7.4.zip">wordpress-4.7.4.zip</a>
 * <a href="wp-config-sample-4.7.4.txt">wp-config-sample-4.7.4.txt</a>
-* <a href="wordpress-4.7.3.zip">wordpress-4.7.3.zip</a>
 * <a href="wp-config-sample-4.7.3.txt">wp-config-sample-4.7.3.txt</a>
-* <a href="wordpress-4.7.2.zip">wordpress-4.7.2.zip</a>
 * <a href="wp-config-sample-4.7.2.txt">wp-config-sample-4.7.2.txt</a>
-* <a href="wordpress-4.7.1.zip">wordpress-4.7.1.zip</a>
 * <a href="wp-config-sample-4.7.1.txt">wp-config-sample-4.7.1.txt</a>
-* <a href="wordpress-4.7.0.zip">wordpress-4.7.0.zip</a>
 * <a href="wp-config-sample-4.7.0.txt">wp-config-sample-4.7.0.txt</a>
-* <a href="wordpress-4.6.13.zip">wordpress-4.6.13.zip</a>
 * <a href="wp-config-sample-4.6.13.txt">wp-config-sample-4.6.13.txt</a>
-* <a href="wordpress-4.6.12.zip">wordpress-4.6.12.zip</a>
 * <a href="wp-config-sample-4.6.12.txt">wp-config-sample-4.6.12.txt</a>
-* <a href="wordpress-4.6.11.zip">wordpress-4.6.11.zip</a>
 * <a href="wp-config-sample-4.6.11.txt">wp-config-sample-4.6.11.txt</a>
-* <a href="wordpress-4.6.10.zip">wordpress-4.6.10.zip</a>
 * <a href="wp-config-sample-4.6.10.txt">wp-config-sample-4.6.10.txt</a>
-* <a href="wordpress-4.6.1.zip">wordpress-4.6.1.zip</a>
 * <a href="wp-config-sample-4.6.1.txt">wp-config-sample-4.6.1.txt</a>
-* <a href="wordpress-4.6.0.zip">wordpress-4.6.0.zip</a>
 * <a href="wp-config-sample-4.6.0.txt">wp-config-sample-4.6.0.txt</a>
 
 #### Throwaway Theme
+
+----
 
 * <a href="throwaway-theme-1.1.0.zip">throwaway-theme-1.1.0.zip</a>
 * <a href="throwaway-theme-1.0.0.zip">throwaway-theme-1.0.0.zip</a>
