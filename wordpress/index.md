@@ -72,7 +72,7 @@
 * <a href="wordpress-4.6.1.zip">wordpress-4.6.1.zip</a>
 * <a href="wordpress-4.6.0.zip">wordpress-4.6.0.zip</a>
 
-#### wp-config.php
+#### Historical Versions: wp-config.php
 
 ----
 
@@ -127,7 +127,7 @@
 * <a href="wp-config-sample-4.6.1.txt">wp-config-sample-4.6.1.txt</a>
 * <a href="wp-config-sample-4.6.0.txt">wp-config-sample-4.6.0.txt</a>
 
-#### Throwaway Theme
+#### Historical Versions: throwaway.zip
 
 ----
 
