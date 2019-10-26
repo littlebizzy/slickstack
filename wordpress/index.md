@@ -13,7 +13,7 @@
 * <a href="functions.txt">functions.txt</a>
 * <a href="object-cache.txt">object-cache.txt</a>
 
-### Release Files
+### Original Files
 
 *Raw files from the vendor’s original release (e.g. official repo), not altered by other providers, included for reference and documentation purposes.*
 
