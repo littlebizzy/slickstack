@@ -33,7 +33,7 @@ if [[ "${UBUNTU_VERSION}" != "18.04" ]]; then
 fi
 
 ## ensure ss-config build version matches ss-install build version ##
-if [[ "$SS_BUILD" != "OCT2019N" ]]; then 
+if [[ "$SS_BUILD" != "OCT2019P" ]]; then 
     echo -e "\e[93mYour ss-config file is outdated. Please rebuild it and run ss-install again.\e[0m" >&2
     exit 1
 fi
@@ -324,6 +324,56 @@ if [[ -z "$PHP_POST_MAX_SIZE" ]]; then
     sed -i "s/@PHP_POST_MAX_SIZE/512M/g" /tmp/php.ini
 else 
     sed -i "s/@PHP_POST_MAX_SIZE/${PHP_POST_MAX_SIZE}/g" /tmp/php.ini
+fi
+
+######### set php.ini opcache stuff ########
+
+## opcache huge code pages ##
+if [[ -z "$OPCACHE_HUGE_CODE_PAGES" ]]; then 
+    sed -i "s/@OPCACHE_HUGE_CODE_PAGES/0/g" /tmp/php.ini
+elif [[ "$OPCACHE_HUGE_CODE_PAGES" == "true" ]]; then
+    sed -i "s/@OPCACHE_HUGE_CODE_PAGES/1/g" /tmp/php.ini
+elif [[ "$OPCACHE_HUGE_CODE_PAGES" == "On" ]]; then
+    sed -i "s/@OPCACHE_HUGE_CODE_PAGES/1/g" /tmp/php.ini
+elif [[ "$OPCACHE_HUGE_CODE_PAGES" == "false" ]]; then
+    sed -i "s/@OPCACHE_HUGE_CODE_PAGES/0/g" /tmp/php.ini
+elif [[ "$OPCACHE_HUGE_CODE_PAGES" == "Off" ]]; then
+    sed -i "s/@OPCACHE_HUGE_CODE_PAGES/0/g" /tmp/php.ini
+fi
+
+## opcache revalidate frequency ##
+if [[ -z "$OPCACHE_REVALIDATE_FREQUENCY" ]]; then 
+    sed -i "s/@OPCACHE_REVALIDATE_FREQUENCY/2/g" /tmp/php.ini
+else 
+    sed -i "s/@OPCACHE_REVALIDATE_FREQUENCY/${OPCACHE_REVALIDATE_FREQUENCY}/g" /tmp/php.ini
+fi
+
+## opcache max wasted percentage ##
+if [[ -z "$OPCACHE_MAX_WASTED_PERCENTAGE" ]]; then 
+    sed -i "s/@OPCACHE_MAX_WASTED_PERCENTAGE/5/g" /tmp/php.ini
+else 
+    sed -i "s/@OPCACHE_MAX_WASTED_PERCENTAGE/${OPCACHE_MAX_WASTED_PERCENTAGE}/g" /tmp/php.ini
+fi
+
+## opcache max accelerated files ##
+if [[ -z "$OPCACHE_MAX_ACCELERATED_FILES" ]]; then 
+    sed -i "s/@OPCACHE_MAX_ACCELERATED_FILES/10000/g" /tmp/php.ini
+else 
+    sed -i "s/@OPCACHE_MAX_ACCELERATED_FILES/${OPCACHE_MAX_ACCELERATED_FILES}/g" /tmp/php.ini
+fi
+
+## opcache interned strings buffer ##
+if [[ -z "$OPCACHE_INTERNED_STRINGS_BUFFER" ]]; then 
+    sed -i "s/@OPCACHE_INTERNED_STRINGS_BUFFER/64/g" /tmp/php.ini
+else 
+    sed -i "s/@OPCACHE_INTERNED_STRINGS_BUFFER/${OPCACHE_INTERNED_STRINGS_BUFFER}/g" /tmp/php.ini
+fi
+
+## opcache memory consumption ##
+if [[ -z "$OPCACHE_MEMORY_CONSUMPTION" ]]; then 
+    sed -i "s/@OPCACHE_MEMORY_CONSUMPTION/256/g" /tmp/php.ini
+else 
+    sed -i "s/@OPCACHE_MEMORY_CONSUMPTION/${OPCACHE_MEMORY_CONSUMPTION}/g" /tmp/php.ini
 fi
 
 
