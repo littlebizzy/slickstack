@@ -429,39 +429,51 @@ ldap.max_links = -1
 ;;;; PHP.ini: OPcache Module Settings ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+;; opcache.use_cwd = should enable to avoid collisions between similar file names ;;
+;; opcache.validate_timestamps = should enable to avoid having to manually purge OPcache ;;
+;; opcache.revalidate_freq = how often should OPcache check files for new code ;;
+;; opcache.revalidate_path = should disable (overkill) ;;
+;; opcache.save_comments = should enable since PHP comments are helpful ;;
+;; opcache.consistency_checks = should disable to improve performance (overkill) ;;
+;; opcache.enable_file_override = enable for better performance ;;
+;; opcache.validate_permission = should disable since SlickStack is not shared hosting ;;
+;; opcache.validate_root = should disable since SlickStack is not shared hosting ;;
+
 [opcache]
 opcache.enable=1
 opcache.enable_cli=1
-opcache.memory_consumption=256
-opcache.interned_strings_buffer=64
-opcache.max_accelerated_files=10000
-opcache.max_wasted_percentage=5
-;opcache.use_cwd=1
+opcache.memory_consumption=@OPCACHE_MEMORY_CONSUMPTION
+opcache.interned_strings_buffer=@OPCACHE_INTERNED_STRINGS_BUFFER
+opcache.max_accelerated_files=@OPCACHE_MAX_ACCELERATED_FILES
+opcache.max_wasted_percentage=@OPCACHE_MAX_WASTED_PERCENTAGE
+opcache.use_cwd=1
 opcache.validate_timestamps=1
-opcache.revalidate_freq=2
+opcache.revalidate_freq=@OPCACHE_REVALIDATE_FREQUENCY
 opcache.revalidate_path=0
 opcache.save_comments=1
 opcache.enable_file_override=1
-;opcache.optimization_level=0xffffffff
-;opcache.inherited_hack=1
-;opcache.dups_fix=0
-;opcache.blacklist_filename=
-;opcache.max_file_size=0
-;opcache.consistency_checks=0
-;opcache.force_restart_timeout=180
+opcache.consistency_checks=0
 opcache.error_log=/var/www/logs/error.log
-opcache.log_verbosity_level=2
-;opcache.preferred_memory_model=
-;opcache.protect_memory=0
-;opcache.restrict_api=
-;opcache.mmap_base=
-;opcache.file_cache=
-;opcache.file_cache_only=0
+opcache.log_verbosity_level=1
+;opcache.file_cache=/var/www/cache/opcache
+;opcache.file_cache_only=0 ;;
 ;opcache.file_cache_consistency_checks=1
 ;opcache.file_cache_fallback=1
-;opcache.huge_code_pages=1
-;opcache.validate_permission=0
-;opcache.validate_root=0
+opcache.huge_code_pages=@OPCACHE_HUGE_CODE_PAGES
+opcache.validate_permission=0
+opcache.validate_root=0
+
+;; opcache.optimization_level=0xffffffff
+;; opcache.inherited_hack=1
+;; opcache.dups_fix=0
+;; opcache.blacklist_filename=
+;; opcache.max_file_size=0
+;; opcache.force_restart_timeout=180
+;; opcache.preferred_memory_model=
+;; opcache.protect_memory=0
+;; opcache.restrict_api=
+;; opcache.mmap_base=
+;; opcache.opt_debug_level=0
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; PHP.ini: Miscellaneous Settings ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -486,3 +498,11 @@ expose_php = Off
 ;; Ref: https://alanstorm.com/php-meminfo-and-memory-leaks/
 ;; Ref: https://serverfault.com/questions/574880/nginx-php-fpm-error-logging
 ;; Ref: https://stackoverflow.com/questions/24049534/is-allow-url-fopen-safe/24049626#24049626
+;; Ref: https://patrickkerrigan.uk/blog/php-opcache-file-cache/
+;; Ref: https://ckon.wordpress.com/2015/09/18/php7-opcache-performance/
+;; Ref: https://www.getpagespeed.com/server-setup/linux-huge-pages-and-web-performance
+;; Ref: https://forum.directadmin.com/showthread.php?t=55111
+;; Ref: https://docs.moodle.org/29/en/OPcache
+;; Ref: https://stackoverflow.com/questions/25747174/opcache-revalidate-freq-config-in-php-ini
+;; Ref: https://stackoverflow.com/questions/23382615/apc-apcu-opcache-performance-poor
+;; Ref: https://ma.ttias.be/mitigating-phps-long-standing-issue-opcache-leaking-sensitive-data/
