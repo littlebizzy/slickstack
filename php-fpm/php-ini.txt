@@ -16,8 +16,8 @@
 
 engine = On
 short_open_tag = Off
-precision = 14
-output_buffering = 4096
+precision = @PHP_PRECISION
+output_buffering = @PHP_OUTPUT_BUFFERING
 ;output_handler =
 ;url_rewriter.tags
 ;url_rewriter.hosts
@@ -46,6 +46,9 @@ zend.enable_gc = On
 ;;;; PHP.ini: Resource Limit Settings ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+;; beware of extremely bloated WordPress themes (or plugins) that tell you to modify these ;;
+;; in most cases properly coded projects should not require high resource limits ;;
+
 max_execution_time = @PHP_MAX_EXECUTION_TIME
 max_input_time = @PHP_MAX_INPUT_TIME
 max_input_nesting_level = @PHP_MAX_INPUT_NESTING_LEVEL
@@ -72,7 +75,7 @@ xmlrpc_errors = Off
 ;; error_log = /var/www/logs/error.log
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;; Data Handling ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;; PHP.ini: Data Handling Settings ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;arg_separator.output = "&amp;"
@@ -115,7 +118,7 @@ cgi.force_redirect = 1
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; for stability reasons SlickStack hard-codes the temp directory used by PHP (WordPress) ;;
-;; these upload file limits are more relevant to WP communities with many users ;;
+;; these file upload limits are more relevant to WP communities with many users ;;
 
 file_uploads = On
 upload_tmp_dir = /var/www/html/wp-content/temp
@@ -126,12 +129,13 @@ max_file_uploads = @PHP_MAX_FILE_UPLOADS
 ;;;; PHP.ini: Fopen Wrapper Settings ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-allow_url_fopen = On
+;; lots of rumors still exist about allow_url_fopen security but generally it is safe ;;
+;; however allow_url_include is not very safe and is disabled on SlickStack ;;
+
+allow_url_fopen = @PHP_ALLOW_URL_FOPEN
 allow_url_include = Off
-;from="john@doe.com"
-;user_agent="PHP"
-default_socket_timeout = 60
-;auto_detect_line_endings = Off
+default_socket_timeout = @PHP_DEFAULT_SOCKET_TIMEOUT
+auto_detect_line_endings = Off
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; PHP.ini: Dynamic Extension Settings ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -460,3 +464,4 @@ expose_php = Off
 ;; Ref: https://www.reddit.com/r/lolphp/comments/41gkss/the_existence_of_the_precision_ini_setting_php/
 ;; Ref: https://alanstorm.com/php-meminfo-and-memory-leaks/
 ;; Ref: https://serverfault.com/questions/574880/nginx-php-fpm-error-logging
+;; Ref: https://stackoverflow.com/questions/24049534/is-allow-url-fopen-safe/24049626#24049626
