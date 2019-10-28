@@ -763,12 +763,22 @@ else
     sed -i "s/@INNODB_FLUSH_METHOD/${INNODB_FLUSH_METHOD}/g" /tmp/my.cnf
 fi
 
+## set InnoDB log file size ##
+if [[ -z "$INNODB_LOG_FILE_SIZE" ]]; then 
+    sed -i "s/@INNODB_LOG_FILE_SIZE/256M/g" /tmp/my.cnf
+else 
+    sed -i "s/@INNODB_LOG_FILE_SIZE/${INNODB_LOG_FILE_SIZE}/g" /tmp/my.cnf
+fi
+
 ## set InnoDB flush_log_at_trx_commit ##
 if [[ "$INNODB_FLUSH_LOG_AT_TRX_COMMIT" == "false" ]]; then
     sed -i "s/@INNODB_FLUSH_LOG_AT_TRX_COMMIT/0/g" /tmp/my.cnf
 else 
     sed -i "s/@INNODB_FLUSH_LOG_AT_TRX_COMMIT/1/g" /tmp/my.cnf
 fi
+
+## safe/clean/slow shutdown MySQL before update config ##
+/etc/init.d/mysql stop
 
 ## copy files to their destinations ##
 cp -R -f -d --no-preserve=mode,ownership /tmp/my.cnf /etc/mysql/my.cnf
@@ -777,6 +787,9 @@ cp -R -f -d --no-preserve=mode,ownership /tmp/my.cnf /etc/mysql/my.cnf
 chown root:root /etc/mysql/my.cnf
 chmod 0777 /etc/mysql/my.cnf
 
+## start the MySQL service again ##
+/etc/init.d/mysql start
+ 
 ####################################################################################################
 #### SlickStack: Install WordPress CMS (Download + Unzip WordPress Archive) ########################
 ####################################################################################################
