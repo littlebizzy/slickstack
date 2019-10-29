@@ -5,42 +5,45 @@
 ;;;; path: n/a (boilerplate) ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; destination: /etc/php/7.2/fpm/php.ini (after install) ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; purpose: PHP (ini) configuration file boilerplate optimized for SlickStack servers ;;;;;;;;;;;;
-;;;; module version: PHP-FPM 7.2 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;; module version: PHP-FPM 7.2 + PHP-FPM 7.4 (support pending) ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 [PHP]
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;; PHP.ini: Language Options ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;; PHP.ini: Language Options Settings ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 engine = On
 short_open_tag = Off
 precision = @PHP_PRECISION
 output_buffering = @PHP_OUTPUT_BUFFERING
-;output_handler =
-;url_rewriter.tags
-;url_rewriter.hosts
 zlib.output_compression = Off
-;zlib.output_compression_level = -1
-;zlib.output_handler =
 implicit_flush = Off
 unserialize_callback_func =
+;; unserialize_max_depth = 4096 ;; PHP 7.4
 serialize_precision = -1
 ;;;; open_basedir = /var/www
-;disable_functions = exec,shell_exec,curl_exec,curl_multi_exec,escapeshellarg,system,mail,passthru,proc_open,proc_close,proc_terminate,popen,curl_exec,parse_ini_file,show_source,dl
+;; disable_functions = exec,shell_exec,curl_exec,curl_multi_exec,escapeshellarg,system,mail,passthru,proc_open,proc_close,proc_terminate,popen,curl_exec,parse_ini_file,show_source,dl
 disable_classes =
-;highlight.string  = #DD0000
-;highlight.comment = #FF9900
-;highlight.keyword = #007700
-;highlight.default = #0000BB
-;highlight.html    = #000000
-;ignore_user_abort = On
-;realpath_cache_size = 4096k
-;realpath_cache_ttl = 120
 zend.enable_gc = On
-;zend.multibyte = Off
-;zend.script_encoding =
+
+;; output_handler =
+;; url_rewriter.tags
+;; url_rewriter.hosts
+;; zlib.output_compression_level = -1
+;; zlib.output_handler =
+;; highlight.string  = #DD0000
+;; highlight.comment = #FF9900
+;; highlight.keyword = #007700
+;; highlight.default = #0000BB
+;; highlight.html    = #000000
+;; ignore_user_abort = On
+;; realpath_cache_size = 4096k
+;; realpath_cache_ttl = 120
+;; zend.multibyte = Off
+;; zend.script_encoding =
+;; zend.exception_ignore_args = On ;; PHP 7.4
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; PHP.ini: Resource Limits Settings ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -160,13 +163,14 @@ auto_detect_line_endings = Off
 
 ;; extension=bz2
 ;; extension=curl
+;; extension=ffi ;; PHP 7.4
 ;; extension=fileinfo
 ;; extension=gd2
 ;; extension=gettext
 ;; extension=gmp
 ;; extension=intl
 ;; extension=imap
-;; extension=interbase
+;; extension=interbase ;; remove for PHP 7.4
 ;; extension=ldap
 ;; extension=mbstring
 ;; extension=exif ;; must be after mbstring as it depends on it ;;
@@ -235,7 +239,7 @@ cli_server.color = On
 ;; pdo_odbc.db2_instance_name
 
 [Pdo_mysql]
-pdo_mysql.cache_size = 2000
+pdo_mysql.cache_size = 2000 ;; remove in PHP 7.4??
 pdo_mysql.default_socket=
 
 [Phar]
@@ -263,9 +267,10 @@ odbc.max_persistent = -1
 odbc.max_links = -1
 odbc.defaultlrl = 4096
 odbc.defaultbinmode = 1
-;; birdstep.max_links = -1
+;; birdstep.max_links = -1 ;; remove in PHP 7.4??
 
 [Interbase]
+;; REMOVE MODULE FOR PHP 7.4 ;;
 ibase.allow_persistent = 1
 ibase.max_persistent = -1
 ibase.max_links = -1
@@ -282,7 +287,7 @@ mysqli.max_persistent = -1
 ;; mysqli.allow_local_infile = On
 mysqli.allow_persistent = On
 mysqli.max_links = -1
-mysqli.cache_size = 2000
+mysqli.cache_size = 2000 ;; remove in PHP 7.4??
 mysqli.default_port = 3306
 mysqli.default_socket =
 mysqli.default_host =
@@ -339,6 +344,7 @@ session.cookie_lifetime = 0
 session.cookie_path = /
 session.cookie_domain =
 session.cookie_httponly =
+;; session.cookie_samesite = ;; PHP 7.4
 session.serialize_handler = php
 session.gc_probability = 1
 session.gc_divisor = 1000
@@ -387,6 +393,8 @@ zend.assertions = -1
 ;; mbstring.func_overload = 0
 ;; mbstring.strict_detection = On
 ;; mbstring.http_output_conv_mimetype=
+;mbstring.regex_stack_limit=100000 ;; PHP 7.4
+;mbstring.regex_retry_limit=1000000 ;; PHP 7.4
 
 [gd]
 ;; gd.jpeg_ignore_warning = 1
@@ -425,6 +433,10 @@ ldap.max_links = -1
 ;; openssl.cafile=
 ;; openssl.capath=
 
+;; [ffi] ;; PHP 7.4
+;; ffi.enable=preload
+;; ffi.preload=
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; PHP.ini: OPcache Module Settings ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -459,12 +471,17 @@ opcache.log_verbosity_level=1
 ;opcache.file_cache_only=0 ;;
 ;opcache.file_cache_consistency_checks=1
 ;opcache.file_cache_fallback=1
+;opcache.cache_id= ;; PHP 7.4
+;opcache.preload= ;; PHP 7.4
+;opcache.preload_user= ;; PHP 7.4
+;opcache.file_update_protection=2 ;; PHP 7.4
+;opcache.lockfile_path=/tmp ;; PHP 7.4
 opcache.huge_code_pages=@OPCACHE_HUGE_CODE_PAGES
 opcache.validate_permission=0
 opcache.validate_root=0
 
 ;; opcache.optimization_level=0xffffffff
-;; opcache.inherited_hack=1
+;; opcache.inherited_hack=1 ;; removed in PHP 7.4
 ;; opcache.dups_fix=0
 ;; opcache.blacklist_filename=
 ;; opcache.max_file_size=0
