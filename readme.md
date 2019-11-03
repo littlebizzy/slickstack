@@ -135,6 +135,8 @@ After completing the installation steps above, your `/var/www/` directory should
     /var/www/ss-install
     /var/www/ss-muplugs
     /var/www/ss-perms
+    /var/www/ss-purge
+    /var/www/ss-restart
     /var/www/ss-scan
     /var/www/ss-update
     /var/www/ss-worker
