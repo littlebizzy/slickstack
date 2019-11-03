@@ -40,6 +40,7 @@ title: SlickStack (Public Mirrors)
 * <a href="ss-muplugs.txt">ss-muplugs.txt</a>
 * <a href="ss-perms.txt">ss-perms.txt</a>
 * <a href="ss-purge.txt">ss-purge.txt</a>
+* <a href="ss-restart.txt">ss-restart.txt</a>
 * <a href="ss-scan.txt">ss-scan.txt</a>
 * <a href="ss-update.txt">ss-update.txt</a>
 * <a href="ss-worker.txt">ss-worker.txt</a>
@@ -68,4 +69,4 @@ title: SlickStack (Public Mirrors)
 
 ----
 
-*Last updated: Oct 17, 2019*
+*Last updated: Nov 4, 2019*
