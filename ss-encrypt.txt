@@ -67,7 +67,7 @@ if [[ ! -f "/var/www/meta/.cherry" ]]; then
 fi
 
 ####################################################################################################
-#### Cerbot: Prepare Public Challenge Directory + Request Certificate ##############################
+#### SS-Encrypt: Prepare Public Challenge Directory + Regenerate Cerbot SSL Certificate ############
 ####################################################################################################
 
 ## ensure public challenge directory exists ##
@@ -83,7 +83,7 @@ chmod 6775 /var/www/html/.well-known
 certbot certonly --noninteractive --agree-tos --register-unsafely-without-email -d ${SITE_DOMAIN} --webroot -w /var/www/html/
 
 ####################################################################################################
-#### Cerbot: Create Symlinks + Modify Nginx Configuration ##########################################
+#### SS-Encrypt: Create Certbot Symlinks + Modify Nginx Configuration ##############################
 ####################################################################################################
 
 ## create symlinks for simpler Nginx config ##
@@ -112,10 +112,18 @@ chown root:root /etc/ssl/chain.pem
 chown root:root /etc/ssl/fullchain.pem
 
 ####################################################################################################
-#### restart services and print message to confirm script has finished running #####################
+#### SS-Encrypt: Restart Services Again If Certbot SSL Is Active (Nginx Server) ####################
 ####################################################################################################
 
-/etc/init.d/nginx restart
+if [[ "$SSL_TYPE" == "certbot" ]]; then 
+    /etc/init.d/nginx restart
+fi
+
+####################################################################################################
+#### SS-Encrypt: SUCCESS MESSAGE ###################################################################
+####################################################################################################
+
+echo -e "\e[36mSSL certificates have been successfully generated...\e[0m"
 
 ####################################################################################################
 #### External References Used By SlickStack To Improve This Script #################################
