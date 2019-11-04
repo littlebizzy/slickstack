@@ -6,7 +6,7 @@
 #### mirror: http://mirrors.slickstack.io/ss-worker.txt ############################################
 #### path: /var/www/ss-worker ######################################################################
 #### destination: n/a (not a boilerplate) ##########################################################
-#### purpose: performs SlickStack maintenance tasks and downloads latest ss-check file #############
+#### purpose: Performs SlickStack maintenance tasks and downloads latest ss-check file #############
 #### module version: Ubuntu 18.04 ##################################################################
 ####################################################################################################
 
@@ -14,13 +14,14 @@
 source /var/www/ss-config
 
 ## critical functions (aliases) ##
-# rm () { rm -R -f; }
+# apt () { DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold"; }
 # wget () { wget --no-cache --no-cookies --tries=3 --timeout=15; }
 # cp () { cp -R -f -d --no-preserve=mode,ownership; }
+# rm () { rm -R -f; }
 # mkdir () { mkdir -p; }
 
 ####################################################################################################
-#### SS-Worker: Delete Any Previous + Leftover Temporary Files #####################################
+#### SS-Worker: Delete Any Previous (Leftover) Temporary Files #####################################
 ####################################################################################################
 
 rm -R -f /tmp/ss*
@@ -28,7 +29,7 @@ rm -R -f /tmp/*cron*
 rm -R -f /tmp/blacklist*
 
 ####################################################################################################
-#### Download The Latest SS-Check Core Script (Improves SlickStack Redundancy) #####################
+#### SS-Worker: Download Latest SS-Check Core Script (Improves SlickStack Redundancy) ##############
 ####################################################################################################
 
 ## download latest ss-check and redundant 1-cron-often scripts ##
@@ -69,7 +70,7 @@ chmod 6775 /var/www/logs
 chmod 6775 /var/www/meta
 
 ####################################################################################################
-## Download The Latest Blacklist.txt File For Plugin Blacklist (MU Plugin) #########################
+## SS-Worker: Download Latest Blacklist.txt File For Plugin Blacklist (MU Plugin) ##################
 ####################################################################################################
 
 ## download latest blacklist (or custom blacklist) ##
@@ -87,13 +88,13 @@ chown www-data:wordpress /var/www/html/wp-content/blacklist.txt ## change to www
 chmod 0440 /var/www/html/wp-content/blacklist.txt
 
 ####################################################################################################
-#### Calculate Largest Directories On Server + Update Meta Records #################################
+#### SS-Worker: Calculate Largest Directories On Server + Update Meta Records ######################
 ####################################################################################################
 
 # du -a /var/www/html | sort -n -r | head -n 15
 
 ####################################################################################################
-#### Delete Any Previous + Leftover Temporary Files ################################################
+#### SS-Worker: Delete Any Previous (Leftover) Temporary Files #####################################
 ####################################################################################################
 
 rm -R -f /tmp/ss*
