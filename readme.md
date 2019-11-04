@@ -1,4 +1,4 @@
-# SlickStack [ss] - "Alpha* ss9a"
+# SlickStack [ss] - "Alpha* ss10a"
 
 SlickStack is a free LEMP stack automation script written in Bash designed to enhance and simplify WordPress provisioning, performance, and security.
 
@@ -9,6 +9,10 @@ SlickStack is a free LEMP stack automation script written in Bash designed to en
 | Google PageSpeed | GTMetrix | Pingdom | Security Headers | Qualys SSL Labs | WebPageTest |
 | :--------------: | :------: | :-----: | :--------------: | :-------------: | :-------------: |
 | [**A**](https://developers.google.com/speed/pagespeed/insights/?url=https%3A%2F%2Fslickstack.io%2F) | [**A**](https://gtmetrix.com/reports/slickstack.io/zpLMZ1eb) | [**A**](https://tools.pingdom.com/#5aeba9dea8000000) | [**A**](https://securityheaders.com/?q=https%3A%2F%2Fslickstack.io%2F&followRedirects=on) | [**A**](https://www.ssllabs.com/ssltest/analyze.html?d=slickstack.io&latest) | [**A**](https://www.webpagetest.org/result/190920_68_a4a541db9847ce601ef264b41df9d0f3/) |
+
+* **NEW!** `ss-restart` now provides a quick and easy way to restart all LEMP services for testing, etc...
+
+* **NEW!** More advanced settings now available for PHP, Opcache, MySQL and more in `ss-config`...
 
 * **NEW!** SlickStack now supports [throwaway themes](https://github.com/littlebizzy/throwaway-theme) that can be used to customize `wp_options` during the setup process... also a few more variables now like `SITE_NAME` and `SITE_EMAIL` to better support this approach...
 
