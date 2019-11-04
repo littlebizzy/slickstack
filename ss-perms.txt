@@ -48,6 +48,7 @@ adduser www-data wordpress &> /dev/null
 ## ensure directories exist (will not overwrite) ##
 mkdir -p /var/www
 mkdir -p /var/www/cache
+mkdir -p /var/www/cache/opcache
 mkdir -p /var/www/logs
 mkdir -p /var/www/meta
 
@@ -74,9 +75,11 @@ chmod 6775 /var/www/wp.sql
 
 ## its okay if the SFTP user accesses this stuff (but www-data access is the priority) ##
 chown www-data:www-data /var/www/cache &> /dev/null ## must be www-data:www-data
+chown www-data:www-data /var/www/cache/opcache &> /dev/null ## must be www-data:www-data
 chown www-data:www-data /var/www/logs &> /dev/null ## must be www-data:www-data
 chown www-data:www-data /var/www/meta &> /dev/null ## must be www-data:www-data
 chmod 6775 /var/www/cache &> /dev/null ## 6755 should also work
+chmod 6775 /var/www/cache/opcache &> /dev/null ## 6755 should also work
 chmod 6775 /var/www/logs &> /dev/null ## 6755 should also work
 chmod 6775 /var/www/meta &> /dev/null ## 6755 should also work
 
@@ -221,3 +224,4 @@ redis-cli flushall &> /dev/null
 ## Ref: https://ubuntuforums.org/showthread.php?t=2383638
 ## Ref: https://serverfault.com/questions/584986/bad-ownership-or-modes-for-chroot-directory-component
 ## Ref: https://stackoverflow.com/questions/6851909/how-do-i-delete-everything-in-redis
+## Ref: https://serverfault.com/questions/888653/correct-web-user-for-php-fpm-under-nginx
