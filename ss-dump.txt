@@ -21,11 +21,14 @@ source /var/www/ss-config
 # mkdir () { mkdir -p; }
 
 ####################################################################################################
-#### SS-Dump: Export The Live MySQL Database #######################################################
+#### SS-Dump: PROCEED MESSAGE ######################################################################
 ####################################################################################################
 
-## MESSAGE ##
-echo -e "\e[36mDumping the live MySQL database to /var/www/wp.sql for safe-keeping...\e[0m"
+echo -e "\e[36mDumping the live MySQL database to /var/www/wp.sql for safe-keeping...\e[0m" >&2
+
+####################################################################################################
+#### SS-Dump: Export The Live MySQL Database #######################################################
+####################################################################################################
 
 ## prepare root password (suppresses MySQL security warnings) ##
 export MYSQL_PWD=$DB_PASSWORD_ROOT
@@ -39,6 +42,13 @@ mysqldump --user=root --host="$DB_HOST" --protocol=tcp --port=3306 --dump-date -
 
 chown -R $SFTP_USER:www-data /var/www/wp.sql
 chmod 6775 /var/www/wp.sql
+
+####################################################################################################
+#### SS-Dump: SUCCESS MESSAGE ######################################################################
+####################################################################################################
+
+## if = file exists + recent touch time + file contents not zero ##
+echo -e "\e[93mThe MySQL database has been successfully dumped to /var/www/wp.sql.\e[0m" >&2
 
 ####################################################################################################
 #### External References Used By SlickStack To Improve This Script #################################
