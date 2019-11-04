@@ -34,7 +34,7 @@ if [[ "${UBUNTU_VERSION}" != "18.04" ]]; then
 fi
 
 ## ensure ss-config build version matches ss-install build version ##
-if [[ "$SS_BUILD" != "NOV2019A" ]]; then 
+if [[ "$SS_BUILD" != "NOV2019B" ]]; then 
     echo -e "\e[93mYour ss-config file is outdated. Please rebuild it and run ss-install again.\e[0m" >&2
     exit 1
 fi
@@ -331,6 +331,20 @@ if [[ -z "$PHP_POST_MAX_SIZE" ]]; then
     sed -i "s/@PHP_POST_MAX_SIZE/512M/g" /tmp/php.ini
 else 
     sed -i "s/@PHP_POST_MAX_SIZE/${PHP_POST_MAX_SIZE}/g" /tmp/php.ini
+fi
+
+## php disable classes ##
+if [[ -z "$PHP_DISABLE_CLASSES" ]]; then 
+    sed -i "s/@PHP_DISABLE_CLASSES//g" /tmp/php.ini
+else 
+    sed -i "s/@PHP_DISABLE_CLASSES/${PHP_DISABLE_CLASSES}/g" /tmp/php.ini
+fi
+
+## php disable functions ##
+if [[ -z "$PHP_DISABLE_FUNCTIONS" ]]; then 
+    sed -i "s/@PHP_DISABLE_FUNCTIONS//g" /tmp/php.ini
+else 
+    sed -i "s/@PHP_DISABLE_FUNCTIONS/${PHP_DISABLE_FUNCTIONS}/g" /tmp/php.ini
 fi
 
 ######### set php.ini opcache stuff ########
