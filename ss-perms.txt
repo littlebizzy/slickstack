@@ -61,11 +61,15 @@ chmod 0755 /var/www &> /dev/null ## must be 0755
 ## SlickStack core scripts ##
 chown root:root /var/www/*cron* &> /dev/null ## must be root:root
 chown root:root /var/www/ss* &> /dev/null ## must be root:root
-chown www-data:www-data /var/www/wp.sql &> /dev/null ## root:root should also work
 chmod 6770 /var/www/*cron* &> /dev/null ## 4700 should also work
 chmod 6770 /var/www/ss* &> /dev/null ## 4700 should also work
 chmod 0700 /var/www/ss-config &> /dev/null
-chmod 6770 /var/www/wp.sql &> /dev/null
+
+## SQL dump file (we want SFTP users to be able to access) ##
+# chown www-data:www-data /var/www/wp.sql &> /dev/null ## root:root should also work
+# chmod 6770 /var/www/wp.sql &> /dev/null
+chown -R $SFTP_USER:www-data /var/www/wp.sql
+chmod 6775 /var/www/wp.sql
 
 ## its okay if the SFTP user accesses this stuff (but www-data access is the priority) ##
 chown www-data:www-data /var/www/cache &> /dev/null ## must be www-data:www-data
