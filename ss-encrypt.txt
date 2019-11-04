@@ -6,7 +6,7 @@
 #### mirror: http://mirrors.slickstack.io/ss-encrypt.txt ###########################################
 #### path: /var/www/ss-encrypt #####################################################################
 #### destination: n/a (not a boilerplate) ##########################################################
-#### purpose: generates or renews free SSL certificates from OpenSSL and Certbot ###################
+#### purpose: Generates or renews free SSL certificates via OpenSSL (SS) and Certbot (CA) ##########
 #### module version: Ubuntu 18.04 ##################################################################
 ####################################################################################################
 
@@ -14,13 +14,14 @@
 source /var/www/ss-config
 
 ## critical functions (aliases) ##
-# rm () { rm -R -f; }
+# apt () { DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold"; }
 # wget () { wget --no-cache --no-cookies --tries=3 --timeout=15; }
 # cp () { cp -R -f -d --no-preserve=mode,ownership; }
+# rm () { rm -R -f; }
 # mkdir () { mkdir -p; }
 
 ####################################################################################################
-#### OpenSSL: Create Self-Signed Certificate + Generate DH Parameters ##############################
+#### SS-Encrypt: Generate Self-Signed OpenSSL Certificate ##########################################
 ####################################################################################################
 
 ## MESSAGE ##
@@ -37,12 +38,18 @@ else
     openssl req -new -x509 -nodes -days 3650 -newkey rsa:2048 -keyout /etc/ssl/nginx.key -out /etc/ssl/nginx.crt -subj "/C=${CSR_COUNTRY}/ST=${CSR_STATE}/L=${CSR_CITY}/O=${CSR_COMPANY}/OU=${CSR_DEPT}/CN=${SITE_DOMAIN}"
 fi
 
-## generate DH parameters ##
+####################################################################################################
+#### SS-Encrypt: Generate DH Parameters (Used Only When Cerbot SSL Is Active) ######################
+####################################################################################################
+
 if [[ "$SSL_TYPE" == "certbot" ]]; then 
     openssl dhparam -out /etc/ssl/dhparam.pem 2048
 fi
 
-## restart services ##
+####################################################################################################
+#### SS-Encrypt: Restart Services (Nginx Server) ###################################################
+####################################################################################################
+
 /etc/init.d/nginx restart
 
 ####################################################################################################
@@ -94,7 +101,7 @@ if [ -d  "/etc/letsencrypt/live" ] && [ -f  "/etc/ssl/cert.pem" ] && [ "$SSL_TYP
 fi
 
 ####################################################################################################
-#### Reset Permissions (OpenSSL + Certbot) #########################################################
+#### SS-Encrypt: Reset Permissions (OpenSSL + Certbot) #############################################
 ####################################################################################################
 
 chown root:root /etc/ssl/nginx.key
