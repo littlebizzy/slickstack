@@ -6,7 +6,7 @@
 #### mirror: http://mirrors.slickstack.io/ss-scan.txt ##############################################
 #### path: /var/www/ss-scan ########################################################################
 #### destination: n/a (not a boilerplate) ##########################################################
-#### purpose: scans the entire SlickStack directory tree (only) for malware via ClamAV #############
+#### purpose: Scans the entire SlickStack directory tree (only) for malware via ClamAV #############
 #### module version: Ubuntu 18.04 + ClamAV #########################################################
 ####################################################################################################
 
@@ -14,14 +14,23 @@
 source /var/www/ss-config
 
 ## critical functions (aliases) ##
-# rm () { rm -R -f; }
+# apt () { DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold"; }
 # wget () { wget --no-cache --no-cookies --tries=3 --timeout=15; }
 # cp () { cp -R -f -d --no-preserve=mode,ownership; }
+# rm () { rm -R -f; }
 # mkdir () { mkdir -p; }
 
-## TAKES 5-10 MINUTES ON AVERAGE (prints + saves results to /var/www/logs/clamav.log) ##
+####################################################################################################
+#### SS-Scan: Selectively Scan SlickStack Directory Tree For Malware (Via ClamAV) ##################
+####################################################################################################
+
+## on average the scanning process takes around 5-10 minutes on the typical server ##
+## verbose results are printed if called by CLI (also saved to /var/www/logs/clamav.log) ##
+
 clamscan -ir /var/www -l /var/www/logs/clamav.log
 
 ####################################################################################################
 #### External References Used By SlickStack To Improve This Script #################################
 ####################################################################################################
+
+## Ref: 
