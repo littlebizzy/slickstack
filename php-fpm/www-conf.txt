@@ -4,30 +4,37 @@
 ;;;; mirror: http://mirrors.slickstack.io/php-fpm/www-conf.txt ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; path: /etc/php/7.2/fpm/pool.d/www.conf ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; destination: n/a (not a boilerplate) ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;; purpose: PHP-FPM pool (www) configuration file ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;; module version: PHP-FPM 7.2+ ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;; purpose: WWW pool configuration file boilerplate optimized for SlickStack servers ;;;;;;;;;;;;;
+;;;; module version: PHP-FPM 7.2 + PHP-FPM 7.4 (pending) ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 [www]
 
-;prefix = /path/to/pools/$pool
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;; WWW Pool: General Settings ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 user = www-data
 group = www-data
 listen = /run/php/php7.2-fpm.sock
-;listen.backlog = 511
 listen.owner = www-data
 listen.group = www-data
-;listen.mode = 0660
-;listen.acl_users =
-;listen.acl_groups =
-;listen.allowed_clients = 127.0.0.1
-;process.priority = -19
-;process.dumpable = yes
 
+;; prefix = /path/to/pools/$pool
+;; listen.backlog = 511
+;; listen.mode = 0660
+;; listen.acl_users =
+;; listen.acl_groups =
+;; listen.allowed_clients = 127.0.0.1
+;; process.priority = -19
+;; process.dumpable = yes
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;; PHP-FPM Pool: Child Processes Settings ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;; WWW Pool: Child Processes Settings ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; ondemand is best for the majority of VPS servers (contrary to many online tutorials) ;;
+;; only incredibly high traffic servers should use dynamic after tuning settings ;;
 
 pm = ondemand
 pm.max_children = 20
@@ -36,8 +43,8 @@ pm.min_spare_servers = 1
 pm.max_spare_servers = 3
 pm.process_idle_timeout = 10s;
 pm.max_requests = 500
-;pm.status_path = /status
 
+;pm.status_path = /status
 ;ping.path = /ping
 ;ping.response = pong
 ;access.log = log/$pool.access.log
@@ -71,3 +78,7 @@ php_admin_flag[log_errors] = on
 ;; Ref: https://gist.github.com/holmberd/44fa5c2555139a1a46e01434d3aaa512
 ;; Ref: https://easyengine.io/docs/prevent-mysql-crashing
 ;; Ref: https://gist.github.com/fyrebase/62262b1ff33a6aaf5a54
+;; Ref: https://www.kinamo.be/en/support/faq/determining-the-correct-number-of-child-processes-for-php-fpm-on-nginx
+;; Ref: https://geekflare.com/php-fpm-optimization/
+;; Ref: https://ma.ttias.be/a-better-way-to-run-php-fpm/
+;; Ref: https://haydenjames.io/php-fpm-tuning-using-pm-static-max-performance/
