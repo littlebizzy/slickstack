@@ -95,7 +95,7 @@ CLOUDFLARE_WIDGET_DNS="true"
 ####################################################################################################
 ####################################################################################################
 ####################################################################################################
-#### ADVANCED SETTINGS BELOW (MOST SLICKSTACK SERVERS SHOULD NOT CHANGE THESE) #####################
+######## ADVANCED SETTINGS BELOW (MOST SLICKSTACK SERVERS SHOULD NOT CHANGE THESE) #################
 ####################################################################################################
 ####################################################################################################
 ####################################################################################################
@@ -174,23 +174,53 @@ INNODB_FLUSH_LOG_AT_TRX_COMMIT="true"
 INNODB_FLUSH_METHOD="O_DIRECT"
 
 ####################################################################################################
-#### PHP-FPM: Various Settings (PHP.ini + PHP-FPM + Pool) ##########################################
+#### PHP-FPM: Various Settings (php.ini) ###########################################################
 ####################################################################################################
 
 ## PHP_MEMORY_LIMIT = [256M|512M|etc] should probably be 512M for most websites ##
 ## PHP_MAX_INPUT_VARS = [3000|5000|10000|etc] mostly to support extremely bloated themes ##
 ## PHP_MAX_INPUT_TIME = [30|60|120|300|etc] most websites should use 30-60 ##
 ## PHP_MAX_EXECUTION_TIME = [30|60|120|300|etc] most websites should use 30-60 ##
-## PHP_MAX_INPUT_NESTING_LEVEL = [64|etc] not many reasons to change this from default (64) ##
-## PHP_UPLOAD_MAX_FILESIZE = [256M|512M|etc] limit the size of super large uploads ##
+## PHP_MAX_INPUT_NESTING_LEVEL = [64|etc] not many reasons to change default value (64) ##
+## PHP_UPLOAD_MAX_FILESIZE = [256M|512M|1024M|etc] limit the size of large uploads ##
+## PHP_MAX_FILE_UPLOADS = [10|100|1000|etc] more relevant for community websites ##
+## PHP_PRECISION = [14|etc] not many reasons to change from default value ##
+## PHP_OUTPUT_BUFFERING = [4096|etc] keep in mind zlib.output_compression is disabled ##
+## PHP_ALLOW_URL_FOPEN = [true|false] safe for most sites to keep this enabled ##
+## PHP_DEFAULT_SOCKET_TIMEOUT = [60|etc] not many reasons to change this ##
+## PHP_POST_MAX_SIZE = [256M|512M|etc] limit the size of post data ##
+## PHP_DISABLE_FUNCTIONS = [*infinite options*] disable certain unsafe PHP functions ##
+## PHP_DISABLE_CLASSES = [*infinite options*] disable certain unsafe PHP classes ##
 
-PHP_MEMORY_LIMIT="512M"
-PHP_MAX_INPUT_VARS="5000"
-PHP_MAX_INPUT_TIME="60"
+PHP_PRECISION="14"
+PHP_OUTPUT_BUFFERING="4096"
+PHP_DISABLE_FUNCTIONS=""
+PHP_DISABLE_CLASSES=""
+# PHP_UNSERIALIZE_MAX_DEPTH="4096" ## PHP 7.4
 PHP_MAX_EXECUTION_TIME="60"
+PHP_MAX_INPUT_TIME="60"
 PHP_MAX_INPUT_NESTING_LEVEL="64"
+PHP_MAX_INPUT_VARS="5000"
+PHP_MEMORY_LIMIT="512M"
+PHP_POST_MAX_SIZE="512M"
 PHP_UPLOAD_MAX_FILESIZE="512M"
 PHP_MAX_FILE_UPLOADS="100"
+PHP_ALLOW_URL_FOPEN="true"
+PHP_DEFAULT_SOCKET_TIMEOUT="60"
+
+####################################################################################################
+#### PHP-FPM: Various Settings (php-fpm.conf + www.conf) ###########################################
+####################################################################################################
+
+## PHP_EMERGENCY_RESTART_THRESHOLD = [10|15|30|etc] keep enabled with reasonable value ##
+## PHP_EMERGENCY_RESTART_INTERVAL = [1m|etc] keep it at 1m if you don't know ##
+## PHP_PROCESS_CONTROL_TIMEOUT = [10|etc] keep it at 10 if you don't know ##
+## PHP_PROCESS_MAX = [128|etc] only experts should modify this value ##
+## PHP_PROCESS_PRIORITY = [-19|etc] only experts should modify this value ##
+## PHP_RLIMIT_FILES = [1024|etc] 1024 is good for most sites ##
+## PHP_RLIMIT_CORE = [0|etc] almost nobody should be changing this from 0 ##
+## PHP_SYSTEMD_INTERVAL = [10|etc] most sites 10 is good ##
+
 PHP_EMERGENCY_RESTART_THRESHOLD="10"
 PHP_EMERGENCY_RESTART_INTERVAL="1m"
 PHP_PROCESS_CONTROL_TIMEOUT="10s"
@@ -199,13 +229,6 @@ PHP_PROCESS_PRIORITY="-19"
 PHP_RLIMIT_FILES="1024"
 PHP_RLIMIT_CORE="0"
 PHP_SYSTEMD_INTERVAL="10"
-PHP_PRECISION="14"
-PHP_OUTPUT_BUFFERING="4096"
-PHP_ALLOW_URL_FOPEN="true"
-PHP_DEFAULT_SOCKET_TIMEOUT="60"
-PHP_POST_MAX_SIZE="512M"
-PHP_DISABLE_FUNCTIONS=""
-PHP_DISABLE_CLASSES=""
 
 ####################################################################################################
 #### PHP-FPM: OPcache Settings (Always Enabled On Production Environments) #########################
