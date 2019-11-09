@@ -131,6 +131,7 @@
 
 ----
 
+* <a href="throwaway-theme-1.2.1.zip">throwaway-theme-1.2.1.zip</a>
 * <a href="throwaway-theme-1.2.0.zip">throwaway-theme-1.2.0.zip</a>
 * <a href="throwaway-theme-1.1.0.zip">throwaway-theme-1.1.0.zip</a>
 * <a href="throwaway-theme-1.0.0.zip">throwaway-theme-1.0.0.zip</a>
@@ -157,4 +158,4 @@
 
 ----
 
-*Last updated: Nov 4, 2019*
+*Last updated: Nov 9, 2019*
