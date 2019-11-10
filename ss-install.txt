@@ -34,7 +34,7 @@ if [[ "${UBUNTU_VERSION}" != "18.04" ]]; then
 fi
 
 ## ensure ss-config build version matches ss-install build version ##
-if [[ "$SS_BUILD" != "NOV2019C" ]]; then 
+if [[ "$SS_BUILD" != "NOV2019D" ]]; then 
     echo -e "\e[93mYour ss-config file is outdated. Please rebuild it and run ss-install again.\e[0m" >&2
     exit 1
 fi
@@ -456,6 +456,85 @@ else
     sed -i "s/@FPM_SYSTEMD_INTERVAL/${FPM_SYSTEMD_INTERVAL}/g" /tmp/php-fpm.conf
 fi
 
+
+######### set www.conf stuff ########
+
+## pool listen backlog ##
+if [[ -z "$WWW_LISTEN_BACKLOG" ]]; then 
+    sed -i "s/@WWW_LISTEN_BACKLOG/65535/g" /tmp/www.conf
+else 
+    sed -i "s/@WWW_LISTEN_BACKLOG/${WWW_LISTEN_BACKLOG}/g" /tmp/www.conf
+fi
+
+## pool type ##
+if [[ -z "$WWW_PM" ]]; then 
+    sed -i "s/@WWW_PM/ondemand/g" /tmp/www.conf
+else 
+    sed -i "s/@WWW_PM/${WWW_PM}/g" /tmp/www.conf
+fi
+
+## pool max children ##
+if [[ -z "$WWW_PM_MAX_CHILDREN" ]]; then 
+    sed -i "s/@WWW_PM_MAX_CHILDREN/20/g" /tmp/www.conf
+else 
+    sed -i "s/@WWW_PM_MAX_CHILDREN/${WWW_PM_MAX_CHILDREN}/g" /tmp/www.conf
+fi
+
+## pool start servers ##
+if [[ -z "$WWW_PM_START_SERVERS" ]]; then 
+    sed -i "s/@WWW_PM_START_SERVERS/2/g" /tmp/www.conf
+else 
+    sed -i "s/@WWW_PM_START_SERVERS/${WWW_PM_START_SERVERS}/g" /tmp/www.conf
+fi
+
+## pool min spare servers ##
+if [[ -z "$WWW_PM_MIN_SPARE_SERVERS" ]]; then 
+    sed -i "s/@WWW_PM_MIN_SPARE_SERVERS/1/g" /tmp/www.conf
+else 
+    sed -i "s/@WWW_PM_MIN_SPARE_SERVERS/${WWW_PM_MIN_SPARE_SERVERS}/g" /tmp/www.conf
+fi
+
+## pool max spare servers ##
+if [[ -z "$WWW_PM_MAX_SPARE_SERVERS" ]]; then 
+    sed -i "s/@WWW_PM_MAX_SPARE_SERVERS/3/g" /tmp/www.conf
+else 
+    sed -i "s/@WWW_PM_MAX_SPARE_SERVERS/${WWW_PM_MAX_SPARE_SERVERS}/g" /tmp/www.conf
+fi
+
+## pool process idle timeout ##
+if [[ -z "$WWW_PM_PROCESS_IDLE_TIMEOUT" ]]; then 
+    sed -i "s/@WWW_PM_PROCESS_IDLE_TIMEOUT/10s/g" /tmp/www.conf
+else 
+    sed -i "s/@WWW_PM_PROCESS_IDLE_TIMEOUT/${WWW_PM_PROCESS_IDLE_TIMEOUT}/g" /tmp/www.conf
+fi
+
+## pool max requests ##
+if [[ -z "$WWW_PM_MAX_REQUESTS" ]]; then 
+    sed -i "s/@WWW_PM_MAX_REQUESTS/500/g" /tmp/www.conf
+else 
+    sed -i "s/@WWW_PM_MAX_REQUESTS/${WWW_PM_MAX_REQUESTS}/g" /tmp/www.conf
+fi
+
+## pool request terminate timeout ##
+if [[ -z "$WWW_REQUEST_TERMINATE_TIMEOUT" ]]; then 
+    sed -i "s/@WWW_REQUEST_TERMINATE_TIMEOUT/300/g" /tmp/www.conf
+else 
+    sed -i "s/@WWW_REQUEST_TERMINATE_TIMEOUT/${WWW_REQUEST_TERMINATE_TIMEOUT}/g" /tmp/www.conf
+fi
+
+## pool rlimit files ##
+if [[ -z "$WWW_RLIMIT_FILES" ]]; then 
+    sed -i "s/@WWW_RLIMIT_FILES/65535/g" /tmp/www.conf
+else 
+    sed -i "s/@WWW_RLIMIT_FILES/${WWW_RLIMIT_FILES}/g" /tmp/www.conf
+fi
+
+## pool rlimit core ##
+if [[ -z "$WWW_RLIMIT_CORE" ]]; then 
+    sed -i "s/@WWW_RLIMIT_CORE/0/g" /tmp/www.conf
+else 
+    sed -i "s/@WWW_RLIMIT_CORE/${WWW_RLIMIT_CORE}/g" /tmp/www.conf
+fi
 
 ## copy files to their destinations ##
 cp -R -f --no-preserve=mode,ownership /tmp/php-fpm.conf /etc/php/7.2/fpm/php-fpm.conf
