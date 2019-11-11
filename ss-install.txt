@@ -34,7 +34,7 @@ if [[ "${UBUNTU_VERSION}" != "18.04" ]]; then
 fi
 
 ## ensure ss-config build version matches ss-install build version ##
-if [[ "$SS_BUILD" != "NOV2019F" ]]; then 
+if [[ "$SS_BUILD" != "NOV2019G" ]]; then 
     echo -e "\e[93mYour ss-config file is outdated. Please rebuild it and run ss-install again.\e[0m" >&2
     exit 1
 fi
@@ -677,6 +677,13 @@ wget --no-cache --no-cookies --tries=3 --timeout=15 -O /tmp/nginx.conf http://mi
 sed -i "s/@FCGI_CACHE_MEMORY/${FCGI_CACHE_MEMORY}/g" /tmp/nginx.conf
 sed -i "s/@FCGI_CACHE_INACTIVE/${FCGI_CACHE_INACTIVE}/g" /tmp/nginx.conf
 sed -i "s/@FCGI_CACHE_MAX_SIZE/${FCGI_CACHE_MAX_SIZE}/g" /tmp/nginx.conf
+
+## noindex entire site (server) if desired ##
+if [[ "$SITE_NOINDEX" == "true" ]]; then 
+    sed -i "s/##NOINDEX##//g" /tmp/nginx.conf
+else 
+    sed -i "/##NOINDEX##/d" /tmp/nginx.conf
+fi
 
 ## copy files to their destinations ##
 cp -R -f --no-preserve=mode,ownership /tmp/nginx.conf /etc/nginx/nginx.conf
