@@ -17,9 +17,7 @@
 
 *Raw files from the vendor’s original release (e.g. official repo), not altered by other providers, included for reference and documentation purposes.*
 
-#### Historical Versions: wordpress.zip
-
-----
+#### wordpress.zip
 
 * <a href="wordpress-5.2.4.zip">wordpress-5.2.4.zip</a>
 * <a href="wordpress-5.2.3.zip">wordpress-5.2.3.zip</a>
@@ -72,9 +70,7 @@
 * <a href="wordpress-4.6.1.zip">wordpress-4.6.1.zip</a>
 * <a href="wordpress-4.6.0.zip">wordpress-4.6.0.zip</a>
 
-#### Historical Versions: wp-config.php
-
-----
+#### wp-config.php
 
 * <a href="wp-config-sample-5.2.4.txt">wp-config-sample-5.2.4.txt</a>
 * <a href="wp-config-sample-5.2.3.txt">wp-config-sample-5.2.3.txt</a>
@@ -127,9 +123,7 @@
 * <a href="wp-config-sample-4.6.1.txt">wp-config-sample-4.6.1.txt</a>
 * <a href="wp-config-sample-4.6.0.txt">wp-config-sample-4.6.0.txt</a>
 
-#### Historical Versions: throwaway.zip
-
-----
+#### throwaway.zip
 
 * <a href="throwaway-theme-1.2.1.zip">throwaway-theme-1.2.1.zip</a>
 * <a href="throwaway-theme-1.2.0.zip">throwaway-theme-1.2.0.zip</a>
