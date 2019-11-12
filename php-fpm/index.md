@@ -6,8 +6,8 @@
 
 *Live configuration files and boilerplates used by current SlickStack installation that may be altered by LittleBizzy or Ubuntu for better performance.*
 
-* <a href="/php-fpm/php-fpm-conf.txt">php-fpm-conf.txt</a>
 * <a href="/php-fpm/php-ini.txt">php-ini.txt</a>
+* <a href="/php-fpm/php-fpm-conf.txt">php-fpm-conf.txt</a>
 * <a href="/php-fpm/www-conf.txt">www-conf.txt</a>
 
 ### Original Files
