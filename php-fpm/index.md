@@ -89,8 +89,7 @@
 
 * https://github.com/php/php-src/blob/php-7.2.24/php.ini-production
 * https://github.com/php/php-src/blob/php-7.2.24/sapi/fpm/php-fpm.conf.in
-* https://raw.githubusercontent.com/php/php-src/php-7.2.6/php.ini-production
-* https://raw.githubusercontent.com/php/php-src/PHP-7.2.6/sapi/fpm/php-fpm.conf.in
+* https://github.com/php/php-src/blob/php-7.2.24/sapi/fpm/www.conf.in
 * https://dev.to/robdwaller/how-php-type-declarations-actually-work-1mm5
 
 ----
