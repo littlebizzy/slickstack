@@ -58,6 +58,98 @@ title: MU Plugins (Public Mirrors)
 
 * (coming soon)
 
+#### dashboard-cleanup.zip
+
+* (coming soon)
+
+#### delete-expired-transients.zip
+
+* (coming soon)
+
+#### disable-attachment-pages.zip
+
+* (coming soon)
+
+#### disable-embeds.zip
+
+* (coming soon)
+
+#### disable-emojis.zip
+
+* (coming soon)
+
+#### disable-empty-trash.zip
+
+* (coming soon)
+
+#### disable-gutenberg.zip
+
+* (coming soon)
+
+#### disable-image-compression.zip
+
+* (coming soon)
+
+#### disable-post-via-email.zip
+
+* (coming soon)
+
+#### disable-xml-rpc.zip
+
+* (coming soon)
+
+#### error-log-monitor.zip
+
+* (coming soon)
+
+#### force-https.zip
+
+* (coming soon)
+
+#### force-strong-hashing.zip
+
+* (coming soon)
+
+#### header-cleanup.zip
+
+* (coming soon)
+
+#### index-autoload.zip
+
+* (coming soon)
+
+#### limit-heartbeat.zip
+
+* (coming soon)
+
+#### maintenance-mode.zip
+
+* (coming soon)
+
+#### minify-html.zip
+
+* (coming soon)
+
+#### plugin-blacklist.zip
+
+* (coming soon)
+
+#### server-status.zip
+
+* (coming soon)
+
+#### sftp-details.zip
+
+* (coming soon)
+
+#### virtual-robotstxt.zip
+
+* (coming soon)
+
+#### xxx-notices.php
+
+* (coming soon)
+
 ### Related Links
 
 *Links and resources related to the above module that may help users understand its functionality, or how it interacts with other LEMP stack modules.*
