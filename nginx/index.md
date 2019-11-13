@@ -19,6 +19,12 @@ title: Nginx (Public Mirrors)
 
 *Raw files from the vendor’s original release (e.g. official repo), not altered by other providers, included for reference and documentation purposes.*
 
+#### nginx.conf
+
+* (coming soon)
+
+#### default (server block)
+
 * (coming soon)
 
 ### Related Links
