@@ -33,7 +33,6 @@ title: MU Plugins (Public Mirrors)
 * <a href="maintenance-mode.zip">maintenance-mode.zip</a>
 * <a href="minify-html.zip">minify-html.zip</a>
 * <a href="plugin-blacklist.zip">plugin-blacklist.zip</a>
-* <a href="remove-query-strings.zip">remove-query-strings.zip</a>
 * <a href="server-status.zip">server-status.zip</a>
 * <a href="sftp-details.zip">sftp-details.zip</a>
 * <a href="virtual-robotstxt.zip">virtual-robotstxt.zip</a>
