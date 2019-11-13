@@ -42,6 +42,20 @@ title: MU Plugins (Public Mirrors)
 
 *Raw files from the vendor’s original release (e.g. official repo), not altered by other providers, included for reference and documentation purposes.*
 
+#### autoloader.php
+
+* (coming soon)
+
+#### clear-caches.zip
+
+* (coming soon)
+
+#### cloudflare.zip
+
+* (coming soon)
+
+#### custom-functions.zip
+
 * (coming soon)
 
 ### Related Links
