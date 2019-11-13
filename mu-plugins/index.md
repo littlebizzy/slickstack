@@ -1,16 +1,12 @@
 ---
 title: MU Plugins (Public Mirrors)
-redirect_from:
-  - /muplugins/
-  - /mu-plugs/
-  - /muplugs/
 ---
 
 # MU (Must-Use) Plugins
 
 ----
 
-### Custom Files
+### Live Files
 
 *Live configuration files and boilerplates used by current SlickStack installation that may be altered by LittleBizzy or Ubuntu for better performance.*
 
@@ -43,7 +39,7 @@ redirect_from:
 * <a href="virtual-robotstxt.zip">virtual-robotstxt.zip</a>
 * <a href="xxx-notices.txt">xxx-notices.txt</a>
 
-### Default Files
+### Original Files
 
 *Raw files from the vendor’s original release (e.g. official repo), not altered by other providers, included for reference and documentation purposes.*
 
@@ -59,4 +55,4 @@ redirect_from:
 
 ----
 
-*Last updated: June 12, 2019*
+*Last updated: Nov 13, 2019*
