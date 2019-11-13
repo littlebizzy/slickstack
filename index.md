@@ -27,24 +27,6 @@ title: SlickStack (Public Mirrors)
 * <a href="clamav/">ClamAV</a>
 * <a href="git/">Git</a>
 
-### Core Scripts
-
-*Bash scripts that perform SlickStack's main functions as an "active" LEMP environment, which are called via cron jobs, and can also be run manually.*
-
-* <a href="ss-check.txt">ss-check.txt</a>
-* <a href="ss-clean.txt">ss-clean.txt</a>
-* <a href="ss-config-sample.txt">ss-config-sample.txt</a>
-* <a href="ss-dump.txt">ss-dump.txt</a>
-* <a href="ss-encrypt.txt">ss-encrypt.txt</a>
-* <a href="ss-install.txt">ss-install.txt</a>
-* <a href="ss-muplugs.txt">ss-muplugs.txt</a>
-* <a href="ss-perms.txt">ss-perms.txt</a>
-* <a href="ss-purge.txt">ss-purge.txt</a>
-* <a href="ss-restart.txt">ss-restart.txt</a>
-* <a href="ss-scan.txt">ss-scan.txt</a>
-* <a href="ss-update.txt">ss-update.txt</a>
-* <a href="ss-worker.txt">ss-worker.txt</a>
-
 ### Core Cron Jobs
 
 *These cron jobs are the most critical part of SlickStack's setup, as they allow your LEMP stack to receive updates to modules and scripts via GitHub.*
@@ -60,6 +42,24 @@ title: SlickStack (Public Mirrors)
 * <a href="8-cron-monthly.txt">8-cron-monthly.txt</a>
 * <a href="9-cron-sometimes.txt">9-cron-sometimes.txt</a>
 
+### Core Scripts
+
+*Bash scripts that perform SlickStack's main functions as an active LEMP environment, which are called via cron jobs, and can also be run manually.*
+
+* <a href="ss-check.txt">ss-check.txt</a>
+* <a href="ss-clean.txt">ss-clean.txt</a>
+* <a href="ss-config-sample.txt">ss-config-sample.txt</a>
+* <a href="ss-dump.txt">ss-dump.txt</a>
+* <a href="ss-encrypt.txt">ss-encrypt.txt</a>
+* <a href="ss-install.txt">ss-install.txt</a>
+* <a href="ss-muplugs.txt">ss-muplugs.txt</a>
+* <a href="ss-perms.txt">ss-perms.txt</a>
+* <a href="ss-purge.txt">ss-purge.txt</a>
+* <a href="ss-restart.txt">ss-restart.txt</a>
+* <a href="ss-scan.txt">ss-scan.txt</a>
+* <a href="ss-update.txt">ss-update.txt</a>
+* <a href="ss-worker.txt">ss-worker.txt</a>
+
 ### Core Meta Files
 
 *Various meta files that are not part of SlickStack's functionality but provide key information about licensing, general "readme" summary files, etc.*
@@ -69,4 +69,4 @@ title: SlickStack (Public Mirrors)
 
 ----
 
-*Last updated: Nov 4, 2019*
+*Last updated: Nov 13, 2019*
