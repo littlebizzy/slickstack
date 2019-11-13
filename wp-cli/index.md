@@ -6,17 +6,19 @@ title: WP-CLI (Public Mirrors)
 
 ----
 
-### Custom Files
+### Live Files
 
 *Live configuration files and boilerplates used by current SlickStack installation that may be modified by LittleBizzy or Ubuntu for better performance.*
 
+* <a href="wp-completion.txt">wp-completion.txt</a>
 * <a href="wp-cli.phar">wp-cli.phar</a>
 * <a href="wp-cli-yml.txt">wp-cli-yml.txt</a>
-* <a href="wp-completion.txt">wp-completion.txt</a>
 
-### Default Files
+### Original Files
 
 *Raw files from the vendor’s original release (e.g. official repo), not altered by other providers, included for reference and documentation purposes.*
+
+#### wp-cli.phar
 
 * <a href="wp-cli-2.2.0.phar">wp-cli-2.2.0.phar</a>
 * <a href="wp-cli-2.1.0.phar">wp-cli-2.1.0.phar</a>
@@ -31,6 +33,9 @@ title: WP-CLI (Public Mirrors)
 * <a href="wp-cli-1.2.0.phar">wp-cli-1.2.0.phar</a>
 * <a href="wp-cli-1.1.0.phar">wp-cli-1.1.0.phar</a>
 * <a href="wp-cli-1.0.0.phar">wp-cli-1.0.0.phar</a>
+
+#### wp-completion
+
 * <a href="wp-completion-2.2.0.txt">wp-completion-2.2.0.txt</a>
 * <a href="wp-completion-2.1.0.txt">wp-completion-2.1.0.txt</a>
 * <a href="wp-completion-2.0.1.txt">wp-completion-2.0.1.txt</a>
@@ -57,4 +62,4 @@ title: WP-CLI (Public Mirrors)
 
 ----
 
-*Last updated: Aug 7, 2019*
+*Last updated: Nov 13, 2019*
