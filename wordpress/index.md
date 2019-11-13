@@ -135,12 +135,10 @@
 
 *Links and resources related to the above module that may help users understand its functionality, or how it interacts with other LEMP stack modules.*
 
-* https://wpseek.com
-* http://hookr.io
-* <a href="https://github.com/WordPress/WordPress">https://github.com/WordPress/WordPress</a>
 * <a href="https://wordpress.org/download/releases/">https://wordpress.org/download/releases/</a>
+* https://github.com/WordPress/WordPress/blob/5.2.4/wp-config-sample.php
+* <a href="https://github.com/WordPress/WordPress">https://github.com/WordPress/WordPress</a>
 * <a href="https://codex.wordpress.org/Editing_wp-config.php">https://codex.wordpress.org/Editing_wp-config.php</a>
-* https://raw.githubusercontent.com/WordPress/WordPress/5.2.4/wp-config-sample.php
 * https://code.tutsplus.com/articles/new-wp-config-tweaks-you-probably-dont-know--wp-35396
 * https://gist.github.com/logichub/ef4bc9fc5961ba1c634a
 * https://wp-mix.com/wordpress-configuration-tricks/
@@ -150,6 +148,8 @@
 * https://codex.wordpress.org/Option_Reference
 * http://wp-answers.com/demo/question/how-to-get-wordpress-time-zone-setting/
 * https://wpengineer.com/1164/my-hacksphp/
+* https://wpseek.com
+* http://hookr.io
 
 ----
 
