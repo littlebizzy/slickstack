@@ -61,7 +61,7 @@ title: Redis (Public Mirrors)
 
 *Links and resources related to the above module that may help users understand its functionality, or how it interacts with other LEMP stack modules.*
 
-* <a href="https://raw.githubusercontent.com/antirez/redis/3.0.7/redis.conf">https://raw.githubusercontent.com/antirez/redis/3.0.7/redis.conf</a>
+* https://github.com/antirez/redis/blob/4.0.14/redis.conf
 
 ----
 
