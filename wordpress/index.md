@@ -19,6 +19,7 @@
 
 #### wordpress.zip
 
+* <a href="wordpress-5.3.0.zip">wordpress-5.3.0.zip</a>
 * <a href="wordpress-5.2.4.zip">wordpress-5.2.4.zip</a>
 * <a href="wordpress-5.2.3.zip">wordpress-5.2.3.zip</a>
 * <a href="wordpress-5.2.2.zip">wordpress-5.2.2.zip</a>
@@ -152,4 +153,4 @@
 
 ----
 
-*Last updated: Nov 9, 2019*
+*Last updated: Nov 13, 2019*
