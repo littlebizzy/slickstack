@@ -6,15 +6,32 @@ title: Redis (Public Mirrors)
 
 ----
 
-### Custom Files
+### Live Files
 
 *Live configuration files and boilerplates used by current SlickStack installation that may be altered by LittleBizzy or Ubuntu for better performance.*
 
 * <a href="redis-conf.txt">redis-conf.txt</a>
 
-### Default Files
+### Original Files
 
 *Raw files from the vendor’s original release (e.g. official repo), not altered by other providers, included for reference and documentation purposes.*
+
+#### redis.tar.gz
+
+* <a href="redis-4.0.9.tar.gz">redis-4.0.9.tar.gz</a>
+* <a href="redis-4.0.8.tar.gz">redis-4.0.8.tar.gz</a>
+* <a href="redis-4.0.7.tar.gz">redis-4.0.7.tar.gz</a>
+* <a href="redis-4.0.6.tar.gz">redis-4.0.6.tar.gz</a>
+* <a href="redis-4.0.5.tar.gz">redis-4.0.5.tar.gz</a>
+* <a href="redis-4.0.4.tar.gz">redis-4.0.4.tar.gz</a>
+* <a href="redis-4.0.3.tar.gz">redis-4.0.3.tar.gz</a>
+* <a href="redis-4.0.2.tar.gz">redis-4.0.2.tar.gz</a>
+* <a href="redis-4.0.1.tar.gz">redis-4.0.1.tar.gz</a>
+* <a href="redis-4.0.0.tar.gz">redis-4.0.0.tar.gz</a>
+* <a href="redis-3.0.7.tar.gz">redis-3.0.7.tar.gz</a>
+* <a href="redis-3.0.6.tar.gz">redis-3.0.6.tar.gz</a>
+
+#### redis.conf
 
 * <a href="redis-conf-5.0.5.txt">redis-conf-5.0.5.txt</a>
 * <a href="redis-conf-5.0.4.txt">redis-conf-5.0.4.txt</a>
@@ -39,18 +56,6 @@ title: Redis (Public Mirrors)
 * <a href="redis-conf-4.0.0.txt">redis-conf-4.0.0.txt</a>
 * <a href="redis-conf-3.0.7.txt">redis-conf-3.0.7.txt</a>
 * <a href="redis-conf-3.0.6.txt">redis-conf-3.0.6.txt</a>
-* <a href="redis-4.0.9.tar.gz">redis-4.0.9.tar.gz</a>
-* <a href="redis-4.0.8.tar.gz">redis-4.0.8.tar.gz</a>
-* <a href="redis-4.0.7.tar.gz">redis-4.0.7.tar.gz</a>
-* <a href="redis-4.0.6.tar.gz">redis-4.0.6.tar.gz</a>
-* <a href="redis-4.0.5.tar.gz">redis-4.0.5.tar.gz</a>
-* <a href="redis-4.0.4.tar.gz">redis-4.0.4.tar.gz</a>
-* <a href="redis-4.0.3.tar.gz">redis-4.0.3.tar.gz</a>
-* <a href="redis-4.0.2.tar.gz">redis-4.0.2.tar.gz</a>
-* <a href="redis-4.0.1.tar.gz">redis-4.0.1.tar.gz</a>
-* <a href="redis-4.0.0.tar.gz">redis-4.0.0.tar.gz</a>
-* <a href="redis-3.0.7.tar.gz">redis-3.0.7.tar.gz</a>
-* <a href="redis-3.0.6.tar.gz">redis-3.0.6.tar.gz</a>
 
 ### Related Links
 
@@ -60,4 +65,4 @@ title: Redis (Public Mirrors)
 
 ----
 
-*Last updated: July 2, 2019*
+*Last updated: Nov 13, 2019*
