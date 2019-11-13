@@ -67,6 +67,7 @@ title: WP-CLI (Public Mirrors)
 * <a href="wp-cli-yml-1.4.1.txt">wp-cli-yml-1.4.1.txt</a>
 * <a href="wp-cli-yml-1.4.0.txt">wp-cli-yml-1.4.0.txt</a>
 * <a href="wp-cli-yml-1.3.0.txt">wp-cli-yml-1.3.0.txt</a>
+* <a href="wp-cli-yml-1.2.1.txt">wp-cli-yml-1.2.1.txt</a>
 * <a href="wp-cli-yml-1.2.0.txt">wp-cli-yml-1.2.0.txt</a>
 * <a href="wp-cli-yml-1.1.0.txt">wp-cli-yml-1.1.0.txt</a>
 * <a href="wp-cli-yml-1.0.0.txt">wp-cli-yml-1.0.0.txt</a>
