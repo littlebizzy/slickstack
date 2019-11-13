@@ -13,6 +13,7 @@ title: Starter Themes (Public Mirrors)
 * bones.zip
 * mythic.zip
 * sage.zip
+* starter.zip
 * storefront.zip
 * underscores.zip
 * understrap.zip
@@ -46,6 +47,10 @@ title: Starter Themes (Public Mirrors)
 * <a href="sage-9.0.3.zip">sage-9.0.3.zip</a>
 * <a href="sage-9.0.2.zip">sage-9.0.2.zip</a>
 * <a href="sage-9.0.1.zip">sage-9.0.1.zip</a>
+
+#### starter.zip
+
+* (coming soon)
 
 #### storefront.zip
 
