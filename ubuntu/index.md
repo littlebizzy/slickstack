@@ -23,30 +23,22 @@ title: Ubuntu (Public Mirrors)
 
 *Raw files from the vendor’s original release (e.g. official repo), not altered by other providers, included for reference and documentation purposes.*
 
-#### Historical Versions: gai.conf
-
-----
+#### gai.conf
 
 * <a href="gai-conf-18.04.txt">gai-conf-18.04.txt</a>
 * <a href="gai-conf-16.04.txt">gai-conf-16.04.txt</a>
 
-#### Historical Versions: ufw
-
-----
+#### ufw
 
 * <a href="ufw-18.04.txt">ufw-18.04.txt</a>
 * <a href="ufw-16.04.txt">ufw-16.04.txt</a>
 
-#### Historical Versions: ufw.conf
-
-----
+#### ufw.conf
 
 * <a href="ufw-conf-18.04.txt">ufw-conf-18.04.txt</a>
 * <a href="ufw-conf-16.04.txt">ufw-conf-16.04.txt</a>
 
-#### Historical Versions: user-rules
-
-----
+#### user-rules
 
 * <a href="user-rules-18.04.txt">user-rules-18.04.txt</a>
 * <a href="user-rules-16.04.txt">user-rules-16.04.txt</a>
