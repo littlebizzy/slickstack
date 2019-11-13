@@ -1,14 +1,14 @@
-# OpenSSL (SSL)
+# OpenSSL (Default SSL)
 
 ----
 
-### Custom Files
+### Live Files
 
 *Live configuration files and boilerplates used by current SlickStack installation that may be altered by LittleBizzy or Ubuntu for better performance.*
 
 * (coming soon)
 
-### Default Files
+### Original Files
 
 *Raw files from the vendor’s original release (e.g. official repo), not altered by other providers, included for reference and documentation purposes.*
 
@@ -22,4 +22,4 @@
 
 ----
 
-*Last updated: Jul 19, 2019*
+*Last updated: Nov 14, 2019*
