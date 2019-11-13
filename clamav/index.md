@@ -1,7 +1,5 @@
 ---
 title: ClamAV (Public Mirrors)
-redirect_from:
-  - /clam/
 ---
 
 # ClamAV (Antivirus)
