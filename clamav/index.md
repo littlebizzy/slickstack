@@ -8,15 +8,17 @@ redirect_from:
 
 ----
 
-### Custom Files
+### Live Files
 
 *Live configuration files and boilerplates used by current SlickStack installation that may be altered by LittleBizzy or Ubuntu for better performance.*
 
-* (coming soon)
+* freshclam.conf
 
-### Default Files
+### Original Files
 
 *Raw files from the vendor’s original release (e.g. official repo), not altered by other providers, included for reference and documentation purposes.*
+
+#### freshclam.conf
 
 * (coming soon)
 
@@ -28,4 +30,4 @@ redirect_from:
 
 ----
 
-*Last updated: May 9, 2019*
+*Last updated: Nov 13, 2019*
