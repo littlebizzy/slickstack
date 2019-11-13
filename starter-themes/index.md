@@ -44,6 +44,8 @@ title: Starter Themes (Public Mirrors)
 
 #### storefront.zip
 
+* <a href="storefront-2.5.3.zip">storefront-2.5.3.zip</a>
+* <a href="storefront-2.5.1.zip">storefront-2.5.1.zip</a>
 * <a href="storefront-2.5.0.zip">storefront-2.5.0.zip</a>
 * <a href="storefront-2.4.6.zip">storefront-2.4.6.zip</a>
 * <a href="storefront-2.4.5.zip">storefront-2.4.5.zip</a>
