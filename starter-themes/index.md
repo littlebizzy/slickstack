@@ -10,7 +10,11 @@ title: Starter Themes (Public Mirrors)
 
 *Live configuration files and boilerplates used by current SlickStack installation that may be altered by LittleBizzy or Ubuntu for better performance.*
 
-* (coming soon)
+* bones.zip
+* mythic.zip
+* sage.zip
+* storefront.zip
+* understrap.zip
 
 ### Original Files
 
@@ -56,6 +60,7 @@ title: Starter Themes (Public Mirrors)
 
 #### understrap.zip
 
+* <a href="understrap-0.9.4.zip">understrap-0.9.4.zip</a>
 * <a href="understrap-0.9.3.zip">understrap-0.9.3.zip</a>
 * <a href="understrap-0.9.2.zip">understrap-0.9.2.zip</a>
 * <a href="understrap-0.9.1.zip">understrap-0.9.1.zip</a>
