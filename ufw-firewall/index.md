@@ -14,9 +14,10 @@
 
 *Raw files from the vendor’s original release (e.g. official repo), not altered by other providers, included for reference and documentation purposes.*
 
-#### ufw
+#### ufw (ufw.defaults)
 
-* 
+* [ufw-defaults-0.36.txt](ufw-defaults-0.36.txt)
+* [ufw-defaults-0.35.txt](ufw-defaults-0.35.txt)
 
 #### ufw.conf
 
