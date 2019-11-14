@@ -6,7 +6,9 @@
 
 *Live configuration files and boilerplates used by current SlickStack installation that may be altered by LittleBizzy or Ubuntu for better performance.*
 
-* (coming soon)
+* ufw.txt
+* ufw-conf.txt
+* user-rules.txt
 
 ### Default Files
 
@@ -22,4 +24,4 @@
 
 ----
 
-*Last updated: Jul 17, 2019*
+*Last updated: Nov 13, 2019*
