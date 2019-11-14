@@ -21,7 +21,8 @@ title: Nginx (Public Mirrors)
 
 #### nginx.conf
 
-* (coming soon)
+* [nginx-conf-1.17.5.txt](nginx-conf-1.17.5.txt)
+* [nginx-conf-1.17.4.txt](nginx-conf-1.17.4.txt)
 
 #### default (server block)
 
