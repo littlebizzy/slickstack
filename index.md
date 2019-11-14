@@ -42,7 +42,7 @@ title: SlickStack (Public Mirrors)
 * <a href="8-cron-monthly.txt">8-cron-monthly.txt</a>
 * <a href="9-cron-sometimes.txt">9-cron-sometimes.txt</a>
 
-### Core Scripts
+### Core Bash Scripts
 
 *Bash scripts that perform SlickStack's main functions as an active LEMP environment, which are called via cron jobs, and can also be run manually.*
 
