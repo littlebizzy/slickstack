@@ -1179,7 +1179,6 @@ DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/u
 ufw default deny incoming
 ufw default allow outgoing
 ufw allow @SSH_PORT
-ufw allow 6969
 ufw allow 80
 ufw allow 443
 ufw allow 6379
@@ -1188,7 +1187,7 @@ ufw --force enable
 echo "y" | ufw enable
 
 # retrieve latest versions ##
-cd /tmp/
+wget --no-cache --no-cookies --tries=3 --timeout=15 -O /tmp/ufw http://mirrors.slickstack.io/ufw-firewall/ufw.txt
 wget --no-cache --no-cookies --tries=3 --timeout=15 -O /tmp/ufw.conf http://mirrors.slickstack.io/ufw-firewall/ufw-conf.txt
 wget --no-cache --no-cookies --tries=3 --timeout=15 -O /tmp/user.rules http://mirrors.slickstack.io/ufw-firewall/user-rules.txt
 
@@ -1199,12 +1198,21 @@ else
 fi
 
 ## copy files to their destinations ##
+cp -R -f -d --no-preserve=mode,ownership /tmp/ufw /etc/default/ufw
 cp -R -f -d --no-preserve=mode,ownership /tmp/ufw.conf /etc/ufw/ufw.conf
 cp -R -f -d --no-preserve=mode,ownership /tmp/user.rules /etc/ufw/user.rules
 
+## reset permissions ##
+chown root:root /etc/default/ufw
+chown root:root /etc/ufw/ufw.conf
+chown root:root /etc/ufw/user.rules
+chmod 0664 /etc/default/ufw
+chmod 0664 /etc/ufw/ufw.conf
+chmod 0664 /etc/ufw/user.rules
+
 ## delete tmp files ##
-rm -R -f /tmp/ufw-conf.txt* /tmp/ufw.conf*
-rm -R -f /tmp/user-rules.txt* /tmp/user.rules*
+rm -R -f /tmp/ufw*
+rm -R -f /tmp/user*
 
 ####################################################################################################
 #### Configure ClamAV ##############################################################################
