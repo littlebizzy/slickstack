@@ -1169,8 +1169,8 @@ source /var/www/ss-muplugs
 ####################################################################################################
 
 ## delete tmp files ##
-rm -R -f /tmp/ufw-conf.txt* /tmp/ufw.conf*
-rm -R -f /tmp/user-rules.txt* /tmp/user.rules*
+rm -R -f /tmp/ufw*
+rm -R -f /tmp/user*
 
 ## install ufw ##
 DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install ufw
@@ -1189,14 +1189,14 @@ echo "y" | ufw enable
 
 # retrieve latest versions ##
 cd /tmp/
-wget --no-cache http://mirrors.slickstack.io/ubuntu/ufw-conf.txt
-wget --no-cache http://mirrors.slickstack.io/ubuntu/user-rules.txt
-# wget --no-cache http://mirrors.slickstack.io/ubuntu/18.04/ufw/ver/ufw-conf.txt
-# wget --no-cache http://mirrors.slickstack.io/ubuntu/18.04/ufw/ver/user-rules.txt
+wget --no-cache --no-cookies --tries=3 --timeout=15 -O /tmp/ufw.conf http://mirrors.slickstack.io/ufw-firewall/ufw-conf.txt
+wget --no-cache --no-cookies --tries=3 --timeout=15 -O /tmp/user.rules http://mirrors.slickstack.io/ufw-firewall/user-rules.txt
 
-## rename files ##
-mv /tmp/ufw-conf.txt /tmp/ufw.conf
-mv /tmp/user-rules.txt /tmp/user.rules
+if [[ -z "$SSH_PORT" ]]; then 
+    sed -i "s/@SSH_PORT/6969/g" /tmp/user.rules
+else 
+    sed -i "s/@SSH_PORT/${SSH_PORT}/g" /tmp/user.rules
+fi
 
 ## copy files to their destinations ##
 cp -R -f -d --no-preserve=mode,ownership /tmp/ufw.conf /etc/ufw/ufw.conf
