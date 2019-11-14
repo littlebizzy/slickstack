@@ -19,6 +19,10 @@
 * [ufw-conf-0.36.txt](ufw-conf-0.36.txt)
 * [ufw-conf-0.35.txt](ufw-conf-0.35.txt)
 
+#### user.rules
+
+* [user-rules-0.36.txt](user-rules-0.36.txt)
+
 ### Related Links
 
 *Links and resources related to the above module that may help users understand its functionality, or how it interacts with other LEMP stack modules.*
