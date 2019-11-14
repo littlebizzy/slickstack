@@ -64,9 +64,11 @@ title: SlickStack (Public Mirrors)
 
 *Various meta files that are not part of SlickStack's functionality but provide key information about licensing, general "readme" summary files, etc.*
 
-* <a href="readme.md">readme.md</a>
-* <a href="license.md">license.md</a>
+* [index.md](index.md)
+* [readme.md](readme.md)
+* [license.md](license.md)
+* changelog.md
 
 ----
 
-*Last updated: Nov 13, 2019*
+*Last updated: Nov 15, 2019*
