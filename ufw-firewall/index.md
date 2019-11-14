@@ -14,13 +14,15 @@
 
 *Raw files from the vendor’s original release (e.g. official repo), not altered by other providers, included for reference and documentation purposes.*
 
-* (coming soon)
+#### ufw.conf
+
+* ufw-conf-0.36.txt
 
 ### Related Links
 
 *Links and resources related to the above module that may help users understand its functionality, or how it interacts with other LEMP stack modules.*
 
-* (coming soon)
+* https://git.launchpad.net/ufw/tree/conf/ufw.conf?h=release/0.36
 
 ----
 
