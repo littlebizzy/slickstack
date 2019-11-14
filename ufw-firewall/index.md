@@ -16,13 +16,15 @@
 
 #### ufw.conf
 
-* ufw-conf-0.36.txt
+* [ufw-conf-0.36.txt](ufw-conf-0.36.txt)
+* [ufw-conf-0.35.txt](ufw-conf-0.35.txt)
 
 ### Related Links
 
 *Links and resources related to the above module that may help users understand its functionality, or how it interacts with other LEMP stack modules.*
 
 * https://git.launchpad.net/ufw/tree/conf/ufw.conf?h=release/0.36
+* https://git.launchpad.net/ufw/tree/conf/user.rules?h=release/0.36
 
 ----
 
