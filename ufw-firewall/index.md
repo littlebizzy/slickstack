@@ -34,6 +34,7 @@
 *Links and resources related to the above module that may help users understand its functionality, or how it interacts with other LEMP stack modules.*
 
 * https://git.launchpad.net/ufw/tree/?h=release/0.36
+* https://git.launchpad.net/ufw/tree/conf/ufw.defaults?h=release/0.36
 * https://git.launchpad.net/ufw/tree/conf/ufw.conf?h=release/0.36
 * https://git.launchpad.net/ufw/tree/conf/user.rules?h=release/0.36
 * https://git.launchpad.net/ufw/tree/conf/sysctl.conf?h=release/0.36
