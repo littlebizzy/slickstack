@@ -39,11 +39,13 @@
 
 #### after.rules
 
-*
+* [after-rules-0.36.txt](after-rules-0.36.txt)
+* [after-rules-0.35.txt](after-rules-0.35.txt)
 
 #### before.rules
 
-*
+* [before-rules-0.36.txt](before-rules-0.36.txt)
+* [before-rules-0.35.txt](before-rules-0.35.txt)
 
 ### Related Links
 
