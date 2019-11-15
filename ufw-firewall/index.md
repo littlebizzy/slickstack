@@ -31,7 +31,8 @@
 
 #### sysctl.conf
 
-*
+* [sysctl-conf-0.36.txt](sysctl-conf-0.36.txt)
+* [sysctl-conf-0.35.txt](sysctl-conf-0.35.txt)
 
 ### Related Links
 
