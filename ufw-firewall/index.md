@@ -10,6 +10,8 @@
 * [ufw-conf.txt](ufw-conf.txt)
 * [user-rules.txt](user-rules.txt)
 * sysctl-conf.txt
+* after.rules
+* before.rules
 
 ### Original Files
 
@@ -34,6 +36,14 @@
 
 * [sysctl-conf-0.36.txt](sysctl-conf-0.36.txt)
 * [sysctl-conf-0.35.txt](sysctl-conf-0.35.txt)
+
+#### after.rules
+
+*
+
+#### before.rules
+
+*
 
 ### Related Links
 
