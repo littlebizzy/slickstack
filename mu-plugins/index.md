@@ -44,7 +44,8 @@ title: MU Plugins (Public Mirrors)
 
 #### autoloader.php
 
-* (coming soon)
+* [autoloader-1.1.0.txt](autoloader-1.1.0.txt)
+* [autoloader-1.0.0.txt](autoloader-1.0.0.txt)
 
 #### clear-caches.zip
 
@@ -160,4 +161,4 @@ title: MU Plugins (Public Mirrors)
 
 ----
 
-*Last updated: Nov 13, 2019*
+*Last updated: Nov 15, 2019*
