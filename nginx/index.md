@@ -11,8 +11,8 @@ title: Nginx (Public Mirrors)
 *Live configuration files and boilerplates used by current SlickStack installation that may be altered by LittleBizzy or Ubuntu for better performance.*
 
 * [nginx-conf.txt](nginx-conf.txt)
-* [server-block-single-site.txt](default-single-site.txt)
-* [server-block-multisite-subdomains.txt](default-multisite-subdomains.txt)
+* [default-single-site.txt](default-single-site.txt)
+* [default-multisite-subdomains.txt](default-multisite-subdomains.txt)
 * default-multisite-subdirectories.txt
 
 ### Original Files
