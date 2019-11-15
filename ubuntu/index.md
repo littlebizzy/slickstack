@@ -10,32 +10,32 @@ title: Ubuntu (Public Mirrors)
 
 *Live configuration files and boilerplates used by current SlickStack installation that may be modified by LittleBizzy or Ubuntu for better performance.*
 
-* <a href="bash-aliases.txt">bash-aliases.txt</a>
-* <a href="gai-conf.txt">gai-conf.txt</a>
 * <a href="sshd-config.txt">sshd-config.txt</a>
 * <a href="sudoers.txt">sudoers.txt</a>
-* <a href="sysctl.txt">sysctl.txt</a>
+* <a href="sysctl.txt">sysctl-conf.txt</a>
+* <a href="gai-conf.txt">gai-conf.txt</a>
+* <a href="bash-aliases.txt">bash-aliases.txt</a>
 
 ### Original Files
 
 *Raw files from the vendor’s original release (e.g. official repo), not altered by other providers, included for reference and documentation purposes.*
 
-#### gai.conf
-
-* <a href="gai-conf-18.04.txt">gai-conf-18.04.txt</a>
-* <a href="gai-conf-16.04.txt">gai-conf-16.04.txt</a>
-
 #### sshd_config
-
-*
-
-#### sysctl
 
 *
 
 #### sudoers
 
 *
+
+#### sysctl.conf
+
+*
+
+#### gai.conf
+
+* <a href="gai-conf-18.04.txt">gai-conf-18.04.txt</a>
+* <a href="gai-conf-16.04.txt">gai-conf-16.04.txt</a>
 
 ### Related Links
 
