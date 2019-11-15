@@ -15,9 +15,6 @@ title: Ubuntu (Public Mirrors)
 * <a href="sshd-config.txt">sshd-config.txt</a>
 * <a href="sudoers.txt">sudoers.txt</a>
 * <a href="sysctl.txt">sysctl.txt</a>
-* <a href="ufw.txt">ufw.txt</a>
-* <a href="ufw-conf.txt">ufw-conf.txt</a>
-* <a href="user-rules.txt">user-rules.txt</a>
 
 ### Original Files
 
@@ -28,31 +25,26 @@ title: Ubuntu (Public Mirrors)
 * <a href="gai-conf-18.04.txt">gai-conf-18.04.txt</a>
 * <a href="gai-conf-16.04.txt">gai-conf-16.04.txt</a>
 
-#### ufw
+#### sshd_config
 
-* <a href="ufw-18.04.txt">ufw-18.04.txt</a>
-* <a href="ufw-16.04.txt">ufw-16.04.txt</a>
+*
 
-#### ufw.conf
+#### sysctl
 
-* <a href="ufw-conf-18.04.txt">ufw-conf-18.04.txt</a>
-* <a href="ufw-conf-16.04.txt">ufw-conf-16.04.txt</a>
+*
 
-#### user-rules
+#### sudoers
 
-* <a href="user-rules-18.04.txt">user-rules-18.04.txt</a>
-* <a href="user-rules-16.04.txt">user-rules-16.04.txt</a>
+*
 
 ### Related Links
 
 *Links and resources related to the above module that may help users understand its functionality, or how it interacts with other LEMP stack modules.*
 
-* <a href="http://manpages.ubuntu.com/manpages/bionic/man5/gai.conf.5.html">http://manpages.ubuntu.com/manpages/bionic/man5/gai.conf.5.html</a>
-* <a href="https://wiki.ubuntu.com/UncomplicatedFirewall">https://wiki.ubuntu.com/UncomplicatedFirewall</a>
-* http://manpages.ubuntu.com/manpages/bionic/man3/DateTime::TimeZone::Catalog.3pm.html
-
-
+* [http://manpages.ubuntu.com/manpages/bionic/man5/gai.conf.5.html](http://manpages.ubuntu.com/manpages/bionic/man5/gai.conf.5.html)
+* [https://wiki.ubuntu.com/UncomplicatedFirewall](https://wiki.ubuntu.com/UncomplicatedFirewall)
+* [http://manpages.ubuntu.com/manpages/bionic/man3/DateTime::TimeZone::Catalog.3pm.html](http://manpages.ubuntu.com/manpages/bionic/man3/DateTime::TimeZone::Catalog.3pm.html)
 
 ----
 
-*Last updated: Oct 5, 2019*
+*Last updated: Nov 15, 2019*
