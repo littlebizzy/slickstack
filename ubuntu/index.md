@@ -44,6 +44,7 @@ title: Ubuntu (Public Mirrors)
 * [http://manpages.ubuntu.com/manpages/bionic/man5/gai.conf.5.html](http://manpages.ubuntu.com/manpages/bionic/man5/gai.conf.5.html)
 * [https://wiki.ubuntu.com/UncomplicatedFirewall](https://wiki.ubuntu.com/UncomplicatedFirewall)
 * [http://manpages.ubuntu.com/manpages/bionic/man3/DateTime::TimeZone::Catalog.3pm.html](http://manpages.ubuntu.com/manpages/bionic/man3/DateTime::TimeZone::Catalog.3pm.html)
+* [https://packages.ubuntu.com/xenial/libc-bin](https://packages.ubuntu.com/xenial/libc-bin)
 
 ----
 
