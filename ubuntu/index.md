@@ -22,15 +22,18 @@ title: Ubuntu (Public Mirrors)
 
 #### sshd_config
 
-*
+* sshd-config-18.04.txt
+* [sshd-config-16.04.txt](sshd-config-16.04.txt)
 
 #### sudoers
 
-*
+* sudoers-18.04.txt
+* [sudoers-16.04.txt](sudoers-16.04.txt)
 
 #### sysctl.conf
 
-*
+* sysctl-conf-18.04.txt
+* [sysctl.conf-16.04.txt](sysctl.conf-16.04.txt)
 
 #### gai.conf
 
@@ -48,4 +51,4 @@ title: Ubuntu (Public Mirrors)
 
 ----
 
-*Last updated: Nov 15, 2019*
+*Last updated: Nov 16, 2019*
