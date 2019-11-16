@@ -37,8 +37,13 @@ title: Ubuntu (Public Mirrors)
 
 #### gai.conf
 
-* <a href="gai-conf-18.04.txt">gai-conf-18.04.txt</a>
-* <a href="gai-conf-16.04.txt">gai-conf-16.04.txt</a>
+* [gai-conf-18.04.txt](gai-conf-18.04.txt)
+* [gai-conf-16.04.txt](gai-conf-16.04.txt)
+
+#### nanorc
+
+* nanorc-18.04.txt
+* [nanorc-16.04.txt](nanorc-16.04.txt)
 
 ### Related Links
 
@@ -48,6 +53,7 @@ title: Ubuntu (Public Mirrors)
 * [https://wiki.ubuntu.com/UncomplicatedFirewall](https://wiki.ubuntu.com/UncomplicatedFirewall)
 * [http://manpages.ubuntu.com/manpages/bionic/man3/DateTime::TimeZone::Catalog.3pm.html](http://manpages.ubuntu.com/manpages/bionic/man3/DateTime::TimeZone::Catalog.3pm.html)
 * [https://packages.ubuntu.com/xenial/libc-bin](https://packages.ubuntu.com/xenial/libc-bin)
+* [https://appuals.com/how-to-set-custom-configuration-features-for-the-gnu-nano-editor/](https://appuals.com/how-to-set-custom-configuration-features-for-the-gnu-nano-editor/)
 
 ----
 
