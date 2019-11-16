@@ -15,6 +15,8 @@ title: Ubuntu (Public Mirrors)
 * [sysctl.txt](sysctl-conf.txt)
 * [gai-conf.txt](gai-conf.txt)
 * nanorc.txt
+* logrotate.txt
+* limits-conf.txt
 * [bash-aliases.txt](bash-aliases.txt)
 
 ### Original Files
