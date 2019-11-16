@@ -14,7 +14,7 @@ title: Ubuntu (Public Mirrors)
 * [sudoers.txt](sudoers.txt)
 * [sysctl.txt](sysctl-conf.txt)
 * [gai-conf.txt](gai-conf.txt)
-* nanorc
+* nanorc.txt
 * [bash-aliases.txt](bash-aliases.txt)
 
 ### Original Files
