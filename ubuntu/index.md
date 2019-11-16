@@ -10,11 +10,12 @@ title: Ubuntu (Public Mirrors)
 
 *Live configuration files and boilerplates used by current SlickStack installation that may be modified by LittleBizzy or Ubuntu for better performance.*
 
-* <a href="sshd-config.txt">sshd-config.txt</a>
-* <a href="sudoers.txt">sudoers.txt</a>
-* <a href="sysctl.txt">sysctl-conf.txt</a>
-* <a href="gai-conf.txt">gai-conf.txt</a>
-* <a href="bash-aliases.txt">bash-aliases.txt</a>
+* [sshd-config.txt](sshd-config.txt)
+* [sudoers.txt](sudoers.txt)
+* [sysctl.txt](sysctl-conf.txt)
+* [gai-conf.txt](gai-conf.txt)
+* nanorc
+* [bash-aliases.txt](bash-aliases.txt)
 
 ### Original Files
 
