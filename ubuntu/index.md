@@ -25,26 +25,31 @@ title: Ubuntu (Public Mirrors)
 
 #### sshd_config
 
+* sshd-config-20.04.txt
 * [sshd-config-18.04.txt](sshd-config-18.04.txt)
 * [sshd-config-16.04.txt](sshd-config-16.04.txt)
 
 #### sudoers
 
+* sudoers-20.04.txt
 * [sudoers-18.04.txt](sudoers-18.04.txt)
 * [sudoers-16.04.txt](sudoers-16.04.txt)
 
 #### sysctl.conf
 
+* sysctl-conf-20.04.txt
 * [sysctl-conf-18.04.txt](sysctl-conf-18.04.txt)
 * [sysctl-conf-16.04.txt](sysctl-conf-16.04.txt)
 
 #### gai.conf
 
+* gai-conf-20.04.txt
 * [gai-conf-18.04.txt](gai-conf-18.04.txt)
 * [gai-conf-16.04.txt](gai-conf-16.04.txt)
 
 #### nanorc
 
+* nanorc-20.04.txt
 * [nanorc-18.04.txt](nanorc-18.04.txt)
 * [nanorc-16.04.txt](nanorc-16.04.txt)
 
