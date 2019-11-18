@@ -1,8 +1,8 @@
-# WordPress (CMS)
+# WordPress (Content Management System)
 
 ----
 
-### Live Files
+### Live Files (WordPress 5.2.4)
 
 *Live configuration files and boilerplates used by current SlickStack installation that may be altered by LittleBizzy or Ubuntu for better performance.*
 
@@ -154,4 +154,4 @@
 
 ----
 
-*Last updated: Nov 13, 2019*
+*Last updated: Nov 18, 2019*
