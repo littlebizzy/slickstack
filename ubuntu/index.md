@@ -25,12 +25,12 @@ title: Ubuntu (Public Mirrors)
 
 #### sshd_config
 
-* sshd-config-18.04.txt
+* [sshd-config-18.04.txt](sshd-config-18.04.txt)
 * [sshd-config-16.04.txt](sshd-config-16.04.txt)
 
 #### sudoers
 
-* sudoers-18.04.txt
+* [sudoers-18.04.txt](sudoers-18.04.txt)
 * [sudoers-16.04.txt](sudoers-16.04.txt)
 
 #### sysctl.conf
