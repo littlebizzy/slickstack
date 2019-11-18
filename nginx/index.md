@@ -2,11 +2,11 @@
 title: Nginx (Public Mirrors)
 ---
 
-# Nginx (Server)
+# Nginx (Web Server)
 
 ----
 
-### Live Files
+### Live Files (Nginx Extras 1.17.x)
 
 *Live configuration files and boilerplates used by current SlickStack installation that may be altered by LittleBizzy or Ubuntu for better performance.*
 
