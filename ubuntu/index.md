@@ -45,7 +45,7 @@ title: Ubuntu (Public Mirrors)
 
 #### nanorc
 
-* nanorc-18.04.txt
+* [nanorc-18.04.txt](nanorc-18.04.txt)
 * [nanorc-16.04.txt](nanorc-16.04.txt)
 
 ### Related Links
@@ -61,4 +61,4 @@ title: Ubuntu (Public Mirrors)
 
 ----
 
-*Last updated: Nov 16, 2019*
+*Last updated: Nov 18, 2019*
