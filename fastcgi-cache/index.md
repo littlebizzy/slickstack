@@ -6,7 +6,7 @@
 
 *Live configuration files and boilerplates used by current SlickStack installation that may be altered by LittleBizzy or Ubuntu for better performance.*
 
-* (coming soon)
+* [fastcgi-cache-conf.txt](fastcgi-cache-conf.txt)
 
 ### Original Files
 
@@ -22,4 +22,4 @@
 
 ----
 
-*Last updated: Nov 13, 2019*
+*Last updated: Nov 18, 2019*
