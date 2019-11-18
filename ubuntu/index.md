@@ -36,7 +36,7 @@ title: Ubuntu (Public Mirrors)
 #### sysctl.conf
 
 * [sysctl-conf-18.04.txt](sysctl-conf-18.04.txt)
-* [sysctl.conf-16.04.txt](sysctl.conf-16.04.txt)
+* [sysctl-conf-16.04.txt](sysctl-conf-16.04.txt)
 
 #### gai.conf
 
