@@ -6,7 +6,7 @@ title: MySQL (Public Mirrors)
 
 ----
 
-### Live Files (MySQL 5.7)
+### Live Files (MySQL 5.7.x)
 
 *Live configuration files and boilerplates used by current SlickStack installation that may be altered by LittleBizzy or Ubuntu for better performance.*
 
