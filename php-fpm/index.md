@@ -1,4 +1,4 @@
-# PHP-FPM
+# PHP-FPM (Server-Side Scripting)
 
 ----
 
