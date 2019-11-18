@@ -2,7 +2,7 @@
 title: Ubuntu (Public Mirrors)
 ---
 
-# Ubuntu LTS (Linux OS)
+# Ubuntu LTS (Linux Operating System)
 
 ----
 
