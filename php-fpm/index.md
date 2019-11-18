@@ -2,7 +2,7 @@
 
 ----
 
-### Live Files
+### Live Files (PHP-FPM 7.2)
 
 *Live configuration files and boilerplates used by current SlickStack installation that may be altered by LittleBizzy or Ubuntu for better performance.*
 
@@ -94,4 +94,4 @@
 
 ----
 
-*Last updated: Nov 12, 2019*
+*Last updated: Nov 18, 2019*
