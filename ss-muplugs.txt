@@ -6,27 +6,116 @@
 #### mirror: http://mirrors.slickstack.io/ss-muplugs.txt ###########################################
 #### path: /var/www/ss-muplugs #####################################################################
 #### destination: n/a (not a boilerplate) ##########################################################
-#### purpose: Reinstalls various MU (Must Use) plugins and drop-in plugins (idempotent) ############
+#### purpose: Reinstalls various MU (Must-Use) plugins and object cache, etc (idempotent) ##########
 #### module version: Ubuntu 18.04 ##################################################################
 ####################################################################################################
+
+## SLICKSTACK SUPPORTS CUSTOMIZING MU PLUGINS BUT REQUIRES A FEW OF OUR OWN SCRIPTS ##
 
 ## include SlickStack configuration ##
 source /var/www/ss-config
 
-## critical functions (aliases) ##
+## critical functions (aliases) for this script to function ##
 # apt () { DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold"; }
 # wget () { wget --no-check-certificate --no-cache --no-cookies --tries=3 --timeout=15; }
 # cp () { cp -R -f -d --no-preserve=mode,ownership; }
 # rm () { rm -R -f; }
 # mkdir () { mkdir -p; }
 
-## ensure MU Plugins directory exists (will not overwrite if exists already) ##
+## ensure MU (Must-Use) plugins directory exists ##
 mkdir -p /var/www/html/wp-content/mu-plugins
 
-## check if MU Plugins are enabled otherwise exit ##
-if [[ "$SS_MUPLUGINS" == "false" ]]; then 
-    echo -e "\e[93mMU Plugins are disabled in ss-config, so we will skip installing them. We will also not delete any existing files in the mu-plugins directory either. In other words, you're the captain of your own MU ship here...\e[0m" >&2
-# elif [[ -n "$MU_PLUGIN_01_SOURCE" ]]; then 
+####################################################################################################
+#### SS-Muplugs: Delete Any Previous (Leftover) Temporary Files ####################################
+####################################################################################################
+
+## delete Autoloader temporary files ##
+rm -R -f /tmp/autoloader*
+
+## delete MU (Must-Use) plugins temporary files ##
+rm -R -f /tmp/clear-caches*
+rm -R -f /tmp/cloudflare*
+rm -R -f /tmp/custom-functions*
+rm -R -f /tmp/dashboard-cleanup*
+rm -R -f /tmp/delete-expired-transients*
+rm -R -f /tmp/disable-attachment-pages*
+rm -R -f /tmp/disable-embeds*
+rm -R -f /tmp/disable-emojis*
+rm -R -f /tmp/disable-empty-trash*
+rm -R -f /tmp/disable-gutenberg*
+rm -R -f /tmp/disable-image-compression*
+rm -R -f /tmp/disable-post-via-email*
+rm -R -f /tmp/disable-xml-rpc*
+rm -R -f /tmp/error-log-monitor*
+rm -R -f /tmp/force-https*
+rm -R -f /tmp/force-strong-hashing*
+rm -R -f /tmp/header-cleanup*
+rm -R -f /tmp/index-autoload*
+rm -R -f /tmp/limit-heartbeat*
+rm -R -f /tmp/maintenance-mode*
+rm -R -f /tmp/minify-html*
+rm -R -f /tmp/plugin-blacklist*
+rm -R -f /tmp/remove-query-strings*
+rm -R -f /tmp/server-status*
+rm -R -f /tmp/sftp-details*
+rm -R -f /tmp/virtual-robotstxt*
+
+## delete XXX Notices (MU plugin) temporary files ##
+rm -R -f /tmp/xxx-notices*
+
+## delete object cache temporary files ##
+rm -R -f /tmp/object-cache*
+
+## delete Custom Functions temporary files ##
+rm -R -f /tmp/functions*
+
+####################################################################################################
+#### SS-Muplugs: Install Autoloader, XXX Notices, And Object Cache (Required) ######################
+####################################################################################################
+
+## download latest files ##
+wget --no-cache --no-cookies --tries=3 --timeout=15 -O /tmp/autoloader.php http://mirrors.slickstack.io/mu-plugins/autoloader.txt
+wget --no-cache --no-cookies --tries=3 --timeout=15 -O /tmp/xxx-notices.php http://mirrors.slickstack.io/mu-plugins/xxx-notices.txt
+wget --no-cache --no-cookies --tries=3 --timeout=15 -O /tmp/object-cache.php http://mirrors.slickstack.io/wordpress/object-cache.txt
+wget --no-cache --no-cookies --tries=3 --timeout=15 -O /tmp/custom-functions.zip http://mirrors.slickstack.io/mu-plugins/custom-functions.zip
+
+## unzip files ##
+unzip /tmp/custom-functions.zip -d /tmp
+
+## delete potentially conflicting plugins ##
+rm -R -f /var/www/html/wp-content/plugins/autoloader*
+rm -R -f /var/www/html/wp-content/plugins/xxx-notices*
+rm -R -f /var/www/html/wp-content/plugins/redis*
+rm -R -f /var/www/html/wp-content/plugins/object-cache*
+rm -R -f /var/www/html/wp-content/object-cache*
+rm -R -f /var/www/html/wp-content/mu-plugins/custom-functions*
+# rm -R -f /var/www/html/wp-content/plugins/custom-functions* ## don't delete others until ours is working 100% perfect
+
+## copy files to destinations ##
+cp -R -f -d --no-preserve=mode,ownership /tmp/autoloader.php /var/www/html/wp-content/mu-plugins/autoloader.php
+cp -R -f -d --no-preserve=mode,ownership /tmp/xxx-notices.php /var/www/html/wp-content/mu-plugins/xxx-notices.php
+cp -R -f -d --no-preserve=mode,ownership /tmp/object-cache.php /var/www/html/wp-content/object-cache.php
+cp -R -f -d --no-preserve=mode,ownership /tmp/custom-functions /var/www/html/wp-content/mu-plugins/custom-functions
+
+####################################################################################################
+#### SS-Muplugs: Configure Custom Functions (MU) Plugin (Required) #################################
+####################################################################################################
+
+## download specified functions file (otherwise create generic) if none exists ##
+if [ ! -f /var/www/html/wp-content/functions.php ] && [ -z "$CUSTOM_FUNCTIONS_SOURCE" ]; then
+    wget --no-cache --no-cookies --tries=3 --timeout=15 -O /tmp/functions.php http://mirrors.slickstack.io/wordpress/functions.txt
+elif [ ! -f /var/www/html/wp-content/functions.php ] && [ -n "$CUSTOM_FUNCTIONS_SOURCE" ]; then
+    wget --no-check-certificate --no-cache --no-cookies --tries=3 --timeout=15 -O /tmp/functions.php "$CUSTOM_FUNCTIONS_SOURCE"
+fi
+
+## copy files to destinations ##
+cp -R -f --no-preserve=mode,ownership /tmp/functions.php /var/www/html/wp-content/functions.php
+
+####################################################################################################
+#### SS-Muplugs: Install Specified MU (Must-Use) Plugins (Optional) ################################
+####################################################################################################
+
+# if [ -n "$MU_PLUGIN_01_SOURCE" ] && [ -n "$MU_PLUGIN_01_DIR" ]; then
 # wget -O /tmp/$MU_PLUGIN_01_DIR.zip $MU_PLUGIN_01_SOURCE
 # wget -O /tmp/$MU_PLUGIN_02_DIR.zip $MU_PLUGIN_02_SOURCE
 # wget -O /tmp/$MU_PLUGIN_03_DIR.zip $MU_PLUGIN_03_SOURCE
@@ -125,71 +214,16 @@ if [[ "$SS_MUPLUGINS" == "false" ]]; then
 # wget -O /tmp/$MU_PLUGIN_96_DIR.zip $MU_PLUGIN_96_SOURCE
 # wget -O /tmp/$MU_PLUGIN_97_DIR.zip $MU_PLUGIN_97_SOURCE
 # wget -O /tmp/$MU_PLUGIN_98_DIR.zip $MU_PLUGIN_98_SOURCE
-# wget -O /tmp/$MU_PLUGIN_99_DIR.zip $MU_PLUGIN_99_SOURCE
-# else [ -z "$MU_PLUGIN_01_SOURCE" ] && [ -z "$SS_MUPLUGINS" ]; then 
-else
+# wget -O /tmp/$MU_PLUGIN_99_DIR.zip $MU_PLUGIN_99_SOURCE 
+# else
 
 ####################################################################################################
-#### SS-Muplugs: Delete Any Previous (Leftover) Temporary Files ####################################
+#### SS-Muplugs: Install Specified MU (Must-Use) Plugins (Optional) ################################
 ####################################################################################################
 
-## delete Autoloader temporary files ##
-rm -R -f /tmp/autoloader*
-
-## delete MU plugins temporary files ##
-rm -R -f /tmp/clear-caches*
-rm -R -f /tmp/cloudflare*
-rm -R -f /tmp/custom-functions*
-rm -R -f /tmp/dashboard-cleanup*
-rm -R -f /tmp/delete-expired-transients*
-rm -R -f /tmp/disable-attachment-pages*
-rm -R -f /tmp/disable-embeds*
-rm -R -f /tmp/disable-emojis*
-rm -R -f /tmp/disable-empty-trash*
-rm -R -f /tmp/disable-gutenberg*
-rm -R -f /tmp/disable-image-compression*
-rm -R -f /tmp/disable-post-via-email*
-rm -R -f /tmp/disable-xml-rpc*
-rm -R -f /tmp/error-log-monitor*
-rm -R -f /tmp/force-https*
-rm -R -f /tmp/force-strong-hashing*
-rm -R -f /tmp/header-cleanup*
-rm -R -f /tmp/index-autoload*
-rm -R -f /tmp/limit-heartbeat*
-rm -R -f /tmp/maintenance-mode*
-rm -R -f /tmp/minify-html*
-rm -R -f /tmp/plugin-blacklist*
-rm -R -f /tmp/remove-query-strings*
-rm -R -f /tmp/server-status*
-rm -R -f /tmp/sftp-details*
-rm -R -f /tmp/virtual-robotstxt*
-
-## delete SlickStack Common (MU Plugin) temp files ##
-rm -R -f /tmp/xxx-notices*
-
-## delete drop-in plugins temporary files ##
-rm -R -f /tmp/object-cache*
-
-####################################################################################################
-#### SS-Muplugs: Download Autoloader, XXX Notices, And Object Cache ################################
-####################################################################################################
-
-## download latest Autoloader (MU Plugin) files ##
-wget --no-cache --no-cookies --tries=3 --timeout=15 -O /tmp/autoloader.txt http://mirrors.slickstack.io/mu-plugins/autoloader.txt
-
-## download latest SlickStack Common (MU Plugin) files ##
-wget --no-cache --no-cookies --tries=3 --timeout=15 -O /tmp/xxx-notices.txt http://mirrors.slickstack.io/mu-plugins/xxx-notices.txt
-
-## download latest drop-in plugins files (e.g. object cache) ##
-wget --no-cache --no-cookies --tries=3 --timeout=15 -O /tmp/object-cache.txt http://mirrors.slickstack.io/wordpress/object-cache.txt
-
-####################################################################################################
-#### SS-Muplugs: Download MU (Must-Use) Plugins Specified in SS-Config (Optional) ##################
-####################################################################################################
-
+## wget them all ##
 wget --no-cache --no-cookies --tries=3 --timeout=15 -O /tmp/clear-caches.zip http://mirrors.slickstack.io/mu-plugins/clear-caches.zip
 wget --no-cache --no-cookies --tries=3 --timeout=15 -O /tmp/cloudflare.zip http://mirrors.slickstack.io/mu-plugins/cloudflare.zip
-wget --no-cache --no-cookies --tries=3 --timeout=15 -O /tmp/custom-functions.zip http://mirrors.slickstack.io/mu-plugins/custom-functions.zip
 wget --no-cache --no-cookies --tries=3 --timeout=15 -O /tmp/dashboard-cleanup.zip http://mirrors.slickstack.io/mu-plugins/dashboard-cleanup.zip
 wget --no-cache --no-cookies --tries=3 --timeout=15 -O /tmp/delete-expired-transients.zip http://mirrors.slickstack.io/mu-plugins/delete-expired-transients.zip
 wget --no-cache --no-cookies --tries=3 --timeout=15 -O /tmp/disable-attachment-pages.zip http://mirrors.slickstack.io/mu-plugins/disable-attachment-pages.zip
@@ -213,19 +247,9 @@ wget --no-cache --no-cookies --tries=3 --timeout=15 -O /tmp/server-status.zip ht
 wget --no-cache --no-cookies --tries=3 --timeout=15 -O /tmp/sftp-details.zip http://mirrors.slickstack.io/mu-plugins/sftp-details.zip
 wget --no-cache --no-cookies --tries=3 --timeout=15 -O /tmp/virtual-robotstxt.zip http://mirrors.slickstack.io/mu-plugins/virtual-robotstxt.zip
 
-####################################################################################################
-#### rename and unzip various downloaded files #####################################################
-####################################################################################################
-
-## rename files ##
-mv /tmp/autoloader.txt /tmp/autoloader.php
-mv /tmp/xxx-notices.txt /tmp/xxx-notices.php
-mv /tmp/object-cache.txt /tmp/object-cache.php
-
-## unzip files ##
+## unzip them all ##
 unzip /tmp/clear-caches.zip -d /tmp
 unzip /tmp/cloudflare.zip -d /tmp
-unzip /tmp/custom-functions.zip -d /tmp
 unzip /tmp/dashboard-cleanup.zip -d /tmp
 unzip /tmp/delete-expired-transients.zip -d /tmp
 unzip /tmp/disable-attachment-pages.zip -d /tmp
@@ -249,16 +273,10 @@ unzip /tmp/server-status.zip -d /tmp
 unzip /tmp/sftp-details.zip -d /tmp
 unzip /tmp/virtual-robotstxt.zip -d /tmp
 
-####################################################################################################
-#### delete previously existing or potentially conflicting plugins #################################
-####################################################################################################
-
 ## delete plugins instances (conflicting namespaces or previous namespaces) ##
-rm -R -f /var/www/html/wp-content/plugins/autoloader*
 rm -R -f /var/www/html/wp-content/plugins/clear-caches*
 rm -R -f /var/www/html/wp-content/plugins/cloudflare*
 rm -R -f /var/www/html/wp-content/plugins/cf-littlebizzy* ## previous CloudFlare namespace
-# rm -R -f /var/www/html/wp-content/plugins/custom-functions* ## don't delete others until ours is working 100% perfect
 rm -R -f /var/www/html/wp-content/plugins/dashboard-cleanup*
 rm -R -f /var/www/html/wp-content/plugins/delete-expired-transients*
 rm -R -f /var/www/html/wp-content/plugins/disable-attachment-pages*
@@ -277,30 +295,19 @@ rm -R -f /var/www/html/wp-content/plugins/index-autoload*
 rm -R -f /var/www/html/wp-content/plugins/limit-heartbeat*
 rm -R -f /var/www/html/wp-content/plugins/maintenance-mode*
 rm -R -f /var/www/html/wp-content/plugins/minify-html*
-rm -R -f /var/www/html/wp-content/plugins/object-cache* ## because you never know...
 rm -R -f /var/www/html/wp-content/plugins/plugin-blacklist*
 rm -R -f /var/www/html/wp-content/plugins/purge-them-all* ## previous Clear Caches namespace
 rm -R -f /var/www/html/wp-content/plugins/remove-query-strings*
 rm -R -f /var/www/html/wp-content/plugins/server-status*
 rm -R -f /var/www/html/wp-content/plugins/sftp-details*
 rm -R -f /var/www/html/wp-content/plugins/virtual-robotstxt*
-rm -R -f /var/www/html/wp-content/plugins/xxx-notices*
-
-## delete drop-in plugin instances (conflicting namespaces or previous namespaces) ##
-rm -R -f /var/www/html/wp-content/object-cache*
 
 ## delete all existing MU plugins ##
 rm -R -f /var/www/html/wp-content/mu-plugins/*
 
-####################################################################################################
-#### copy all MU plugins and drop-in plugins files to their destinations ###########################
-####################################################################################################
-
-## copy MU plugins files to /var/www/wp-content/mu-plugins/ ##
-cp -R -f -d --no-preserve=mode,ownership /tmp/autoloader.php /var/www/html/wp-content/mu-plugins/autoloader.php
+## copy to destination ##
 cp -R -f -d --no-preserve=mode,ownership /tmp/clear-caches /var/www/html/wp-content/mu-plugins/clear-caches
 cp -R -f -d --no-preserve=mode,ownership /tmp/cloudflare /var/www/html/wp-content/mu-plugins/cloudflare
-cp -R -f -d --no-preserve=mode,ownership /tmp/custom-functions /var/www/html/wp-content/mu-plugins/custom-functions
 cp -R -f -d --no-preserve=mode,ownership /tmp/dashboard-cleanup /var/www/html/wp-content/mu-plugins/dashboard-cleanup
 cp -R -f -d --no-preserve=mode,ownership /tmp/delete-expired-transients /var/www/html/wp-content/mu-plugins/delete-expired-transients
 cp -R -f -d --no-preserve=mode,ownership /tmp/disable-attachment-pages /var/www/html/wp-content/mu-plugins/disable-attachment-pages
@@ -323,55 +330,30 @@ cp -R -f -d --no-preserve=mode,ownership /tmp/plugin-blacklist /var/www/html/wp-
 cp -R -f -d --no-preserve=mode,ownership /tmp/server-status /var/www/html/wp-content/mu-plugins/server-status
 cp -R -f -d --no-preserve=mode,ownership /tmp/sftp-details /var/www/html/wp-content/mu-plugins/sftp-details
 cp -R -f -d --no-preserve=mode,ownership /tmp/virtual-robotstxt /var/www/html/wp-content/mu-plugins/virtual-robotstxt
-cp -R -f -d --no-preserve=mode,ownership /tmp/xxx-notices.php /var/www/html/wp-content/mu-plugins/xxx-notices.php
 
-## copy drop-in plugins files to /var/www/wp-content/ ##
-cp -R -f -d --no-preserve=mode,ownership /tmp/object-cache.php /var/www/html/wp-content/object-cache.php
+## end if ##
+# fi
 
 ####################################################################################################
-#### reset permissions #############################################################################
+#### SS-Muplugs: Reset Permissions #################################################################
 ####################################################################################################
 
-## reset MU plugins permissions ##
 chown -R www-data:wordpress /var/www/html/wp-content/mu-plugins
+chown -R www-data:wordpress /var/www/html/wp-content/object-cache.php
+chown $SFTP_USER:wordpress /var/www/html/wp-content/functions.php
 find /var/www/html/wp-content/mu-plugins/ -type d -exec chmod 775 {} \;
 find /var/www/html/wp-content/mu-plugins/ -type f -exec chmod 664 {} \;
-
-## reset drop-in plugins permissions ##
-chown -R www-data:wordpress /var/www/html/wp-content/object-cache.php
 chmod 664 /var/www/html/wp-content/object-cache.php
-
-####################################################################################################
-#### modify other files (besides wp-config.php) used by MU plugins as needed #######################
-####################################################################################################
-
-rm -R -f /tmp/functions*
-
-## retrieve custom functions.php file if defined (otherwise create a generic one) ##
-if [ ! -f /var/www/html/wp-content/functions.php ] && [ -z "$CUSTOM_FUNCTIONS_SOURCE" ]; then
-    wget --no-cache --no-cookies --tries=3 --timeout=15 -O /tmp/functions.php http://mirrors.slickstack.io/wordpress/functions.txt
-elif [ ! -f /var/www/html/wp-content/functions.php ] && [ -n "$CUSTOM_FUNCTIONS_SOURCE" ]; then
-    wget --no-check-certificate --no-cache --no-cookies --tries=3 --timeout=15 -O /tmp/functions.php "$CUSTOM_FUNCTIONS_SOURCE"
-fi
-
-## copy files and delete tmp files ##
-cp -R -f --no-preserve=mode,ownership /tmp/functions.php /var/www/html/wp-content/functions.php
-rm -R -f /tmp/functions*
-
-chown $SFTP_USER:wordpress /var/www/html/wp-content/functions.php
 chmod 6775 /var/www/html/wp-content/functions.php
 
-## ensure blacklist.txt file exists ##
-# if [ ! -f /var/www/html/wp-content/blacklist.txt ]; then touch /var/www/html/wp-content/blacklist.txt; fi
-
 ####################################################################################################
-#### delete any previous / leftover temporary files ################################################
+#### SS-Muplugs: Delete Any Previous (Leftover) Temporary Files ####################################
 ####################################################################################################
 
 ## delete Autoloader temporary files ##
 rm -R -f /tmp/autoloader*
 
-## delete MU plugins temporary files ##
+## delete MU (Must-Use) plugins temporary files ##
 rm -R -f /tmp/clear-caches*
 rm -R -f /tmp/cloudflare*
 rm -R -f /tmp/custom-functions*
@@ -399,28 +381,27 @@ rm -R -f /tmp/server-status*
 rm -R -f /tmp/sftp-details*
 rm -R -f /tmp/virtual-robotstxt*
 
-## delete SlickStack Common (MU Plugin) temp files ##
+## delete XXX Notices (MU plugin) temporary files ##
 rm -R -f /tmp/xxx-notices*
 
-## delete drop-in plugins temp files ##
+## delete object cache temporary files ##
 rm -R -f /tmp/object-cache*
 
+## delete Custom Functions temporary files ##
+rm -R -f /tmp/functions*
+
 ####################################################################################################
-#### Flush Redis Object Cache (Optional) ###########################################################
+#### SS-Muplugs: Reset PHP OPcache + Flush Redis Object Cache ######################################
 ####################################################################################################
 
+## reset PHP OPcache ##
+RANDOM_RESET_OPCACHE=$(openssl rand -hex 48)
+echo "<?php opcache_reset(); ?>" > /var/www/html/${RANDOM_RESET_OPCACHE}.php
+/usr/bin/php /var/www/html/${RANDOM_RESET_OPCACHE}.php
+rm /var/www/html/${RANDOM_RESET_OPCACHE}.php
+
+## flush Redis cache (object cache) ##
 redis-cli flushall &> /dev/null
-
-####################################################################################################
-#### restart services ##############################################################################
-####################################################################################################
-
-## finish if statement ##
-fi
-
-## restart services ##
-/etc/init.d/php7.2-fpm restart
-# /etc/init.d/redis-server restart
 
 ####################################################################################################
 #### External References Used By SlickStack To Improve This Script #################################
