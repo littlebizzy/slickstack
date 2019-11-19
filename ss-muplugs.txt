@@ -15,7 +15,7 @@ source /var/www/ss-config
 
 ## critical functions (aliases) ##
 # apt () { DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold"; }
-# wget () { wget --no-cache --no-cookies --tries=3 --timeout=15; }
+# wget () { wget --no-check-certificate --no-cache --no-cookies --tries=3 --timeout=15; }
 # cp () { cp -R -f -d --no-preserve=mode,ownership; }
 # rm () { rm -R -f; }
 # mkdir () { mkdir -p; }
@@ -26,6 +26,10 @@ mkdir -p /var/www/html/wp-content/mu-plugins
 ## check if MU Plugins are enabled otherwise exit ##
 if [[ "$SS_MUPLUGINS" == "false" ]]; then 
     echo -e "\e[93mMU Plugins are disabled in ss-config, so we will skip installing them. We will also not delete any existing files in the mu-plugins directory either. In other words, you're the captain of your own MU ship here...\e[0m" >&2
+# elif [[ -z "$MU_PLUGIN_01_SOURCE" ]]; then 
+#    echo -e "\e[93mMU Plugins are not specificed in ss-config therefore skipping...\e[0m" >&2
+# elif [[ -n "$MU_PLUGIN_01_SOURCE" ]]; then 
+# wget --no-cache --no-cookies --tries=3 --timeout=15 -O $MU_PLUGIN_01_DIR $MU_PLUGIN_01_SOURCE
 else
 
 ####################################################################################################
