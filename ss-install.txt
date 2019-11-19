@@ -1027,18 +1027,13 @@ sed -i "s/@SECUREAUTHSALT/$(openssl rand -hex 48)/g" /tmp/wp-config.txt
 sed -i "s/@LOGGEDINSALT/$(openssl rand -hex 48)/g" /tmp/wp-config.txt
 sed -i "s/@NONCESALT/$(openssl rand -hex 48)/g" /tmp/wp-config.txt
 
-## Replace Placeholders: Debug ##
-if [[ "$SS_TYPE" == "production" ]]; then 
-    sed -i "s/@DEBUGON/false/g" /tmp/wp-config.txt
+## Replace Placeholders: Debug and Dev/staging server ##
+if [[ "$SS_TYPE" != "production" ]]; then 
+    sed -i "s/@WP_DEBUG/true/g" /tmp/wp-config.txt
+    sed -i "s/@WP_LOCAL_DEV/true/g" /tmp/wp-config.txt
 else 
-    sed -i "s/@DEBUGON/true/g" /tmp/wp-config.txt
-fi
-
-## Replace Placeholders: Debug ##
-if [[ "$SS_TYPE" == "production" ]]; then 
-    sed -i "s/@DEBUGDISPLAY/false/g" /tmp/wp-config.txt
-else 
-    sed -i "s/@DEBUGDISPLAY/true/g" /tmp/wp-config.txt
+    sed -i "s/@WP_DEBUG/false/g" /tmp/wp-config.txt
+    sed -i "s/@WP_LOCAL_DEV/false/g" /tmp/wp-config.txt
 fi
 
 ## multisite ##
