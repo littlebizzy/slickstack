@@ -22,9 +22,6 @@ source /var/www/ss-config
 # rm () { rm -R -f; }
 # mkdir () { mkdir -p; }
 
-## ensure MU (Must-Use) plugins directory exists ##
-mkdir -p /var/www/html/wp-content/mu-plugins
-
 ####################################################################################################
 #### SS-Muplugs: Delete Any Previous (Leftover) Temporary Files ####################################
 ####################################################################################################
@@ -70,11 +67,59 @@ rm -R -f /tmp/object-cache*
 rm -R -f /tmp/functions*
 
 ####################################################################################################
-#### SS-Muplugs: Install Specified MU (Must-Use) Plugins (Optional) ################################
+#### SS-Muplugs: Ensure MU (Must-Use) Directory Exists + Delete Current Plugin Files ###############
 ####################################################################################################
+
+## ensure MU (Must-Use) plugins directory exists ##
+mkdir -p /var/www/html/wp-content/mu-plugins
 
 ## delete all currently installed MU (Must-Use) plugins ##
 rm -R -f /var/www/html/wp-content/mu-plugins/*
+
+####################################################################################################
+#### SS-Muplugs: Install Autoloader, XXX Notices, Custom Functions, Object Cache (Required) ########
+####################################################################################################
+
+## download latest files ##
+wget --no-cache --no-cookies --tries=3 --timeout=15 -O /tmp/autoloader.php http://mirrors.slickstack.io/mu-plugins/autoloader.txt
+wget --no-cache --no-cookies --tries=3 --timeout=15 -O /tmp/xxx-notices.php http://mirrors.slickstack.io/mu-plugins/xxx-notices.txt
+wget --no-cache --no-cookies --tries=3 --timeout=15 -O /tmp/object-cache.php http://mirrors.slickstack.io/wordpress/object-cache.txt
+wget --no-cache --no-cookies --tries=3 --timeout=15 -O /tmp/custom-functions.zip http://mirrors.slickstack.io/mu-plugins/custom-functions.zip
+
+## unzip files ##
+unzip /tmp/custom-functions.zip -d /tmp
+
+## delete potentially conflicting plugins ##
+rm -R -f /var/www/html/wp-content/plugins/autoloader*
+rm -R -f /var/www/html/wp-content/plugins/xxx-notices*
+rm -R -f /var/www/html/wp-content/plugins/redis*
+rm -R -f /var/www/html/wp-content/plugins/object-cache*
+rm -R -f /var/www/html/wp-content/object-cache*
+rm -R -f /var/www/html/wp-content/mu-plugins/custom-functions*
+# rm -R -f /var/www/html/wp-content/plugins/custom-functions* ## don't delete others until ours is working 100% perfect
+
+## copy files to destinations ##
+cp -R -f -d --no-preserve=mode,ownership /tmp/autoloader.php /var/www/html/wp-content/mu-plugins/autoloader.php
+cp -R -f -d --no-preserve=mode,ownership /tmp/xxx-notices.php /var/www/html/wp-content/mu-plugins/xxx-notices.php
+cp -R -f -d --no-preserve=mode,ownership /tmp/object-cache.php /var/www/html/wp-content/object-cache.php
+cp -R -f -d --no-preserve=mode,ownership /tmp/custom-functions /var/www/html/wp-content/mu-plugins/custom-functions
+
+####################################################################################################
+#### SS-Muplugs: Configure Custom Functions (MU) Plugin (Required) #################################
+####################################################################################################
+
+## download specified functions file (otherwise create generic) if none exists ##
+if [ ! -f /var/www/html/wp-content/functions.php ] && [ -z "$CUSTOM_FUNCTIONS_SOURCE" ]; then
+    wget --no-cache --no-cookies --tries=3 --timeout=15 -O /tmp/functions.php http://mirrors.slickstack.io/wordpress/functions.txt
+    cp -R -f --no-preserve=mode,ownership /tmp/functions.php /var/www/html/wp-content/functions.php
+elif [ ! -f /var/www/html/wp-content/functions.php ] && [ -n "$CUSTOM_FUNCTIONS_SOURCE" ]; then
+    wget --no-check-certificate --no-cache --no-cookies --tries=3 --timeout=15 -O /tmp/functions.php "$CUSTOM_FUNCTIONS_SOURCE"
+    cp -R -f --no-preserve=mode,ownership /tmp/functions.php /var/www/html/wp-content/functions.php
+fi
+
+####################################################################################################
+#### SS-Muplugs: Install Specified MU (Must-Use) Plugins (Optional) ################################
+####################################################################################################
 
 ## download latest specified MU (Must-Use) files as defined in the ss-config ##
 # if [ -n "$MU_PLUGIN_01_SOURCE" ] && [ -n "$MU_PLUGIN_01_DIR" ]; then
@@ -288,47 +333,6 @@ cp -R -f -d --no-preserve=mode,ownership /tmp/virtual-robotstxt /var/www/html/wp
 
 ## end if ##
 # fi
-
-####################################################################################################
-#### SS-Muplugs: Install Autoloader, XXX Notices, And Object Cache (Required) ######################
-####################################################################################################
-
-## download latest files ##
-wget --no-cache --no-cookies --tries=3 --timeout=15 -O /tmp/autoloader.php http://mirrors.slickstack.io/mu-plugins/autoloader.txt
-wget --no-cache --no-cookies --tries=3 --timeout=15 -O /tmp/xxx-notices.php http://mirrors.slickstack.io/mu-plugins/xxx-notices.txt
-wget --no-cache --no-cookies --tries=3 --timeout=15 -O /tmp/object-cache.php http://mirrors.slickstack.io/wordpress/object-cache.txt
-wget --no-cache --no-cookies --tries=3 --timeout=15 -O /tmp/custom-functions.zip http://mirrors.slickstack.io/mu-plugins/custom-functions.zip
-
-## unzip files ##
-unzip /tmp/custom-functions.zip -d /tmp
-
-## delete potentially conflicting plugins ##
-rm -R -f /var/www/html/wp-content/plugins/autoloader*
-rm -R -f /var/www/html/wp-content/plugins/xxx-notices*
-rm -R -f /var/www/html/wp-content/plugins/redis*
-rm -R -f /var/www/html/wp-content/plugins/object-cache*
-rm -R -f /var/www/html/wp-content/object-cache*
-rm -R -f /var/www/html/wp-content/mu-plugins/custom-functions*
-# rm -R -f /var/www/html/wp-content/plugins/custom-functions* ## don't delete others until ours is working 100% perfect
-
-## copy files to destinations ##
-cp -R -f -d --no-preserve=mode,ownership /tmp/autoloader.php /var/www/html/wp-content/mu-plugins/autoloader.php
-cp -R -f -d --no-preserve=mode,ownership /tmp/xxx-notices.php /var/www/html/wp-content/mu-plugins/xxx-notices.php
-cp -R -f -d --no-preserve=mode,ownership /tmp/object-cache.php /var/www/html/wp-content/object-cache.php
-cp -R -f -d --no-preserve=mode,ownership /tmp/custom-functions /var/www/html/wp-content/mu-plugins/custom-functions
-
-####################################################################################################
-#### SS-Muplugs: Configure Custom Functions (MU) Plugin (Required) #################################
-####################################################################################################
-
-## download specified functions file (otherwise create generic) if none exists ##
-if [ ! -f /var/www/html/wp-content/functions.php ] && [ -z "$CUSTOM_FUNCTIONS_SOURCE" ]; then
-    wget --no-cache --no-cookies --tries=3 --timeout=15 -O /tmp/functions.php http://mirrors.slickstack.io/wordpress/functions.txt
-    cp -R -f --no-preserve=mode,ownership /tmp/functions.php /var/www/html/wp-content/functions.php
-elif [ ! -f /var/www/html/wp-content/functions.php ] && [ -n "$CUSTOM_FUNCTIONS_SOURCE" ]; then
-    wget --no-check-certificate --no-cache --no-cookies --tries=3 --timeout=15 -O /tmp/functions.php "$CUSTOM_FUNCTIONS_SOURCE"
-    cp -R -f --no-preserve=mode,ownership /tmp/functions.php /var/www/html/wp-content/functions.php
-fi
 
 ####################################################################################################
 #### SS-Muplugs: Reset Permissions #################################################################
