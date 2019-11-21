@@ -13,6 +13,7 @@ title: MU (Must-Use) Plugins (Public Mirrors)
 #### Required MU (Must-Use) Plugins
 
 * [autoloader.txt](autoloader.txt)
+* [custom-functions.zip](custom-functions.zip)
 * [xxx-notices.txt](xxx-notices.txt)
 
 #### Required Drop-In Plugins
@@ -23,7 +24,6 @@ title: MU (Must-Use) Plugins (Public Mirrors)
 
 * <a href="clear-caches.zip">clear-caches.zip</a>
 * <a href="cloudflare.zip">cloudflare.zip</a>
-* <a href="custom-functions.zip">custom-functions.zip</a>
 * <a href="dashboard-cleanup.zip">dashboard-cleanup.zip</a>
 * <a href="delete-expired-transients.zip">delete-expired-transients.zip</a>
 * <a href="disable-attachment-pages.zip">disable-attachment-pages.zip</a>
@@ -178,4 +178,4 @@ title: MU (Must-Use) Plugins (Public Mirrors)
 
 ----
 
-*Last updated: Nov 18, 2019*
+*Last updated: Nov 21, 2019*
