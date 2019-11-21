@@ -64,6 +64,10 @@ title: MU (Must-Use) Plugins (Public Mirrors)
 
 * (coming soon)
 
+#### object-cache.php
+
+* (coming soon)
+
 ----
 
 #### clear-caches.zip
