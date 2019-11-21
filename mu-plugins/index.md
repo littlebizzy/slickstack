@@ -6,7 +6,7 @@ title: MU (Must-Use) Plugins (Public Mirrors)
 
 ----
 
-### Live Files (WordPress Plugins By LittleBizzy)
+### Live Files (Plugins By LittleBizzy)
 
 *Live configuration files and boilerplates used by current SlickStack installation that may be altered by LittleBizzy or Ubuntu for better performance.*
 
