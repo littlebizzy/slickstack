@@ -7,26 +7,34 @@
 #### path: /var/www/ss-scan ########################################################################
 #### destination: n/a (not a boilerplate) ##########################################################
 #### purpose: Scans the entire SlickStack directory tree (only) for malware via ClamAV #############
-#### module version: Ubuntu 18.04 + ClamAV #########################################################
+#### module version: Ubuntu 18.04 LTS + ClamAV 0.100.x #############################################
 ####################################################################################################
 
 ## include SlickStack configuration ##
 source /var/www/ss-config
 
-## critical functions (aliases) ##
-# apt () { DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold"; }
-# wget () { wget --no-cache --no-cookies --tries=3 --timeout=15; }
-# cp () { cp -R -f -d --no-preserve=mode,ownership; }
-# rm () { rm -R -f; }
-# mkdir () { mkdir -p; }
+## critical functions (aliases) for this script to function ##
+apt () { command DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" "$@"; }
+wget () { command wget --no-check-certificate --no-cache --no-cookies --tries=3 --timeout=15 "$@"; }
+cp () { command cp -R -f -d --no-preserve=mode,ownership "$@"; }
+rm () { command rm -R -f "$@"; }
+mkdir () { command mkdir -p "$@"; }
+unzip () { command unzip -o "$@"; }
 
 ####################################################################################################
-#### SS-Scan: Selectively Scan SlickStack Directory Tree For Malware (Via ClamAV) ##################
+#### SS-Scan: Scan SlickStack Directory Tree For Malware (Via ClamAV) ##############################
 ####################################################################################################
 
-## on average the scanning process takes around 5-10 minutes on the typical server ##
-## verbose results are printed if called by CLI (also saved to /var/www/logs/clamav.log) ##
+## on average the ClamAV scanning process takes around 5-10 minutes on typical servers ##
+## verbose results are printed if CLI (also saved to /var/www/logs/clamav.log) ##
 
+## ensure ClamAV log file exists ##
+if [[ ! -f "/var/www/logs/clamav.log" ]]; then 
+    touch "/var/www/logs/clamav.log"
+    chown clamav:clamav /var/www/logs/clamav*.log*
+fi
+
+## scan SlickStack directory tree (only) for common malware ##
 clamscan -ir /var/www -l /var/www/logs/clamav.log
 
 ####################################################################################################
