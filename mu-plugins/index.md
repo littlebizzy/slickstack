@@ -172,9 +172,10 @@ title: MU (Must-Use) Plugins (Public Mirrors)
 
 *Links and resources related to the above module that may help users understand its functionality, or how it interacts with other LEMP stack modules.*
 
-* <a href="https://www.littlebizzy.com/plugins">https://www.littlebizzy.com/plugins</a>
-* <a href="https://wordpress.org/support/article/must-use-plugins/">https://wordpress.org/support/article/must-use-plugins/</a>
-* <a href="https://codex.wordpress.org/Writing_a_Plugin">https://codex.wordpress.org/Writing_a_Plugin</a>
+* [https://www.littlebizzy.com/plugins](https://www.littlebizzy.com/plugins)
+* [https://wordpress.org/support/article/must-use-plugins/](https://wordpress.org/support/article/must-use-plugins/)
+* [https://codex.wordpress.org/Writing_a_Plugin](https://codex.wordpress.org/Writing_a_Plugin)
+* [https://github.com/pressjitsu/pj-object-cache-red](https://github.com/pressjitsu/pj-object-cache-red)
 
 ----
 
