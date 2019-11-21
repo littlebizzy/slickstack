@@ -2,15 +2,15 @@
 title: MU (Must-Use) Plugins (Public Mirrors)
 ---
 
-# MU (Must-Use) Plugins (For WordPress)
+# MU (Must-Use) WordPress Plugins
 
 ----
 
-### Live Files (LittleBizzy Plugins)
+### Live Files (WordPress Plugins By LittleBizzy)
 
 *Live configuration files and boilerplates used by current SlickStack installation that may be altered by LittleBizzy or Ubuntu for better performance.*
 
-#### Required Scripts
+#### Required MU (Must-Use) Plugins
 
 * [autoloader.txt](autoloader.txt)
 * [xxx-notices.txt](xxx-notices.txt)
