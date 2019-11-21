@@ -17,7 +17,7 @@ title: MU (Must-Use) Plugins (Public Mirrors)
 
 #### Required Drop-In Plugins
 
-* object-cache.txt
+* [object-cache.txt](object-cache.txt)
 
 #### Default MU (Must-Use) Plugins
 
