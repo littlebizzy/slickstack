@@ -176,6 +176,7 @@ title: MU (Must-Use) Plugins (Public Mirrors)
 * [https://wordpress.org/support/article/must-use-plugins/](https://wordpress.org/support/article/must-use-plugins/)
 * [https://codex.wordpress.org/Writing_a_Plugin](https://codex.wordpress.org/Writing_a_Plugin)
 * [https://github.com/pressjitsu/pj-object-cache-red](https://github.com/pressjitsu/pj-object-cache-red)
+* [https://github.com/roots/bedrock/blob/master/web/app/mu-plugins/bedrock-autoloader.php](https://github.com/roots/bedrock/blob/master/web/app/mu-plugins/bedrock-autoloader.php)
 
 ----
 
