@@ -56,6 +56,12 @@ title: MU (Must-Use) Plugins (Public Mirrors)
 * [autoloader-1.1.0.txt](autoloader-1.1.0.txt)
 * [autoloader-1.0.0.txt](autoloader-1.0.0.txt)
 
+#### xxx-notices.php
+
+* (coming soon)
+
+----
+
 #### clear-caches.zip
 
 * (coming soon)
@@ -156,9 +162,11 @@ title: MU (Must-Use) Plugins (Public Mirrors)
 
 * (coming soon)
 
-#### xxx-notices.php
+----
 
-* (coming soon)
+#### pj-object-cache-1.0.txt
+
+* [pj-object-cache-1.0.txt](pj-object-cache-1.0.txt)
 
 ### Related Links
 
