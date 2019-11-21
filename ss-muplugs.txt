@@ -16,93 +16,107 @@
 source /var/www/ss-config
 
 ## critical functions (aliases) for this script to function ##
-# apt () { DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold"; }
-# wget () { wget --no-check-certificate --no-cache --no-cookies --tries=3 --timeout=15; }
-# cp () { cp -R -f -d --no-preserve=mode,ownership; }
-# rm () { rm -R -f; }
-# mkdir () { mkdir -p; }
+apt () { DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold"; }
+wget () { wget --no-check-certificate --no-cache --no-cookies --tries=3 --timeout=15; }
+cp () { cp -R -f -d --no-preserve=mode,ownership; }
+rm () { rm -R -f; }
+mkdir () { mkdir -p; }
 
 ####################################################################################################
 #### SS-Muplugs: Delete Any Previous (Leftover) Temporary Files ####################################
 ####################################################################################################
 
-## delete Autoloader temporary files ##
-rm -R -f /tmp/autoloader*
+## delete Autoloader (required script) temporary files ##
+rm /tmp/autoloader*
 
-## delete MU (Must-Use) plugins temporary files ##
-rm -R -f /tmp/clear-caches*
-rm -R -f /tmp/cloudflare*
-rm -R -f /tmp/custom-functions*
-rm -R -f /tmp/dashboard-cleanup*
-rm -R -f /tmp/delete-expired-transients*
-rm -R -f /tmp/disable-attachment-pages*
-rm -R -f /tmp/disable-embeds*
-rm -R -f /tmp/disable-emojis*
-rm -R -f /tmp/disable-empty-trash*
-rm -R -f /tmp/disable-gutenberg*
-rm -R -f /tmp/disable-image-compression*
-rm -R -f /tmp/disable-post-via-email*
-rm -R -f /tmp/disable-xml-rpc*
-rm -R -f /tmp/error-log-monitor*
-rm -R -f /tmp/force-https*
-rm -R -f /tmp/force-strong-hashing*
-rm -R -f /tmp/header-cleanup*
-rm -R -f /tmp/index-autoload*
-rm -R -f /tmp/limit-heartbeat*
-rm -R -f /tmp/maintenance-mode*
-rm -R -f /tmp/minify-html*
-rm -R -f /tmp/plugin-blacklist*
-rm -R -f /tmp/remove-query-strings*
-rm -R -f /tmp/server-status*
-rm -R -f /tmp/sftp-details*
-rm -R -f /tmp/virtual-robotstxt*
+## delete Custom Functions + XXX Notices (required MU plugins) temporary files ##
+rm /tmp/custom-functions*
+rm /tmp/functions*
+rm /tmp/xxx-notices*
 
-## delete XXX Notices (MU plugin) temporary files ##
-rm -R -f /tmp/xxx-notices*
+## delete Object Cache (required drop-in plugin) temporary files ##
+rm /tmp/object-cache*
 
-## delete object cache temporary files ##
-rm -R -f /tmp/object-cache*
+## delete default MU plugins temporary files ##
+rm /tmp/clear-caches*
+rm /tmp/cloudflare*
+rm /tmp/dashboard-cleanup*
+rm /tmp/delete-expired-transients*
+rm /tmp/disable-attachment-pages*
+rm /tmp/disable-embeds*
+rm /tmp/disable-emojis*
+rm /tmp/disable-empty-trash*
+rm /tmp/disable-gutenberg*
+rm /tmp/disable-image-compression*
+rm /tmp/disable-post-via-email*
+rm /tmp/disable-xml-rpc*
+rm /tmp/error-log-monitor*
+rm /tmp/force-https*
+rm /tmp/force-strong-hashing*
+rm /tmp/header-cleanup*
+rm /tmp/index-autoload*
+rm /tmp/limit-heartbeat*
+rm /tmp/maintenance-mode*
+rm /tmp/minify-html*
+rm /tmp/plugin-blacklist*
+rm /tmp/remove-query-strings*
+rm /tmp/server-status*
+rm /tmp/sftp-details*
+rm /tmp/virtual-robotstxt*
 
-## delete Custom Functions temporary files ##
-rm -R -f /tmp/functions*
+## delete custom MU plugins temporary files ##
+# (coming soon)
 
 ####################################################################################################
-#### SS-Muplugs: Ensure MU (Must-Use) Directory Exists + Delete Current Plugin Files ###############
+#### SS-Muplugs: Ensure MU (Must-Use) Directory Exists + Delete Current MU Plugins #################
 ####################################################################################################
 
 ## ensure MU (Must-Use) plugins directory exists ##
-mkdir -p /var/www/html/wp-content/mu-plugins
+mkdir /var/www/html/wp-content/mu-plugins
 
 ## delete all currently installed MU (Must-Use) plugins ##
-rm -R -f /var/www/html/wp-content/mu-plugins/*
+rm /var/www/html/wp-content/mu-plugins/*
 
 ####################################################################################################
-#### SS-Muplugs: Install Autoloader, XXX Notices, Custom Functions, Object Cache (Required) ########
+#### SS-Muplugs: Install Required MU (Must-Use) Plugins + Object Cache #############################
 ####################################################################################################
 
-## download latest files ##
-wget --no-cache --no-cookies --tries=3 --timeout=15 -O /tmp/autoloader.php http://mirrors.slickstack.io/mu-plugins/autoloader.txt
-wget --no-cache --no-cookies --tries=3 --timeout=15 -O /tmp/xxx-notices.php http://mirrors.slickstack.io/mu-plugins/xxx-notices.txt
-wget --no-cache --no-cookies --tries=3 --timeout=15 -O /tmp/object-cache.php http://mirrors.slickstack.io/wordpress/object-cache.txt
-wget --no-cache --no-cookies --tries=3 --timeout=15 -O /tmp/custom-functions.zip http://mirrors.slickstack.io/mu-plugins/custom-functions.zip
+## download Autoloader (required script) files ##
+wget -O /tmp/autoloader.php http://mirrors.slickstack.io/mu-plugins/autoloader.txt
 
-## unzip files ##
+## download Custom Functions + XXX Notices (required MU plugins) files  ##
+wget -O /tmp/custom-functions.zip http://mirrors.slickstack.io/mu-plugins/custom-functions.zip
+wget -O /tmp/xxx-notices.php http://mirrors.slickstack.io/mu-plugins/xxx-notices.txt
+
+## download Object Cache (required drop-in plugin) files ##
+wget -O /tmp/object-cache.php http://mirrors.slickstack.io/wordpress/object-cache.txt
+
+## unzip various files ##
 unzip /tmp/custom-functions.zip -d /tmp
 
-## delete potentially conflicting plugins ##
-rm -R -f /var/www/html/wp-content/plugins/autoloader*
-rm -R -f /var/www/html/wp-content/plugins/xxx-notices*
-rm -R -f /var/www/html/wp-content/plugins/redis*
-rm -R -f /var/www/html/wp-content/plugins/object-cache*
-rm -R -f /var/www/html/wp-content/object-cache*
-rm -R -f /var/www/html/wp-content/mu-plugins/custom-functions*
-# rm -R -f /var/www/html/wp-content/plugins/custom-functions* ## don't delete others until ours is working 100% perfect
+## delete potentially conflicting Autoloader scripts ##
+rm /var/www/html/wp-content/plugins/autoloader*
 
-## copy files to destinations ##
-cp -R -f -d --no-preserve=mode,ownership /tmp/autoloader.php /var/www/html/wp-content/mu-plugins/autoloader.php
-cp -R -f -d --no-preserve=mode,ownership /tmp/xxx-notices.php /var/www/html/wp-content/mu-plugins/xxx-notices.php
-cp -R -f -d --no-preserve=mode,ownership /tmp/object-cache.php /var/www/html/wp-content/object-cache.php
-cp -R -f -d --no-preserve=mode,ownership /tmp/custom-functions /var/www/html/wp-content/mu-plugins/custom-functions
+## delete potentially conflicting normal plugins (with required MU plugins) ##
+# rm /var/www/html/wp-content/plugins/custom-functions* ## don't delete others until ours is working 100% perfect
+rm /var/www/html/wp-content/plugins/xxx-notices*
+
+## delete potentially conflicting object caches (drop-in plugins + normal plugins) ##
+rm /var/www/html/wp-content/object-cache*
+rm /var/www/html/wp-content/plugins/memcache*
+rm /var/www/html/wp-content/plugins/memcached*
+rm /var/www/html/wp-content/plugins/object-cache*
+rm /var/www/html/wp-content/plugins/redis*
+
+## copy Autoloader files to destination ##
+cp /tmp/autoloader.php /var/www/html/wp-content/mu-plugins/autoloader.php
+
+## copy required MU plugins files to destinations ##
+cp /tmp/custom-functions /var/www/html/wp-content/mu-plugins/custom-functions
+cp /tmp/xxx-notices.php /var/www/html/wp-content/mu-plugins/xxx-notices.php
+
+## copy Object Cache files to destination ##
+cp /tmp/object-cache.php /var/www/html/wp-content/object-cache.php
 
 ####################################################################################################
 #### SS-Muplugs: Configure Custom Functions (MU) Plugin (Required) #################################
@@ -110,11 +124,11 @@ cp -R -f -d --no-preserve=mode,ownership /tmp/custom-functions /var/www/html/wp-
 
 ## download specified functions file (otherwise create generic) if none exists ##
 if [ ! -f /var/www/html/wp-content/functions.php ] && [ -z "$CUSTOM_FUNCTIONS_SOURCE" ]; then
-    wget --no-cache --no-cookies --tries=3 --timeout=15 -O /tmp/functions.php http://mirrors.slickstack.io/wordpress/functions.txt
-    cp -R -f --no-preserve=mode,ownership /tmp/functions.php /var/www/html/wp-content/functions.php
+    wget -O /tmp/functions.php http://mirrors.slickstack.io/wordpress/functions.txt
+    cp /tmp/functions.php /var/www/html/wp-content/functions.php
 elif [ ! -f /var/www/html/wp-content/functions.php ] && [ -n "$CUSTOM_FUNCTIONS_SOURCE" ]; then
-    wget --no-check-certificate --no-cache --no-cookies --tries=3 --timeout=15 -O /tmp/functions.php "$CUSTOM_FUNCTIONS_SOURCE"
-    cp -R -f --no-preserve=mode,ownership /tmp/functions.php /var/www/html/wp-content/functions.php
+    wget -O /tmp/functions.php "$CUSTOM_FUNCTIONS_SOURCE"
+    cp /tmp/functions.php /var/www/html/wp-content/functions.php
 fi
 
 ####################################################################################################
@@ -225,30 +239,30 @@ fi
 # else
 
 ## download default MU (Must-Use) files if none specified in the ss-config ##
-wget --no-cache --no-cookies --tries=3 --timeout=15 -O /tmp/clear-caches.zip http://mirrors.slickstack.io/mu-plugins/clear-caches.zip
-wget --no-cache --no-cookies --tries=3 --timeout=15 -O /tmp/cloudflare.zip http://mirrors.slickstack.io/mu-plugins/cloudflare.zip
-wget --no-cache --no-cookies --tries=3 --timeout=15 -O /tmp/dashboard-cleanup.zip http://mirrors.slickstack.io/mu-plugins/dashboard-cleanup.zip
-wget --no-cache --no-cookies --tries=3 --timeout=15 -O /tmp/delete-expired-transients.zip http://mirrors.slickstack.io/mu-plugins/delete-expired-transients.zip
-wget --no-cache --no-cookies --tries=3 --timeout=15 -O /tmp/disable-attachment-pages.zip http://mirrors.slickstack.io/mu-plugins/disable-attachment-pages.zip
-wget --no-cache --no-cookies --tries=3 --timeout=15 -O /tmp/disable-embeds.zip http://mirrors.slickstack.io/mu-plugins/disable-embeds.zip
-wget --no-cache --no-cookies --tries=3 --timeout=15 -O /tmp/disable-emojis.zip http://mirrors.slickstack.io/mu-plugins/disable-emojis.zip
-wget --no-cache --no-cookies --tries=3 --timeout=15 -O /tmp/disable-empty-trash.zip http://mirrors.slickstack.io/mu-plugins/disable-empty-trash.zip
-wget --no-cache --no-cookies --tries=3 --timeout=15 -O /tmp/disable-gutenberg.zip http://mirrors.slickstack.io/mu-plugins/disable-gutenberg.zip
-wget --no-cache --no-cookies --tries=3 --timeout=15 -O /tmp/disable-image-compression.zip http://mirrors.slickstack.io/mu-plugins/disable-image-compression.zip
-wget --no-cache --no-cookies --tries=3 --timeout=15 -O /tmp/disable-post-via-email.zip http://mirrors.slickstack.io/mu-plugins/disable-post-via-email.zip
-wget --no-cache --no-cookies --tries=3 --timeout=15 -O /tmp/disable-xml-rpc.zip http://mirrors.slickstack.io/mu-plugins/disable-xml-rpc.zip
-wget --no-cache --no-cookies --tries=3 --timeout=15 -O /tmp/error-log-monitor.zip http://mirrors.slickstack.io/mu-plugins/error-log-monitor.zip
-wget --no-cache --no-cookies --tries=3 --timeout=15 -O /tmp/force-https.zip http://mirrors.slickstack.io/mu-plugins/force-https.zip
-wget --no-cache --no-cookies --tries=3 --timeout=15 -O /tmp/force-strong-hashing.zip http://mirrors.slickstack.io/mu-plugins/force-strong-hashing.zip
-wget --no-cache --no-cookies --tries=3 --timeout=15 -O /tmp/header-cleanup.zip http://mirrors.slickstack.io/mu-plugins/header-cleanup.zip
-wget --no-cache --no-cookies --tries=3 --timeout=15 -O /tmp/index-autoload.zip http://mirrors.slickstack.io/mu-plugins/index-autoload.zip
-wget --no-cache --no-cookies --tries=3 --timeout=15 -O /tmp/limit-heartbeat.zip http://mirrors.slickstack.io/mu-plugins/limit-heartbeat.zip
-wget --no-cache --no-cookies --tries=3 --timeout=15 -O /tmp/maintenance-mode.zip http://mirrors.slickstack.io/mu-plugins/maintenance-mode.zip
-wget --no-cache --no-cookies --tries=3 --timeout=15 -O /tmp/minify-html.zip http://mirrors.slickstack.io/mu-plugins/minify-html.zip
-wget --no-cache --no-cookies --tries=3 --timeout=15 -O /tmp/plugin-blacklist.zip http://mirrors.slickstack.io/mu-plugins/plugin-blacklist.zip
-wget --no-cache --no-cookies --tries=3 --timeout=15 -O /tmp/server-status.zip http://mirrors.slickstack.io/mu-plugins/server-status.zip
-wget --no-cache --no-cookies --tries=3 --timeout=15 -O /tmp/sftp-details.zip http://mirrors.slickstack.io/mu-plugins/sftp-details.zip
-wget --no-cache --no-cookies --tries=3 --timeout=15 -O /tmp/virtual-robotstxt.zip http://mirrors.slickstack.io/mu-plugins/virtual-robotstxt.zip
+wget -O /tmp/clear-caches.zip http://mirrors.slickstack.io/mu-plugins/clear-caches.zip
+wget -O /tmp/cloudflare.zip http://mirrors.slickstack.io/mu-plugins/cloudflare.zip
+wget -O /tmp/dashboard-cleanup.zip http://mirrors.slickstack.io/mu-plugins/dashboard-cleanup.zip
+wget -O /tmp/delete-expired-transients.zip http://mirrors.slickstack.io/mu-plugins/delete-expired-transients.zip
+wget -O /tmp/disable-attachment-pages.zip http://mirrors.slickstack.io/mu-plugins/disable-attachment-pages.zip
+wget -O /tmp/disable-embeds.zip http://mirrors.slickstack.io/mu-plugins/disable-embeds.zip
+wget -O /tmp/disable-emojis.zip http://mirrors.slickstack.io/mu-plugins/disable-emojis.zip
+wget -O /tmp/disable-empty-trash.zip http://mirrors.slickstack.io/mu-plugins/disable-empty-trash.zip
+wget -O /tmp/disable-gutenberg.zip http://mirrors.slickstack.io/mu-plugins/disable-gutenberg.zip
+wget -O /tmp/disable-image-compression.zip http://mirrors.slickstack.io/mu-plugins/disable-image-compression.zip
+wget -O /tmp/disable-post-via-email.zip http://mirrors.slickstack.io/mu-plugins/disable-post-via-email.zip
+wget -O /tmp/disable-xml-rpc.zip http://mirrors.slickstack.io/mu-plugins/disable-xml-rpc.zip
+wget -O /tmp/error-log-monitor.zip http://mirrors.slickstack.io/mu-plugins/error-log-monitor.zip
+wget -O /tmp/force-https.zip http://mirrors.slickstack.io/mu-plugins/force-https.zip
+wget -O /tmp/force-strong-hashing.zip http://mirrors.slickstack.io/mu-plugins/force-strong-hashing.zip
+wget -O /tmp/header-cleanup.zip http://mirrors.slickstack.io/mu-plugins/header-cleanup.zip
+wget -O /tmp/index-autoload.zip http://mirrors.slickstack.io/mu-plugins/index-autoload.zip
+wget -O /tmp/limit-heartbeat.zip http://mirrors.slickstack.io/mu-plugins/limit-heartbeat.zip
+wget -O /tmp/maintenance-mode.zip http://mirrors.slickstack.io/mu-plugins/maintenance-mode.zip
+wget -O /tmp/minify-html.zip http://mirrors.slickstack.io/mu-plugins/minify-html.zip
+wget -O /tmp/plugin-blacklist.zip http://mirrors.slickstack.io/mu-plugins/plugin-blacklist.zip
+wget -O /tmp/server-status.zip http://mirrors.slickstack.io/mu-plugins/server-status.zip
+wget -O /tmp/sftp-details.zip http://mirrors.slickstack.io/mu-plugins/sftp-details.zip
+wget -O /tmp/virtual-robotstxt.zip http://mirrors.slickstack.io/mu-plugins/virtual-robotstxt.zip
 
 ## unzip them all ##
 unzip /tmp/clear-caches.zip -d /tmp
@@ -277,59 +291,59 @@ unzip /tmp/sftp-details.zip -d /tmp
 unzip /tmp/virtual-robotstxt.zip -d /tmp
 
 ## delete plugins instances (conflicting namespaces or previous namespaces) ##
-rm -R -f /var/www/html/wp-content/plugins/clear-caches*
-rm -R -f /var/www/html/wp-content/plugins/cloudflare*
-rm -R -f /var/www/html/wp-content/plugins/cf-littlebizzy* ## previous CloudFlare namespace
-rm -R -f /var/www/html/wp-content/plugins/dashboard-cleanup*
-rm -R -f /var/www/html/wp-content/plugins/delete-expired-transients*
-rm -R -f /var/www/html/wp-content/plugins/disable-attachment-pages*
-rm -R -f /var/www/html/wp-content/plugins/disable-embeds*
-rm -R -f /var/www/html/wp-content/plugins/disable-emojis*
-rm -R -f /var/www/html/wp-content/plugins/disable-empty-trash*
-rm -R -f /var/www/html/wp-content/plugins/disable-gutenberg*
-rm -R -f /var/www/html/wp-content/plugins/disable-image-compression*
-rm -R -f /var/www/html/wp-content/plugins/disable-post-via-email*
-rm -R -f /var/www/html/wp-content/plugins/disable-xml-rpc*
-rm -R -f /var/www/html/wp-content/plugins/error-log-monitor*
-rm -R -f /var/www/html/wp-content/plugins/force-https*
-rm -R -f /var/www/html/wp-content/plugins/force-strong-hashing*
-rm -R -f /var/www/html/wp-content/plugins/header-cleanup*
-rm -R -f /var/www/html/wp-content/plugins/index-autoload*
-rm -R -f /var/www/html/wp-content/plugins/limit-heartbeat*
-rm -R -f /var/www/html/wp-content/plugins/maintenance-mode*
-rm -R -f /var/www/html/wp-content/plugins/minify-html*
-rm -R -f /var/www/html/wp-content/plugins/plugin-blacklist*
-rm -R -f /var/www/html/wp-content/plugins/purge-them-all* ## previous Clear Caches namespace
-rm -R -f /var/www/html/wp-content/plugins/remove-query-strings*
-rm -R -f /var/www/html/wp-content/plugins/server-status*
-rm -R -f /var/www/html/wp-content/plugins/sftp-details*
-rm -R -f /var/www/html/wp-content/plugins/virtual-robotstxt*
+rm /var/www/html/wp-content/plugins/clear-caches*
+rm /var/www/html/wp-content/plugins/cloudflare*
+rm /var/www/html/wp-content/plugins/cf-littlebizzy* ## previous CloudFlare namespace
+rm /var/www/html/wp-content/plugins/dashboard-cleanup*
+rm /var/www/html/wp-content/plugins/delete-expired-transients*
+rm /var/www/html/wp-content/plugins/disable-attachment-pages*
+rm /var/www/html/wp-content/plugins/disable-embeds*
+rm /var/www/html/wp-content/plugins/disable-emojis*
+rm /var/www/html/wp-content/plugins/disable-empty-trash*
+rm /var/www/html/wp-content/plugins/disable-gutenberg*
+rm /var/www/html/wp-content/plugins/disable-image-compression*
+rm /var/www/html/wp-content/plugins/disable-post-via-email*
+rm /var/www/html/wp-content/plugins/disable-xml-rpc*
+rm /var/www/html/wp-content/plugins/error-log-monitor*
+rm /var/www/html/wp-content/plugins/force-https*
+rm /var/www/html/wp-content/plugins/force-strong-hashing*
+rm /var/www/html/wp-content/plugins/header-cleanup*
+rm /var/www/html/wp-content/plugins/index-autoload*
+rm /var/www/html/wp-content/plugins/limit-heartbeat*
+rm /var/www/html/wp-content/plugins/maintenance-mode*
+rm /var/www/html/wp-content/plugins/minify-html*
+rm /var/www/html/wp-content/plugins/plugin-blacklist*
+rm /var/www/html/wp-content/plugins/purge-them-all* ## previous Clear Caches namespace
+rm /var/www/html/wp-content/plugins/remove-query-strings*
+rm /var/www/html/wp-content/plugins/server-status*
+rm /var/www/html/wp-content/plugins/sftp-details*
+rm /var/www/html/wp-content/plugins/virtual-robotstxt*
 
 ## copy to destination ##
-cp -R -f -d --no-preserve=mode,ownership /tmp/clear-caches /var/www/html/wp-content/mu-plugins/clear-caches
-cp -R -f -d --no-preserve=mode,ownership /tmp/cloudflare /var/www/html/wp-content/mu-plugins/cloudflare
-cp -R -f -d --no-preserve=mode,ownership /tmp/dashboard-cleanup /var/www/html/wp-content/mu-plugins/dashboard-cleanup
-cp -R -f -d --no-preserve=mode,ownership /tmp/delete-expired-transients /var/www/html/wp-content/mu-plugins/delete-expired-transients
-cp -R -f -d --no-preserve=mode,ownership /tmp/disable-attachment-pages /var/www/html/wp-content/mu-plugins/disable-attachment-pages
-cp -R -f -d --no-preserve=mode,ownership /tmp/disable-embeds /var/www/html/wp-content/mu-plugins/disable-embeds
-cp -R -f -d --no-preserve=mode,ownership /tmp/disable-emojis /var/www/html/wp-content/mu-plugins/disable-emojis
-cp -R -f -d --no-preserve=mode,ownership /tmp/disable-empty-trash /var/www/html/wp-content/mu-plugins/disable-empty-trash
-cp -R -f -d --no-preserve=mode,ownership /tmp/disable-gutenberg /var/www/html/wp-content/mu-plugins/disable-gutenberg
-cp -R -f -d --no-preserve=mode,ownership /tmp/disable-image-compression /var/www/html/wp-content/mu-plugins/disable-image-compression
-cp -R -f -d --no-preserve=mode,ownership /tmp/disable-post-via-email /var/www/html/wp-content/mu-plugins/disable-post-via-email
-cp -R -f -d --no-preserve=mode,ownership /tmp/disable-xml-rpc /var/www/html/wp-content/mu-plugins/disable-xml-rpc
-cp -R -f -d --no-preserve=mode,ownership /tmp/error-log-monitor /var/www/html/wp-content/mu-plugins/error-log-monitor
-cp -R -f -d --no-preserve=mode,ownership /tmp/force-https /var/www/html/wp-content/mu-plugins/force-https
-cp -R -f -d --no-preserve=mode,ownership /tmp/force-strong-hashing /var/www/html/wp-content/mu-plugins/force-strong-hashing
-cp -R -f -d --no-preserve=mode,ownership /tmp/header-cleanup /var/www/html/wp-content/mu-plugins/header-cleanup
-cp -R -f -d --no-preserve=mode,ownership /tmp/index-autoload /var/www/html/wp-content/mu-plugins/index-autoload
-cp -R -f -d --no-preserve=mode,ownership /tmp/limit-heartbeat /var/www/html/wp-content/mu-plugins/limit-heartbeat
-cp -R -f -d --no-preserve=mode,ownership /tmp/maintenance-mode /var/www/html/wp-content/mu-plugins/maintenance-mode
-cp -R -f -d --no-preserve=mode,ownership /tmp/minify-html /var/www/html/wp-content/mu-plugins/minify-html
-cp -R -f -d --no-preserve=mode,ownership /tmp/plugin-blacklist /var/www/html/wp-content/mu-plugins/plugin-blacklist
-cp -R -f -d --no-preserve=mode,ownership /tmp/server-status /var/www/html/wp-content/mu-plugins/server-status
-cp -R -f -d --no-preserve=mode,ownership /tmp/sftp-details /var/www/html/wp-content/mu-plugins/sftp-details
-cp -R -f -d --no-preserve=mode,ownership /tmp/virtual-robotstxt /var/www/html/wp-content/mu-plugins/virtual-robotstxt
+cp /tmp/clear-caches /var/www/html/wp-content/mu-plugins/clear-caches
+cp /tmp/cloudflare /var/www/html/wp-content/mu-plugins/cloudflare
+cp /tmp/dashboard-cleanup /var/www/html/wp-content/mu-plugins/dashboard-cleanup
+cp /tmp/delete-expired-transients /var/www/html/wp-content/mu-plugins/delete-expired-transients
+cp /tmp/disable-attachment-pages /var/www/html/wp-content/mu-plugins/disable-attachment-pages
+cp /tmp/disable-embeds /var/www/html/wp-content/mu-plugins/disable-embeds
+cp /tmp/disable-emojis /var/www/html/wp-content/mu-plugins/disable-emojis
+cp /tmp/disable-empty-trash /var/www/html/wp-content/mu-plugins/disable-empty-trash
+cp /tmp/disable-gutenberg /var/www/html/wp-content/mu-plugins/disable-gutenberg
+cp /tmp/disable-image-compression /var/www/html/wp-content/mu-plugins/disable-image-compression
+cp /tmp/disable-post-via-email /var/www/html/wp-content/mu-plugins/disable-post-via-email
+cp /tmp/disable-xml-rpc /var/www/html/wp-content/mu-plugins/disable-xml-rpc
+cp /tmp/error-log-monitor /var/www/html/wp-content/mu-plugins/error-log-monitor
+cp /tmp/force-https /var/www/html/wp-content/mu-plugins/force-https
+cp /tmp/force-strong-hashing /var/www/html/wp-content/mu-plugins/force-strong-hashing
+cp /tmp/header-cleanup /var/www/html/wp-content/mu-plugins/header-cleanup
+cp /tmp/index-autoload /var/www/html/wp-content/mu-plugins/index-autoload
+cp /tmp/limit-heartbeat /var/www/html/wp-content/mu-plugins/limit-heartbeat
+cp /tmp/maintenance-mode /var/www/html/wp-content/mu-plugins/maintenance-mode
+cp /tmp/minify-html /var/www/html/wp-content/mu-plugins/minify-html
+cp /tmp/plugin-blacklist /var/www/html/wp-content/mu-plugins/plugin-blacklist
+cp /tmp/server-status /var/www/html/wp-content/mu-plugins/server-status
+cp /tmp/sftp-details /var/www/html/wp-content/mu-plugins/sftp-details
+cp /tmp/virtual-robotstxt /var/www/html/wp-content/mu-plugins/virtual-robotstxt
 
 ## end if ##
 # fi
@@ -350,45 +364,46 @@ chmod 6775 /var/www/html/wp-content/functions.php
 #### SS-Muplugs: Delete Any Previous (Leftover) Temporary Files ####################################
 ####################################################################################################
 
-## delete Autoloader temporary files ##
-rm -R -f /tmp/autoloader*
+## delete Autoloader (required script) temporary files ##
+rm /tmp/autoloader*
 
-## delete MU (Must-Use) plugins temporary files ##
-rm -R -f /tmp/clear-caches*
-rm -R -f /tmp/cloudflare*
-rm -R -f /tmp/custom-functions*
-rm -R -f /tmp/dashboard-cleanup*
-rm -R -f /tmp/delete-expired-transients*
-rm -R -f /tmp/disable-attachment-pages*
-rm -R -f /tmp/disable-embeds*
-rm -R -f /tmp/disable-emojis*
-rm -R -f /tmp/disable-empty-trash*
-rm -R -f /tmp/disable-gutenberg*
-rm -R -f /tmp/disable-image-compression*
-rm -R -f /tmp/disable-post-via-email*
-rm -R -f /tmp/disable-xml-rpc*
-rm -R -f /tmp/error-log-monitor*
-rm -R -f /tmp/force-https*
-rm -R -f /tmp/force-strong-hashing*
-rm -R -f /tmp/header-cleanup*
-rm -R -f /tmp/index-autoload*
-rm -R -f /tmp/limit-heartbeat*
-rm -R -f /tmp/maintenance-mode*
-rm -R -f /tmp/minify-html*
-rm -R -f /tmp/plugin-blacklist*
-rm -R -f /tmp/remove-query-strings*
-rm -R -f /tmp/server-status*
-rm -R -f /tmp/sftp-details*
-rm -R -f /tmp/virtual-robotstxt*
+## delete Custom Functions + XXX Notices (required MU plugins) temporary files ##
+rm /tmp/custom-functions*
+rm /tmp/functions*
+rm /tmp/xxx-notices*
 
-## delete XXX Notices (MU plugin) temporary files ##
-rm -R -f /tmp/xxx-notices*
+## delete Object Cache (required drop-in plugin) temporary files ##
+rm /tmp/object-cache*
 
-## delete object cache temporary files ##
-rm -R -f /tmp/object-cache*
+## delete default MU plugins temporary files ##
+rm /tmp/clear-caches*
+rm /tmp/cloudflare*
+rm /tmp/dashboard-cleanup*
+rm /tmp/delete-expired-transients*
+rm /tmp/disable-attachment-pages*
+rm /tmp/disable-embeds*
+rm /tmp/disable-emojis*
+rm /tmp/disable-empty-trash*
+rm /tmp/disable-gutenberg*
+rm /tmp/disable-image-compression*
+rm /tmp/disable-post-via-email*
+rm /tmp/disable-xml-rpc*
+rm /tmp/error-log-monitor*
+rm /tmp/force-https*
+rm /tmp/force-strong-hashing*
+rm /tmp/header-cleanup*
+rm /tmp/index-autoload*
+rm /tmp/limit-heartbeat*
+rm /tmp/maintenance-mode*
+rm /tmp/minify-html*
+rm /tmp/plugin-blacklist*
+rm /tmp/remove-query-strings*
+rm /tmp/server-status*
+rm /tmp/sftp-details*
+rm /tmp/virtual-robotstxt*
 
-## delete Custom Functions temporary files ##
-rm -R -f /tmp/functions*
+## delete custom MU plugins temporary files ##
+# (coming soon)
 
 ####################################################################################################
 #### SS-Muplugs: Reset PHP OPcache + Flush Redis Object Cache ######################################
