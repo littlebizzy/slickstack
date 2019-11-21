@@ -10,7 +10,17 @@ title: MU (Must-Use) Plugins (Public Mirrors)
 
 *Live configuration files and boilerplates used by current SlickStack installation that may be altered by LittleBizzy or Ubuntu for better performance.*
 
-* <a href="autoloader.txt">autoloader.txt</a>
+#### Required Scripts
+
+* [autoloader.txt](autoloader.txt)
+* [xxx-notices.txt](xxx-notices.txt)
+
+#### Required Drop-In Plugins
+
+* object-cache.txt
+
+#### Default MU (Must-Use) Plugins
+
 * <a href="clear-caches.zip">clear-caches.zip</a>
 * <a href="cloudflare.zip">cloudflare.zip</a>
 * <a href="custom-functions.zip">custom-functions.zip</a>
@@ -36,7 +46,6 @@ title: MU (Must-Use) Plugins (Public Mirrors)
 * <a href="server-status.zip">server-status.zip</a>
 * <a href="sftp-details.zip">sftp-details.zip</a>
 * <a href="virtual-robotstxt.zip">virtual-robotstxt.zip</a>
-* <a href="xxx-notices.txt">xxx-notices.txt</a>
 
 ### Original Files
 
