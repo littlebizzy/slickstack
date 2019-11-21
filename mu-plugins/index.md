@@ -56,6 +56,10 @@ title: MU (Must-Use) Plugins (Public Mirrors)
 * [autoloader-1.1.0.txt](autoloader-1.1.0.txt)
 * [autoloader-1.0.0.txt](autoloader-1.0.0.txt)
 
+#### custom-functions.zip
+
+* (coming soon)
+
 #### xxx-notices.php
 
 * (coming soon)
@@ -67,10 +71,6 @@ title: MU (Must-Use) Plugins (Public Mirrors)
 * (coming soon)
 
 #### cloudflare.zip
-
-* (coming soon)
-
-#### custom-functions.zip
 
 * (coming soon)
 
