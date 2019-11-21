@@ -164,7 +164,7 @@ title: MU (Must-Use) Plugins (Public Mirrors)
 
 ----
 
-#### pj-object-cache-1.0.txt
+#### object-cache.php (Pressjitsu)
 
 * [pj-object-cache-1.0.txt](pj-object-cache-1.0.txt)
 
