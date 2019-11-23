@@ -6,8 +6,8 @@
 #### mirror: http://mirrors.slickstack.io/ss-update.txt ############################################
 #### path: /var/www/ss-update ######################################################################
 #### destination: n/a (not a boilerplate) ##########################################################
-#### purpose: Updates and cleans up SlickStack modules (Ubuntu packages) and MU plugins ############
-#### module version: Ubuntu 18.04 ##################################################################
+#### purpose: Updates and cleans up SlickStack modules (Ubuntu packages) and WP extensions #########
+#### module version: Ubuntu 18.04 LTS ##############################################################
 ####################################################################################################
 
 ## YOU CAN SAFELY RUN SS-UPDATE WITH NO EFFECT TO YOUR SLICKSTACK CONFIGURATION ##
@@ -15,63 +15,63 @@
 ## include SlickStack configuration ##
 source /var/www/ss-config
 
-## critical functions (aliases) ##
-# apt () { DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold"; }
-# wget () { wget --no-cache --no-cookies --tries=3 --timeout=15; }
-# cp () { cp -R -f -d --no-preserve=mode,ownership; }
-# rm () { rm -R -f; }
-# mkdir () { mkdir -p; }
+## critical functions (aliases) for this script to function ##
+apt () { command DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" "$@"; }
+wget () { command wget --no-check-certificate --no-cache --no-cookies --tries=3 --timeout=15 "$@"; }
+cp () { command cp -R -f -d --no-preserve=mode,ownership "$@"; }
+rm () { command rm -R -f "$@"; }
+mkdir () { command mkdir -p "$@"; }
+unzip () { command unzip -o "$@"; }
 
 ####################################################################################################
-#### SS-Update: Backup Live Database Before Proceeding (Via SS-Dump) ###############################
+#### SS-Update: Backup Live MySQL Database Before Proceeding (Via SS-Dump) #########################
 ####################################################################################################
 
+## run ss-dump ##
 source /var/www/ss-dump
 
 ####################################################################################################
-#### SS-Update: Update MU (Must Use) Plugins (Via SS-Muplugs) ######################################
+#### SS-Update: Update MU (Must-Use) Plugins (Via SS-Muplugs) ######################################
 ####################################################################################################
 
+## run ss-muplugs ##
 source /var/www/ss-muplugs
 
 ####################################################################################################
 #### SS-Update: Upgrade + Autoremove + Autoclean SlickStack Modules (Ubuntu Packages) ##############
 ####################################################################################################
 
-## update repo cache ##
-DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" update
+## update Ubuntu repo cache ##
+apt update
 
-## upgrade installed packages ##
-DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" upgrade
+## upgrade installed Ubuntu packages (SlickStack LEMP modules) ##
+apt upgrade
 
-## autoremove packages ##
-DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" autoremove
+## autoremove Ubuntu packages ##
+apt autoremove
 
-## autoclean packages ##
-DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" autoclean
-
-# apt update
-# apt upgrade
-# apt autoremove
-# apt autoclean
+## autoclean Ubuntu packages ##
+apt autoclean
 
 ####################################################################################################
 #### SS-Update: Purge All Caches (Via SS-Purge) ####################################################
 ####################################################################################################
 
+## run ss-purge ##
 source /var/www/ss-purge
 
 ####################################################################################################
 #### SS-Update: Restart All Services (Via SS-Restart) ##############################################
 ####################################################################################################
 
+## run ss-restart ##
 source /var/www/ss-restart
 
 ####################################################################################################
-#### SS-Update: Reboot Server Automatically (SS-Config Option) #####################################
+#### SS-Update: Reboot Server Automatically (Optional In SS-Config) ################################
 ####################################################################################################
 
-## IT IS BETTER TO RUN SS-UPDATE MANUALLY AND REBOOT YOUR SERVER MANUALLY ##
+## IT IS ALWAYS BETTER TO RUN SS-UPDATE MANUALLY AND REBOOT YOUR SERVER MANUALLY ##
 
 if [[ "$SS_REBOOT" == "true" ]]; then 
     echo -e "\e[93mSlickStack updates complete! Automatic server reboot in progress... see you on the other side!\e[0m" >&2
