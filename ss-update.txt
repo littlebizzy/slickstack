@@ -17,10 +17,10 @@ source /var/www/ss-config
 
 ## critical functions (aliases) for this script to work ##
 function apt { 
-    DEBIAN_PRIORITY=critical
-    DEBIAN_FRONTEND=noninteractive
-    PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'
-    command /usr/bin/apt -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" "$@"
+    # DEBIAN_PRIORITY=critical
+    export DEBIAN_FRONTEND=noninteractive
+    export PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'
+    command /usr/bin/apt -o Dpkg::Options::=--force-confold -o Dpkg::Options::=--force-confdef -q --yes "$@"
 }
 function wget { command wget --no-check-certificate --no-cache --no-cookies --tries=3 --timeout=15 "$@"; }
 function cp { command cp -R -f -d --no-preserve=mode,ownership "$@"; }
@@ -89,4 +89,15 @@ fi
 #### External References Used By SlickStack To Improve This Script #################################
 ####################################################################################################
 
+## Ref: https://linux.die.net/man/8/apt-get
 ## Ref: https://unix.stackexchange.com/questions/467552/reboot-over-ssh/467996#467996
+## Ref: https://askubuntu.com/questions/254129/how-to-display-all-apt-get-dpkgoptions-and-their-current-values
+## Ref: https://serverfault.com/questions/48724/100-non-interactive-debian-dist-upgrade
+## Ref: https://askubuntu.com/questions/938359/apt-get-install-remove-update-upgrade-via-cron-job
+## Ref: http://manpages.ubuntu.com/manpages/trusty/man8/apt.8.html
+## Ref: https://www.debian.org/doc/manuals/apt-guide/index.en.html
+## Ref: https://serverfault.com/questions/478461/how-to-install-packages-with-apt-without-user-interaction
+## Ref: https://serverfault.com/questions/644180/what-does-qq-argument-for-apt-get-mean
+## Ref: https://superuser.com/questions/1438031/ubuntu-18-command-apt-get-dist-upgrade-qq-force-yes-deprecated
+## Ref: https://superuser.com/questions/1412054/non-interactive-apt-upgrade
+## Ref: https://serverfault.com/questions/227190/how-do-i-ask-apt-get-to-skip-any-interactive-post-install-configuration-steps
