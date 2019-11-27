@@ -83,7 +83,7 @@ http {
     large_client_header_buffers 4 64k;
 
 ####################################################################################################
-#### Nginx: Various Timeout Settings (Optimized For Traffic Scaling) ###############################
+#### Nginx: Various Timeout + Keepalive Settings ###################################################
 ####################################################################################################
     
     client_body_timeout 15s;
@@ -94,7 +94,7 @@ http {
     reset_timedout_connection on;
     
 ####################################################################################################
-#### Nginx: HTTP Headers Settings (Optimized For CloudFlare) #######################################
+#### Nginx: HTTP Headers Settings (Security Headers, Etc) ##########################################
 ####################################################################################################
     
     add_header X-Powered-By "SlickStack";
@@ -109,13 +109,18 @@ http {
     # add_header Feature-Policy "ambient-light-sensor none; animations self; autoplay none; accelerometer none; camera none; display-capture none; document-domain none; document-write none; encrypted-media none; fullscreen self; geolocation none; gyroscope none; image-compression *; legacy-image-formats *; magnetometer none; max-downscaling-image *; microphone none; midi none; notifications self; payment none; picture-in-picture self; push none; speaker self; sync-xhr none; unsized-media *; usb none; vertical-scroll self; wake-lock none; webauthn none; vibrate none; vr none; xr-spatial-tracking none;";
    
     server_tokens off;
-    more_clear_headers "Pragma"; ## outdated
-    more_clear_headers "Expires"; ## outdated
-    more_clear_headers "Cache-Control"; ## CloudFlare sends it for static files (and FastCGI Cache handles page caching)
+    
+    ## Pragma and Expires are outdated cache headers that conflict with Cache-Control ##
+    ## Cache-Control set by CloudFlare for static files, not needed for HTML ##
+    
+    more_clear_headers "Pragma";
+    more_clear_headers "Expires";
+    more_clear_headers "Cache-Control";
+    
     charset utf-8;
     
 ####################################################################################################
-#### Nginx: SSL Settings (Supports Self-Signed OpenSSL + CA-Signed Let's Encrypt) ##################
+#### Nginx: SSL Settings (Self-Signed OpenSSL + CA-Signed Let's Encrypt) ###########################
 ####################################################################################################
 
     ssl_certificate /etc/ssl/nginx.crt;
