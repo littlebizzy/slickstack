@@ -93,7 +93,7 @@ fi
 #### SS-Encrypt: Generate DH Parameters (Used Only When Cerbot SSL Is Active) ######################
 ####################################################################################################
 
-if [[ "$SSL_TYPE" == "certbot" ]]; then 
+if [ ! -f "/etc/ssl/dhparam.pem" ] || [ "$SSL_TYPE" == "certbot" ]; then 
     openssl dhparam -out /etc/ssl/dhparam.pem 2048
 fi
 
@@ -166,12 +166,9 @@ fi
 #### SS-Encrypt: Reset Permissions (OpenSSL + Certbot) #############################################
 ####################################################################################################
 
-chown root:root /etc/ssl/nginx.key
-chown root:root /etc/ssl/nginx.crt
-chown root:root /etc/ssl/cert.pem
-chown root:root /etc/ssl/privkey.pem
-chown root:root /etc/ssl/chain.pem
-chown root:root /etc/ssl/fullchain.pem
+chown root:root /etc/ssl/*.key
+chown root:root /etc/ssl/*.crt
+chown root:root /etc/ssl/*.pem
 
 ####################################################################################################
 #### SS-Encrypt: Restart Services Again If Certbot SSL Is Active (Nginx Server) ####################
