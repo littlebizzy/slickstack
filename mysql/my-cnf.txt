@@ -4,8 +4,8 @@
 #### mirror: http://mirrors.slickstack.io/mysql/my-cnf.txt #########################################
 #### path: n/a (boilerplate) #######################################################################
 #### destination: /etc/mysql/my.cnf (after install) ################################################
-#### purpose: MySQL configuration file boilerplate that supports a custom sql-mode #################
-#### module version: MySQL 5.7+ ####################################################################
+#### purpose: MySQL configuration file boilerplate that supports a custom SQL mode, etc ############
+#### module version: MySQL 5.7.x + MySQL 8.x (pending Ubuntu 20.04) ################################
 ####################################################################################################
 
 [mysqld]
@@ -16,14 +16,15 @@
 
 sql-mode="@SQL_MODE"
 
-## buffer pool size at least 1GB+ will automatically trigger 8 buffer pools (instead of 1) ##
-## buffer pool size should be set to around 50-70% of total RAM memory on server ##
-## a bigger log file is generally better but causes slower crash recovery ##
+## buffer pool size at least 1GB+ will automatically trigger 8 buffer pools (not just 1) ##
+## a bigger log file size is generally better but can cause slower crash recovery ##
 
 innodb_buffer_pool_size = @INNODB_BUFFER_POOL_SIZE
 innodb_log_file_size = @INNODB_LOG_FILE_SIZE
 innodb_flush_log_at_trx_commit = @INNODB_FLUSH_LOG_AT_TRX_COMMIT
 innodb_flush_method = @INNODB_FLUSH_METHOD
+
+##MySQL_8.0##innodb_log_files_in_group = 1 ## MySQL 8.0
 
 ####################################################################################################
 #### MySQL: Include Other Configuration Files ######################################################
@@ -33,7 +34,7 @@ innodb_flush_method = @INNODB_FLUSH_METHOD
 !includedir /etc/mysql/mysql.conf.d/
 
 ####################################################################################################
-#### External References Used By SlickStack To Improve This Script #################################
+#### SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ###############
 ####################################################################################################
 
 ## Ref: https://dev.mysql.com/doc/mysql/en/server-system-variables.html
@@ -57,3 +58,10 @@ innodb_flush_method = @INNODB_FLUSH_METHOD
 ## Ref: https://stackoverflow.com/questions/18806377/setting-correct-innodb-log-file-size-in-mysql
 ## Ref: https://stackoverflow.com/questions/28849293/how-to-make-sql-mode-no-engine-substitution-permanent-in-mysql-my-cnf
 ## Ref: https://dev.mysql.com/doc/refman/5.7/en/innodb-redo-log.html
+## Ref: https://www.percona.com/blog/2019/02/21/mysql-8-is-not-always-faster-than-mysql-5-7/
+## Ref: https://blog.softhints.com/mysql-5-7-vs-mysql-8-do-you-need-to-upgrade-to-mysql-8/
+## Ref: https://dev.mysql.com/doc/refman/8.0/en/innodb-parameters.html#sysvar_innodb_flush_log_at_trx_commit
+## Ref: https://www.percona.com/blog/2018/03/26/mysql-8-0-innodb_dedicated_server-variable-optimizes-innodb/
+## Ref: https://dev.mysql.com/doc/refman/8.0/en/innodb-dedicated-server.html
+## Ref: https://jira.mariadb.org/browse/MDEV-20907
+## Ref: https://salsa.debian.org/mariadb-team/mariadb-server/commit/743ac7c2d0f7c27699d53f35137e02ee3cfd4b71
