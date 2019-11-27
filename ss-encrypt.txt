@@ -57,7 +57,7 @@ function rm {
 ## MESSAGE ##
 echo -e "\e[36mInstalling (or renewing) free SSL certs from OpenSSL and Certbot...\e[0m"
 
-## TEMPORARY: hide bug/error in OpenSSL 1.1.1 ##
+## hide error message (bug) in OpenSSL 1.1.1 (remove this later) ##
 touch /home/${SUDO_USER}/.rnd
 touch /home/${SFTP_USER}/.rnd
 
@@ -69,10 +69,10 @@ else
 fi
 
 ####################################################################################################
-#### SS-Encrypt: Restart Nginx Server (Prepare For Certbot Verification) ###########################
+#### SS-Encrypt: Restart Nginx (Prepare For Certbot Verification) ##################################
 ####################################################################################################
 
-## restart nginx ##
+## restart Nginx ##
 /etc/init.d/nginx restart
 
 ####################################################################################################
@@ -90,7 +90,7 @@ if [[ ! -f "/var/www/meta/.cherry" ]]; then
 fi
 
 ####################################################################################################
-#### SS-Encrypt: Generate DH Parameters (Used Only When Cerbot SSL Is Active) ######################
+#### SS-Encrypt: Generate DH Parameters (Used By Certbot Only) #####################################
 ####################################################################################################
 
 if [ ! -f "/etc/ssl/dhparam.pem" ] || [ "$SSL_TYPE" == "certbot" ]; then 
@@ -161,11 +161,10 @@ ln -s /etc/letsencrypt/live/${SITE_DOMAIN}/chain.pem /etc/ssl/chain.pem &> /dev/
 ln -s /etc/letsencrypt/live/${SITE_DOMAIN}/fullchain.pem /etc/ssl/fullchain.pem &> /dev/null
 
 ## modify live Nginx configuration if Certbot successful + preferred ##
-if [ -d  "/etc/letsencrypt/live" ] && [ -f  "/etc/ssl/cert.pem" ] && [ "$SSL_TYPE" == "certbot" ]; then
-    sed -i "s#@/etc/ssl/nginx.crt#/etc/ssl/cert.pem#g" /etc/nginx/nginx.conf
-    sed -i "s#@/etc/ssl/nginx.key#/etc/ssl/privkey.pem#g" /etc/nginx/nginx.conf
-    sed -i "s/#@@//g" /etc/nginx/nginx.conf
-    /etc/init.d/nginx restart
+if [[ -d  "/etc/letsencrypt/live" ]] && [[ -f  "/etc/ssl/cert.pem" ]] && [[ "$SSL_TYPE" == "certbot" ]]; then
+    sed -i "s#/etc/ssl/nginx.crt#/etc/ssl/cert.pem#g" /etc/nginx/nginx.conf
+    sed -i "s#/etc/ssl/nginx.key#/etc/ssl/privkey.pem#g" /etc/nginx/nginx.conf
+    sed -i "s/#CERTBOT#//g" /etc/nginx/nginx.conf
 fi
 
 ####################################################################################################
