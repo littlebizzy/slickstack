@@ -34,7 +34,7 @@ if [[ "${UBUNTU_VERSION}" != "18.04" ]]; then
 fi
 
 ## ensure ss-config build version matches ss-install build version ##
-if [[ "$SS_BUILD" != "NOV2019J" ]]; then 
+if [[ "$SS_BUILD" != "NOV2019K" ]]; then 
     echo -e "\e[93mYour ss-config file is outdated. Please rebuild it and run ss-install again.\e[0m" >&2
     exit 1
 fi
@@ -889,6 +889,13 @@ if [[ -z "$INNODB_LOG_FILE_SIZE" ]]; then
     sed -i "s/@INNODB_LOG_FILE_SIZE/256M/g" /tmp/my.cnf
 else 
     sed -i "s/@INNODB_LOG_FILE_SIZE/${INNODB_LOG_FILE_SIZE}/g" /tmp/my.cnf
+fi
+
+## set InnoDB log files in group ##
+if [[ -z "$INNODB_LOG_FILES_IN_GROUP" ]]; then 
+    sed -i "s/@INNODB_LOG_FILES_IN_GROUP/1/g" /tmp/my.cnf
+else 
+    sed -i "s/@INNODB_LOG_FILES_IN_GROUP/${INNODB_LOG_FILES_IN_GROUP}/g" /tmp/my.cnf
 fi
 
 ## set InnoDB flush_log_at_trx_commit ##
