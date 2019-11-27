@@ -6,19 +6,49 @@
 #### mirror: http://mirrors.slickstack.io/ss-encrypt.txt ###########################################
 #### path: /var/www/ss-encrypt #####################################################################
 #### destination: n/a (not a boilerplate) ##########################################################
-#### purpose: Generates or renews free SSL certificates via OpenSSL (SS) and Certbot (CA) ##########
-#### module version: Ubuntu 18.04 ##################################################################
+#### purpose: Generates or renews free SSL certs via OpenSSL and Certbot (Let's Encrypt) ###########
+#### module version: Ubuntu 18.04 LTS + OpenSSL 1.1.0g + Certbot 0.23.x ############################
 ####################################################################################################
 
 ## include SlickStack configuration ##
 source /var/www/ss-config
 
-## critical functions (aliases) ##
-# apt () { DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold"; }
-# wget () { wget --no-cache --no-cookies --tries=3 --timeout=15; }
-# cp () { cp -R -f -d --no-preserve=mode,ownership; }
-# rm () { rm -R -f; }
-# mkdir () { mkdir -p; }
+####################################################################################################
+#### SlickStack: Critical Bash Functions (Aliases) For This Script To Work #########################
+####################################################################################################
+
+## apt alias flags ##
+function apt {
+    export DEBIAN_FRONTEND=noninteractive
+    export DEBIAN_PRIORITY=critical
+    export PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'
+    command /usr/bin/apt -q -y -o Dpkg::Options::=--force-confold -o Dpkg::Options::=--force-confdef "$@"
+}
+
+## wget alias flags ##
+function wget {
+    command wget --no-check-certificate --no-cache --no-cookies --tries=3 --timeout=15 "$@"
+}
+
+## cp alias flags ##
+function cp {
+    command cp -R -f -d --no-preserve=mode,ownership "$@"
+}
+
+## mkdir alias flags ##
+function mkdir {
+    command mkdir -p "$@"
+}
+
+## unzip alias flags ##
+function unzip {
+    command unzip -o "$@"
+}
+
+## rm alias flags ##
+function rm {
+    command rm -R -f "$@"
+}
 
 ####################################################################################################
 #### SS-Encrypt: Generate Self-Signed OpenSSL Certificate ##########################################
@@ -39,17 +69,10 @@ else
 fi
 
 ####################################################################################################
-#### SS-Encrypt: Generate DH Parameters (Used Only When Cerbot SSL Is Active) ######################
+#### SS-Encrypt: Restart Nginx Server (Prepare For Certbot Verification) ###########################
 ####################################################################################################
 
-if [[ "$SSL_TYPE" == "certbot" ]]; then 
-    openssl dhparam -out /etc/ssl/dhparam.pem 2048
-fi
-
-####################################################################################################
-#### SS-Encrypt: Restart Services (Nginx Server) ###################################################
-####################################################################################################
-
+## restart nginx ##
 /etc/init.d/nginx restart
 
 ####################################################################################################
@@ -67,20 +90,59 @@ if [[ ! -f "/var/www/meta/.cherry" ]]; then
 fi
 
 ####################################################################################################
-#### SS-Encrypt: Prepare Public Challenge Directory + Regenerate Cerbot SSL Certificate ############
+#### SS-Encrypt: Generate DH Parameters (Used Only When Cerbot SSL Is Active) ######################
+####################################################################################################
+
+if [[ "$SSL_TYPE" == "certbot" ]]; then 
+    openssl dhparam -out /etc/ssl/dhparam.pem 2048
+fi
+
+####################################################################################################
+#### SS-Encrypt: Prepare Public Challenge Directory + Reset Permissions ############################
 ####################################################################################################
 
 ## ensure public challenge directory exists ##
-## in future versions maybe hide this in a system folder (Nginx server block mask) ##
-mkdir -p /var/www/html/.well-known
-mkdir -p /var/www/html/.well-known/acme-challenge
+mkdir /var/www/html/.well-known
+mkdir /var/www/html/.well-known/acme-challenge
 
-## this folder used by server for e.g. Cerbot but also SFTP for things like Stripe ##
+## reset permissions (ensure that SFTP user can access if needed for e.g. Stripe, etc) ##
 chown -R $SFTP_USER:www-data /var/www/html/.well-known
 chmod 6775 /var/www/html/.well-known
 
-## request/renew Certbot SSL certificate (via their remote API) ##
-certbot certonly --noninteractive --agree-tos --register-unsafely-without-email -d ${SITE_DOMAIN} --webroot -w /var/www/html/
+####################################################################################################
+#### SS-Encrypt: Prepare Domain Variables + Regenerate Cerbot SSL Certificate ######################
+####################################################################################################
+
+## email alerts + not a subdomain + contains www ##
+if [ "$SSL_EMAIL_ALERTS" == "true" ] && [ $SITE_DOMAIN != *.*.* ] && [ $SITE_DOMAIN == *www.* ]; then
+        SITE_DOMAIN_ONE="${SITE_DOMAIN//$www./}"
+        SITE_DOMAIN_TWO="${SITE_DOMAIN}"
+        certbot certonly --noninteractive --agree-tos --expand -m ${SSL_EMAIL} -d ${SITE_DOMAIN_ONE} -d ${SITE_DOMAIN_TWO} --webroot -w /var/www/html/
+## email alerts + not a subdomain + does not contain www ##
+elif [ "$SSL_EMAIL_ALERTS" == "true" ] && [ $SITE_DOMAIN != *.*.* ] && [ $SITE_DOMAIN != *www.* ]; then
+        SITE_DOMAIN_ONE="${SITE_DOMAIN}"
+        SITE_DOMAIN_TWO="www.${SITE_DOMAIN}"
+        certbot certonly --noninteractive --agree-tos --expand -m ${SSL_EMAIL} -d ${SITE_DOMAIN_ONE} -d ${SITE_DOMAIN_TWO} --webroot -w /var/www/html/
+## email alerts + is a subdomain (www is irrelevant) ##
+elif [ "$SSL_EMAIL_ALERTS" == "true" ] && [ $SITE_DOMAIN == *.*.* ]; then
+        certbot certonly --noninteractive --agree-tos --expand -m ${SSL_EMAIL} -d ${SITE_DOMAIN} --webroot -w /var/www/html/
+## no email alerts or not defined + not a subdomain + contains www ##
+elif [ "$SSL_EMAIL_ALERTS" != "true" ] && [ $SITE_DOMAIN != *.*.* ] && [ $SITE_DOMAIN == *www.* ]; then
+        SITE_DOMAIN_ONE="${SITE_DOMAIN//$www./}"
+        SITE_DOMAIN_TWO="${SITE_DOMAIN}"
+        certbot certonly --noninteractive --agree-tos --expand --register-unsafely-without-email -d ${SITE_DOMAIN_ONE} -d ${SITE_DOMAIN_TWO} --webroot -w /var/www/html/
+## no email alerts or not defined + not a subdomain + does not contain www ##
+elif [ "$SSL_EMAIL_ALERTS" != "true" ] && [ $SITE_DOMAIN != *.*.* ] && [ $SITE_DOMAIN != *www.* ]; then
+        SITE_DOMAIN_ONE="${SITE_DOMAIN}"
+        SITE_DOMAIN_TWO="www.${SITE_DOMAIN}"
+        certbot certonly --noninteractive --agree-tos --expand -m ${SSL_EMAIL} -d ${SITE_DOMAIN_ONE} -d ${SITE_DOMAIN_TWO} --webroot -w /var/www/html/
+## no email alerts + is a subdomain (www is irrelevant) ##
+elif [ "$SSL_EMAIL_ALERTS" != "true" ] && [ $SITE_DOMAIN == *.*.* ]; then
+        certbot certonly --noninteractive --agree-tos --expand -m ${SSL_EMAIL} -d ${SITE_DOMAIN} --webroot -w /var/www/html/
+## otherwise just do this ##
+else
+    certbot certonly --noninteractive --agree-tos --expand --register-unsafely-without-email -d ${SITE_DOMAIN_ONE} -d ${SITE_DOMAIN_TWO} --webroot -w /var/www/html/
+fi
 
 ####################################################################################################
 #### SS-Encrypt: Create Certbot Symlinks + Modify Nginx Configuration ##############################
@@ -130,10 +192,14 @@ echo -e "\e[36mSSL certificates have been successfully generated...\e[0m"
 ####################################################################################################
 
 ## Ref: https://linuxize.com/post/secure-apache-with-let-s-encrypt-on-ubuntu-18-04/
-## Ref: https://stackoverflow.com/a/57019299/1718491
+## Ref: https://stackoverflow.com/questions/49172841/install-certbot-letsencrypt-without-interaction/57019299#57019299
 ## Ref: https://matthewlehner.net/lets-encrypt-with-nginx
 ## Ref: https://community.letsencrypt.org/t/how-often-should-i-run-the-cerbot-cron-job-to-update-the-certificates/18851
 ## Ref: https://community.letsencrypt.org/t/how-to-get-crt-and-key-files-from-i-just-have-pem-files/7348/2
 ## Ref: https://community.letsencrypt.org/t/certificate-path/24227
 ## Ref: https://www.cyberciti.biz/tips/linux-unix-pause-command.html
-## Ref: https://stackoverflow.com/a/9483693/1718491
+## Ref: https://stackoverflow.com/questions/9483633/how-to-use-bash-read-with-a-timeout/9483693#9483693
+## Ref: https://stackoverflow.com/questions/229551/how-to-check-if-a-string-contains-a-substring-in-bash
+## Ref: https://unix.stackexchange.com/questions/311758/remove-specific-word-in-variable
+## Ref: https://stackoverflow.com/questions/13210880/replace-one-substring-for-another-string-in-shell-script
+## Ref: https://github.com/certbot/certbot/issues/3039
