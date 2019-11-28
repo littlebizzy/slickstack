@@ -8,7 +8,6 @@
 
 * <a href="wordpress.zip">wordpress.zip</a>
 * <a href="wp-config.txt">wp-config.txt</a>
-* <a href="object-cache.txt">object-cache.txt</a>
 * <a href="blacklist.txt">blacklist.txt</a>
 * <a href="functions.txt">functions.txt</a>
 * <a href="throwaway.zip">throwaway.zip</a>
@@ -154,4 +153,4 @@
 
 ----
 
-*Last updated: Nov 18, 2019*
+*Last updated: Nov 29, 2019*
