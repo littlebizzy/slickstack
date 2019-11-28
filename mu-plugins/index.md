@@ -58,7 +58,7 @@ title: MU (Must-Use) Plugins (Public Mirrors)
 
 #### custom-functions.zip
 
-* (coming soon)
+* [custom-functions-1.0.0.zip](custom-functions-1.0.0.zip)
 
 #### xxx-notices.php
 
