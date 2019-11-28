@@ -8,8 +8,8 @@
 
 * <a href="wordpress.zip">wordpress.zip</a>
 * <a href="wp-config.txt">wp-config.txt</a>
-* <a href="blacklist.txt">blacklist.txt</a>
 * <a href="functions.txt">functions.txt</a>
+* <a href="blacklist.txt">blacklist.txt</a>
 * <a href="throwaway.zip">throwaway.zip</a>
 
 ### Original Files
