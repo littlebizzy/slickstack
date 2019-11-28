@@ -1,19 +1,37 @@
 <?php
-/**
- * Plugin Name: Pressjitsu Redis Object Cache
- * Author:      Pressjitsu, Inc., Eric Mann & Erick Hitter
- * Version:     1.0
- */
+/*
+Plugin Name: Object Cache
+Plugin URI: https://www.littlebizzy.com/plugins/object-cache
+Description: Drop-in persistent object cache for WordPress based on Redis in-memory storage that supports Predis, clusters, and WP-CLI (forked from PressJitsu).
+Version: 1.2.2
+Author: LittleBizzy
+Author URI: https://www.littlebizzy.com
+License: GPLv3
+License URI: https://www.gnu.org/licenses/gpl-3.0.html
+Upstream Plugin Name: Pressjitsu Redis Object Cache
+Upstream Plugin URI: https://github.com/pressjitsu/pj-object-cache-red
+Upstream Author: Eric Mann + Erick Hitter + Pressjitsu, Inc.
+Upstream Author URI: https://pressjitsu.com
+PBP Version: N/A
+WC requires at least: 3.3
+WC tested up to: 3.8
+Prefix: OBJCHE
+*/
 
-// Check if Redis class is installed
-if ( ! class_exists( 'Redis' ) ) {
+declare(strict_types=1);
+
+// check if OBJECT_CACHE is disabled in wp-config.php
+if ( defined( 'OBJECT_CACHE' ) && !OBJECT_CACHE ) {
 	return;
 }
+
+// check if 'Redis' class exists
+if( class_exists( 'Redis' ) ) :
 
 /**
  * Adds a value to cache.
  *
- * If the specified key already exists, the value is not stored and the function
+ * If the specified key wp_cache_addalready exists, the value is not stored and the function
  * returns false.
  *
  * @param string $key        The key under which to store the value.
@@ -270,7 +288,25 @@ class WP_Object_Cache {
 	 *
 	 * @var array
 	 */
-	public $global_groups = array( 'users', 'userlogins', 'usermeta', 'site-options', 'site-lookup', 'blog-lookup', 'blog-details', 'rss' );
+	public $global_groups = array(
+        'blog-details',
+        'blog-id-cache',
+        'blog-lookup',
+        'global-posts',
+        'networks',
+        'rss',
+        'sites',
+        'site-details',
+        'site-lookup',
+        'site-options',
+        'site-transient',
+        'users',
+        'useremail',
+        'userlogins',
+        'usermeta',
+        'user_meta',
+        'userslugs',
+    );
 
 	private $_global_groups;
 
@@ -347,7 +383,7 @@ class WP_Object_Cache {
 			}
 			$this->redis = $redis_instance;
 			$this->redis->connect( $redis['host'], $redis['port'] );
-			$this->redis->setOption( Redis::OPT_SERIALIZER, Redis::SERIALIZER_NONE );
+			$this->redis->setOption( Redis::OPT_SERIALIZER, (string) Redis::SERIALIZER_PHP );
 
 			if ( isset( $redis['auth'] ) ) {
 				$this->redis->auth( $redis['auth'] );
@@ -517,7 +553,7 @@ class WP_Object_Cache {
 		unset( $this->to_preload[ $group ][ $key ] );
 		unset( $this->to_unserialize[ $redis_key ] );
 
-		return (bool) $this->redis->delete( $redis_key );
+		return (bool) $this->redis->del( $redis_key );
 	}
 
 	/**
@@ -560,10 +596,13 @@ class WP_Object_Cache {
 				$this->cache[ $group ][ $key ] = $value;
 			}
 
+			$this->cache_hits += 1;
+
 			return is_object( $value ) ? clone $value : $value;
 		}
 
 		if ( in_array( $group, $this->no_redis_groups ) || ! $this->can_redis() ) {
+			$this->cache_misses += 1;
 			return false;
 		}
 
@@ -572,11 +611,13 @@ class WP_Object_Cache {
 
 		if ( ! is_string( $value ) ) {
 			$this->cache[ $group ][ $key ] = false;
+			$this->cache_misses += 1;
 			return false;
 		}
 
 		$value = is_numeric( $value ) ? $value : unserialize( $value );
 		$this->cache[ $group ][ $key ] = $value;
+		$this->cache_hits += 1;
 		return $value;
 	}
 
@@ -677,7 +718,7 @@ class WP_Object_Cache {
 		if ( in_array( $group, $this->no_redis_groups ) || ! $this->can_redis() ) {
 			return true;
 		}
-		
+
 		$value = is_numeric( $value ) ? $value : serialize( $value );
 
 		// Save to Redis
@@ -788,3 +829,5 @@ class WP_Object_Cache {
 		$this->no_redis_groups = array_unique( array_merge( $this->no_redis_groups, $groups ) );
 	}
 }
+
+endif; // if 'Redis' class exists
