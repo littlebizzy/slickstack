@@ -436,16 +436,20 @@ rm /tmp/virtual-robotstxt*
 # (coming soon)
 
 ####################################################################################################
-#### SS-Muplugs: Reset PHP OPcache + Flush Redis Object Cache ######################################
+#### SS-Muplugs: Reset PHP OPcache (Bash Script Workaround) ########################################
 ####################################################################################################
 
-## reset PHP OPcache ##
-RANDOM_RESET_OPCACHE=$(openssl rand -hex 48)
-echo "<?php opcache_reset(); ?>" > /var/www/html/${RANDOM_RESET_OPCACHE}.php
-/usr/bin/php /var/www/html/${RANDOM_RESET_OPCACHE}.php
-rm /var/www/html/${RANDOM_RESET_OPCACHE}.php
+## creative way to reset OPcache using temporary PHP script ##
+RANDOM_RESET_OPCACHE=$(openssl rand -hex 12)
+echo "<?php opcache_reset(); ?>" > /var/www/html/purge-${RANDOM_RESET_OPCACHE}.php
+/usr/bin/php /var/www/html/purge-${RANDOM_RESET_OPCACHE}.php
+rm /var/www/html/purge-${RANDOM_RESET_OPCACHE}.php
 
-## flush Redis cache (object cache) ##
+####################################################################################################
+#### SS-Muplugs: Flush Redis Object Cache ##########################################################
+####################################################################################################
+
+## flush Redis server (suppress CLI messages) ##
 redis-cli flushall &> /dev/null
 
 ####################################################################################################
