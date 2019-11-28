@@ -66,7 +66,9 @@ title: MU (Must-Use) Plugins (Public Mirrors)
 
 #### object-cache.php
 
-* (coming soon)
+* [object-cache-1.2.2.txt](object-cache-1.2.2.txt)
+* [object-cache-1.2.1.txt](object-cache-1.2.1.txt)
+* [object-cache-1.2.0.txt](object-cache-1.2.0.txt)
 
 ----
 
@@ -184,4 +186,4 @@ title: MU (Must-Use) Plugins (Public Mirrors)
 
 ----
 
-*Last updated: Nov 21, 2019*
+*Last updated: Nov 29, 2019*
