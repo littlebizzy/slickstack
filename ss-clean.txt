@@ -26,20 +26,26 @@ source /var/www/ss-config
 #### SS-Clean: Delete Bash Command History (Root + Sudo + SFTP User) ###############################
 ####################################################################################################
 
+## many sensitive data items like passwords are often saved indefinitely in Bash history ##
+## this simple command will erase the Bash history file contents for extra safety ##
+
 cat /dev/null > /root/.bash_history
 cat /dev/null > /home/${SUDO_USER}/.bash_history
 cat /dev/null > /home/${SFTP_USER}/.bash_history
 
 ####################################################################################################
-#### SS-Clean: Delete Any PHP (ini) Hacking Attempted By Plugins + Themes  #########################
+#### SS-Clean: Delete Any PHP Error Handling Hacks In WordPress Plugins + Themes ###################
 ####################################################################################################
 
-# sed -i.bak '/ini_set/d' /var/www/html/wp-content/mu-plugins/*.php
-# sed -i.bak '/ini_set/d' /var/www/html/wp-content/plugins/*.php
-# sed -i.bak '/ini_set/d' /var/www/html/wp-content/themes/*.php
-# sed -i.bak '/error_reporting/d' /var/www/html/wp-content/mu-plugins/*.php
-# sed -i.bak '/error_reporting/d' /var/www/html/wp-content/plugins/*.php
-# sed -i.bak '/error_reporting/d' /var/www/html/wp-content/themes/*.php
+## an unfortunate feature of PHP is that scripts can override WP or server-level settings ##
+## this set of commands safely removes any PHP error handling hacks from scripts ##
+
+find /var/www/html/wp-content/mu-plugins -type f -name "*.php" -exec sed -i.bak '/ini_set/d' {} \;
+find /var/www/html/wp-content/plugins -type f -name "*.php" -exec sed -i.bak '/ini_set/d' {} \;
+find /var/www/html/wp-content/themes -type f -name "*.php" -exec sed -i.bak '/ini_set/d' {} \;
+find /var/www/html/wp-content/mu-plugins -type f -name "*.php" -exec sed -i.bak '/error_reporting/d' {} \;
+find /var/www/html/wp-content/plugins -type f -name "*.php" -exec sed -i.bak '/error_reporting/d' {} \;
+find /var/www/html/wp-content/themes -type f -name "*.php" -exec sed -i.bak '/error_reporting/d' {} \;
 
 ####################################################################################################
 #### SS-Clean: Delete Various Junk Files From Ubuntu (Etc) Outside Public Directory ################
@@ -701,7 +707,7 @@ rm -R -f /var/www/html/wp-content/uploads/fw-backup*
 rm -R -f /var/www/html/wp-content/uploads/cache* ## improper cache path
 
 ####################################################################################################
-#### External References Used By SlickStack To Improve This Script #################################
+#### SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ###############
 ####################################################################################################
 
 ## Ref: https://www.techrepublic.com/article/how-to-effectively-clear-your-bash-history/
@@ -709,3 +715,6 @@ rm -R -f /var/www/html/wp-content/uploads/cache* ## improper cache path
 ## Ref: https://stackoverflow.com/questions/13148438/how-to-view-the-bash-history-for-root
 ## Ref: https://stackoverflow.com/questions/1182756/remove-line-of-text-from-multiple-files-in-linux
 ## Ref: https://unix.stackexchange.com/questions/17520/deleting-lines-containing-a-specified-string-in-different-files
+## Ref: https://superuser.com/questions/428493/how-can-i-do-a-recursive-find-and-replace-from-the-command-line
+## Ref: https://unix.stackexchange.com/questions/324118/replace-string-in-multiple-files-using-find-and-sed
+## Ref: https://unix.stackexchange.com/questions/474505/how-to-use-sed-on-all-matching-files
