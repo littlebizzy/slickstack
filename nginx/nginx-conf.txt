@@ -94,7 +94,7 @@ http {
     reset_timedout_connection on;
     
 ####################################################################################################
-#### Nginx: HTTP Headers Settings (Security Headers, Etc) ##########################################
+#### Nginx: HTTP General + Security Headers Settings ###############################################
 ####################################################################################################
     
 ## several HTTP security headers are well-known best practices and are thus hardcoded ##
@@ -108,18 +108,24 @@ http {
     add_header X-Content-Type-Options nosniff;
     add_header X-XSS-Protection "1; mode=block";
     add_header Referrer-Policy "strict-origin-when-cross-origin";
+
+    # add_header Feature-Policy "ambient-light-sensor none; animations self; autoplay none; accelerometer none; camera none; display-capture none; document-domain none; document-write none; encrypted-media none; fullscreen self; geolocation none; gyroscope none; image-compression *; legacy-image-formats *; magnetometer none; max-downscaling-image *; microphone none; midi none; notifications self; payment none; picture-in-picture self; push none; speaker self; sync-xhr none; unsized-media *; usb none; vertical-scroll self; wake-lock none; webauthn none; vibrate none; vr none; xr-spatial-tracking none;";
+    
     ##NOINDEX##add_header X-Robots-Tag "noindex, nofollow, nosnippet, noarchive";
     
-    # add_header Feature-Policy "ambient-light-sensor none; animations self; autoplay none; accelerometer none; camera none; display-capture none; document-domain none; document-write none; encrypted-media none; fullscreen self; geolocation none; gyroscope none; image-compression *; legacy-image-formats *; magnetometer none; max-downscaling-image *; microphone none; midi none; notifications self; payment none; picture-in-picture self; push none; speaker self; sync-xhr none; unsized-media *; usb none; vertical-scroll self; wake-lock none; webauthn none; vibrate none; vr none; xr-spatial-tracking none;";
-   
+    ## enforce Unicode encoding ##
+    charset utf-8;
+
+####################################################################################################
+#### Nginx: HTTP Caching Headers Settings (Browser Cache) ##########################################
+####################################################################################################
+
 ## Pragma and Expires are outdated cache headers that conflict with Cache-Control header ##
 ## Cache-Control is set by CloudFlare for static files, and not needed for HTML ##
     
     more_clear_headers "Pragma";
     more_clear_headers "Expires";
     more_clear_headers "Cache-Control";
-    
-    charset utf-8;
     
 ####################################################################################################
 #### Nginx: SSL Settings (Self-Signed OpenSSL + CA-Signed Let's Encrypt) ###########################
