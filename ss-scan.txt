@@ -13,13 +13,42 @@
 ## include SlickStack configuration ##
 source /var/www/ss-config
 
-## critical functions (aliases) for this script to function ##
-apt () { command DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" "$@"; }
-wget () { command wget --no-check-certificate --no-cache --no-cookies --tries=3 --timeout=15 "$@"; }
-cp () { command cp -R -f -d --no-preserve=mode,ownership "$@"; }
-rm () { command rm -R -f "$@"; }
-mkdir () { command mkdir -p "$@"; }
-unzip () { command unzip -o "$@"; }
+####################################################################################################
+#### SlickStack: Critical Bash Functions (Aliases) For This Script To Work #########################
+####################################################################################################
+
+## apt alias flags ##
+function apt {
+    export DEBIAN_FRONTEND=noninteractive
+    export DEBIAN_PRIORITY=critical
+    export PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'
+    command /usr/bin/apt -q -y -o Dpkg::Options::=--force-confold -o Dpkg::Options::=--force-confdef "$@"
+}
+
+## wget alias flags ##
+function wget {
+    command wget --no-check-certificate --no-cache --no-cookies --tries=3 --timeout=15 "$@"
+}
+
+## cp alias flags ##
+function cp {
+    command cp -R -f -d --no-preserve=mode,ownership "$@"
+}
+
+## mkdir alias flags ##
+function mkdir {
+    command mkdir -p "$@"
+}
+
+## unzip alias flags ##
+function unzip {
+    command unzip -o "$@"
+}
+
+## rm alias flags ##
+function rm {
+    command rm -R -f "$@"
+}
 
 ####################################################################################################
 #### SS-Scan: Scan SlickStack Directory Tree For Malware (Via ClamAV) ##############################
@@ -38,7 +67,7 @@ fi
 clamscan -ir /var/www -l /var/www/logs/clamav.log
 
 ####################################################################################################
-#### External References Used By SlickStack To Improve This Script #################################
+#### SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ###############
 ####################################################################################################
 
 ## Ref: 
