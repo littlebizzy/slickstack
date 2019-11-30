@@ -731,7 +731,7 @@ chown root:root /etc/nginx/sites-available/default
 #### SS-Install: Install OpenSSL + Certbot (Let's Encrypt) Free SSL Certificates ###################
 ####################################################################################################
 
-## run scripts ##
+## run ss-encrypt ##
 source /var/www/ss-encrypt
 
 ####################################################################################################
@@ -764,11 +764,7 @@ spawn $(which mysql_secure_installation)
 
 ## re-enter root password ##
 expect "Enter password for user root:"
-if [[ -z "$DB_PASSWORD_ROOT" ]]; then 
-    send "${dbrootpass}\r"
-else 
-    send "${DB_PASSWORD_ROOT}\r"
-fi
+send "${DB_PASSWORD_ROOT}\r"
 
 ## skip the validate password plugin ##
 expect "Press y|Y for Yes, any other key for No:"
@@ -815,6 +811,11 @@ echo "Congratulations, MySQL 5.7 is installed and secured. Onward!"
 
 ## create wordpress database as per ss-config ##
 mysql -uroot -p${DB_PASSWORD_ROOT} -e "CREATE DATABASE ${DB_NAME};"
+
+## create root user (required before granting privileges after MySQL 8.0) ##
+mysql -uroot -p${DB_PASSWORD_ROOT} -e "CREATE USER 'root'@'localhost' IDENTIFIED BY '${DB_PASSWORD_ROOT}';"
+mysql -uroot -p${DB_PASSWORD_ROOT} -e "CREATE USER 'root'@'127.0.0.1' IDENTIFIED BY '${DB_PASSWORD_ROOT}';"
+mysql -uroot -p${DB_PASSWORD_ROOT} -e "CREATE USER 'root'@'::1' IDENTIFIED BY '${DB_PASSWORD_ROOT}';"
 
 ## grant root user all privileges on wordpress database (all connections) ##
 mysql -uroot -p${DB_PASSWORD_ROOT} -e "GRANT ALL PRIVILEGES ON ${DB_NAME}.* TO 'root'@'localhost';"
@@ -1284,3 +1285,4 @@ echo -e "\e[36mSlickStack installation complete! Please reboot server and ensure
 ## Ref: https://stackoverflow.com/questions/3601515/how-to-check-if-a-variable-is-set-in-bash
 ## Ref: https://serverfault.com/questions/773964/calculating-the-percentage-of-the-total-available-memory-on-linux-as-an-integer
 ## Ref: https://stackoverflow.com/questions/29271593/bash-check-for-amount-of-memory-installed-on-a-system-as-sanity-check
+## Ref: https://stackoverflow.com/questions/50177216/how-to-grant-all-privileges-to-root-user-in-mysql-8-0
