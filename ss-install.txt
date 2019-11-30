@@ -809,8 +809,11 @@ echo "Congratulations, MySQL 5.7 is installed and secured. Onward!"
 #### SS-Install: Configure MySQL Users + Connections (Supports IPv4 + IPv6) ########################
 ####################################################################################################
 
+## prepare MySQL root password (suppresses MySQL security warnings) ##
+export MYSQL_PWD=$DB_PASSWORD_ROOT
+
 ## create wordpress database as per ss-config ##
-mysql --user=root -p${DB_PASSWORD_ROOT} --host="$DB_HOST" --protocol=tcp --port=3306 --force -e "CREATE DATABASE ${DB_NAME};"
+mysql --user=root --host="$DB_HOST" --protocol=tcp --port=3306 --force --execute="CREATE DATABASE ${DB_NAME};"
 
 ## create root user (required before granting privileges after MySQL 8.0) ##
 mysql -uroot -p${DB_PASSWORD_ROOT} -e "CREATE USER 'root'@'localhost' IDENTIFIED BY '${DB_PASSWORD_ROOT}';"
