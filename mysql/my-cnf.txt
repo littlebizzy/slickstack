@@ -11,10 +11,18 @@
 [mysqld]
 
 ####################################################################################################
-#### MySQL: Custom Settings (SS-Config Defaults Highly Recommended) ################################
+#### MySQL: Optimized General Settings (Overrides Default MySQL Settings) ##########################
 ####################################################################################################
 
 sql-mode="@SQL_MODE"
+
+## here we hardcode a few connection settings to avoid DNS lookups and MyISAM locking ##
+## keep in mind that below settings will not apply if using a remote database ##
+
+bind_address = 127.0.0.1
+port = 3306
+skip_external_locking
+skip_name_resolve
 
 ## buffer pool size at least 1GB+ will automatically trigger 8 buffer pools (not just 1) ##
 ## a bigger log file size is generally better but can cause slower crash recovery ##
@@ -64,3 +72,12 @@ innodb_flush_method = @INNODB_FLUSH_METHOD
 ## Ref: https://dev.mysql.com/doc/refman/8.0/en/innodb-dedicated-server.html
 ## Ref: https://jira.mariadb.org/browse/MDEV-20907
 ## Ref: https://salsa.debian.org/mariadb-team/mariadb-server/commit/743ac7c2d0f7c27699d53f35137e02ee3cfd4b71
+## Ref: https://dev.mysql.com/doc/refman/5.7/en/host-cache.html
+## Ref: https://www.vionblog.com/skip-name-resolve-to-speed-up-mysql-and-avoid-problems/
+## Ref: https://dev.mysql.com/doc/refman/5.7/en/server-system-variables.html#sysvar_skip_name_resolve
+## Ref: https://stackoverflow.com/questions/6668073/how-to-use-the-option-skip-name-resolve-when-using-mysqldb-for-python
+## Ref: https://gist.github.com/rhtyd/d59078be4dc88123104e
+## Ref: https://mariadb.com/kb/en/library/mysqld-options/
+## Ref: https://dba.stackexchange.com/questions/152755/how-to-define-custom-path-to-mysql-socket-file
+## Ref: https://gist.github.com/fevangelou/fb72f36bbe333e059b66
+## Ref: https://gist.github.com/tanchao90/d758912446b122d70a0ce64d0ed98b37
