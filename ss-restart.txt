@@ -6,26 +6,55 @@
 #### mirror: http://mirrors.slickstack.io/ss-restart.txt ###########################################
 #### path: /var/www/ss-restart #####################################################################
 #### destination: n/a (not a boilerplate) ##########################################################
-#### purpose: Restarts all of the SlickStack module services (installed Ubuntu packages) ###########
+#### purpose: Restarts all of the SlickStack LEMP module services (e.g. Ubuntu packages) ###########
 #### module version: Ubuntu 18.04 LTS ##############################################################
 ####################################################################################################
 
 ## include SlickStack configuration ##
 source /var/www/ss-config
 
-## critical functions (aliases) for this script to function ##
-apt () { command DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" "$@"; }
-wget () { command wget --no-check-certificate --no-cache --no-cookies --tries=3 --timeout=15 "$@"; }
-cp () { command cp -R -f -d --no-preserve=mode,ownership "$@"; }
-rm () { command rm -R -f "$@"; }
-mkdir () { command mkdir -p "$@"; }
-unzip () { command unzip -o "$@"; }
-
 ####################################################################################################
-#### SS-Restart: Forcefully Restart SlickStack (LEMP) Modules (Via /etc/init.d) ####################
+#### SlickStack: Critical Bash Functions (Aliases) For This Script To Work #########################
 ####################################################################################################
 
-## restart all services via /etc/init.d ##
+## apt alias flags ##
+function apt {
+    export DEBIAN_FRONTEND=noninteractive
+    export DEBIAN_PRIORITY=critical
+    export PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'
+    command /usr/bin/apt -q -y -o Dpkg::Options::=--force-confold -o Dpkg::Options::=--force-confdef "$@"
+}
+
+## wget alias flags ##
+function wget {
+    command wget --no-check-certificate --no-cache --no-cookies --tries=3 --timeout=15 "$@"
+}
+
+## cp alias flags ##
+function cp {
+    command cp -R -f -d --no-preserve=mode,ownership "$@"
+}
+
+## mkdir alias flags ##
+function mkdir {
+    command mkdir -p "$@"
+}
+
+## unzip alias flags ##
+function unzip {
+    command unzip -o "$@"
+}
+
+## rm alias flags ##
+function rm {
+    command rm -R -f "$@"
+}
+
+####################################################################################################
+#### SS-Restart: Forcefully Restart SlickStack (LEMP) Modules ######################################
+####################################################################################################
+
+## restart all LEMP modules (services) ##
 /etc/init.d/redis-server restart
 /etc/init.d/php7.2-fpm restart
 /etc/init.d/nginx restart
@@ -35,7 +64,7 @@ unzip () { command unzip -o "$@"; }
 /etc/init.d/clamav-freshclam restart
 
 ####################################################################################################
-#### External References Used By SlickStack To Improve This Script #################################
+#### SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ###############
 ####################################################################################################
 
 ## Ref: 
