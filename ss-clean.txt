@@ -15,12 +15,42 @@
 ## include SlickStack configuration ##
 source /var/www/ss-config
 
-## critical functions (aliases) ##
-# apt () { DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold"; }
-# wget () { wget --no-cache --no-cookies --tries=3 --timeout=15; }
-# cp () { cp -R -f -d --no-preserve=mode,ownership; }
-# rm () { rm -R -f; }
-# mkdir () { mkdir -p; }
+####################################################################################################
+#### SlickStack: Critical Bash Functions (Aliases) For This Script To Work #########################
+####################################################################################################
+
+## apt alias flags ##
+function apt {
+    export DEBIAN_FRONTEND=noninteractive
+    export DEBIAN_PRIORITY=critical
+    export PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'
+    command /usr/bin/apt -q -y -o Dpkg::Options::=--force-confold -o Dpkg::Options::=--force-confdef "$@"
+}
+
+## wget alias flags ##
+function wget {
+    command wget --no-check-certificate --no-cache --no-cookies --tries=3 --timeout=15 "$@"
+}
+
+## cp alias flags ##
+function cp {
+    command cp -d --no-preserve=mode,ownership "$@"
+}
+
+## mkdir alias flags ##
+function mkdir {
+    command mkdir -p "$@"
+}
+
+## unzip alias flags ##
+function unzip {
+    command unzip -o "$@"
+}
+
+## rm alias flags ##
+function rm {
+    command rm "$@"
+}
 
 ####################################################################################################
 #### SS-Clean: Delete Bash Command History (Root + Sudo + SFTP User) ###############################
@@ -62,41 +92,41 @@ mysql --user=root --host="$DB_HOST" --database="$DB_NAME" --protocol=tcp --port=
 ####################################################################################################
 
 ## delete Ubuntu junk files ##
-# rm -f /tmp/systemd-*
-# rm -f /var/tmp/systemd-*
+# rm /tmp/systemd-*
+# rm /var/tmp/systemd-*
 # find /var/backups/ -name "*.gz" -type f -delete
 find /var/www/html/ -name "wget-log*" -type f -delete
-# rm -R -f /media*
+# rm /media*
 
 ## cleanup all log files ##
 find /var/log/ -name "*.gz" -type f -delete
 find /var/log/ -name "*.log.*" -type f -delete
-rm -R -f /var/log/fpm-php.www.log*
-rm -R -f /var/log/php7.0-fpm.log*
-rm -R -f /var/log/php7.1-fpm.log*
-rm -R -f /var/log/php7.2-fpm.log*
-rm -R -f /var/log/php-fpm/*
-rm -R -f /var/log/monit.log*
+rm /var/log/fpm-php.www.log*
+rm /var/log/php7.0-fpm.log*
+rm /var/log/php7.1-fpm.log*
+rm /var/log/php7.2-fpm.log*
+rm /var/log/php-fpm/*
+rm /var/log/monit.log*
 
 ## delete old SlickStack cache ##
-rm -R -f /etc/nginx/cache*
+rm /etc/nginx/cache*
 
 ####################################################################################################
 #### SS-Clean: Cleanup Files Under /var/www/ #######################################################
 ####################################################################################################
 
 ## delete SlickStack leftovers ##
-rm -R -f /var/www/'$'
-rm -R -f /var/www/ss
-rm -R -f /var/www/monit.log
-rm -R -f /var/www/html/wp-completion.bash
-rm -R -f /var/www/meta/wp-completion.bash
-rm -R -f /var/www/meta/.wp-completion.bash
-rm -R -f /home/wp-completion.bash
-rm -R -f /home/${SUDO_USER}/config.yml
-rm -R -f /home/${SUDO_USER}/wp-cli.yml
-# rm -R -f /var/www/html/.wp-cli
-# rm -R -f /var/www/html/wp-cli
+rm /var/www/'$'
+rm /var/www/ss
+rm /var/www/monit.log
+rm /var/www/html/wp-completion.bash
+rm /var/www/meta/wp-completion.bash
+rm /var/www/meta/.wp-completion.bash
+rm /home/wp-completion.bash
+rm /home/${SUDO_USER}/config.yml
+rm /home/${SUDO_USER}/wp-cli.yml
+# rm /var/www/html/.wp-cli
+# rm /var/www/html/wp-cli
 
 ## delete slickstack junk files ##
 find /var/www/ -name "*.save*" -type f -delete
@@ -133,10 +163,10 @@ find /var/www/html/ -name "new_license.php" -type f -delete
 find /var/www/html/ -name "site-site-icon-functions.php" -type f -delete
 # find /var/www/html/ -name "wp-media.php" -type f -delete
 find /var/www/html/ -name "wp-reset-*.php" -type f -delete
-rm -R -f /var/www/html/wp-domain.php
-rm -R -f /var/www/html/wp-main.php
-rm -R -f /var/www/html/wp-uti.php
-rm -R -f /var/www/html/wp.php
+rm /var/www/html/wp-domain.php
+rm /var/www/html/wp-main.php
+rm /var/www/html/wp-uti.php
+rm /var/www/html/wp.php
 # find /var/www/html/ -name "default_library_puvox.php" -type f -delete
 
 ## known malware filenames that cant be deleted because they conflict with WP Core filenames ##
@@ -218,189 +248,189 @@ find /var/www/html/ -name "adminer*.version*" -type f -delete ## Adminer plugin 
 find /var/www/html/ -name "php_errorlog*" -type f -delete ## Adminer plugin config
 
 ## delete nginx junk files ##
-rm -f /var/www/html/index.nginx-debian*.html
+rm /var/www/html/index.nginx-debian*.html
 find /var/www/html/ -name "nginx.conf" -type f -delete
 # find /var/www/html/ -name "*.conf" -type f -delete
 
 ## delete outdated or unused WordPress core files ##
-rm -R -f /var/www/html/wp-links-opml*.php* ## wordpresss junk files
-rm -R -f /var/www/html/wp-mail*.php* ## wordpresss junk files
-rm -R -f /var/www/html/wp-trackback*.php* ## wordpresss junk files
-rm -R -f /var/www/html/xmlrpc*.php* ## wordpresss junk files
+rm /var/www/html/wp-links-opml*.php* ## wordpresss junk files
+rm /var/www/html/wp-mail*.php* ## wordpresss junk files
+rm /var/www/html/wp-trackback*.php* ## wordpresss junk files
+rm /var/www/html/xmlrpc*.php* ## wordpresss junk files
 
 ## delete obvious database access points ##
-rm -R -f /var/www/html/adminer
-rm -R -f /var/www/html/adminer.php
-rm -R -f /var/www/html/database.php*
-rm -R -f /var/www/html/db.php*
-rm -R -f /var/www/html/database
-rm -R -f /var/www/html/DATABASE
-rm -R -f /var/www/html/db
-rm -R -f /var/www/html/DB
-rm -R -f /var/www/html/phpMyAdmin*
-rm -R -f /var/www/html/phpmyadmin*
-rm -R -f /var/www/html/phpmyadmin*.php* ## no support for phpMyAdmin
-rm -R -f /var/www/html/phpMyAdmin*.php* ## no support for phpMyAdmin
+rm /var/www/html/adminer
+rm /var/www/html/adminer.php
+rm /var/www/html/database.php*
+rm /var/www/html/db.php*
+rm /var/www/html/database
+rm /var/www/html/DATABASE
+rm /var/www/html/db
+rm /var/www/html/DB
+rm /var/www/html/phpMyAdmin*
+rm /var/www/html/phpmyadmin*
+rm /var/www/html/phpmyadmin*.php* ## no support for phpMyAdmin
+rm /var/www/html/phpMyAdmin*.php* ## no support for phpMyAdmin
 
 ## delete various files ##
-rm -R -f /var/www/html/.maintenance
-rm -R -f /var/www/html/.quarantine*
-rm -R -f /var/www/html/.tmb*
-rm -R -f /var/www/html/*_archive.zip ## leftover migration junk (Duplicator plugin)
-rm -R -f /var/www/html/_wpeprivate* ## vendor specific (WP Engine)
-rm -R -f /var/www/html/bing*.xml  ## junk domain verification files
-rm -R -f /var/www/html/Bing*.xml  ## junk domain verification files
-# rm -R -f /var/www/html/browserconfig.xml*
-rm -R -f /var/www/html/cache* ## invalid cache files
-rm -R -f /var/www/html/cgi-bin* ## ss conflicts
-rm -R -f /var/www/html/cookie.txt* ## (Netscape HTTP Cookie File)
-rm -R -f /var/www/html/crossdomain.xml ## https://sethsec.blogspot.com/2014/03/exploiting-misconfigured-crossdomainxml.html
-rm -R -f /var/www/html/dup-installer* ## unsafe archives and leftover migration junk (Duplicator plugin)
-rm -R -f /var/www/html/error_log* ## leftover Apache error logs
-rm -R -f /var/www/html/favicon.gif ## invalid favicons
-rm -R -f /var/www/html/GetYoastData*.php ##
-rm -R -f /var/www/html/google*.html ## junk domain verification files
-rm -R -f /var/www/html/google*.txt ## junk domain verification files
-rm -R -f /var/www/html/imagify-backup* ## junk plugin files
-rm -R -f /var/www/html/index.htm ## ss conflicts
-rm -R -f /var/www/html/index.html ## ss conflicts
-rm -R -f /var/www/html/i.php ## obvious phpinfo files
-rm -R -f /var/www/html/i.html ## obvious phpinfo files
-rm -R -f /var/www/html/info.php ## obvious phpinfo files
-rm -R -f /var/www/html/info.html ## obvious phpinfo files
-rm -R -f /var/www/html/installer*.php ## leftover migration junk (Duplicator plugin)
-rm -R -f /var/www/html/license*.txt ## wordpresss junk files
-rm -R -f /var/www/html/licence*.txt ## wordpresss junk files
-# rm -R -f /var/www/html/manifest.json*
-rm -R -f /var/www/html/my-wp-backup* ## ss conflicts, unsafe archives
-rm -R -f /var/www/html/networko* ## known malware infection
-rm -R -f /var/www/html/nortonsw*.html  ## junk domain verification files
-rm -R -f /var/www/html/php.php ## obvious phpinfo files
-rm _R -f /var/www/html/php.html ## obvious phpinfo files
-rm -R -f /var/www/html/phpinfo*.php ## obvious phpinfo files
-rm -R -f /var/www/html/phpinfo*.html ## obvious phpinfo files
-rm -R -f /var/www/html/php-errors.log* ## ss conflicts, duplicate logs
-rm -R -f /var/www/html/pinterest*.html  ## junk domain verification files
-rm -R -f /var/www/html/readme*.html ## wordpresss junk files
-rm -R -f /var/www/html/ror.xml
-rm -R -f /var/www/html/sap-logs* ## plugin logs (AccessPress Social Auto Post)
-rm -R -f /var/www/html/wp-snapshots* ## ss conflicts, unsafe archives
-rm -R -f /var/www/html/ssv3_directory.php* ## vendor specific (Bluehost)
-rm -R -f /var/www/html/sucuri*.php
-rm -R -f /var/www/html/test.php ## obvious phpinfo files
-rm -R -f /var/www/html/test.html ## obvious phpinfo files
-rm -R -f /var/www/html/theme-option-export-file* ## local theme export archives
-rm -R -f /var/www/html/web.config*
-rm -R -f /var/www/html/wordfence-waf* ## ss conflicts, bloated, creates instability (WordFence)
-rm -R -f /var/www/html/yandex*.html  ## junk domain verification files
-rm -R -f /var/www/html/wp-snapshots* ## unsafe archives (Duplicator)
-rm -R -f /var/www/html/wps-fbre-logs* ## unknown
+rm /var/www/html/.maintenance
+rm /var/www/html/.quarantine*
+rm /var/www/html/.tmb*
+rm /var/www/html/*_archive.zip ## leftover migration junk (Duplicator plugin)
+rm /var/www/html/_wpeprivate* ## vendor specific (WP Engine)
+rm /var/www/html/bing*.xml  ## junk domain verification files
+rm /var/www/html/Bing*.xml  ## junk domain verification files
+# rm /var/www/html/browserconfig.xml*
+rm /var/www/html/cache* ## invalid cache files
+rm /var/www/html/cgi-bin* ## ss conflicts
+rm /var/www/html/cookie.txt* ## (Netscape HTTP Cookie File)
+rm /var/www/html/crossdomain.xml ## https://sethsec.blogspot.com/2014/03/exploiting-misconfigured-crossdomainxml.html
+rm /var/www/html/dup-installer* ## unsafe archives and leftover migration junk (Duplicator plugin)
+rm /var/www/html/error_log* ## leftover Apache error logs
+rm /var/www/html/favicon.gif ## invalid favicons
+rm /var/www/html/GetYoastData*.php ##
+rm /var/www/html/google*.html ## junk domain verification files
+rm /var/www/html/google*.txt ## junk domain verification files
+rm /var/www/html/imagify-backup* ## junk plugin files
+rm /var/www/html/index.htm ## ss conflicts
+rm /var/www/html/index.html ## ss conflicts
+rm /var/www/html/i.php ## obvious phpinfo files
+rm /var/www/html/i.html ## obvious phpinfo files
+rm /var/www/html/info.php ## obvious phpinfo files
+rm /var/www/html/info.html ## obvious phpinfo files
+rm /var/www/html/installer*.php ## leftover migration junk (Duplicator plugin)
+rm /var/www/html/license*.txt ## wordpresss junk files
+rm /var/www/html/licence*.txt ## wordpresss junk files
+# rm /var/www/html/manifest.json*
+rm /var/www/html/my-wp-backup* ## ss conflicts, unsafe archives
+rm /var/www/html/networko* ## known malware infection
+rm /var/www/html/nortonsw*.html  ## junk domain verification files
+rm /var/www/html/php.php ## obvious phpinfo files
+rm /var/www/html/php.html ## obvious phpinfo files
+rm /var/www/html/phpinfo*.php ## obvious phpinfo files
+rm /var/www/html/phpinfo*.html ## obvious phpinfo files
+rm /var/www/html/php-errors.log* ## ss conflicts, duplicate logs
+rm /var/www/html/pinterest*.html  ## junk domain verification files
+rm /var/www/html/readme*.html ## wordpresss junk files
+rm /var/www/html/ror.xml
+rm /var/www/html/sap-logs* ## plugin logs (AccessPress Social Auto Post)
+rm /var/www/html/wp-snapshots* ## ss conflicts, unsafe archives
+rm /var/www/html/ssv3_directory.php* ## vendor specific (Bluehost)
+rm /var/www/html/sucuri*.php
+rm /var/www/html/test.php ## obvious phpinfo files
+rm /var/www/html/test.html ## obvious phpinfo files
+rm /var/www/html/theme-option-export-file* ## local theme export archives
+rm /var/www/html/web.config*
+rm /var/www/html/wordfence-waf* ## ss conflicts, bloated, creates instability (WordFence)
+rm /var/www/html/yandex*.html  ## junk domain verification files
+rm /var/www/html/wp-snapshots* ## unsafe archives (Duplicator)
+rm /var/www/html/wps-fbre-logs* ## unknown
 
 ####################################################################################################
 #### SS-Clean: Cleanup Files Under /var/www/html/wp-content/ #######################################
 ####################################################################################################
 
 ## no cache folder in SlickStack ##
-rm -R -f /var/www/html/wp-content/cache*
+rm /var/www/html/wp-content/cache*
 
 ## delete unsafe/unecessary debug logs ##
-# rm -R -f /var/www/html/wp-content/debug*.log
-# rm -R -f /var/www/html/wp-content/debug.log*
+# rm /var/www/html/wp-content/debug*.log
+# rm /var/www/html/wp-content/debug.log*
 
 ## cleanup various files ##
-rm -R -f /var/www/html/wp-content/advanced-cache.php* ## ss conflicts
-# rm -R -f /var/www/html/wp-content/ai1ec_static*
-rm -R -f /var/www/html/wp-content/ai1wm-backups*
-rm -R -f /var/www/html/wp-content/ari-adminer-config.php*
-rm -R -f /var/www/html/wp-content/backupwordpress* ## BackupWordPress archives
-# rm -R -f /var/www/html/wp-content/blogs.dir ## WPMU
-rm -R -f /var/www/html/wp-content/caos_cache*
-# rm -R -f /var/www/html/wp-content/cusri*
-rm -R -f /var/www/html/wp-content/debug.log*
-rm -R -f /var/www/html/wp-content/deleteme*.php ## unknown source
-rm -R -f /var/www/html/wp-content/easysocialsharebuttons-assets*
-rm -R -f /var/www/html/wp-content/evf-logs* ## Everest Forms junk files
-rm -R -f /var/www/html/wp-content/ewww* ## junk files generated by EWWW
-rm -R -f /var/www/html/wp-content/expdbs-migrations* ## junk files generated by Export Database (LittleBizzy)
-rm -R -f /var/www/html/wp-content/fvm* ## minify files
-rm -R -f /var/www/html/wp-content/install.php* ## plugin junk files (Jetpack)
-# rm -R -f /var/www/html/wp-content/ip-geo-api* ## unknown
-rm -R -f /var/www/html/wp-content/ithemes-security* ## ss conflicts, bloated (iThemes Security)
-# rm -R -f /var/www/html/wp-content/js_composer* ## plugin files (Visual Composer)
-# rm -R -f /var/www/html/wp-content/local-fonts*
-rm -R -f /var/www/html/wp-content/maintenance.php* ## potential malware, unknown
-rm -R -f /var/www/html/wp-content/managewp* ## ss conflicts, creates instability (ManageWP)
-rm -R -f /var/www/html/wp-content/MCE_Styles* ## wp core hacks, bad practice (TinyMCE Custom Styles)
-# rm -R -f /var/www/html/wp-content/multiverso-files*
-rm -R -f /var/www/html/wp-content/nginx-helper* ## ss conflicts, junk logs (Nginx Helper)
-rm -R -f /var/www/html/wp-content/pegasaas-cache* ## improper cache, Pegasaas junk files
-rm -R -f /var/www/html/wp-content/pdf-light-viewer-logs* ## plugin logs (PDF viewer for WordPress by ThemeNcode)
-rm -R -f /var/www/html/wp-content/ptetmp*
-# # rm -R -f /var/www/html/wp-content/revslider* ## serious errors, exploitable, better options exist (Revslider)
-# rm -R -f /var/www/html/wp-content/rstemp* ## unknown slider plugin
-rm -R -f /var/www/html/wp-content/sedlex*
-rm -R -f /var/www/html/wp-content/sgf-css* ## Self Hosted Google Fonts junk files
-rm -R -f /var/www/html/wp-content/ShortpixelBackups* ## generates junk files, resource intensive (Shortpixel)
-rm -R -f /var/www/html/wp-content/siteground-migrator* ## vendor specific
-# rm -R -f /var/www/html/wp-content/squirrly*
-rm -R -f /var/www/html/wp-content/sucuri* ## ss conflicts, resource intensive (Sucuri)
-rm -R -f /var/www/html/wp-content/sunrise.php*
-rm -R -f /var/www/html/wp-content/temp-write-test* ## unknown
-rm -R -f /var/www/html/wp-content/tg-demo-pack* ## ThemeGrill junk files
-rm -R -f /var/www/html/wp-content/uo-unix.log* ## unknown
-rm -R -f /var/www/html/wp-content/upgrade* ## WordPress Core upgrade temp files
-# rm -R -f /var/www/html/wp-content/useanyfont* ## creates instability, bad practice (use CSS)
-rm -R -f /var/www/html/wp-content/w3tc-config*
-# rm -R -f /var/www/html/wp-content/wc-logs*
-rm -R -f /var/www/html/wp-content/wcfe* ## WP Config File Editor files
-rm -R -f /var/www/html/wp-content/wflogs* ## WordFence junk files
-rm -R -f /var/www/html/wp-content/wishlist-backup* ## unsafe archives, plugin junk files (Wishlist Member)
-# rm -R -f /var/www/html/wp-content/woocommerce_uploads*
-# rm -R -f /var/www/html/wp-content/wp-bruiser* ## plugin files (WP Bruiser)
-rm -R -f /var/www/html/wp-content/wp-cache-config.php* ## ss conflicts
-rm -R -f /var/www/html/wp-content/wp-clone* ## unsafe local archives (WP Clone)
-rm -R -f /var/www/html/wp-content/wp-migrate-db* ## unsafe local archives (WP Migrate DB)
-rm -R -f /var/www/html/wp-content/wp-performance-score-booster* ## ss conflicts, bad practice, creates instability
-rm -R -f /var/www/html/wp-content/wp-rocket ## ss conflicts (WP Rocket)
-rm -R -f /var/www/html/wp-content/wp-rocket-config* ## ss conflicts (WP Rocket)
-rm -R -f /var/www/html/wp-content/wp-snapshots*
-rm -R -f /var/www/html/wp-content/wpbackitup* ## WPBackitup archives
-# rm -R -f /var/www/html/wp-content/wpdesk-logs* ## WP Desk various logs
-rm -R -f /var/www/html/wp-content/wphb-cache* ## Hummingbird files
-rm -R -f /var/www/html/wp-content/wphb-logs* ## Hummingbird files
-rm -R -f /var/www/html/wp-content/wpsl-csv-import*
-# rm -R -f /var/www/html/wp-content/wpallexport*
-# rm -R -f /var/www/html/wp-content/wpallimport*
-# rm -R -f /var/www/html/wp-content/wpcf7_uploads*
-# rm -R -f /var/www/html/wp-content/wpseo-redirects*
-# rm -R -f /var/www/html/wp-content/xlwuev-errors* ## improper error logs
-rm -R -f /var/www/html/wp-content/temp-write-test* ## unknown
-rm -R -f /var/www/html/wp-content/yotuwp_cache* ## improper cache
-rm -R -f /var/www/html/wp-content/codeguard_backups*
-rm -R -f /var/www/html/wp-content/envato-backups*
-rm -R -f /var/www/html/wp-content/managewp*
-rm -R -f /var/www/html/wp-content/ai1wm-backups*
-rm -R -f /var/www/html/wp-content/aiowps_backups*
-rm -R -f /var/www/html/wp-content/backup/
-rm -R -f /var/www/html/wp-content/backup-*
-rm -R -f /var/www/html/wp-content/backups
-rm -R -f /var/www/html/wp-content/uploads/backup
-rm -R -f /var/www/html/wp-content/updraft*
-rm -R -f /var/www/html/wp-content/wpclone-temp*
-rm -R -f /var/www/html/wp-content/codeguard_backups*
-rm -R -f /var/www/html/wp-content/Dropbox_Backup*
-rm -R -f /var/www/html/wp-content/bps-backup*
-rm -R -f /var/www/html/wp-content/backups-dup-pro*
-rm -R -f /var/www/html/wp-content/sedlex* ## backup scheduler files
+rm /var/www/html/wp-content/advanced-cache.php* ## ss conflicts
+# rm /var/www/html/wp-content/ai1ec_static*
+rm /var/www/html/wp-content/ai1wm-backups*
+rm /var/www/html/wp-content/ari-adminer-config.php*
+rm /var/www/html/wp-content/backupwordpress* ## BackupWordPress archives
+# rm /var/www/html/wp-content/blogs.dir ## WPMU
+rm /var/www/html/wp-content/caos_cache*
+# rm /var/www/html/wp-content/cusri*
+rm /var/www/html/wp-content/debug.log*
+rm /var/www/html/wp-content/deleteme*.php ## unknown source
+rm /var/www/html/wp-content/easysocialsharebuttons-assets*
+rm /var/www/html/wp-content/evf-logs* ## Everest Forms junk files
+rm /var/www/html/wp-content/ewww* ## junk files generated by EWWW
+rm /var/www/html/wp-content/expdbs-migrations* ## junk files generated by Export Database (LittleBizzy)
+rm /var/www/html/wp-content/fvm* ## minify files
+rm /var/www/html/wp-content/install.php* ## plugin junk files (Jetpack)
+# rm /var/www/html/wp-content/ip-geo-api* ## unknown
+rm /var/www/html/wp-content/ithemes-security* ## ss conflicts, bloated (iThemes Security)
+# rm /var/www/html/wp-content/js_composer* ## plugin files (Visual Composer)
+# rm /var/www/html/wp-content/local-fonts*
+rm /var/www/html/wp-content/maintenance.php* ## potential malware, unknown
+rm /var/www/html/wp-content/managewp* ## ss conflicts, creates instability (ManageWP)
+rm /var/www/html/wp-content/MCE_Styles* ## wp core hacks, bad practice (TinyMCE Custom Styles)
+# rm /var/www/html/wp-content/multiverso-files*
+rm /var/www/html/wp-content/nginx-helper* ## ss conflicts, junk logs (Nginx Helper)
+rm /var/www/html/wp-content/pegasaas-cache* ## improper cache, Pegasaas junk files
+rm /var/www/html/wp-content/pdf-light-viewer-logs* ## plugin logs (PDF viewer for WordPress by ThemeNcode)
+rm /var/www/html/wp-content/ptetmp*
+# # rm /var/www/html/wp-content/revslider* ## serious errors, exploitable, better options exist (Revslider)
+# rm /var/www/html/wp-content/rstemp* ## unknown slider plugin
+rm /var/www/html/wp-content/sedlex*
+rm /var/www/html/wp-content/sgf-css* ## Self Hosted Google Fonts junk files
+rm /var/www/html/wp-content/ShortpixelBackups* ## generates junk files, resource intensive (Shortpixel)
+rm /var/www/html/wp-content/siteground-migrator* ## vendor specific
+# rm /var/www/html/wp-content/squirrly*
+rm /var/www/html/wp-content/sucuri* ## ss conflicts, resource intensive (Sucuri)
+rm /var/www/html/wp-content/sunrise.php*
+rm /var/www/html/wp-content/temp-write-test* ## unknown
+rm /var/www/html/wp-content/tg-demo-pack* ## ThemeGrill junk files
+rm /var/www/html/wp-content/uo-unix.log* ## unknown
+rm /var/www/html/wp-content/upgrade* ## WordPress Core upgrade temp files
+# rm /var/www/html/wp-content/useanyfont* ## creates instability, bad practice (use CSS)
+rm /var/www/html/wp-content/w3tc-config*
+# rm /var/www/html/wp-content/wc-logs*
+rm /var/www/html/wp-content/wcfe* ## WP Config File Editor files
+rm /var/www/html/wp-content/wflogs* ## WordFence junk files
+rm /var/www/html/wp-content/wishlist-backup* ## unsafe archives, plugin junk files (Wishlist Member)
+# rm /var/www/html/wp-content/woocommerce_uploads*
+# rm /var/www/html/wp-content/wp-bruiser* ## plugin files (WP Bruiser)
+rm /var/www/html/wp-content/wp-cache-config.php* ## ss conflicts
+rm /var/www/html/wp-content/wp-clone* ## unsafe local archives (WP Clone)
+rm /var/www/html/wp-content/wp-migrate-db* ## unsafe local archives (WP Migrate DB)
+rm /var/www/html/wp-content/wp-performance-score-booster* ## ss conflicts, bad practice, creates instability
+rm /var/www/html/wp-content/wp-rocket ## ss conflicts (WP Rocket)
+rm /var/www/html/wp-content/wp-rocket-config* ## ss conflicts (WP Rocket)
+rm /var/www/html/wp-content/wp-snapshots*
+rm /var/www/html/wp-content/wpbackitup* ## WPBackitup archives
+# rm /var/www/html/wp-content/wpdesk-logs* ## WP Desk various logs
+rm /var/www/html/wp-content/wphb-cache* ## Hummingbird files
+rm /var/www/html/wp-content/wphb-logs* ## Hummingbird files
+rm /var/www/html/wp-content/wpsl-csv-import*
+# rm /var/www/html/wp-content/wpallexport*
+# rm /var/www/html/wp-content/wpallimport*
+# rm /var/www/html/wp-content/wpcf7_uploads*
+# rm /var/www/html/wp-content/wpseo-redirects*
+# rm /var/www/html/wp-content/xlwuev-errors* ## improper error logs
+rm /var/www/html/wp-content/temp-write-test* ## unknown
+rm /var/www/html/wp-content/yotuwp_cache* ## improper cache
+rm /var/www/html/wp-content/codeguard_backups*
+rm /var/www/html/wp-content/envato-backups*
+rm /var/www/html/wp-content/managewp*
+rm /var/www/html/wp-content/ai1wm-backups*
+rm /var/www/html/wp-content/aiowps_backups*
+rm /var/www/html/wp-content/backup/
+rm /var/www/html/wp-content/backup-*
+rm /var/www/html/wp-content/backups
+rm /var/www/html/wp-content/uploads/backup
+rm /var/www/html/wp-content/updraft*
+rm /var/www/html/wp-content/wpclone-temp*
+rm /var/www/html/wp-content/codeguard_backups*
+rm /var/www/html/wp-content/Dropbox_Backup*
+rm /var/www/html/wp-content/bps-backup*
+rm /var/www/html/wp-content/backups-dup-pro*
+rm /var/www/html/wp-content/sedlex* ## backup scheduler files
 
 ####################################################################################################
 #### cleanup /var/www/html/wp-content/mu-plugins/ ##################################################
 ####################################################################################################
 
-rm -R -f /var/www/html/wp-content/mu-plugins/0-worker* ## creates instability, resource intensive (ManageWP)
-rm -R -f /var/www/html/wp-content/mu-plugins/et-safe-mode* ## Elegant Themes
-rm -R -f /var/www/html/wp-content/mu-plugins/mainwp-child* ## creates instability, resource intensive (MainWP)
-rm -R -f /var/www/html/wp-content/mu-plugins/SupportCenterMUAutoloader.php* ## Elegant Themes
+rm /var/www/html/wp-content/mu-plugins/0-worker* ## creates instability, resource intensive (ManageWP)
+rm /var/www/html/wp-content/mu-plugins/et-safe-mode* ## Elegant Themes
+rm /var/www/html/wp-content/mu-plugins/mainwp-child* ## creates instability, resource intensive (MainWP)
+rm /var/www/html/wp-content/mu-plugins/SupportCenterMUAutoloader.php* ## Elegant Themes
 
 ####################################################################################################
 #### cleanup /var/www/html/wp-content/plugins/ #####################################################
@@ -412,210 +442,210 @@ find /var/www/html/wp-content/plugins/ -name "*.tar" -type f -delete
 find /var/www/html/wp-content/plugins/ -name "*.zip" -type f -delete
 
 ## delete plugins for various reasons ##
-rm -R -f /var/www/html/wp-content/plugins/404s/ ## excessive logging
-rm -R -f /var/www/html/wp-content/plugins/404-error-monitor* ## excessive logging, not maintained
-rm -R -f /var/www/html/wp-content/plugins/404-notifier* ## excessive logging, not maintained
-rm -R -f /var/www/html/wp-content/plugins/404-redirection-manager* ## excessive logging, serious errors, not maintained
-rm -R -f /var/www/html/wp-content/plugins/404-to-301* ## excessive logging
-rm -R -f /var/www/html/wp-content/plugins/admin-menu-editor* ## creates instability
-rm -R -f /var/www/html/wp-content/plugins/adminer* ## serious errors, creates instability
-rm -R -f /var/www/html/wp-content/plugins/ajax-thumbnail-rebuild* ## database thrashing
-# rm -R -f /var/www/html/wp-content/plugins/all-in-one-wp-migration* ## temporary delete old versions (XSS exploit)
-rm -R -f /var/www/html/wp-content/plugins/all-in-one-wp-security-and-firewall*
-rm -R -f /var/www/html/wp-content/plugins/allow-php-in-posts-and-pages* ## php hacks
-rm -R -f /var/www/html/wp-content/plugins/apikey ## malware
-# rm -R -f /var/www/html/wp-content/plugins/ari-adminer* ## better to delete manually to remove database data
-rm -R -f /var/www/html/wp-content/plugins/askapache-debug-viewer*
-rm -R -f /var/www/html/wp-content/plugins/autologin-links* ## exploitable
-rm -R -f /var/www/html/wp-content/plugins/autoptimize* ## ss conflicts
-rm -R -f /var/www/html/wp-content/plugins/backup ## unsafe archives, resource intensive
-rm -R -f /var/www/html/wp-content/plugins/backup-scheduler* ## unsafe archives, resource intensive
-rm -R -f /var/www/html/wp-content/plugins/backwpup* ## ss conflicts, resource intensive, unsafe archives
-rm -R -f /var/www/html/wp-content/plugins/bad-behavior* ## ss conflicts, bloated
-rm -R -f /var/www/html/wp-content/plugins/better-wp-security* ## ss conflicts, bloated
-rm -R -f /var/www/html/wp-content/plugins/bitcoin-plus-miner* ## cryptomining
-rm -R -f /var/www/html/wp-content/plugins/blogvault* ## ss conflicts, resource intensive
-rm -R -f /var/www/html/wp-content/plugins/BoosterPage ## deprecated, exploitable (Smart Marketer)
-rm -R -f /var/www/html/wp-content/plugins/broken-link-checker* ## resource intensive, not maintained
-rm -R -f /var/www/html/wp-content/plugins/browser-caching-with-htaccess* ## ss conflicts (apache)
-rm -R -f /var/www/html/wp-content/plugins/bugherd* ## ss conflicts
-rm -R -f /var/www/html/wp-content/plugins/captcha ## deprecated
-rm -R -f /var/www/html/wp-content/plugins/classic-editor* ## ss conflicts
-rm -R -f /var/www/html/wp-content/plugins/clearfy* ## ss conflicts, bloated (Clearfy)
-rm -R -f /var/www/html/wp-content/plugins/codeguard* ## ss conflicts
-rm -R -f /var/www/html/wp-content/plugins/contextual-related-posts* ## resource intensive
-rm -R -f /var/www/html/wp-content/plugins/custom-sidebars* ## exploitable, errors/conflicts, resource intensive, bad practice (WPMU Dev)
-rm -R -f /var/www/html/wp-content/plugins/disable-rss ## deprecated
-rm -R -f /var/www/html/wp-content/plugins/display-widgets ## malware/spyware
-rm -R -f /var/www/html/wp-content/plugins/divi-booster* ## serious errors, creates instability
-rm -R -f /var/www/html/wp-content/plugins/dreamhost-panel-login* ## vendor specific
-rm -R -f /var/www/html/wp-content/plugins/dreamobjects* ## vendor specific
-rm -R -f /var/www/html/wp-content/plugins/duplicate-page* ## exploitable, ss conflicts (Gutenberg), better options exist
-rm -R -f /var/www/html/wp-content/plugins/duplicator* ## ss conflicts, resource intensive, unsafe local archives
-rm -R -f /var/www/html/wp-content/plugins/dynamic-related-posts*
-# rm -R -f /var/www/html/wp-content/plugins/easy-contact-forms*
-rm -R -f /var/www/html/wp-content/plugins/easy-wp-smtp* ## blacklist risk (smtp)
-rm -R -f /var/www/html/wp-content/plugins/envato-wordpress-toolkit* ## deprecated
-rm -R -f /var/www/html/wp-content/plugins/error_log* ## improper error log
-rm -R -f /var/www/html/wp-content/plugins/ewww-image-optimizer* ## generates junk files, resource intensive
-# rm -R -f /var/www/html/wp-content/plugins/ewww-image-optimizer-cloud
-rm -R -f /var/www/html/wp-content/plugins/extend-bundle-widgets* ## not maintained, no public docs, possibly exploitable
-rm -R -f /var/www/html/wp-content/plugins/fancy-box ## not maintained
-rm -R -f /var/www/html/wp-content/plugins/fb-instant-articles ## not maintained, serious errors (by Automattic)
-rm -R -f /var/www/html/wp-content/plugins/fb-messenger ## deprecated
-rm -R -f /var/www/html/wp-content/plugins/file-away* ## creates instability, not maintained
-rm -R -f /var/www/html/wp-content/plugins/flexi-quote-rotator* ## not maintained, serious errors
-rm -R -f /var/www/html/wp-content/plugins/folders ## creates instability
-rm -R -f /var/www/html/wp-content/plugins/fuzzy-seo-booster* ## database thrashing
-# rm -R -f /var/www/html/wp-content/plugins/geotargeting-pro* ## potential resource intensive
-rm -R -f /var/www/html/wp-content/plugins/godaddy-email-marketing-sign-up-forms* ## vendor specific (godaddy)
-rm -R -f /var/www/html/wp-content/plugins/google-analyticator* ## history of poor code, poor maintenance, better options exist (By SumoMe)
-rm -R -f /var/www/html/wp-content/plugins/google-analytics-dashboard-for-wp* ## spamware, bloated, creates instability
-rm -R -f /var/www/html/wp-content/plugins/googleanalytics ## malware/spyware
-rm -R -f /var/www/html/wp-content/plugins/heartbeat-control* ## ss conflicts
-rm -R -f /var/www/html/wp-content/plugins/hello.php* ## pointless
-rm -R -f /var/www/html/wp-content/plugins/hide_my_wp* ## ss conflicts, breaks firewalls
-rm -R -f /var/www/html/wp-content/plugins/htaccess* ## ss conflicts (apache)
-rm -R -f /var/www/html/wp-content/plugins/htaccess-login-block* ## ss conflicts (apache)
-rm -R -f /var/www/html/wp-content/plugins/htaccess-site-access-control* ## ss conflicts (apache)
-rm -R -f /var/www/html/wp-content/plugins/hummingbird-performance* ## ss conflicts
-rm -R -f /var/www/html/wp-content/plugins/hyperdb* ## ss conflicts, not maintained
-rm -R -f /var/www/html/wp-content/plugins/increase-upload-file-size-maximum-execution-time-limit* ## ss conflicts
-rm -R -f /var/www/html/wp-content/plugins/integrate-monero-miner* ## cryptomining
-rm -R -f /var/www/html/wp-content/plugins/intuitive-custom-post-order* ## resource intensive, creates instability
-rm -R -f /var/www/html/wp-content/plugins/ithemes-sync* ## ss conflicts
-rm -R -f /var/www/html/wp-content/plugins/iwp-client*
-rm -R -f /var/www/html/wp-content/plugins/jetpack* ## bloated, ss conflicts
-rm -R -f /var/www/html/wp-content/plugins/jm-live-blog* ## serious errors, database thrashing, not maintained
-rm -R -f /var/www/html/wp-content/plugins/jonradio-multiple-themes* ## creates instability
-# rm -R -f /var/www/html/wp-content/plugins/js_composer_theme ## modified (nulled?) version of WP Bakery
-rm -R -f /var/www/html/wp-content/plugins/jsecoin ## cryptomining
-rm -R -f /var/www/html/wp-content/plugins/last-modified-timestamp* ## ss conflicts
-# rm -R -f /var/www/html/wp-content/plugins/leadpages ## potential creates instability
-rm -R -f /var/www/html/wp-content/plugins/linkman* ## deprecated, database thrashing
-rm -R -f /var/www/html/wp-content/plugins/litespeed-cache* ## ss conflicts
-rm -R -f /var/www/html/wp-content/plugins/login-lockdown* ## excessive logging
-rm -R -f /var/www/html/wp-content/plugins/mailchimp
-rm -R -f /var/www/html/wp-content/plugins/mailchimp-forms-by-mailmunch* ## malware/spyware
-rm -R -f /var/www/html/wp-content/plugins/maintenance-mode ## ss conflicts
-rm -R -f /var/www/html/wp-content/plugins/maintenance-mode-litlebizzy* ## ss conflicts
-rm -R -f /var/www/html/wp-content/plugins/mainwp* ## ss conflicts, creates instability (MainWP)
-rm -R -f /var/www/html/wp-content/plugins/mainwp-child* ## ss conflicts, creates instability (MainWP)
-rm -R -f /var/www/html/wp-content/plugins/manual-image-crop*
-rm -R -f /var/www/html/wp-content/plugins/miwoftp* ## exploitable, not maintained
-rm -R -f /var/www/html/wp-content/plugins/my-custom-css ## serious errors, poor coding (by Esther Tyler)
-rm -R -f /var/www/html/wp-content/plugins/my-wp-backup* ## by MyThemeShop
-rm -R -f /var/www/html/wp-content/plugins/my-wp-backup-pro-master* ## by MyThemeShop
-rm -R -f /var/www/html/wp-content/plugins/myrp* ## database thrashing
-rm -R -f /var/www/html/wp-content/plugins/mythemeshop-connect* ## ransomware (by MyThemeShop)
-rm -R -f /var/www/html/wp-content/plugins/onlywire-bookmark-share-button*
-rm -R -f /var/www/html/wp-content/plugins/optimizemember* ## requires OptimizePress (banned)
-rm -R -f /var/www/html/wp-content/plugins/optimizeMember* ## requires OptimizePress (banned)
-rm -R -f /var/www/html/wp-content/plugins/optimizePress* ## serious errors, potential data loss, creates instability
-rm -R -f /var/www/html/wp-content/plugins/optimizePressPlugin* ## serious errors, potential data loss, creates instability
-rm -R -f /var/www/html/wp-content/plugins/optimizepress* ## serious errors, potential data loss, creates instability
-# rm -R -f /var/www/html/wp-content/plugins/optimus
-rm -R -f /var/www/html/wp-content/plugins/outtatimr* ## deprecated (by DigitalMarketer)
-rm -R -f /var/www/html/wp-content/plugins/p3-profiler* ## serious errors, not maintained
-rm -R -f /var/www/html/wp-content/plugins/page-links-to* ## not maintained, poorly coded, bad practice (redirects should not conflict with permalinks)
-rm -R -f /var/www/html/wp-content/plugins/pc-google-analytics* ## deprecated
-rm -R -f /var/www/html/wp-content/plugins/perfmatters* ## ss conflicts, bloated, stolen code (Perfmatters)
-rm -R -f /var/www/html/wp-content/plugins/periods-in-titles* ## bad for seo
-# rm -R -f /var/www/html/wp-content/plugins/photomix* ## resource intensive
-rm -R -f /var/www/html/wp-content/plugins/php-settings* ## php hacks
-rm -R -f /var/www/html/wp-content/plugins/post-types-order* ## creates instability, potential data loss
-# rm -R -f /var/www/html/wp-content/plugins/postman-smtp ## not maintained, blacklist risk (smtp)
-rm -R -f /var/www/html/wp-content/plugins/pp_default_lib.php ## wordpresss junk files
-rm -R -f /var/www/html/wp-content/plugins/protect-wp-admin* ## ss conflicts, breaks firewalls
-# rm -R -f /var/www/html/wp-content/plugins/pt-instant*
-rm -R -f /var/www/html/wp-content/plugins/qtranslate-x* ## deprecated, serious errors
-rm -R -f /var/www/html/wp-content/plugins/quick-pagepost-redirect-plugin* ## not maintained, bizarre code, bad practice
-rm -R -f /var/www/html/wp-content/plugins/redirection/ ## excessive logging, better options exist ## DO NOT WILDCARD
-rm -R -f /var/www/html/wp-content/plugins/redis-cache* ## ss conflicts
-rm -R -f /var/www/html/wp-content/plugins/redis-object-cache* ## ss conflicts
-# rm -R -f /var/www/html/wp-content/plugins/related-posts-by-zemanta* ## resource intensive
-rm -R -f /var/www/html/wp-content/plugins/rest-api/ ## not maintained, exists in wp core (Rest API)
-# rm -R -f /var/www/html/wp-content/plugins/sendgrid-email-delivery-simplified*
-rm -R -f /var/www/html/wp-content/plugins/SenestreGDPR* ## better options exist, no public changelog
-rm -R -f /var/www/html/wp-content/plugins/seo-alrp* ## database thrashing
-# rm -R -f /var/www/html/wp-content/plugins/seo-optimized-images
-rm -R -f /var/www/html/wp-content/plugins/sg-cachepress* ## vendor specific
-rm -R -f /var/www/html/wp-content/plugins/shopbop-widget* ## database thrashing
-rm -R -f /var/www/html/wp-content/plugins/shortpixel* ## generates junk files, resource intensive
-rm -R -f /var/www/html/wp-content/plugins/shortpixel-image-optimiser* ## generates junk files, resource intensive
-rm -R -f /var/www/html/wp-content/plugins/similar-posts* ## database thrashing
-rm -R -f /var/www/html/wp-content/plugins/simple-monero-miner-coin-hive* ## cryptomining
-rm -R -f /var/www/html/wp-content/plugins/simple-share-buttons-adder* ## serious errors
-rm -R -f /var/www/html/wp-content/plugins/simple-wistia-embed* ## exists in wp core
-rm -R -f /var/www/html/wp-content/plugins/sitewide-message/ ## abandoned
-rm -R -f /var/www/html/wp-content/uploads/sucuri* ## ss conflicts, bloated
-rm -R -f /var/www/html/wp-content/plugins/sucuri-scanner* ## ss conflicts, bloated
-rm -R -f /var/www/html/wp-content/plugins/sweetcaptcha* ## malware/spyware
-rm -R -f /var/www/html/wp-content/plugins/sweetcaptcha-revolutionary-free-captcha-service* ## malware/spyware
-rm -R -f /var/www/html/wp-content/plugins/tfm-google-product-feed* ## abandoned, serious errors
-rm -R -f /var/www/html/wp-content/plugins/timthumb* ## exploitable, deprecated
-rm -R -f /var/www/html/wp-content/plugins/total-donations* ## exploitable, not maintained
-rm -R -f /var/www/html/wp-content/plugins/totaldonations* ## exploitable, not maintained
-rm -R -f /var/www/html/wp-content/plugins/tweet-blender* ## database thrashing
-rm -R -f /var/www/html/wp-content/plugins/tweetable/ ## not maintained, serious errors
-rm -R -f /var/www/html/wp-content/plugins/twitter ## deprecated
-rm -R -f /var/www/html/wp-content/plugins/updraft ## ss conflicts, unsafe archives, resource intensive
-rm -R -f /var/www/html/wp-content/plugins/updraftplus ## ss conflicts, unsafe archives, resource intensive
-rm -R -f /var/www/html/wp-content/plugins/upload-max-file-size* ## ss conflicts, php hacks
-rm -R -f /var/www/html/wp-content/plugins/uploadify*
-rm -R -f /var/www/html/wp-content/plugins/w3-total-cache* ## ss conflicts, bloated
-rm -R -f /var/www/html/wp-content/plugins/way2enjoy-compress-images*
-rm -R -f /var/www/html/wp-content/plugins/weather-for-us-widget* ## cryptomining
-rm -R -f /var/www/html/wp-content/plugins/wistia-responsive* ## exists in wp core
-rm -R -f /var/www/html/wp-content/plugins/wp-htaccess-control* ## ss conflicts (apache)
-rm -R -f /var/www/html/wp-content/plugins/wordpress-firewall-2* ## ss conflicts, creates instability
-rm -R -f /var/www/html/wp-content/plugins/woocommerce-jquery-cookie-fix*
-rm -R -f /var/www/html/wp-content/plugins/woocommerce-services* ## ss conflicts, bloatware, spamware
-rm -R -f /var/www/html/wp-content/plugins/woodojo* ## deprecated
-rm -R -f /var/www/html/wp-content/plugins/woosidebars-sbm-converter* ## deprecated
-rm -R -f /var/www/html/wp-content/plugins/woothemes-updater* ## deprecated
-rm -R -f /var/www/html/wp-content/plugins/wordfence* ## ss conflicts, bloated
-rm -R -f /var/www/html/wp-content/plugins/wordpress-popular-posts* ## excessive logging, resource intensive
-rm -R -f /var/www/html/wp-content/plugins/worker ## ss conflicts, creates instability (ManageWP)
-rm -R -f /var/www/html/wp-content/plugins/wc-cancel-order ## creates instability
-rm -R -f /var/www/html/wp-content/plugins/wc-password-strength-settings* ## exploitable, bad practice
-rm -R -f /var/www/html/wp-content/plugins/wp-advanced-importer* ## not maintained, serious errors
-rm -R -f /var/www/html/wp-content/plugins/wp-author-date-and-meta-remover* ## not maintained, serious errors
-rm -R -f /var/www/html/wp-content/plugins/wp-coinhive ## cryptomining
-rm -R -f /var/www/html/wp-content/plugins/wp-database-backup* ## unsafe archives, resource intensive
-rm -R -f /var/www/html/wp-content/plugins/wp-db-backup* ## unsafe archives, resource intensive
-rm -R -f /var/www/html/wp-content/plugins/wp-editor* ## exists in wp core (syntax editor)
-rm -R -f /var/www/html/wp-content/plugins/wp-force-ssl* ## ss conflicts
-rm -R -f /var/www/html/wp-content/plugins/wp-maximum-execution-time-exceeded* ## ss conflicts
-rm -R -f /var/www/html/wp-content/plugins/wp-monero-miner-using-coin-hive* ## cryptomining
-rm -R -f /var/www/html/wp-content/plugins/wp-no-category-base* ## not maintained, better options exist
-rm -R -f /var/www/html/wp-content/plugins/wp-optimize* ## ss conflicts
-rm -R -f /var/www/html/wp-content/plugins/wp-performance-score-booster* ## ss conflicts, bad practice
-rm -R -f /var/www/html/wp-content/plugins/wp-phpmyadmin-extension* ## ss conflicts, creates instability, exploitable
-rm -R -f /var/www/html/wp-content/plugins/wp-postviews* ## database thrashing
-rm -R -f /var/www/html/wp-content/plugins/wp-redis* ## ss conflicts
-rm -R -f /var/www/html/wp-content/plugins/wp-rocket* ## ss conflicts, bloated (WP Rocket)
-rm -R -f /var/www/html/wp-content/plugins/wp-rocket-static-exclude-defer-js* ## ss conflicts
-rm -R -f /var/www/html/wp-content/plugins/wp-security* ## malware (reported by Sucuri)
-rm -R -f /var/www/html/wp-content/plugins/wp-site-migrate* ## vendor specific (WP Engine)
-rm -R -f /var/www/html/wp-content/plugins/wp-smush-pro* ## resource intensive, creates instability, vendor specific (WPMUDev)
-rm -R -f /var/www/html/wp-content/plugins/wp-smushit* ## resource intensive
-rm -R -f /var/www/html/wp-content/plugins/wp-speedup* ## ss conflicts
-rm -R -f /var/www/html/wp-content/plugins/wp-super-cache* ## ss conflicts
-rm -R -f /var/www/html/wp-content/plugins/wpengine-geoip* ## vendor specific (WP Engine)
-rm -R -f /var/www/html/wp-content/plugins/wp-vi-duplicate-posts*
-rm -R -f /var/www/html/wp-content/plugins/wp_mainlog2* ## unknown
-rm -R -f /var/www/html/wp-content/plugins/wpe-advanced-cache-options* ## vendor specific
-rm -R -f /var/www/html/wp-content/plugins/wpframework* ## malware (reported by Sucuri)
-rm -R -f /var/www/html/wp-content/plugins/wpide ## exists in wp core (syntax editor)
-rm -R -f /var/www/html/wp-content/plugins/wpmudev-updates* ## ss conflicts, vendor specific (WPMUDev Dashboard)
-rm -R -f /var/www/html/wp-content/plugins/wpremote*
-rm -R -f /var/www/html/wp-content/plugins/wps-hide-login* ## ss conflicts
-# rm -R -f /var/www/html/wp-content/plugins/woocommerce-digital-download-free-shipping*
-rm -R -f /var/www/html/wp-content/plugins/yet-another-related-posts-plugin*
-rm -R -f /var/www/html/wp-content/plugins/yith-woocommerce-wishlist* ## exploitable, poor code, resource intensive, better options exist
-rm -R -f /var/www/html/wp-content/plugins/yoast-seo-search-index-purge* ## ss conflicts, serious errors
-rm -R -f /var/www/html/wp-content/plugins/yuzo-related-post* ## deprecated, exploitable
+rm /var/www/html/wp-content/plugins/404s/ ## excessive logging
+rm /var/www/html/wp-content/plugins/404-error-monitor* ## excessive logging, not maintained
+rm /var/www/html/wp-content/plugins/404-notifier* ## excessive logging, not maintained
+rm /var/www/html/wp-content/plugins/404-redirection-manager* ## excessive logging, serious errors, not maintained
+rm /var/www/html/wp-content/plugins/404-to-301* ## excessive logging
+rm /var/www/html/wp-content/plugins/admin-menu-editor* ## creates instability
+rm /var/www/html/wp-content/plugins/adminer* ## serious errors, creates instability
+rm /var/www/html/wp-content/plugins/ajax-thumbnail-rebuild* ## database thrashing
+# rm /var/www/html/wp-content/plugins/all-in-one-wp-migration* ## temporary delete old versions (XSS exploit)
+rm /var/www/html/wp-content/plugins/all-in-one-wp-security-and-firewall*
+rm /var/www/html/wp-content/plugins/allow-php-in-posts-and-pages* ## php hacks
+rm /var/www/html/wp-content/plugins/apikey ## malware
+# rm /var/www/html/wp-content/plugins/ari-adminer* ## better to delete manually to remove database data
+rm /var/www/html/wp-content/plugins/askapache-debug-viewer*
+rm /var/www/html/wp-content/plugins/autologin-links* ## exploitable
+rm /var/www/html/wp-content/plugins/autoptimize* ## ss conflicts
+rm /var/www/html/wp-content/plugins/backup ## unsafe archives, resource intensive
+rm /var/www/html/wp-content/plugins/backup-scheduler* ## unsafe archives, resource intensive
+rm /var/www/html/wp-content/plugins/backwpup* ## ss conflicts, resource intensive, unsafe archives
+rm /var/www/html/wp-content/plugins/bad-behavior* ## ss conflicts, bloated
+rm /var/www/html/wp-content/plugins/better-wp-security* ## ss conflicts, bloated
+rm /var/www/html/wp-content/plugins/bitcoin-plus-miner* ## cryptomining
+rm /var/www/html/wp-content/plugins/blogvault* ## ss conflicts, resource intensive
+rm /var/www/html/wp-content/plugins/BoosterPage ## deprecated, exploitable (Smart Marketer)
+rm /var/www/html/wp-content/plugins/broken-link-checker* ## resource intensive, not maintained
+rm /var/www/html/wp-content/plugins/browser-caching-with-htaccess* ## ss conflicts (apache)
+rm /var/www/html/wp-content/plugins/bugherd* ## ss conflicts
+rm /var/www/html/wp-content/plugins/captcha ## deprecated
+rm /var/www/html/wp-content/plugins/classic-editor* ## ss conflicts
+rm /var/www/html/wp-content/plugins/clearfy* ## ss conflicts, bloated (Clearfy)
+rm /var/www/html/wp-content/plugins/codeguard* ## ss conflicts
+rm /var/www/html/wp-content/plugins/contextual-related-posts* ## resource intensive
+rm /var/www/html/wp-content/plugins/custom-sidebars* ## exploitable, errors/conflicts, resource intensive, bad practice (WPMU Dev)
+rm /var/www/html/wp-content/plugins/disable-rss ## deprecated
+rm /var/www/html/wp-content/plugins/display-widgets ## malware/spyware
+rm /var/www/html/wp-content/plugins/divi-booster* ## serious errors, creates instability
+rm /var/www/html/wp-content/plugins/dreamhost-panel-login* ## vendor specific
+rm /var/www/html/wp-content/plugins/dreamobjects* ## vendor specific
+rm /var/www/html/wp-content/plugins/duplicate-page* ## exploitable, ss conflicts (Gutenberg), better options exist
+rm /var/www/html/wp-content/plugins/duplicator* ## ss conflicts, resource intensive, unsafe local archives
+rm /var/www/html/wp-content/plugins/dynamic-related-posts*
+# rm /var/www/html/wp-content/plugins/easy-contact-forms*
+rm /var/www/html/wp-content/plugins/easy-wp-smtp* ## blacklist risk (smtp)
+rm /var/www/html/wp-content/plugins/envato-wordpress-toolkit* ## deprecated
+rm /var/www/html/wp-content/plugins/error_log* ## improper error log
+rm /var/www/html/wp-content/plugins/ewww-image-optimizer* ## generates junk files, resource intensive
+# rm /var/www/html/wp-content/plugins/ewww-image-optimizer-cloud
+rm /var/www/html/wp-content/plugins/extend-bundle-widgets* ## not maintained, no public docs, possibly exploitable
+rm /var/www/html/wp-content/plugins/fancy-box ## not maintained
+rm /var/www/html/wp-content/plugins/fb-instant-articles ## not maintained, serious errors (by Automattic)
+rm /var/www/html/wp-content/plugins/fb-messenger ## deprecated
+rm /var/www/html/wp-content/plugins/file-away* ## creates instability, not maintained
+rm /var/www/html/wp-content/plugins/flexi-quote-rotator* ## not maintained, serious errors
+rm /var/www/html/wp-content/plugins/folders ## creates instability
+rm /var/www/html/wp-content/plugins/fuzzy-seo-booster* ## database thrashing
+# rm /var/www/html/wp-content/plugins/geotargeting-pro* ## potential resource intensive
+rm /var/www/html/wp-content/plugins/godaddy-email-marketing-sign-up-forms* ## vendor specific (godaddy)
+rm /var/www/html/wp-content/plugins/google-analyticator* ## history of poor code, poor maintenance, better options exist (By SumoMe)
+rm /var/www/html/wp-content/plugins/google-analytics-dashboard-for-wp* ## spamware, bloated, creates instability
+rm /var/www/html/wp-content/plugins/googleanalytics ## malware/spyware
+rm /var/www/html/wp-content/plugins/heartbeat-control* ## ss conflicts
+rm /var/www/html/wp-content/plugins/hello.php* ## pointless
+rm /var/www/html/wp-content/plugins/hide_my_wp* ## ss conflicts, breaks firewalls
+rm /var/www/html/wp-content/plugins/htaccess* ## ss conflicts (apache)
+rm /var/www/html/wp-content/plugins/htaccess-login-block* ## ss conflicts (apache)
+rm /var/www/html/wp-content/plugins/htaccess-site-access-control* ## ss conflicts (apache)
+rm /var/www/html/wp-content/plugins/hummingbird-performance* ## ss conflicts
+rm /var/www/html/wp-content/plugins/hyperdb* ## ss conflicts, not maintained
+rm /var/www/html/wp-content/plugins/increase-upload-file-size-maximum-execution-time-limit* ## ss conflicts
+rm /var/www/html/wp-content/plugins/integrate-monero-miner* ## cryptomining
+rm /var/www/html/wp-content/plugins/intuitive-custom-post-order* ## resource intensive, creates instability
+rm /var/www/html/wp-content/plugins/ithemes-sync* ## ss conflicts
+rm /var/www/html/wp-content/plugins/iwp-client*
+rm /var/www/html/wp-content/plugins/jetpack* ## bloated, ss conflicts
+rm /var/www/html/wp-content/plugins/jm-live-blog* ## serious errors, database thrashing, not maintained
+rm /var/www/html/wp-content/plugins/jonradio-multiple-themes* ## creates instability
+# rm /var/www/html/wp-content/plugins/js_composer_theme ## modified (nulled?) version of WP Bakery
+rm /var/www/html/wp-content/plugins/jsecoin ## cryptomining
+rm /var/www/html/wp-content/plugins/last-modified-timestamp* ## ss conflicts
+# rm /var/www/html/wp-content/plugins/leadpages ## potential creates instability
+rm /var/www/html/wp-content/plugins/linkman* ## deprecated, database thrashing
+rm /var/www/html/wp-content/plugins/litespeed-cache* ## ss conflicts
+rm /var/www/html/wp-content/plugins/login-lockdown* ## excessive logging
+rm /var/www/html/wp-content/plugins/mailchimp
+rm /var/www/html/wp-content/plugins/mailchimp-forms-by-mailmunch* ## malware/spyware
+rm /var/www/html/wp-content/plugins/maintenance-mode ## ss conflicts
+rm /var/www/html/wp-content/plugins/maintenance-mode-litlebizzy* ## ss conflicts
+rm /var/www/html/wp-content/plugins/mainwp* ## ss conflicts, creates instability (MainWP)
+rm /var/www/html/wp-content/plugins/mainwp-child* ## ss conflicts, creates instability (MainWP)
+rm /var/www/html/wp-content/plugins/manual-image-crop*
+rm /var/www/html/wp-content/plugins/miwoftp* ## exploitable, not maintained
+rm /var/www/html/wp-content/plugins/my-custom-css ## serious errors, poor coding (by Esther Tyler)
+rm /var/www/html/wp-content/plugins/my-wp-backup* ## by MyThemeShop
+rm /var/www/html/wp-content/plugins/my-wp-backup-pro-master* ## by MyThemeShop
+rm /var/www/html/wp-content/plugins/myrp* ## database thrashing
+rm /var/www/html/wp-content/plugins/mythemeshop-connect* ## ransomware (by MyThemeShop)
+rm /var/www/html/wp-content/plugins/onlywire-bookmark-share-button*
+rm /var/www/html/wp-content/plugins/optimizemember* ## requires OptimizePress (banned)
+rm /var/www/html/wp-content/plugins/optimizeMember* ## requires OptimizePress (banned)
+rm /var/www/html/wp-content/plugins/optimizePress* ## serious errors, potential data loss, creates instability
+rm /var/www/html/wp-content/plugins/optimizePressPlugin* ## serious errors, potential data loss, creates instability
+rm /var/www/html/wp-content/plugins/optimizepress* ## serious errors, potential data loss, creates instability
+# rm /var/www/html/wp-content/plugins/optimus
+rm /var/www/html/wp-content/plugins/outtatimr* ## deprecated (by DigitalMarketer)
+rm /var/www/html/wp-content/plugins/p3-profiler* ## serious errors, not maintained
+rm /var/www/html/wp-content/plugins/page-links-to* ## not maintained, poorly coded, bad practice (redirects should not conflict with permalinks)
+rm /var/www/html/wp-content/plugins/pc-google-analytics* ## deprecated
+rm /var/www/html/wp-content/plugins/perfmatters* ## ss conflicts, bloated, stolen code (Perfmatters)
+rm /var/www/html/wp-content/plugins/periods-in-titles* ## bad for seo
+# rm /var/www/html/wp-content/plugins/photomix* ## resource intensive
+rm /var/www/html/wp-content/plugins/php-settings* ## php hacks
+rm /var/www/html/wp-content/plugins/post-types-order* ## creates instability, potential data loss
+# rm /var/www/html/wp-content/plugins/postman-smtp ## not maintained, blacklist risk (smtp)
+rm /var/www/html/wp-content/plugins/pp_default_lib.php ## wordpresss junk files
+rm /var/www/html/wp-content/plugins/protect-wp-admin* ## ss conflicts, breaks firewalls
+# rm /var/www/html/wp-content/plugins/pt-instant*
+rm /var/www/html/wp-content/plugins/qtranslate-x* ## deprecated, serious errors
+rm /var/www/html/wp-content/plugins/quick-pagepost-redirect-plugin* ## not maintained, bizarre code, bad practice
+rm /var/www/html/wp-content/plugins/redirection/ ## excessive logging, better options exist ## DO NOT WILDCARD
+rm /var/www/html/wp-content/plugins/redis-cache* ## ss conflicts
+rm /var/www/html/wp-content/plugins/redis-object-cache* ## ss conflicts
+# rm /var/www/html/wp-content/plugins/related-posts-by-zemanta* ## resource intensive
+rm /var/www/html/wp-content/plugins/rest-api/ ## not maintained, exists in wp core (Rest API)
+# rm /var/www/html/wp-content/plugins/sendgrid-email-delivery-simplified*
+rm /var/www/html/wp-content/plugins/SenestreGDPR* ## better options exist, no public changelog
+rm /var/www/html/wp-content/plugins/seo-alrp* ## database thrashing
+# rm /var/www/html/wp-content/plugins/seo-optimized-images
+rm /var/www/html/wp-content/plugins/sg-cachepress* ## vendor specific
+rm /var/www/html/wp-content/plugins/shopbop-widget* ## database thrashing
+rm /var/www/html/wp-content/plugins/shortpixel* ## generates junk files, resource intensive
+rm /var/www/html/wp-content/plugins/shortpixel-image-optimiser* ## generates junk files, resource intensive
+rm /var/www/html/wp-content/plugins/similar-posts* ## database thrashing
+rm /var/www/html/wp-content/plugins/simple-monero-miner-coin-hive* ## cryptomining
+rm /var/www/html/wp-content/plugins/simple-share-buttons-adder* ## serious errors
+rm /var/www/html/wp-content/plugins/simple-wistia-embed* ## exists in wp core
+rm /var/www/html/wp-content/plugins/sitewide-message/ ## abandoned
+rm /var/www/html/wp-content/uploads/sucuri* ## ss conflicts, bloated
+rm /var/www/html/wp-content/plugins/sucuri-scanner* ## ss conflicts, bloated
+rm /var/www/html/wp-content/plugins/sweetcaptcha* ## malware/spyware
+rm /var/www/html/wp-content/plugins/sweetcaptcha-revolutionary-free-captcha-service* ## malware/spyware
+rm /var/www/html/wp-content/plugins/tfm-google-product-feed* ## abandoned, serious errors
+rm /var/www/html/wp-content/plugins/timthumb* ## exploitable, deprecated
+rm /var/www/html/wp-content/plugins/total-donations* ## exploitable, not maintained
+rm /var/www/html/wp-content/plugins/totaldonations* ## exploitable, not maintained
+rm /var/www/html/wp-content/plugins/tweet-blender* ## database thrashing
+rm /var/www/html/wp-content/plugins/tweetable/ ## not maintained, serious errors
+rm /var/www/html/wp-content/plugins/twitter ## deprecated
+rm /var/www/html/wp-content/plugins/updraft ## ss conflicts, unsafe archives, resource intensive
+rm /var/www/html/wp-content/plugins/updraftplus ## ss conflicts, unsafe archives, resource intensive
+rm /var/www/html/wp-content/plugins/upload-max-file-size* ## ss conflicts, php hacks
+rm /var/www/html/wp-content/plugins/uploadify*
+rm /var/www/html/wp-content/plugins/w3-total-cache* ## ss conflicts, bloated
+rm /var/www/html/wp-content/plugins/way2enjoy-compress-images*
+rm /var/www/html/wp-content/plugins/weather-for-us-widget* ## cryptomining
+rm /var/www/html/wp-content/plugins/wistia-responsive* ## exists in wp core
+rm /var/www/html/wp-content/plugins/wp-htaccess-control* ## ss conflicts (apache)
+rm /var/www/html/wp-content/plugins/wordpress-firewall-2* ## ss conflicts, creates instability
+rm /var/www/html/wp-content/plugins/woocommerce-jquery-cookie-fix*
+rm /var/www/html/wp-content/plugins/woocommerce-services* ## ss conflicts, bloatware, spamware
+rm /var/www/html/wp-content/plugins/woodojo* ## deprecated
+rm /var/www/html/wp-content/plugins/woosidebars-sbm-converter* ## deprecated
+rm /var/www/html/wp-content/plugins/woothemes-updater* ## deprecated
+rm /var/www/html/wp-content/plugins/wordfence* ## ss conflicts, bloated
+rm /var/www/html/wp-content/plugins/wordpress-popular-posts* ## excessive logging, resource intensive
+rm /var/www/html/wp-content/plugins/worker ## ss conflicts, creates instability (ManageWP)
+rm /var/www/html/wp-content/plugins/wc-cancel-order ## creates instability
+rm /var/www/html/wp-content/plugins/wc-password-strength-settings* ## exploitable, bad practice
+rm /var/www/html/wp-content/plugins/wp-advanced-importer* ## not maintained, serious errors
+rm /var/www/html/wp-content/plugins/wp-author-date-and-meta-remover* ## not maintained, serious errors
+rm /var/www/html/wp-content/plugins/wp-coinhive ## cryptomining
+rm /var/www/html/wp-content/plugins/wp-database-backup* ## unsafe archives, resource intensive
+rm /var/www/html/wp-content/plugins/wp-db-backup* ## unsafe archives, resource intensive
+rm /var/www/html/wp-content/plugins/wp-editor* ## exists in wp core (syntax editor)
+rm /var/www/html/wp-content/plugins/wp-force-ssl* ## ss conflicts
+rm /var/www/html/wp-content/plugins/wp-maximum-execution-time-exceeded* ## ss conflicts
+rm /var/www/html/wp-content/plugins/wp-monero-miner-using-coin-hive* ## cryptomining
+rm /var/www/html/wp-content/plugins/wp-no-category-base* ## not maintained, better options exist
+rm /var/www/html/wp-content/plugins/wp-optimize* ## ss conflicts
+rm /var/www/html/wp-content/plugins/wp-performance-score-booster* ## ss conflicts, bad practice
+rm /var/www/html/wp-content/plugins/wp-phpmyadmin-extension* ## ss conflicts, creates instability, exploitable
+rm /var/www/html/wp-content/plugins/wp-postviews* ## database thrashing
+rm /var/www/html/wp-content/plugins/wp-redis* ## ss conflicts
+rm /var/www/html/wp-content/plugins/wp-rocket* ## ss conflicts, bloated (WP Rocket)
+rm /var/www/html/wp-content/plugins/wp-rocket-static-exclude-defer-js* ## ss conflicts
+rm /var/www/html/wp-content/plugins/wp-security* ## malware (reported by Sucuri)
+rm /var/www/html/wp-content/plugins/wp-site-migrate* ## vendor specific (WP Engine)
+rm /var/www/html/wp-content/plugins/wp-smush-pro* ## resource intensive, creates instability, vendor specific (WPMUDev)
+rm /var/www/html/wp-content/plugins/wp-smushit* ## resource intensive
+rm /var/www/html/wp-content/plugins/wp-speedup* ## ss conflicts
+rm /var/www/html/wp-content/plugins/wp-super-cache* ## ss conflicts
+rm /var/www/html/wp-content/plugins/wpengine-geoip* ## vendor specific (WP Engine)
+rm /var/www/html/wp-content/plugins/wp-vi-duplicate-posts*
+rm /var/www/html/wp-content/plugins/wp_mainlog2* ## unknown
+rm /var/www/html/wp-content/plugins/wpe-advanced-cache-options* ## vendor specific
+rm /var/www/html/wp-content/plugins/wpframework* ## malware (reported by Sucuri)
+rm /var/www/html/wp-content/plugins/wpide ## exists in wp core (syntax editor)
+rm /var/www/html/wp-content/plugins/wpmudev-updates* ## ss conflicts, vendor specific (WPMUDev Dashboard)
+rm /var/www/html/wp-content/plugins/wpremote*
+rm /var/www/html/wp-content/plugins/wps-hide-login* ## ss conflicts
+# rm /var/www/html/wp-content/plugins/woocommerce-digital-download-free-shipping*
+rm /var/www/html/wp-content/plugins/yet-another-related-posts-plugin*
+rm /var/www/html/wp-content/plugins/yith-woocommerce-wishlist* ## exploitable, poor code, resource intensive, better options exist
+rm /var/www/html/wp-content/plugins/yoast-seo-search-index-purge* ## ss conflicts, serious errors
+rm /var/www/html/wp-content/plugins/yuzo-related-post* ## deprecated, exploitable
 
 ####################################################################################################
 #### cleanup /var/www/html/wp-content/themes/ ######################################################
@@ -630,91 +660,91 @@ find /var/www/html/wp-content/themes/ -name "*.zip" -type f -delete
 #### cleanup /var/www/wp-content/uploads/ ##########################################################
 ####################################################################################################
 
-rm -R -f /var/www/html/wp-content/uploads/.shortpixel* ## junk files (Shortpixel)
-# rm -R -f /var/www/html/wp-content/uploads/affwp-debug.log* ## improper debug logs (AffiliateWP)
-# rm -R -f /var/www/html/wp-content/uploads/ai1ec_static*
-rm -R -f /var/www/html/wp-content/uploads/analytify-logs*
-rm -R -f /var/www/html/wp-content/uploads/*edd-debug.log
-rm -R -f /var/www/html/wp-content/uploads/backup-guard* ## unsafe archives
-rm -R -f /var/www/html/wp-content/uploads/backwpup* ## unsafe archives (BackWPUp)
-# rm -R -f /var/www/html/wp-content/uploads/bfi_thumb* ## (elementor? various themes too)
-rm -R -f /var/www/html/wp-content/uploads/cache* ## improper cache
-# rm -R -f /var/www/html/wp-content/uploads/ced_umb_logs ## unknown
-rm -R -f /var/www/html/wp-content/uploads/certifications*
-rm -R -f /var/www/html/wp-content/uploads/csv_exports* ## unsafe local archives (WooCommerce Product CSV Import Suite)
-# rm -R -f /var/www/html/wp-content/uploads/custom-css-js* ## bad practice, creates instability, hostage-ware (Simple Custom CSS & JS)
-rm -R -f /var/www/html/wp-content/uploads/db-backup*
-rm -R -f /var/www/html/wp-content/uploads/divi-contact-extended-temp*
-rm -R -f /var/www/html/wp-content/uploads/dynamic-style-* ## unknown CSS minify plugin?
-rm -R -f /var/www/html/wp-content/uploads/edd/jilt*.log
-rm -R -f /var/www/html/wp-content/uploads/elm-email-errors.lock* ## unknown
-rm -R -f /var/www/html/wp-content/uploads/et_temp* ## improper temp folders (Elegant Themes)
-rm -R -f /var/www/html/wp-content/uploads/expdbs-migrations*
-# rm -R -f /var/www/html/wp-content/uploads/fbrfg* ## unknown
-rm -R -f /var/www/html/wp-content/uploads/file-manager* ## plugin junk files/logs
-# rm -R -f /var/www/html/wp-content/uploads/fileaway-custom-css*
-# rm -R -f /var/www/html/wp-content/uploads/flags* ## unknown (maybe WPML)
-rm -R -f /var/www/html/wp-content/uploads/freshizer*
-# rm -R -f /var/www/html/wp-content/uploads/fusion_slider_exports* ## plugin junk files (Fusion Slider)
-rm -R -f /var/www/html/wp-content/uploads/GeoIP.dat* ## ss conflicts
-rm -R -f /var/www/html/wp-content/uploads/GeoIPv6.dat* ## ss conflicts
-rm -R -f /var/www/html/wp-content/uploads/GeoLite2-Country.mmdb* ## ss conflicts
-rm -R -f /var/www/html/wp-content/uploads/gppro* ## files from disallowed plugin (Genesis Design Palette Pro – Export CSS)
-rm -R -f /var/www/html/wp-content/uploads/hummingbird-assets* ## ss conflicts (WPMU Hummingbird)
-rm -R -f /var/www/html/wp-content/uploads/ithemes-security* ## junk files (iThemes Security)
-rm -R -f /var/www/html/wp-content/uploads/latest-export*
-rm -R -f /var/www/html/wp-content/uploads/mainwp* ## junk files (MainWP)
-rm -R -f /var/www/html/wp-content/uploads/mc4wp-debug-log.php*
-rm -R -f /var/www/html/wp-content/uploads/my-php.log* ## improper error log, exploitable (unknown source)
-# rm -R -f /var/www/html/wp-content/uploads/my_custom_css*
-rm -R -f /var/www/html/wp-content/uploads/nginx-helper*
-rm -R -f /var/www/html/wp-content/uploads/premise*
-# rm -R -f /var/www/html/wp-content/uploads/resized ## unsure (slider plugin)
-rm -R -f /var/www/html/wp-content/uploads/rstemp* ## improper temp directory
-rm -R -f /var/www/html/wp-content/uploads/sacache* ## unknown
-rm -R -f /var/www/html/wp-content/uploads/ShortpixelBackups* ## junk files (Shortpixel)
-rm -R -f /var/www/html/wp-content/uploads/siteground-optimizer-assets*
-# rm -R -f /var/www/html/wp-content/uploads/siteorigin-widgets* ## possibly no longer used
-# rm -R -f /var/www/html/wp-content/uploads/smile_fonts* ## unsure
-rm -R -f /var/www/html/wp-content/uploads/taxjar*.csv* ## unsafe archives (TaxJar)
-rm -R -f /var/www/html/wp-content/uploads/tCapsule* ## unsafe archives (WP Time Capsule)
-# rm -R -f /var/www/html/wp-content/uploads/tcb_content_templates* ## (Thrive junk)
-# rm -R -f /var/www/html/wp-content/uploads/tcb_lp_templates* ## (Thrive junk)
-# rm -R -f /var/www/html/wp-content/uploads/thrive-ab-page-testing* ## (Thrive junk)
-# rm -R -f /var/www/html/wp-content/uploads/thrive-quiz-builder* ## (Thrive junk)
-# rm -R -f /var/www/html/wp-content/uploads/thrive-visual-editor* ## (Thrive junk)
-# rm -R -f /var/www/html/wp-content/uploads/tve-ff-* (Thrive junk)
-# rm -R -f /var/www/html/wp-content/uploads/tve_leads_templates* ## (Thrive Leads)
-# rm -R -f /var/www/html/wp-content/uploads/us-assets* ## unsure
-# rm -R -f /var/www/html/wp-content/uploads/useanyfont* ## creates instability, bad practice (Use Any Font)
-# rm -R -f /var/www/html/wp-content/uploads/wordpress-popular-posts* files from disallowed plugin
-rm -R -f /var/www/html/wp-content/uploads/wp-clone* ## unsafe archives (WP Clone)
-rm -R -f /var/www/html/wp-content/uploads/wp-defender* ## ss conflicts (WP Defender)
-rm -R -f /var/www/html/wp-content/uploads/wp-file-manager-pro* ## junk files (WP File Manager Pro)
-rm -R -f /var/www/html/wp-content/uploads/wp-migrate-db* ## junk files (WP Migrate DB)
-# rm -R -f /var/www/html/wp-content/uploads/wp-staging*
-# rm -R -f /var/www/html/wp-content/uploads/wp-staging/logs*
-# rm -R -f /var/www/html/wp-content/uploads/wp-static-html*
-rm -R -f /var/www/html/wp-content/uploads/wp-statistics* ## junk files (WP Statistics)
-rm -R -f /var/www/html/wp-content/uploads/wp-sync-db* ## local archives
-# rm -R -f /var/www/html/wp-content/uploads/wp-ultimate-csv-importer* ## log files (WP Ultimate CSV Importer)
-rm -R -f /var/www/html/wp-content/uploads/wp_edit_pro* ## WP Edit Pro files (disallowed plugin)
-# rm -R -f /var/www/html/wp-content/uploads/wpallimport*
-# rm -R -f /var/www/html/wp-content/uploads/wpallimport_history*
-# rm -R -f /var/www/html/wp-content/uploads/wpallimport_logs*
-rm -R -f /var/www/html/wp-content/uploads/wpfc-backup* ## local archives
-rm -R -f /var/www/html/wp-content/uploads/wplr-tmp*
-# rm -R -f /var/www/html/wp-content/uploads/wpseo-redirects* ## bad practice (automatic 301s) Yoast Premium
-rm -R -f /var/www/html/wp-content/uploads/wtfdivi* ## Divi Booster files, bad practice
-rm -R -f /var/www/html/wp-content/uploads/wwlc-temp* ## improper temp folder
-# rm -R -f /var/www/html/wp-content/uploads/yikes-log* ## log files (Yikes Easy Mailchimp)
-rm -R -f /var/www/html/wp-content/uploads/sucuri*
-rm -R -f /var/www/html/wp-content/uploads/backupbuddy_backups*
-rm -R -f /var/www/html/wp-content/uploads/pb_backupbuddy*
-rm -R -f /var/www/html/wp-content/uploads/snapshots*
-rm -R -f /var/www/html/wp-content/uploads/fw-backup*
-# rm -R -f /var/www/html/wp-content/uploads/ithemes-security*
-rm -R -f /var/www/html/wp-content/uploads/cache* ## improper cache path
+rm /var/www/html/wp-content/uploads/.shortpixel* ## junk files (Shortpixel)
+# rm /var/www/html/wp-content/uploads/affwp-debug.log* ## improper debug logs (AffiliateWP)
+# rm /var/www/html/wp-content/uploads/ai1ec_static*
+rm /var/www/html/wp-content/uploads/analytify-logs*
+rm /var/www/html/wp-content/uploads/*edd-debug.log
+rm /var/www/html/wp-content/uploads/backup-guard* ## unsafe archives
+rm /var/www/html/wp-content/uploads/backwpup* ## unsafe archives (BackWPUp)
+# rm /var/www/html/wp-content/uploads/bfi_thumb* ## (elementor? various themes too)
+rm /var/www/html/wp-content/uploads/cache* ## improper cache
+# rm /var/www/html/wp-content/uploads/ced_umb_logs ## unknown
+rm /var/www/html/wp-content/uploads/certifications*
+rm /var/www/html/wp-content/uploads/csv_exports* ## unsafe local archives (WooCommerce Product CSV Import Suite)
+# rm /var/www/html/wp-content/uploads/custom-css-js* ## bad practice, creates instability, hostage-ware (Simple Custom CSS & JS)
+rm /var/www/html/wp-content/uploads/db-backup*
+rm /var/www/html/wp-content/uploads/divi-contact-extended-temp*
+rm /var/www/html/wp-content/uploads/dynamic-style-* ## unknown CSS minify plugin?
+rm /var/www/html/wp-content/uploads/edd/jilt*.log
+rm /var/www/html/wp-content/uploads/elm-email-errors.lock* ## unknown
+rm /var/www/html/wp-content/uploads/et_temp* ## improper temp folders (Elegant Themes)
+rm /var/www/html/wp-content/uploads/expdbs-migrations*
+# rm /var/www/html/wp-content/uploads/fbrfg* ## unknown
+rm /var/www/html/wp-content/uploads/file-manager* ## plugin junk files/logs
+# rm /var/www/html/wp-content/uploads/fileaway-custom-css*
+# rm /var/www/html/wp-content/uploads/flags* ## unknown (maybe WPML)
+rm /var/www/html/wp-content/uploads/freshizer*
+# rm /var/www/html/wp-content/uploads/fusion_slider_exports* ## plugin junk files (Fusion Slider)
+rm /var/www/html/wp-content/uploads/GeoIP.dat* ## ss conflicts
+rm /var/www/html/wp-content/uploads/GeoIPv6.dat* ## ss conflicts
+rm /var/www/html/wp-content/uploads/GeoLite2-Country.mmdb* ## ss conflicts
+rm /var/www/html/wp-content/uploads/gppro* ## files from disallowed plugin (Genesis Design Palette Pro – Export CSS)
+rm /var/www/html/wp-content/uploads/hummingbird-assets* ## ss conflicts (WPMU Hummingbird)
+rm /var/www/html/wp-content/uploads/ithemes-security* ## junk files (iThemes Security)
+rm /var/www/html/wp-content/uploads/latest-export*
+rm /var/www/html/wp-content/uploads/mainwp* ## junk files (MainWP)
+rm /var/www/html/wp-content/uploads/mc4wp-debug-log.php*
+rm /var/www/html/wp-content/uploads/my-php.log* ## improper error log, exploitable (unknown source)
+# rm /var/www/html/wp-content/uploads/my_custom_css*
+rm /var/www/html/wp-content/uploads/nginx-helper*
+rm /var/www/html/wp-content/uploads/premise*
+# rm /var/www/html/wp-content/uploads/resized ## unsure (slider plugin)
+rm /var/www/html/wp-content/uploads/rstemp* ## improper temp directory
+rm /var/www/html/wp-content/uploads/sacache* ## unknown
+rm /var/www/html/wp-content/uploads/ShortpixelBackups* ## junk files (Shortpixel)
+rm /var/www/html/wp-content/uploads/siteground-optimizer-assets*
+# rm /var/www/html/wp-content/uploads/siteorigin-widgets* ## possibly no longer used
+# rm /var/www/html/wp-content/uploads/smile_fonts* ## unsure
+rm /var/www/html/wp-content/uploads/taxjar*.csv* ## unsafe archives (TaxJar)
+rm /var/www/html/wp-content/uploads/tCapsule* ## unsafe archives (WP Time Capsule)
+# rm /var/www/html/wp-content/uploads/tcb_content_templates* ## (Thrive junk)
+# rm /var/www/html/wp-content/uploads/tcb_lp_templates* ## (Thrive junk)
+# rm /var/www/html/wp-content/uploads/thrive-ab-page-testing* ## (Thrive junk)
+# rm /var/www/html/wp-content/uploads/thrive-quiz-builder* ## (Thrive junk)
+# rm /var/www/html/wp-content/uploads/thrive-visual-editor* ## (Thrive junk)
+# rm /var/www/html/wp-content/uploads/tve-ff-* (Thrive junk)
+# rm /var/www/html/wp-content/uploads/tve_leads_templates* ## (Thrive Leads)
+# rm /var/www/html/wp-content/uploads/us-assets* ## unsure
+# rm /var/www/html/wp-content/uploads/useanyfont* ## creates instability, bad practice (Use Any Font)
+# rm /var/www/html/wp-content/uploads/wordpress-popular-posts* files from disallowed plugin
+rm /var/www/html/wp-content/uploads/wp-clone* ## unsafe archives (WP Clone)
+rm /var/www/html/wp-content/uploads/wp-defender* ## ss conflicts (WP Defender)
+rm /var/www/html/wp-content/uploads/wp-file-manager-pro* ## junk files (WP File Manager Pro)
+rm /var/www/html/wp-content/uploads/wp-migrate-db* ## junk files (WP Migrate DB)
+# rm /var/www/html/wp-content/uploads/wp-staging*
+# rm /var/www/html/wp-content/uploads/wp-staging/logs*
+# rm /var/www/html/wp-content/uploads/wp-static-html*
+rm /var/www/html/wp-content/uploads/wp-statistics* ## junk files (WP Statistics)
+rm /var/www/html/wp-content/uploads/wp-sync-db* ## local archives
+# rm /var/www/html/wp-content/uploads/wp-ultimate-csv-importer* ## log files (WP Ultimate CSV Importer)
+rm /var/www/html/wp-content/uploads/wp_edit_pro* ## WP Edit Pro files (disallowed plugin)
+# rm /var/www/html/wp-content/uploads/wpallimport*
+# rm /var/www/html/wp-content/uploads/wpallimport_history*
+# rm /var/www/html/wp-content/uploads/wpallimport_logs*
+rm /var/www/html/wp-content/uploads/wpfc-backup* ## local archives
+rm /var/www/html/wp-content/uploads/wplr-tmp*
+# rm /var/www/html/wp-content/uploads/wpseo-redirects* ## bad practice (automatic 301s) Yoast Premium
+rm /var/www/html/wp-content/uploads/wtfdivi* ## Divi Booster files, bad practice
+rm /var/www/html/wp-content/uploads/wwlc-temp* ## improper temp folder
+# rm /var/www/html/wp-content/uploads/yikes-log* ## log files (Yikes Easy Mailchimp)
+rm /var/www/html/wp-content/uploads/sucuri*
+rm /var/www/html/wp-content/uploads/backupbuddy_backups*
+rm /var/www/html/wp-content/uploads/pb_backupbuddy*
+rm /var/www/html/wp-content/uploads/snapshots*
+rm /var/www/html/wp-content/uploads/fw-backup*
+# rm /var/www/html/wp-content/uploads/ithemes-security*
+rm /var/www/html/wp-content/uploads/cache* ## improper cache path
 
 ####################################################################################################
 #### SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ###############
