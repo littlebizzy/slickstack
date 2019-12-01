@@ -38,7 +38,6 @@ title: MU (Must-Use) Plugins (Public Mirrors)
 * <a href="force-https.zip">force-https.zip</a>
 * <a href="force-strong-hashing.zip">force-strong-hashing.zip</a>
 * <a href="header-cleanup.zip">header-cleanup.zip</a>
-* <a href="index-autoload.zip">index-autoload.zip</a>
 * <a href="limit-heartbeat.zip">limit-heartbeat.zip</a>
 * <a href="maintenance-mode.zip">maintenance-mode.zip</a>
 * <a href="minify-html.zip">minify-html.zip</a>
@@ -138,10 +137,6 @@ title: MU (Must-Use) Plugins (Public Mirrors)
 
 * (coming soon)
 
-#### index-autoload.zip
-
-* (coming soon)
-
 #### limit-heartbeat.zip
 
 * (coming soon)
@@ -188,4 +183,4 @@ title: MU (Must-Use) Plugins (Public Mirrors)
 
 ----
 
-*Last updated: Nov 29, 2019*
+*Last updated: Dec 1, 2019*
