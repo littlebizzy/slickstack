@@ -7,100 +7,131 @@
 #### path: /var/www/ss-check #######################################################################
 #### destination: n/a (not a boilerplate) ##########################################################
 #### purpose: Downloads latest SlickStack core files (except itself = done by ss-worker) ###########
-#### module version: Ubuntu 18.04 ##################################################################
+#### module version: Ubuntu 18.04 LTS ##############################################################
 ####################################################################################################
 
 ## include SlickStack configuration ##
 source /var/www/ss-config
 
-## critical functions (aliases) ##
-# apt () { DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold"; }
-# wget () { wget --no-cache --no-cookies --tries=3 --timeout=15; }
-# cp () { cp -R -f -d --no-preserve=mode,ownership; }
-# rm () { rm -R -f; }
-# mkdir () { mkdir -p; }
-
 ####################################################################################################
-#### SS-Check: Delete Any Previous + Leftover Temporary Files ######################################
+#### SlickStack: Critical Bash Functions (Aliases) For This Script To Work #########################
 ####################################################################################################
 
-rm -R -f /tmp/ss*
-rm -R -f /tmp/*cron*
-rm -R -f /tmp/blacklist*
-rm -R -f /tmp/functions*
+## apt alias flags ##
+function apt {
+    export DEBIAN_FRONTEND=noninteractive
+    export DEBIAN_PRIORITY=critical
+    export PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'
+    command /usr/bin/apt -q -y -o Dpkg::Options::=--force-confold -o Dpkg::Options::=--force-confdef "$@"
+}
+
+## wget alias flags ##
+function wget {
+    command wget --no-check-certificate --no-cache --no-cookies --tries=3 --timeout=15 "$@"
+}
+
+## cp alias flags ##
+function cp {
+    command cp -R -f -d --no-preserve=mode,ownership "$@"
+}
+
+## mkdir alias flags ##
+function mkdir {
+    command mkdir -p "$@"
+}
+
+## unzip alias flags ##
+function unzip {
+    command unzip -o "$@"
+}
+
+## rm alias flags ##
+function rm {
+    command rm -R -f "$@"
+}
 
 ####################################################################################################
-#### SS-Check: Download The Latest SlickStack Core Files (Does Not Install Anything) ###############
+#### SS-Check: Delete Any Previous / Leftover (Conflicting) Temporary Files ########################
 ####################################################################################################
 
-## download latest cron jobs ##
-wget --no-cache --no-cookies --tries=3 --timeout=15 -O /tmp/0-crontab http://mirrors.slickstack.io/0-crontab.txt
-wget --no-cache --no-cookies --tries=3 --timeout=15 -O /tmp/1-cron-often http://mirrors.slickstack.io/1-cron-often.txt
-wget --no-cache --no-cookies --tries=3 --timeout=15 -O /tmp/2-cron-regular http://mirrors.slickstack.io/2-cron-regular.txt
-wget --no-cache --no-cookies --tries=3 --timeout=15 -O /tmp/3-cron-hourly http://mirrors.slickstack.io/3-cron-hourly.txt
-wget --no-cache --no-cookies --tries=3 --timeout=15 -O /tmp/4-cron-quarter-daily http://mirrors.slickstack.io/4-cron-quarter-daily.txt
-wget --no-cache --no-cookies --tries=3 --timeout=15 -O /tmp/5-cron-half-daily http://mirrors.slickstack.io/5-cron-half-daily.txt
-wget --no-cache --no-cookies --tries=3 --timeout=15 -O /tmp/6-cron-daily http://mirrors.slickstack.io/6-cron-daily.txt
-wget --no-cache --no-cookies --tries=3 --timeout=15 -O /tmp/7-cron-weekly http://mirrors.slickstack.io/7-cron-weekly.txt
-wget --no-cache --no-cookies --tries=3 --timeout=15 -O /tmp/8-cron-monthly http://mirrors.slickstack.io/8-cron-monthly.txt
-wget --no-cache --no-cookies --tries=3 --timeout=15 -O /tmp/9-cron-sometimes http://mirrors.slickstack.io/9-cron-sometimes.txt
-
-## download latest scripts (except itself = done by ss-worker) ##
-wget --no-cache --no-cookies --tries=3 --timeout=15 -O /tmp/ss-clean http://mirrors.slickstack.io/ss-clean.txt
-wget --no-cache --no-cookies --tries=3 --timeout=15 -O /tmp/ss-config-sample http://mirrors.slickstack.io/ss-config-sample.txt
-wget --no-cache --no-cookies --tries=3 --timeout=15 -O /tmp/ss-dump http://mirrors.slickstack.io/ss-dump.txt
-wget --no-cache --no-cookies --tries=3 --timeout=15 -O /tmp/ss-encrypt http://mirrors.slickstack.io/ss-encrypt.txt
-wget --no-cache --no-cookies --tries=3 --timeout=15 -O /tmp/ss-install http://mirrors.slickstack.io/ss-install.txt
-wget --no-cache --no-cookies --tries=3 --timeout=15 -O /tmp/ss-muplugs http://mirrors.slickstack.io/ss-muplugs.txt
-wget --no-cache --no-cookies --tries=3 --timeout=15 -O /tmp/ss-perms http://mirrors.slickstack.io/ss-perms.txt
-wget --no-cache --no-cookies --tries=3 --timeout=15 -O /tmp/ss-purge http://mirrors.slickstack.io/ss-purge.txt
-wget --no-cache --no-cookies --tries=3 --timeout=15 -O /tmp/ss-restart http://mirrors.slickstack.io/ss-restart.txt
-wget --no-cache --no-cookies --tries=3 --timeout=15 -O /tmp/ss-scan http://mirrors.slickstack.io/ss-scan.txt
-wget --no-cache --no-cookies --tries=3 --timeout=15 -O /tmp/ss-update http://mirrors.slickstack.io/ss-update.txt
-wget --no-cache --no-cookies --tries=3 --timeout=15 -O /tmp/ss-worker http://mirrors.slickstack.io/ss-worker.txt
+## delete temp files ##
+rm /tmp/ss*
+rm /tmp/*cron*
 
 ####################################################################################################
-#### SS-Check: Copy Latest SlickStack Core Files To: /var/www ######################################
+#### SS-Check: Download Latest SlickStack Core Files (Does Not Download Any Modules) ###############
 ####################################################################################################
 
-## copy SlickStack core cron jobs ##
-cp -R -f -d --no-preserve=mode,ownership /tmp/0-crontab /var/www/0-crontab
-cp -R -f -d --no-preserve=mode,ownership /tmp/1-cron-often /var/www/1-cron-often
-cp -R -f -d --no-preserve=mode,ownership /tmp/2-cron-regular /var/www/2-cron-regular
-cp -R -f -d --no-preserve=mode,ownership /tmp/3-cron-hourly /var/www/3-cron-hourly
-cp -R -f -d --no-preserve=mode,ownership /tmp/4-cron-quarter-daily /var/www/4-cron-quarter-daily
-cp -R -f -d --no-preserve=mode,ownership /tmp/5-cron-half-daily /var/www/5-cron-half-daily
-cp -R -f -d --no-preserve=mode,ownership /tmp/6-cron-daily /var/www/6-cron-daily
-cp -R -f -d --no-preserve=mode,ownership /tmp/7-cron-weekly /var/www/7-cron-weekly
-cp -R -f -d --no-preserve=mode,ownership /tmp/8-cron-monthly /var/www/8-cron-monthly
-cp -R -f -d --no-preserve=mode,ownership /tmp/9-cron-sometimes /var/www/9-cron-sometimes
+## download latest core cron jobs ##
+wget -O /tmp/0-crontab http://mirrors.slickstack.io/0-crontab.txt
+wget -O /tmp/1-cron-often http://mirrors.slickstack.io/1-cron-often.txt
+wget -O /tmp/2-cron-regular http://mirrors.slickstack.io/2-cron-regular.txt
+wget -O /tmp/3-cron-hourly http://mirrors.slickstack.io/3-cron-hourly.txt
+wget -O /tmp/4-cron-quarter-daily http://mirrors.slickstack.io/4-cron-quarter-daily.txt
+wget -O /tmp/5-cron-half-daily http://mirrors.slickstack.io/5-cron-half-daily.txt
+wget -O /tmp/6-cron-daily http://mirrors.slickstack.io/6-cron-daily.txt
+wget -O /tmp/7-cron-weekly http://mirrors.slickstack.io/7-cron-weekly.txt
+wget -O /tmp/8-cron-monthly http://mirrors.slickstack.io/8-cron-monthly.txt
+wget -O /tmp/9-cron-sometimes http://mirrors.slickstack.io/9-cron-sometimes.txt
 
-## copy SlickStack core scripts ##
-cp -R -f -d --no-preserve=mode,ownership /tmp/ss-clean /var/www/ss-clean
-cp -R -f -d --no-preserve=mode,ownership /tmp/ss-config-sample /var/www/ss-config-sample
-cp -R -f -d --no-preserve=mode,ownership /tmp/ss-dump /var/www/ss-dump
-cp -R -f -d --no-preserve=mode,ownership /tmp/ss-encrypt /var/www/ss-encrypt
-cp -R -f -d --no-preserve=mode,ownership /tmp/ss-install /var/www/ss-install
-cp -R -f -d --no-preserve=mode,ownership /tmp/ss-muplugs /var/www/ss-muplugs
-cp -R -f -d --no-preserve=mode,ownership /tmp/ss-perms /var/www/ss-perms
-cp -R -f -d --no-preserve=mode,ownership /tmp/ss-purge /var/www/ss-purge
-cp -R -f -d --no-preserve=mode,ownership /tmp/ss-restart /var/www/ss-restart
-cp -R -f -d --no-preserve=mode,ownership /tmp/ss-scan /var/www/ss-scan
-cp -R -f -d --no-preserve=mode,ownership /tmp/ss-update /var/www/ss-update
-cp -R -f -d --no-preserve=mode,ownership /tmp/ss-worker /var/www/ss-worker
+## download latest core Bash scripts (except ss-check) ##
+wget -O /tmp/ss-clean http://mirrors.slickstack.io/ss-clean.txt
+wget -O /tmp/ss-config-sample http://mirrors.slickstack.io/ss-config-sample.txt
+wget -O /tmp/ss-dump http://mirrors.slickstack.io/ss-dump.txt
+wget -O /tmp/ss-encrypt http://mirrors.slickstack.io/ss-encrypt.txt
+wget -O /tmp/ss-install http://mirrors.slickstack.io/ss-install.txt
+wget -O /tmp/ss-muplugs http://mirrors.slickstack.io/ss-muplugs.txt
+wget -O /tmp/ss-perms http://mirrors.slickstack.io/ss-perms.txt
+wget -O /tmp/ss-purge http://mirrors.slickstack.io/ss-purge.txt
+wget -O /tmp/ss-restart http://mirrors.slickstack.io/ss-restart.txt
+wget -O /tmp/ss-scan http://mirrors.slickstack.io/ss-scan.txt
+wget -O /tmp/ss-update http://mirrors.slickstack.io/ss-update.txt
+wget -O /tmp/ss-worker http://mirrors.slickstack.io/ss-worker.txt
 
 ####################################################################################################
-#### SS-Check: Reset Permissions (SlickStack Core Files Only) ######################################
+#### SS-Check: Copy Latest SlickStack Core Files To Jailed Root (/var/www) #########################
 ####################################################################################################
 
-## ensure directories exist (will not overwrite) ##
-mkdir -p /var/www
-mkdir -p /var/www/cache
-mkdir -p /var/www/logs
-mkdir -p /var/www/meta
+## copy core cron jobs ##
+cp /tmp/0-crontab /var/www/0-crontab
+cp /tmp/1-cron-often /var/www/1-cron-often
+cp /tmp/2-cron-regular /var/www/2-cron-regular
+cp /tmp/3-cron-hourly /var/www/3-cron-hourly
+cp /tmp/4-cron-quarter-daily /var/www/4-cron-quarter-daily
+cp /tmp/5-cron-half-daily /var/www/5-cron-half-daily
+cp /tmp/6-cron-daily /var/www/6-cron-daily
+cp /tmp/7-cron-weekly /var/www/7-cron-weekly
+cp /tmp/8-cron-monthly /var/www/8-cron-monthly
+cp /tmp/9-cron-sometimes /var/www/9-cron-sometimes
 
-## ensure files exist ##
-if [ ! -f "/var/www/wp.sql" ]; then touch "/var/www/wp.sql"; fi
+## copy core Bash scripts ##
+cp /tmp/ss-clean /var/www/ss-clean
+cp /tmp/ss-config-sample /var/www/ss-config-sample
+cp /tmp/ss-dump /var/www/ss-dump
+cp /tmp/ss-encrypt /var/www/ss-encrypt
+cp /tmp/ss-install /var/www/ss-install
+cp /tmp/ss-muplugs /var/www/ss-muplugs
+cp /tmp/ss-perms /var/www/ss-perms
+cp /tmp/ss-purge /var/www/ss-purge
+cp /tmp/ss-restart /var/www/ss-restart
+cp /tmp/ss-scan /var/www/ss-scan
+cp /tmp/ss-update /var/www/ss-update
+cp /tmp/ss-worker /var/www/ss-worker
+
+####################################################################################################
+#### SS-Check: Reset SlickStack Core Files Permissions (Skips Web Root) ############################
+####################################################################################################
+
+## ensure core directories exist (except html) ##
+mkdir /var/www
+mkdir /var/www/cache
+mkdir /var/www/logs
+mkdir /var/www/meta
+
+## ensure misc files exist (makes things look pretty and suppresses error messages) ##
+if [[ ! -f "/var/www/wp.sql" ]]; then 
+    touch "/var/www/wp.sql"; 
+fi
 
 ## chroot (SFTP) user directory ##
 chown root:root /var ## must be root:root
@@ -139,16 +170,15 @@ chown www-data:www-data /var/www/logs/nginx*.log*
 chown redis:redis /var/www/logs/redis*.log*
 
 ####################################################################################################
-#### SS-Check: Delete Any Previous + Leftover Temporary Files ######################################
+#### SS-Check: Delete Any Previous / Leftover (Conflicting) Temporary Files ########################
 ####################################################################################################
 
-rm -R -f /tmp/ss*
-rm -R -f /tmp/*cron*
-rm -R -f /tmp/blacklist*
-rm -R -f /tmp/functions*
+## delete temp files ##
+rm /tmp/ss*
+rm /tmp/*cron*
 
 ####################################################################################################
-#### External References Used By SlickStack To Improve This Script #################################
+#### SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ###############
 ####################################################################################################
 
 ## Ref: https://linuxize.com/post/bash-functions/
