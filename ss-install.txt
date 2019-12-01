@@ -15,15 +15,53 @@
 ## include SlickStack configuration ##
 source /var/www/ss-config
 
-## critical functions (aliases) ##
-# apt () { DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold"; }
-# wget () { wget --no-check-certificate --no-cache --no-cookies --tries=3 --timeout=15; }
-# cp () { cp -R -f -d --no-preserve=mode,ownership; }
-# rm () { rm -R -f; }
-# mkdir () { mkdir -p; }
+####################################################################################################
+#### SlickStack: Critical Bash Functions (Aliases) For This Script To Work #########################
+####################################################################################################
+
+## apt alias flags ##
+function apt {
+    export DEBIAN_FRONTEND=noninteractive
+    export DEBIAN_PRIORITY=critical
+    export PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'
+    command /usr/bin/apt -q -y -o Dpkg::Options::=--force-confold -o Dpkg::Options::=--force-confdef "$@"
+}
+
+## add-apt-repository alias flags ##
+function add-apt-repository {
+    export DEBIAN_FRONTEND=noninteractive
+    export DEBIAN_PRIORITY=critical
+    export PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'
+    command /usr/bin/add-apt-repository -y "$@"
+}
+
+## wget alias flags ##
+function wget {
+    command wget --no-check-certificate --no-cache --no-cookies --tries=3 --timeout=15 "$@"
+}
+
+## cp alias flags ##
+function cp {
+    command cp -R -f -d --no-preserve=mode,ownership "$@"
+}
+
+## mkdir alias flags ##
+function mkdir {
+    command mkdir -p "$@"
+}
+
+## unzip alias flags ##
+function unzip {
+    command unzip -o "$@"
+}
+
+## rm alias flags ##
+function rm {
+    command rm -R -f "$@"
+}
 
 ####################################################################################################
-#### SlickStack: Compatibility Checks + Backup Live Database #######################################
+#### SS-Install: Check OS Compability + Verify SS-Config Freshness + Backup Database ###############
 ####################################################################################################
 
 ## ensure correct Ubuntu version is installed ##
@@ -34,7 +72,7 @@ if [[ "${UBUNTU_VERSION}" != "18.04" ]]; then
 fi
 
 ## ensure ss-config build version matches ss-install build version ##
-if [[ "$SS_BUILD" != "NOV2019M" ]]; then 
+if [[ "$SS_BUILD" != "NOV2019N" ]]; then 
     echo -e "\e[93mYour ss-config file is outdated. Please rebuild it and run ss-install again.\e[0m" >&2
     exit 1
 fi
@@ -84,10 +122,10 @@ fi
 echo -e "\e[36mRetrieving latest SlickStack files and copying them to local server...\e[0m"
 
 ## download latest versions ##
-wget --no-cache --no-cookies --tries=3 --timeout=15 -O /tmp/ss-check http://mirrors.slickstack.io/ss-check.txt
+wget -O /tmp/ss-check http://mirrors.slickstack.io/ss-check.txt
 
 ## copy files to their destinations ##
-cp -R -f -d --no-preserve=mode,ownership /tmp/ss-check /var/www/ss-check
+cp /tmp/ss-check /var/www/ss-check
 
 ## reset permissions ##
 chown root:root /var/www/ss-check
@@ -104,13 +142,13 @@ source /var/www/ss-check
 echo -e "\e[36mConfiguring the Sudoers file (root and sudo users)...\e[0m"
 
 ## download latest versions ##
-wget --no-cache --no-cookies --tries=3 --timeout=15 -O /tmp/sudoers http://mirrors.slickstack.io/ubuntu/sudoers.txt
+wget -O /tmp/sudoers http://mirrors.slickstack.io/ubuntu/sudoers.txt
 
 ## replace variables ##
 sed -i "s/@SUDO_USER/${SUDO_USER}/g" /tmp/sudoers
 
 ## copy files to their destinations ##
-cp -R -f -d --no-preserve=mode,ownership /tmp/sudoers /etc/sudoers
+cp /tmp/sudoers /etc/sudoers
 
 ## reset permissions ##
 chown root:root /etc/sudoers
@@ -124,7 +162,7 @@ chmod 0440 /etc/sudoers
 echo -e "\e[36mConfiguring SSH (SFTP) settings, user permissions, and port number...\e[0m"
 
 ## download latest versions ##
-wget --no-cache --no-cookies --tries=3 --timeout=15 -O /tmp/sshd_config http://mirrors.slickstack.io/ubuntu/sshd-config.txt
+wget -O /tmp/sshd_config http://mirrors.slickstack.io/ubuntu/sshd-config.txt
 
 ## replace variables ##
 sed -i "s/@SUDO_USER/${SUDO_USER}/g" /tmp/sshd_config
@@ -138,7 +176,7 @@ else
 fi
 
 ## copy files to their destinations ##
-cp -R -f --no-preserve=mode,ownership /tmp/sshd_config /etc/ssh/sshd_config
+cp /tmp/sshd_config /etc/ssh/sshd_config
 
 ## reset permissions ##
 chown root:root /etc/ssh/sshd_config
@@ -148,7 +186,7 @@ chmod 0440 /etc/ssh/sshd_config
 /etc/init.d/ssh restart
 
 ####################################################################################################
-#### Configure Ubuntu: Install SlickStack (Root) Crontab File ######################################
+#### SS-Install: Install SlickStack (Ubuntu) Root Crontab File #####################################
 ####################################################################################################
 
 ## MESSAGE ##
@@ -175,70 +213,67 @@ echo -e "\e[36mInstalling various SlickStack modules from most recent Ubuntu rep
 DEBIAN_FRONTEND=noninteractive dpkg --configure -a --force-confold
 
 ## update repo cache ##
-DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" update
-
-## purge monit (removed from SlickStack) ##
-DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" purge monit
+apt update
 
 ## upgrade existing repos ##
-DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" upgrade
+apt upgrade
 
 ## install update-manager-core ##
-DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install update-manager-core
+apt install update-manager-core
 
 ## install Linux utilities (Zip, Unzip, DOS2Unix) ##
-DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install zip unzip dos2unix
+apt install zip unzip dos2unix
 
 ## install Git ##
-DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install git
+apt install git
 
 ## install ClamAV ##
-DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install clamav
+apt install clamav
 
 ####################################################################################################
 #### Install Cerbot (Let's Encrypt) Packages Via PPA Repos #########################################
 ####################################################################################################
 
 ## install software-properties-common (for Certbot) ##
-DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install software-properties-common
+apt install software-properties-common
 
 ## add custom PPAs (for Certbot) ##
-DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" add-apt-repository universe
-DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" add-apt-repository ppa:certbot/certbot
+add-apt-repository universe
+add-apt-repository ppa:certbot/certbot
 
 ## update again after adding custom ppas ##
-DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" update
+apt update
 
 ## install Certbot ##
-DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install certbot python-certbot-nginx
+apt install certbot python-certbot-nginx
 
 ####################################################################################################
 #### Install PHP-FPM 7.2 + Required Extensions #####################################################
 ####################################################################################################
 
 ## purge PHP 7.0 + PHP 7.1 ##
-DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" purge php7.0
-DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" purge php7.1
+apt purge php7.0
+apt purge php7.1
 
 ## delete PHP 7.0 + PHP 7.1 files ##
-rm -R -f /etc/php/7.0*
-rm -R -f /etc/php/7.1*
+rm /etc/php/7.0*
+rm /etc/php/7.1*
 
 ## purge PHP 7.2 (so we can install again fresh) ##
-DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" purge php7.2
+apt purge php7.2
 
 ## install PHP 7.2 and extensions (php7.2 not needed when php7.2-fpm is used) ##
-DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install php7.2-bcmath php7.2-curl php7.2-fpm php7.2-gd php7.2-imagick php7.2-json php7.2-mbstring php7.2-mysql php7.2-soap php7.2-xml php7.2-zip
+apt install php7.2-bcmath php7.2-curl php7.2-fpm php7.2-gd php7.2-imagick php7.2-json php7.2-mbstring php7.2-mysql php7.2-soap php7.2-xml php7.2-zip
 
 ## delete tmp files ##
-rm -R -f /tmp/php-fpm*
-rm -R -f /tmp/php-ini*
-rm -R -f /tmp/www*
+rm /tmp/php-fpm*
+rm /tmp/php-ini*
+rm /tmp/www*
 
 ## download latest versions ##
-wget --no-cache --no-cookies --tries=3 --timeout=15 -O /tmp/php-fpm.conf http://mirrors.slickstack.io/php-fpm/php-fpm-conf.txt
-wget --no-cache --no-cookies --tries=3 --timeout=15 -O /tmp/php.ini http://mirrors.slickstack.io/php-fpm/php-ini.txt
-wget --no-cache --no-cookies --tries=3 --timeout=15 -O /tmp/www.conf http://mirrors.slickstack.io/php-fpm/www-conf.txt
+wget -O /tmp/php-fpm.conf http://mirrors.slickstack.io/php-fpm/php-fpm-conf.txt
+wget -O /tmp/php.ini http://mirrors.slickstack.io/php-fpm/php-ini.txt
+wget -O /tmp/www.conf http://mirrors.slickstack.io/php-fpm/www-conf.txt
 
 
 ######### set php.ini stuff ########
@@ -551,10 +586,10 @@ else
 fi
 
 ## copy files to their destinations ##
-cp -R -f --no-preserve=mode,ownership /tmp/php-fpm.conf /etc/php/7.2/fpm/php-fpm.conf
-cp -R -f --no-preserve=mode,ownership /tmp/php.ini /etc/php/7.2/fpm/php.ini
-cp -R -f --no-preserve=mode,ownership /tmp/php.ini /etc/php/7.2/cli/php.ini
-cp -R -f --no-preserve=mode,ownership /tmp/www.conf /etc/php/7.2/fpm/pool.d/www.conf
+cp /tmp/php-fpm.conf /etc/php/7.2/fpm/php-fpm.conf
+cp /tmp/php.ini /etc/php/7.2/fpm/php.ini
+cp /tmp/php.ini /etc/php/7.2/cli/php.ini
+cp /tmp/www.conf /etc/php/7.2/fpm/pool.d/www.conf
 
 ## customize PHP settings ##
 # sed -i '/error_log/c\error_log = /var/www/logs/error.log' /etc/php/7.2/fpm/php-fpm.conf
@@ -572,9 +607,9 @@ chown root:root /etc/php/7.2/fpm/pool.d/www.conf
 /etc/init.d/php7.2-fpm restart
 
 ## delete tmp files ##
-rm -R -f /tmp/php-fpm*
-rm -R -f /tmp/php-ini*
-rm -R -f /tmp/www*
+rm /tmp/php-fpm*
+rm /tmp/php-ini*
+rm /tmp/www*
 
 ####################################################################################################
 ### Prepare WP-CLI Configuration (Installation Completed Via Bash Aliases) #########################
@@ -584,13 +619,13 @@ rm -R -f /tmp/www*
 echo -e "\e[36mInstalling the WP-CLI module directly from SlickStack mirrors...\e[0m"
 
 ## uninstall current wp-cli versions ##
-rm -R -f /usr/local/bin/wp
-rm -R -f /home/wp-completion.bash
-rm -R -f /home/${SUDO_USER}/wp-cli.yml
-rm -R -f /var/www/meta/.wp-completion*
-rm -R -f /var/www/meta/wp-cli.yml
-rm -R -f /var/www/html/.wp-cli
-rm -R -f /var/www/html/wp-cli
+rm /usr/local/bin/wp
+rm /home/wp-completion.bash
+rm /home/${SUDO_USER}/wp-cli.yml
+rm /var/www/meta/.wp-completion*
+rm /var/www/meta/wp-cli.yml
+rm /var/www/html/.wp-cli
+rm /var/www/html/wp-cli
 sed -i '/WP-CLI/d' /home/${SUDO_USER}/.bashrc
 sed -i '/wp-completion/d' /home/${SUDO_USER}/.bashrc
 
@@ -599,17 +634,17 @@ ln -s /home/${SUDO_USER}/.wp-cli/config.yml /var/www/meta/wp-cli.yml &> /dev/nul
 ln -s /root/.wp-cli/config.yml /var/www/meta/wp-cli.yml &> /dev/null
 
 ## download latest versions ##
-wget --no-cache --no-cookies --tries=3 --timeout=15 -O /tmp/wp-cli.phar http://mirrors.slickstack.io/wp-cli/wp-cli.phar
-wget --no-cache --no-cookies --tries=3 --timeout=15 -O /tmp/wp-cli.yml http://mirrors.slickstack.io/wp-cli/wp-cli-yml.txt
-wget --no-cache --no-cookies --tries=3 --timeout=15 -O /tmp/wp-completion.txt http://mirrors.slickstack.io/wp-cli/wp-completion.txt
+wget -O /tmp/wp-cli.phar http://mirrors.slickstack.io/wp-cli/wp-cli.phar
+wget -O /tmp/wp-cli.yml http://mirrors.slickstack.io/wp-cli/wp-cli-yml.txt
+wget -O /tmp/wp-completion.txt http://mirrors.slickstack.io/wp-cli/wp-completion.txt
 
 ## make files executable ##
 chmod +x /tmp/wp-cli.phar
 
 ## copy files to destinations ##
-cp -R -f -d --no-preserve=mode,ownership /tmp/wp-cli.phar /usr/local/bin/wp
-cp -R -f -d --no-preserve=mode,ownership /tmp/wp-cli.yml /var/www/meta/wp-cli.yml
-cp -R -f -d --no-preserve=mode,ownership /tmp/wp-completion.txt /var/www/meta/.wp-completion
+cp /tmp/wp-cli.phar /usr/local/bin/wp
+cp /tmp/wp-cli.yml /var/www/meta/wp-cli.yml
+cp /tmp/wp-completion.txt /var/www/meta/.wp-completion
 
 ## reset permissions ##
 ## Ref: https://www.alexgeorgiou.gr/wp-cli-www-data-user-permissions-linux/
@@ -631,16 +666,16 @@ chmod 6775 /var/www/meta/.wp-completion
 echo -e "\e[36mInstalling Bash aliases for basic SlickStack commands...\e[0m"
 
 ## uninstall old ##
-rm -R -f /home/${SUDO_USER}/.bash-aliases
-rm -R -f /var/www/meta/.bash-aliases
+rm /home/${SUDO_USER}/.bash-aliases
+rm /var/www/meta/.bash-aliases
 sed -i '/include Bash aliases/d' /home/${SUDO_USER}/.bashrc
 sed -i '\:var/www/meta:d' /home/${SUDO_USER}/.bashrc
 
 ## download ##
-wget --no-cache --no-cookies --tries=3 --timeout=15 -O /tmp/bash-aliases.txt http://mirrors.slickstack.io/ubuntu/bash-aliases.txt
+wget -O /tmp/bash-aliases.txt http://mirrors.slickstack.io/ubuntu/bash-aliases.txt
 
 ## copy files ##
-cp -R -f -d --no-preserve=mode,ownership /tmp/bash-aliases.txt /var/www/meta/.bash-aliases
+cp /tmp/bash-aliases.txt /var/www/meta/.bash-aliases
 
 ## reset permissions ##
 chown root:root /var/www/meta/.bash-aliases
@@ -659,19 +694,19 @@ source /home/${SUDO_USER}/.bashrc
 ####################################################################################################
 
 ## update Ubuntu package cache ##
-DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" update
+apt update
 
 ## add Nginx mainline (dev) branch ppa ##
-DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/add-apt-repository --yes ppa:nginx/development
+add-apt-repository ppa:nginx/development
 
 ## update package cache (again... not needed in Ubuntu 18.04+ but just for fun) ##
-DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" update
+apt update
 
 ## install Nginx-Extras ##
-DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install nginx-extras
+apt install nginx-extras
 
 ## download latest versions ##
-wget --no-cache --no-cookies --tries=3 --timeout=15 -O /tmp/nginx.conf http://mirrors.slickstack.io/nginx/nginx-conf.txt
+wget -O /tmp/nginx.conf http://mirrors.slickstack.io/nginx/nginx-conf.txt
 
 ## replace variables ##
 sed -i "s/@FCGI_CACHE_MEMORY/${FCGI_CACHE_MEMORY}/g" /tmp/nginx.conf
@@ -686,10 +721,10 @@ else
 fi
 
 ## copy files to their destinations ##
-cp -R -f --no-preserve=mode,ownership /tmp/nginx.conf /etc/nginx/nginx.conf
+cp /tmp/nginx.conf /etc/nginx/nginx.conf
 
 ## ensure cache directory exists (will not overwrite) ##
-mkdir -p /var/www/cache
+mkdir /var/www/cache
 
 ## reset permissions ##
 chown www-data:www-data /var/www/cache
@@ -705,7 +740,7 @@ else
 fi
 
 ## download latest versions ##
-wget --no-cache --no-cookies --tries=3 --timeout=15 -O /tmp/default http://mirrors.slickstack.io/nginx/default-single-site.txt
+wget -O /tmp/default http://mirrors.slickstack.io/nginx/default-single-site.txt
 
 ## replace variables ##
 sed -i "s/@DOMAIN/${SITE_DOMAIN}/g" /tmp/default
@@ -719,7 +754,7 @@ else
 fi
 
 ## copy files to destinations ##
-cp -R -f --no-preserve=mode,ownership /tmp/default /etc/nginx/sites-available/default
+cp /tmp/default /etc/nginx/sites-available/default
 
 ## reset permissions ##
 chown root:root /etc/nginx/sites-available/default
@@ -750,13 +785,13 @@ echo debconf mysql-server/root_password_again password ${DB_PASSWORD_ROOT} | deb
 # debconf-set-selections <<< "mysql-server-5.7 mysql-server/root_password_again password ${dbrootpass}"
 
 ## install mysql 5.7 ##
-DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install mysql-server-5.7 
+apt install mysql-server-5.7 
 
 ## MESSAGE ##
 echo -e "\e[36mMySQL 5.7 is installed, now we will secure it...\e[0m"
 
 ## install expect ##
-DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install expect
+apt install expect
 
 ## build expect script ##
 tee ~/secure_our_mysql.sh > /dev/null << EOF
@@ -800,7 +835,7 @@ expect ~/secure_our_mysql.sh
 rm -v ~/secure_our_mysql.sh
 
 ## uninstall expect ##
-# apt -qq purge expect > /dev/null # Uninstall Expect, commented out in case you need Expect
+# apt purge expect
 
 ## confirm secured ##
 echo "Congratulations, MySQL 5.7 is installed and secured. Onward!"
@@ -843,10 +878,10 @@ mysql --user=root --execute="FLUSH PRIVILEGES;"
 ####################################################################################################
 
 ## cleanup leftover files ##
-rm -R -f /tmp/my.cnf
+rm /tmp/my.cnf
 
 ## install custom my.cnf config file ##
-wget --no-cache --no-cookies --tries=3 --timeout=15 -O /tmp/my.cnf http://mirrors.slickstack.io/mysql/my-cnf.txt
+wget -O /tmp/my.cnf http://mirrors.slickstack.io/mysql/my-cnf.txt
 
 ## set MySQL mode ##
 if [[ -z "$SQL_MODE" ]]; then 
@@ -896,7 +931,7 @@ fi
 /etc/init.d/mysql stop
 
 ## copy files to their destinations ##
-cp -R -f -d --no-preserve=mode,ownership /tmp/my.cnf /etc/mysql/my.cnf
+cp /tmp/my.cnf /etc/mysql/my.cnf
 
 ## reset permissions ##
 chown root:root /etc/mysql/my.cnf
@@ -910,36 +945,36 @@ chmod 0775 /etc/mysql/my.cnf
 ####################################################################################################
 
 ## cleanup files ##
-rm -R -f /var/www/html/wordpress*
+rm /var/www/html/wordpress*
 
 ## change dir (temp fix) ##
 cd /var/www/html
 
 ## download latest version ##
-wget --no-cache --no-cookies --tries=3 --timeout=15 -O /var/www/html/wordpress.zip http://mirrors.slickstack.io/wordpress/wordpress.zip
+wget -O /var/www/html/wordpress.zip http://mirrors.slickstack.io/wordpress/wordpress.zip
 unzip -o /var/www/html/wordpress.zip
 chown -R www-data:wordpress /var/www/html/wordpress
 chmod 775 /var/www/html/wordpress
-rm -R -f /var/www/html/wp-admin*
-rm -R -f /var/www/html/wp-includes*
-rm -R -f /var/www/html/wp*.php*
-rm -R -f /var/www/html/index*.php*
-rm -R -f /var/www/html/composer.json*
+rm /var/www/html/wp-admin*
+rm /var/www/html/wp-includes*
+rm /var/www/html/wp*.php*
+rm /var/www/html/index*.php*
+rm /var/www/html/composer.json*
 rsync -raqI /var/www/html/wordpress/* ./
 
 ## cleanup files ##
-rm -R -f /var/www/html/wordpress*
-rm -R -f /var/www/html/classicpress*
+rm /var/www/html/wordpress*
+rm /var/www/html/classicpress*
 
 ####################################################################################################
 #### SlickStack: Install + Configure Throwaway Theme ###############################################
 ####################################################################################################
 
 ## cleanup files ##
-rm -R -f /tmp/throwaway*
+rm /tmp/throwaway*
 
 ## retrieve latest throwaway theme ##
-wget --no-cache --no-cookies --tries=3 --timeout=15 -O /tmp/throwaway.zip http://mirrors.slickstack.io/wordpress/throwaway.zip
+wget -O /tmp/throwaway.zip http://mirrors.slickstack.io/wordpress/throwaway.zip
 
 ## unzip ##
 unzip -d /tmp/throwaway/ -o -j /tmp/throwaway.zip
@@ -951,23 +986,16 @@ sed -i "s/@SITE_DOMAIN/${SITE_DOMAIN}/g" /tmp/throwaway/functions.php
 sed -i "s/@WP_LANG/${WP_LANG}/g" /tmp/throwaway/functions.php
 
 ## copy files to destinations ##
-cp -R -f --no-preserve=mode,ownership /tmp/throwaway /var/www/html/wp-content/themes/
+cp /tmp/throwaway /var/www/html/wp-content/themes/
 
 ## cleanup files ##
-rm -R -f /tmp/throwaway*
+rm /tmp/throwaway*
 
 ####################################################################################################
 #### SlickStack: Configure WP-Config File (WordPress Configuration) ################################
 ####################################################################################################
 
-## retrieve wp-config.php boilerplate ##
-# if [[ -z "$WP_CONFIG_BOILERPLATE_SOURCE" ]]; then 
-#   wget --no-cache --no-cookies --tries=3 --timeout=15 -O /tmp/wp-config.txt http://mirrors.slickstack.io/wordpress/wp-config.txt
-# else 
-#     wget --no-check-certificate --no-cache --no-cookies --tries=3 --timeout=15 -O /tmp/wp-config.txt "$WP_CONFIG_BOILERPLATE_SOURCE"
-# fi
-
-wget --no-cache --no-cookies --tries=3 --timeout=15 -O /tmp/wp-config.txt http://mirrors.slickstack.io/wordpress/wp-config.txt
+wget -O /tmp/wp-config.txt http://mirrors.slickstack.io/wordpress/wp-config.txt
 
 ## replace database placeholders ##
 sed -i "s/@DB_NAME/${DB_NAME}/g" /tmp/wp-config.txt
@@ -1102,30 +1130,27 @@ fi
 mv /tmp/wp-config.txt /tmp/wp-config.php
 
 ## copy files to destinations ##
-cp -R -f --no-preserve=mode,ownership /tmp/wp-config.php /var/www/html/wp-config.php
+cp /tmp/wp-config.php /var/www/html/wp-config.php
 
 ## delete tmp files ##
-rm -R -f /tmp/wp-config*
+rm /tmp/wp-config*
 
 ## create directories if doesn't exist (will not overwrite) ##
-mkdir -p /var/www/html/wp-content/temp
-mkdir -p /var/www/html/wp-content/uploads
-mkdir -p /var/www/html/wp-content/upgrade
-
-## test ss-install first that throway being activated + theme switch before enabling this line ##
-# rm -R -f /var/www/html/wp-content/themes/throwaway*
+mkdir /var/www/html/wp-content/temp
+mkdir /var/www/html/wp-content/uploads
+mkdir /var/www/html/wp-content/upgrade
 
 ####################################################################################################
 #### SlickStack: Install Redis-Server (Includes Redis-CLI) + PHP-Redis #############################
 ####################################################################################################
 
 ## purge redis-server + php-redis (if installed) ##
-DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" purge redis-server
-DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" purge php-redis
+apt purge redis-server
+apt purge php-redis
 
 ## install redis-server + php-redis ##
-DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install redis-server
-DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install php-redis
+apt install redis-server
+apt install php-redis
 
 ## configure redis-server for object caching (only) ##
 sed -i '/maxmemory.*bytes.*/c\maxmemory 256mb' /etc/redis/redis.conf
@@ -1136,7 +1161,7 @@ sed -i '/always-show-logo yes/c\always-show-logo no' /etc/redis/redis.conf
 
 ## create log files if do not exist ##
 # if [ ! -f "/var/www/logs/redis.log" ]; then touch "/var/www/logs/redis.log"; fi
-# mkdir -p /var/run/redis
+# mkdir /var/run/redis
 
 ## reset permissions ##
 chown redis:redis /var/www/logs/redis.log
@@ -1147,22 +1172,22 @@ chmod 775 /etc/redis/redis.conf
 chmod 775 /var/run/redis
 
 ####################################################################################################
-#### SlickStack: Install MU Plugins (WordPress) After PHP-FPM And Redis Installed ##################
+#### SS-Install: Install MU (Must-Use) Plugins (After PHP-FPM And Redis Installed) #################
 ####################################################################################################
 
-## run scripts ##
+## run ss-muplugs ##
 source /var/www/ss-muplugs
 
 ####################################################################################################
-#### Configure UFW Firewall ########################################################################
+#### SS-Install: Configure UFW Firewall + Set UFW Rules ############################################
 ####################################################################################################
 
 ## delete tmp files ##
-rm -R -f /tmp/ufw*
-rm -R -f /tmp/user*
+rm /tmp/ufw*
+rm /tmp/user*
 
 ## install ufw ##
-DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=critical PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' /usr/bin/apt -q --yes -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install ufw
+apt install ufw
 
 ## ufw rules ##
 ufw default deny incoming
@@ -1176,9 +1201,9 @@ ufw --force enable
 echo "y" | ufw enable
 
 # retrieve latest versions ##
-wget --no-cache --no-cookies --tries=3 --timeout=15 -O /tmp/ufw http://mirrors.slickstack.io/ufw-firewall/ufw.txt
-wget --no-cache --no-cookies --tries=3 --timeout=15 -O /tmp/ufw.conf http://mirrors.slickstack.io/ufw-firewall/ufw-conf.txt
-wget --no-cache --no-cookies --tries=3 --timeout=15 -O /tmp/user.rules http://mirrors.slickstack.io/ufw-firewall/user-rules.txt
+wget -O /tmp/ufw http://mirrors.slickstack.io/ufw-firewall/ufw.txt
+wget -O /tmp/ufw.conf http://mirrors.slickstack.io/ufw-firewall/ufw-conf.txt
+wget -O /tmp/user.rules http://mirrors.slickstack.io/ufw-firewall/user-rules.txt
 
 if [[ -z "$SSH_PORT" ]]; then 
     sed -i "s/@SSH_PORT/6969/g" /tmp/user.rules
@@ -1187,9 +1212,9 @@ else
 fi
 
 ## copy files to their destinations ##
-cp -R -f -d --no-preserve=mode,ownership /tmp/ufw /etc/default/ufw
-cp -R -f -d --no-preserve=mode,ownership /tmp/ufw.conf /etc/ufw/ufw.conf
-cp -R -f -d --no-preserve=mode,ownership /tmp/user.rules /etc/ufw/user.rules
+cp /tmp/ufw /etc/default/ufw
+cp /tmp/ufw.conf /etc/ufw/ufw.conf
+cp /tmp/user.rules /etc/ufw/user.rules
 
 ## reset permissions ##
 chown root:root /etc/default/ufw
@@ -1200,8 +1225,8 @@ chmod 0664 /etc/ufw/ufw.conf
 chmod 0664 /etc/ufw/user.rules
 
 ## delete tmp files ##
-rm -R -f /tmp/ufw*
-rm -R -f /tmp/user*
+rm /tmp/ufw*
+rm /tmp/user*
 
 ####################################################################################################
 #### Configure ClamAV ##############################################################################
@@ -1221,16 +1246,16 @@ sed -i '/MaxAttempts/c\MaxAttempts 3' /etc/clamav/freshclam.conf
 ####################################################################################################
 
 ## delete tmp files ##
-rm -R -f /tmp/sysctl*
+rm /tmp/sysctl*
 
 ## backup current Ubunt kernel file ##
-cp -R -f -d --no-preserve=mode,ownership /etc/sysctl.conf /etc/sysctl.conf.bak
+cp /etc/sysctl.conf /etc/sysctl.conf.bak
 
 ## download latest versions ##
-wget --no-cache --no-cookies --tries=3 --timeout=15 -O /tmp/sysctl.conf http://mirrors.slickstack.io/ubuntu/sysctl.txt
+wget -O /tmp/sysctl.conf http://mirrors.slickstack.io/ubuntu/sysctl.txt
 
 ## copy files to their destinations ##
-cp -R -f -d --no-preserve=mode,ownership /tmp/sysctl.conf /etc/sysctl.conf
+cp /tmp/sysctl.conf /etc/sysctl.conf
 
 ## reset permissions ##
 chown root:root /etc/sysctl.conf
@@ -1241,7 +1266,7 @@ chmod 0664 /etc/sysctl.conf
 ####################################################################################################
 
 ## not a virgin install anymore ##
-mkdir -p /var/www/meta/ && touch /var/www/meta/.cherry
+mkdir /var/www/meta/ && touch /var/www/meta/.cherry
 
 ## run scripts ##
 source /var/www/ss-purge
@@ -1261,7 +1286,7 @@ source /var/www/ss-restart
 echo -e "\e[36mSlickStack installation complete! Please reboot server and ensure CloudFlare is activated with Full SSL mode.\e[0m"
 
 ####################################################################################################
-#### External References Used By SlickStack To Improve This Script #################################
+#### SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ###############
 ####################################################################################################
 
 ## Ref: http://wproller.com ##
