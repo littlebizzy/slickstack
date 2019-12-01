@@ -181,6 +181,7 @@ title: MU (Must-Use) Plugins (Public Mirrors)
 * [https://github.com/pressjitsu/pj-object-cache-red](https://github.com/pressjitsu/pj-object-cache-red)
 * [https://github.com/roots/bedrock/blob/master/web/app/mu-plugins/bedrock-autoloader.php](https://github.com/roots/bedrock/blob/master/web/app/mu-plugins/bedrock-autoloader.php)
 * [https://core.trac.wordpress.org/ticket/24044](https://core.trac.wordpress.org/ticket/24044)
+* [https://wordpress.stackexchange.com/questions/98284/how-come-wp-options-table-does-not-have-an-index-on-autoload](https://wordpress.stackexchange.com/questions/98284/how-come-wp-options-table-does-not-have-an-index-on-autoload)
 
 ----
 
