@@ -72,7 +72,7 @@ if [[ "${UBUNTU_VERSION}" != "18.04" ]]; then
 fi
 
 ## ensure ss-config build version matches ss-install build version ##
-if [[ "$SS_BUILD" != "NOV2019N" ]]; then 
+if [[ "$SS_BUILD" != "NOV2019P" ]]; then 
     echo -e "\e[93mYour ss-config file is outdated. Please rebuild it and run ss-install again.\e[0m" >&2
     exit 1
 fi
@@ -718,6 +718,41 @@ if [[ "$SITE_NOINDEX" == "true" ]]; then
     sed -i "s/#@NOINDEX# //g" /tmp/nginx.conf
 else 
     sed -i "/#@NOINDEX# /d" /tmp/nginx.conf
+fi
+
+## nginx worker rlimit nofile ##
+if [[ -z "$NGINX_WORKER_RLIMIT_NOFILE" ]]; then 
+    sed -i "s/@NGINX_WORKER_RLIMIT_NOFILE/65535/g" /tmp/nginx.conf
+else 
+    sed -i "s/@NGINX_WORKER_RLIMIT_NOFILE/${NGINX_WORKER_RLIMIT_NOFILE}/g" /tmp/nginx.conf
+fi
+
+## nginx worker connections ##
+if [[ -z "$NGINX_WORKER_CONNECTIONS" ]]; then 
+    sed -i "s/@NGINX_WORKER_CONNECTIONS/8192/g" /tmp/nginx.conf
+else 
+    sed -i "s/@NGINX_WORKER_CONNECTIONS/${NGINX_WORKER_CONNECTIONS}/g" /tmp/nginx.conf
+fi
+
+## nginx server names hash bucket size ##
+if [[ -z "$NGINX_SERVER_NAMES_HASH_BUCKET_SIZE" ]]; then 
+    sed -i "s/@NGINX_SERVER_NAMES_HASH_BUCKET_SIZE/64/g" /tmp/nginx.conf
+else 
+    sed -i "s/@NGINX_SERVER_NAMES_HASH_BUCKET_SIZE/${NGINX_SERVER_NAMES_HASH_BUCKET_SIZE}/g" /tmp/nginx.conf
+fi
+
+## nginx server names max hash size ##
+if [[ -z "$NGINX_SERVER_NAMES_MAX_HASH_SIZE" ]]; then 
+    sed -i "s/@NGINX_SERVER_NAMES_MAX_HASH_SIZE/64/g" /tmp/nginx.conf
+else 
+    sed -i "s/@NGINX_SERVER_NAMES_MAX_HASH_SIZE/${NGINX_SERVER_NAMES_MAX_HASH_SIZE}/g" /tmp/nginx.conf
+fi
+
+## nginx types max hash size ##
+if [[ -z "$NGINX_TYPES_MAX_HASH_SIZE" ]]; then 
+    sed -i "s/@NGINX_TYPES_MAX_HASH_SIZE/2048/g" /tmp/nginx.conf
+else 
+    sed -i "s/@NGINX_TYPES_MAX_HASH_SIZE/${NGINX_TYPES_MAX_HASH_SIZE}/g" /tmp/nginx.conf
 fi
 
 ## copy files to their destinations ##
