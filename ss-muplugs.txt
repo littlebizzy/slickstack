@@ -3,7 +3,7 @@
 ####################################################################################################
 #### author: SlickStack ############################################################################
 #### link: https://slickstack.io ###################################################################
-#### mirror: http://mirrors.slickstack.io/ss-muplugs.txt ###########################################
+#### mirror: http://lemp.redshift.network/ss-muplugs.txt ###########################################
 #### path: /var/www/ss-muplugs #####################################################################
 #### destination: n/a (not a boilerplate) ##########################################################
 #### purpose: Reinstalls various MU (Must-Use) plugins and object cache, etc (idempotent) ##########
@@ -59,10 +59,10 @@ function rm {
 ## delete Autoloader (required script) temporary files ##
 rm /tmp/autoloader*
 
-## delete Custom Functions + XXX Notices (required MU plugins) temporary files ##
+## delete Custom Functions ##
 rm /tmp/custom-functions*
 rm /tmp/functions*
-rm /tmp/xxx-notices*
+
 
 ## delete Object Cache (required drop-in plugin) temporary files ##
 rm /tmp/object-cache*
@@ -80,7 +80,6 @@ rm /tmp/disable-gutenberg*
 rm /tmp/disable-image-compression*
 rm /tmp/disable-post-via-email*
 rm /tmp/disable-xml-rpc*
-rm /tmp/error-log-monitor*
 rm /tmp/force-https*
 rm /tmp/force-strong-hashing*
 rm /tmp/header-cleanup*
@@ -112,14 +111,13 @@ rm /var/www/html/wp-content/mu-plugins/*
 ####################################################################################################
 
 ## download Autoloader (required script) files ##
-wget -O /tmp/autoloader.php http://mirrors.slickstack.io/mu-plugins/autoloader.txt
+wget -O /tmp/autoloader.php http://lemp.redshift.network/mu-plugins/autoloader.txt
 
-## download Custom Functions + XXX Notices (required MU plugins) files  ##
-wget -O /tmp/custom-functions.zip http://mirrors.slickstack.io/mu-plugins/custom-functions.zip
-wget -O /tmp/xxx-notices.php http://mirrors.slickstack.io/mu-plugins/xxx-notices.txt
+## download Custom Functions files ##
+wget -O /tmp/custom-functions.zip http://lemp.redshift.network/mu-plugins/custom-functions.zip
 
 ## download Object Cache (required drop-in plugin) files ##
-wget -O /tmp/object-cache.php http://mirrors.slickstack.io/mu-plugins/object-cache.txt
+wget -O /tmp/object-cache.php http://lemp.redshift.network/mu-plugins/object-cache.txt
 
 ## unzip various files ##
 unzip /tmp/custom-functions.zip -d /tmp
@@ -129,7 +127,7 @@ rm /var/www/html/wp-content/plugins/autoloader*
 
 ## delete potentially conflicting normal plugins (with required MU plugins) ##
 # rm /var/www/html/wp-content/plugins/custom-functions* ## don't delete others until ours is working 100% perfect
-rm /var/www/html/wp-content/plugins/xxx-notices*
+
 
 ## delete potentially conflicting object caches (drop-in plugins + normal plugins) ##
 rm /var/www/html/wp-content/object-cache*
@@ -143,7 +141,6 @@ cp /tmp/autoloader.php /var/www/html/wp-content/mu-plugins/autoloader.php
 
 ## copy required MU plugins files to destinations ##
 cp /tmp/custom-functions /var/www/html/wp-content/mu-plugins/custom-functions
-cp /tmp/xxx-notices.php /var/www/html/wp-content/mu-plugins/xxx-notices.php
 
 ## copy Object Cache files to destination ##
 cp /tmp/object-cache.php /var/www/html/wp-content/object-cache.php
@@ -154,7 +151,7 @@ cp /tmp/object-cache.php /var/www/html/wp-content/object-cache.php
 
 ## download specified functions file (otherwise create generic) if none exists ##
 if [ ! -f /var/www/html/wp-content/functions.php ] && [ -z "$CUSTOM_FUNCTIONS_SOURCE" ]; then
-    wget -O /tmp/functions.php http://mirrors.slickstack.io/wordpress/functions.txt
+    wget -O /tmp/functions.php http://lemp.redshift.network/wordpress/functions.txt
     cp /tmp/functions.php /var/www/html/wp-content/functions.php
 elif [ ! -f /var/www/html/wp-content/functions.php ] && [ -n "$CUSTOM_FUNCTIONS_SOURCE" ]; then
     wget -O /tmp/functions.php "$CUSTOM_FUNCTIONS_SOURCE"
@@ -269,30 +266,29 @@ fi
 # else
 
 ## download default MU (Must-Use) files if none specified in the ss-config ##
-wget -O /tmp/clear-caches.zip http://mirrors.slickstack.io/mu-plugins/clear-caches.zip
-wget -O /tmp/cloudflare.zip http://mirrors.slickstack.io/mu-plugins/cloudflare.zip
-wget -O /tmp/dashboard-cleanup.zip http://mirrors.slickstack.io/mu-plugins/dashboard-cleanup.zip
-wget -O /tmp/delete-expired-transients.zip http://mirrors.slickstack.io/mu-plugins/delete-expired-transients.zip
-wget -O /tmp/disable-attachment-pages.zip http://mirrors.slickstack.io/mu-plugins/disable-attachment-pages.zip
-wget -O /tmp/disable-embeds.zip http://mirrors.slickstack.io/mu-plugins/disable-embeds.zip
-wget -O /tmp/disable-emojis.zip http://mirrors.slickstack.io/mu-plugins/disable-emojis.zip
-wget -O /tmp/disable-empty-trash.zip http://mirrors.slickstack.io/mu-plugins/disable-empty-trash.zip
-wget -O /tmp/disable-gutenberg.zip http://mirrors.slickstack.io/mu-plugins/disable-gutenberg.zip
-wget -O /tmp/disable-image-compression.zip http://mirrors.slickstack.io/mu-plugins/disable-image-compression.zip
-wget -O /tmp/disable-post-via-email.zip http://mirrors.slickstack.io/mu-plugins/disable-post-via-email.zip
-wget -O /tmp/disable-xml-rpc.zip http://mirrors.slickstack.io/mu-plugins/disable-xml-rpc.zip
-wget -O /tmp/error-log-monitor.zip http://mirrors.slickstack.io/mu-plugins/error-log-monitor.zip
-wget -O /tmp/force-https.zip http://mirrors.slickstack.io/mu-plugins/force-https.zip
-wget -O /tmp/force-strong-hashing.zip http://mirrors.slickstack.io/mu-plugins/force-strong-hashing.zip
-wget -O /tmp/header-cleanup.zip http://mirrors.slickstack.io/mu-plugins/header-cleanup.zip
-wget -O /tmp/index-autoload.zip http://mirrors.slickstack.io/mu-plugins/index-autoload.zip
-wget -O /tmp/limit-heartbeat.zip http://mirrors.slickstack.io/mu-plugins/limit-heartbeat.zip
-wget -O /tmp/maintenance-mode.zip http://mirrors.slickstack.io/mu-plugins/maintenance-mode.zip
-wget -O /tmp/minify-html.zip http://mirrors.slickstack.io/mu-plugins/minify-html.zip
-wget -O /tmp/plugin-blacklist.zip http://mirrors.slickstack.io/mu-plugins/plugin-blacklist.zip
-wget -O /tmp/server-status.zip http://mirrors.slickstack.io/mu-plugins/server-status.zip
-wget -O /tmp/sftp-details.zip http://mirrors.slickstack.io/mu-plugins/sftp-details.zip
-wget -O /tmp/virtual-robotstxt.zip http://mirrors.slickstack.io/mu-plugins/virtual-robotstxt.zip
+wget -O /tmp/clear-caches.zip http://lemp.redshift.network/mu-plugins/clear-caches.zip
+wget -O /tmp/cloudflare.zip http://lemp.redshift.network/mu-plugins/cloudflare.zip
+wget -O /tmp/dashboard-cleanup.zip http://lemp.redshift.network/mu-plugins/dashboard-cleanup.zip
+wget -O /tmp/delete-expired-transients.zip http://lemp.redshift.network/mu-plugins/delete-expired-transients.zip
+wget -O /tmp/disable-attachment-pages.zip http://lemp.redshift.network/mu-plugins/disable-attachment-pages.zip
+wget -O /tmp/disable-embeds.zip http://lemp.redshift.network/mu-plugins/disable-embeds.zip
+wget -O /tmp/disable-emojis.zip http://lemp.redshift.network/mu-plugins/disable-emojis.zip
+wget -O /tmp/disable-empty-trash.zip http://lemp.redshift.network/mu-plugins/disable-empty-trash.zip
+wget -O /tmp/disable-gutenberg.zip http://lemp.redshift.network/mu-plugins/disable-gutenberg.zip
+wget -O /tmp/disable-image-compression.zip http://lemp.redshift.network/mu-plugins/disable-image-compression.zip
+wget -O /tmp/disable-post-via-email.zip http://lemp.redshift.network/mu-plugins/disable-post-via-email.zip
+wget -O /tmp/disable-xml-rpc.zip http://lemp.redshift.network/mu-plugins/disable-xml-rpc.zip
+wget -O /tmp/force-https.zip http://lemp.redshift.network/mu-plugins/force-https.zip
+wget -O /tmp/force-strong-hashing.zip http://lemp.redshift.network/mu-plugins/force-strong-hashing.zip
+wget -O /tmp/header-cleanup.zip http://lemp.redshift.network/mu-plugins/header-cleanup.zip
+wget -O /tmp/index-autoload.zip http://lemp.redshift.network/mu-plugins/index-autoload.zip
+wget -O /tmp/limit-heartbeat.zip http://lemp.redshift.network/mu-plugins/limit-heartbeat.zip
+wget -O /tmp/maintenance-mode.zip http://lemp.redshift.network/mu-plugins/maintenance-mode.zip
+wget -O /tmp/minify-html.zip http://lemp.redshift.network/mu-plugins/minify-html.zip
+wget -O /tmp/plugin-blacklist.zip http://lemp.redshift.network/mu-plugins/plugin-blacklist.zip
+wget -O /tmp/server-status.zip http://lemp.redshift.network/mu-plugins/server-status.zip
+wget -O /tmp/sftp-details.zip http://lemp.redshift.network/mu-plugins/sftp-details.zip
+wget -O /tmp/virtual-robotstxt.zip http://lemp.redshift.network/mu-plugins/virtual-robotstxt.zip
 
 ## unzip them all ##
 unzip /tmp/clear-caches.zip -d /tmp
@@ -307,7 +303,6 @@ unzip /tmp/disable-gutenberg.zip -d /tmp
 unzip /tmp/disable-image-compression.zip -d /tmp
 unzip /tmp/disable-post-via-email.zip -d /tmp
 unzip /tmp/disable-xml-rpc.zip -d /tmp
-unzip /tmp/error-log-monitor.zip -d /tmp
 unzip /tmp/force-https.zip -d /tmp
 unzip /tmp/force-strong-hashing.zip -d /tmp
 unzip /tmp/header-cleanup.zip -d /tmp
@@ -334,7 +329,6 @@ rm /var/www/html/wp-content/plugins/disable-gutenberg*
 rm /var/www/html/wp-content/plugins/disable-image-compression*
 rm /var/www/html/wp-content/plugins/disable-post-via-email*
 rm /var/www/html/wp-content/plugins/disable-xml-rpc*
-rm /var/www/html/wp-content/plugins/error-log-monitor*
 rm /var/www/html/wp-content/plugins/force-https*
 rm /var/www/html/wp-content/plugins/force-strong-hashing*
 rm /var/www/html/wp-content/plugins/header-cleanup*
@@ -362,7 +356,6 @@ cp /tmp/disable-gutenberg /var/www/html/wp-content/mu-plugins/disable-gutenberg
 cp /tmp/disable-image-compression /var/www/html/wp-content/mu-plugins/disable-image-compression
 cp /tmp/disable-post-via-email /var/www/html/wp-content/mu-plugins/disable-post-via-email
 cp /tmp/disable-xml-rpc /var/www/html/wp-content/mu-plugins/disable-xml-rpc
-# cp /tmp/error-log-monitor /var/www/html/wp-content/mu-plugins/error-log-monitor
 cp /tmp/force-https /var/www/html/wp-content/mu-plugins/force-https
 cp /tmp/force-strong-hashing /var/www/html/wp-content/mu-plugins/force-strong-hashing
 cp /tmp/header-cleanup /var/www/html/wp-content/mu-plugins/header-cleanup
@@ -397,10 +390,9 @@ chmod 6775 /var/www/html/wp-content/functions.php
 ## delete Autoloader (required script) temporary files ##
 rm /tmp/autoloader*
 
-## delete Custom Functions + XXX Notices (required MU plugins) temporary files ##
+## delete Custom Functions temporary files ##
 rm /tmp/custom-functions*
 rm /tmp/functions*
-rm /tmp/xxx-notices*
 
 ## delete Object Cache (required drop-in plugin) temporary files ##
 rm /tmp/object-cache*
@@ -418,7 +410,6 @@ rm /tmp/disable-gutenberg*
 rm /tmp/disable-image-compression*
 rm /tmp/disable-post-via-email*
 rm /tmp/disable-xml-rpc*
-rm /tmp/error-log-monitor*
 rm /tmp/force-https*
 rm /tmp/force-strong-hashing*
 rm /tmp/header-cleanup*

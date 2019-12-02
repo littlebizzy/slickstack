@@ -78,21 +78,21 @@ It should also be noted that SlickStack [ss] is HTTPS-only, meaning that HTTP si
 
 | LEMP Module | Mirrors | Version | What does SlickStack [ss] customize? |
 | :------------- | :----------: | :----------: | :----------: |
-| **Ubuntu** | [mirrors](http://mirrors.slickstack.io/ubuntu/) | 18.04 (LTS) | `crontab` + `gai.conf` + `sshd_config` + `sudoers` + `sysctl.conf` |
-| **Nginx (Extras)** | [mirrors](http://mirrors.slickstack.io/nginx/) | 1.15.8 | `nginx.conf` + `default` (server block) |
-| **FastCGI Cache** | [mirrors](http://mirrors.slickstack.io/fastcgi-cache/) | 1.15.8 | `fastcgi-cache.conf` |
-| **OpenSSL** | [mirrors](http://mirrors.slickstack.io/openssl/) | 1.1.0g | default config |
-| **Let's Encrypt†** | [mirrors](http://mirrors.slickstack.io/letsencrypt/) | 0.23.0 | custom config |
-| **MySQL** | [mirrors](http://mirrors.slickstack.io/mysql/) | 5.7+ | default config (will be customized slightly in future) |
-| **PHP-FPM** | [mirrors](http://mirrors.slickstack.io/php-fpm/) | 7.2+ | `php.ini` + `php-fpm.conf` + `www.conf` |
-| **Zend / OPcache** | [mirrors](http://mirrors.slickstack.io/opcache/) | 3.2.0 / 7.2.17 | (same as PHP-FPM) |
-| **WordPress** | [mirrors](http://mirrors.slickstack.io/wordpress/) | 5.2.4 | some WP Core junk files are removed by `ss-clean` |
-| **MU Plugins** | [mirrors](http://mirrors.slickstack.io/mu-plugins/) | N/A | several `mu-plugins` by LittleBizzy |
-| **WP-CLI** | [mirrors](http://mirrors.slickstack.io/wp-cli/) | 2.2.0 | default config |
-| **Redis (Obj Cache)** | [mirrors](http://mirrors.slickstack.io/redis/) | 4.0.9 | `redis.conf` + `object-cache.php` |
-| **Git** | [mirrors](http://mirrors.slickstack.io/git/) | 2.17.1 | default config |
-| **UFW Firewall** | [mirrors](http://mirrors.slickstack.io/ufw-firewall/) | 0.36 | `ufw` + `ufw.conf` + `user-rules` |
-| **ClamAV** | [mirrors](http://mirrors.slickstack.io/clamav/) | 0.100.x | `freshclam.conf` |
+| **Ubuntu** | [mirrors](http://lemp.redshift.network/ubuntu/) | 18.04 (LTS) | `crontab` + `gai.conf` + `sshd_config` + `sudoers` + `sysctl.conf` |
+| **Nginx (Extras)** | [mirrors](http://lemp.redshift.network/nginx/) | 1.15.8 | `nginx.conf` + `default` (server block) |
+| **FastCGI Cache** | [mirrors](http://lemp.redshift.network/fastcgi-cache/) | 1.15.8 | `fastcgi-cache.conf` |
+| **OpenSSL** | [mirrors](http://lemp.redshift.network/openssl/) | 1.1.0g | default config |
+| **Let's Encrypt†** | [mirrors](http://lemp.redshift.network/letsencrypt/) | 0.23.0 | custom config |
+| **MySQL** | [mirrors](http://lemp.redshift.network/mysql/) | 5.7+ | default config (will be customized slightly in future) |
+| **PHP-FPM** | [mirrors](http://lemp.redshift.network/php-fpm/) | 7.2+ | `php.ini` + `php-fpm.conf` + `www.conf` |
+| **Zend / OPcache** | [mirrors](http://lemp.redshift.network/opcache/) | 3.2.0 / 7.2.17 | (same as PHP-FPM) |
+| **WordPress** | [mirrors](http://lemp.redshift.network/wordpress/) | 5.2.4 | some WP Core junk files are removed by `ss-clean` |
+| **MU Plugins** | [mirrors](http://lemp.redshift.network/mu-plugins/) | N/A | several `mu-plugins` by LittleBizzy |
+| **WP-CLI** | [mirrors](http://lemp.redshift.network/wp-cli/) | 2.2.0 | default config |
+| **Redis (Obj Cache)** | [mirrors](http://lemp.redshift.network/redis/) | 4.0.9 | `redis.conf` + `object-cache.php` |
+| **Git** | [mirrors](http://lemp.redshift.network/git/) | 2.17.1 | default config |
+| **UFW Firewall** | [mirrors](http://lemp.redshift.network/ufw-firewall/) | 0.36 | `ufw` + `ufw.conf` + `user-rules` |
+| **ClamAV** | [mirrors](http://lemp.redshift.network/clamav/) | 0.100.x | `freshclam.conf` |
 
 †Not yet supported (pending)
 
@@ -106,9 +106,9 @@ The below installation steps assume that you've already spun up a dedicated Ubun
 
 1. `sudo mkdir /var/www/ && sudo chown root:root /var/www/ && sudo chmod 755 /var/www/`
 
-2. `sudo nano /var/www/ss-config`  [*configure as desired*](http://mirrors.slickstack.io/ss-config-sample.txt)
+2. `sudo nano /var/www/ss-config`  [*configure as desired*](http://lemp.redshift.network/ss-config-sample.txt)
 
-3. `cd /var/www/ && sudo wget -O ss slick.fyi && sudo chmod 755 ss && sudo bash ss`
+3. `cd /var/www/ && sudo wget -O ss lemp.redshift.network/ss-install.txt && sudo chmod 755 ss && sudo bash ss`
 
 4. `sudo reboot`
 
