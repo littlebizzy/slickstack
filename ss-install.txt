@@ -72,7 +72,7 @@ if [[ "${UBUNTU_VERSION}" != "18.04" ]]; then
 fi
 
 ## ensure ss-config build version matches ss-install build version ##
-if [[ "$SS_BUILD" != "DEC2019B" ]]; then 
+if [[ "$SS_BUILD" != "DEC2019C" ]]; then 
     echo -e "\e[93mYour ss-config file is outdated. Please rebuild it and run ss-install again.\e[0m" >&2
     exit 1
 fi
@@ -720,6 +720,40 @@ else
     sed -i "/#@NOINDEX# /d" /tmp/nginx.conf
 fi
 
+
+#### nginx ssl settings #####
+
+## ssl protocols ##
+if [[ -z "$SSL_PROTOCOLS" ]]; then 
+    sed -i "s/@SSL_PROTOCOLS/TLSv1.2/g" /tmp/nginx.conf
+else 
+    sed -i "s/@SSL_PROTOCOLS/${SSL_PROTOCOLS}/g" /tmp/nginx.conf
+fi
+
+## ssl session timeout ##
+if [[ -z "$SSL_SESSION_TIMEOUT" ]]; then 
+    sed -i "s/@SSL_SESSION_TIMEOUT/1d/g" /tmp/nginx.conf
+else 
+    sed -i "s/@SSL_SESSION_TIMEOUT/${SSL_SESSION_TIMEOUT}/g" /tmp/nginx.conf
+fi
+
+## ssl session cache ##
+if [[ -z "$SSL_SESSION_CACHE" ]]; then 
+    sed -i "s/@SSL_SESSION_CACHE/shared:SSL:64m/g" /tmp/nginx.conf
+else 
+    sed -i "s/@SSL_SESSION_CACHE/${SSL_SESSION_CACHE}/g" /tmp/nginx.conf
+fi
+
+## ssl buffer size ##
+if [[ -z "$SSL_BUFFER_SIZE" ]]; then 
+    sed -i "s/@SSL_BUFFER_SIZE/16k/g" /tmp/nginx.conf
+else 
+    sed -i "s/@SSL_BUFFER_SIZE/${SSL_BUFFER_SIZE}/g" /tmp/nginx.conf
+fi
+
+
+########## various nginx settings ######
+
 ## nginx worker rlimit nofile ##
 if [[ -z "$NGINX_WORKER_RLIMIT_NOFILE" ]]; then 
     sed -i "s/@NGINX_WORKER_RLIMIT_NOFILE/65535/g" /tmp/nginx.conf
@@ -849,7 +883,7 @@ fi
 
 ## open file cache min uses ##
 if [[ -z "$OPEN_FILE_CACHE_MIN_USES" ]]; then 
-    sed -i "s/@OPEN_FILE_CACHE_MIN_USES/on/g" /tmp/nginx.conf
+    sed -i "s/@OPEN_FILE_CACHE_MIN_USES/2/g" /tmp/nginx.conf
 else 
     sed -i "s/@OPEN_FILE_CACHE_MIN_USES/${OPEN_FILE_CACHE_MIN_USES}/g" /tmp/nginx.conf
 fi
