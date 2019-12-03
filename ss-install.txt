@@ -72,7 +72,7 @@ if [[ "${UBUNTU_VERSION}" != "18.04" ]]; then
 fi
 
 ## ensure ss-config build version matches ss-install build version ##
-if [[ "$SS_BUILD" != "DEC2019A" ]]; then 
+if [[ "$SS_BUILD" != "DEC2019B" ]]; then 
     echo -e "\e[93mYour ss-config file is outdated. Please rebuild it and run ss-install again.\e[0m" >&2
     exit 1
 fi
@@ -754,6 +754,115 @@ if [[ -z "$NGINX_TYPES_MAX_HASH_SIZE" ]]; then
 else 
     sed -i "s/@NGINX_TYPES_MAX_HASH_SIZE/${NGINX_TYPES_MAX_HASH_SIZE}/g" /tmp/nginx.conf
 fi
+
+#### more nginx stuff ###
+
+## client max body size ##
+if [[ -z "$NGINX_CLIENT_MAX_BODY_SIZE" ]]; then 
+    sed -i "s/@NGINX_CLIENT_MAX_BODY_SIZE/512M/g" /tmp/nginx.conf
+else 
+    sed -i "s/@NGINX_CLIENT_MAX_BODY_SIZE/${NGINX_CLIENT_MAX_BODY_SIZE}/g" /tmp/nginx.conf
+fi
+
+## client body buffer size ##
+if [[ -z "$NGINX_CLIENT_BODY_BUFFER_SIZE" ]]; then 
+    sed -i "s/@NGINX_CLIENT_BODY_BUFFER_SIZE/16k/g" /tmp/nginx.conf
+else 
+    sed -i "s/@NGINX_CLIENT_BODY_BUFFER_SIZE/${NGINX_CLIENT_BODY_BUFFER_SIZE}/g" /tmp/nginx.conf
+fi
+
+## client header buffer size ##
+if [[ -z "$NGINX_CLIENT_HEADER_BUFFER_SIZE" ]]; then 
+    sed -i "s/@NGINX_CLIENT_HEADER_BUFFER_SIZE/4k/g" /tmp/nginx.conf
+else 
+    sed -i "s/@NGINX_CLIENT_HEADER_BUFFER_SIZE/${NGINX_CLIENT_HEADER_BUFFER_SIZE}/g" /tmp/nginx.conf
+fi
+
+## large client header buffers ##
+if [[ -z "$NGINX_LARGE_CLIENT_HEADER_BUFFERS" ]]; then 
+    sed -i "s/@NGINX_LARGE_CLIENT_HEADER_BUFFERS/4 64k/g" /tmp/nginx.conf
+else 
+    sed -i "s/@NGINX_LARGE_CLIENT_HEADER_BUFFERS/${NGINX_LARGE_CLIENT_HEADER_BUFFERS}/g" /tmp/nginx.conf
+fi
+
+#### nginx timeouts ets ##
+
+## client body timeout ##
+if [[ -z "$NGINX_CLIENT_BODY_TIMEOUT" ]]; then 
+    sed -i "s/@NGINX_CLIENT_BODY_TIMEOUT/15s/g" /tmp/nginx.conf
+else 
+    sed -i "s/@NGINX_CLIENT_BODY_TIMEOUT/${NGINX_CLIENT_BODY_TIMEOUT}/g" /tmp/nginx.conf
+fi
+
+## client header timeout ##
+if [[ -z "$NGINX_CLIENT_HEADER_TIMEOUT" ]]; then 
+    sed -i "s/@NGINX_CLIENT_HEADER_TIMEOUT/15s/g" /tmp/nginx.conf
+else 
+    sed -i "s/@NGINX_CLIENT_HEADER_TIMEOUT/${NGINX_CLIENT_HEADER_TIMEOUT}/g" /tmp/nginx.conf
+fi
+
+## keepalive timeout ##
+if [[ -z "$NGINX_KEEPALIVE_TIMEOUT" ]]; then 
+    sed -i "s/@NGINX_KEEPALIVE_TIMEOUT/15s/g" /tmp/nginx.conf
+else 
+    sed -i "s/@NGINX_KEEPALIVE_TIMEOUT/${NGINX_KEEPALIVE_TIMEOUT}/g" /tmp/nginx.conf
+fi
+
+## keepalive requests ##
+if [[ -z "$NGINX_KEEPALIVE_REQUESTS" ]]; then 
+    sed -i "s/@NGINX_KEEPALIVE_REQUESTS/65535/g" /tmp/nginx.conf
+else 
+    sed -i "s/@NGINX_KEEPALIVE_REQUESTS/${NGINX_KEEPALIVE_REQUESTS}/g" /tmp/nginx.conf
+fi
+
+## send timeout ##
+if [[ -z "$NGINX_SEND_TIMEOUT" ]]; then 
+    sed -i "s/@NGINX_SEND_TIMEOUT/15s/g" /tmp/nginx.conf
+else 
+    sed -i "s/@NGINX_SEND_TIMEOUT/${NGINX_SEND_TIMEOUT}/g" /tmp/nginx.conf
+fi
+
+
+
+#### open file cache ####
+
+## open file cache max files ##
+if [[ -z "$OPEN_FILE_CACHE_MAX" ]]; then 
+    sed -i "s/@OPEN_FILE_CACHE_MAX/200000/g" /tmp/nginx.conf
+else 
+    sed -i "s/@OPEN_FILE_CACHE_MAX/${OPEN_FILE_CACHE_MAX}/g" /tmp/nginx.conf
+fi
+
+## open file cache inactive ##
+if [[ -z "$OPEN_FILE_CACHE_INACTIVE" ]]; then 
+    sed -i "s/@OPEN_FILE_CACHE_INACTIVE/20s/g" /tmp/nginx.conf
+else 
+    sed -i "s/@OPEN_FILE_CACHE_INACTIVE/${OPEN_FILE_CACHE_INACTIVE}/g" /tmp/nginx.conf
+fi
+
+## open file cache valid ##
+if [[ -z "$OPEN_FILE_CACHE_VALID" ]]; then 
+    sed -i "s/@OPEN_FILE_CACHE_VALID/30s/g" /tmp/nginx.conf
+else 
+    sed -i "s/@OPEN_FILE_CACHE_VALID/${OPEN_FILE_CACHE_VALID}/g" /tmp/nginx.conf
+fi
+
+## open file cache min uses ##
+if [[ -z "$OPEN_FILE_CACHE_MIN_USES" ]]; then 
+    sed -i "s/@OPEN_FILE_CACHE_MIN_USES/on/g" /tmp/nginx.conf
+else 
+    sed -i "s/@OPEN_FILE_CACHE_MIN_USES/${OPEN_FILE_CACHE_MIN_USES}/g" /tmp/nginx.conf
+fi
+
+## open file cache errors ##
+if [[ -z "$OPEN_FILE_CACHE_ERRORS" ]]; then 
+    sed -i "s/@OPEN_FILE_CACHE_ERRORS/on/g" /tmp/nginx.conf
+else 
+    sed -i "s/@OPEN_FILE_CACHE_ERRORS/${OPEN_FILE_CACHE_ERRORS}/g" /tmp/nginx.conf
+fi
+
+
+
 
 ## copy files to their destinations ##
 cp /tmp/nginx.conf /etc/nginx/nginx.conf
