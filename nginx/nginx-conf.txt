@@ -14,6 +14,9 @@
 #### Nginx: General Settings #######################################################################
 ####################################################################################################
 
+## for stability and simplicity Nginx always runs as www-data with auto worker processes ##
+## worker_rlimit_nofile should be tuned in relevance to worker_connections (etc) ##
+
 user www-data;
 worker_processes auto;
 worker_rlimit_nofile @NGINX_WORKER_RLIMIT_NOFILE;
@@ -25,6 +28,9 @@ include /etc/nginx/modules-enabled/*.conf;
 ####################################################################################################
 #### Nginx: Event Handling Settings ################################################################
 ####################################################################################################
+
+## virtually no Linux server should not use epoll or multi_accept thus they are hardcoded ##
+## worker_connections should be tuned in relevance to worker_rlimit_nofile (etc) ##
 
 events {
     worker_connections @NGINX_WORKER_CONNECTIONS;
@@ -47,8 +53,11 @@ http {
     types_hash_max_size @NGINX_TYPES_MAX_HASH_SIZE;
 
 ####################################################################################################
-#### Nginx: FastCGI Cache Settings (Modify Using SS-Config + SS-Install Only) ######################
+#### Nginx: FastCGI Cache Settings #################################################################
 ####################################################################################################
+    
+## the FastCGI Cache is arguably the most powerful Nginx feature for high-traffic sites ##
+## whenever possible maintain aggressive (larger) settings to improve performance ##
     
     fastcgi_cache_path /var/www/cache levels=1:2 keys_zone=WORDPRESS:@FCGI_CACHE_MEMORY inactive=@FCGI_CACHE_INACTIVE max_size=@FCGI_CACHE_MAX_SIZE;
     fastcgi_cache_key "$scheme$request_method$host$request_uri$rt_session";
@@ -65,32 +74,35 @@ http {
     # fastcgi_temp_file_write_size 256k;
     
 ####################################################################################################
-#### Nginx: Open File Cache Settings (Optimized For Traffic Scaling) ###############################
+#### Nginx: Open File Cache Settings ###############################################################
 ####################################################################################################
     
-    open_file_cache max=200000 inactive=20s;
-    open_file_cache_valid 30s;
-    open_file_cache_min_uses 2;
-    open_file_cache_errors on;
+    open_file_cache max=@OPEN_FILE_CACHE_MAX inactive=@OPEN_FILE_CACHE_INACTIVE;
+    open_file_cache_valid @OPEN_FILE_CACHE_VALID;
+    open_file_cache_min_uses @OPEN_FILE_CACHE_MIN_USES;
+    open_file_cache_errors @OPEN_FILE_CACHE_ERRORS;
 	
 ####################################################################################################
 #### Nginx: Various Buffer Settings ################################################################
 ####################################################################################################
     
-    client_max_body_size 512M;
-    client_body_buffer_size 16K;
-    client_header_buffer_size 4k;
-    large_client_header_buffers 4 64k;
+    client_max_body_size @NGINX_CLIENT_MAX_BODY_SIZE;
+    client_body_buffer_size @NGINX_CLIENT_BODY_BUFFER_SIZE;
+    client_header_buffer_size @NGINX_CLIENT_HEADER_BUFFER_SIZE;
+    large_client_header_buffers @NGINX_LARGE_CLIENT_HEADER_BUFFERS;
 
 ####################################################################################################
 #### Nginx: Various Timeout + Keepalive Settings ###################################################
 ####################################################################################################
     
-    client_body_timeout 15s;
-    client_header_timeout 15s;
-    keepalive_timeout 15s;
-    keepalive_requests 65535;
-    send_timeout 15s;
+## when scaling high traffic websites it is important to keep timeouts relatively short ##
+## reset_timedout_connection is hardcoded to improve stability (availability) ##
+    
+    client_body_timeout @NGINX_CLIENT_BODY_TIMEOUT;
+    client_header_timeout @NGINX_CLIENT_HEADER_TIMEOUT;
+    keepalive_timeout @NGINX_KEEPALIVE_TIMEOUT;
+    keepalive_requests @NGINX_KEEPALIVE_REQUESTS;
+    send_timeout @NGINX_SEND_TIMEOUT;
     reset_timedout_connection on;
     
 ####################################################################################################
@@ -98,7 +110,7 @@ http {
 ####################################################################################################
     
 ## several HTTP security headers are well-known best practices and are thus hardcoded ##
-## to noindex your entire website, set SITE_NOINDEX to true in the ss-config ##
+## to noindex your entire website, set SITE_NOINDEX to true in your ss-config ##
     
     add_header X-Powered-By "SlickStack";
     add_header Strict-Transport-Security "max-age=2628000" always;
@@ -124,7 +136,7 @@ http {
 ####################################################################################################
 
 ## Pragma and Expires are outdated cache headers that conflict with Cache-Control header ##
-## Cache-Control is set by CloudFlare for static files, and not needed for HTML ##
+## CloudFlare sets CC headers on static files, not needed for HTML (FastCGI Cache) ##
     
     more_clear_headers "Pragma";
     more_clear_headers "Expires";
@@ -166,6 +178,9 @@ http {
 #### Nginx: Logging Settings #######################################################################
 ####################################################################################################
     
+## to improve scalability access_log is hardcode disabled to reduce CPU and disk usage ##
+## error_log is hardcoded in conjunction with SlickStack error handling settings ##
+    
     access_log off;
     error_log /var/www/logs/nginx.log crit;
 
@@ -203,8 +218,11 @@ http {
         text/javascript;
     
 ####################################################################################################
-#### Nginx: Rate Limiting Settings (Prevents Minor DDOS + Brute Force Attacks) #####################
+#### Nginx: Rate Limiting Settings #################################################################
 ####################################################################################################
+    
+## basic rate limiting helps protect the server from small DDOS or brute force attacks ##
+## it is used for common target URIs but an external WAF firewall is recommended ##
     
     limit_req_zone $binary_remote_addr zone=one:10m rate=1r/s;
     limit_req_status 444;
@@ -229,7 +247,7 @@ http {
 }
 
 ####################################################################################################
-#### External References Used By SlickStack To Improve This Script #################################
+#### SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ###############
 ####################################################################################################
 
 ## Future: attempt to invalidate cookies: tk_ai, tk_ni, tk_qs (Jetpack)
@@ -290,4 +308,4 @@ http {
 ## Ref: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Feature-Policy
 ## Ref: https://yoast.com/prevent-site-being-indexed/
 ## Ref: https://stackoverflow.com/questions/34077140/nginx-rule-to-add-x-robots-tag-header
-
+## Ref: https://www.revsys.com/12days/nginx-tuning/
