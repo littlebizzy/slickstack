@@ -6,11 +6,11 @@
 #### mirror: http://mirrors.slickstack.io/ss-clean.txt #############################################
 #### path: /var/www/ss-clean #######################################################################
 #### destination: n/a (not a boilerplate) ##########################################################
-#### purpose: Cleans up various unsafe or unnecessary files throughout the entire server ###########
+#### purpose: Cleans up various unsafe or unnecessary files throughout the SlickStack server #######
 #### module version: Ubuntu 18.04 LTS ##############################################################
 ####################################################################################################
 
-## SS-CLEAN DOES NOT PERFORM ANY MALWARE FILE SCANNING (USE SS-SCAN INSTEAD) ##
+## SS-CLEAN DOES NOT PERFORM ANY MALWARE FILE SCANNING (PLEASE USE SS-SCAN INSTEAD) ##
 
 ## include SlickStack configuration ##
 source /var/www/ss-config
@@ -27,6 +27,14 @@ function apt {
     command /usr/bin/apt -q -y -o Dpkg::Options::=--force-confold -o Dpkg::Options::=--force-confdef "$@"
 }
 
+## add-apt-repository alias flags ##
+function add-apt-repository {
+    export DEBIAN_FRONTEND=noninteractive
+    export DEBIAN_PRIORITY=critical
+    export PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'
+    command /usr/bin/add-apt-repository -y "$@"
+}
+
 ## wget alias flags ##
 function wget {
     command wget --no-check-certificate --no-cache --no-cookies --tries=3 --timeout=15 "$@"
@@ -34,7 +42,7 @@ function wget {
 
 ## cp alias flags ##
 function cp {
-    command cp -d --no-preserve=mode,ownership "$@"
+    command cp -R -f -d --no-preserve=mode,ownership "$@"
 }
 
 ## mkdir alias flags ##
