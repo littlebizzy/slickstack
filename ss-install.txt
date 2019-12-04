@@ -72,7 +72,7 @@ if [[ "${UBUNTU_VERSION}" != "18.04" ]]; then
 fi
 
 ## ensure ss-config build version matches ss-install build version ##
-if [[ "$SS_BUILD" != "DEC2019C" ]]; then 
+if [[ "$SS_BUILD" != "DEC2019D" ]]; then 
     echo -e "\e[93mYour ss-config file is outdated. Please rebuild it and run ss-install again.\e[0m" >&2
     exit 1
 fi
@@ -708,17 +708,86 @@ apt install nginx-extras
 ## download latest versions ##
 wget -O /tmp/nginx.conf http://mirrors.slickstack.io/nginx/nginx-conf.txt
 
-## replace variables ##
-sed -i "s/@FCGI_CACHE_MEMORY/${FCGI_CACHE_MEMORY}/g" /tmp/nginx.conf
-sed -i "s/@FCGI_CACHE_INACTIVE/${FCGI_CACHE_INACTIVE}/g" /tmp/nginx.conf
-sed -i "s/@FCGI_CACHE_MAX_SIZE/${FCGI_CACHE_MAX_SIZE}/g" /tmp/nginx.conf
-
 ## noindex entire site (server) if desired ##
 if [[ "$SITE_NOINDEX" == "true" ]]; then 
     sed -i "s/#@NOINDEX# //g" /tmp/nginx.conf
 else 
     sed -i "/#@NOINDEX# /d" /tmp/nginx.conf
 fi
+
+
+##### nginx fastcgi cache settings ########
+
+## fastcgi cache memory ##
+if [[ -z "$FCGI_CACHE_MEMORY" ]]; then 
+    sed -i "s/@FCGI_CACHE_MEMORY/256m/g" /tmp/nginx.conf
+else 
+    sed -i "s/@FCGI_CACHE_MEMORY/${FCGI_CACHE_MEMORY}/g" /tmp/nginx.conf
+fi
+
+## fastcgi cache inactive ##
+if [[ -z "$FCGI_CACHE_INACTIVE" ]]; then 
+    sed -i "s/@FCGI_CACHE_INACTIVE/1440m/g" /tmp/nginx.conf
+else 
+    sed -i "s/@FCGI_CACHE_INACTIVE/${FCGI_CACHE_INACTIVE}/g" /tmp/nginx.conf
+fi
+
+## fastcgi cache max size ##
+if [[ -z "$FCGI_CACHE_MAX_SIZE" ]]; then 
+    sed -i "s/@FCGI_CACHE_MAX_SIZE/4096m/g" /tmp/nginx.conf
+else 
+    sed -i "s/@FCGI_CACHE_MAX_SIZE/${FCGI_CACHE_MAX_SIZE}/g" /tmp/nginx.conf
+fi
+
+## fastcgi cache connect timeout ##
+if [[ -z "$FCGI_CONNECT_TIMEOUT" ]]; then 
+    sed -i "s/@FCGI_CONNECT_TIMEOUT/60s/g" /tmp/nginx.conf
+else 
+    sed -i "s/@FCGI_CONNECT_TIMEOUT/${FCGI_CONNECT_TIMEOUT}/g" /tmp/nginx.conf
+fi
+
+## fastcgi cache read timeout ##
+if [[ -z "$FCGI_READ_TIMEOUT" ]]; then 
+    sed -i "s/@FCGI_READ_TIMEOUT/60s/g" /tmp/nginx.conf
+else 
+    sed -i "s/@FCGI_READ_TIMEOUT/${FCGI_READ_TIMEOUT}/g" /tmp/nginx.conf
+fi
+
+## fastcgi cache send timeout ##
+if [[ -z "$FCGI_SEND_TIMEOUT" ]]; then 
+    sed -i "s/@FCGI_SEND_TIMEOUT/60s/g" /tmp/nginx.conf
+else 
+    sed -i "s/@FCGI_SEND_TIMEOUT/${FCGI_SEND_TIMEOUT}/g" /tmp/nginx.conf
+fi
+
+## fastcgi cache buffers ##
+if [[ -z "$FCGI_BUFFERS" ]]; then 
+    sed -i "s/@FCGI_BUFFERS/32 32k/g" /tmp/nginx.conf
+else 
+    sed -i "s/@FCGI_BUFFERS/${FCGI_BUFFERS}/g" /tmp/nginx.conf
+fi
+
+## fastcgi cache buffer size ##
+if [[ -z "$FCGI_BUFFER_SIZE" ]]; then 
+    sed -i "s/@FCGI_BUFFER_SIZE/32k/g" /tmp/nginx.conf
+else 
+    sed -i "s/@FCGI_BUFFER_SIZE/${FCGI_BUFFER_SIZE}/g" /tmp/nginx.conf
+fi
+
+## fastcgi cache busy buffers size ##
+if [[ -z "$FCGI_BUSY_BUFFERS_SIZE" ]]; then 
+    sed -i "s/@FCGI_BUSY_BUFFERS_SIZE/256k/g" /tmp/nginx.conf
+else 
+    sed -i "s/@FCGI_BUSY_BUFFERS_SIZE/${FCGI_BUSY_BUFFERS_SIZE}/g" /tmp/nginx.conf
+fi
+
+## fastcgi cache temp file write size ##
+if [[ -z "$FCGI_TEMP_FILE_WRITE_SIZE" ]]; then 
+    sed -i "s/@FCGI_TEMP_FILE_WRITE_SIZE/256k/g" /tmp/nginx.conf
+else 
+    sed -i "s/@FCGI_TEMP_FILE_WRITE_SIZE/${FCGI_TEMP_FILE_WRITE_SIZE}/g" /tmp/nginx.conf
+fi
+
 
 
 #### nginx ssl settings #####
