@@ -6,11 +6,11 @@
 #### mirror: http://lemp.redshift.network/ss-clean.txt #############################################
 #### path: /var/www/ss-clean #######################################################################
 #### destination: n/a (not a boilerplate) ##########################################################
-#### purpose: Cleans up various unsafe or unnecessary files throughout the entire server ###########
+#### purpose: Cleans up various unsafe or unnecessary files throughout the SlickStack server #######
 #### module version: Ubuntu 18.04 LTS ##############################################################
 ####################################################################################################
 
-## SS-CLEAN DOES NOT PERFORM ANY MALWARE FILE SCANNING (USE SS-SCAN INSTEAD) ##
+## SS-CLEAN DOES NOT PERFORM ANY MALWARE FILE SCANNING (PLEASE USE SS-SCAN INSTEAD) ##
 
 ## include SlickStack configuration ##
 source /var/www/ss-config
@@ -27,6 +27,14 @@ function apt {
     command /usr/bin/apt -q -y -o Dpkg::Options::=--force-confold -o Dpkg::Options::=--force-confdef "$@"
 }
 
+## add-apt-repository alias flags ##
+function add-apt-repository {
+    export DEBIAN_FRONTEND=noninteractive
+    export DEBIAN_PRIORITY=critical
+    export PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'
+    command /usr/bin/add-apt-repository -y "$@"
+}
+
 ## wget alias flags ##
 function wget {
     command wget --no-check-certificate --no-cache --no-cookies --tries=3 --timeout=15 "$@"
@@ -34,7 +42,7 @@ function wget {
 
 ## cp alias flags ##
 function cp {
-    command cp -d --no-preserve=mode,ownership "$@"
+    command cp -R -f -d --no-preserve=mode,ownership "$@"
 }
 
 ## mkdir alias flags ##
@@ -574,6 +582,7 @@ rm /var/www/html/wp-content/plugins/post-types-order* ## creates instability, po
 rm /var/www/html/wp-content/plugins/pp_default_lib.php ## wordpresss junk files
 rm /var/www/html/wp-content/plugins/protect-wp-admin* ## ss conflicts, breaks firewalls
 # rm /var/www/html/wp-content/plugins/pt-instant*
+rm /var/www/html/wp-content/plugins/pushlive* ## not maintained (by 1 Squared, Jamin Szczesny)
 rm /var/www/html/wp-content/plugins/qtranslate-x* ## deprecated, serious errors
 rm /var/www/html/wp-content/plugins/quick-pagepost-redirect-plugin* ## not maintained, bizarre code, bad practice
 rm /var/www/html/wp-content/plugins/redirection/ ## excessive logging, better options exist ## DO NOT WILDCARD
@@ -617,6 +626,7 @@ rm /var/www/html/wp-content/plugins/wp-htaccess-control* ## ss conflicts (apache
 rm /var/www/html/wp-content/plugins/wordpress-firewall-2* ## ss conflicts, creates instability
 rm /var/www/html/wp-content/plugins/woocommerce-jquery-cookie-fix*
 rm /var/www/html/wp-content/plugins/woocommerce-services* ## ss conflicts, bloatware, spamware
+rm /var/www/html/wp-content/plugins/woocommerce-zoomifier* ## deprecated, serious errors, js conflicts, better options exist
 rm /var/www/html/wp-content/plugins/woodojo* ## deprecated
 rm /var/www/html/wp-content/plugins/woosidebars-sbm-converter* ## deprecated
 rm /var/www/html/wp-content/plugins/woothemes-updater* ## deprecated

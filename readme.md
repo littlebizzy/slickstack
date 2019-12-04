@@ -1,4 +1,4 @@
-# SlickStack [ss] - "Alpha* ss12"
+# SlickStack [ss] - "Alpha* ss13"
 
 SlickStack is a free LEMP stack automation script written in Bash designed to enhance and simplify WordPress provisioning, performance, and security.
 
@@ -9,6 +9,8 @@ SlickStack is a free LEMP stack automation script written in Bash designed to en
 | Google PageSpeed | GTMetrix | Pingdom | Security Headers | Qualys SSL Labs | WebPageTest |
 | :--------------: | :------: | :-----: | :--------------: | :-------------: | :-------------: |
 | [**A**](https://developers.google.com/speed/pagespeed/insights/?url=https%3A%2F%2Fslickstack.io%2F) | [**A**](https://gtmetrix.com/reports/slickstack.io/zpLMZ1eb) | [**A**](https://tools.pingdom.com/#5aeba9dea8000000) | [**A**](https://securityheaders.com/?q=https%3A%2F%2Fslickstack.io%2F&followRedirects=on) | [**A**](https://www.ssllabs.com/ssltest/analyze.html?d=slickstack.io&latest) | [**A**](https://www.webpagetest.org/result/190920_68_a4a541db9847ce601ef264b41df9d0f3/) |
+
+* **NEW!** All Nginx functionality is now via TCP-only (127.0.0.1) including FastCGI cache for more robust scaling... many Nginx settings can now be customized using `ss-config`... check back for more options soon...
 
 * **NEW!** All MySQL functionality is now via TCP-only (127.0.0.1) including during setup and when purging transient cache via `ss-purge` for better database performance and smoother traffic scaling...
 
@@ -42,15 +44,9 @@ SlickStack is a free LEMP stack automation script written in Bash designed to en
 
 * **NEW!** SlickStack now supports custom SSH (SFTP) port numbers using the `SSH_PORT` variable in `ss-config`...
 
-* **NEW!** SlickStack now supports "disabling" our MU plugins via `ss-config` ... remember that currently, this means no CloudFlare, Clear Caches, and other valuable plugins, so be sure to setup your own if needed...
-
 * **NEW!** SlickStack now supports remote databases and better `DB_` customization...
 
 * **NEW!** SlickStack now supports loading FastCGI Cache as `tmpfs` (optional)...
-
-* **NEW!** SlickStack better `ss-config` formatting (variables) now live...
-
-* **NEW!** SlickStack now supports custom `wp-config.php` boilerplates using `WP_CONFIG_BOILERPLATE_SOURCE`... make sure that your boilerplate is using variables supported in the latest `ss-config` and `ss-install` builds...
 
 * **NEW!** SlickStack `ss-install` now verifies that `ss-config` is up-to-date before running the installation...
 
