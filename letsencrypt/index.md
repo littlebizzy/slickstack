@@ -20,6 +20,8 @@
 
 * [https://github.com/certbot/certbot/blob/master/certbot-nginx/certbot_nginx/_internal/tls_configs/options-ssl-nginx.conf](https://github.com/certbot/certbot/blob/master/certbot-nginx/certbot_nginx/_internal/tls_configs/options-ssl-nginx.conf)
 * [https://community.letsencrypt.org/t/does-certbot-really-need-etc-letsencrypt-options-ssl-nginx-conf/102789](https://community.letsencrypt.org/t/does-certbot-really-need-etc-letsencrypt-options-ssl-nginx-conf/102789)
+* [https://timtaubert.de/blog/2017/02/the-future-of-session-resumption/](https://timtaubert.de/blog/2017/02/the-future-of-session-resumption/)
+* [https://medium.com/@vanrijn/what-is-new-with-tls-1-3-e991df2caaac](https://medium.com/@vanrijn/what-is-new-with-tls-1-3-e991df2caaac)
 
 ----
 
