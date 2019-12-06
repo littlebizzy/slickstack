@@ -22,6 +22,7 @@
 * [https://community.letsencrypt.org/t/does-certbot-really-need-etc-letsencrypt-options-ssl-nginx-conf/102789](https://community.letsencrypt.org/t/does-certbot-really-need-etc-letsencrypt-options-ssl-nginx-conf/102789)
 * [https://timtaubert.de/blog/2017/02/the-future-of-session-resumption/](https://timtaubert.de/blog/2017/02/the-future-of-session-resumption/)
 * [https://medium.com/@vanrijn/what-is-new-with-tls-1-3-e991df2caaac](https://medium.com/@vanrijn/what-is-new-with-tls-1-3-e991df2caaac)
+* [https://tls.mbed.org/discussions/generic/what-is-the-correct-way-to-use-session-tickets](https://tls.mbed.org/discussions/generic/what-is-the-correct-way-to-use-session-tickets)
 
 ----
 
