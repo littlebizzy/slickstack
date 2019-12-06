@@ -23,6 +23,7 @@
 * [https://timtaubert.de/blog/2017/02/the-future-of-session-resumption/](https://timtaubert.de/blog/2017/02/the-future-of-session-resumption/)
 * [https://medium.com/@vanrijn/what-is-new-with-tls-1-3-e991df2caaac](https://medium.com/@vanrijn/what-is-new-with-tls-1-3-e991df2caaac)
 * [https://tls.mbed.org/discussions/generic/what-is-the-correct-way-to-use-session-tickets](https://tls.mbed.org/discussions/generic/what-is-the-correct-way-to-use-session-tickets)
+* [https://community.letsencrypt.org/t/errors-from-browsers-with-ssl-session-tickets-off-nginx/18124/3](https://community.letsencrypt.org/t/errors-from-browsers-with-ssl-session-tickets-off-nginx/18124/3)
 
 ----
 
