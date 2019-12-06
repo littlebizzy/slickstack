@@ -6,7 +6,7 @@
 
 *Live configuration files and boilerplates used by current SlickStack installation that may be altered by LittleBizzy or Ubuntu for better performance.*
 
-* (coming soon)
+* options-ssl-nginx.conf
 
 ### Original Files
 
