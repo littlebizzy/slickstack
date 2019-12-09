@@ -66,8 +66,8 @@ title: SlickStack (Public Mirrors)
 
 * [readme.md](readme.md)
 * [license.md](license.md)
-* changelog.md
+* [changelog.md](changelog.md)
 
 ----
 
-*Last updated: Nov 15, 2019*
+*Last updated: Dec 9, 2019*
