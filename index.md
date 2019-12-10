@@ -10,55 +10,55 @@ title: SlickStack (Public Mirrors)
 
 *Main modules of SlickStack's optimized WordPress LEMP stack, including Ubuntu LTS, Nginx, MySQL, PHP-FPM, Redis, and several LittleBizzy MU plugins.*
 
-* <a href="ubuntu/">Ubuntu LTS</a>
-* <a href="nginx/">Nginx</a>
-* <a href="mysql/">MySQL</a>
-* <a href="php-fpm/">PHP-FPM</a>
-* <a href="openssl/">OpenSSL</a>
-* <a href="fastcgi-cache/">FastCGI Cache</a>
-* <a href="letsencrypt/">Let's Encrypt (Certbot)</a>
-* <a href="redis/">Redis</a>
-* <a href="opcache/">OPcache</a>
-* <a href="wordpress/">WordPress</a>
-* <a href="mu-plugins/">MU (Must-Use) Plugins</a>
-* <a href="starter-themes/">Starter Themes</a>
-* <a href="wp-cli/">WP-CLI</a>
-* <a href="ufw-firewall/">UFW Firewall</a>
-* <a href="clamav/">ClamAV</a>
-* <a href="git/">Git</a>
+* [ubuntu/](Ubuntu LTS)
+* [nginx/](Nginx)
+* [mysql/](MySQL)
+* [php-fpm/](PHP-FPM)
+* [openssl/](OpenSSL)
+* [fastcgi-cache/](FastCGI Cache)
+* [letsencrypt/](Let's Encrypt (Certbot))
+* [redis/](Redis)
+* [opcache/](OPcache)
+* [wordpress/](WordPress)
+* [mu-plugins/](MU (Must-Use) Plugins)
+* [starter-themes/](Starter Themes)
+* [wp-cli/](WP-CLI)
+* [ufw-firewall/](UFW Firewall)
+* [clamav/](ClamAV)
+* [git/](Git)
 
 ### Core Cron Jobs
 
 *These cron jobs are the most critical part of SlickStack's setup, as they allow your LEMP stack to receive updates to modules and scripts via GitHub.*
 
-* <a href="0-crontab.txt">0-crontab.txt</a>
-* <a href="1-cron-often.txt">1-cron-often.txt</a>
-* <a href="2-cron-regular.txt">2-cron-regular.txt</a>
-* <a href="3-cron-hourly.txt">3-cron-hourly.txt</a>
-* <a href="4-cron-quarter-daily.txt">4-cron-quarter-daily.txt</a>
-* <a href="5-cron-half-daily.txt">5-cron-half-daily.txt</a>
-* <a href="6-cron-daily.txt">6-cron-daily.txt</a>
-* <a href="7-cron-weekly.txt">7-cron-weekly.txt</a>
-* <a href="8-cron-monthly.txt">8-cron-monthly.txt</a>
-* <a href="9-cron-sometimes.txt">9-cron-sometimes.txt</a>
+* [0-crontab.txt](0-crontab.txt)
+* [1-cron-often.txt](1-cron-often.txt)
+* [2-cron-regular.txt](2-cron-regular.txt)
+* [3-cron-hourly.txt](3-cron-hourly.txt)
+* [4-cron-quarter-daily.txt](4-cron-quarter-daily.txt)
+* [5-cron-half-daily.txt](5-cron-half-daily.txt)
+* [6-cron-daily.txt](6-cron-daily.txt)
+* [7-cron-weekly.txt](7-cron-weekly.txt)
+* [8-cron-monthly.txt](8-cron-monthly.txt)
+* [9-cron-sometimes.txt](9-cron-sometimes.txt)
 
 ### Core Bash Scripts
 
 *Bash scripts that perform SlickStack's main functions as an active LEMP environment, which are called via cron jobs, and can also be run manually.*
 
-* <a href="ss-check.txt">ss-check.txt</a>
-* <a href="ss-clean.txt">ss-clean.txt</a>
-* <a href="ss-config-sample.txt">ss-config-sample.txt</a>
-* <a href="ss-dump.txt">ss-dump.txt</a>
-* <a href="ss-encrypt.txt">ss-encrypt.txt</a>
-* <a href="ss-install.txt">ss-install.txt</a>
-* <a href="ss-muplugs.txt">ss-muplugs.txt</a>
-* <a href="ss-perms.txt">ss-perms.txt</a>
-* <a href="ss-purge.txt">ss-purge.txt</a>
-* <a href="ss-restart.txt">ss-restart.txt</a>
-* <a href="ss-scan.txt">ss-scan.txt</a>
-* <a href="ss-update.txt">ss-update.txt</a>
-* <a href="ss-worker.txt">ss-worker.txt</a>
+* [ss-check.txt](ss-check.txt)
+* [ss-clean.txt](ss-clean.txt)
+* [ss-config-sample.txt](ss-config-sample.txt)
+* [ss-dump.txt](ss-dump.txt)
+* [ss-encrypt.txt](ss-encrypt.txt)
+* [ss-install.txt](ss-install.txt)
+* [ss-muplugs.txt](ss-muplugs.txt)
+* [ss-perms.txt](ss-perms.txt)
+* [ss-purge.txt](ss-purge.txt)
+* [ss-restart.txt](ss-restart.txt)
+* [ss-scan.txt](ss-scan.txt)
+* [ss-update.txt](ss-update.txt)
+* [ss-worker.txt](ss-worker.txt)
 
 ### Core Meta Files
 
@@ -70,4 +70,4 @@ title: SlickStack (Public Mirrors)
 
 ----
 
-*Last updated: Dec 9, 2019*
+*Last updated: Dec 11, 2019*
