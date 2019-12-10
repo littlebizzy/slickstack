@@ -10,7 +10,7 @@ title: SlickStack (Public Mirrors)
 
 *Main modules of SlickStack's optimized WordPress LEMP stack, including Ubuntu LTS, Nginx, MySQL, PHP-FPM, Redis, and several LittleBizzy MU plugins.*
 
-* [ubuntu/](Ubuntu LTS)
+* [ubuntu](Ubuntu LTS)
 * [nginx/](Nginx)
 * [mysql/](MySQL)
 * [php-fpm/](PHP-FPM)
