@@ -76,8 +76,7 @@ source /var/www/ss-dump
 #### SS-Update: Install Latest SS-Config File (Safely Replicates Existing Settings) ################
 ####################################################################################################
 
-## MODULE VERSION: SlickStack Build = DEC2019E
-## find a better way to export variables ##
+## MODULE VERSION: SS Build = DEC2019E
 
 ## delete leftover files ##
 # rm /tmp/ss-config*
@@ -85,8 +84,9 @@ source /var/www/ss-dump
 ## retrieve latest version of ss-config-sample ##
 # wget -O /tmp/ss-config http://mirrors.slickstack.io/ss-config-sample.txt
 
-## export all existing variables to the new config file ##
-# sed -i "s#\(^ROOT_PASSWORD=\).*#${ROOT_PASSWORD}#" /tmp/ss-config
+## replicate existing variables to the new config file ##
+## find a better way to auto detect variables? ##
+# sed -i "s|\(^ROOT_PASSWORD=\).*|ROOT_PASSWORD=\"$ROOT_PASSWORD\"|g" /tmp/ss-config
 # sed -i "s#\(^ROOT_PASSWORD=\).*#${ROOT_PASSWORD}#" /tmp/ss-config
 # sed -i "s#\(^ROOT_PASSWORD=\).*#${ROOT_PASSWORD}#" /tmp/ss-config
 # sed -i "s#\(^ROOT_PASSWORD=\).*#${ROOT_PASSWORD}#" /tmp/ss-config
@@ -115,10 +115,10 @@ DEBIAN_FRONTEND=noninteractive dpkg --configure -a --force-confold
 ## update Ubuntu repo cache ##
 apt update
 
-## upgrade installed Ubuntu packages (LEMP modules) + Linux kernel ##
+## upgrade installed Ubuntu packages (LEMP modules) + Linux kernel (apt feature) ##
 apt full-upgrade
 
-## autoremove Ubuntu packages ##
+## autoremove unused Ubuntu packages ##
 apt autoremove
 
 ## autoclean Ubuntu packages ##
@@ -144,6 +144,7 @@ source /var/www/ss-restart
 
 ## IT IS ALWAYS BETTER TO RUN SS-UPDATE MANUALLY AND REBOOT YOUR SERVER MANUALLY ##
 
+## reboot server ##
 if [[ "$SS_REBOOT" == "true" ]]; then 
     echo -e "\e[93mSlickStack updates complete! Automatic server reboot in progress... see you on the other side!\e[0m" >&2
     /bin/bash -c "/sbin/reboot"
@@ -179,3 +180,6 @@ fi
 ## Ref: https://askubuntu.com/questions/163200/e-dpkg-was-interrupted-run-sudo-dpkg-configure-a
 ## Ref: https://stackoverflow.com/questions/1305237/how-to-list-variables-declared-in-script-in-bash
 ## Ref: https://stackoverflow.com/questions/32739572/bash-search-and-replace-value-of-a-variable-inside-a-file
+## Ref: https://askubuntu.com/questions/76808/how-do-i-use-variables-in-a-sed-command
+## Ref: https://unix.stackexchange.com/questions/69112/how-can-i-use-variables-in-the-lhs-and-rhs-of-a-sed-substitution
+## Ref: https://stackoverflow.com/questions/19151954/how-to-use-variables-in-a-command-in-sed
