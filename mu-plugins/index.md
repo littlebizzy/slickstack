@@ -52,6 +52,7 @@ title: MU (Must-Use) Plugins (Public Mirrors)
 
 #### autoloader.php
 
+* [autoloader-1.2.1.txt](autoloader-1.2.1.txt)
 * [autoloader-1.2.0.txt](autoloader-1.2.0.txt)
 * [autoloader-1.1.0.txt](autoloader-1.1.0.txt)
 * [autoloader-1.0.0.txt](autoloader-1.0.0.txt)
