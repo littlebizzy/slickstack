@@ -186,4 +186,4 @@ title: MU (Must-Use) Plugins (Public Mirrors)
 
 ----
 
-*Last updated: Dec 11, 2019*
+*Last updated: Dec 13, 2019*
