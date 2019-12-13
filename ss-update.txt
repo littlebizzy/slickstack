@@ -96,7 +96,12 @@ sed -i "s|\(^DB_NAME=\).*|DB_NAME=\"$DB_NAME\"|g" /tmp/ss-config
 sed -i "s|\(^DB_USER=\).*|DB_USER=\"$DB_USER\"|g" /tmp/ss-config
 sed -i "s|\(^DB_PASSWORD=\).*|DB_PASSWORD=\"$DB_PASSWORD\"|g" /tmp/ss-config
 sed -i "s|\(^DB_PASSWORD_ROOT=\).*|DB_PASSWORD_ROOT=\"$DB_PASSWORD_ROOT\"|g" /tmp/ss-config
-sed -i "s|\(^DB_HOST=\).*|DB_HOST=\"$DB_HOST\"|g" /tmp/ss-config
+
+## only copy over remote DB_HOST otherwise use new default 127.0.0.1 (present in the default new template) ##
+if [[ "$DB_HOST" != "localhost" ]] && [[ "$DB_HOST" != "127.0.0.1" ]]; then
+    sed -i "s|\(^DB_HOST=\).*|DB_HOST=\"$DB_HOST\"|g" /tmp/ss-config
+fi
+
 sed -i "s|\(^DB_PREFIX=\).*|DB_PREFIX=\"$DB_PREFIX\"|g" /tmp/ss-config
 sed -i "s|\(^DB_CHARSET=\).*|DB_CHARSET=\"$DB_CHARSET\"|g" /tmp/ss-config
 sed -i "s|\(^DB_COLLATE=\).*|DB_COLLATE=\"$DB_COLLATE\"|g" /tmp/ss-config
@@ -204,3 +209,4 @@ fi
 ## Ref: https://askubuntu.com/questions/76808/how-do-i-use-variables-in-a-sed-command
 ## Ref: https://unix.stackexchange.com/questions/69112/how-can-i-use-variables-in-the-lhs-and-rhs-of-a-sed-substitution
 ## Ref: https://stackoverflow.com/questions/19151954/how-to-use-variables-in-a-command-in-sed
+## Ref: https://unix.stackexchange.com/questions/47584/in-a-bash-script-using-the-conditional-or-in-an-if-statement
