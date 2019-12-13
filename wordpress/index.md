@@ -73,6 +73,7 @@
 
 #### wp-config.php
 
+* <a href="wp-config-sample-5.3.1.txt">wp-config-sample-5.3.1.txt</a>
 * <a href="wp-config-sample-5.3.0.txt">wp-config-sample-5.3.0.txt</a>
 * <a href="wp-config-sample-5.2.4.txt">wp-config-sample-5.2.4.txt</a>
 * <a href="wp-config-sample-5.2.3.txt">wp-config-sample-5.2.3.txt</a>
