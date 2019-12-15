@@ -20,57 +20,21 @@ SlickStack is a free LEMP stack automation script written in Bash designed to en
 
 * **NEW!** `ss-restart` now provides a quick and easy way to restart all LEMP services for testing, etc...
 
-* **NEW!** More advanced settings now available for PHP, Opcache, MySQL and more in `ss-config`...
-
 * **NEW!** SlickStack now supports [throwaway themes](https://github.com/littlebizzy/throwaway-theme) to customize `wp_options` during install...
-
-* **NEW!** You can now define `WP_LANG` in `ss-config` and your `wp-config` will be updated during install...
-
-* **NEW!** Use the `CUSTOM_FUNCTIONS_SOURCE` variable to save time and wget custom `functions.php` file during install...
 
 * **NEW!** The `ss-purge` core script clears FastCGI Cache, OPcache, and Redis object cache in one go...
 
-* **NEW!** SlickStack now supports custom server timezones using the `SS_TIMEZONE` variable...
-
-* **NEW!** Many more constants from `wp-config` can now be adjusted in `ss-config` as desired, keep checking back to see more of these being added over the next several weeks...
-
-* **NEW!** Custom MySQL mode now supported using the `MYSQL_MODE` variable in `ss-config`...
-
-* **NEW!** an optimized Ubuntu kernel (`/etc/sysctl.conf`) is now installed by default...
-
-* **NEW!** all SlickStack intervals (scheduled cron jobs) can be customized using `SS_INTERVAL` variables...
-
 * **NEW!** SlickStack can now convert DOS files to Unix format via `SS_DOS2UNIX` variable in `ss-config` that will run automatically whenever the `ss-perms` script is called (end of the script)...
-
-* **NEW!** SlickStack now supports custom SSH (SFTP) port numbers using the `SSH_PORT` variable in `ss-config`...
-
-* **NEW!** SlickStack now supports remote databases and better `DB_` customization...
-
-* **NEW!** SlickStack now supports loading FastCGI Cache as `tmpfs` (optional)...
-
-* **NEW!** SlickStack `ss-install` now verifies that `ss-config` is up-to-date before running the installation...
 
 * **NEW!** SlickStack now supports custom plugin blacklists using `PLUGIN_BLACKLIST_SOURCE` variable...
 
 * **NEW!** SlickStack now does `include_once` within wp-config.php on the Custom Functions (MU plugin) file `/var/www/html/wp-content/functions.php` meaning much more reliable PHP functions...
 
-## Abstract
-
-Most of modern computing history can be traced back to one thing: [Unix](https://en.wikipedia.org/wiki/Unix). Indeed, one of the only things about web servers that hasn't changed much in several decades is the Unix shell (Bash) command language. Keeping the same pragmatism and simplicity in mind that inspired LittleBizzy's managed hosting, SlickStack [ss] is coded entirely in Bash.
-
-While there are [clear benefits](https://medium.com/capital-one-developers/bashing-the-bash-replacing-shell-scripts-with-python-d8d201bc0989) to programming languages like Python or Ruby, provisioning a server with WordPress isn't very complicated, and every Linux server comes with [shell built into it](https://www.infoworld.com/article/2893519/linux/perl-python-ruby-are-nice-bash-is-where-its-at.html). Plus, let's not forget [what happens](https://discourse.roots.io/t/updated-to-ansible-2-4-deploys-broken-now-what/10588) when typical web agencies rely on advanced dependencies like Ansible... yikes! Onward, then...
-
-## Requirements (Compatibility)
-
-SlickStack [ss] works best on VPS servers with KVM virtualization that have at least 2GB RAM from [quality network providers](https://slickstack.io/hosting/) such as DigitalOcean, Vultr, Linode, and Amazon Lightsail. The underlying LEMP stack configuration is meant specifically for single-site WordPress installations, and does not support [Multisite](https://codex.wordpress.org/Create_A_Network) installations. SlickStack [ss] supports WordPress, WooCommerce, bbPress, and BuddyPress "out of the box" with optimized settings that scale.
-
-Currently, SlickStack [ss] is meant for a single origin server with a `localhost` database, although remote databases should also work fine. Server "clustering" or "load balancing" has not been tested, and is not the goal here; complex enterprise-style configurations for WordPress are rarely needed (and can be expensive and difficult to manage), thus SlickStack [ss] aims to to provide a simple solution for the 99% of WordPress sites that don't need such.
-
-It should also be noted that SlickStack [ss] is HTTPS-only, meaning that HTTP sites are not supported. Because OpenSSL generates self-signed certificates, SlickStack [ss] servers require CloudFlare to be active in front of your server in order for SSL certificates to be properly CA-signed and loaded by your browser.
-
 ## Core Modules
 
-*Last updated: Oct 20, 2019*
+*Last updated: Dec 13, 2019*
+
+*Readiness for Ubuntu 20.04 and PHP 7.4 is our current focus. PHP 7.3 will not be supported.*
 
 | LEMP Module | Mirrors | Version | What does SlickStack [ss] customize? |
 | :------------- | :----------: | :----------: | :----------: |
@@ -79,20 +43,36 @@ It should also be noted that SlickStack [ss] is HTTPS-only, meaning that HTTP si
 | **FastCGI Cache** | [mirrors](http://lemp.redshift.network/fastcgi-cache/) | 1.15.8 | `fastcgi-cache.conf` |
 | **OpenSSL** | [mirrors](http://lemp.redshift.network/openssl/) | 1.1.0g | default config |
 | **Let's Encrypt†** | [mirrors](http://lemp.redshift.network/letsencrypt/) | 0.23.0 | custom config |
-| **MySQL** | [mirrors](http://lemp.redshift.network/mysql/) | 5.7+ | default config (will be customized slightly in future) |
-| **PHP-FPM** | [mirrors](http://lemp.redshift.network/php-fpm/) | 7.2+ | `php.ini` + `php-fpm.conf` + `www.conf` |
+| **MySQL** | [mirrors](http://lemp.redshift.network/mysql/) | 5.7.x | `my.cnf` |
+| **PHP-FPM** | [mirrors](http://lemp.redshift.network/php-fpm/) | 7.2.x | `php.ini` + `php-fpm.conf` + `www.conf` |
 | **Zend / OPcache** | [mirrors](http://lemp.redshift.network/opcache/) | 3.2.0 / 7.2.17 | (same as PHP-FPM) |
-| **WordPress** | [mirrors](http://lemp.redshift.network/wordpress/) | 5.2.4 | some WP Core junk files are removed by `ss-clean` |
+| **WordPress** | [mirrors](http://lemp.redshift.network/wordpress/) | 5.3.1 | some WP Core junk files are removed by `ss-clean` |
 | **MU Plugins** | [mirrors](http://lemp.redshift.network/mu-plugins/) | N/A | several `mu-plugins` by LittleBizzy |
-| **WP-CLI** | [mirrors](http://lemp.redshift.network/wp-cli/) | 2.2.0 | default config |
+| **WP-CLI** | [mirrors](http://lemp.redshift.network/wp-cli/) | 2.4.0 | default config |
 | **Redis (Obj Cache)** | [mirrors](http://lemp.redshift.network/redis/) | 4.0.9 | `redis.conf` + `object-cache.php` |
 | **Git** | [mirrors](http://lemp.redshift.network/git/) | 2.17.1 | default config |
 | **UFW Firewall** | [mirrors](http://lemp.redshift.network/ufw-firewall/) | 0.36 | `ufw` + `ufw.conf` + `user-rules` |
-| **ClamAV** | [mirrors](http://lemp.redshift.network/clamav/) | 0.100.x | `freshclam.conf` |
+| **ClamAV** | [mirrors](http://lemp.redshift.network/clamav/) | 0.101.x | `freshclam.conf` |
 
 †Not yet supported (pending)
 
 Default Ports: 80 (HTTP), 443 (HTTPS), 6969 (SSH)
+
+## Abstract
+
+Most of modern computing history can be traced back to one thing: [Unix](https://en.wikipedia.org/wiki/Unix). Indeed, one of the only things about web servers that hasn't changed much in several decades is the Unix shell (Bash) command language. Keeping the same pragmatism and simplicity in mind that inspired LittleBizzy's managed hosting, SlickStack [ss] is coded entirely in Bash.
+
+While there are [clear benefits](https://medium.com/capital-one-developers/bashing-the-bash-replacing-shell-scripts-with-python-d8d201bc0989) to programming languages like Python or Ruby, provisioning a server with WordPress isn't very complicated, and every Linux server comes with [shell built into it](https://www.infoworld.com/article/2893519/linux/perl-python-ruby-are-nice-bash-is-where-its-at.html). Plus, let's not forget [what happens](https://discourse.roots.io/t/updated-to-ansible-2-4-deploys-broken-now-what/10588) when typical web agencies rely on advanced dependencies like Ansible... yikes! Onward, then...
+
+## Requirements [[read more](https://slickstack.io/requirements)]
+
+SlickStack [ss] works best on cloud servers with KVM virtualization that have at least 2GB RAM from [quality network providers](https://slickstack.io/hosting) such as DigitalOcean, Vultr, Hostwinds, and AWS Lightsail. The underlying LEMP stack configuration is meant primarily for high-traffic single-site WordPress installations, although support for [Multisite](https://codex.wordpress.org/Create_A_Network) installations is being planned. SlickStack [ss] supports WordPress, WooCommerce, bbPress, and BuddyPress "out of the box" with optimized settings that scale -- what this means is that you can upgrade your cloud server to a bigger or better instance, and run `ss-install` again, and most settings will (re)optimize themselves.
+
+**NOTE: In no case will SlickStack [ss] ever support installing multiple TLDs on a single server.**
+
+Currently, SlickStack [ss] is meant for a single origin server with a single `127.0.0.1` database, although remote databases should also work fine. Server "clustering" or "load balancing" has not been tested, and is not the goal here; complex enterprise-style configurations for WordPress are rarely needed (and can be expensive and difficult to manage), thus SlickStack [ss] aims to to provide a simple solution for the 99% of WordPress sites that don't need such complexity.
+
+It should also be noted that SlickStack [ss] is HTTPS-only, and that HSTS is enabled by default, meaning that HTTP sites are not supported. Because OpenSSL generates self-signed certificates, SlickStack [ss] servers require CloudFlare to be active in front of your server in order for SSL certificates to be properly CA-signed and loaded by your browser, at least until the first `ss-install` has been completed (after that, you can switch to Certbot / Let's Encrypt).
 
 ## Installation
 

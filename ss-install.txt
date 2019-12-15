@@ -72,7 +72,7 @@ if [[ "${UBUNTU_VERSION}" != "18.04" ]]; then
 fi
 
 ## ensure ss-config build version matches ss-install build version ##
-if [[ "$SS_BUILD" != "DEC2019D" ]]; then 
+if [[ "$SS_BUILD" != "DEC2019E" ]]; then 
     echo -e "\e[93mYour ss-config file is outdated. Please rebuild it and run ss-install again.\e[0m" >&2
     exit 1
 fi
@@ -693,16 +693,20 @@ source /home/${SUDO_USER}/.bashrc
 #### SlickStack: Install Nginx Server (Single Server Block) + FastCGI Cache ########################
 ####################################################################################################
 
+## purge nginx-extras (and all nginx packages) ##
+apt purge nginx*
+
 ## update Ubuntu package cache ##
 apt update
 
 ## add Nginx mainline (dev) branch ppa ##
+# add-apt-repository --remove ppa:nginx/development
 add-apt-repository ppa:nginx/development
 
 ## update package cache (again... not needed in Ubuntu 18.04+ but just for fun) ##
 apt update
 
-## install Nginx-Extras ##
+## install Nginx Extras ##
 apt install nginx-extras
 
 ## download latest versions ##
@@ -794,9 +798,16 @@ fi
 
 ## ssl protocols ##
 if [[ -z "$SSL_PROTOCOLS" ]]; then 
-    sed -i "s/@SSL_PROTOCOLS/TLSv1.2/g" /tmp/nginx.conf
+    sed -i "s/@SSL_PROTOCOLS/TLSv1.2 TLSv1.3/g" /tmp/nginx.conf
 else 
     sed -i "s/@SSL_PROTOCOLS/${SSL_PROTOCOLS}/g" /tmp/nginx.conf
+fi
+
+## ssl ciphers ##
+if [[ -z "$SSL_CIPHERS" ]]; then 
+    sed -i "s/@SSL_CIPHERS/ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384/g" /tmp/nginx.conf
+else 
+    sed -i "s/@SSL_CIPHERS/${SSL_CIPHERS}/g" /tmp/nginx.conf
 fi
 
 ## ssl session timeout ##
@@ -1560,4 +1571,6 @@ echo -e "\e[36mSlickStack installation complete! Please reboot server and ensure
 ## Ref: https://stackoverflow.com/questions/28118296/bash-script-is-super-slow
 ## Ref: https://stackoverflow.com/questions/15445361/speeding-up-bash-scripts
 ## Ref: https://unix.stackexchange.com/questions/67057/bash-script-optimization-of-processing-speed
-## Ref:https://unix.stackexchange.com/questions/313256/why-write-an-entire-bash-script-in-functions
+## Ref: https://unix.stackexchange.com/questions/313256/why-write-an-entire-bash-script-in-functions
+## Ref: http://nginx.org/en/linux_packages.html
+## Ref: https://www.digitalocean.com/community/questions/nginx-stable-or-mainline-for-production-server

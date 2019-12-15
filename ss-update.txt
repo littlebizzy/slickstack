@@ -60,6 +60,11 @@ function rm {
     command rm -R -f "$@"
 }
 
+## ln alias flags ##
+function ln {
+    command ln -s -f "$@"
+}
+
 ####################################################################################################
 #### SS-Update: Backup MySQL Database Before Proceeding (Via SS-Dump) ##############################
 ####################################################################################################
@@ -68,11 +73,642 @@ function rm {
 source /var/www/ss-dump
 
 ####################################################################################################
-#### SS-Update: Set Confold As Ubuntu Dpkg Default (When Upgrading Any Packages) ###################
+#### SS-Update: Install Latest SS-Config File (Safely Replicates Existing Variables) ###############
 ####################################################################################################
 
-## set confold as the dpkg default choice ##
-DEBIAN_FRONTEND=noninteractive dpkg --configure -a --force-confold
+## MODULE VERSION: SlickStack Build = DEC2019E
+
+## variables will only be copied over from the previous ss-config file if they are defined ##
+## otherwise default (latest) variable values will be implemented automatically ##
+
+## delete leftover files ##
+rm /tmp/ss-config*
+
+## retrieve latest version of ss-config-sample ##
+wget -O /tmp/ss-config http://mirrors.slickstack.io/ss-config-sample.txt
+
+## replicate existing variables to the new config file ##
+## find a better way to auto detect variables? ##
+
+## copy over shell settings ##
+sed -i "s|\(^ROOT_PASSWORD=\).*|ROOT_PASSWORD=\"$ROOT_PASSWORD\"|g" /tmp/ss-config
+sed -i "s|\(^SUDO_USER=\).*|SUDO_USER=\"$SUDO_USER\"|g" /tmp/ss-config
+sed -i "s|\(^SUDO_PASSWORD=\).*|SUDO_PASSWORD=\"$SUDO_PASSWORD\"|g" /tmp/ss-config
+
+if [[ -n "$SSH_PORT" ]]; then 
+    sed -i "s|\(^SSH_PORT=\).*|SSH_PORT=\"$SSH_PORT\"|g" /tmp/ss-config
+fi
+
+## copy over sftp settings ##
+sed -i "s|\(^SFTP_USER=\).*|SFTP_USER=\"$SFTP_USER\"|g" /tmp/ss-config
+sed -i "s|\(^SFTP_PASSWORD=\).*|SFTP_PASSWORD=\"$SFTP_PASSWORD\"|g" /tmp/ss-config
+
+## copy over initial database settings ##
+
+if [[ -n "$DB_NAME" ]]; then 
+sed -i "s|\(^DB_NAME=\).*|DB_NAME=\"$DB_NAME\"|g" /tmp/ss-config
+fi
+
+sed -i "s|\(^DB_USER=\).*|DB_USER=\"$DB_USER\"|g" /tmp/ss-config
+sed -i "s|\(^DB_PASSWORD=\).*|DB_PASSWORD=\"$DB_PASSWORD\"|g" /tmp/ss-config
+sed -i "s|\(^DB_PASSWORD_ROOT=\).*|DB_PASSWORD_ROOT=\"$DB_PASSWORD_ROOT\"|g" /tmp/ss-config
+
+## only copy over remote DB_HOST otherwise use new default 127.0.0.1 (present in the default new template) ##
+if [[ "$DB_HOST" != "localhost" ]] && [[ "$DB_HOST" != "127.0.0.1" ]]; then
+    sed -i "s|\(^DB_HOST=\).*|DB_HOST=\"$DB_HOST\"|g" /tmp/ss-config
+fi
+
+## copy over remaining database settings ##
+if [[ -n "$DB_PREFIX" ]]; then 
+sed -i "s|\(^DB_PREFIX=\).*|DB_PREFIX=\"$DB_PREFIX\"|g" /tmp/ss-config
+fi
+
+if [[ -n "$DB_CHARSET" ]]; then 
+sed -i "s|\(^DB_CHARSET=\).*|DB_CHARSET=\"$DB_CHARSET\"|g" /tmp/ss-config
+fi
+
+if [[ -n "$DB_COLLATE" ]]; then 
+sed -i "s|\(^DB_COLLATE=\).*|DB_COLLATE=\"$DB_COLLATE\"|g" /tmp/ss-config
+fi
+
+## copy over site settings ##
+sed -i "s|\(^SITE_TLD=\).*|SITE_TLD=\"$SITE_TLD\"|g" /tmp/ss-config
+sed -i "s|\(^SITE_DOMAIN=\).*|SITE_DOMAIN=\"$SITE_DOMAIN\"|g" /tmp/ss-config
+
+if [[ -n "$SITE_NOINDEX" ]]; then 
+sed -i "s|\(^SITE_NOINDEX=\).*|SITE_NOINDEX=\"$SITE_NOINDEX\"|g" /tmp/ss-config
+fi
+
+## copy over CloudFlare settings ##
+sed -i "s|\(^CLOUDFLARE_API_KEY=\).*|CLOUDFLARE_API_KEY=\"$CLOUDFLARE_API_KEY\"|g" /tmp/ss-config
+sed -i "s|\(^CLOUDFLARE_API_EMAIL=\).*|CLOUDFLARE_API_EMAIL=\"$CLOUDFLARE_API_EMAIL\"|g" /tmp/ss-config
+
+if [[ -n "$CLOUDFLARE_WIDGET_DNS" ]]; then 
+sed -i "s|\(^CLOUDFLARE_WIDGET_DNS=\).*|CLOUDFLARE_WIDGET_DNS=\"$CLOUDFLARE_WIDGET_DNS\"|g" /tmp/ss-config
+fi
+
+if [[ -n "$CLOUDFLARE_WIDGET_ANALYTICS" ]]; then 
+sed -i "s|\(^CLOUDFLARE_WIDGET_ANALYTICS=\).*|CLOUDFLARE_WIDGET_ANALYTICS=\"$CLOUDFLARE_WIDGET_ANALYTICS\"|g" /tmp/ss-config
+fi
+
+if [[ -n "$CLOUDFLARE_RECOMMENDED_SETTINGS" ]]; then 
+sed -i "s|\(^CLOUDFLARE_RECOMMENDED_SETTINGS=\).*|CLOUDFLARE_RECOMMENDED_SETTINGS=\"$CLOUDFLARE_RECOMMENDED_SETTINGS\"|g" /tmp/ss-config
+fi
+
+## copy over Multisite settings ##
+if [[ -n "$WP_MULTISITE" ]]; then 
+sed -i "s|\(^WP_MULTISITE=\).*|WP_MULTISITE=\"$WP_MULTISITE\"|g" /tmp/ss-config
+fi
+
+if [[ -n "$WP_MULTISITE_SUBDOMAINS" ]]; then 
+sed -i "s|\(^WP_MULTISITE_SUBDOMAINS=\).*|WP_MULTISITE_SUBDOMAINS=\"$WP_MULTISITE_SUBDOMAINS\"|g" /tmp/ss-config
+fi
+
+## ADVANCED SETTINGS ##
+
+## copy over WP config settings ##
+if [[ -n "$WP_LANG" ]]; then 
+sed -i "s|\(^WP_LANG=\).*|WP_LANG=\"$WP_LANG\"|g" /tmp/ss-config
+fi
+
+if [[ -n "$WP_POST_REVISIONS" ]]; then 
+sed -i "s|\(^WP_POST_REVISIONS=\).*|WP_POST_REVISIONS=\"$WP_POST_REVISIONS\"|g" /tmp/ss-config
+fi
+
+if [[ -n "$WP_AUTOSAVE_INTERVAL" ]]; then 
+sed -i "s|\(^WP_AUTOSAVE_INTERVAL=\).*|WP_AUTOSAVE_INTERVAL=\"$WP_AUTOSAVE_INTERVAL\"|g" /tmp/ss-config
+fi
+
+if [[ -n "$WP_HTTP_BLOCK_EXTERNAL" ]]; then 
+sed -i "s|\(^WP_HTTP_BLOCK_EXTERNAL=\).*|WP_HTTP_BLOCK_EXTERNAL=\"$WP_HTTP_BLOCK_EXTERNAL\"|g" /tmp/ss-config
+fi
+
+if [[ -n "$WP_ACCESSIBLE_HOSTS" ]]; then 
+sed -i "s|\(^WP_ACCESSIBLE_HOSTS=\).*|WP_ACCESSIBLE_HOSTS=\"$WP_ACCESSIBLE_HOSTS\"|g" /tmp/ss-config
+fi
+
+if [[ -n "$WP_AUTO_UPDATE_CORE" ]]; then 
+sed -i "s|\(^WP_AUTO_UPDATE_CORE=\).*|WP_AUTO_UPDATE_CORE=\"$WP_AUTO_UPDATE_CORE\"|g" /tmp/ss-config
+fi
+
+if [[ -n "$WP_DISALLOW_FILE_EDIT" ]]; then 
+sed -i "s|\(^WP_DISALLOW_FILE_EDIT=\).*|WP_DISALLOW_FILE_EDIT=\"$WP_DISALLOW_FILE_EDIT\"|g" /tmp/ss-config
+fi
+
+if [[ -n "$WP_DISALLOW_FILE_MODS" ]]; then
+sed -i "s|\(^WP_DISALLOW_FILE_MODS=\).*|WP_DISALLOW_FILE_MODS=\"$WP_DISALLOW_FILE_MODS\"|g" /tmp/ss-config
+fi
+
+if [[ -n "$WP_ALLOW_UNFILTERED_UPLOADS" ]]; then
+sed -i "s|\(^WP_ALLOW_UNFILTERED_UPLOADS=\).*|WP_ALLOW_UNFILTERED_UPLOADS=\"$WP_ALLOW_UNFILTERED_UPLOADS\"|g" /tmp/ss-config
+fi
+
+## copy over ssl settings ##
+if [[ -n "$SSL_TYPE" ]]; then 
+sed -i "s|\(^SSL_TYPE=\).*|SSL_TYPE=\"$SSL_TYPE\"|g" /tmp/ss-config
+fi
+
+if [[ -n "$SSL_PROTOCOLS" ]]; then 
+sed -i "s|\(^SSL_PROTOCOLS=\).*|SSL_PROTOCOLS=\"$SSL_PROTOCOLS\"|g" /tmp/ss-config
+fi
+
+if [[ -n "$SSL_CIPHERS" ]]; then 
+sed -i "s|\(^SSL_CIPHERS=\).*|SSL_CIPHERS=\"$SSL_CIPHERS\"|g" /tmp/ss-config
+fi
+
+if [[ -n "$SSL_SESSION_TIMEOUT" ]]; then
+sed -i "s|\(^SSL_SESSION_TIMEOUT=\).*|SSL_SESSION_TIMEOUT=\"$SSL_SESSION_TIMEOUT\"|g" /tmp/ss-config
+fi
+
+if [[ -n "$SSL_SESSION_CACHE" ]]; then
+sed -i "s|\(^SSL_SESSION_CACHE=\).*|SSL_SESSION_CACHE=\"$SSL_SESSION_CACHE\"|g" /tmp/ss-config
+fi
+
+if [[ -n "$SSL_BUFFER_SIZE" ]]; then
+sed -i "s|\(^SSL_BUFFER_SIZE=\).*|SSL_BUFFER_SIZE=\"$SSL_BUFFER_SIZE\"|g" /tmp/ss-config
+fi
+
+if [[ -n "$SSL_EMAIL" ]]; then
+sed -i "s|\(^SSL_EMAIL=\).*|SSL_EMAIL=\"$SSL_EMAIL\"|g" /tmp/ss-config
+fi
+
+if [[ -n "$SSL_EMAIL_ALERTS" ]]; then
+sed -i "s|\(^SSL_EMAIL_ALERTS=\).*|SSL_EMAIL_ALERTS=\"$SSL_EMAIL_ALERTS\"|g" /tmp/ss-config
+fi
+
+if [[ -n "$SSL_CHALLENGE_TYPE" ]]; then
+sed -i "s|\(^SSL_CHALLENGE_TYPE=\).*|SSL_CHALLENGE_TYPE=\"$SSL_CHALLENGE_TYPE\"|g" /tmp/ss-config
+fi
+
+## copy over csr settings ##
+if [[ -n "$CSR_COUNTRY" ]]; then
+sed -i "s|\(^CSR_COUNTRY=\).*|CSR_COUNTRY=\"$CSR_COUNTRY\"|g" /tmp/ss-config
+fi
+
+if [[ -n "$CSR_STATE" ]]; then
+sed -i "s|\(^CSR_STATE=\).*|CSR_STATE=\"$CSR_STATE\"|g" /tmp/ss-config
+fi
+
+if [[ -n "$CSR_CITY" ]]; then
+sed -i "s|\(^CSR_CITY=\).*|CSR_CITY=\"$CSR_CITY\"|g" /tmp/ss-config
+fi
+
+if [[ -n "$CSR_COMPANY" ]]; then
+sed -i "s|\(^CSR_COMPANY=\).*|CSR_COMPANY=\"$CSR_COMPANY\"|g" /tmp/ss-config
+fi
+
+if [[ -n "$CSR_DEPT" ]]; then
+sed -i "s|\(^CSR_DEPT=\).*|CSR_DEPT=\"$CSR_DEPT\"|g" /tmp/ss-config
+fi
+
+## copy over nginx settings ##
+if [[ -n "$NGINX_WORKER_RLIMIT_NOFILE" ]]; then
+sed -i "s|\(^NGINX_WORKER_RLIMIT_NOFILE=\).*|NGINX_WORKER_RLIMIT_NOFILE=\"$NGINX_WORKER_RLIMIT_NOFILE\"|g" /tmp/ss-config
+fi
+
+if [[ -n "$NGINX_WORKER_CONNECTIONS" ]]; then
+sed -i "s|\(^NGINX_WORKER_CONNECTIONS=\).*|NGINX_WORKER_CONNECTIONS=\"$NGINX_WORKER_CONNECTIONS\"|g" /tmp/ss-config
+fi
+
+if [[ -n "$NGINX_SERVER_NAMES_HASH_BUCKET_SIZE" ]]; then
+sed -i "s|\(^NGINX_SERVER_NAMES_HASH_BUCKET_SIZE=\).*|NGINX_SERVER_NAMES_HASH_BUCKET_SIZE=\"$NGINX_SERVER_NAMES_HASH_BUCKET_SIZE\"|g" /tmp/ss-config
+fi
+
+if [[ -n "$NGINX_SERVER_NAMES_MAX_HASH_SIZE" ]]; then
+sed -i "s|\(^NGINX_SERVER_NAMES_MAX_HASH_SIZE=\).*|NGINX_SERVER_NAMES_MAX_HASH_SIZE=\"$NGINX_SERVER_NAMES_MAX_HASH_SIZE\"|g" /tmp/ss-config
+fi
+
+if [[ -n "$NGINX_TYPES_MAX_HASH_SIZE" ]]; then
+sed -i "s|\(^NGINX_TYPES_MAX_HASH_SIZE=\).*|NGINX_TYPES_MAX_HASH_SIZE=\"$NGINX_TYPES_MAX_HASH_SIZE\"|g" /tmp/ss-config
+fi
+
+if [[ -n "$NGINX_CLIENT_MAX_BODY_SIZE" ]]; then
+sed -i "s|\(^NGINX_CLIENT_MAX_BODY_SIZE=\).*|NGINX_CLIENT_MAX_BODY_SIZE=\"$NGINX_CLIENT_MAX_BODY_SIZE\"|g" /tmp/ss-config
+fi
+
+if [[ -n "$NGINX_CLIENT_BODY_BUFFER_SIZE" ]]; then
+sed -i "s|\(^NGINX_CLIENT_BODY_BUFFER_SIZE=\).*|NGINX_CLIENT_BODY_BUFFER_SIZE=\"$NGINX_CLIENT_BODY_BUFFER_SIZE\"|g" /tmp/ss-config
+fi
+
+if [[ -n "$NGINX_CLIENT_HEADER_BUFFER_SIZE" ]]; then
+sed -i "s|\(^NGINX_CLIENT_HEADER_BUFFER_SIZE=\).*|NGINX_CLIENT_HEADER_BUFFER_SIZE=\"$NGINX_CLIENT_HEADER_BUFFER_SIZE\"|g" /tmp/ss-config
+fi
+
+if [[ -n "$NGINX_LARGE_CLIENT_HEADER_BUFFERS" ]]; then
+sed -i "s|\(^NGINX_LARGE_CLIENT_HEADER_BUFFERS=\).*|NGINX_LARGE_CLIENT_HEADER_BUFFERS=\"$NGINX_LARGE_CLIENT_HEADER_BUFFERS\"|g" /tmp/ss-config
+fi
+
+if [[ -n "$NGINX_CLIENT_BODY_TIMEOUT" ]]; then
+sed -i "s|\(^NGINX_CLIENT_BODY_TIMEOUT=\).*|NGINX_CLIENT_BODY_TIMEOUT=\"$NGINX_CLIENT_BODY_TIMEOUT\"|g" /tmp/ss-config
+fi
+
+if [[ -n "$NGINX_CLIENT_HEADER_TIMEOUT" ]]; then
+sed -i "s|\(^NGINX_CLIENT_HEADER_TIMEOUT=\).*|NGINX_CLIENT_HEADER_TIMEOUT=\"$NGINX_CLIENT_HEADER_TIMEOUT\"|g" /tmp/ss-config
+fi
+
+if [[ -n "$NGINX_KEEPALIVE_TIMEOUT" ]]; then
+sed -i "s|\(^NGINX_KEEPALIVE_TIMEOUT=\).*|NGINX_KEEPALIVE_TIMEOUT=\"$NGINX_KEEPALIVE_TIMEOUT\"|g" /tmp/ss-config
+fi
+
+if [[ -n "$NGINX_KEEPALIVE_REQUESTS" ]]; then
+sed -i "s|\(^NGINX_KEEPALIVE_REQUESTS=\).*|NGINX_KEEPALIVE_REQUESTS=\"$NGINX_KEEPALIVE_REQUESTS\"|g" /tmp/ss-config
+fi
+
+if [[ -n "$NGINX_SEND_TIMEOUT" ]]; then
+sed -i "s|\(^NGINX_SEND_TIMEOUT=\).*|NGINX_SEND_TIMEOUT=\"$NGINX_SEND_TIMEOUT\"|g" /tmp/ss-config
+fi
+
+## copy over open file cache settings ##
+if [[ -n "$OPEN_FILE_CACHE_MAX" ]]; then
+sed -i "s|\(^OPEN_FILE_CACHE_MAX=\).*|OPEN_FILE_CACHE_MAX=\"$OPEN_FILE_CACHE_MAX\"|g" /tmp/ss-config
+fi
+
+if [[ -n "$OPEN_FILE_CACHE_INACTIVE" ]]; then
+sed -i "s|\(^OPEN_FILE_CACHE_INACTIVE=\).*|OPEN_FILE_CACHE_INACTIVE=\"$OPEN_FILE_CACHE_INACTIVE\"|g" /tmp/ss-config
+fi
+
+if [[ -n "$OPEN_FILE_CACHE_VALID" ]]; then
+sed -i "s|\(^OPEN_FILE_CACHE_VALID=\).*|OPEN_FILE_CACHE_VALID=\"$OPEN_FILE_CACHE_VALID\"|g" /tmp/ss-config
+fi
+
+if [[ -n "$OPEN_FILE_CACHE_MIN_USES" ]]; then
+sed -i "s|\(^OPEN_FILE_CACHE_MIN_USES=\).*|OPEN_FILE_CACHE_MIN_USES=\"$OPEN_FILE_CACHE_MIN_USES\"|g" /tmp/ss-config
+fi
+
+if [[ -n "$OPEN_FILE_CACHE_ERRORS" ]]; then
+sed -i "s|\(^OPEN_FILE_CACHE_ERRORS=\).*|OPEN_FILE_CACHE_ERRORS=\"$OPEN_FILE_CACHE_ERRORS\"|g" /tmp/ss-config
+fi
+
+## copy over fastcgi cache settings ##
+if [[ -n "$FCGI_CACHE" ]]; then
+sed -i "s|\(^FCGI_CACHE=\).*|FCGI_CACHE=\"$FCGI_CACHE\"|g" /tmp/ss-config
+fi
+
+if [[ -n "$FCGI_CACHE_VALID" ]]; then
+sed -i "s|\(^FCGI_CACHE_VALID=\).*|FCGI_CACHE_VALID=\"$FCGI_CACHE_VALID\"|g" /tmp/ss-config
+fi
+
+if [[ -n "$FCGI_CACHE_INACTIVE" ]]; then
+sed -i "s|\(^FCGI_CACHE_INACTIVE=\).*|FCGI_CACHE_INACTIVE=\"$FCGI_CACHE_INACTIVE\"|g" /tmp/ss-config
+fi
+
+if [[ -n "$FCGI_CACHE_MEMORY" ]]; then
+sed -i "s|\(^FCGI_CACHE_MEMORY=\).*|FCGI_CACHE_MEMORY=\"$FCGI_CACHE_MEMORY\"|g" /tmp/ss-config
+fi
+
+if [[ -n "$FCGI_CACHE_MAX_SIZE" ]]; then
+sed -i "s|\(^FCGI_CACHE_MAX_SIZE=\).*|FCGI_CACHE_MAX_SIZE=\"$FCGI_CACHE_MAX_SIZE\"|g" /tmp/ss-config
+fi
+
+if [[ -n "$FCGI_CONNECT_TIMEOUT" ]]; then
+sed -i "s|\(^FCGI_CONNECT_TIMEOUT=\).*|FCGI_CONNECT_TIMEOUT=\"$FCGI_CONNECT_TIMEOUT\"|g" /tmp/ss-config
+fi
+
+if [[ -n "$FCGI_READ_TIMEOUT" ]]; then
+sed -i "s|\(^FCGI_READ_TIMEOUT=\).*|FCGI_READ_TIMEOUT=\"$FCGI_READ_TIMEOUT\"|g" /tmp/ss-config
+fi
+
+if [[ -n "$FCGI_SEND_TIMEOUT" ]]; then
+sed -i "s|\(^FCGI_SEND_TIMEOUT=\).*|FCGI_SEND_TIMEOUT=\"$FCGI_SEND_TIMEOUT\"|g" /tmp/ss-config
+fi
+
+if [[ -n "$FCGI_BUFFERS" ]]; then
+sed -i "s|\(^FCGI_BUFFERS=\).*|FCGI_BUFFERS=\"$FCGI_BUFFERS\"|g" /tmp/ss-config
+fi
+
+if [[ -n "$FCGI_BUFFER_SIZE" ]]; then
+sed -i "s|\(^FCGI_BUFFER_SIZE=\).*|FCGI_BUFFER_SIZE=\"$FCGI_BUFFER_SIZE\"|g" /tmp/ss-config
+fi
+
+if [[ -n "$FCGI_BUSY_BUFFERS_SIZE" ]]; then
+sed -i "s|\(^FCGI_BUSY_BUFFERS_SIZE=\).*|FCGI_BUSY_BUFFERS_SIZE=\"$FCGI_BUSY_BUFFERS_SIZE\"|g" /tmp/ss-config
+fi
+
+if [[ -n "$FCGI_TEMP_FILE_WRITE_SIZE" ]]; then
+sed -i "s|\(^FCGI_TEMP_FILE_WRITE_SIZE=\).*|FCGI_TEMP_FILE_WRITE_SIZE=\"$FCGI_TEMP_FILE_WRITE_SIZE\"|g" /tmp/ss-config
+fi
+
+if [[ -n "$FCGI_CACHE_TMPFS" ]]; then
+sed -i "s|\(^FCGI_CACHE_TMPFS=\).*|FCGI_CACHE_TMPFS=\"$FCGI_CACHE_TMPFS\"|g" /tmp/ss-config
+fi
+
+## copy over mysql settings ##
+if [[ -n "$SQL_MODE" ]]; then
+sed -i "s|\(^SQL_MODE=\).*|SQL_MODE=\"$SQL_MODE\"|g" /tmp/ss-config
+fi
+
+if [[ -n "$INNODB_BUFFER_POOL_SIZE" ]]; then
+sed -i "s|\(^INNODB_BUFFER_POOL_SIZE=\).*|INNODB_BUFFER_POOL_SIZE=\"$INNODB_BUFFER_POOL_SIZE\"|g" /tmp/ss-config
+fi
+
+if [[ -n "$INNODB_LOG_FILE_SIZE" ]]; then
+sed -i "s|\(^INNODB_LOG_FILE_SIZE=\).*|INNODB_LOG_FILE_SIZE=\"$INNODB_LOG_FILE_SIZE\"|g" /tmp/ss-config
+fi
+
+if [[ -n "$INNODB_LOG_FILES_IN_GROUP" ]]; then
+sed -i "s|\(^INNODB_LOG_FILES_IN_GROUP=\).*|INNODB_LOG_FILES_IN_GROUP=\"$INNODB_LOG_FILES_IN_GROUP\"|g" /tmp/ss-config
+fi
+
+if [[ -n "$INNODB_FLUSH_LOG_AT_TRX_COMMIT" ]]; then
+sed -i "s|\(^INNODB_FLUSH_LOG_AT_TRX_COMMIT=\).*|INNODB_FLUSH_LOG_AT_TRX_COMMIT=\"$INNODB_FLUSH_LOG_AT_TRX_COMMIT\"|g" /tmp/ss-config
+fi
+
+if [[ -n "$INNODB_FLUSH_METHOD" ]]; then
+sed -i "s|\(^INNODB_FLUSH_METHOD=\).*|INNODB_FLUSH_METHOD=\"$INNODB_FLUSH_METHOD\"|g" /tmp/ss-config
+fi
+
+## copy over php settings ##
+if [[ -n "$PHP_PRECISION" ]]; then
+sed -i "s|\(^PHP_PRECISION=\).*|PHP_PRECISION=\"$PHP_PRECISION\"|g" /tmp/ss-config
+fi
+
+if [[ -n "$PHP_OUTPUT_BUFFERING" ]]; then
+sed -i "s|\(^PHP_OUTPUT_BUFFERING=\).*|PHP_OUTPUT_BUFFERING=\"$PHP_OUTPUT_BUFFERING\"|g" /tmp/ss-config
+fi
+
+if [[ -n "$PHP_UNSERIALIZE_MAX_DEPTH" ]]; then
+sed -i "s|\(^PHP_UNSERIALIZE_MAX_DEPTH=\).*|PHP_UNSERIALIZE_MAX_DEPTH=\"$PHP_UNSERIALIZE_MAX_DEPTH\"|g" /tmp/ss-config
+fi
+
+if [[ -n "$PHP_SERIALIZE_PRECISION" ]]; then
+sed -i "s|\(^PHP_SERIALIZE_PRECISION=\).*|PHP_SERIALIZE_PRECISION=\"$PHP_SERIALIZE_PRECISION\"|g" /tmp/ss-config
+fi
+
+if [[ -n "$PHP_DISABLE_FUNCTIONS" ]]; then
+sed -i "s|\(^PHP_DISABLE_FUNCTIONS=\).*|PHP_DISABLE_FUNCTIONS=\"$PHP_DISABLE_FUNCTIONS\"|g" /tmp/ss-config
+fi
+
+if [[ -n "$PHP_DISABLE_CLASSES" ]]; then
+sed -i "s|\(^PHP_DISABLE_CLASSES=\).*|PHP_DISABLE_CLASSES=\"$PHP_DISABLE_CLASSES\"|g" /tmp/ss-config
+fi
+
+if [[ -n "$PHP_MAX_EXECUTION_TIME" ]]; then
+sed -i "s|\(^PHP_MAX_EXECUTION_TIME=\).*|PHP_MAX_EXECUTION_TIME=\"$PHP_MAX_EXECUTION_TIME\"|g" /tmp/ss-config
+fi
+
+if [[ -n "$PHP_MAX_INPUT_TIME" ]]; then
+sed -i "s|\(^PHP_MAX_INPUT_TIME=\).*|PHP_MAX_INPUT_TIME=\"$PHP_MAX_INPUT_TIME\"|g" /tmp/ss-config
+fi
+
+if [[ -n "$PHP_MAX_INPUT_NESTING_LEVEL" ]]; then
+sed -i "s|\(^PHP_MAX_INPUT_NESTING_LEVEL=\).*|PHP_MAX_INPUT_NESTING_LEVEL=\"$PHP_MAX_INPUT_NESTING_LEVEL\"|g" /tmp/ss-config
+fi
+
+if [[ -n "$PHP_MAX_INPUT_VARS" ]]; then
+sed -i "s|\(^PHP_MAX_INPUT_VARS=\).*|PHP_MAX_INPUT_VARS=\"$PHP_MAX_INPUT_VARS\"|g" /tmp/ss-config
+fi
+
+if [[ -n "$PHP_MEMORY_LIMIT" ]]; then
+sed -i "s|\(^PHP_MEMORY_LIMIT=\).*|PHP_MEMORY_LIMIT=\"$PHP_MEMORY_LIMIT\"|g" /tmp/ss-config
+fi
+
+if [[ -n "$PHP_POST_MAX_SIZE" ]]; then
+sed -i "s|\(^PHP_POST_MAX_SIZE=\).*|PHP_POST_MAX_SIZE=\"$PHP_POST_MAX_SIZE\"|g" /tmp/ss-config
+fi
+
+if [[ -n "$PHP_UPLOAD_MAX_FILESIZE" ]]; then
+sed -i "s|\(^PHP_UPLOAD_MAX_FILESIZE=\).*|PHP_UPLOAD_MAX_FILESIZE=\"$PHP_UPLOAD_MAX_FILESIZE\"|g" /tmp/ss-config
+fi
+
+if [[ -n "$PHP_MAX_FILE_UPLOADS" ]]; then
+sed -i "s|\(^PHP_MAX_FILE_UPLOADS=\).*|PHP_MAX_FILE_UPLOADS=\"$PHP_MAX_FILE_UPLOADS\"|g" /tmp/ss-config
+fi
+
+if [[ -n "$PHP_ALLOW_URL_FOPEN" ]]; then
+sed -i "s|\(^PHP_ALLOW_URL_FOPEN=\).*|PHP_ALLOW_URL_FOPEN=\"$PHP_ALLOW_URL_FOPEN\"|g" /tmp/ss-config
+fi
+
+if [[ -n "$PHP_DEFAULT_SOCKET_TIMEOUT" ]]; then
+sed -i "s|\(^PHP_DEFAULT_SOCKET_TIMEOUT=\).*|PHP_DEFAULT_SOCKET_TIMEOUT=\"$PHP_DEFAULT_SOCKET_TIMEOUT\"|g" /tmp/ss-config
+fi
+
+## copy over fpm settings ##
+if [[ -n "$FPM_EMERGENCY_RESTART_THRESHOLD" ]]; then
+sed -i "s|\(^FPM_EMERGENCY_RESTART_THRESHOLD=\).*|FPM_EMERGENCY_RESTART_THRESHOLD=\"$FPM_EMERGENCY_RESTART_THRESHOLD\"|g" /tmp/ss-config
+fi
+
+if [[ -n "$FPM_EMERGENCY_RESTART_INTERVAL" ]]; then
+sed -i "s|\(^FPM_EMERGENCY_RESTART_INTERVAL=\).*|FPM_EMERGENCY_RESTART_INTERVAL=\"$FPM_EMERGENCY_RESTART_INTERVAL\"|g" /tmp/ss-config
+fi
+
+if [[ -n "$FPM_PROCESS_CONTROL_TIMEOUT" ]]; then
+sed -i "s|\(^FPM_PROCESS_CONTROL_TIMEOUT=\).*|FPM_PROCESS_CONTROL_TIMEOUT=\"$FPM_PROCESS_CONTROL_TIMEOUT\"|g" /tmp/ss-config
+fi
+
+if [[ -n "$FPM_PROCESS_MAX" ]]; then
+sed -i "s|\(^FPM_PROCESS_MAX=\).*|FPM_PROCESS_MAX=\"$FPM_PROCESS_MAX\"|g" /tmp/ss-config
+fi
+
+if [[ -n "$FPM_PROCESS_PRIORITY" ]]; then
+sed -i "s|\(^FPM_PROCESS_PRIORITY=\).*|FPM_PROCESS_PRIORITY=\"$FPM_PROCESS_PRIORITY\"|g" /tmp/ss-config
+fi
+
+if [[ -n "$FPM_RLIMIT_FILES" ]]; then
+sed -i "s|\(^FPM_RLIMIT_FILES=\).*|FPM_RLIMIT_FILES=\"$FPM_RLIMIT_FILES\"|g" /tmp/ss-config
+fi
+
+if [[ -n "$FPM_RLIMIT_CORE" ]]; then
+sed -i "s|\(^FPM_RLIMIT_CORE=\).*|FPM_RLIMIT_CORE=\"$FPM_RLIMIT_CORE\"|g" /tmp/ss-config
+fi
+
+if [[ -n "$FPM_SYSTEMD_INTERVAL" ]]; then
+sed -i "s|\(^FPM_SYSTEMD_INTERVAL=\).*|FPM_SYSTEMD_INTERVAL=\"$FPM_SYSTEMD_INTERVAL\"|g" /tmp/ss-config
+fi
+
+## copy over www pool settings ##
+if [[ -n "$WWW_LISTEN_BACKLOG" ]]; then
+sed -i "s|\(^WWW_LISTEN_BACKLOG=\).*|WWW_LISTEN_BACKLOG=\"$WWW_LISTEN_BACKLOG\"|g" /tmp/ss-config
+fi
+
+if [[ -n "$WWW_PM_MODE" ]]; then
+sed -i "s|\(^WWW_PM_MODE=\).*|WWW_PM_MODE=\"$WWW_PM_MODE\"|g" /tmp/ss-config
+fi
+
+if [[ -n "$WWW_PM_MAX_CHILDREN" ]]; then
+sed -i "s|\(^WWW_PM_MAX_CHILDREN=\).*|WWW_PM_MAX_CHILDREN=\"$WWW_PM_MAX_CHILDREN\"|g" /tmp/ss-config
+fi
+
+if [[ -n "$WWW_PM_START_SERVERS" ]]; then
+sed -i "s|\(^WWW_PM_START_SERVERS=\).*|WWW_PM_START_SERVERS=\"$WWW_PM_START_SERVERS\"|g" /tmp/ss-config
+fi
+
+if [[ -n "$WWW_PM_MIN_SPARE_SERVERS" ]]; then
+sed -i "s|\(^WWW_PM_MIN_SPARE_SERVERS=\).*|WWW_PM_MIN_SPARE_SERVERS=\"$WWW_PM_MIN_SPARE_SERVERS\"|g" /tmp/ss-config
+fi
+
+if [[ -n "$WWW_PM_MAX_SPARE_SERVERS" ]]; then
+sed -i "s|\(^WWW_PM_MAX_SPARE_SERVERS=\).*|WWW_PM_MAX_SPARE_SERVERS=\"$WWW_PM_MAX_SPARE_SERVERS\"|g" /tmp/ss-config
+fi
+
+if [[ -n "$WWW_PM_PROCESS_IDLE_TIMEOUT" ]]; then
+sed -i "s|\(^WWW_PM_PROCESS_IDLE_TIMEOUT=\).*|WWW_PM_PROCESS_IDLE_TIMEOUT=\"$WWW_PM_PROCESS_IDLE_TIMEOUT\"|g" /tmp/ss-config
+fi
+
+if [[ -n "$WWW_PM_MAX_REQUESTS" ]]; then
+sed -i "s|\(^WWW_PM_MAX_REQUESTS=\).*|WWW_PM_MAX_REQUESTS=\"$WWW_PM_MAX_REQUESTS\"|g" /tmp/ss-config
+fi
+
+if [[ -n "$WWW_REQUEST_TERMINATE_TIMEOUT" ]]; then
+sed -i "s|\(^WWW_REQUEST_TERMINATE_TIMEOUT=\).*|WWW_REQUEST_TERMINATE_TIMEOUT=\"$WWW_REQUEST_TERMINATE_TIMEOUT\"|g" /tmp/ss-config
+fi
+
+if [[ -n "$WWW_RLIMIT_FILES" ]]; then
+sed -i "s|\(^WWW_RLIMIT_FILES=\).*|WWW_RLIMIT_FILES=\"$WWW_RLIMIT_FILES\"|g" /tmp/ss-config
+fi
+
+if [[ -n "$WWW_RLIMIT_CORE" ]]; then
+sed -i "s|\(^WWW_RLIMIT_CORE=\).*|WWW_RLIMIT_CORE=\"$WWW_RLIMIT_CORE\"|g" /tmp/ss-config
+fi
+
+## copy over opcache settings ##
+if [[ -n "$OPCACHE_MEMORY_CONSUMPTION" ]]; then
+sed -i "s|\(^OPCACHE_MEMORY_CONSUMPTION=\).*|OPCACHE_MEMORY_CONSUMPTION=\"$OPCACHE_MEMORY_CONSUMPTION\"|g" /tmp/ss-config
+fi
+
+if [[ -n "$OPCACHE_INTERNED_STRINGS_BUFFER" ]]; then
+sed -i "s|\(^OPCACHE_INTERNED_STRINGS_BUFFER=\).*|OPCACHE_INTERNED_STRINGS_BUFFER=\"$OPCACHE_INTERNED_STRINGS_BUFFER\"|g" /tmp/ss-config
+fi
+
+if [[ -n "$OPCACHE_MAX_ACCELERATED_FILES" ]]; then
+sed -i "s|\(^OPCACHE_MAX_ACCELERATED_FILES=\).*|OPCACHE_MAX_ACCELERATED_FILES=\"$OPCACHE_MAX_ACCELERATED_FILES\"|g" /tmp/ss-config
+fi
+
+if [[ -n "$OPCACHE_MAX_WASTED_PERCENTAGE" ]]; then
+sed -i "s|\(^OPCACHE_MAX_WASTED_PERCENTAGE=\).*|OPCACHE_MAX_WASTED_PERCENTAGE=\"$OPCACHE_MAX_WASTED_PERCENTAGE\"|g" /tmp/ss-config
+fi
+
+if [[ -n "$OPCACHE_REVALIDATE_FREQUENCY" ]]; then
+sed -i "s|\(^OPCACHE_REVALIDATE_FREQUENCY=\).*|OPCACHE_REVALIDATE_FREQUENCY=\"$OPCACHE_REVALIDATE_FREQUENCY\"|g" /tmp/ss-config
+fi
+
+if [[ -n "$OPCACHE_HUGE_CODE_PAGES" ]]; then
+sed -i "s|\(^OPCACHE_HUGE_CODE_PAGES=\).*|OPCACHE_HUGE_CODE_PAGES=\"$OPCACHE_HUGE_CODE_PAGES\"|g" /tmp/ss-config
+fi
+
+## copy over general slickstack settings ##
+# if [[ -n "$SS_APP" ]]; then
+# sed -i "s|\(^SS_APP=\).*|SS_APP=\"$SS_APP\"|g" /tmp/ss-config
+# fi
+
+if [[ -n "$SS_TYPE" ]]; then
+sed -i "s|\(^SS_TYPE=\).*|SS_TYPE=\"$SS_TYPE\"|g" /tmp/ss-config
+fi
+
+if [[ -n "$SS_TIMEZONE" ]]; then
+sed -i "s|\(^SS_TIMEZONE=\).*|SS_TIMEZONE=\"$SS_TIMEZONE\"|g" /tmp/ss-config
+fi
+
+if [[ -n "$SS_REBOOT" ]]; then
+sed -i "s|\(^SS_REBOOT=\).*|SS_REBOOT=\"$SS_REBOOT\"|g" /tmp/ss-config
+fi
+
+if [[ -n "$SS_DOS2UNIX" ]]; then
+sed -i "s|\(^SS_DOS2UNIX=\).*|SS_DOS2UNIX=\"$SS_DOS2UNIX\"|g" /tmp/ss-config
+fi
+
+## copy over ss interval settings ##
+if [[ -n "$SS_INTERVAL_CHECK" ]]; then
+sed -i "s|\(^SS_INTERVAL_CHECK=\).*|SS_INTERVAL_CHECK=\"$SS_INTERVAL_CHECK\"|g" /tmp/ss-config
+fi
+
+if [[ -n "$SS_INTERVAL_WORKER" ]]; then
+sed -i "s|\(^SS_INTERVAL_WORKER=\).*|SS_INTERVAL_WORKER=\"$SS_INTERVAL_WORKER\"|g" /tmp/ss-config
+fi
+
+if [[ -n "$SS_INTERVAL_DUMP" ]]; then
+sed -i "s|\(^SS_INTERVAL_DUMP=\).*|SS_INTERVAL_DUMP=\"$SS_INTERVAL_DUMP\"|g" /tmp/ss-config
+fi
+
+if [[ -n "$SS_INTERVAL_PERMS" ]]; then
+sed -i "s|\(^SS_INTERVAL_PERMS=\).*|SS_INTERVAL_PERMS=\"$SS_INTERVAL_PERMS\"|g" /tmp/ss-config
+fi
+
+if [[ -n "$SS_INTERVAL_CLEAN" ]]; then
+sed -i "s|\(^SS_INTERVAL_CLEAN=\).*|SS_INTERVAL_CLEAN=\"$SS_INTERVAL_CLEAN\"|g" /tmp/ss-config
+fi
+
+if [[ -n "$SS_INTERVAL_MUPLUGS" ]]; then
+sed -i "s|\(^SS_INTERVAL_MUPLUGS=\).*|SS_INTERVAL_MUPLUGS=\"$SS_INTERVAL_MUPLUGS\"|g" /tmp/ss-config
+fi
+
+if [[ -n "$SS_INTERVAL_SCAN" ]]; then
+sed -i "s|\(^SS_INTERVAL_SCAN=\).*|SS_INTERVAL_SCAN=\"$SS_INTERVAL_SCAN\"|g" /tmp/ss-config
+fi
+
+if [[ -n "$SS_INTERVAL_PURGE" ]]; then
+sed -i "s|\(^SS_INTERVAL_PURGE=\).*|SS_INTERVAL_PURGE=\"$SS_INTERVAL_PURGE\"|g" /tmp/ss-config
+fi
+
+if [[ -n "$SS_INTERVAL_ENCRYPT" ]]; then
+sed -i "s|\(^SS_INTERVAL_ENCRYPT=\).*|SS_INTERVAL_ENCRYPT=\"$SS_INTERVAL_ENCRYPT\"|g" /tmp/ss-config
+fi
+
+if [[ -n "$SS_INTERVAL_UPDATE" ]]; then
+sed -i "s|\(^SS_INTERVAL_UPDATE=\).*|SS_INTERVAL_UPDATE=\"$SS_INTERVAL_UPDATE\"|g" /tmp/ss-config
+fi
+
+## copy over custom sources ##
+if [[ -n "$PLUGIN_BLACKLIST_SOURCE" ]]; then
+sed -i "s|\(^PLUGIN_BLACKLIST_SOURCE=\).*|PLUGIN_BLACKLIST_SOURCE=\"$PLUGIN_BLACKLIST_SOURCE\"|g" /tmp/ss-config
+fi
+
+if [[ -n "$CUSTOM_FUNCTIONS_SOURCE" ]]; then
+sed -i "s|\(^CUSTOM_FUNCTIONS_SOURCE=\).*|CUSTOM_FUNCTIONS_SOURCE=\"$CUSTOM_FUNCTIONS_SOURCE\"|g" /tmp/ss-config
+fi
+
+if [[ -n "$THROWAWAY_THEME_SOURCE" ]]; then
+sed -i "s|\(^THROWAWAY_THEME_SOURCE=\).*|THROWAWAY_THEME_SOURCE=\"$THROWAWAY_THEME_SOURCE\"|g" /tmp/ss-config
+fi
+
+## MORE SOON... ##
+
+## copy files to destinations ##
+cp /tmp/ss-config /var/www/ss-config
+
+## reset permissions ##
+chown root:root /var/www/ss-config &> /dev/null ## must be root:root
+chmod 0700 /var/www/ss-config &> /dev/null
+
+## delete leftover files ##
+rm /tmp/ss-config*
+
+####################################################################################################
+#### SS-Install: Configure MySQL Users + Connections (Supports IPv4 + IPv6) ########################
+####################################################################################################
+
+## THIS IS REQUIRED BECAUSE NEW SS-CONFIG TEMPLATE SWITCHED TO 127.0.0.1 DATABASE HOST ##
+
+## prepare MySQL root password (suppresses MySQL security warnings) ##
+export MYSQL_PWD=$DB_PASSWORD_ROOT
+
+## create root user (required before granting privileges after MySQL 8.0) ##
+mysql -uroot -p${DB_PASSWORD_ROOT} -e "CREATE USER 'root'@'localhost' IDENTIFIED BY '${DB_PASSWORD_ROOT}';"
+mysql -uroot -p${DB_PASSWORD_ROOT} -e "CREATE USER 'root'@'127.0.0.1' IDENTIFIED BY '${DB_PASSWORD_ROOT}';"
+mysql -uroot -p${DB_PASSWORD_ROOT} -e "CREATE USER 'root'@'::1' IDENTIFIED BY '${DB_PASSWORD_ROOT}';"
+
+## grant root user all privileges on wordpress database (all connections) ##
+mysql -uroot -p${DB_PASSWORD_ROOT} -e "GRANT ALL PRIVILEGES ON ${DB_NAME}.* TO 'root'@'localhost';"
+mysql -uroot -p${DB_PASSWORD_ROOT} -e "GRANT ALL PRIVILEGES ON ${DB_NAME}.* TO 'root'@'127.0.0.1';"
+mysql -uroot -p${DB_PASSWORD_ROOT} -e "GRANT ALL PRIVILEGES ON ${DB_NAME}.* TO 'root'@'::1';"
+
+## create database user as per ss-config ##
+mysql -uroot -p${DB_PASSWORD_ROOT} -e "CREATE USER '${DB_USER}'@'localhost' IDENTIFIED BY '${DB_PASSWORD}';"
+mysql -uroot -p${DB_PASSWORD_ROOT} -e "CREATE USER '${DB_USER}'@'127.0.0.1' IDENTIFIED BY '${DB_PASSWORD}';"
+mysql -uroot -p${DB_PASSWORD_ROOT} -e "CREATE USER '${DB_USER}'@'::1' IDENTIFIED BY '${DB_PASSWORD}';"
+
+## grant database user all privileges on wordpress database only (all connections) ##
+mysql -uroot -p${DB_PASSWORD_ROOT} -e "GRANT ALL PRIVILEGES ON ${DB_NAME}.* TO '${DB_USER}'@'localhost';"
+mysql -uroot -p${DB_PASSWORD_ROOT} -e "GRANT ALL PRIVILEGES ON ${DB_NAME}.* TO '${DB_USER}'@'127.0.0.1';"
+mysql -uroot -p${DB_PASSWORD_ROOT} -e "GRANT ALL PRIVILEGES ON ${DB_NAME}.* TO '${DB_USER}'@'::1';"
+
+## flush MySQL privileges ##
+mysql --user=root --execute="FLUSH PRIVILEGES;"
+
+####################################################################################################
+#### SS-Update: Update WP-Config (Via Boilerplate) #################################################
+####################################################################################################
+
+# coming soon
 
 ####################################################################################################
 #### SS-Update: Update MU (Must-Use) Plugins (Via SS-Muplugs) ######################################
@@ -85,13 +721,16 @@ source /var/www/ss-muplugs
 #### SS-Update: Upgrade + Autoremove + Autoclean SlickStack Modules (Ubuntu Packages) ##############
 ####################################################################################################
 
+## set confold as the dpkg default choice ##
+DEBIAN_FRONTEND=noninteractive dpkg --configure -a --force-confold
+
 ## update Ubuntu repo cache ##
 apt update
 
-## upgrade installed Ubuntu packages (LEMP modules) + Linux kernel ##
+## upgrade installed Ubuntu packages (LEMP modules) + Linux kernel (apt feature) ##
 apt full-upgrade
 
-## autoremove Ubuntu packages ##
+## autoremove unused Ubuntu packages ##
 apt autoremove
 
 ## autoclean Ubuntu packages ##
@@ -117,6 +756,7 @@ source /var/www/ss-restart
 
 ## IT IS ALWAYS BETTER TO RUN SS-UPDATE MANUALLY AND REBOOT YOUR SERVER MANUALLY ##
 
+## reboot server ##
 if [[ "$SS_REBOOT" == "true" ]]; then 
     echo -e "\e[93mSlickStack updates complete! Automatic server reboot in progress... see you on the other side!\e[0m" >&2
     /bin/bash -c "/sbin/reboot"
@@ -150,3 +790,9 @@ fi
 ## Ref: https://stackoverflow.com/questions/38977713/what-is-snap-bin-directory-in-path-can-i-remove-it-from-path
 ## Ref: https://askubuntu.com/questions/1121495/add-snap-bin-to-path-used-by-systemd
 ## Ref: https://askubuntu.com/questions/163200/e-dpkg-was-interrupted-run-sudo-dpkg-configure-a
+## Ref: https://stackoverflow.com/questions/1305237/how-to-list-variables-declared-in-script-in-bash
+## Ref: https://stackoverflow.com/questions/32739572/bash-search-and-replace-value-of-a-variable-inside-a-file
+## Ref: https://askubuntu.com/questions/76808/how-do-i-use-variables-in-a-sed-command
+## Ref: https://unix.stackexchange.com/questions/69112/how-can-i-use-variables-in-the-lhs-and-rhs-of-a-sed-substitution
+## Ref: https://stackoverflow.com/questions/19151954/how-to-use-variables-in-a-command-in-sed
+## Ref: https://unix.stackexchange.com/questions/47584/in-a-bash-script-using-the-conditional-or-in-an-if-statement

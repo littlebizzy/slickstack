@@ -58,6 +58,11 @@ function rm {
     command rm -R -f "$@"
 }
 
+## ln alias flags ##
+function ln {
+    command ln -s -f "$@"
+}
+
 ####################################################################################################
 #### SS-Encrypt: Generate Self-Signed OpenSSL Certificate ##########################################
 ####################################################################################################
@@ -163,14 +168,14 @@ fi
 ####################################################################################################
 
 ## create symlinks for simpler Nginx config ##
-ln -s /etc/letsencrypt/live/${SITE_DOMAIN}/cert.pem /etc/ssl/cert.pem &> /dev/null
-ln -s /etc/letsencrypt/live/${SITE_DOMAIN}/privkey.pem /etc/ssl/privkey.pem &> /dev/null
-ln -s /etc/letsencrypt/live/${SITE_DOMAIN}/chain.pem /etc/ssl/chain.pem &> /dev/null
-ln -s /etc/letsencrypt/live/${SITE_DOMAIN}/fullchain.pem /etc/ssl/fullchain.pem &> /dev/null
+ln /etc/letsencrypt/live/${SITE_DOMAIN}/cert.pem /etc/ssl/cert.pem &> /dev/null
+ln /etc/letsencrypt/live/${SITE_DOMAIN}/privkey.pem /etc/ssl/privkey.pem &> /dev/null
+ln /etc/letsencrypt/live/${SITE_DOMAIN}/chain.pem /etc/ssl/chain.pem &> /dev/null
+ln /etc/letsencrypt/live/${SITE_DOMAIN}/fullchain.pem /etc/ssl/fullchain.pem &> /dev/null
 
 ## modify live Nginx configuration if Certbot successful + preferred ##
 if [[ -d  "/etc/letsencrypt/live" ]] && [[ -f  "/etc/ssl/cert.pem" ]] && [[ "$SSL_TYPE" == "certbot" ]]; then
-    sed -i "s#/etc/ssl/nginx.crt#/etc/ssl/cert.pem#g" /etc/nginx/nginx.conf
+    sed -i "s#/etc/ssl/nginx.crt#/etc/ssl/fullchain.pem#g" /etc/nginx/nginx.conf
     sed -i "s#/etc/ssl/nginx.key#/etc/ssl/privkey.pem#g" /etc/nginx/nginx.conf
     sed -i "s/#@CERTBOT# //g" /etc/nginx/nginx.conf
 fi
@@ -213,3 +218,11 @@ echo -e "\e[36mSSL certificates have been successfully generated...\e[0m"
 ## Ref: https://github.com/certbot/certbot/issues/3039
 ## Ref: https://superuser.com/questions/1056183/using-a-wildcard-in-a-condition-to-match-the-beginning-of-a-string
 ## Ref: https://stackoverflow.com/questions/18730509/bash-substring-regex-matching-wildcard
+## Ref: https://linuxize.com/post/how-to-create-symbolic-links-in-linux-using-the-ln-command/
+## Ref: https://superuser.com/questions/81164/why-create-a-link-like-this-ln-nsf/81168
+## Ref: https://support.cloudflare.com/hc/en-us/articles/214820528-Validating-a-Let-s-Encrypt-Certificate-on-a-Site-Already-Active-on-Cloudflare
+## Ref: https://serverfault.com/questions/788220/lets-encrypt-certbot-validation-over-https
+## Ref: https://certbot-dns-cloudflare.readthedocs.io/en/stable/
+## Ref: https://dev.to/michaeldscherr/lets-encrypt-ssl-certificate-via-dns-challenge-8dd
+## Ref: https://letsencrypt.org/docs/challenge-types/
+## Ref: https://serverfault.com/questions/750902/how-to-use-lets-encrypt-dns-challenge-validation

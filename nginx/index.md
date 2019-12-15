@@ -57,7 +57,8 @@ title: Nginx (Public Mirrors)
 * [https://launchpad.net/~nginx/+archive/ubuntu/development](https://launchpad.net/~nginx/+archive/ubuntu/development)
 * [https://libre-software.net/lemp/](https://libre-software.net/lemp/)
 * [https://www.lowendtalk.com/discussion/7289/nginx-php-fpm-unix-socket-or-tcp-ip-for-fastcgi-pass](https://www.lowendtalk.com/discussion/7289/nginx-php-fpm-unix-socket-or-tcp-ip-for-fastcgi-pass)
+* [https://developer.mozilla.org/en-US/docs/Web/Security/Subresource_Integrity](https://developer.mozilla.org/en-US/docs/Web/Security/Subresource_Integrity)
 
 ----
 
-*Last updated: Nov 15, 2019*
+*Last updated: Dec 6, 2019*
