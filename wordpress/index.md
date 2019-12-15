@@ -2,7 +2,7 @@
 
 ----
 
-### Live Files (WordPress 5.2.4)
+### Live Files (WordPress 5.3.1)
 
 *Live configuration files and boilerplates used by current SlickStack installation that may be altered by LittleBizzy or Ubuntu for better performance.*
 
@@ -18,6 +18,7 @@
 
 #### wordpress.zip
 
+* <a href="wordpress-5.3.1.zip">wordpress-5.3.1.zip</a>
 * <a href="wordpress-5.3.0.zip">wordpress-5.3.0.zip</a>
 * <a href="wordpress-5.2.4.zip">wordpress-5.2.4.zip</a>
 * <a href="wordpress-5.2.3.zip">wordpress-5.2.3.zip</a>
@@ -72,6 +73,7 @@
 
 #### wp-config.php
 
+* <a href="wp-config-sample-5.3.1.txt">wp-config-sample-5.3.1.txt</a>
 * <a href="wp-config-sample-5.3.0.txt">wp-config-sample-5.3.0.txt</a>
 * <a href="wp-config-sample-5.2.4.txt">wp-config-sample-5.2.4.txt</a>
 * <a href="wp-config-sample-5.2.3.txt">wp-config-sample-5.2.3.txt</a>
@@ -153,4 +155,4 @@
 
 ----
 
-*Last updated: Nov 29, 2019*
+*Last updated: Dec 13, 2019*
