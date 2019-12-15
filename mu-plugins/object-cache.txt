@@ -3,7 +3,7 @@
 Plugin Name: Object Cache
 Plugin URI: https://www.littlebizzy.com/plugins/object-cache
 Description: Drop-in persistent object cache for WordPress based on Redis in-memory storage that supports Predis, clusters, and WP-CLI (forked from PressJitsu).
-Version: 1.2.2
+Version: 1.2.3
 Author: LittleBizzy
 Author URI: https://www.littlebizzy.com
 License: GPLv3
@@ -592,7 +592,11 @@ class WP_Object_Cache {
 
 			if ( isset( $this->to_unserialize[ $redis_key ] ) ) {
 				unset( $this->to_unserialize[ $redis_key ] );
-				$value = unserialize( $value );
+
+				if ( is_string( $value ) ) {
+					$value = unserialize( $value );
+				}
+
 				$this->cache[ $group ][ $key ] = $value;
 			}
 
