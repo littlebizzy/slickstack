@@ -36,6 +36,8 @@ SlickStack is a free LEMP stack automation script written in Bash designed to en
 
 *Last updated: Dec 13, 2019*
 
+*Default Ports: 80 (HTTP), 443 (HTTPS), 6969 (SSH)*
+
 *Readiness for Ubuntu 20.04 and PHP 7.4 is our current focus. PHP 7.3 will not be supported.*
 
 | LEMP Module | Mirrors | Version | What does SlickStack [ss] customize? |
@@ -44,7 +46,7 @@ SlickStack is a free LEMP stack automation script written in Bash designed to en
 | **Nginx (Extras)** | [mirrors](http://mirrors.slickstack.io/nginx/) | 1.15.8 | `nginx.conf` + `default` (server block) |
 | **FastCGI Cache** | [mirrors](http://mirrors.slickstack.io/fastcgi-cache/) | 1.15.8 | `fastcgi-cache.conf` |
 | **OpenSSL** | [mirrors](http://mirrors.slickstack.io/openssl/) | 1.1.0g | default config |
-| **Let's Encrypt†** | [mirrors](http://mirrors.slickstack.io/letsencrypt/) | 0.23.0 | custom config |
+| **Let's Encrypt** | [mirrors](http://mirrors.slickstack.io/letsencrypt/) | 0.31.0 | custom config |
 | **MySQL** | [mirrors](http://mirrors.slickstack.io/mysql/) | 5.7.x | `my.cnf` |
 | **PHP-FPM** | [mirrors](http://mirrors.slickstack.io/php-fpm/) | 7.2.x | `php.ini` + `php-fpm.conf` + `www.conf` |
 | **Zend / OPcache** | [mirrors](http://mirrors.slickstack.io/opcache/) | 3.2.0 / 7.2.17 | (same as PHP-FPM) |
@@ -55,10 +57,6 @@ SlickStack is a free LEMP stack automation script written in Bash designed to en
 | **Git** | [mirrors](http://mirrors.slickstack.io/git/) | 2.17.1 | default config |
 | **UFW Firewall** | [mirrors](http://mirrors.slickstack.io/ufw-firewall/) | 0.36 | `ufw` + `ufw.conf` + `user-rules` |
 | **ClamAV** | [mirrors](http://mirrors.slickstack.io/clamav/) | 0.101.x | `freshclam.conf` |
-
-†Not yet supported (pending)
-
-Default Ports: 80 (HTTP), 443 (HTTPS), 6969 (SSH)
 
 ## Abstract [[read more](https://slickstack.io/about)]
 
