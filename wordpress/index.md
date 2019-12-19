@@ -2,7 +2,7 @@
 
 ----
 
-### Live Files (WordPress 5.3.1)
+### Live Files (WordPress 5.3.2)
 
 *Live configuration files and boilerplates used by current SlickStack installation that may be altered by LittleBizzy or Ubuntu for better performance.*
 
@@ -18,6 +18,7 @@
 
 #### wordpress.zip
 
+* [wordpress-5.3.2.zip](wordpress-5.3.2.zip)
 * <a href="wordpress-5.3.1.zip">wordpress-5.3.1.zip</a>
 * <a href="wordpress-5.3.0.zip">wordpress-5.3.0.zip</a>
 * <a href="wordpress-5.2.4.zip">wordpress-5.2.4.zip</a>
@@ -73,6 +74,7 @@
 
 #### wp-config.php
 
+* [wp-config-sample-5.3.2.txt](wp-config-sample-5.3.2.txt)
 * <a href="wp-config-sample-5.3.1.txt">wp-config-sample-5.3.1.txt</a>
 * <a href="wp-config-sample-5.3.0.txt">wp-config-sample-5.3.0.txt</a>
 * <a href="wp-config-sample-5.2.4.txt">wp-config-sample-5.2.4.txt</a>
@@ -137,8 +139,8 @@
 
 *Links and resources related to the above module that may help users understand its functionality, or how it interacts with other LEMP stack modules.*
 
-* <a href="https://wordpress.org/download/releases/">https://wordpress.org/download/releases/</a>
-* https://github.com/WordPress/WordPress/blob/5.2.4/wp-config-sample.php
+* [https://wordpress.org/download/releases/](https://wordpress.org/download/releases/)
+* [https://github.com/WordPress/WordPress/blob/5.3.2/wp-config-sample.php](https://github.com/WordPress/WordPress/blob/5.3.2/wp-config-sample.php)
 * <a href="https://github.com/WordPress/WordPress">https://github.com/WordPress/WordPress</a>
 * <a href="https://codex.wordpress.org/Editing_wp-config.php">https://codex.wordpress.org/Editing_wp-config.php</a>
 * https://code.tutsplus.com/articles/new-wp-config-tweaks-you-probably-dont-know--wp-35396
@@ -155,4 +157,4 @@
 
 ----
 
-*Last updated: Dec 13, 2019*
+*Last updated: Dec 19, 2019*
