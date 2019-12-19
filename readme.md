@@ -1,4 +1,4 @@
-# SlickStack [ss] - "Alpha* ss13"
+# SlickStack [ss] - "Alpha* ss14"
 
 SlickStack is a free LEMP stack automation script written in Bash designed to enhance and simplify WordPress provisioning, performance, and security.
 
@@ -9,6 +9,8 @@ SlickStack is a free LEMP stack automation script written in Bash designed to en
 | Google PageSpeed | GTMetrix | Pingdom | Security Headers | Qualys SSL Labs | WebPageTest |
 | :--------------: | :------: | :-----: | :--------------: | :-------------: | :-------------: |
 | [**A**](https://developers.google.com/speed/pagespeed/insights/?url=https%3A%2F%2Fslickstack.io%2F) | [**A**](https://gtmetrix.com/reports/slickstack.io/zpLMZ1eb) | [**A**](https://tools.pingdom.com/#5aeba9dea8000000) | [**A**](https://securityheaders.com/?q=https%3A%2F%2Fslickstack.io%2F&followRedirects=on) | [**A**](https://www.ssllabs.com/ssltest/analyze.html?d=slickstack.io&latest) | [**A**](https://www.webpagetest.org/result/190920_68_a4a541db9847ce601ef264b41df9d0f3/) |
+
+* **NEW!** Long-awaited Let's Encrypt (Certbot) support is now live using `SSL_TYPE` option in `ss-config`... those who do not wish to use CloudFlare can now use this approach instead... OpenSSL + CloudFlare is still always our recommended approach however... also, keep in mind that during initial setup (the first time that you request an SSL cert via Certbot) you will still need to have CloudFlare active for `.well-known` domain verification to work properly over HTTPS (otherwise Certbot will complain re: the self-signed OpenSSL cert)...
 
 * **NEW!** All Nginx functionality is now via TCP-only (127.0.0.1) including FastCGI cache for more robust scaling... many Nginx settings can now be customized using `ss-config`... check back for more options soon...
 
@@ -32,7 +34,9 @@ SlickStack is a free LEMP stack automation script written in Bash designed to en
 
 ## Core Modules
 
-*Last updated: Dec 13, 2019*
+*Last updated: Dec 19, 2019*
+
+*Default Ports: 80 (HTTP), 443 (HTTPS), 6969 (SSH)*
 
 *Readiness for Ubuntu 20.04 and PHP 7.4 is our current focus. PHP 7.3 will not be supported.*
 
@@ -54,11 +58,7 @@ SlickStack is a free LEMP stack automation script written in Bash designed to en
 | **UFW Firewall** | [mirrors](http://lemp.redshift.network/ufw-firewall/) | 0.36 | `ufw` + `ufw.conf` + `user-rules` |
 | **ClamAV** | [mirrors](http://lemp.redshift.network/clamav/) | 0.101.x | `freshclam.conf` |
 
-†Not yet supported (pending)
-
-Default Ports: 80 (HTTP), 443 (HTTPS), 6969 (SSH)
-
-## Abstract
+## Abstract [[read more](https://slickstack.io/about)]
 
 Most of modern computing history can be traced back to one thing: [Unix](https://en.wikipedia.org/wiki/Unix). Indeed, one of the only things about web servers that hasn't changed much in several decades is the Unix shell (Bash) command language. Keeping the same pragmatism and simplicity in mind that inspired LittleBizzy's managed hosting, SlickStack [ss] is coded entirely in Bash.
 
@@ -68,13 +68,13 @@ While there are [clear benefits](https://medium.com/capital-one-developers/bashi
 
 SlickStack [ss] works best on cloud servers with KVM virtualization that have at least 2GB RAM from [quality network providers](https://slickstack.io/hosting) such as DigitalOcean, Vultr, Hostwinds, and AWS Lightsail. The underlying LEMP stack configuration is meant primarily for high-traffic single-site WordPress installations, although support for [Multisite](https://codex.wordpress.org/Create_A_Network) installations is being planned. SlickStack [ss] supports WordPress, WooCommerce, bbPress, and BuddyPress "out of the box" with optimized settings that scale -- what this means is that you can upgrade your cloud server to a bigger or better instance, and run `ss-install` again, and most settings will (re)optimize themselves.
 
-**NOTE: In no case will SlickStack [ss] ever support installing multiple TLDs on a single server.**
+**NOTE: SlickStack [ss] will never support installing multiple TLDs on a single server.**
 
 Currently, SlickStack [ss] is meant for a single origin server with a single `127.0.0.1` database, although remote databases should also work fine. Server "clustering" or "load balancing" has not been tested, and is not the goal here; complex enterprise-style configurations for WordPress are rarely needed (and can be expensive and difficult to manage), thus SlickStack [ss] aims to to provide a simple solution for the 99% of WordPress sites that don't need such complexity.
 
 It should also be noted that SlickStack [ss] is HTTPS-only, and that HSTS is enabled by default, meaning that HTTP sites are not supported. Because OpenSSL generates self-signed certificates, SlickStack [ss] servers require CloudFlare to be active in front of your server in order for SSL certificates to be properly CA-signed and loaded by your browser, at least until the first `ss-install` has been completed (after that, you can switch to Certbot / Let's Encrypt).
 
-## Installation
+## Installation [[read more](https://slickstack.io/install)]
 
 Because it’s written purely in [Bash](https://en.wikipedia.org/wiki/Bash_(Unix_shell)) (Unix shell), SlickStack [ss] has no dependencies and works on any [Ubuntu Linux](https://www.ubuntu.com) machine. Unlike heavier provisioning tools like EasyEngine or Ansible, there are no third party languages required such as Python or Docker, meaning a lighter and simpler approach to launching WordPress servers.
 

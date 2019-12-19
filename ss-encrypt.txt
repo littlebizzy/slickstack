@@ -64,21 +64,34 @@ function ln {
 }
 
 ####################################################################################################
-#### SS-Encrypt: Generate Self-Signed OpenSSL Certificate ##########################################
+#### SS-Encrypt: PROCEED MESSAGE ###################################################################
 ####################################################################################################
 
 ## MESSAGE ##
 echo -e "\e[36mInstalling (or renewing) free SSL certs from OpenSSL and Certbot...\e[0m"
+
+####################################################################################################
+#### SS-Encrypt: Manually Delete Previous / Conflicting SSL Certificates ###########################
+####################################################################################################
+
+## delete OpenSSL certs + keys ##
+# rm /etc/ssl/*.crt
+# rm /etc/ssl/*.key
+## rm /etc/ssl/*.pem ## reuse existing DH Params + ignore Certbot (self-managed)
+
+####################################################################################################
+#### SS-Encrypt: Generate Self-Signed OpenSSL Certificate ##########################################
+####################################################################################################
 
 ## hide error message (bug) in OpenSSL 1.1.1 (remove this later) ##
 touch /home/${SUDO_USER}/.rnd
 touch /home/${SFTP_USER}/.rnd
 
 ## create self-signed OpenSSL certificate ##
-if [[ -z "$CSR_COUNTRY" ]]; then 
-    openssl req -new -x509 -nodes -days 3650 -newkey rsa:2048 -keyout /etc/ssl/nginx.key -out /etc/ssl/nginx.crt -subj "/C=${SSL_COUNTRY}/ST=${SSL_STATE}/L=${SSL_CITY}/O=${SSL_COMPANY}/OU=${SSL_DEPT}/CN=${SITE_DOMAIN}"
-else 
+if [[ -n "$CSR_COUNTRY" ]] && [[ -n "$CSR_STATE" ]] && [[ -n "$CSR_CITY" ]] && [[ -n "$CSR_COMPANY" ]] && [[ -n "$CSR_DEPT" ]]; then 
     openssl req -new -x509 -nodes -days 3650 -newkey rsa:2048 -keyout /etc/ssl/nginx.key -out /etc/ssl/nginx.crt -subj "/C=${CSR_COUNTRY}/ST=${CSR_STATE}/L=${CSR_CITY}/O=${CSR_COMPANY}/OU=${CSR_DEPT}/CN=${SITE_DOMAIN}"
+else 
+    openssl req -new -x509 -nodes -days 3650 -newkey rsa:2048 -keyout /etc/ssl/nginx.key -out /etc/ssl/nginx.crt -subj "/C=US/ST=Nevada/L=Las Vegas/O=Example, LLC/OU=DevOps/CN=${SITE_DOMAIN}"
 fi
 
 ####################################################################################################
@@ -92,13 +105,15 @@ fi
 #### Cerbot: Reminder To Activate CloudFlare (15 Minute Pause For Virgin Installs) #################
 ####################################################################################################
 
-if [[ ! -f "/var/www/meta/.cherry" ]]; then
-    secs=$((15 * 60))
-    echo -e "\e[36m♬♬♬ **ELEVATOR MUSIC** ♬♬♬ ... Since this is a virgin SlickStack installation, we will now attempt to generate your very first Lets Encrypt SSL certificate for this domain using their remote API. However, for this to work correctly, your domain needs to fully resolve to this server's IP address, and must have CloudFlare already activated (in order to CA-sign the OpenSSL certificate)... so if you haven't done this yet, hurry up and activate CloudFlare on this domain right now (be sure to choose 'Full SSL' under the Crypto tab) and then come back here and push the ENTER key to proceed...\e[0m"
-    while [ $secs -gt 0 ]; do
-       echo -ne "$secs\033[0K\r"
-       read -p -t 1
-       : $((secs--))
+## pause if no Certbot certs exist yet ##
+if [[ "$SSL_TYPE" == "certbot" ]] && [[ ! -f "/etc/ssl/cert.pem" ]]; then
+    echo -e "\e[36m♬♬♬ **ELEVATOR MUSIC** ♬♬♬ ... This looks to be a virgin Cerbot installation, so we will now attempt to generate your very first Lets Encrypt SSL certificate for this domain using their Certbot API. However, for Certbot to verify correctly, your domain needs to fully resolve to this server's IP address over HTTPS, and must have CloudFlare activated before proceeding (in order to CA-sign the OpenSSL certificate)... so if you haven't done this yet, hurry up and activate CloudFlare on this domain right now (be sure to choose 'Full SSL' under the Crypto tab) and then come back here and push any key to proceed...\e[0m"
+    for (( i=900; i>0; i--)); do
+        read -s -n 1 -t 1 key
+        if [ $? -eq 0 ]; then
+            break
+        fi
+        echo -ne "\r$i\033[0K"
     done
 fi
 
@@ -106,7 +121,7 @@ fi
 #### SS-Encrypt: Generate DH Parameters (Used By Certbot Only) #####################################
 ####################################################################################################
 
-if [ ! -f "/etc/ssl/dhparam.pem" ] || [ "$SSL_TYPE" == "certbot" ]; then 
+if [[ "$SSL_TYPE" == "certbot" ]] && [[ ! -f "/etc/ssl/dhparam.pem" ]]; then 
     openssl dhparam -out /etc/ssl/dhparam.pem 2048
 fi
 
@@ -174,24 +189,28 @@ ln /etc/letsencrypt/live/${SITE_DOMAIN}/chain.pem /etc/ssl/chain.pem &> /dev/nul
 ln /etc/letsencrypt/live/${SITE_DOMAIN}/fullchain.pem /etc/ssl/fullchain.pem &> /dev/null
 
 ## modify live Nginx configuration if Certbot successful + preferred ##
-if [[ -d  "/etc/letsencrypt/live" ]] && [[ -f  "/etc/ssl/cert.pem" ]] && [[ "$SSL_TYPE" == "certbot" ]]; then
+if [[ "$SSL_TYPE" == "certbot" ]] && [[ -d  "/etc/letsencrypt/live" ]] && [[ -f  "/etc/ssl/cert.pem" ]]; then
     sed -i "s#/etc/ssl/nginx.crt#/etc/ssl/fullchain.pem#g" /etc/nginx/nginx.conf
     sed -i "s#/etc/ssl/nginx.key#/etc/ssl/privkey.pem#g" /etc/nginx/nginx.conf
     sed -i "s/#@CERTBOT# //g" /etc/nginx/nginx.conf
+else
+    echo -e "\e[36mCertbot installation was not successful, reverting to OpenSSL...\e[0m"
 fi
 
 ####################################################################################################
 #### SS-Encrypt: Reset Permissions (OpenSSL + Certbot) #############################################
 ####################################################################################################
 
+## reset permissions ##
 chown root:root /etc/ssl/*.key
 chown root:root /etc/ssl/*.crt
 chown root:root /etc/ssl/*.pem
 
 ####################################################################################################
-#### SS-Encrypt: Restart Services Again If Certbot SSL Is Active (Nginx Server) ####################
+#### SS-Encrypt: Restart Nginx (After Certbot SSL Installation Complete) ###########################
 ####################################################################################################
 
+## restart nginx ##
 /etc/init.d/nginx restart
 
 ####################################################################################################
@@ -226,3 +245,12 @@ echo -e "\e[36mSSL certificates have been successfully generated...\e[0m"
 ## Ref: https://dev.to/michaeldscherr/lets-encrypt-ssl-certificate-via-dns-challenge-8dd
 ## Ref: https://letsencrypt.org/docs/challenge-types/
 ## Ref: https://serverfault.com/questions/750902/how-to-use-lets-encrypt-dns-challenge-validation
+## Ref: https://community.letsencrypt.org/t/do-i-need-copy-dhparam-pem-file-when-i-move-certificates-to-a-new-server/47346
+## Ref: https://weakdh.org/sysadmin.html
+## Ref: https://security.stackexchange.com/questions/38206/can-someone-explain-what-exactly-is-accomplished-by-generation-of-dh-parameters
+## Ref: https://security.stackexchange.com/questions/94390/whats-the-purpose-of-dh-parameters
+## Ref: https://wiki.mozilla.org/Security/Server_Side_TLS
+## Ref: https://stackoverflow.com/questions/21251714/bash-script-countdown-timer-needs-to-detect-any-key-to-continue
+## Ref: https://stackoverflow.com/questions/33614865/bash-countdown-to-execution-if-no-key-pressed
+## Ref: https://unix.stackexchange.com/questions/293940/bash-how-can-i-make-press-any-key-to-continue
+## Ref: https://serverfault.com/questions/532559/bash-script-count-down-5-minutes-display-on-single-line
