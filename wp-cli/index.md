@@ -76,14 +76,14 @@ title: WP-CLI (Public Mirrors)
 
 *Links and resources related to the above module that may help users understand its functionality, or how it interacts with other LEMP stack modules.*
 
-* https://wp-cli.org
-* https://github.com/wp-cli/wp-cli/releases
-* https://github.com/wp-cli/wp-cli.github.com/blob/v2.4.0/wp-cli.yml
-* https://github.com/wp-cli/wp-cli/blob/v2.4.0/utils/wp-completion.bash
-* https://developer.wordpress.org/cli/commands/cli/
-* https://make.wordpress.org/cli/handbook/config/
-* https://developer.wordpress.org/cli/commands/
-* https://make.wordpress.org/cli/handbook/commands-cookbook/
+* [https://wp-cli.org](https://wp-cli.org)
+* [https://github.com/wp-cli/wp-cli/releases](https://github.com/wp-cli/wp-cli/releases)
+* [https://github.com/wp-cli/wp-cli.github.com/blob/v2.4.0/wp-cli.yml](https://github.com/wp-cli/wp-cli.github.com/blob/v2.4.0/wp-cli.yml)
+* [https://github.com/wp-cli/wp-cli/blob/v2.4.0/utils/wp-completion.bash](https://github.com/wp-cli/wp-cli/blob/v2.4.0/utils/wp-completion.bash)
+* [https://developer.wordpress.org/cli/commands/cli/](https://developer.wordpress.org/cli/commands/cli/)
+* [https://make.wordpress.org/cli/handbook/config/](https://make.wordpress.org/cli/handbook/config/)
+* [https://developer.wordpress.org/cli/commands/](https://developer.wordpress.org/cli/commands/)
+* [https://make.wordpress.org/cli/handbook/commands-cookbook/](https://make.wordpress.org/cli/handbook/commands-cookbook/)
 
 ----
 
