@@ -24,7 +24,7 @@ output_buffering = @PHP_OUTPUT_BUFFERING
 zlib.output_compression = Off
 implicit_flush = Off
 unserialize_callback_func =
-;; unserialize_max_depth = @PHP_UNSERIALIZE_MAX_DEPTH ;; PHP 7.4
+;;@PHP74;; unserialize_max_depth = @PHP_UNSERIALIZE_MAX_DEPTH ;; PHP 7.4
 serialize_precision = @PHP_SERIALIZE_PRECISION
 disable_functions = @PHP_DISABLE_FUNCTIONS
 disable_classes = @PHP_DISABLE_CLASSES
@@ -46,7 +46,7 @@ zend.enable_gc = On
 ;; realpath_cache_ttl = 120
 ;; zend.multibyte = Off
 ;; zend.script_encoding =
-;; zend.exception_ignore_args = On ;; PHP 7.4
+;;@PHP74;; zend.exception_ignore_args = On ;; PHP 7.4
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; PHP.ini: Resource Limits Settings ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -166,14 +166,14 @@ auto_detect_line_endings = Off
 
 ;; extension=bz2
 ;; extension=curl
-;; extension=ffi ;; PHP 7.4
+;;@PHP74;; extension=ffi ;; PHP 7.4
 ;; extension=fileinfo
 ;; extension=gd2
 ;; extension=gettext
 ;; extension=gmp
 ;; extension=intl
 ;; extension=imap
-;; extension=interbase ;; removed in PHP 7.4
+;;@PHP72;; extension=interbase ;; removed in PHP 7.4
 ;; extension=ldap
 ;; extension=mbstring
 ;; extension=exif ;; must be after mbstring as it depends on it ;;
@@ -245,7 +245,7 @@ cli_server.color = On
 ;; pdo_odbc.db2_instance_name
 
 [Pdo_mysql]
-pdo_mysql.cache_size = 2000 ;; removed in PHP 7.4??
+;;@PHP72;; pdo_mysql.cache_size = 2000 ;; removed in PHP 7.4??
 pdo_mysql.default_socket=
 
 [Phar]
@@ -273,7 +273,7 @@ odbc.max_persistent = -1
 odbc.max_links = -1
 odbc.defaultlrl = 4096
 odbc.defaultbinmode = 1
-;; birdstep.max_links = -1 ;; remove in PHP 7.4??
+;;@PHP72;; birdstep.max_links = -1 ;; remove in PHP 7.4??
 
 [Interbase]
 ;; REMOVE MODULE FOR PHP 7.4 ;;
@@ -350,7 +350,7 @@ session.cookie_lifetime = 0
 session.cookie_path = /
 session.cookie_domain =
 session.cookie_httponly =
-;; session.cookie_samesite = ;; PHP 7.4
+;;@PHP74;; session.cookie_samesite = ;; PHP 7.4
 session.serialize_handler = php
 session.gc_probability = 1
 session.gc_divisor = 1000
@@ -399,8 +399,8 @@ zend.assertions = -1
 ;; mbstring.func_overload = 0
 ;; mbstring.strict_detection = On
 ;; mbstring.http_output_conv_mimetype=
-;mbstring.regex_stack_limit=100000 ;; PHP 7.4
-;mbstring.regex_retry_limit=1000000 ;; PHP 7.4
+;;@PHP74;; mbstring.regex_stack_limit=100000 ;; PHP 7.4
+;;@PHP74;; mbstring.regex_retry_limit=1000000 ;; PHP 7.4
 
 [gd]
 ;; gd.jpeg_ignore_warning = 1
@@ -439,13 +439,15 @@ ldap.max_links = -1
 ;; openssl.cafile=
 ;; openssl.capath=
 
-;; [ffi] ;; PHP 7.4
-;; ffi.enable=preload
-;; ffi.preload=
+;;@PHP74;; [ffi] ;; PHP 7.4
+;;@PHP74;; ffi.enable=preload
+;;@PHP74;; ffi.preload=
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; PHP.ini: OPcache Module Settings ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; for stability reasons certain OPcache settings like validate_timestamps are hardcoded ;;
 
 ;; opcache.use_cwd = should enable to avoid collisions between similar file names ;;
 ;; opcache.validate_timestamps = should enable to avoid having to manually purge OPcache ;;
@@ -456,6 +458,8 @@ ldap.max_links = -1
 ;; opcache.enable_file_override = enable for better performance ;;
 ;; opcache.validate_permission = should disable since SlickStack is not shared hosting ;;
 ;; opcache.validate_root = should disable since SlickStack is not shared hosting ;;
+
+;; opcache.file_cache_only = should be disabled on PHP-FPM server config ;;
 
 [opcache]
 opcache.enable=1
@@ -473,21 +477,23 @@ opcache.enable_file_override=1
 opcache.consistency_checks=0
 opcache.error_log=/var/www/logs/error.log
 opcache.log_verbosity_level=1
+
 ;opcache.file_cache=/var/www/cache/opcache
-;opcache.file_cache_only=0 ;;
+;opcache.file_cache_only=0
 ;opcache.file_cache_consistency_checks=1
+
 ;opcache.file_cache_fallback=1
-;; opcache.cache_id= ;; PHP 7.4
-;; opcache.preload= ;; PHP 7.4
-;; opcache.preload_user= ;; PHP 7.4
-;; opcache.file_update_protection=2 ;; PHP 7.4
-;; opcache.lockfile_path=/tmp ;; PHP 7.4
+;;@PHP74;; opcache.cache_id= ;; PHP 7.4
+;;@PHP74;; opcache.preload= ;; PHP 7.4
+;;@PHP74;; opcache.preload_user= ;; PHP 7.4
+;;@PHP74;; opcache.file_update_protection=2 ;; PHP 7.4
+;;@PHP74;; opcache.lockfile_path=/tmp ;; PHP 7.4
 opcache.huge_code_pages=@OPCACHE_HUGE_CODE_PAGES
 opcache.validate_permission=0
 opcache.validate_root=0
 
 ;; opcache.optimization_level=0xffffffff
-;; opcache.inherited_hack=1 ;; removed in PHP 7.4
+;;@PHP72;; ;; opcache.inherited_hack=1 ;; removed in PHP 7.4
 ;; opcache.dups_fix=0
 ;; opcache.blacklist_filename=
 ;; opcache.max_file_size=0
@@ -547,3 +553,4 @@ expose_php = Off
 ;; Ref: https://forums.cubecart.com/topic/50862-resolved-error-establishing-a-database-connection/
 ;; Ref: https://phoenixnap.com/kb/php-error-reporting
 ;; Ref: http://php.net/manual/en/function.error-reporting.php
+;; Ref: https://stackoverflow.com/questions/25044817/zend-opcache-opcache-enable-cli-1-or-0-what-does-it-do
