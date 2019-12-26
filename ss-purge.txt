@@ -64,17 +64,27 @@ function ln {
 }
 
 ####################################################################################################
-#### SS-Purge: Reset PHP OPcache (Bash Script Workaround) ##########################################
+#### SS-Purge: PROCEED MESSAGE #####################################################################
 ####################################################################################################
 
 ## MESSAGE ##
 echo -e "\e[36mPurging all caches (PHP OPcache, WP transients, Redis object cache, and FastCGI (Nginx) cache...\e[0m" >&2
+
+####################################################################################################
+#### SS-Purge: Reset PHP OPcache (Bash Script Workaround) ##########################################
+####################################################################################################
+
+## manually delete OPcache file cache ##
+# rm /var/www/cache/opcache/*
 
 ## creative way to reset OPcache using temporary PHP script ##
 RANDOM_RESET_OPCACHE=$(openssl rand -hex 12)
 echo "<?php opcache_reset(); ?>" > /var/www/html/purge-${RANDOM_RESET_OPCACHE}.php
 /usr/bin/php /var/www/html/purge-${RANDOM_RESET_OPCACHE}.php
 rm /var/www/html/purge-${RANDOM_RESET_OPCACHE}.php
+
+## manually delete OPcache file cache (again) ##
+# rm /var/www/cache/opcache/*
 
 ####################################################################################################
 #### SS-Purge: Delete Transients From MySQL Database (WordPress Queries Cache) #####################
@@ -98,6 +108,7 @@ redis-cli flushall &> /dev/null
 ####################################################################################################
 
 ## manually delete all FastCGI cache files ##
+## fix later to not delete opcache subdirectory ##
 rm /var/www/cache/*
 
 ####################################################################################################
@@ -113,3 +124,4 @@ rm /var/www/cache/*
 ## Ref: https://serverfault.com/questions/337818/how-to-force-mysql-to-connect-by-tcp-instead-of-a-unix-socket
 ## Ref: https://stackoverflow.com/questions/33067909/bash-variable-under-a-mysql-query
 ## Ref: https://dev.mysql.com/doc/refman/5.7/en/examples.html
+## Ref: https://stackoverflow.com/questions/25044817/zend-opcache-opcache-enable-cli-1-or-0-what-does-it-do#comment91052089_35880017

@@ -4,11 +4,13 @@ SlickStack is a free LEMP stack automation script written in Bash designed to en
 
 ⮕ ⮕ ⮕ [ **Join us on Spectrum Chat 100% free (like Slack + Discourse in a single app)**](https://spectrum.chat/slickstack)
 
-**Alpha because core features are still changing and being "settled". Safe for production servers, if you're okay with this... if you run into any issues, re-installing is always a quick `sudo bash /var/www/ss-install` command away.*
+**Alpha because core ss-config variables are still being "settled". Safe for production servers, if you're okay with this... if you run into any issues, re-installing is always a quick `sudo bash ss-update && ss-install` command away.*
 
 | Google PageSpeed | GTMetrix | Pingdom | Security Headers | Qualys SSL Labs | WebPageTest |
 | :--------------: | :------: | :-----: | :--------------: | :-------------: | :-------------: |
 | [**A**](https://developers.google.com/speed/pagespeed/insights/?url=https%3A%2F%2Fslickstack.io%2F) | [**A**](https://gtmetrix.com/reports/slickstack.io/zpLMZ1eb) | [**A**](https://tools.pingdom.com/#5aeba9dea8000000) | [**A**](https://securityheaders.com/?q=https%3A%2F%2Fslickstack.io%2F&followRedirects=on) | [**A**](https://www.ssllabs.com/ssltest/analyze.html?d=slickstack.io&latest) | [**A**](https://www.webpagetest.org/result/190920_68_a4a541db9847ce601ef264b41df9d0f3/) |
+
+* **NEW!** Running `ss-update` will now automagically update your `ss-config` to latest template... any variables that are missing or undefined will simply be setup using the default (recommended) values for those variables...
 
 * **NEW!** Long-awaited Let's Encrypt (Certbot) support is now live using `SSL_TYPE` option in `ss-config`... those who do not wish to use CloudFlare can now use this approach instead... OpenSSL + CloudFlare is still always our recommended approach however... also, keep in mind that during initial setup (the first time that you request an SSL cert via Certbot) you will still need to have CloudFlare active for `.well-known` domain verification to work properly over HTTPS (otherwise Certbot will complain re: the self-signed OpenSSL cert)...
 
@@ -32,7 +34,7 @@ SlickStack is a free LEMP stack automation script written in Bash designed to en
 
 * **NEW!** SlickStack now does `include_once` within wp-config.php on the Custom Functions (MU plugin) file `/var/www/html/wp-content/functions.php` meaning much more reliable PHP functions...
 
-## Core Modules
+## Core Modules [[read more](https://slickstack.io/modules)]
 
 *Last updated: Dec 19, 2019*
 
@@ -45,13 +47,13 @@ SlickStack is a free LEMP stack automation script written in Bash designed to en
 | **Ubuntu** | [mirrors](http://lemp.redshift.network/ubuntu/) | 18.04 (LTS) | `crontab` + `gai.conf` + `sshd_config` + `sudoers` + `sysctl.conf` |
 | **Nginx (Extras)** | [mirrors](http://lemp.redshift.network/nginx/) | 1.15.8 | `nginx.conf` + `default` (server block) |
 | **FastCGI Cache** | [mirrors](http://lemp.redshift.network/fastcgi-cache/) | 1.15.8 | `fastcgi-cache.conf` |
-| **OpenSSL** | [mirrors](http://lemp.redshift.network/openssl/) | 1.1.0g | default config |
-| **Let's Encrypt†** | [mirrors](http://lemp.redshift.network/letsencrypt/) | 0.23.0 | custom config |
+| **OpenSSL** | [mirrors](http://lemp.redshift.network/openssl/) | 1.1.0g | `nginx.crt` + `nginx.key` |
+| **Let's Encrypt** | [mirrors](http://lemp.redshift.network/letsencrypt/) | 0.31.0 | `cert.perm` + `privkey.pem` + `chain.pem` + `fullchain.pem` |
 | **MySQL** | [mirrors](http://lemp.redshift.network/mysql/) | 5.7.x | `my.cnf` |
 | **PHP-FPM** | [mirrors](http://lemp.redshift.network/php-fpm/) | 7.2.x | `php.ini` + `php-fpm.conf` + `www.conf` |
-| **Zend / OPcache** | [mirrors](http://lemp.redshift.network/opcache/) | 3.2.0 / 7.2.17 | (same as PHP-FPM) |
-| **WordPress** | [mirrors](http://lemp.redshift.network/wordpress/) | 5.3.1 | some WP Core junk files are removed by `ss-clean` |
-| **MU Plugins** | [mirrors](http://lemp.redshift.network/mu-plugins/) | N/A | several `mu-plugins` by LittleBizzy |
+| **Zend / OPcache** | [mirrors](http://lemp.redshift.network/opcache/) | 3.2.0 / 7.2.x | (same as PHP-FPM) |
+| **WordPress** | [mirrors](http://lemp.redshift.network/wordpress/) | 5.3.2 | some WP Core junk files are removed by `ss-clean` |
+| **MU Plugins** | [mirrors](http://lemp.redshift.network/mu-plugins/) | (n/a) | optional `mu-plugins` by LittleBizzy |
 | **WP-CLI** | [mirrors](http://lemp.redshift.network/wp-cli/) | 2.4.0 | default config |
 | **Redis (Obj Cache)** | [mirrors](http://lemp.redshift.network/redis/) | 4.0.9 | `redis.conf` + `object-cache.php` |
 | **Git** | [mirrors](http://lemp.redshift.network/git/) | 2.17.1 | default config |
@@ -135,7 +137,7 @@ After completing the installation steps above, your `/var/www/` directory should
     /var/www/html/wp-includes/
     /var/www/html/wp-...
     
-## MU (Must Use) Plugins
+## MU (Must Use) Plugins [[read more](https://slickstack.io/modules/must-use-plugins)]
     
 If you choose to deploy a SlickStack [ss] server using our free WPLite boilerplate, the installation process will include several [Must Use plugins](https://wordpress.org/support/article/must-use-plugins/) inside your WordPress structure (`/var/www/html/wp-content/mu-plugins/`) that are maintained by LittleBizzy. If you do not wish for these Must Use plugins to be installed, and want a default "vanilla" WordPress installation, choose "wordpress" instead of "wplite" when setting up your `ss-config` options:
 
@@ -156,11 +158,9 @@ If you choose to deploy a SlickStack [ss] server using our free WPLite boilerpla
 * [**Error Log Monitor**]():
 * [**Force Strong Hashing**](https://github.com/littlebizzy/force-strong-hashing): Forces all user passwords generated by WordPress to be hashed using Bcrypt, the most secure and popular PHP hashing algorithm currently available.
 * [**Header Cleanup**](https://github.com/littlebizzy/header-cleanup): Cleans up most of the unnecessary junk meta included by default in the WordPress header including generator, RSD, shortlink, previous and next, etc.
-* [**Index Autoload**](https://github.com/littlebizzy/index-autoload): Adds an index to the autoload in wp_options table and verifies it exists on a daily basis (using WP Cron), resulting in a more efficient database.
 * [**Limit Heartbeat**](https://github.com/littlebizzy/limit-heartbeat): Limits the Heartbeat API in WordPress to certain areas of the site (and a longer pulse interval) to reduce AJAX queries and improve resource usage.
 * [**Minify HTML**](https://github.com/littlebizzy/minify-html): Tactfully minifies HTML output and markup to remove line breaks, whitespace, comments, and other code bloat to cleanup source code and improve speed.
 * [**Plugin Blacklist**](https://github.com/littlebizzy/plugin-blacklist): Allows web hosts, agencies, or other WordPress site managers to disallow a custom list of plugins from being activated for security or other reasons.
-* [**Remove Query Strings**](https://github.com/littlebizzy/remove-query-strings): Removes all query strings from static resources meaning that proxy servers and beyond can better cache your site content (plus, better SEO scores).
 * [**Server Status**](https://github.com/littlebizzy/server-status): Useful statistics about the server OS, CPU, RAM, load average, memory usage, IP address, hostname, timezone, disk space, PHP, MySQL, caches, etc.
 * [**SFTP Details**](https://github.com/littlebizzy/sftp-details): Displays a small Dashboard widget to remind logged-in Admin users of their server SFTP login information for easy reference (uses defined constants).
 * [**Virtual Robotstxt**](https://github.com/littlebizzy/virtual-robotstxt): Replaces the default virtual robots.txt generated by WordPress with an editable one, and deletes any physical robots.txt file that may already exist.
