@@ -4,7 +4,7 @@ SlickStack is a free LEMP stack automation script written in Bash designed to en
 
 ⮕ ⮕ ⮕ [ **Join us on Spectrum Chat 100% free (like Slack + Discourse in a single app)**](https://spectrum.chat/slickstack)
 
-**Alpha because core ss-config variables are still being "settled". Safe for production servers, if you're okay with this... if you run into any issues, re-installing is always a quick `sudo bash ss-update && ss-install` command away.*
+**Alpha because ss-config variables are still being "settled". Safe for production servers, if you're okay with this... if you run into any issues, re-installing is always a quick `sudo bash ss-update && ss-install` command away.*
 
 | Google PageSpeed | GTMetrix | Pingdom | Security Headers | Qualys SSL Labs | WebPageTest |
 | :--------------: | :------: | :-----: | :--------------: | :-------------: | :-------------: |
@@ -137,7 +137,7 @@ After completing the installation steps above, your `/var/www/` directory should
     /var/www/html/wp-includes/
     /var/www/html/wp-...
     
-## MU (Must Use) Plugins [[read more](https://slickstack.io/modules/must-use-plugins)]
+## MU (Must-Use) Plugins [[read more](https://slickstack.io/modules/mu-plugins)]
     
 If you choose to deploy a SlickStack [ss] server using our free WPLite boilerplate, the installation process will include several [Must Use plugins](https://wordpress.org/support/article/must-use-plugins/) inside your WordPress structure (`/var/www/html/wp-content/mu-plugins/`) that are maintained by LittleBizzy. If you do not wish for these Must Use plugins to be installed, and want a default "vanilla" WordPress installation, choose "wordpress" instead of "wplite" when setting up your `ss-config` options:
 
