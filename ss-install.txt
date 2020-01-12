@@ -1002,12 +1002,32 @@ else
     sed -i '/tmpfs/d' /etc/fstab
 fi
 
-## download latest versions ##
-wget -O /tmp/default http://mirrors.slickstack.io/nginx/default-single-site.txt
+## download latest server block (depends on WP single site or multisite) ##
+
+if [[ "$WP_MULTISITE" == "true" ]]; then 
+    wget -O /tmp/default http://mirrors.slickstack.io/nginx/default-multisite.txt
+else 
+    wget -O /tmp/default http://mirrors.slickstack.io/nginx/default-single-site.txt
+fi
+
+
 
 ## replace variables ##
 sed -i "s/@DOMAIN/${SITE_DOMAIN}/g" /tmp/default
+sed -i "s/@SITE_DOMAIN/${SITE_DOMAIN}/g" /tmp/default
 sed -i "s/@CACHEVALID/${FCGI_CACHE_VALID}/g" /tmp/default
+
+## replace conditional variables ##
+if [[ "$WP_MULTISITE_DOMAIN_MAPPING" == "true" ]]; then 
+   sed -i "s/#@WP_MULTISITE_DOMAIN_MAPPING# //g" /tmp/default
+else
+    sed -i "s/#@WP_MULTISITE_DOMAIN_MAPPING_FALSE# //g" /tmp/default
+fi
+
+if [[ "$WP_MULTISITE_SUBDOMAINS" == "true" ]]; then 
+    sed -i "s/#@WP_MULTISITE_SUBDOMAINS# //g" /tmp/default
+fi
+
 
 ## set FastCGI Cache if enabled ##
 if [[ "$FCGI_CACHE" == "false" ]]; then 
