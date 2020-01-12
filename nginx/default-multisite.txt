@@ -48,30 +48,31 @@ server {
 ####################################################################################################
 #### Server Block: Indexing + Try Files Settings ###################################################
 ####################################################################################################
-
-        ## redirect index.php requests ##
-        if ($request_uri ~* "^(.*/)index\.php$") {
-            return 301 $1;
-        }
-	
-	## try files order ##
-	location / {
-        ## first try files, then directories, otherwise query index ##
+    
+    ## redirect index.php requests ##
+    if ($request_uri ~* "^(.*/)index\.php$") {
+        return 301 $1;
+    }
+    
+    ## try files order ##
+    location / {
+        ## first try files, then directories, otherwise query index
         try_files $uri $uri/ /index.php?$args;
-	## force trailing slashes on urls (do not enable for bbPress/BuddyPress sites) ##
+	## force trailing slashes on urls (do not enable for bbPress/BuddyPress sites)
         # rewrite ^([^.]*[^/])$ $1/ permanent;
-        }
-	
-	## hidden files (block access) ##
-        location ~ /\. {
+    }
+    
+    ## hidden files (block access) ##
+    location ~ /\. {
         ## do not enable if using Certbot, Git, etc ##
-	    # deny all;
-        }
-	
-	## Certbot domain verification ##
-        location = /.well-known* {
-            allow all;
-        }
+	# deny all;
+    }
+    
+    ## Certbot domain verification ##
+    location = /.well-known* {
+        # default_type "text/plain";
+        allow all;
+    }
 
 ####################################################################################################
 #### Server Block: FastCGI Cache Settings ##########################################################
@@ -134,7 +135,8 @@ server {
         try_files $uri =404;
         fastcgi_split_path_info ^(.+\.php)(/.+)$;
         ## fastcgi_pass unix:/var/run/php/php7.2-fpm.sock
-	fastcgi_pass unix:/run/php/php7.2-fpm.sock;
+	## fastcgi_pass unix:/run/php/php7.2-fpm.sock;
+	fastcgi_pass 127.0.0.1:9000;
 	fastcgi_read_timeout 300;
         fastcgi_index index.php;
         fastcgi_cache WORDPRESS;
@@ -144,7 +146,7 @@ server {
         ## below line should not be needed
         # include snippets/fastcgi-php.conf;
     }
-    
+
 ####################################################################################################
 #### Server Block: WP-Login Settings (Rate Limiting) ###############################################
 ####################################################################################################
@@ -157,7 +159,8 @@ server {
         try_files $uri =404;
         fastcgi_split_path_info ^(.+\.php)(/.+)$;
         ## fastcgi_pass unix:/var/run/php/php7.2-fpm.sock
-	fastcgi_pass unix:/run/php/php7.2-fpm.sock;
+	## fastcgi_pass unix:/run/php/php7.2-fpm.sock;
+	fastcgi_pass 127.0.0.1:9000;
 	fastcgi_read_timeout 300;
         fastcgi_index index.php;
         fastcgi_cache WORDPRESS;
@@ -176,7 +179,8 @@ server {
         ## tweak FastCGI Cache (needs to be improved with mild cache settings) ##
         include /etc/nginx/fastcgi.conf;
         fastcgi_split_path_info ^(.+\.php)(/.+)$;
-        fastcgi_pass unix:/run/php/php7.2-fpm.sock;
+        ## fastcgi_pass unix:/run/php/php7.2-fpm.sock;
+	fastcgi_pass 127.0.0.1:9000;
         fastcgi_read_timeout 300;
         fastcgi_index index.php;
         fastcgi_cache off;
@@ -237,7 +241,7 @@ server {
     location = /wp-content/functions.php {
 	deny all;
     }
-
+    
 ####################################################################################################
 #### Server Block: Plugin Blacklist (MU Plugin) Settings ###########################################
 ####################################################################################################
@@ -253,7 +257,7 @@ server {
     location = /.git/config {
         deny all;
     }
-   
+    
 ####################################################################################################
 #### Server Block: Deny Access To Various (Unsafe + Unused) WordPress Core Files ###################
 ####################################################################################################
