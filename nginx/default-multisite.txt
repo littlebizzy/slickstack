@@ -46,6 +46,36 @@ server {
 	#@WP_MULTISITE_DOMAIN_MAPPING# server_name_in_redirect off;
 	
 ####################################################################################################
+#### Server Block: WordPress Multisite Settings ####################################################
+####################################################################################################
+
+# Pass uploaded files to wp-includes/ms-files.php.
+    rewrite /files/$ /index.php last;
+    
+    if ($uri !~ wp-content/plugins) {
+        rewrite /files/(.+)$ /wp-includes/ms-files.php?file=$1 last;
+    }
+    
+    # Rewrite multisite '.../wp-.*' and '.../*.php'.
+    if (!-e $request_filename) {
+        rewrite ^/[_0-9a-zA-Z-]+(/wp-.*) $1 last;
+        rewrite ^/[_0-9a-zA-Z-]+.*(/wp-admin/.*\.php)$ $1 last;
+        rewrite ^/[_0-9a-zA-Z-]+(/.*\.php)$ $1 last;
+    }
+    
+    
+#    location ~ ^/files/(.*)$ {
+# try_files /wp-content/blogs.dir/$blogid/$uri /wp-includes/ms-files.php?file=$1 ;
+# # access_log on; log_not_found on; expires max;
+#v}
+
+## avoid php readfile()
+location ^~ /blogs.dir {
+ internal;
+ alias /var/www/wordpress/wp-content/blogs.dir ;
+}
+
+####################################################################################################
 #### Server Block: Indexing + Try Files Settings ###################################################
 ####################################################################################################
     
@@ -53,6 +83,9 @@ server {
     if ($request_uri ~* "^(.*/)index\.php$") {
         return 301 $1;
     }
+    
+    ## force trailing slash on */wp-admin requests ##
+    rewrite /wp-admin$ $scheme://$host$uri/ permanent;
     
     ## try files order ##
     location / {
@@ -329,3 +362,5 @@ server {
 ## Ref: https://stackoverflow.com/questions/21687288/nginx-redirect-loop-remove-index-php-from-url/21813759#21813759
 ## Ref: https://wordpress.org/plugins/wordpress-mu-domain-mapping/
 ## Ref: https://stackoverflow.com/questions/4833238/nginx-conf-redirect-multiple-conditions/45504231#45504231
+## Ref: https://gist.github.com/evansolomon/2274120
+## Ref: https://premium.wpmudev.org/blog/wordpress-multisite-wordpress-nginx/
