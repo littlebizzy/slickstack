@@ -76,7 +76,7 @@ source /var/www/ss-dump
 #### SS-Update: Install Latest SS-Config File (Safely Replicates Existing Variables) ###############
 ####################################################################################################
 
-## MODULE VERSION: SlickStack Build = DEC2019E
+## MODULE VERSION: SlickStack Build = JAN2020B
 
 ## variables will only be copied over from the previous ss-config file if they are defined ##
 ## otherwise default (recommended) variable values will be implemented automatically ##
@@ -139,6 +139,19 @@ if [[ -n "$SITE_NOINDEX" ]]; then
 sed -i "s|\(^SITE_NOINDEX=\).*|SITE_NOINDEX=\"$SITE_NOINDEX\"|g" /tmp/ss-config
 fi
 
+## copy over Multisite settings ##
+if [[ -n "$WP_MULTISITE" ]]; then 
+sed -i "s|\(^WP_MULTISITE=\).*|WP_MULTISITE=\"$WP_MULTISITE\"|g" /tmp/ss-config
+fi
+
+if [[ -n "$WP_MULTISITE_SUBDOMAINS" ]]; then 
+sed -i "s|\(^WP_MULTISITE_SUBDOMAINS=\).*|WP_MULTISITE_SUBDOMAINS=\"$WP_MULTISITE_SUBDOMAINS\"|g" /tmp/ss-config
+fi
+
+if [[ -n "$WP_MULTISITE_DOMAIN_MAPPING" ]]; then 
+sed -i "s|\(^WP_MULTISITE_DOMAIN_MAPPING=\).*|WP_MULTISITE_DOMAIN_MAPPING=\"$WP_MULTISITE_DOMAIN_MAPPING\"|g" /tmp/ss-config
+fi
+
 ## copy over CloudFlare settings ##
 sed -i "s|\(^CLOUDFLARE_API_KEY=\).*|CLOUDFLARE_API_KEY=\"$CLOUDFLARE_API_KEY\"|g" /tmp/ss-config
 sed -i "s|\(^CLOUDFLARE_API_EMAIL=\).*|CLOUDFLARE_API_EMAIL=\"$CLOUDFLARE_API_EMAIL\"|g" /tmp/ss-config
@@ -155,16 +168,9 @@ if [[ -n "$CLOUDFLARE_RECOMMENDED_SETTINGS" ]]; then
 sed -i "s|\(^CLOUDFLARE_RECOMMENDED_SETTINGS=\).*|CLOUDFLARE_RECOMMENDED_SETTINGS=\"$CLOUDFLARE_RECOMMENDED_SETTINGS\"|g" /tmp/ss-config
 fi
 
-## copy over Multisite settings ##
-if [[ -n "$WP_MULTISITE" ]]; then 
-sed -i "s|\(^WP_MULTISITE=\).*|WP_MULTISITE=\"$WP_MULTISITE\"|g" /tmp/ss-config
-fi
 
-if [[ -n "$WP_MULTISITE_SUBDOMAINS" ]]; then 
-sed -i "s|\(^WP_MULTISITE_SUBDOMAINS=\).*|WP_MULTISITE_SUBDOMAINS=\"$WP_MULTISITE_SUBDOMAINS\"|g" /tmp/ss-config
-fi
 
-## ADVANCED SETTINGS ##
+################################## ADVANCED SETTINGS ###############################
 
 ## copy over WP config settings ##
 if [[ -n "$WP_LANG" ]]; then 
