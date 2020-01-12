@@ -77,7 +77,7 @@ if [[ "${UBUNTU_VERSION}" != "18.04" ]]; then
 fi
 
 ## ensure ss-config build version matches ss-install build version ##
-if [[ "$SS_BUILD" != "DEC2019E" ]]; then 
+if [[ "$SS_BUILD" != "JAN2020A" ]]; then 
     echo -e "\e[93mYour ss-config file is outdated. Please update it by running ss-update and then run ss-install again.\e[0m" >&2
     exit 1
 fi
@@ -1260,6 +1260,25 @@ rm /tmp/throwaway*
 ####################################################################################################
 
 wget -O /tmp/wp-config.txt http://mirrors.slickstack.io/wordpress/wp-config.txt
+
+###### WP Multisite settings ########
+
+## set multisite ##
+if [[ -z "$WP_MULTISITE" ]]; then 
+    sed -i "s/@WP_MULTISITE/false/g" /tmp/wp-config.txt
+else 
+    sed -i "s/@WP_MULTISITE/${WP_MULTISITE}/g" /tmp/wp-config.txt
+fi
+
+## set multisite subdomains ##
+if [[ -z "$WP_MULTISITE_SUBDOMAINS" ]]; then 
+    sed -i "s/@WP_MULTISITE_SUBDOMAINS/true/g" /tmp/wp-config.txt
+else 
+    sed -i "s/@WP_MULTISITE_SUBDOMAINS/${WP_MULTISITE_SUBDOMAINS}/g" /tmp/wp-config.txt
+fi
+
+
+####### other WP Config settings ##########
 
 ## replace database placeholders ##
 sed -i "s/@DB_NAME/${DB_NAME}/g" /tmp/wp-config.txt
