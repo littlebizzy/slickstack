@@ -27,7 +27,7 @@ server {
 }
 
 ####################################################################################################
-#### Server Block: WordPress Multisite (Subdomains Approach) #######################################
+#### Server Block: WordPress Multisite Network (Subdomains + Single Database) ######################
 ####################################################################################################
 
 ## CloudFlare ignores HTTP/2 from origin server but we enable in case of Lets Encrypt ##
@@ -47,12 +47,26 @@ server {
 	#@WP_MULTISITE_DOMAIN_MAPPING# server_name_in_redirect off;
 	
 ####################################################################################################
-#### Server Block: WordPress Multisite Settings ####################################################
+#### Server Block: WordPress Multisite Various Settings ############################################
 ####################################################################################################
 
-# Pass uploaded files to wp-includes/ms-files.php.
-    rewrite /files/$ /index.php last;
+## Multisite has some unique security and performance concerns that are addressed below ##
+## 
+
+    # location ^~ /files/ {
+    #     rewrite ^.*/files/(.+)$ /wp-includes/ms-files.php?file=$1 last;
+    # }
     
+    #    location ~ ^/files/(.*)$ {
+    # try_files /wp-content/blogs.dir/$blogid/$uri /wp-includes/ms-files.php?file=$1 ;
+    #v}
+    
+    # Pass uploaded files to wp-includes/ms-files.php
+   #  rewrite /files/$ /index.php last;
+   # rewrite /files/(.+) /wp-includes/ms-files.php?file=$1 last;
+       
+       
+    ## pass uploaded files to wp-includes/ms-files.php (except plugin files) ##
     if ($uri !~ wp-content/plugins) {
         rewrite /files/(.+)$ /wp-includes/ms-files.php?file=$1 last;
     }
@@ -64,17 +78,11 @@ server {
         rewrite ^/[_0-9a-zA-Z-]+(/.*\.php)$ $1 last;
     }
     
-    
-#    location ~ ^/files/(.*)$ {
-# try_files /wp-content/blogs.dir/$blogid/$uri /wp-includes/ms-files.php?file=$1 ;
-# # access_log on; log_not_found on; expires max;
-#v}
-
-## avoid php readfile()
-location ^~ /blogs.dir {
- internal;
- alias /var/www/wordpress/wp-content/blogs.dir ;
-}
+    ## avoid php readfile() ##
+    location ^~ /blogs.dir {
+        internal;
+        alias /var/www/html/wp-content/blogs.dir;
+    }
 
 ####################################################################################################
 #### Server Block: Indexing + Try Files Settings ###################################################
@@ -355,6 +363,7 @@ location ^~ /blogs.dir {
 #### SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ###############
 ####################################################################################################
 
+## Ref: https://wordpress.org/support/article/nginx/
 ## Ref: https://computingforgeeks.com/how-to-setup-wordpress-multisite-network-nginx-letsencrypt/
 ## Ref: https://easyengine.io/wordpress-nginx/tutorials/multisite/subdomains/minimal/
 ## Ref: https://easyengine.io/wordpress-nginx/tutorials/multisite/subdomains/minimal/#comment-42709
@@ -366,3 +375,4 @@ location ^~ /blogs.dir {
 ## Ref: https://gist.github.com/evansolomon/2274120
 ## Ref: https://premium.wpmudev.org/blog/wordpress-multisite-wordpress-nginx/
 ## Ref: https://serverfault.com/questions/578648/properly-setting-up-a-default-nginx-server-for-https
+## Ref: https://stackoverflow.com/questions/6246490/wordpress-subdomain-multisite-nginx-media-library
