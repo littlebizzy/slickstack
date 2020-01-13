@@ -1276,6 +1276,19 @@ cp /tmp/throwaway /var/www/html/wp-content/themes/
 rm /tmp/throwaway*
 
 ####################################################################################################
+#### SlickStack: Modify Database Options For WordPress #############################################
+####################################################################################################
+
+## prepare MySQL root password (suppresses MySQL security warnings) ##
+export MYSQL_PWD=$DB_PASSWORD_ROOT
+
+## ensure home option is correct in WordPress database ##
+mysql --user=root --host="$DB_HOST" --database="$DB_NAME" --protocol=tcp --port=3306 --force --execute="UPDATE ${DB_PREFIX}options SET option_value='https://$SITE_DOMAIN' WHERE option_name='home'";
+
+## ensure siteurl option is correct in WordPress database ##
+mysql --user=root --host="$DB_HOST" --database="$DB_NAME" --protocol=tcp --port=3306 --force --execute="UPDATE ${DB_PREFIX}options SET option_value='https://$SITE_DOMAIN' WHERE option_name='siteurl'";
+
+####################################################################################################
 #### SlickStack: Configure WP-Config File (WordPress Configuration) ################################
 ####################################################################################################
 
@@ -1619,3 +1632,5 @@ echo -e "\e[36mSlickStack installation complete! Please reboot server and ensure
 ## Ref: https://unix.stackexchange.com/questions/313256/why-write-an-entire-bash-script-in-functions
 ## Ref: http://nginx.org/en/linux_packages.html
 ## Ref: https://www.digitalocean.com/community/questions/nginx-stable-or-mainline-for-production-server
+## Ref: https://precisionsec.com/changing-the-wordpress-site-url-using-the-mysql-command-line/
+## Ref: https://magc.co/box/notes/change-wp-urls-mysql/
