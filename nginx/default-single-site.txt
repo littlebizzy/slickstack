@@ -44,11 +44,6 @@ server {
 ####################################################################################################
 #### Server Block: Indexing + Public URI + Try Files Settings ######################################
 ####################################################################################################
-    
-    ## fixes potential 403 denied issues with WP-JSON ##
-    location ~ ^/wp-json/ {
-        rewrite ^/wp-json/(.*?)$ /?rest_route=/$1 last;
-    }
 
     ## redirect index.php requests ##
     if ($request_uri ~* "^(.*/)index\.php$") {
@@ -76,6 +71,12 @@ server {
     location = /.well-known* {
         # default_type "text/plain";
         allow all;
+    }
+    
+    ## fixes potential 403 denied issues with WP-JSON ##
+    location ~ ^/wp-json/ {
+        ## if permalinks not enabled or not loaded properly in the browser ##
+        rewrite ^/wp-json/(.*?)$ /?rest_route=/$1 last;
     }
 
 ####################################################################################################
@@ -340,3 +341,6 @@ server {
 ## Ref: https://support.cloudflare.com/hc/en-us/articles/214534978-Are-the-HTTP-2-or-SPDY-protocols-supported-between-Cloudflare-and-the-origin-server-
 ## Ref: https://blog.cloudflare.com/experiment-with-http-3-using-nginx-and-quiche/
 ## Ref: https://blog.cloudflare.com/http-2-prioritization-with-nginx/
+## Ref: https://wordpress.org/support/topic/contact-form-7-wp-json-404-error/
+## Ref: https://wordpress.stackexchange.com/questions/306033/rewrite-rest-route-link-to-wp-json-without-changing-default-permalink-stru
+## Ref: https://stackoverflow.com/questions/30379940/how-do-i-get-the-wordpress-json-api-to-work-on-nginx-server
