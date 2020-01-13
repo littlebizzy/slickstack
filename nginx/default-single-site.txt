@@ -42,9 +42,14 @@ server {
     	}
     
 ####################################################################################################
-#### Server Block: Indexing + Try Files Settings ###################################################
+#### Server Block: Indexing + Public URI + Try Files Settings ######################################
 ####################################################################################################
     
+    ## fixes potential 403 denied issues with WP-JSON ##
+    location ~ ^/wp-json/ {
+        rewrite ^/wp-json/(.*?)$ /?rest_route=/$1 last;
+    }
+
     ## redirect index.php requests ##
     if ($request_uri ~* "^(.*/)index\.php$") {
         return 301 $1;
