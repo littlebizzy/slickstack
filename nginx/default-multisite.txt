@@ -51,37 +51,45 @@ server {
 ####################################################################################################
 
 ## Multisite has some unique security and performance concerns that are addressed below ##
-## 
-
-    # location ^~ /files/ {
-    #     rewrite ^.*/files/(.+)$ /wp-includes/ms-files.php?file=$1 last;
-    # }
+## lots of outdated code snippets floating around online but should be current ##
     
-    #    location ~ ^/files/(.*)$ {
-    # try_files /wp-content/blogs.dir/$blogid/$uri /wp-includes/ms-files.php?file=$1 ;
-    #v}
+    ## location ^~ /files/ {
+    ##    rewrite ^.*/files/(.+)$ /wp-includes/ms-files.php?file=$1 last;
+    ## }
+    ## location ~ ^/files/(.*)$ {
+    ##     try_files /wp-content/blogs.dir/$blogid/$uri /wp-includes/ms-files.php?file=$1 ;
+    ## }
     
-    # Pass uploaded files to wp-includes/ms-files.php
-   #  rewrite /files/$ /index.php last;
-   # rewrite /files/(.+) /wp-includes/ms-files.php?file=$1 last;
-       
-       
-    ## pass uploaded files to wp-includes/ms-files.php (except plugin files) ##
+    ## pass uploaded files to ms-files.php ##
+    rewrite /files/$ /index.php last;
+    
     if ($uri !~ wp-content/plugins) {
         rewrite /files/(.+)$ /wp-includes/ms-files.php?file=$1 last;
     }
     
-    # Rewrite multisite '.../wp-.*' and '.../*.php'.
+    ## Rewrite multisite '.../wp-.*' and '.../*.php' ##
     if (!-e $request_filename) {
         rewrite ^/[_0-9a-zA-Z-]+(/wp-.*) $1 last;
-        rewrite ^/[_0-9a-zA-Z-]+.*(/wp-admin/.*\.php)$ $1 last;
         rewrite ^/[_0-9a-zA-Z-]+(/.*\.php)$ $1 last;
+	## not required if wp-admin trailing slash rule already implemented ##
+	# rewrite ^/[_0-9a-zA-Z-]+.*(/wp-admin/.*\.php)$ $1 last;
+	# rewrite /wp-admin$ $scheme://$host$uri/ permanent;
     }
     
     ## avoid php readfile() ##
     location ^~ /blogs.dir {
         internal;
         alias /var/www/html/wp-content/blogs.dir;
+    }
+
+####################################################################################################
+#### Server Block: File Uploads Settings ###########################################################
+####################################################################################################
+
+    # Deny access to any files with a .php extension in the uploads directory
+    # Works in sub-directory installs and also in multisite network
+    location ~* /(?:uploads|files)/.*\.php$ {
+        deny all;
     }
 
 ####################################################################################################
@@ -376,3 +384,11 @@ server {
 ## Ref: https://premium.wpmudev.org/blog/wordpress-multisite-wordpress-nginx/
 ## Ref: https://serverfault.com/questions/578648/properly-setting-up-a-default-nginx-server-for-https
 ## Ref: https://stackoverflow.com/questions/6246490/wordpress-subdomain-multisite-nginx-media-library
+## Ref: https://gist.github.com/centminmod/9034414
+## Ref: https://stackoverflow.com/questions/29123222/wordpress-multisite-directory-nginx-config
+## Ref: https://premium.wpmudev.org/forums/topic/ssl-on-domain-mapping-with-wp-multisite/
+## Ref: https://core.trac.wordpress.org/ticket/18852
+## Ref: https://github.com/bradp/vv/issues/355
+## Ref: https://github.com/roots/wordpress-nginx/blob/master/templates/default/wordpress-common.erb
+## Ref: https://snippets.cacher.io/snippet/797464509dbb045262f4
+## Ref: https://forum.nginx.org/read.php?9,219980
