@@ -12,7 +12,7 @@ title: Nginx (Public Mirrors)
 
 * [nginx-conf.txt](nginx-conf.txt)
 * [default-single-site.txt](default-single-site.txt)
-* default-multisite-subdomains.txt
+* [default-multisite-subdomains.txt](default-multisite-subdomains.txt)
 * default-multisite-subdirectories.txt
 
 ### Original Files
@@ -61,4 +61,4 @@ title: Nginx (Public Mirrors)
 
 ----
 
-*Last updated: Dec 6, 2019*
+*Last updated: Jan 15, 2019*
