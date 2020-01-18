@@ -7,7 +7,7 @@
 #### path: /var/www/ss-encrypt #####################################################################
 #### destination: n/a (not a boilerplate) ##########################################################
 #### purpose: Generates or renews free SSL certs via OpenSSL and Certbot (Let's Encrypt) ###########
-#### module version: Ubuntu 18.04 LTS + OpenSSL 1.1.0g + Certbot 0.23.x ############################
+#### module version: Ubuntu 18.04 LTS + OpenSSL 1.1.1 + Certbot 0.23.x #############################
 ####################################################################################################
 
 ## include SlickStack configuration ##
@@ -173,6 +173,31 @@ elif [[ "$SSL_EMAIL_ALERTS" != "true" ]] && [[ $SITE_DOMAIN != *.*.* ]] && [[ $S
 elif [[ "$SSL_EMAIL_ALERTS" != "true" ]] && [[ $SITE_DOMAIN == *.*.* ]]; then
         certbot certonly --noninteractive --agree-tos --expand -m ${SSL_EMAIL} -d ${SITE_DOMAIN} --webroot -w /var/www/html/
 
+
+#### multisite ####
+
+## multisite (subdomains) + main site not a subdomain + main site contains www + email alerts ##
+# if [[ "$WP_MULTISITE" == "true" ]] && [[ $SITE_DOMAIN != *.*.* ]] && [[ $SITE_DOMAIN == *www.* ]] && [[ "$SSL_EMAIL_ALERTS" == "true" ]]; then
+#         SITE_DOMAIN_ONE="${SITE_DOMAIN//$www./}"
+ #        SITE_DOMAIN_TWO="*.${SITE_DOMAIN//$www./}"
+ #        certbot certonly --noninteractive --agree-tos --expand -m ${SSL_EMAIL} -d ${SITE_DOMAIN_ONE} -d ${SITE_DOMAIN_TWO} --webroot -w /var/www/html/
+
+
+## multisite (subdomains) + main site DOES NOT contain www + email alerts ##
+
+## multisite (subdomains) + main site contains www + no email alerts ##
+
+## multisite (subdomains) + main site DOES NOT contain www + no email alerts ##
+
+
+
+## no email alerts + multisite (subdomains) + contains www (main site) ##
+
+## email alerts + multisite (subdirectories) + contains www (main site) ##
+
+## no email alerts + multisite (subdirectories) + contains www (main site) ##
+
+
 ## otherwise just do this ##
 else
     certbot certonly --noninteractive --agree-tos --expand --register-unsafely-without-email -d ${SITE_DOMAIN} --webroot -w /var/www/html/
@@ -254,3 +279,5 @@ echo -e "\e[36mSSL certificates have been successfully generated...\e[0m"
 ## Ref: https://stackoverflow.com/questions/33614865/bash-countdown-to-execution-if-no-key-pressed
 ## Ref: https://unix.stackexchange.com/questions/293940/bash-how-can-i-make-press-any-key-to-continue
 ## Ref: https://serverfault.com/questions/532559/bash-script-count-down-5-minutes-display-on-single-line
+## Ref: https://community.letsencrypt.org/t/confusing-on-root-domain-with-wildcard-cert/56113/2
+## Ref: https://gist.github.com/joepie91/7e5cad8c0726fd6a5e90360a754fc568
