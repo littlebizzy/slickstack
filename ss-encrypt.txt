@@ -6,8 +6,8 @@
 #### mirror: http://mirrors.slickstack.io/ss-encrypt.txt ###########################################
 #### path: /var/www/ss-encrypt #####################################################################
 #### destination: n/a (not a boilerplate) ##########################################################
-#### purpose: Generates or renews free SSL certs via OpenSSL and Certbot (Let's Encrypt) ###########
-#### module version: Ubuntu 18.04 LTS + OpenSSL 1.1.1 + Certbot 0.23.x #############################
+#### purpose: Generates or renews free SSL certs via OpenSSL and Certbot (Lets Encrypt) ############
+#### module version: Ubuntu 18.04 LTS + OpenSSL 1.1.1 + Certbot 0.31.x #############################
 ####################################################################################################
 
 ## include SlickStack configuration ##
@@ -138,64 +138,95 @@ chown -R $SFTP_USER:www-data /var/www/html/.well-known
 chmod 6775 /var/www/html/.well-known
 
 ####################################################################################################
-#### SS-Encrypt: Prepare Domain Variables + Regenerate Cerbot SSL Certificate ######################
+#### SS-Encrypt: Prepare Domain Variables + (Re)generate Cerbot SSL Certificate ####################
 ####################################################################################################
 
-## email alerts + not a subdomain + contains www ##
+## SINGLE SITE CERTS + EMAIL ALERTS ##
+
+## not a subdomain + contains www + email alerts ##
 if [[ "$SSL_EMAIL_ALERTS" == "true" ]] && [[ $SITE_DOMAIN != *.*.* ]] && [[ $SITE_DOMAIN == *www.* ]]; then
-        SITE_DOMAIN_ONE="${SITE_DOMAIN//$www./}"
-        SITE_DOMAIN_TWO="${SITE_DOMAIN}"
-        certbot certonly --noninteractive --agree-tos --expand -m ${SSL_EMAIL} -d ${SITE_DOMAIN_ONE} -d ${SITE_DOMAIN_TWO} --webroot -w /var/www/html/
+    SITE_DOMAIN_ONE="${SITE_DOMAIN//$www./}"
+    SITE_DOMAIN_TWO="${SITE_DOMAIN}"
+    certbot certonly --noninteractive --agree-tos --expand -m ${SSL_EMAIL} -d ${SITE_DOMAIN_ONE} -d ${SITE_DOMAIN_TWO} --webroot -w /var/www/html/
 
-## email alerts + not a subdomain + does not contain www ##
+## not a subdomain + does not contain www + email alerts ##
 elif [[ "$SSL_EMAIL_ALERTS" == "true" ]] && [[ $SITE_DOMAIN != *.*.* ]] && [[ $SITE_DOMAIN != *www.* ]]; then
-        SITE_DOMAIN_ONE="${SITE_DOMAIN}"
-        SITE_DOMAIN_TWO="www.${SITE_DOMAIN}"
-        certbot certonly --noninteractive --agree-tos --expand -m ${SSL_EMAIL} -d ${SITE_DOMAIN_ONE} -d ${SITE_DOMAIN_TWO} --webroot -w /var/www/html/
+    SITE_DOMAIN_ONE="${SITE_DOMAIN}"
+    SITE_DOMAIN_TWO="www.${SITE_DOMAIN}"
+    certbot certonly --noninteractive --agree-tos --expand -m ${SSL_EMAIL} -d ${SITE_DOMAIN_ONE} -d ${SITE_DOMAIN_TWO} --webroot -w /var/www/html/
 
-## email alerts + is a subdomain (www is irrelevant) ##
+## subdomain (www is irrelevant) + email alerts ##
 elif [[ "$SSL_EMAIL_ALERTS" == "true" ]] && [[ $SITE_DOMAIN == *.*.* ]]; then
-        certbot certonly --noninteractive --agree-tos --expand -m ${SSL_EMAIL} -d ${SITE_DOMAIN} --webroot -w /var/www/html/
+    certbot certonly --noninteractive --agree-tos --expand -m ${SSL_EMAIL} -d ${SITE_DOMAIN} --webroot -w /var/www/html/
 
-## no email alerts or not defined + not a subdomain + contains www ##
+## SINGLE SITE CERTS + NO EMAIL ALERTS ##
+
+## not a subdomain + contains www + no email alerts (or missing) ##
 elif [[ "$SSL_EMAIL_ALERTS" != "true" ]] && [[ $SITE_DOMAIN != *.*.* ]] && [[ $SITE_DOMAIN == *www.* ]]; then
-        SITE_DOMAIN_ONE="${SITE_DOMAIN//$www./}"
-        SITE_DOMAIN_TWO="${SITE_DOMAIN}"
-        certbot certonly --noninteractive --agree-tos --expand --register-unsafely-without-email -d ${SITE_DOMAIN_ONE} -d ${SITE_DOMAIN_TWO} --webroot -w /var/www/html/
+    SITE_DOMAIN_ONE="${SITE_DOMAIN//$www./}"
+    SITE_DOMAIN_TWO="${SITE_DOMAIN}"
+    certbot certonly --noninteractive --agree-tos --expand --register-unsafely-without-email -d ${SITE_DOMAIN_ONE} -d ${SITE_DOMAIN_TWO} --webroot -w /var/www/html/
 
-## no email alerts or not defined + not a subdomain + does not contain www ##
+## not a subdomain + does not contain www + no email alerts (or missing) ##
 elif [[ "$SSL_EMAIL_ALERTS" != "true" ]] && [[ $SITE_DOMAIN != *.*.* ]] && [[ $SITE_DOMAIN != *www.* ]]; then
-        SITE_DOMAIN_ONE="${SITE_DOMAIN}"
-        SITE_DOMAIN_TWO="www.${SITE_DOMAIN}"
-        certbot certonly --noninteractive --agree-tos --expand -m ${SSL_EMAIL} -d ${SITE_DOMAIN_ONE} -d ${SITE_DOMAIN_TWO} --webroot -w /var/www/html/
+    SITE_DOMAIN_ONE="${SITE_DOMAIN}"
+    SITE_DOMAIN_TWO="www.${SITE_DOMAIN}"
+    certbot certonly --noninteractive --agree-tos --expand -m ${SSL_EMAIL} -d ${SITE_DOMAIN_ONE} -d ${SITE_DOMAIN_TWO} --webroot -w /var/www/html/
 
-## no email alerts + is a subdomain (www is irrelevant) ##
+## subdomain (www is irrelevant) + no email alerts (or missing)  ##
 elif [[ "$SSL_EMAIL_ALERTS" != "true" ]] && [[ $SITE_DOMAIN == *.*.* ]]; then
-        certbot certonly --noninteractive --agree-tos --expand -m ${SSL_EMAIL} -d ${SITE_DOMAIN} --webroot -w /var/www/html/
+    certbot certonly --noninteractive --agree-tos --expand -m ${SSL_EMAIL} -d ${SITE_DOMAIN} --webroot -w /var/www/html/
 
-
-#### multisite ####
+## MULTISITE NETWORK (SUBDOMAINS) CERTS + EMAIL ALERTS ##
 
 ## multisite (subdomains) + main site not a subdomain + main site contains www + email alerts ##
-# if [[ "$WP_MULTISITE" == "true" ]] && [[ $SITE_DOMAIN != *.*.* ]] && [[ $SITE_DOMAIN == *www.* ]] && [[ "$SSL_EMAIL_ALERTS" == "true" ]]; then
-#         SITE_DOMAIN_ONE="${SITE_DOMAIN//$www./}"
- #        SITE_DOMAIN_TWO="*.${SITE_DOMAIN//$www./}"
- #        certbot certonly --noninteractive --agree-tos --expand -m ${SSL_EMAIL} -d ${SITE_DOMAIN_ONE} -d ${SITE_DOMAIN_TWO} --webroot -w /var/www/html/
+elif [[ "$WP_MULTISITE" == "true" ]] && [[ $SITE_DOMAIN != *.*.* ]] && [[ $SITE_DOMAIN == *www.* ]] && [[ "$SSL_EMAIL_ALERTS" == "true" ]]; then
+    SITE_DOMAIN_ONE="*.${SITE_DOMAIN//$www./}"
+    SITE_DOMAIN_TWO="${SITE_DOMAIN//$www./}"
+    ## request certs for *.example.com (supports www + subsites) and example.com ##
+    certbot certonly --noninteractive --agree-tos --expand -m ${SSL_EMAIL} -d ${SITE_DOMAIN_ONE} -d ${SITE_DOMAIN_TWO} --webroot -w /var/www/html/
+
+## multisite (subdomains) + main site not a subdomain + main site does not contain www + email alerts ##
+elif [[ "$WP_MULTISITE" == "true" ]] && [[ $SITE_DOMAIN != *.*.* ]] && [[ $SITE_DOMAIN != *www.* ]] && [[ "$SSL_EMAIL_ALERTS" == "true" ]]; then
+    SITE_DOMAIN_ONE="*.${SITE_DOMAIN//$www./}"
+    SITE_DOMAIN_TWO="${SITE_DOMAIN//$www./}"
+    ## request certs for *.example.com and example.com (same result as above) ##
+    certbot certonly --noninteractive --agree-tos --expand -m ${SSL_EMAIL} -d ${SITE_DOMAIN_ONE} -d ${SITE_DOMAIN_TWO} --webroot -w /var/www/html/
+
+## multisite (subdomains) + main site is a subdomain (www is irrelevant) + email alerts ##
+elif [[ "$WP_MULTISITE" == "true" ]] && [[ $SITE_DOMAIN == *.*.* ]] && [[ "$SSL_EMAIL_ALERTS" == "true" ]]; then
+    SITE_DOMAIN_ONE="*.${SITE_DOMAIN}"
+    SITE_DOMAIN_TWO="${SITE_DOMAIN}"
+    ## request certs for *.sub.example.com and sub.example.com ##
+    certbot certonly --noninteractive --agree-tos --expand -m ${SSL_EMAIL} -d ${SITE_DOMAIN_ONE} -d ${SITE_DOMAIN_TWO} --webroot -w /var/www/html/
+
+## MULTISITE NETWORK (SUBDOMAINS) CERTS + NO EMAIL ALERTS ##
+
+## multisite (subdomains) + main site not a subdomain + main site contains www + no email alerts ##
+elif [[ "$WP_MULTISITE" == "true" ]] && [[ $SITE_DOMAIN != *.*.* ]] && [[ $SITE_DOMAIN == *www.* ]] && [[ "$SSL_EMAIL_ALERTS" != "true" ]]; then
+    SITE_DOMAIN_ONE="*.${SITE_DOMAIN//$www./}"
+    SITE_DOMAIN_TWO="${SITE_DOMAIN//$www./}"
+    ## request certs for *.example.com (supports www + subsites) and example.com ##
+    certbot certonly --noninteractive --agree-tos --expand --register-unsafely-without-email -d ${SITE_DOMAIN_ONE} -d ${SITE_DOMAIN_TWO} --webroot -w /var/www/html/
+
+## multisite (subdomains) + main site not a subdomain + main site does not contain www + no email alerts ##
+elif [[ "$WP_MULTISITE" == "true" ]] && [[ $SITE_DOMAIN != *.*.* ]] && [[ $SITE_DOMAIN != *www.* ]] && [[ "$SSL_EMAIL_ALERTS" != "true" ]]; then
+    SITE_DOMAIN_ONE="*.${SITE_DOMAIN//$www./}"
+    SITE_DOMAIN_TWO="${SITE_DOMAIN//$www./}"
+    ## request certs for *.example.com and example.com (same result as above) ##
+    certbot certonly --noninteractive --agree-tos --expand --register-unsafely-without-email -d ${SITE_DOMAIN_ONE} -d ${SITE_DOMAIN_TWO} --webroot -w /var/www/html/
+
+## multisite (subdomains) + main site is a subdomain (www is irrelevant) + email alerts ##
+elif [[ "$WP_MULTISITE" == "true" ]] && [[ $SITE_DOMAIN == *.*.* ]] && [[ "$SSL_EMAIL_ALERTS" != "true" ]]; then
+    SITE_DOMAIN_ONE="*.${SITE_DOMAIN}"
+    SITE_DOMAIN_TWO="${SITE_DOMAIN}"
+    ## request certs for *.sub.example.com and sub.example.com ##
+    certbot certonly --noninteractive --agree-tos --expand --register-unsafely-without-email -d ${SITE_DOMAIN_ONE} -d ${SITE_DOMAIN_TWO} --webroot -w /var/www/html/
 
 
-## multisite (subdomains) + main site DOES NOT contain www + email alerts ##
+## MULTISITE NETWORK (SUBDIRECTORIES) CERTS + EMAIL ALERTS ##
 
-## multisite (subdomains) + main site contains www + no email alerts ##
-
-## multisite (subdomains) + main site DOES NOT contain www + no email alerts ##
-
-
-
-## no email alerts + multisite (subdomains) + contains www (main site) ##
-
-## email alerts + multisite (subdirectories) + contains www (main site) ##
-
-## no email alerts + multisite (subdirectories) + contains www (main site) ##
+## MULTISITE NETWORK (SUBDIRECTORIES) CERTS + NO EMAIL ALERTS ##
 
 
 ## otherwise just do this ##
