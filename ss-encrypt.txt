@@ -188,21 +188,24 @@ elif [[ "$WP_MULTISITE" == "true" ]] && [[ $SITE_DOMAIN != *.*.* ]] && [[ $SITE_
     SITE_DOMAIN_ONE="*.${SITE_DOMAIN//$www./}"
     SITE_DOMAIN_TWO="${SITE_DOMAIN//$www./}"
     ## request certs for *.example.com (supports www + subsites) and example.com ##
-    certbot certonly --noninteractive --agree-tos --expand -m ${SSL_EMAIL} -d ${SITE_DOMAIN_ONE} -d ${SITE_DOMAIN_TWO} --webroot -w /var/www/html/
+    ## wildcard domain should be contained within quotes ##
+    certbot certonly --noninteractive --agree-tos --expand -m ${SSL_EMAIL} -d "${SITE_DOMAIN_ONE}" -d ${SITE_DOMAIN_TWO} --webroot -w /var/www/html/
 
 ## multisite (subdomains) + main site not a subdomain + main site does not contain www + email alerts ##
 elif [[ "$WP_MULTISITE" == "true" ]] && [[ $SITE_DOMAIN != *.*.* ]] && [[ $SITE_DOMAIN != *www.* ]] && [[ "$SSL_EMAIL_ALERTS" == "true" ]]; then
     SITE_DOMAIN_ONE="*.${SITE_DOMAIN//$www./}"
     SITE_DOMAIN_TWO="${SITE_DOMAIN//$www./}"
     ## request certs for *.example.com and example.com (same result as above) ##
-    certbot certonly --noninteractive --agree-tos --expand -m ${SSL_EMAIL} -d ${SITE_DOMAIN_ONE} -d ${SITE_DOMAIN_TWO} --webroot -w /var/www/html/
+    ## wildcard domain should be contained within quotes ##
+    certbot certonly --noninteractive --agree-tos --expand -m ${SSL_EMAIL} -d "${SITE_DOMAIN_ONE}" -d ${SITE_DOMAIN_TWO} --webroot -w /var/www/html/
 
 ## multisite (subdomains) + main site is a subdomain (www is irrelevant) + email alerts ##
 elif [[ "$WP_MULTISITE" == "true" ]] && [[ $SITE_DOMAIN == *.*.* ]] && [[ "$SSL_EMAIL_ALERTS" == "true" ]]; then
     SITE_DOMAIN_ONE="*.${SITE_DOMAIN}"
     SITE_DOMAIN_TWO="${SITE_DOMAIN}"
     ## request certs for *.sub.example.com and sub.example.com ##
-    certbot certonly --noninteractive --agree-tos --expand -m ${SSL_EMAIL} -d ${SITE_DOMAIN_ONE} -d ${SITE_DOMAIN_TWO} --webroot -w /var/www/html/
+    ## wildcard domain should be contained within quotes ##
+    certbot certonly --noninteractive --agree-tos --expand -m ${SSL_EMAIL} -d "${SITE_DOMAIN_ONE}" -d ${SITE_DOMAIN_TWO} --webroot -w /var/www/html/
 
 ## MULTISITE NETWORK (SUBDOMAINS) CERTS + NO EMAIL ALERTS ##
 
@@ -211,21 +214,24 @@ elif [[ "$WP_MULTISITE" == "true" ]] && [[ $SITE_DOMAIN != *.*.* ]] && [[ $SITE_
     SITE_DOMAIN_ONE="*.${SITE_DOMAIN//$www./}"
     SITE_DOMAIN_TWO="${SITE_DOMAIN//$www./}"
     ## request certs for *.example.com (supports www + subsites) and example.com ##
-    certbot certonly --noninteractive --agree-tos --expand --register-unsafely-without-email -d ${SITE_DOMAIN_ONE} -d ${SITE_DOMAIN_TWO} --webroot -w /var/www/html/
+    ## wildcard domain should be contained within quotes ##
+    certbot certonly --noninteractive --agree-tos --expand --register-unsafely-without-email -d "${SITE_DOMAIN_ONE}" -d ${SITE_DOMAIN_TWO} --webroot -w /var/www/html/
 
 ## multisite (subdomains) + main site not a subdomain + main site does not contain www + no email alerts ##
 elif [[ "$WP_MULTISITE" == "true" ]] && [[ $SITE_DOMAIN != *.*.* ]] && [[ $SITE_DOMAIN != *www.* ]] && [[ "$SSL_EMAIL_ALERTS" != "true" ]]; then
     SITE_DOMAIN_ONE="*.${SITE_DOMAIN//$www./}"
     SITE_DOMAIN_TWO="${SITE_DOMAIN//$www./}"
     ## request certs for *.example.com and example.com (same result as above) ##
-    certbot certonly --noninteractive --agree-tos --expand --register-unsafely-without-email -d ${SITE_DOMAIN_ONE} -d ${SITE_DOMAIN_TWO} --webroot -w /var/www/html/
+    ## wildcard domain should be contained within quotes ##
+    certbot certonly --noninteractive --agree-tos --expand --register-unsafely-without-email -d "${SITE_DOMAIN_ONE}" -d ${SITE_DOMAIN_TWO} --webroot -w /var/www/html/
 
 ## multisite (subdomains) + main site is a subdomain (www is irrelevant) + email alerts ##
 elif [[ "$WP_MULTISITE" == "true" ]] && [[ $SITE_DOMAIN == *.*.* ]] && [[ "$SSL_EMAIL_ALERTS" != "true" ]]; then
     SITE_DOMAIN_ONE="*.${SITE_DOMAIN}"
     SITE_DOMAIN_TWO="${SITE_DOMAIN}"
     ## request certs for *.sub.example.com and sub.example.com ##
-    certbot certonly --noninteractive --agree-tos --expand --register-unsafely-without-email -d ${SITE_DOMAIN_ONE} -d ${SITE_DOMAIN_TWO} --webroot -w /var/www/html/
+    ## wildcard domain should be contained within quotes ##
+    certbot certonly --noninteractive --agree-tos --expand --register-unsafely-without-email -d "${SITE_DOMAIN_ONE}" -d ${SITE_DOMAIN_TWO} --webroot -w /var/www/html/
 
 
 ## MULTISITE NETWORK (SUBDIRECTORIES) CERTS + EMAIL ALERTS ##
@@ -317,3 +323,6 @@ echo -e "\e[36mSSL certificates have been successfully generated...\e[0m"
 ## Ref: https://community.letsencrypt.org/t/confusing-on-root-domain-with-wildcard-cert/56113/2
 ## Ref: https://gist.github.com/joepie91/7e5cad8c0726fd6a5e90360a754fc568
 ## Ref: https://ma.ttias.be/how-to-read-ssl-certificate-info-from-the-cli/
+## Ref: http://nginx.org/en/docs/http/configuring_https_servers.html#certificate_with_several_names
+## Ref: https://dev.to/nabbisen/let-s-encrypt-wildcard-certificate-with-certbot-plo
+## Ref: https://community.letsencrypt.org/t/wildcard-certificate-does-not-work/79041
