@@ -173,17 +173,20 @@ rm /etc/letsencrypt/live/${SITE_DOMAIN}/privkey.pem
 if [[ "$SSL_EMAIL_ALERTS" == "true" ]] && [[ $SITE_DOMAIN != *.*.* ]] && [[ $SITE_DOMAIN == *www.* ]]; then
     SITE_DOMAIN_ONE="${SITE_DOMAIN//$www./}"
     SITE_DOMAIN_TWO="${SITE_DOMAIN}"
-    certbot certonly --noninteractive --agree-tos --expand -m ${SSL_EMAIL} -d ${SITE_DOMAIN_ONE} -d ${SITE_DOMAIN_TWO} --webroot -w /var/www/html/
+    certbot delete --cert-name ${SITE_TLD}
+    certbot certonly --noninteractive --agree-tos --cert-name ${SITE_TLD} -d ${SITE_DOMAIN_ONE} -d ${SITE_DOMAIN_TWO} -m ${SSL_EMAIL} --webroot -w /var/www/html/
 
 ## not a subdomain + does not contain www + email alerts ##
 elif [[ "$SSL_EMAIL_ALERTS" == "true" ]] && [[ $SITE_DOMAIN != *.*.* ]] && [[ $SITE_DOMAIN != *www.* ]]; then
     SITE_DOMAIN_ONE="${SITE_DOMAIN}"
     SITE_DOMAIN_TWO="www.${SITE_DOMAIN}"
-    certbot certonly --noninteractive --agree-tos --expand -m ${SSL_EMAIL} -d ${SITE_DOMAIN_ONE} -d ${SITE_DOMAIN_TWO} --webroot -w /var/www/html/
+    certbot delete --cert-name ${SITE_TLD}
+    certbot certonly --noninteractive --agree-tos --cert-name ${SITE_TLD} -d ${SITE_DOMAIN_ONE} -d ${SITE_DOMAIN_TWO} -m ${SSL_EMAIL} --webroot -w /var/www/html/
 
 ## subdomain (www is irrelevant) + email alerts ##
 elif [[ "$SSL_EMAIL_ALERTS" == "true" ]] && [[ $SITE_DOMAIN == *.*.* ]]; then
-    certbot certonly --noninteractive --agree-tos --expand -m ${SSL_EMAIL} -d ${SITE_DOMAIN} --webroot -w /var/www/html/
+    certbot delete --cert-name ${SITE_TLD}
+    certbot certonly --noninteractive --agree-tos --cert-name ${SITE_TLD} -d ${SITE_DOMAIN} -m ${SSL_EMAIL} --webroot -w /var/www/html/
 
 ## SINGLE SITE CERTS + NO EMAIL ALERTS ##
 
@@ -191,17 +194,20 @@ elif [[ "$SSL_EMAIL_ALERTS" == "true" ]] && [[ $SITE_DOMAIN == *.*.* ]]; then
 elif [[ "$SSL_EMAIL_ALERTS" != "true" ]] && [[ $SITE_DOMAIN != *.*.* ]] && [[ $SITE_DOMAIN == *www.* ]]; then
     SITE_DOMAIN_ONE="${SITE_DOMAIN//$www./}"
     SITE_DOMAIN_TWO="${SITE_DOMAIN}"
-    certbot certonly --noninteractive --agree-tos --expand --register-unsafely-without-email -d ${SITE_DOMAIN_ONE} -d ${SITE_DOMAIN_TWO} --webroot -w /var/www/html/
+    certbot delete --cert-name ${SITE_TLD}
+    certbot certonly --noninteractive --agree-tos --cert-name ${SITE_TLD} -d ${SITE_DOMAIN_ONE} -d ${SITE_DOMAIN_TWO} --register-unsafely-without-email --webroot -w /var/www/html/
 
 ## not a subdomain + does not contain www + no email alerts (or missing) ##
 elif [[ "$SSL_EMAIL_ALERTS" != "true" ]] && [[ $SITE_DOMAIN != *.*.* ]] && [[ $SITE_DOMAIN != *www.* ]]; then
     SITE_DOMAIN_ONE="${SITE_DOMAIN}"
     SITE_DOMAIN_TWO="www.${SITE_DOMAIN}"
-    certbot certonly --noninteractive --agree-tos --expand -m ${SSL_EMAIL} -d ${SITE_DOMAIN_ONE} -d ${SITE_DOMAIN_TWO} --webroot -w /var/www/html/
+    certbot delete --cert-name ${SITE_TLD}
+    certbot certonly --noninteractive --agree-tos --cert-name ${SITE_TLD} -d ${SITE_DOMAIN_ONE} -d ${SITE_DOMAIN_TWO} --register-unsafely-without-email --webroot -w /var/www/html/
 
 ## subdomain (www is irrelevant) + no email alerts (or missing)  ##
 elif [[ "$SSL_EMAIL_ALERTS" != "true" ]] && [[ $SITE_DOMAIN == *.*.* ]]; then
-    certbot certonly --noninteractive --agree-tos --expand -m ${SSL_EMAIL} -d ${SITE_DOMAIN} --webroot -w /var/www/html/
+    certbot delete --cert-name ${SITE_TLD}
+    certbot certonly --noninteractive --agree-tos --cert-name ${SITE_TLD} -d ${SITE_DOMAIN} --register-unsafely-without-email --webroot -w /var/www/html/
 
 ## MULTISITE NETWORK (SUBDOMAINS) CERTS + EMAIL ALERTS ##
 
@@ -211,7 +217,8 @@ elif [[ "$WP_MULTISITE" == "true" ]] && [[ $SITE_DOMAIN != *.*.* ]] && [[ $SITE_
     SITE_DOMAIN_TWO="${SITE_DOMAIN//$www./}"
     ## request certs for *.example.com (supports www + subsites) and example.com ##
     ## wildcard domain should be contained within quotes ##
-    certbot certonly --noninteractive --agree-tos --expand -m ${SSL_EMAIL} -d "${SITE_DOMAIN_ONE}" -d ${SITE_DOMAIN_TWO} --webroot -w /var/www/html/
+    certbot delete --cert-name ${SITE_TLD}
+    certbot certonly --noninteractive --agree-tos --cert-name ${SITE_TLD} -d "${SITE_DOMAIN_ONE}" -d ${SITE_DOMAIN_TWO} -m ${SSL_EMAIL} --webroot -w /var/www/html/
 
 ## multisite (subdomains) + main site not a subdomain + main site does not contain www + email alerts ##
 elif [[ "$WP_MULTISITE" == "true" ]] && [[ $SITE_DOMAIN != *.*.* ]] && [[ $SITE_DOMAIN != *www.* ]] && [[ "$SSL_EMAIL_ALERTS" == "true" ]]; then
@@ -219,7 +226,8 @@ elif [[ "$WP_MULTISITE" == "true" ]] && [[ $SITE_DOMAIN != *.*.* ]] && [[ $SITE_
     SITE_DOMAIN_TWO="${SITE_DOMAIN//$www./}"
     ## request certs for *.example.com and example.com (same result as above) ##
     ## wildcard domain should be contained within quotes ##
-    certbot certonly --noninteractive --agree-tos --expand -m ${SSL_EMAIL} -d "${SITE_DOMAIN_ONE}" -d ${SITE_DOMAIN_TWO} --webroot -w /var/www/html/
+    certbot delete --cert-name ${SITE_TLD}
+    certbot certonly --noninteractive --agree-tos --cert-name ${SITE_TLD} -d "${SITE_DOMAIN_ONE}" -d ${SITE_DOMAIN_TWO} -m ${SSL_EMAIL} --webroot -w /var/www/html/
 
 ## multisite (subdomains) + main site is a subdomain (www is irrelevant) + email alerts ##
 elif [[ "$WP_MULTISITE" == "true" ]] && [[ $SITE_DOMAIN == *.*.* ]] && [[ "$SSL_EMAIL_ALERTS" == "true" ]]; then
@@ -227,7 +235,8 @@ elif [[ "$WP_MULTISITE" == "true" ]] && [[ $SITE_DOMAIN == *.*.* ]] && [[ "$SSL_
     SITE_DOMAIN_TWO="${SITE_DOMAIN}"
     ## request certs for *.sub.example.com and sub.example.com ##
     ## wildcard domain should be contained within quotes ##
-    certbot certonly --noninteractive --agree-tos --expand -m ${SSL_EMAIL} -d "${SITE_DOMAIN_ONE}" -d ${SITE_DOMAIN_TWO} --webroot -w /var/www/html/
+    certbot delete --cert-name ${SITE_TLD}
+    certbot certonly --noninteractive --agree-tos --cert-name ${SITE_TLD} -d "${SITE_DOMAIN_ONE}" -d ${SITE_DOMAIN_TWO} -m ${SSL_EMAIL} --webroot -w /var/www/html/
 
 ## MULTISITE NETWORK (SUBDOMAINS) CERTS + NO EMAIL ALERTS ##
 
@@ -237,7 +246,8 @@ elif [[ "$WP_MULTISITE" == "true" ]] && [[ $SITE_DOMAIN != *.*.* ]] && [[ $SITE_
     SITE_DOMAIN_TWO="${SITE_DOMAIN//$www./}"
     ## request certs for *.example.com (supports www + subsites) and example.com ##
     ## wildcard domain should be contained within quotes ##
-    certbot certonly --noninteractive --agree-tos --expand --register-unsafely-without-email -d "${SITE_DOMAIN_ONE}" -d ${SITE_DOMAIN_TWO} --webroot -w /var/www/html/
+    certbot delete --cert-name ${SITE_TLD}
+    certbot certonly --noninteractive --agree-tos --cert-name ${SITE_TLD} -d "${SITE_DOMAIN_ONE}" -d ${SITE_DOMAIN_TWO} --register-unsafely-without-email --webroot -w /var/www/html/
 
 ## multisite (subdomains) + main site not a subdomain + main site does not contain www + no email alerts ##
 elif [[ "$WP_MULTISITE" == "true" ]] && [[ $SITE_DOMAIN != *.*.* ]] && [[ $SITE_DOMAIN != *www.* ]] && [[ "$SSL_EMAIL_ALERTS" != "true" ]]; then
@@ -245,7 +255,8 @@ elif [[ "$WP_MULTISITE" == "true" ]] && [[ $SITE_DOMAIN != *.*.* ]] && [[ $SITE_
     SITE_DOMAIN_TWO="${SITE_DOMAIN//$www./}"
     ## request certs for *.example.com and example.com (same result as above) ##
     ## wildcard domain should be contained within quotes ##
-    certbot certonly --noninteractive --agree-tos --expand --register-unsafely-without-email -d "${SITE_DOMAIN_ONE}" -d ${SITE_DOMAIN_TWO} --webroot -w /var/www/html/
+    certbot delete --cert-name ${SITE_TLD}
+    certbot certonly --noninteractive --agree-tos --cert-name ${SITE_TLD} -d "${SITE_DOMAIN_ONE}" -d ${SITE_DOMAIN_TWO} --register-unsafely-without-email --webroot -w /var/www/html/
 
 ## multisite (subdomains) + main site is a subdomain (www is irrelevant) + email alerts ##
 elif [[ "$WP_MULTISITE" == "true" ]] && [[ $SITE_DOMAIN == *.*.* ]] && [[ "$SSL_EMAIL_ALERTS" != "true" ]]; then
@@ -253,7 +264,8 @@ elif [[ "$WP_MULTISITE" == "true" ]] && [[ $SITE_DOMAIN == *.*.* ]] && [[ "$SSL_
     SITE_DOMAIN_TWO="${SITE_DOMAIN}"
     ## request certs for *.sub.example.com and sub.example.com ##
     ## wildcard domain should be contained within quotes ##
-    certbot certonly --noninteractive --agree-tos --expand --register-unsafely-without-email -d "${SITE_DOMAIN_ONE}" -d ${SITE_DOMAIN_TWO} --webroot -w /var/www/html/
+    certbot delete --cert-name ${SITE_TLD}
+    certbot certonly --noninteractive --agree-tos --cert-name ${SITE_TLD} -d "${SITE_DOMAIN_ONE}" -d ${SITE_DOMAIN_TWO} --register-unsafely-without-email --webroot -w /var/www/html/
 
 
 ## MULTISITE NETWORK (SUBDIRECTORIES) CERTS + EMAIL ALERTS ##
@@ -349,3 +361,5 @@ echo -e "\e[36mSSL certificates have been successfully generated...\e[0m"
 ## Ref: https://dev.to/nabbisen/let-s-encrypt-wildcard-certificate-with-certbot-plo
 ## Ref: https://community.letsencrypt.org/t/wildcard-certificate-does-not-work/79041
 ## Ref: https://letsencrypt.org/docs/rate-limits/
+## Ref: https://github.com/certbot/certbot/issues/2071
+## Ref: https://community.letsencrypt.org/t/how-to-prevent-creation-of-etc-letsencrypt-live-domain-tld-0001-when-removing-domains-from-a-domain-tld-multidomain-certificate/8135/14
