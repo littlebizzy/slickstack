@@ -76,12 +76,15 @@ echo -e "\e[36mInstalling (or renewing) free SSL certs from OpenSSL and Certbot.
 #### SS-Encrypt: Manually Delete Previous / Conflicting SSL Certificates ###########################
 ####################################################################################################
 
-## only delete first if server type or domain name has changed ... check with /var/www/meta/.profile type file? ##
-
-## delete OpenSSL certs + keys ##
-# rm /etc/ssl/*.crt
-# rm /etc/ssl/*.key
-## rm /etc/ssl/*.pem ## reuse existing DH Params + ignore Certbot (self-managed)
+## delete existing SSL certs (and keys) to avoid conflicts ##
+rm /etc/ssl/cert.pem ## Lets Encrypt
+rm /etc/ssl/chain.pem ## Lets Encrypt
+# rm /etc/ssl/dhparam.pem ## reuse existing DH Params (takes a long time to regenerate)
+rm /etc/ssl/fullchain.pem ## Lets Encrypt
+rm /etc/ssl/nginx.crt ## OpenSSL
+rm /etc/ssl/nginx.key ## OpenSSL
+rm /etc/ssl/nginx.pem ## OpenSSL
+rm /etc/ssl/privkey.pem ## Lets Encrypt
 
 ####################################################################################################
 #### SS-Encrypt: Generate Self-Signed OpenSSL Certificate ##########################################
@@ -326,3 +329,4 @@ echo -e "\e[36mSSL certificates have been successfully generated...\e[0m"
 ## Ref: http://nginx.org/en/docs/http/configuring_https_servers.html#certificate_with_several_names
 ## Ref: https://dev.to/nabbisen/let-s-encrypt-wildcard-certificate-with-certbot-plo
 ## Ref: https://community.letsencrypt.org/t/wildcard-certificate-does-not-work/79041
+## Ref: https://letsencrypt.org/docs/rate-limits/
