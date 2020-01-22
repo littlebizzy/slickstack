@@ -73,32 +73,23 @@ function ln {
 echo -e "\e[36mInstalling (or renewing) free SSL certs from OpenSSL and Certbot...\e[0m"
 
 ####################################################################################################
-#### SS-Encrypt: Manually Delete Previous / Conflicting SSL Certificates ###########################
+#### SS-Encrypt: Manually Delete Previous / Conflicting OpenSSL Certificates #######################
 ####################################################################################################
 
-## delete existing SSL certs (and keys) to avoid conflicts ##
-rm /etc/ssl/cert.pem ## Lets Encrypt symlink
-rm /etc/ssl/chain.pem ## Lets Encrypt symlink
-rm /etc/ssl/fullchain.pem ## Lets Encrypt symlink
-rm /etc/ssl/privkey.pem ## Lets Encrypt symlink
-rm /etc/ssl/nginx.crt ## OpenSSL
-rm /etc/ssl/nginx.key ## OpenSSL
-rm /etc/ssl/nginx.pem ## OpenSSL
-# rm /etc/ssl/dhparam.pem ## reuse existing DH Params (takes a long time to regenerate)
-rm /etc/letsencrypt/live/${SITE_DOMAIN}/cert.pem
-rm /etc/letsencrypt/live/${SITE_DOMAIN}/chain.pem
-rm /etc/letsencrypt/live/${SITE_DOMAIN}/fullchain.pem
-rm /etc/letsencrypt/live/${SITE_DOMAIN}/privkey.pem
+## delete existing OpenSSL certificates (and keys) ##
+rm /etc/ssl/nginx.crt
+rm /etc/ssl/nginx.key
+rm /etc/ssl/nginx.pem
 
 ####################################################################################################
-#### SS-Encrypt: Generate Self-Signed OpenSSL Certificate ##########################################
+#### SS-Encrypt: (Re)generate Self-Signed OpenSSL Certificate ######################################
 ####################################################################################################
 
-## hide error message (bug) in OpenSSL 1.1.1 (remove this later) ##
+## hide error message (bug) in OpenSSL 1.1.1 (remove this snippet later) ##
 touch /home/${SUDO_USER}/.rnd
 touch /home/${SFTP_USER}/.rnd
 
-## create self-signed OpenSSL certificate ##
+## generate self-signed OpenSSL certificate ##
 if [[ -n "$CSR_COUNTRY" ]] && [[ -n "$CSR_STATE" ]] && [[ -n "$CSR_CITY" ]] && [[ -n "$CSR_COMPANY" ]] && [[ -n "$CSR_DEPT" ]]; then 
     openssl req -new -x509 -nodes -days 3650 -newkey rsa:2048 -keyout /etc/ssl/nginx.key -out /etc/ssl/nginx.crt -subj "/C=${CSR_COUNTRY}/ST=${CSR_STATE}/L=${CSR_CITY}/O=${CSR_COMPANY}/OU=${CSR_DEPT}/CN=${SITE_DOMAIN}"
 else 
@@ -106,8 +97,13 @@ else
 fi
 
 ####################################################################################################
-#### SS-Encrypt: Restart Nginx (Prepare For Certbot Verification) ##################################
+#### SS-Encrypt: (Re)configure Nginx (Prepare For Certbot Verification) ############################
 ####################################################################################################
+
+## here we need to check if:
+# Lets Encrypt certs do not exist (or wrong based on current ss-config multisite/domain) then
+# revert Nginx config to OpenSSL now to allow for Certbot verify domain again
+# or if Lets Encrypt 
 
 ## restart Nginx ##
 /etc/init.d/nginx restart
@@ -132,6 +128,9 @@ fi
 #### SS-Encrypt: Generate DH Parameters (Used By Certbot Only) #####################################
 ####################################################################################################
 
+## delete existing DH Params certificate ##
+# rm /etc/ssl/dhparam.pem ## reuse existing DH Params (takes a long time to regenerate)
+
 if [[ "$SSL_TYPE" == "certbot" ]] && [[ ! -f "/etc/ssl/dhparam.pem" ]]; then 
     openssl dhparam -out /etc/ssl/dhparam.pem 2048
 fi
@@ -147,6 +146,20 @@ mkdir /var/www/html/.well-known/acme-challenge
 ## reset permissions (ensure that SFTP user can access if needed for e.g. Stripe, etc) ##
 chown -R $SFTP_USER:www-data /var/www/html/.well-known
 chmod 6775 /var/www/html/.well-known
+
+####################################################################################################
+#### SS-Encrypt: Manually Delete Previous / Conflicting Lets Encrypt Certificates ##################
+####################################################################################################
+
+## delete existing Lets Encrypt certificates (and keys) ##
+rm /etc/ssl/cert.pem ## symlink
+rm /etc/ssl/chain.pem ## symlink
+rm /etc/ssl/fullchain.pem ## symlink
+rm /etc/ssl/privkey.pem ## symlink
+rm /etc/letsencrypt/live/${SITE_DOMAIN}/cert.pem
+rm /etc/letsencrypt/live/${SITE_DOMAIN}/chain.pem
+rm /etc/letsencrypt/live/${SITE_DOMAIN}/fullchain.pem
+rm /etc/letsencrypt/live/${SITE_DOMAIN}/privkey.pem
 
 ####################################################################################################
 #### SS-Encrypt: Prepare Domain Variables + (Re)generate Cerbot SSL Certificate ####################
