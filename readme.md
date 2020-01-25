@@ -70,7 +70,7 @@ While there are [clear benefits](https://medium.com/capital-one-developers/bashi
 
 SlickStack [ss] works best on cloud servers with KVM virtualization that have at least 2GB RAM from [quality network providers](https://slickstack.io/hosting) such as DigitalOcean, Vultr, Hostwinds, and AWS Lightsail. The underlying LEMP stack configuration is meant primarily for high-traffic single-site WordPress installations, although support for [Multisite](https://codex.wordpress.org/Create_A_Network) installations is being planned. SlickStack [ss] supports WordPress, WooCommerce, bbPress, and BuddyPress "out of the box" with optimized settings that scale -- what this means is that you can upgrade your cloud server to a bigger or better instance, and run `ss-install` again, and most settings will (re)optimize themselves.
 
-**NOTE: SlickStack [ss] will never support installing multiple TLDs on a single server.**
+**NOTE: SlickStack [ss] will never support installing multiple TLDs on a single server. This is to ensure top security, stability, and performance, including technical SEO optimization. We will also never include any type of UI interface, to allow third party teams to integrate SlickStack into interfaces and management tools as they best see fit.**
 
 Currently, SlickStack [ss] is meant for a single origin server with a single `127.0.0.1` database, although remote databases should also work fine. Server "clustering" or "load balancing" has not been tested, and is not the goal here; complex enterprise-style configurations for WordPress are rarely needed (and can be expensive and difficult to manage), thus SlickStack [ss] aims to to provide a simple solution for the 99% of WordPress sites that don't need such complexity.
 
