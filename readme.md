@@ -132,9 +132,20 @@ After completing the installation steps above, your `/var/www/` directory should
     
 ...likewise, your `/var/www/html/` (WordPress) directory should look like this:    
     
-    /var/www/html/wp-admin/
+    /var/www/html/wp-admin/...
     /var/www/html/wp-content/
-    /var/www/html/wp-includes/
+    /var/www/html/wp-content/blacklist.txt
+    /var/www/html/wp-content/functions.php
+    /var/www/html/wp-content/index.php
+    /var/www/html/wp-content/languages/
+    /var/www/html/wp-content/mu-plugins/
+    /var/www/html/wp-content/object-cache.php
+    /var/www/html/wp-content/plugins/
+    /var/www/html/wp-content/temp/
+    /var/www/html/wp-content/themes/
+    /var/www/html/wp-content/upgrade/
+    /var/www/html/wp-content/uploads/
+    /var/www/html/wp-includes/...
     /var/www/html/wp-...
     
 ## MU (Must-Use) Plugins [[read more](https://slickstack.io/modules/mu-plugins)]
