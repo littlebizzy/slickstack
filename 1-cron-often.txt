@@ -7,13 +7,81 @@
 #### path: /var/www/1-cron-often ###################################################################
 #### destination: n/a (not a boilerplate) ##########################################################
 #### purpose: SlickStack cron job *often* (1/9) will run every 15 minutes ##########################
-#### module version: Ubuntu 18.04 ##################################################################
+#### module version: Ubuntu 18.04 LTS ##############################################################
 ####################################################################################################
 
 ## !!! DO NOT MODIFY SLICKSTACK CRONTAB OR CRON JOBS (ADD CUSTOM SCRIPTS TO SS-CUSTOM) ##
 
 ## include SlickStack configuration ##
 source /var/www/ss-config
+
+####################################################################################################
+#### SlickStack: Critical Bash Functions (Aliases) For This Script To Work #########################
+####################################################################################################
+
+## apt alias flags ##
+function apt {
+    export DEBIAN_FRONTEND=noninteractive
+    export DEBIAN_PRIORITY=critical
+    export PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'
+    command /usr/bin/apt -q -y -o Dpkg::Options::=--force-confold -o Dpkg::Options::=--force-confdef "$@"
+}
+
+## add-apt-repository alias flags ##
+function add-apt-repository {
+    export DEBIAN_FRONTEND=noninteractive
+    export DEBIAN_PRIORITY=critical
+    export PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'
+    command /usr/bin/add-apt-repository -y "$@"
+}
+
+## wget alias flags ##
+function wget {
+    command wget --no-check-certificate --no-cache --no-cookies --tries=3 --timeout=15 "$@"
+}
+
+## cp alias flags ##
+function cp {
+    command cp -R -f -d --no-preserve=mode,ownership "$@"
+}
+
+## mkdir alias flags ##
+function mkdir {
+    command mkdir -p "$@"
+}
+
+## unzip alias flags ##
+function unzip {
+    command unzip -o "$@"
+}
+
+## rm alias flags ##
+function rm {
+    command rm -R -f "$@"
+}
+
+## ln alias flags ##
+function ln {
+    command ln -s -f "$@"
+}
+
+####################################################################################################
+#### Cron Job (Often): Ensure SS-Check + SS-Dump Scripts Exist #####################################
+####################################################################################################
+
+if [ ! -f "/var/www/ss-check" ]; then 
+    ## delete temp files ##
+    rm /tmp/ss-check*
+    ## download latest versions ##
+    wget -O /tmp/ss-check http://mirrors.slickstack.io/ss-check.txt
+    ## copy files to their destinations ##
+    cp /tmp/ss-check /var/www/ss-check
+    ## reset permissions ##
+    chown root:root /var/www/ss-check
+    chmod 6770 /var/www/ss-check
+    ## delete temp files ##
+    rm /tmp/ss-check*
+fi
 
 ####################################################################################################
 #### SlickStack Cron Job: *Often* ##################################################################
@@ -33,4 +101,4 @@ fi
 source /var/www/ss-check
 
 ## delete lock files ##
-rm -R -f /tmp/1-cron-often*.lock*
+rm /tmp/1-cron-often*.lock*
