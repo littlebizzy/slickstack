@@ -70,9 +70,9 @@ function ln {
 ####################################################################################################
 
 ## many sensitive data items like passwords are often saved indefinitely in Bash history ##
-## this simple command will erase the Bash history file contents for extra safety ##
+## this command will erase the Bash history file contents for better security ##
 
-## NULL shell history for all Ubuntu users ##
+## NULL shell history for Ubuntu users ##
 cat /dev/null > /root/.bash_history
 cat /dev/null > /home/${SUDO_USER}/.bash_history
 cat /dev/null > /home/${SFTP_USER}/.bash_history
@@ -98,7 +98,10 @@ mysql --user=root --host="$DB_HOST" --database="$DB_NAME" --protocol=tcp --port=
 #### SS-Clean: Delete Unsafe + Unnecessary WordPress Core Files ####################################
 ####################################################################################################
 
-## delete various WordPress Core files ##
+## partly for backwards compatibility (but also stubborness) WP Core retains these files ##
+## none are critical yet they greatly hurt security thus SlickStack deletes them ##
+
+## delete exploitable WordPress Core files ##
 rm /var/www/html/wp-links-opml*.php*
 rm /var/www/html/wp-mail*.php*
 rm /var/www/html/wp-trackback*.php*
@@ -144,7 +147,7 @@ rm /var/log/monit.log*
 rm /etc/nginx/cache*
 
 ####################################################################################################
-#### SS-Clean: Cleanup Files Under /var/www/ #######################################################
+#### SS-Clean: Cleanup SlickStack Core Files Under /var/www/ #######################################
 ####################################################################################################
 
 ## delete SlickStack leftovers ##
@@ -160,15 +163,18 @@ rm /home/${SUDO_USER}/wp-cli.yml
 # rm /var/www/html/.wp-cli
 # rm /var/www/html/wp-cli
 
-## delete slickstack junk files ##
+## delete SlickStack junk files ##
 find /var/www/ -name "*.save*" -type f -delete
+rm /var/www/wp.sql.*
 
 ####################################################################################################
-#### SS-Clean: cleanup Files Under /var/www/html/ ##################################################
+#### SS-Clean: cleanup Various Files Throughout Public Web Root /var/www/html/ #####################
 ####################################################################################################
+
+## these powerful commands delete several unsafe file types throughout the html web root ##
+## the file types will be permanently deleted regardless of where they are found ##
 
 ## delete known malware files ##
-# /var/www/html/http_ ## wget leftovers?
 # find /var/www/html/ -name "script.php" -type f -delete
 # find /var/www/html/ -name "licensed.php" -type f -delete
 # find /var/www/html/ -name "apikey*.zip" -type f -delete
@@ -279,9 +285,20 @@ find /var/www/html/ -name "adminer*.version*" -type f -delete ## Adminer plugin 
 find /var/www/html/ -name "php_errorlog*" -type f -delete ## Adminer plugin config
 
 ## delete nginx junk files ##
-rm /var/www/html/index.nginx-debian*.html
 find /var/www/html/ -name "nginx.conf" -type f -delete
 # find /var/www/html/ -name "*.conf" -type f -delete
+
+## delete suspicious and non-critical files ##
+# find /var/www/html/ -name "default_library_puvox.php" -type f -delete ## not malware (by Puvox.Software)
+
+####################################################################################################
+#### SS-Clean: cleanup Various Files Directly Under /var/www/html/ #################################
+####################################################################################################
+
+# rm /var/www/html/http_* ## improper wget leftovers?
+
+## delete Nginx junk files ##
+rm /var/www/html/index.nginx-debian*.html*
 
 ## delete obvious database access points ##
 rm /var/www/html/adminer
@@ -350,9 +367,6 @@ rm /var/www/html/wordfence-waf* ## ss conflicts, bloated, creates instability (W
 rm /var/www/html/yandex*.html  ## junk domain verification files
 rm /var/www/html/wp-snapshots* ## unsafe archives (Duplicator)
 rm /var/www/html/wps-fbre-logs* ## unknown
-
-## delete suspicious and non-critical files ##
-# find /var/www/html/ -name "default_library_puvox.php" -type f -delete ## not malware (by Puvox.Software)
 
 ####################################################################################################
 #### SS-Clean: Cleanup Files Under /var/www/html/wp-content/ #######################################
