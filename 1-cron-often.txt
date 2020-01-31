@@ -69,7 +69,9 @@ function ln {
 #### Cron Job (Often): Ensure SS-Check + SS-Worker (Bash Scripts) Exist ############################
 ####################################################################################################
 
-if [ ! -f "/var/www/ss-check" ]; then 
+FILE_SS_CHECK="/var/www/ss-check"
+STRING_SS_CHECK="SS_CHECK_EOF"
+if [[ ! -f "$FILE_SS_CHECK" ]] || [[ -z $(grep -q "$STRING_SS_CHECK" "$FILE_SS_CHECK") ]]; then
     ## delete temp files ##
     rm /tmp/ss-check*
     ## download latest versions ##
@@ -102,3 +104,13 @@ source /var/www/ss-check
 
 ## delete lock files ##
 rm /tmp/1-cron-often*.lock*
+
+####################################################################################################
+#### SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ###############
+####################################################################################################
+
+## Ref: https://stackoverflow.com/questions/22861580/bash-script-check-if-a-file-contains-a-specific-line
+## Ref: https://stackoverflow.com/questions/4749330/how-to-test-if-string-exists-in-file-with-bash/14201583
+## Ref: https://stackoverflow.com/questions/11287861/how-to-check-if-a-file-contains-a-specific-string-using-bash
+## Ref: https://stackoverflow.com/questions/4749330/how-to-test-if-string-exists-in-file-with-bash-
+## Ref: https://stackoverflow.com/questions/42377739/while-file-doesnt-contain-string-bash
