@@ -10,7 +10,9 @@ SlickStack is a free LEMP stack automation script written in Bash designed to en
 | :--------------: | :------: | :-----: | :--------------: | :-------------: | :-------------: |
 | [**A**](https://developers.google.com/speed/pagespeed/insights/?url=https%3A%2F%2Fslickstack.io%2F) | [**A**](https://gtmetrix.com/reports/slickstack.io/zpLMZ1eb) | [**A**](https://tools.pingdom.com/#5aeba9dea8000000) | [**A**](https://securityheaders.com/?q=https%3A%2F%2Fslickstack.io%2F&followRedirects=on) | [**A**](https://www.ssllabs.com/ssltest/analyze.html?d=slickstack.io&latest) | [**A**](https://www.webpagetest.org/result/190920_68_a4a541db9847ce601ef264b41df9d0f3/) |
 
-* **NEW!** SlickStack now has self-healing functions in the root Crontab and `1-cron-often` and `2-cron-regular` to ensure that Core Cron Jobs will be reinstalled fresh in case they are missing or damaged. This self-healing function also ensures that the critical Core Bash Scripts `ss-check` and `ss-worker` also exist and are intact every single day! NOTE: If you have disabled certain Core Bash Scripts schedules in your `ss-config` file, this process will not effect your schedules.
+* **NEW!** SlickStack now has self-healing functions in the root Crontab and `1-cron-often` and `2-cron-regular` to ensure that Core Cron Jobs will be reinstalled fresh in case they are missing or damaged. This self-healing function also ensures that the critical Core Bash Scripts `ss-check` and `ss-worker` also exist and are intact every single day! 
+
+NOTE: The self-healing function will respect any custom Cron Job schedules found in your `ss-config` file...
 
 * **NEW!** Running `ss-update` will now automagically update your `ss-config` to latest template... any variables that are missing or undefined will simply be setup using the default (recommended) values for those variables...
 
