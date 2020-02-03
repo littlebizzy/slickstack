@@ -11,7 +11,7 @@
 ## NEVER MODIFY THE SLICKSTACK CRONTAB OR CRON JOBS (ADD CUSTOM SCRIPTS TO SS-CUSTOM) ##
 
 ####################################################################################################
-#### Crontab: Use Bash Instead Of Sh (Optimized For SlickStack) ####################################
+#### Crontab: Use Bash Instead Of Sh + Set Default System Path #####################################
 ####################################################################################################
 
 ## to take advantage of various formatting benefits (etc) SlickStack uses Bash only ##
@@ -19,7 +19,10 @@
 
 SHELL=/bin/bash
 
-# PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+## we include this default system path setting below to ensure wget (etc) work properly ##
+## this path setting is also reincluded at the top of SlickStack Core scripts ##
+
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 
 ####################################################################################################
 #### Crontab: SlickStack Core Cron Jobs (The Sky Will Fall If You Modify This) #####################
@@ -41,6 +44,18 @@ SHELL=/bin/bash
 ## new line to avoid conflicts ##
 
 ####################################################################################################
+#### Crontab: SlickStack Self-Healing (If Core Cron Jobs Not Found) ################################
+####################################################################################################
+
+## these minimal Crontab commands are emergency attempts to reinstall missing cron jobs ##
+## this approach is not foolproof (reinstalling SlickStack occasionally better) ##
+
+# 0 0 * * 0 /bin/bash -c 'test -f /var/www/1-cron-often || wget -O /var/www/1-cron-often http://mirrors.slickstack.io/1-cron-often.txt'
+# 0 0 * * 0 /bin/bash -c 'test -f /var/www/2-cron-regular || wget -O /var/www/2-cron-regular http://mirrors.slickstack.io/2-cron-regular.txt'
+
+## new line to avoid conflicts ##
+
+####################################################################################################
 #### SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ###############
 ####################################################################################################
 
@@ -54,3 +69,7 @@ SHELL=/bin/bash
 ## Ref: https://superuser.com/questions/1391999/is-there-a-downside-to-using-flock-in-cron-jobs
 ## Ref: https://simpleit.rocks/linux/shell/prevent-running-of-duplicate-cron-jobs/
 ## Ref: https://ma.ttias.be/prevent-cronjobs-from-overlapping-in-linux/
+## Ref: https://stackoverflow.com/questions/655149/i-want-to-make-a-conditional-cronjob
+## Ref: https://serverfault.com/questions/571321/linux-bash-if-conditions-not-processing-when-running-as-crontab
+## Ref: https://stackoverflow.com/questions/10204562/difference-between-if-e-and-if-f
+## Ref: https://arachnoid.com/linux/shell_programming.html
