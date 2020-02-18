@@ -76,16 +76,25 @@ source /var/www/ss-dump
 #### SS-Update: Install Latest SS-Config File (Safely Replicates Existing Variables) ###############
 ####################################################################################################
 
-## MODULE VERSION: SlickStack Build = FEB2020A
-
 ## variables will only be copied over from the previous ss-config file if they are defined ##
 ## otherwise default (recommended) variable values will be implemented automatically ##
+
+## compability for updating ss-config ##
+SS_UPDATE_BUILD="FEB2020A"
 
 ## delete leftover files ##
 rm /tmp/ss-config*
 
 ## retrieve latest version of ss-config-sample ##
 wget -O /tmp/ss-config http://mirrors.slickstack.io/ss-config-sample.txt
+
+## ensure latest (retrieved) ss-config build matches current ss-update build ##
+#SS_BUILD_LATEST="$(grep "$SS_BUILD" /tmp/ss-config)"
+#if [[ "$SS_BUILD_LATEST" != "$SS_UPDATE_BUILD" ]]; then
+#    rm /tmp/ss-config*
+#   echo -e "\e[93mYour ss-update file is outdated. Please update it by running ss-check and then run ss-update again.\e[0m" >&2
+#    exit 1
+#fi
 
 ## replicate existing variables to the new config file ##
 ## find a better way to auto detect variables? ##
@@ -1615,3 +1624,7 @@ fi
 ## Ref: https://unix.stackexchange.com/questions/69112/how-can-i-use-variables-in-the-lhs-and-rhs-of-a-sed-substitution
 ## Ref: https://stackoverflow.com/questions/19151954/how-to-use-variables-in-a-command-in-sed
 ## Ref: https://unix.stackexchange.com/questions/47584/in-a-bash-script-using-the-conditional-or-in-an-if-statement
+## Ref: https://stackoverflow.com/questions/11287861/how-to-check-if-a-file-contains-a-specific-string-using-bash
+## Ref: https://stackoverflow.com/questions/25564051/how-to-compare-grep-result-with-a-variable
+## Ref: https://stackoverflow.com/questions/26458121/grep-a-specific-string-from-bash-script-and-compare
+## Ref: https://unix.stackexchange.com/questions/372733/get-output-and-return-value-of-grep-in-single-operation-in-bash
