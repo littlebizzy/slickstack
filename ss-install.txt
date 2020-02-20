@@ -77,7 +77,7 @@ if [[ "${UBUNTU_VERSION}" != "18.04" ]]; then
 fi
 
 ## ensure ss-config build version matches ss-install build version ##
-if [[ "$SS_BUILD" != "FEB2020A" ]]; then 
+if [[ "$SS_BUILD" != "FEB2020B" ]]; then 
     echo -e "\e[93mYour ss-config file is outdated. Please update it by running ss-update and then run ss-install again.\e[0m" >&2
     exit 1
 fi
@@ -1167,12 +1167,59 @@ rm /tmp/my.cnf
 ## install custom my.cnf config file ##
 wget -O /tmp/my.cnf http://mirrors.slickstack.io/mysql/my-cnf.txt
 
-## set MySQL mode ##
+
+
+#### MySQL Settings ####
+
+## SQL mode ##
 if [[ -z "$SQL_MODE" ]]; then 
     sed -i "s/@SQL_MODE/STRICT_TRANS_TABLES,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION/g" /tmp/my.cnf
 else 
     sed -i "s/@SQL_MODE/${SQL_MODE}/g" /tmp/my.cnf
 fi
+
+## max allowed packet ##
+if [[ -z "$SQL_MAX_ALLOWED_PACKET" ]]; then 
+    sed -i "s/@SQL_MAX_ALLOWED_PACKET/256M/g" /tmp/my.cnf
+else 
+    sed -i "s/@SQL_MAX_ALLOWED_PACKET/${SQL_MAX_ALLOWED_PACKET}/g" /tmp/my.cnf
+fi
+
+## connect timeout ##
+if [[ -z "$SQL_CONNECT_TIMEOUT" ]]; then 
+    sed -i "s/@SQL_CONNECT_TIMEOUT/30/g" /tmp/my.cnf
+else 
+    sed -i "s/@SQL_CONNECT_TIMEOUT/${SQL_CONNECT_TIMEOUT}/g" /tmp/my.cnf
+fi
+
+## wait timeout ##
+if [[ -z "$SQL_WAIT_TIMEOUT" ]]; then 
+    sed -i "s/@SQL_WAIT_TIMEOUT/3600/g" /tmp/my.cnf
+else 
+    sed -i "s/@SQL_WAIT_TIMEOUT/${SQL_WAIT_TIMEOUT}/g" /tmp/my.cnf
+fi
+
+## interactive timeout ##
+if [[ -z "$SQL_INTERACTIVE_TIMEOUT" ]]; then 
+    sed -i "s/@SQL_INTERACTIVE_TIMEOUT/43200/g" /tmp/my.cnf
+else 
+    sed -i "s/@SQL_INTERACTIVE_TIMEOUT/${SQL_INTERACTIVE_TIMEOUT}/g" /tmp/my.cnf
+fi
+
+## net read timeout ##
+if [[ -z "$SQL_NET_READ_TIMEOUT" ]]; then 
+    sed -i "s/@SQL_NET_READ_TIMEOUT/30/g" /tmp/my.cnf
+else 
+    sed -i "s/@SQL_NET_READ_TIMEOUT/${SQL_NET_READ_TIMEOUT}/g" /tmp/my.cnf
+fi
+
+## net write timeout ##
+if [[ -z "$SQL_NET_WRITE_TIMEOUT" ]]; then 
+    sed -i "s/@SQL_NET_WRITE_TIMEOUT/60/g" /tmp/my.cnf
+else 
+    sed -i "s/@SQL_NET_WRITE_TIMEOUT/${SQL_NET_WRITE_TIMEOUT}/g" /tmp/my.cnf
+fi
+
 
 ## set InnoDB buffer pool size (supports "auto" or manual via ss-config) ##
 PERCENT_RAM_MB=$(free -m | awk 'NR==2{printf "%d", $2*0.50 }')
