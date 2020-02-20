@@ -20,7 +20,7 @@
 ## rebuild ss-config if outdated errors: http://mirrors.slickstack.io/ss-config-sample.txt ##
 ## copy and paste entire ss-config boilerplate before modifying variables ##
 
-SS_BUILD="FEB2020A"
+SS_BUILD="FEB2020B"
 
 ####################################################################################################
 #### SS-Config: Ubuntu Root + Sudo User Settings (Console + SSH Access) ############################
@@ -303,7 +303,7 @@ FCGI_CACHE_TMPFS="false"
 # FCGI_CACHE_QUERIES_SEARCH="true"
 
 ####################################################################################################
-#### MySQL: SQL Mode + InnoDB Settings (Applies To Localhost Database Only) ########################
+#### SS-Config: MySQL + InnoDB Settings (Applies To Localhost Database Only) #######################
 ####################################################################################################
 
 ## MODULE VERSION: MySQL 5.7.x
@@ -312,26 +312,32 @@ FCGI_CACHE_TMPFS="false"
 ## probably the SQL_MODE is the only setting that you might consider changing ##
 
 ## SQL_MODE = [*infinite options*] the preset mode is highly recommended ##
-## INNODB_BUFFER_POOL_SIZE = [auto|256M|512M|1GB|2GB|4GB|etc] ~50-70% of total RAM ##
-## INNODB_LOG_FILE_SIZE = [256M|512M|1GB|etc] bigger is better but slows crash recovery ##
-## INNODB_LOG_FILES_IN_GROUP =
-## INNODB_FLUSH_LOG_AT_TRX_COMMIT = [true|false] be a good boy and leave it on ##
-## INNODB_FLUSH_METHOD = most servers should use O_DIRECT ##
+## SQL_MAX_ALLOWED_PACKET = [4MB|256M|etc] a high number helps avoid staging/backup issues ##
+## SQL_CONNECT_TIMEOUT = [15|30|60|etc] time allowed to establish a connection ##
+## SQL_WAIT_TIMEOUT = [30|60|3600|28800|etc] usually this can be a fairly small number ##
+## SQL_INTERACTIVE_TIMEOUT = [1800|3600|28800|43200|etc] larger to support applications etc ##
+## SQL_NET_READ_TIMEOUT = [30|60|etc] usually this should be fine at 30 seconds ##
+## SQL_NET_WRITE_TIMEOUT = [30|60|etc] usually this should be fine at 60 seconds ##
 
 SQL_MODE="STRICT_TRANS_TABLES,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION"
+SQL_MAX_ALLOWED_PACKET="256M"
+SQL_CONNECT_TIMEOUT="30"
+SQL_WAIT_TIMEOUT="3600"
+SQL_INTERACTIVE_TIMEOUT="43200"
+SQL_NET_READ_TIMEOUT="30"
+SQL_NET_WRITE_TIMEOUT="60"
+
+## INNODB_BUFFER_POOL_SIZE = [auto|256M|512M|1GB|2GB|4GB|etc] ~50-70% of total RAM ##
+## INNODB_LOG_FILE_SIZE = [256M|512M|1GB|etc] bigger is better but slows crash recovery ##
+## INNODB_LOG_FILES_IN_GROUP = [1|2|etc] debated but 1 is usually best ##
+## INNODB_FLUSH_LOG_AT_TRX_COMMIT = [true|false] be a good boy and leave it on ##
+## INNODB_FLUSH_METHOD = most servers should use O_DIRECT flushing ##
+
 INNODB_BUFFER_POOL_SIZE="auto"
 INNODB_LOG_FILE_SIZE="256M"
 INNODB_LOG_FILES_IN_GROUP="1"
 INNODB_FLUSH_LOG_AT_TRX_COMMIT="true"
 INNODB_FLUSH_METHOD="O_DIRECT" ## MySQL 8.0 = O_DIRECT_NO_FSYNC
-
-MAX_ALLOWED_PACKET="256M"
-
-# CONNECT_TIMEOUT
-# WAIT_TIMEOUT
-# INTERACTIVE_TIMEOUT
-# NET_READ_TIMEOUT
-# NET_WRITE_TIMEOUT
 
 ####################################################################################################
 #### PHP-FPM: General PHP Settings (php.ini) #######################################################
