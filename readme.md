@@ -10,6 +10,8 @@ SlickStack is a free LEMP stack automation script written in Bash designed to en
 | :--------------: | :------: | :-----: | :--------------: | :-------------: | :-------------: |
 | [**A**](https://developers.google.com/speed/pagespeed/insights/?url=https%3A%2F%2Fslickstack.io%2F) | [**A**](https://gtmetrix.com/reports/slickstack.io/zpLMZ1eb) | [**A**](https://tools.pingdom.com/#5aeba9dea8000000) | [**A**](https://securityheaders.com/?q=https%3A%2F%2Fslickstack.io%2F&followRedirects=on) | [**A**](https://www.ssllabs.com/ssltest/analyze.html?d=slickstack.io&latest) | [**A**](https://www.webpagetest.org/result/190920_68_a4a541db9847ce601ef264b41df9d0f3/) |
 
+* **NEW!** To avoid potential conflicts we've added a `SS_MU_PLUGINS` variable that should be set to either `default` or `custom` in order to activate the custom list of MU plugins that you can edit in your `ss-config` file...
+
 * **NEW!** `ss-update` now performs a "safety" check before running to ensure that it is compatible with the latest version of `ss-config` in order to avoid overwriting the current `ss-config` version with an outdated boilerplate...
 
 * **NEW!** SlickStack now supports fully customizing the MU (Must-Use) plugins that are installed. This can be done easily by defining the download link and desired directory name of each MU plugin in the `ss-config` advanced settings (in case these variables are missing, SlickStack will default to the LittleBizzy plugins). Keep in mind that the Autoloader, Object Cache, Custom Functions, and XXX Notices plugins are required and cannot be disabled at this time.
