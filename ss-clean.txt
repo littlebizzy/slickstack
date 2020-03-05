@@ -10,6 +10,7 @@
 #### module version: Ubuntu 18.04 LTS ##############################################################
 ####################################################################################################
 
+## CERTAIN WORDPRESS PLUGINS WILL BE DELETED: https://slickstack.io/faq/blacklisted-plugins ##
 ## SS-CLEAN DOES NOT PERFORM ANY MALWARE FILE SCANNING (PLEASE USE SS-SCAN INSTEAD) ##
 
 ## include SlickStack configuration ##
@@ -78,14 +79,14 @@ cat /dev/null > /home/${SUDO_USER}/.bash_history
 cat /dev/null > /home/${SFTP_USER}/.bash_history
 
 ####################################################################################################
-#### SS-Clean: Delete Throwaway Theme Used During SlickStack Installation (SS-Install) #############
+#### SS-Clean: Delete SlickStack Files No Longer Needed ############################################
 ####################################################################################################
 
 ## delete throwaway theme ##
 rm /var/www/html/wp-content/themes/throwaway*
 
-## no longer needed MU plugins ##
-rm /var/www/html/wp-content/mu-plugins/index-autoload*
+## no longer required MU plugins ##
+rm /var/www/html/wp-content/mu-plugins/index-autoload* ## included in WP 5.3
 
 ####################################################################################################
 #### SS-Clean: Delete Junk Tables From MySQL Database ##############################################
@@ -94,8 +95,9 @@ rm /var/www/html/wp-content/mu-plugins/index-autoload*
 ## prepare MySQL root password (suppresses MySQL security warnings) ##
 export MYSQL_PWD=$DB_PASSWORD_ROOT
 
-## delete wp_links table (virtually deprecated) ##
-mysql --user=root --host="$DB_HOST" --database="$DB_NAME" --protocol=tcp --port=3306 --force --execute="DROP TABLE ${DB_PREFIX}links;"
+## delete various junk tables from MySQL ##
+mysql --user=root --host="$DB_HOST" --database="$DB_NAME" --protocol=tcp --port=3306 --force --execute="DROP TABLE ${DB_PREFIX}links;" &> /dev/null ## wp_links virtually deprecated
+# more soon (cache plugins etc)
 
 ####################################################################################################
 #### SS-Clean: Delete Unsafe + Unnecessary WordPress Core Files ####################################
@@ -104,12 +106,12 @@ mysql --user=root --host="$DB_HOST" --database="$DB_NAME" --protocol=tcp --port=
 ## partly for backwards compatibility (but also stubborness) WP Core retains these files ##
 ## none are critical yet they greatly hurt security thus SlickStack deletes them ##
 
-## delete exploitable WordPress Core files ##
+## delete old + exploitable WordPress Core files ##
 rm /var/www/html/wp-links-opml*.php*
 rm /var/www/html/wp-mail*.php*
 rm /var/www/html/wp-trackback*.php*
 rm /var/www/html/xmlrpc*.php*
-# rm /wp-admin/install.php*
+# rm /wp-admin/install.php* ## if not virgin install anymore
 
 ####################################################################################################
 #### SS-Clean: Delete Any PHP Error Handling Hacks In WordPress Plugins + Themes ###################
@@ -118,6 +120,7 @@ rm /var/www/html/xmlrpc*.php*
 ## an unfortunate feature of PHP is that scripts can override WP or server-level settings ##
 ## this set of commands safely removes any PHP error handling hacks from scripts ##
 
+## replace this with WP Admin warning message if files found ##
 # find /var/www/html/wp-content/mu-plugins -type f -name "*.php" -exec sed -i '/ini_set/d' {} \;
 # find /var/www/html/wp-content/plugins -type f -name "*.php" -exec sed -i '/ini_set/d' {} \;
 # find /var/www/html/wp-content/themes -type f -name "*.php" -exec sed -i '/ini_set/d' {} \;
@@ -486,12 +489,55 @@ rm /var/www/html/wp-content/mu-plugins/SupportCenterMUAutoloader.php* ## Elegant
 #### cleanup /var/www/html/wp-content/plugins/ #####################################################
 ####################################################################################################
 
+## even if you disable the Plugin Blacklist certain problematic plugins are still deleted ##
+## this is to ensure stability of SlickStack and to establish some best practices ##
+
 ## cleanup file types ##
 find /var/www/html/wp-content/plugins/ -name "*.gz" -type f -delete
 find /var/www/html/wp-content/plugins/ -name "*.tar" -type f -delete
 find /var/www/html/wp-content/plugins/ -name "*.zip" -type f -delete
 
-## delete plugins for various reasons ##
+## DELETE VARIOUS CONFLICTING PLUGINS ##
+
+## delete junk WP Core plugins ##
+rm /var/www/html/wp-content/plugins/hello.php* ## pointless
+
+## delete Apache/LiteSpeed plugins ##
+rm /var/www/html/wp-content/plugins/askapache-debug-viewer* ## ss conflicts
+rm /var/www/html/wp-content/plugins/htaccess* ## ss conflicts (apache)
+rm /var/www/html/wp-content/plugins/htaccess-login-block* ## ss conflicts (apache)
+rm /var/www/html/wp-content/plugins/htaccess-site-access-control* ## ss conflicts (apache)
+rm /var/www/html/wp-content/plugins/litespeed-cache* ## ss conflicts
+
+## delete backup plugins ##
+rm /var/www/html/wp-content/plugins/backup ## unsafe archives, resource intensive
+rm /var/www/html/wp-content/plugins/backup-scheduler* ## unsafe archives, resource intensive
+rm /var/www/html/wp-content/plugins/backwpup* ## ss conflicts, resource intensive, unsafe archives
+rm /var/www/html/wp-content/plugins/my-wp-backup* ## by MyThemeShop
+rm /var/www/html/wp-content/plugins/my-wp-backup-pro-master* ## by MyThemeShop
+
+## delete cache plugins ##
+rm /var/www/html/wp-content/plugins/autoptimize* ## ss conflicts
+
+## delete cryptocurrency miners ##
+rm /var/www/html/wp-content/plugins/bitcoin-plus-miner* ## cryptomining
+rm /var/www/html/wp-content/plugins/jsecoin* ## cryptomining
+
+## delete security / anti-brute force plugins ##
+rm /var/www/html/wp-content/plugins/all-in-one-wp-security-and-firewall*
+rm /var/www/html/wp-content/plugins/bad-behavior* ## ss conflicts, bloated
+rm /var/www/html/wp-content/plugins/better-wp-security* ## ss conflicts, bloated
+rm /var/www/html/wp-content/plugins/hide_my_wp* ## ss conflicts, breaks firewalls
+rm /var/www/html/wp-content/plugins/login-lockdown* ## excessive logging
+
+## delete vendor-specific plugins ##
+rm /var/www/html/wp-content/plugins/dreamhost-panel-login* ## vendor-specific
+rm /var/www/html/wp-content/plugins/dreamobjects* ## vendor-specific
+
+
+
+
+## delete plugins for various reasons (replace this with categories for better understanding) ##
 rm /var/www/html/wp-content/plugins/404s/ ## excessive logging
 rm /var/www/html/wp-content/plugins/404-error-monitor* ## excessive logging, not maintained
 rm /var/www/html/wp-content/plugins/404-notifier* ## excessive logging, not maintained
@@ -504,19 +550,10 @@ rm /var/www/html/wp-content/plugins/adminer* ## serious errors, creates instabil
 rm /var/www/html/wp-content/plugins/ajax-load-more* ## resource intensive (by Darren Cooney)
 rm /var/www/html/wp-content/plugins/ajax-thumbnail-rebuild* ## database thrashing
 # rm /var/www/html/wp-content/plugins/all-in-one-wp-migration* ## temporary delete old versions (XSS exploit)
-rm /var/www/html/wp-content/plugins/all-in-one-wp-security-and-firewall*
 rm /var/www/html/wp-content/plugins/allow-php-in-posts-and-pages* ## php hacks
 rm /var/www/html/wp-content/plugins/apikey ## malware
 # rm /var/www/html/wp-content/plugins/ari-adminer* ## better to delete manually to remove database data
-rm /var/www/html/wp-content/plugins/askapache-debug-viewer*
 rm /var/www/html/wp-content/plugins/autologin-links* ## exploitable
-rm /var/www/html/wp-content/plugins/autoptimize* ## ss conflicts
-rm /var/www/html/wp-content/plugins/backup ## unsafe archives, resource intensive
-rm /var/www/html/wp-content/plugins/backup-scheduler* ## unsafe archives, resource intensive
-rm /var/www/html/wp-content/plugins/backwpup* ## ss conflicts, resource intensive, unsafe archives
-rm /var/www/html/wp-content/plugins/bad-behavior* ## ss conflicts, bloated
-rm /var/www/html/wp-content/plugins/better-wp-security* ## ss conflicts, bloated
-rm /var/www/html/wp-content/plugins/bitcoin-plus-miner* ## cryptomining
 rm /var/www/html/wp-content/plugins/blogvault* ## ss conflicts, resource intensive
 rm /var/www/html/wp-content/plugins/BoosterPage ## deprecated, exploitable (Smart Marketer)
 rm /var/www/html/wp-content/plugins/broken-link-checker* ## resource intensive, not maintained
@@ -531,8 +568,6 @@ rm /var/www/html/wp-content/plugins/custom-sidebars* ## exploitable, errors/conf
 rm /var/www/html/wp-content/plugins/disable-rss ## deprecated
 rm /var/www/html/wp-content/plugins/display-widgets ## malware/spyware
 rm /var/www/html/wp-content/plugins/divi-booster* ## serious errors, creates instability
-rm /var/www/html/wp-content/plugins/dreamhost-panel-login* ## vendor specific
-rm /var/www/html/wp-content/plugins/dreamobjects* ## vendor specific
 rm /var/www/html/wp-content/plugins/duplicate-page* ## exploitable, ss conflicts (Gutenberg), better options exist
 rm /var/www/html/wp-content/plugins/duplicator* ## ss conflicts, resource intensive, unsafe local archives
 rm /var/www/html/wp-content/plugins/dynamic-related-posts*
@@ -556,11 +591,6 @@ rm /var/www/html/wp-content/plugins/google-analyticator* ## history of poor code
 rm /var/www/html/wp-content/plugins/google-analytics-dashboard-for-wp* ## spamware, bloated, creates instability
 rm /var/www/html/wp-content/plugins/googleanalytics ## malware/spyware
 rm /var/www/html/wp-content/plugins/heartbeat-control* ## ss conflicts
-rm /var/www/html/wp-content/plugins/hello.php* ## pointless
-rm /var/www/html/wp-content/plugins/hide_my_wp* ## ss conflicts, breaks firewalls
-rm /var/www/html/wp-content/plugins/htaccess* ## ss conflicts (apache)
-rm /var/www/html/wp-content/plugins/htaccess-login-block* ## ss conflicts (apache)
-rm /var/www/html/wp-content/plugins/htaccess-site-access-control* ## ss conflicts (apache)
 rm /var/www/html/wp-content/plugins/hummingbird-performance* ## ss conflicts
 rm /var/www/html/wp-content/plugins/hyperdb* ## ss conflicts, not maintained
 rm /var/www/html/wp-content/plugins/increase-upload-file-size-maximum-execution-time-limit* ## ss conflicts
@@ -572,12 +602,9 @@ rm /var/www/html/wp-content/plugins/jetpack* ## bloated, ss conflicts
 rm /var/www/html/wp-content/plugins/jm-live-blog* ## serious errors, database thrashing, not maintained
 rm /var/www/html/wp-content/plugins/jonradio-multiple-themes* ## creates instability
 # rm /var/www/html/wp-content/plugins/js_composer_theme ## modified (nulled?) version of WP Bakery
-rm /var/www/html/wp-content/plugins/jsecoin ## cryptomining
 rm /var/www/html/wp-content/plugins/last-modified-timestamp* ## ss conflicts
 # rm /var/www/html/wp-content/plugins/leadpages ## potential creates instability
 rm /var/www/html/wp-content/plugins/linkman* ## deprecated, database thrashing
-rm /var/www/html/wp-content/plugins/litespeed-cache* ## ss conflicts
-rm /var/www/html/wp-content/plugins/login-lockdown* ## excessive logging
 rm /var/www/html/wp-content/plugins/mailchimp
 rm /var/www/html/wp-content/plugins/mailchimp-forms-by-mailmunch* ## malware/spyware
 rm /var/www/html/wp-content/plugins/maintenance-mode ## ss conflicts
@@ -588,8 +615,6 @@ rm /var/www/html/wp-content/plugins/manual-image-crop*
 rm /var/www/html/wp-content/plugins/miwoftp* ## exploitable, not maintained
 rm /var/www/html/wp-content/plugins/mobius-conversion-tracker* ## deprecated (by Mobius Media)
 rm /var/www/html/wp-content/plugins/my-custom-css ## serious errors, poor coding (by Esther Tyler)
-rm /var/www/html/wp-content/plugins/my-wp-backup* ## by MyThemeShop
-rm /var/www/html/wp-content/plugins/my-wp-backup-pro-master* ## by MyThemeShop
 rm /var/www/html/wp-content/plugins/myrp* ## database thrashing
 rm /var/www/html/wp-content/plugins/mythemeshop-connect* ## ransomware (by MyThemeShop)
 rm /var/www/html/wp-content/plugins/nofollow/ ## serious errors, pointless
@@ -822,3 +847,4 @@ rm /var/www/html/wp-content/uploads/cache* ## improper cache path
 ## Ref: https://superuser.com/questions/428493/how-can-i-do-a-recursive-find-and-replace-from-the-command-line
 ## Ref: https://unix.stackexchange.com/questions/324118/replace-string-in-multiple-files-using-find-and-sed
 ## Ref: https://unix.stackexchange.com/questions/474505/how-to-use-sed-on-all-matching-files
+## Ref: https://wordpress.org/plugins/old-core-files/
