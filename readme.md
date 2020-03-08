@@ -2,7 +2,7 @@
 
 SlickStack is a free LEMP stack automation script written in Bash designed to enhance and simplify WordPress provisioning, performance, and security.
 
-⮕ ⮕ ⮕ [ **Free Facebook group)**](https://www.facebook.com/groups/slickstack/)
+⮕ ⮕ ⮕ [ **Free Facebook group (real names/faces required)**](https://www.facebook.com/groups/slickstack/)
 
 ⮕ ⮕ ⮕ [ **Join us on Spectrum Chat (like Slack + Discourse in a single app)**](https://spectrum.chat/slickstack)
 
