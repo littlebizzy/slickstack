@@ -514,6 +514,10 @@ Because we aim to mirror WordPress Core as much as possible. Because the misnome
 
 For stability reasons, we don't use any tpmfs (memory-based storage) for caching or otherwise, as it introduces more instability, possible data loss, and doesn't necessarily improve performance. What people people don't realize is Linux already uses tmpfs for its own purposes, and already stores many "requests" in RAM. Best to let the operating system do its thing, and we optimize the software packages installed.
 
+**Can I run apt update && apt upgrade without issues?**
+
+Yes, you can. The entire point of SlickStack is to be a lightweight group of Bash scripts that save you time without adding bloat to your stack (and reducing most learning curves). Your LEMP stack will be just like any other LEMP stack tutorial you might setup using a tutorial online, just using our optimized templates for Nginx blocks, etc (and optional Must Use plugins for WordPress). But after setup is complete, you can just use the Ubuntu package manager to run updates if you like or just run ss-update and it will do the same thing instead (it always defaults to using the existing/old conf files to retain all configuration).
+
 ## Thanks
 
 * [rtCamp](https://rtcamp.com) -- various inspiration
