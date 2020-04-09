@@ -20,7 +20,7 @@
 ## rebuild ss-config if outdated errors: http://lemp.redshift.network/ss-config-sample.txt ##
 ## copy and paste entire ss-config boilerplate before modifying variables ##
 
-SS_BUILD="DEC2019E"
+SS_BUILD="FEB2020C"
 
 ####################################################################################################
 #### SS-Config: Ubuntu Root + Sudo User Settings (Console + SSH Access) ############################
@@ -101,6 +101,23 @@ SITE_DOMAIN="www.example.com"
 SITE_NOINDEX="false"
 
 ####################################################################################################
+#### SS-Config: WordPress Multisite Settings (Subdomains Recommended) ##############################
+####################################################################################################
+
+## MODULE VERSION: WordPress 5.3.x
+
+## Multisite setups should not be used for high-traffic or business-critical websites ##
+## domain mapping on Multisite installations requires the subdomains approach ##
+
+## WP_MULTISITE = [false|true] enables WP Multisite using the same directory structure ##
+## WP_MULTISITE_SUBDOMAINS = [true|false] subdomains approach highly recommended ##
+## WP_MULTISITE_DOMAIN_MAPPING = [false|true] hosting multiple TLD domains not recommended ##
+
+WP_MULTISITE="false"
+WP_MULTISITE_SUBDOMAINS="true"
+WP_MULTISITE_DOMAIN_MAPPING="false"
+
+####################################################################################################
 #### SS-Config: CloudFlare API + Various Settings (MU Plugin) ######################################
 ####################################################################################################
 
@@ -120,18 +137,6 @@ CLOUDFLARE_API_EMAIL="user@example.com"
 CLOUDFLARE_WIDGET_DNS="true"
 # CLOUDFLARE_WIDGET_ANALYTICS="true"
 # CLOUDFLARE_RECOMMENDED_SETTINGS="true"
-
-####################################################################################################
-#### SS-Config: WordPress Multisite Settings (Subdomains Option Recommended) #######################
-####################################################################################################
-
-## MODULE VERSION: WordPress 5.3.x
-
-## Multisite setups should not be used for high-traffic or business-critical websites ##
-## domain mapping on Multisite installations requires the subdomains approach ##
-
-# WP_MULTISITE="false"
-# WP_MULTISITE_SUBDOMAINS="true"
 
 ####################################################################################################
 ####################################################################################################
@@ -169,7 +174,7 @@ WP_ALLOW_UNFILTERED_UPLOADS="true"
 #### SS-Config: OpenSSL + Cerbot (Let's Encrypt) SSL Settings (CSR Optional) #######################
 ####################################################################################################
 
-## MODULE VERSION: OpenSSL 1.1.0g + Certbot 0.23.0
+## MODULE VERSION: OpenSSL 1.1.1 + Certbot 0.31.0
 
 ## we recommend OpenSSL because it is infinitely simpler and more reliable to maintain ##
 ## even if you choose Cerbot you will still need CloudFlare active during setup ##
@@ -179,9 +184,6 @@ WP_ALLOW_UNFILTERED_UPLOADS="true"
 ## SSL_SESSION_TIMEOUT =
 ## SSL_SESSION_CACHE =
 ## SSL_BUFFER_SIZE =
-## SSL_EMAIL = [user@example.com] the admin user email address for Cerbot (optional) ##
-## SSL_EMAIL_ALERTS = [false|true] receive Certbot email notifications (not recommended) ##
-## SSL_CHALLENGE_TYPE = [http|dns] which method of verifying your domain do you want ##
 
 SSL_TYPE="openssl"
 SSL_PROTOCOLS="TLSv1.2 TLSv1.3"
@@ -189,15 +191,20 @@ SSL_CIPHERS="ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECD
 SSL_SESSION_TIMEOUT="1d"
 SSL_SESSION_CACHE="shared:SSL:64m"
 SSL_BUFFER_SIZE="16k"
+
+## CERTBOT_EMAIL = [user@example.com] the admin user email address for Cerbot (optional) ##
+## CERTBOT_EMAIL_ALERTS = [false|true] receive Certbot email notifications (not recommended) ##
+## CERTBOT_CHALLENGE_TYPE = [http|dns] which method of verifying your domain do you want ##
+
 SSL_EMAIL="user@example.com"
 SSL_EMAIL_ALERTS="false"
-# SSL_CHALLENGE_TYPE="http"
+# CERTBOT_CHALLENGE_TYPE="http"
 
 ## CSR_COUNTRY = [US|etc] country to be used with your SSL CSR request data ##
 ## CSR_STATE = [Nevada|etc] state or province to be used with your SSL CSR request data ##
 ## CSR_CITY = [Las Vegas|etc] city or town to be used with your SSL CSR request data ##
 ## CSR_COMPANY = [Example, LLC|etc] company name to be used with your SSL CSR request data ##
-## CSR_DEPT = [Marketing|etc] department to be used with your SSL CSR request data ##
+## CSR_DEPT = [DevOps|etc] department to be used with your SSL CSR request data ##
 
 CSR_COUNTRY="US"
 CSR_STATE="Nevada"
@@ -296,7 +303,7 @@ FCGI_CACHE_TMPFS="false"
 # FCGI_CACHE_QUERIES_SEARCH="true"
 
 ####################################################################################################
-#### MySQL: SQL Mode + InnoDB Settings (Applies To Localhost Database Only) ########################
+#### SS-Config: MySQL + InnoDB Settings (Applies To Localhost Database Only) #######################
 ####################################################################################################
 
 ## MODULE VERSION: MySQL 5.7.x
@@ -305,13 +312,27 @@ FCGI_CACHE_TMPFS="false"
 ## probably the SQL_MODE is the only setting that you might consider changing ##
 
 ## SQL_MODE = [*infinite options*] the preset mode is highly recommended ##
-## INNODB_BUFFER_POOL_SIZE = [auto|256M|512M|1GB|2GB|4GB|etc] ~50-70% of total RAM ##
-## INNODB_LOG_FILE_SIZE = [256M|512M|1GB|etc] bigger is better but slows crash recovery ##
-## INNODB_LOG_FILES_IN_GROUP =
-## INNODB_FLUSH_LOG_AT_TRX_COMMIT = [true|false] be a good boy and leave it on ##
-## INNODB_FLUSH_METHOD = most servers should use O_DIRECT ##
+## SQL_MAX_ALLOWED_PACKET = [4MB|256M|etc] a high number helps avoid staging/backup issues ##
+## SQL_CONNECT_TIMEOUT = [15|30|60|etc] time allowed to establish a connection ##
+## SQL_WAIT_TIMEOUT = [30|60|3600|28800|etc] usually this can be a fairly small number ##
+## SQL_INTERACTIVE_TIMEOUT = [1800|3600|28800|43200|etc] larger to support applications etc ##
+## SQL_NET_READ_TIMEOUT = [30|60|etc] usually this should be fine at 30 seconds ##
+## SQL_NET_WRITE_TIMEOUT = [30|60|etc] usually this should be fine at 60 seconds ##
 
 SQL_MODE="STRICT_TRANS_TABLES,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION"
+SQL_MAX_ALLOWED_PACKET="256M"
+SQL_CONNECT_TIMEOUT="30"
+SQL_WAIT_TIMEOUT="3600"
+SQL_INTERACTIVE_TIMEOUT="43200"
+SQL_NET_READ_TIMEOUT="30"
+SQL_NET_WRITE_TIMEOUT="60"
+
+## INNODB_BUFFER_POOL_SIZE = [auto|256M|512M|1GB|2GB|4GB|etc] ~50-70% of total RAM ##
+## INNODB_LOG_FILE_SIZE = [256M|512M|1GB|etc] bigger is better but slows crash recovery ##
+## INNODB_LOG_FILES_IN_GROUP = [1|2|etc] debated but 1 is usually best ##
+## INNODB_FLUSH_LOG_AT_TRX_COMMIT = [true|false] be a good boy and leave it on ##
+## INNODB_FLUSH_METHOD = most servers should use O_DIRECT flushing ##
+
 INNODB_BUFFER_POOL_SIZE="auto"
 INNODB_LOG_FILE_SIZE="256M"
 INNODB_LOG_FILES_IN_GROUP="1"
@@ -453,12 +474,14 @@ OPCACHE_HUGE_CODE_PAGES="false"
 ####################################################################################################
 
 ## SS_APP = [wordpress] only WordPress currently supported (feedback? tell us!) ##
+## SS_MU_PLUGINS = [default|custom] use default LittleBizzy MU plugins or custom ones ##
 ## SS_TYPE = [production|staging|dev] barely functional... enables debug, disables FastCGI Cache, disables OPcache, enables CloudFlare dev mode on non-production servers ##
 ## SS_TIMEZONE = [UTC|Greenwich|etc] almost nobody should have a reason to not use UTC ##
 ## SS_REBOOT = [false|true] server will reboot automatically after ss-update runs ##
 ## SS_DOS2UNIX = [false|true] converts any DOS files to Unix format whenever ss-perms runs ##
 
 SS_APP="wordpress"
+SS_MU_PLUGINS="default"
 SS_TYPE="production"
 SS_TIMEZONE="UTC"
 SS_REBOOT="false"
@@ -495,8 +518,10 @@ SS_INTERVAL_ENCRYPT="never"
 SS_INTERVAL_UPDATE="never"
 
 ####################################################################################################
-#### SlickStack: Custom Config File Sources (Advanced Users Only) ##################################
+#### SlickStack: Custom Config File Sources ########################################################
 ####################################################################################################
+
+## MODULE VERSION: WordPress 5.3.x
 
 ## for custom configuration use the below settings to define configuration file sources ##
 ## source files must be publicly accessible via wget over either HTTP or HTTPS ##
@@ -506,10 +531,13 @@ CUSTOM_FUNCTIONS_SOURCE="http://lemp.redshift.network/wordpress/functions.txt"
 THROWAWAY_THEME_SOURCE="http://lemp.redshift.network/wordpress/throwaway.zip"
 
 ####################################################################################################
-#### SS-Config: MU (Must-Use) WordPress Plugins ####################################################
+#### SS-Config: MU (Must-Use) WordPress Plugins (Custom List) ######################################
 ####################################################################################################
 
-## below you can specify the MU (Must-Use) plugins to install on this SlickStack server ##
+## MODULE VERSION: WordPress 5.3.x
+
+## activate this custom list of MU (Must-Use) plugins using the SS_MU_PLUGINS variable ##
+## NOTE: Autoloader, Custom Functions, Object Cache, and XXX Notices are required ##
 
 MU_PLUGIN_01_SOURCE="http://lemp.redshift.network/mu-plugins/clear-caches.zip"
 MU_PLUGIN_01_DIR="clear-caches"

@@ -60,6 +60,11 @@ function rm {
     command rm -R -f "$@"
 }
 
+## ln alias flags ##
+function ln {
+    command ln -s -f "$@"
+}
+
 ####################################################################################################
 #### SS-Install: Check OS Compability + Verify SS-Config Freshness + Backup Database ###############
 ####################################################################################################
@@ -72,7 +77,7 @@ if [[ "${UBUNTU_VERSION}" != "18.04" ]]; then
 fi
 
 ## ensure ss-config build version matches ss-install build version ##
-if [[ "$SS_BUILD" != "DEC2019E" ]]; then 
+if [[ "$SS_BUILD" != "FEB2020C" ]]; then 
     echo -e "\e[93mYour ss-config file is outdated. Please update it by running ss-update and then run ss-install again.\e[0m" >&2
     exit 1
 fi
@@ -209,14 +214,14 @@ chmod 0600 /var/spool/cron/crontabs/root
 ## MESSAGE ##
 echo -e "\e[36mInstalling various SlickStack modules from most recent Ubuntu repos...\e[0m"
 
-## fix dpkg ##
+## set confold as dpkg default (fail-safe in case apt upgrade called directly) ##
 DEBIAN_FRONTEND=noninteractive dpkg --configure -a --force-confold
 
 ## update repo cache ##
 apt update
 
-## upgrade existing repos ##
-apt upgrade
+## upgrade installed Ubuntu packages (LEMP modules) + Linux kernel (apt feature) ##
+apt full-upgrade
 
 ## install update-manager-core ##
 apt install update-manager-core
@@ -630,8 +635,8 @@ sed -i '/WP-CLI/d' /home/${SUDO_USER}/.bashrc
 sed -i '/wp-completion/d' /home/${SUDO_USER}/.bashrc
 
 ## symlinks for wp-cli.yml ##
-ln -s /home/${SUDO_USER}/.wp-cli/config.yml /var/www/meta/wp-cli.yml &> /dev/null
-ln -s /root/.wp-cli/config.yml /var/www/meta/wp-cli.yml &> /dev/null
+ln /home/${SUDO_USER}/.wp-cli/config.yml /var/www/meta/wp-cli.yml &> /dev/null
+ln /root/.wp-cli/config.yml /var/www/meta/wp-cli.yml &> /dev/null
 
 ## download latest versions ##
 wget -O /tmp/wp-cli.phar http://lemp.redshift.network/wp-cli/wp-cli.phar
@@ -997,12 +1002,33 @@ else
     sed -i '/tmpfs/d' /etc/fstab
 fi
 
-## download latest versions ##
-wget -O /tmp/default http://lemp.redshift.network/nginx/default-single-site.txt
+## download latest server block (depends on WP single site or multisite) ##
+
+if [[ "$WP_MULTISITE" == "true" ]]; then 
+    wget -O /tmp/default http://lemp.redshift.network/nginx/default-multisite-subdomains.txt
+    # elif [[ "$WP_MULTISITE" == "true" ]] && [[ "$WP_MULTISITE_SUBDOMAINS" == "false" ]]; then 
+else 
+    wget -O /tmp/default http://lemp.redshift.network/nginx/default-single-site.txt
+fi
+
+
 
 ## replace variables ##
 sed -i "s/@DOMAIN/${SITE_DOMAIN}/g" /tmp/default
+sed -i "s/@SITE_DOMAIN/${SITE_DOMAIN}/g" /tmp/default
 sed -i "s/@CACHEVALID/${FCGI_CACHE_VALID}/g" /tmp/default
+
+## replace conditional variables ##
+if [[ "$WP_MULTISITE_DOMAIN_MAPPING" == "true" ]]; then 
+   sed -i "s/#@WP_MULTISITE_DOMAIN_MAPPING# //g" /tmp/default
+else
+    sed -i "s/#@WP_MULTISITE_DOMAIN_MAPPING_FALSE# //g" /tmp/default
+fi
+
+if [[ "$WP_MULTISITE_SUBDOMAINS" == "true" ]]; then 
+    sed -i "s/#@WP_MULTISITE_SUBDOMAINS# //g" /tmp/default
+fi
+
 
 ## set FastCGI Cache if enabled ##
 if [[ "$FCGI_CACHE" == "false" ]]; then 
@@ -1141,12 +1167,59 @@ rm /tmp/my.cnf
 ## install custom my.cnf config file ##
 wget -O /tmp/my.cnf http://lemp.redshift.network/mysql/my-cnf.txt
 
-## set MySQL mode ##
+
+
+#### MySQL Settings ####
+
+## SQL mode ##
 if [[ -z "$SQL_MODE" ]]; then 
     sed -i "s/@SQL_MODE/STRICT_TRANS_TABLES,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION/g" /tmp/my.cnf
 else 
     sed -i "s/@SQL_MODE/${SQL_MODE}/g" /tmp/my.cnf
 fi
+
+## max allowed packet ##
+if [[ -z "$SQL_MAX_ALLOWED_PACKET" ]]; then 
+    sed -i "s/@SQL_MAX_ALLOWED_PACKET/256M/g" /tmp/my.cnf
+else 
+    sed -i "s/@SQL_MAX_ALLOWED_PACKET/${SQL_MAX_ALLOWED_PACKET}/g" /tmp/my.cnf
+fi
+
+## connect timeout ##
+if [[ -z "$SQL_CONNECT_TIMEOUT" ]]; then 
+    sed -i "s/@SQL_CONNECT_TIMEOUT/30/g" /tmp/my.cnf
+else 
+    sed -i "s/@SQL_CONNECT_TIMEOUT/${SQL_CONNECT_TIMEOUT}/g" /tmp/my.cnf
+fi
+
+## wait timeout ##
+if [[ -z "$SQL_WAIT_TIMEOUT" ]]; then 
+    sed -i "s/@SQL_WAIT_TIMEOUT/3600/g" /tmp/my.cnf
+else 
+    sed -i "s/@SQL_WAIT_TIMEOUT/${SQL_WAIT_TIMEOUT}/g" /tmp/my.cnf
+fi
+
+## interactive timeout ##
+if [[ -z "$SQL_INTERACTIVE_TIMEOUT" ]]; then 
+    sed -i "s/@SQL_INTERACTIVE_TIMEOUT/43200/g" /tmp/my.cnf
+else 
+    sed -i "s/@SQL_INTERACTIVE_TIMEOUT/${SQL_INTERACTIVE_TIMEOUT}/g" /tmp/my.cnf
+fi
+
+## net read timeout ##
+if [[ -z "$SQL_NET_READ_TIMEOUT" ]]; then 
+    sed -i "s/@SQL_NET_READ_TIMEOUT/30/g" /tmp/my.cnf
+else 
+    sed -i "s/@SQL_NET_READ_TIMEOUT/${SQL_NET_READ_TIMEOUT}/g" /tmp/my.cnf
+fi
+
+## net write timeout ##
+if [[ -z "$SQL_NET_WRITE_TIMEOUT" ]]; then 
+    sed -i "s/@SQL_NET_WRITE_TIMEOUT/60/g" /tmp/my.cnf
+else 
+    sed -i "s/@SQL_NET_WRITE_TIMEOUT/${SQL_NET_WRITE_TIMEOUT}/g" /tmp/my.cnf
+fi
+
 
 ## set InnoDB buffer pool size (supports "auto" or manual via ss-config) ##
 PERCENT_RAM_MB=$(free -m | awk 'NR==2{printf "%d", $2*0.50 }')
@@ -1251,10 +1324,42 @@ cp /tmp/throwaway /var/www/html/wp-content/themes/
 rm /tmp/throwaway*
 
 ####################################################################################################
+#### SlickStack: Modify Database Options For WordPress #############################################
+####################################################################################################
+
+## prepare MySQL root password (suppresses MySQL security warnings) ##
+export MYSQL_PWD=$DB_PASSWORD_ROOT
+
+## ensure home option is correct in WordPress database ##
+mysql --user=root --host="$DB_HOST" --database="$DB_NAME" --protocol=tcp --port=3306 --force --execute="UPDATE ${DB_PREFIX}options SET option_value='https://$SITE_DOMAIN' WHERE option_name='home'";
+
+## ensure siteurl option is correct in WordPress database ##
+mysql --user=root --host="$DB_HOST" --database="$DB_NAME" --protocol=tcp --port=3306 --force --execute="UPDATE ${DB_PREFIX}options SET option_value='https://$SITE_DOMAIN' WHERE option_name='siteurl'";
+
+####################################################################################################
 #### SlickStack: Configure WP-Config File (WordPress Configuration) ################################
 ####################################################################################################
 
 wget -O /tmp/wp-config.txt http://lemp.redshift.network/wordpress/wp-config.txt
+
+###### WP Multisite settings ########
+
+## set multisite subdomains ##
+if [[ -z "$WP_MULTISITE_SUBDOMAINS" ]]; then 
+    sed -i "s/@WP_MULTISITE_SUBDOMAINS/true/g" /tmp/wp-config.txt
+else 
+    sed -i "s/@WP_MULTISITE_SUBDOMAINS/${WP_MULTISITE_SUBDOMAINS}/g" /tmp/wp-config.txt
+fi
+
+## set multisite ##
+if [[ -z "$WP_MULTISITE" ]]; then 
+    sed -i "s/@WP_MULTISITE/false/g" /tmp/wp-config.txt
+else 
+    sed -i "s/@WP_MULTISITE/${WP_MULTISITE}/g" /tmp/wp-config.txt
+fi
+
+
+####### other WP Config settings ##########
 
 ## replace database placeholders ##
 sed -i "s/@DB_NAME/${DB_NAME}/g" /tmp/wp-config.txt
@@ -1398,6 +1503,12 @@ rm /tmp/wp-config*
 mkdir /var/www/html/wp-content/temp
 mkdir /var/www/html/wp-content/uploads
 mkdir /var/www/html/wp-content/upgrade
+
+## for fresh (virgin) WP installs delete some of the WP Core junk plugins and themes ##
+if [ ! -f "/var/www/meta/.cherry" ]; then 
+    rm /var/www/html/wp-content/plugins/akismet*
+    # rm /var/www/html/wp-content/themes/twenty*
+fi
 
 ####################################################################################################
 #### SlickStack: Install Redis-Server (Includes Redis-CLI) + PHP-Redis #############################
@@ -1575,3 +1686,7 @@ echo -e "\e[36mSlickStack installation complete! Please reboot server and ensure
 ## Ref: https://unix.stackexchange.com/questions/313256/why-write-an-entire-bash-script-in-functions
 ## Ref: http://nginx.org/en/linux_packages.html
 ## Ref: https://www.digitalocean.com/community/questions/nginx-stable-or-mainline-for-production-server
+## Ref: https://precisionsec.com/changing-the-wordpress-site-url-using-the-mysql-command-line/
+## Ref: https://magc.co/box/notes/change-wp-urls-mysql/
+## Ref: https://wordpress.stackexchange.com/questions/281814/wordpress-multisite-redirecting-to-wp-signup-php
+## Ref: https://wordpress.stackexchange.com/questions/165507/site-redirecting-to-wp-signup-php
