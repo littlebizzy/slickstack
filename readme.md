@@ -1,14 +1,26 @@
-# SlickStack [ss] - "Alpha* ss14"
+# SlickStack [ss] - "Alpha* ss15"
 
 SlickStack is a free LEMP stack automation script written in Bash designed to enhance and simplify WordPress provisioning, performance, and security.
 
-⮕ ⮕ ⮕ [ **Join us on Spectrum Chat 100% free (like Slack + Discourse in a single app)**](https://spectrum.chat/slickstack)
+⮕ ⮕ ⮕ [ **Free Facebook group (real names/faces required)**](https://www.facebook.com/groups/slickstack/)
+
+⮕ ⮕ ⮕ [ **Join us on Spectrum Chat (like Slack + Discourse in a single app)**](https://spectrum.chat/slickstack)
 
 **Alpha because ss-config variables are still being "settled". Safe for production servers, if you're okay with this... if you run into any issues, re-installing is always a quick `sudo bash ss-update && ss-install` command away.*
 
 | Google PageSpeed | GTMetrix | Pingdom | Security Headers | Qualys SSL Labs | WebPageTest |
 | :--------------: | :------: | :-----: | :--------------: | :-------------: | :-------------: |
 | [**A**](https://developers.google.com/speed/pagespeed/insights/?url=https%3A%2F%2Fslickstack.io%2F) | [**A**](https://gtmetrix.com/reports/slickstack.io/zpLMZ1eb) | [**A**](https://tools.pingdom.com/#5aeba9dea8000000) | [**A**](https://securityheaders.com/?q=https%3A%2F%2Fslickstack.io%2F&followRedirects=on) | [**A**](https://www.ssllabs.com/ssltest/analyze.html?d=slickstack.io&latest) | [**A**](https://www.webpagetest.org/result/190920_68_a4a541db9847ce601ef264b41df9d0f3/) |
+
+* **NEW!** To avoid potential conflicts we've added a `SS_MU_PLUGINS` variable that should be set to either `default` or `custom` in order to activate the custom list of MU plugins that you can edit in your `ss-config` file...
+
+* **NEW!** `ss-update` now performs a "safety" check before running to ensure that it is compatible with the latest version of `ss-config` in order to avoid overwriting the current `ss-config` version with an outdated boilerplate...
+
+* **NEW!** SlickStack now supports fully customizing the MU (Must-Use) plugins that are installed. This can be done easily by defining the download link and desired directory name of each MU plugin in the `ss-config` advanced settings (in case these variables are missing, SlickStack will default to the LittleBizzy plugins). Keep in mind that the Autoloader, Object Cache, Custom Functions, and XXX Notices plugins are required and cannot be disabled at this time.
+
+* **NEW!** SlickStack now has self-healing functions in the root Crontab and `1-cron-often` and `2-cron-regular` to ensure that Core Cron Jobs will be reinstalled fresh in case they are missing or damaged. This self-healing function also ensures that the critical Core Bash Scripts `ss-check` and `ss-worker` also exist and are intact every single day! 
+
+NOTE: The self-healing function will respect any custom Cron Job schedules found in your `ss-config` file...
 
 * **NEW!** Running `ss-update` will now automagically update your `ss-config` to latest template... any variables that are missing or undefined will simply be setup using the default (recommended) values for those variables...
 
@@ -36,7 +48,7 @@ SlickStack is a free LEMP stack automation script written in Bash designed to en
 
 ## Core Modules [[read more](https://slickstack.io/modules)]
 
-*Last updated: Dec 19, 2019*
+*Last updated: Jan 18, 2019*
 
 *Default Ports: 80 (HTTP), 443 (HTTPS), 6969 (SSH)*
 
@@ -64,13 +76,13 @@ SlickStack is a free LEMP stack automation script written in Bash designed to en
 
 Most of modern computing history can be traced back to one thing: [Unix](https://en.wikipedia.org/wiki/Unix). Indeed, one of the only things about web servers that hasn't changed much in several decades is the Unix shell (Bash) command language. Keeping the same pragmatism and simplicity in mind that inspired LittleBizzy's managed hosting, SlickStack [ss] is coded entirely in Bash.
 
-While there are [clear benefits](https://medium.com/capital-one-developers/bashing-the-bash-replacing-shell-scripts-with-python-d8d201bc0989) to programming languages like Python or Ruby, provisioning a server with WordPress isn't very complicated, and every Linux server comes with [shell built into it](https://www.infoworld.com/article/2893519/linux/perl-python-ruby-are-nice-bash-is-where-its-at.html). Plus, let's not forget [what happens](https://discourse.roots.io/t/updated-to-ansible-2-4-deploys-broken-now-what/10588) when typical web agencies rely on advanced dependencies like Ansible... yikes! Onward, then...
+While there are [clear benefits](https://medium.com/capital-one-developers/bashing-the-bash-replacing-shell-scripts-with-python-d8d201bc0989) to programming languages like Python or Ruby, provisioning a server with WordPress isn't very complicated, and every Linux machine comes with [Bash built into it](https://www.infoworld.com/article/2893519/linux/perl-python-ruby-are-nice-bash-is-where-its-at.html). Plus, let's not forget [what happens](https://discourse.roots.io/t/updated-to-ansible-2-4-deploys-broken-now-what/10588) when typical web agencies rely on advanced dependencies like Ansible... yikes! Onward, then...
 
-## Requirements [[read more](https://slickstack.io/requirements)]
+## Requirements (Compatibility) [[read more](https://slickstack.io/requirements)]
+
+**NOTE: SlickStack [ss] will never support installing multiple TLD domains on a single server. This is to ensure top speed, stability, and security (i.e. technical SEO). We will also never include any type of UI interface, to allow third party applications to integrate SlickStack [ss] with management tools as they best see fit.**
 
 SlickStack [ss] works best on cloud servers with KVM virtualization that have at least 2GB RAM from [quality network providers](https://slickstack.io/hosting) such as DigitalOcean, Vultr, Hostwinds, and AWS Lightsail. The underlying LEMP stack configuration is meant primarily for high-traffic single-site WordPress installations, although support for [Multisite](https://codex.wordpress.org/Create_A_Network) installations is being planned. SlickStack [ss] supports WordPress, WooCommerce, bbPress, and BuddyPress "out of the box" with optimized settings that scale -- what this means is that you can upgrade your cloud server to a bigger or better instance, and run `ss-install` again, and most settings will (re)optimize themselves.
-
-**NOTE: SlickStack [ss] will never support installing multiple TLDs on a single server.**
 
 Currently, SlickStack [ss] is meant for a single origin server with a single `127.0.0.1` database, although remote databases should also work fine. Server "clustering" or "load balancing" has not been tested, and is not the goal here; complex enterprise-style configurations for WordPress are rarely needed (and can be expensive and difficult to manage), thus SlickStack [ss] aims to to provide a simple solution for the 99% of WordPress sites that don't need such complexity.
 
@@ -132,9 +144,20 @@ After completing the installation steps above, your `/var/www/` directory should
     
 ...likewise, your `/var/www/html/` (WordPress) directory should look like this:    
     
-    /var/www/html/wp-admin/
+    /var/www/html/wp-admin/...
     /var/www/html/wp-content/
-    /var/www/html/wp-includes/
+    /var/www/html/wp-content/blacklist.txt
+    /var/www/html/wp-content/functions.php
+    /var/www/html/wp-content/index.php
+    /var/www/html/wp-content/languages/
+    /var/www/html/wp-content/mu-plugins/
+    /var/www/html/wp-content/object-cache.php
+    /var/www/html/wp-content/plugins/
+    /var/www/html/wp-content/temp/
+    /var/www/html/wp-content/themes/
+    /var/www/html/wp-content/upgrade/
+    /var/www/html/wp-content/uploads/
+    /var/www/html/wp-includes/...
     /var/www/html/wp-...
     
 ## MU (Must-Use) Plugins [[read more](https://slickstack.io/modules/mu-plugins)]
@@ -490,6 +513,10 @@ Because we aim to mirror WordPress Core as much as possible. Because the misnome
 **Why don't you use TMPFS or similar?**
 
 For stability reasons, we don't use any tpmfs (memory-based storage) for caching or otherwise, as it introduces more instability, possible data loss, and doesn't necessarily improve performance. What people people don't realize is Linux already uses tmpfs for its own purposes, and already stores many "requests" in RAM. Best to let the operating system do its thing, and we optimize the software packages installed.
+
+**Can I run apt update && apt upgrade without issues?**
+
+Yes, you can. The entire point of SlickStack is to be a lightweight group of Bash scripts that save you time without adding bloat to your stack (and reducing most learning curves). Your LEMP stack will be just like any other LEMP stack tutorial you might setup using a tutorial online, just using our optimized templates for Nginx blocks, etc (and optional Must Use plugins for WordPress). But after setup is complete, you can just use the Ubuntu package manager to run updates if you like or just run ss-update and it will do the same thing instead (it always defaults to using the existing/old conf files to retain all configuration).
 
 ## Thanks
 
