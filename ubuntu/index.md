@@ -63,7 +63,11 @@ title: Ubuntu (Public Mirrors)
 * [https://packages.ubuntu.com/xenial/libc-bin](https://packages.ubuntu.com/xenial/libc-bin)
 * [https://appuals.com/how-to-set-custom-configuration-features-for-the-gnu-nano-editor/](https://appuals.com/how-to-set-custom-configuration-features-for-the-gnu-nano-editor/)
 * [https://help.ubuntu.com/community/SSH/OpenSSH/Configuring](https://help.ubuntu.com/community/SSH/OpenSSH/Configuring)
+* https://github.com/jcelerier/jcelerier.github.io/blob/master/index.html
+* https://forum.manjaro.org/t/turning-off-intel-cpu-security-protection-for-performance/87866/2
+* https://news.ycombinator.com/item?id=19928110
+* https://unix.stackexchange.com/questions/554908/disable-spectre-and-meltdown-mitigations
 
 ----
 
-*Last updated: Nov 18, 2019*
+*Last updated: Apr 12, 2020*
