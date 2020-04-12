@@ -67,6 +67,8 @@ title: Ubuntu (Public Mirrors)
 * https://forum.manjaro.org/t/turning-off-intel-cpu-security-protection-for-performance/87866/2
 * https://news.ycombinator.com/item?id=19928110
 * https://unix.stackexchange.com/questions/554908/disable-spectre-and-meltdown-mitigations
+* https://www.reddit.com/r/linux/comments/b1ltnr/disabling_kernel_cpu_vulnerabilities_mitigations/
+* https://linuxreviews.org/HOWTO_make_Linux_run_blazing_fast_(again)_on_Intel_CPUs
 
 ----
 
