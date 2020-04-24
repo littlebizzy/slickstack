@@ -53,18 +53,18 @@ NOTE: The self-healing function will respect any custom Cron Job schedules found
 | LEMP Module | Mirrors | Version | What does SlickStack [ss] customize? |
 | :------------- | :----------: | :----------: | :----------: |
 | **Ubuntu** | [mirrors](http://mirrors.slickstack.io/ubuntu/) | 20.04 (LTS) | `crontab` + `gai.conf` + `sshd_config` + `sudoers` + `sysctl.conf` |
-| **Nginx (Extras)** | [mirrors](http://mirrors.slickstack.io/nginx/) | 1.15.8 | `nginx.conf` + `default` (server block) |
-| **FastCGI Cache** | [mirrors](http://mirrors.slickstack.io/fastcgi-cache/) | 1.15.8 | `fastcgi-cache.conf` |
-| **OpenSSL** | [mirrors](http://mirrors.slickstack.io/openssl/) | 1.1.1 | `nginx.crt` + `nginx.key` |
+| **Nginx (Extras)** | [mirrors](http://mirrors.slickstack.io/nginx/) | 1.17.x | `nginx.conf` + `default` (server block) |
+| **FastCGI Cache** | [mirrors](http://mirrors.slickstack.io/fastcgi-cache/) | 1.17.x | `fastcgi-cache.conf` |
+| **OpenSSL** | [mirrors](http://mirrors.slickstack.io/openssl/) | 1.1.1x | `nginx.crt` + `nginx.key` |
 | **Let's Encrypt** | [mirrors](http://mirrors.slickstack.io/letsencrypt/) | 0.31.0 | `cert.perm` + `privkey.pem` + `chain.pem` + `fullchain.pem` |
 | **MySQL** | [mirrors](http://mirrors.slickstack.io/mysql/) | 8.0.x | `my.cnf` |
 | **PHP-FPM** | [mirrors](http://mirrors.slickstack.io/php-fpm/) | 7.4.x | `php.ini` + `php-fpm.conf` + `www.conf` |
-| **Zend / OPcache** | [mirrors](http://mirrors.slickstack.io/opcache/) | 3.2.0 / 7.4.x | (same as PHP-FPM) |
+| **Zend / OPcache** | [mirrors](http://mirrors.slickstack.io/opcache/) | 3.4.x / 7.4.x | (same as PHP-FPM) |
 | **WordPress** | [mirrors](http://mirrors.slickstack.io/wordpress/) | 5.3.2 | some WP Core junk files are removed by `ss-clean` |
 | **MU Plugins** | [mirrors](http://mirrors.slickstack.io/mu-plugins/) | (n/a) | optional `mu-plugins` by LittleBizzy |
 | **WP-CLI** | [mirrors](http://mirrors.slickstack.io/wp-cli/) | 2.4.0 | default config |
-| **Redis (Obj Cache)** | [mirrors](http://mirrors.slickstack.io/redis/) | 4.0.9 | `redis.conf` + `object-cache.php` |
-| **Git** | [mirrors](http://mirrors.slickstack.io/git/) | 2.17.1 | default config |
+| **Redis (Obj Cache)** | [mirrors](http://mirrors.slickstack.io/redis/) | 5.0.x | `redis.conf` + `object-cache.php` |
+| **Git** | [mirrors](http://mirrors.slickstack.io/git/) | 2.25.x | default config |
 | **UFW Firewall** | [mirrors](http://mirrors.slickstack.io/ufw-firewall/) | 0.36 | `ufw` + `ufw.conf` + `user-rules` |
 | **ClamAV** | [mirrors](http://mirrors.slickstack.io/clamav/) | 0.101.x | `freshclam.conf` |
 
