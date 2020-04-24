@@ -1,12 +1,10 @@
-# SlickStack [ss] - "Alpha* ss15"
+# SlickStack [ss] Beta 20.04
 
 SlickStack is a free LEMP stack automation script written in Bash designed to enhance and simplify WordPress provisioning, performance, and security.
 
 ⮕ ⮕ ⮕ [ **Free Facebook group (real names/faces required)**](https://www.facebook.com/groups/slickstack/)
 
 ⮕ ⮕ ⮕ [ **Join us on Spectrum Chat (like Slack + Discourse in a single app)**](https://spectrum.chat/slickstack)
-
-**Alpha because ss-config variables are still being "settled". Safe for production servers, if you're okay with this... if you run into any issues, re-installing is always a quick `sudo bash ss-update && ss-install` command away.*
 
 | Google PageSpeed | GTMetrix | Pingdom | Security Headers | Qualys SSL Labs | WebPageTest |
 | :--------------: | :------: | :-----: | :--------------: | :-------------: | :-------------: |
@@ -48,22 +46,20 @@ NOTE: The self-healing function will respect any custom Cron Job schedules found
 
 ## Core Modules [[read more](https://slickstack.io/modules)]
 
-*Last updated: Jan 18, 2019*
+*Last updated: Apr 24, 2020*
 
 *Default Ports: 80 (HTTP), 443 (HTTPS), 6969 (SSH)*
 
-*Readiness for Ubuntu 20.04 and PHP 7.4 is our current focus. PHP 7.3 will not be supported.*
-
 | LEMP Module | Mirrors | Version | What does SlickStack [ss] customize? |
 | :------------- | :----------: | :----------: | :----------: |
-| **Ubuntu** | [mirrors](http://mirrors.slickstack.io/ubuntu/) | 18.04 (LTS) | `crontab` + `gai.conf` + `sshd_config` + `sudoers` + `sysctl.conf` |
+| **Ubuntu** | [mirrors](http://mirrors.slickstack.io/ubuntu/) | 20.04 (LTS) | `crontab` + `gai.conf` + `sshd_config` + `sudoers` + `sysctl.conf` |
 | **Nginx (Extras)** | [mirrors](http://mirrors.slickstack.io/nginx/) | 1.15.8 | `nginx.conf` + `default` (server block) |
 | **FastCGI Cache** | [mirrors](http://mirrors.slickstack.io/fastcgi-cache/) | 1.15.8 | `fastcgi-cache.conf` |
 | **OpenSSL** | [mirrors](http://mirrors.slickstack.io/openssl/) | 1.1.1 | `nginx.crt` + `nginx.key` |
 | **Let's Encrypt** | [mirrors](http://mirrors.slickstack.io/letsencrypt/) | 0.31.0 | `cert.perm` + `privkey.pem` + `chain.pem` + `fullchain.pem` |
-| **MySQL** | [mirrors](http://mirrors.slickstack.io/mysql/) | 5.7.x | `my.cnf` |
-| **PHP-FPM** | [mirrors](http://mirrors.slickstack.io/php-fpm/) | 7.2.x | `php.ini` + `php-fpm.conf` + `www.conf` |
-| **Zend / OPcache** | [mirrors](http://mirrors.slickstack.io/opcache/) | 3.2.0 / 7.2.x | (same as PHP-FPM) |
+| **MySQL** | [mirrors](http://mirrors.slickstack.io/mysql/) | 8.0.x | `my.cnf` |
+| **PHP-FPM** | [mirrors](http://mirrors.slickstack.io/php-fpm/) | 7.4.x | `php.ini` + `php-fpm.conf` + `www.conf` |
+| **Zend / OPcache** | [mirrors](http://mirrors.slickstack.io/opcache/) | 3.2.0 / 7.4.x | (same as PHP-FPM) |
 | **WordPress** | [mirrors](http://mirrors.slickstack.io/wordpress/) | 5.3.2 | some WP Core junk files are removed by `ss-clean` |
 | **MU Plugins** | [mirrors](http://mirrors.slickstack.io/mu-plugins/) | (n/a) | optional `mu-plugins` by LittleBizzy |
 | **WP-CLI** | [mirrors](http://mirrors.slickstack.io/wp-cli/) | 2.4.0 | default config |
