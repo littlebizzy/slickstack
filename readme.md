@@ -1,12 +1,10 @@
-# SlickStack [ss] - "Alpha* ss15"
+# SlickStack [ss] Beta 20.04
 
 SlickStack is a free LEMP stack automation script written in Bash designed to enhance and simplify WordPress provisioning, performance, and security.
 
 ⮕ ⮕ ⮕ [ **Free Facebook group (real names/faces required)**](https://www.facebook.com/groups/slickstack/)
 
 ⮕ ⮕ ⮕ [ **Join us on Spectrum Chat (like Slack + Discourse in a single app)**](https://spectrum.chat/slickstack)
-
-**Alpha because ss-config variables are still being "settled". Safe for production servers, if you're okay with this... if you run into any issues, re-installing is always a quick `sudo bash ss-update && ss-install` command away.*
 
 | Google PageSpeed | GTMetrix | Pingdom | Security Headers | Qualys SSL Labs | WebPageTest |
 | :--------------: | :------: | :-----: | :--------------: | :-------------: | :-------------: |
@@ -48,27 +46,25 @@ NOTE: The self-healing function will respect any custom Cron Job schedules found
 
 ## Core Modules [[read more](https://slickstack.io/modules)]
 
-*Last updated: Jan 18, 2019*
+*Last updated: Apr 24, 2020*
 
 *Default Ports: 80 (HTTP), 443 (HTTPS), 6969 (SSH)*
 
-*Readiness for Ubuntu 20.04 and PHP 7.4 is our current focus. PHP 7.3 will not be supported.*
-
 | LEMP Module | Mirrors | Version | What does SlickStack [ss] customize? |
 | :------------- | :----------: | :----------: | :----------: |
-| **Ubuntu** | [mirrors](http://lemp.redshift.network/ubuntu/) | 18.04 (LTS) | `crontab` + `gai.conf` + `sshd_config` + `sudoers` + `sysctl.conf` |
-| **Nginx (Extras)** | [mirrors](http://lemp.redshift.network/nginx/) | 1.15.8 | `nginx.conf` + `default` (server block) |
-| **FastCGI Cache** | [mirrors](http://lemp.redshift.network/fastcgi-cache/) | 1.15.8 | `fastcgi-cache.conf` |
-| **OpenSSL** | [mirrors](http://lemp.redshift.network/openssl/) | 1.1.0g | `nginx.crt` + `nginx.key` |
+| **Ubuntu** | [mirrors](http://lemp.redshift.network/ubuntu/) | 20.04 (LTS) | `crontab` + `gai.conf` + `sshd_config` + `sudoers` + `sysctl.conf` |
+| **Nginx (Extras)** | [mirrors](http://lemp.redshift.network/nginx/) | 1.17.x | `nginx.conf` + `default` (server block) |
+| **FastCGI Cache** | [mirrors](http://lemp.redshift.network/fastcgi-cache/) | 1.17.x | `fastcgi-cache.conf` |
+| **OpenSSL** | [mirrors](http://lemp.redshift.network/openssl/) | 1.1.1x | `nginx.crt` + `nginx.key` |
 | **Let's Encrypt** | [mirrors](http://lemp.redshift.network/letsencrypt/) | 0.31.0 | `cert.perm` + `privkey.pem` + `chain.pem` + `fullchain.pem` |
-| **MySQL** | [mirrors](http://lemp.redshift.network/mysql/) | 5.7.x | `my.cnf` |
-| **PHP-FPM** | [mirrors](http://lemp.redshift.network/php-fpm/) | 7.2.x | `php.ini` + `php-fpm.conf` + `www.conf` |
-| **Zend / OPcache** | [mirrors](http://lemp.redshift.network/opcache/) | 3.2.0 / 7.2.x | (same as PHP-FPM) |
+| **MySQL** | [mirrors](http://lemp.redshift.network/mysql/) | 8.0.x | `my.cnf` |
+| **PHP-FPM** | [mirrors](http://lemp.redshift.network/php-fpm/) | 7.4.x | `php.ini` + `php-fpm.conf` + `www.conf` |
+| **Zend / OPcache** | [mirrors](http://lemp.redshift.network/opcache/) | 3.4.x / 7.4.x | (same as PHP-FPM) |
 | **WordPress** | [mirrors](http://lemp.redshift.network/wordpress/) | 5.3.2 | some WP Core junk files are removed by `ss-clean` |
 | **MU Plugins** | [mirrors](http://lemp.redshift.network/mu-plugins/) | (n/a) | optional `mu-plugins` by LittleBizzy |
 | **WP-CLI** | [mirrors](http://lemp.redshift.network/wp-cli/) | 2.4.0 | default config |
-| **Redis (Obj Cache)** | [mirrors](http://lemp.redshift.network/redis/) | 4.0.9 | `redis.conf` + `object-cache.php` |
-| **Git** | [mirrors](http://lemp.redshift.network/git/) | 2.17.1 | default config |
+| **Redis (Obj Cache)** | [mirrors](http://lemp.redshift.network/redis/) | 5.0.x | `redis.conf` + `object-cache.php` |
+| **Git** | [mirrors](http://lemp.redshift.network/git/) | 2.25.x | default config |
 | **UFW Firewall** | [mirrors](http://lemp.redshift.network/ufw-firewall/) | 0.36 | `ufw` + `ufw.conf` + `user-rules` |
 | **ClamAV** | [mirrors](http://lemp.redshift.network/clamav/) | 0.101.x | `freshclam.conf` |
 

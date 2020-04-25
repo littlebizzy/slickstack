@@ -71,7 +71,7 @@ function ln {
 
 ## ensure correct Ubuntu version is installed ##
 UBUNTU_VERSION=`lsb_release -rs`
-if [[ "${UBUNTU_VERSION}" != "18.04" ]]; then
+if [[ "${UBUNTU_VERSION}" != "20.04" ]]; then
     echo -e "\e[93mSlickStack is designed for Ubuntu 18.04, but this server is running Ubuntu ${UBUNTU_VERSION}.\e[0m" >&2
     exit 1
 fi
@@ -116,7 +116,7 @@ update-alternatives --set editor /bin/nano
 if [[ -z "$SS_TIMEZONE" ]]; then 
     timedatectl set-timezone UTC
 else 
-    timedatectl set-timezone @SS_TIMEZONE
+    timedatectl set-timezone $SS_TIMEZONE
 fi
 
 ####################################################################################################
@@ -259,16 +259,20 @@ apt install certbot python-certbot-nginx
 ## purge PHP 7.0 + PHP 7.1 ##
 apt purge php7.0
 apt purge php7.1
+apt purge php7.2
+apt purge php7.3
 
 ## delete PHP 7.0 + PHP 7.1 files ##
 rm /etc/php/7.0*
 rm /etc/php/7.1*
+rm /etc/php/7.2*
+rm /etc/php/7.3*
 
-## purge PHP 7.2 (so we can install again fresh) ##
-apt purge php7.2
+## temp purge PHP 7.4 (so we can install again fresh) ##
+apt purge php7.4
 
-## install PHP 7.2 and extensions (php7.2 not needed when php7.2-fpm is used) ##
-apt install php7.2-bcmath php7.2-curl php7.2-fpm php7.2-gd php7.2-imagick php7.2-json php7.2-mbstring php7.2-mysql php7.2-soap php7.2-xml php7.2-zip
+## install PHP-FPM 7.4 and extensions (php7.4 not needed when php7.4-fpm is used) ##
+apt install php7.4-bcmath php7.4-curl php7.4-fpm php7.4-gd php7.4-imagick php7.4-json php7.4-mbstring php7.4-mysql php7.4-soap php7.4-xml php7.4-zip
 
 ## delete tmp files ##
 rm /tmp/php-fpm*
@@ -591,25 +595,25 @@ else
 fi
 
 ## copy files to their destinations ##
-cp /tmp/php-fpm.conf /etc/php/7.2/fpm/php-fpm.conf
-cp /tmp/php.ini /etc/php/7.2/fpm/php.ini
-cp /tmp/php.ini /etc/php/7.2/cli/php.ini
-cp /tmp/www.conf /etc/php/7.2/fpm/pool.d/www.conf
+cp /tmp/php-fpm.conf /etc/php/7.4/fpm/php-fpm.conf
+cp /tmp/php.ini /etc/php/7.4/fpm/php.ini
+cp /tmp/php.ini /etc/php/7.4/cli/php.ini
+cp /tmp/www.conf /etc/php/7.4/fpm/pool.d/www.conf
 
 ## customize PHP settings ##
-# sed -i '/error_log/c\error_log = /var/www/logs/error.log' /etc/php/7.2/fpm/php-fpm.conf
+# sed -i '/error_log/c\error_log = /var/www/logs/error.log' /etc/php/7.4/fpm/php-fpm.conf
 
 ## set Ubuntu default PHP version ##
-update-alternatives --set php /usr/bin/php7.2
+update-alternatives --set php /usr/bin/php7.4
 
 ## reset permissions ##
-chown root:root /etc/php/7.2/fpm/php-fpm.conf
-chown root:root /etc/php/7.2/fpm/php.ini
-chown root:root /etc/php/7.2/cli/php.ini
-chown root:root /etc/php/7.2/fpm/pool.d/www.conf
+chown root:root /etc/php/7.4/fpm/php-fpm.conf
+chown root:root /etc/php/7.4/fpm/php.ini
+chown root:root /etc/php/7.4/cli/php.ini
+chown root:root /etc/php/7.4/fpm/pool.d/www.conf
 
 ## restart services ##
-/etc/init.d/php7.2-fpm restart
+/etc/init.d/php7.4-fpm restart
 
 ## delete tmp files ##
 rm /tmp/php-fpm*
@@ -1068,11 +1072,18 @@ echo debconf mysql-server/root_password_again password ${DB_PASSWORD_ROOT} | deb
 # debconf-set-selections <<< "mysql-server-5.7 mysql-server/root_password password ${dbrootpass}"
 # debconf-set-selections <<< "mysql-server-5.7 mysql-server/root_password_again password ${dbrootpass}"
 
-## install mysql 5.7 ##
-apt install mysql-server-5.7 
+## remove MySQL 8.0 (but do not purge to retain database) ##
+apt remove mysql-server-5.5
+apt remove mysql-server-5.6
+apt remove mysql-server-5.7
+apt remove mysql-server-8.0
+apt remove mysql-server
+
+## install mysql 8.0 ##
+apt install mysql-server-8.0
 
 ## MESSAGE ##
-echo -e "\e[36mMySQL 5.7 is installed, now we will secure it...\e[0m"
+echo -e "\e[36mMySQL 8.0 is installed, now we will secure it...\e[0m"
 
 ## install expect ##
 apt install expect
@@ -1122,7 +1133,7 @@ rm -v ~/secure_our_mysql.sh
 # apt purge expect
 
 ## confirm secured ##
-echo "Congratulations, MySQL 5.7 is installed and secured. Onward!"
+echo "Congratulations, MySQL 8.0 is installed and secured. Onward!"
 
 ####################################################################################################
 #### SS-Install: Configure MySQL Users + Connections (Supports IPv4 + IPv6) ########################
