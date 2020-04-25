@@ -56,7 +56,7 @@ NOTE: The self-healing function will respect any custom Cron Job schedules found
 | **Nginx (Extras)** | [mirrors](http://mirrors.slickstack.io/nginx/) | 1.17.x | `nginx.conf` + `default` (server block) |
 | **FastCGI Cache** | [mirrors](http://mirrors.slickstack.io/fastcgi-cache/) | 1.17.x | `fastcgi-cache.conf` |
 | **OpenSSL** | [mirrors](http://mirrors.slickstack.io/openssl/) | 1.1.1x | `nginx.crt` + `nginx.key` |
-| **Let's Encrypt** | [mirrors](http://mirrors.slickstack.io/letsencrypt/) | 0.31.0 | `cert.perm` + `privkey.pem` + `chain.pem` + `fullchain.pem` |
+| **Let's Encrypt** | [mirrors](http://mirrors.slickstack.io/letsencrypt/) | 0.40.x | `cert.perm` + `privkey.pem` + `chain.pem` + `fullchain.pem` |
 | **MySQL** | [mirrors](http://mirrors.slickstack.io/mysql/) | 8.0.x | `my.cnf` |
 | **PHP-FPM** | [mirrors](http://mirrors.slickstack.io/php-fpm/) | 7.4.x | `php.ini` + `php-fpm.conf` + `www.conf` |
 | **Zend / OPcache** | [mirrors](http://mirrors.slickstack.io/opcache/) | 3.4.x / 7.4.x | (same as PHP-FPM) |
