@@ -189,7 +189,8 @@ elif [[ "$SSL_EMAIL_ALERTS" == "true" ]] && [[ $SITE_DOMAIN != *.*.* ]] && [[ $S
 ## subdomain (www is irrelevant) + email alerts ##
 elif [[ "$SSL_EMAIL_ALERTS" == "true" ]] && [[ $SITE_DOMAIN == *.*.* ]]; then
     certbot delete --cert-name ${SITE_TLD}
-    certbot certonly --noninteractive --agree-tos --cert-name ${SITE_TLD} -d ${SITE_DOMAIN} -m ${SSL_EMAIL} --webroot -w /var/www/html/
+    certbot delete --cert-name ${SITE_DOMAIN}
+    certbot certonly --noninteractive --agree-tos --cert-name ${SITE_DOMAIN} -d ${SITE_DOMAIN} -m ${SSL_EMAIL} --webroot -w /var/www/html/
 
 ## SINGLE SITE CERTS + NO EMAIL ALERTS ##
 
@@ -210,7 +211,8 @@ elif [[ "$SSL_EMAIL_ALERTS" != "true" ]] && [[ $SITE_DOMAIN != *.*.* ]] && [[ $S
 ## subdomain (www is irrelevant) + no email alerts (or missing)  ##
 elif [[ "$SSL_EMAIL_ALERTS" != "true" ]] && [[ $SITE_DOMAIN == *.*.* ]]; then
     certbot delete --cert-name ${SITE_TLD}
-    certbot certonly --noninteractive --agree-tos --cert-name ${SITE_TLD} -d ${SITE_DOMAIN} --register-unsafely-without-email --webroot -w /var/www/html/
+    certbot delete --cert-name ${SITE_DOMAIN}
+    certbot certonly --noninteractive --agree-tos --cert-name ${SITE_DOMAIN} -d ${SITE_DOMAIN} --register-unsafely-without-email --webroot -w /var/www/html/
 
 ## MULTISITE NETWORK (SUBDOMAINS) CERTS + EMAIL ALERTS ##
 
@@ -290,6 +292,7 @@ ln /etc/letsencrypt/live/${SITE_DOMAIN}/cert.pem /etc/ssl/cert.pem &> /dev/null
 ln /etc/letsencrypt/live/${SITE_DOMAIN}/privkey.pem /etc/ssl/privkey.pem &> /dev/null
 ln /etc/letsencrypt/live/${SITE_DOMAIN}/chain.pem /etc/ssl/chain.pem &> /dev/null
 ln /etc/letsencrypt/live/${SITE_DOMAIN}/fullchain.pem /etc/ssl/fullchain.pem &> /dev/null
+## need to add more complex rules for SITE_TLD symlinks too (depends on how the certs were generated above) ##
 
 ## modify live Nginx configuration if Certbot successful + preferred ##
 # if [[ "$SSL_TYPE" == "certbot" ]] && [[ -d  "/etc/letsencrypt/live" ]] && [[ -f  "/etc/ssl/cert.pem" ]]; then
