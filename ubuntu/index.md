@@ -12,12 +12,12 @@ title: Ubuntu (Public Mirrors)
 
 * [sshd-config.txt](sshd-config.txt)
 * [sudoers.txt](sudoers.txt)
-* [sysctl.txt](sysctl-conf.txt)
+* [sysctl.txt](sysctl.txt)
 * [gai-conf.txt](gai-conf.txt)
+* [bash-aliases.txt](bash-aliases.txt)
 * nanorc.txt
 * logrotate.txt
 * limits-conf.txt
-* [bash-aliases.txt](bash-aliases.txt)
 
 ### Original Files
 
@@ -72,4 +72,4 @@ title: Ubuntu (Public Mirrors)
 
 ----
 
-*Last updated: Apr 12, 2020*
+*Last updated: Apr 28, 2020*
