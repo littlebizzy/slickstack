@@ -21,6 +21,11 @@ title: Nginx (Public Mirrors)
 
 #### nginx.conf
 
+* [nginx-conf-1.17.10.txt](nginx-conf-1.17.10.txt)
+* [nginx-conf-1.17.9.txt](nginx-conf-1.17.9.txt)
+* [nginx-conf-1.17.8.txt](nginx-conf-1.17.8.txt)
+* [nginx-conf-1.17.7.txt](nginx-conf-1.17.7.txt)
+* [nginx-conf-1.17.6.txt](nginx-conf-1.17.6.txt)
 * [nginx-conf-1.17.5.txt](nginx-conf-1.17.5.txt)
 * [nginx-conf-1.17.4.txt](nginx-conf-1.17.4.txt)
 * [nginx-conf-1.17.3.txt](nginx-conf-1.17.3.txt)
@@ -61,4 +66,4 @@ title: Nginx (Public Mirrors)
 
 ----
 
-*Last updated: Jan 15, 2019*
+*Last updated: Apr 28, 2020*
