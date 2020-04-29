@@ -6,7 +6,7 @@ title: PHP-FPM (Public Mirrors)
 
 ----
 
-### Live Files (PHP-FPM 7.2.x)
+### Live Files (PHP-FPM 7.4.x)
 
 *Live configuration files and boilerplates used by current SlickStack installation that may be altered by LittleBizzy or Ubuntu for better performance.*
 
@@ -98,4 +98,4 @@ title: PHP-FPM (Public Mirrors)
 
 ----
 
-*Last updated: Nov 18, 2019*
+*Last updated: Apr 30, 2020*
