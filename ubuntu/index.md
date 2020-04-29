@@ -6,7 +6,7 @@ title: Ubuntu (Public Mirrors)
 
 ----
 
-### Live Files (Ubuntu 18.04 LTS)
+### Live Files (Ubuntu 20.04 LTS)
 
 *Live configuration files and boilerplates used by current SlickStack installation that may be modified by LittleBizzy or Ubuntu for better performance.*
 
@@ -72,4 +72,4 @@ title: Ubuntu (Public Mirrors)
 
 ----
 
-*Last updated: Apr 28, 2020*
+*Last updated: Apr 30, 2020*
