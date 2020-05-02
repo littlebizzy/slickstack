@@ -54,6 +54,17 @@ title: PHP-FPM (Public Mirrors)
 
 #### php-fpm.conf
 
+* [php-fpm-conf-7.4.5.txt](php-fpm-conf-7.4.5.txt)
+* [php-fpm-conf-7.4.4.txt](php-fpm-conf-7.4.4.txt)
+* [php-fpm-conf-7.4.3.txt](php-fpm-conf-7.4.3.txt)
+* [php-fpm-conf-7.4.2.txt](php-fpm-conf-7.4.2.txt)
+* [php-fpm-conf-7.4.1.txt](php-fpm-conf-7.4.1.txt)
+* [php-fpm-conf-7.4.0.txt](php-fpm-conf-7.4.0.txt)
+* [php-fpm-conf-7.2.30.txt](php-fpm-conf-7.2.30.txt)
+* [php-fpm-conf-7.2.29.txt](php-fpm-conf-7.2.29.txt)
+* [php-fpm-conf-7.2.28.txt](php-fpm-conf-7.2.28.txt)
+* [php-fpm-conf-7.2.27.txt](php-fpm-conf-7.2.27.txt)
+* [php-fpm-conf-7.2.26.txt](php-fpm-conf-7.2.26.txt)
 * [php-fpm-conf-7.2.25.txt](php-fpm-conf-7.2.25.txt)
 * [php-fpm-conf-7.2.24.txt](php-fpm-conf-7.2.24.txt)
 * [php-fpm-conf-7.2.23.txt](php-fpm-conf-7.2.23.txt)
@@ -77,7 +88,18 @@ title: PHP-FPM (Public Mirrors)
 
 #### www.conf
 
-* www-conf-7.2.25.txt
+* [www-conf-7.4.5.txt](www-conf-7.4.5.txt)
+* [www-conf-7.4.4.txt](www-conf-7.4.4.txt)
+* [www-conf-7.4.3.txt](www-conf-7.4.3.txt)
+* [www-conf-7.4.2.txt](www-conf-7.4.2.txt)
+* [www-conf-7.4.1.txt](www-conf-7.4.1.txt)
+* [www-conf-7.4.0.txt](www-conf-7.4.0.txt)
+* [www-conf-7.2.30.txt](www-conf-7.2.30.txt)
+* [www-conf-7.2.29.txt](www-conf-7.2.29.txt)
+* [www-conf-7.2.28.txt](www-conf-7.2.28.txt)
+* [www-conf-7.2.27.txt](www-conf-7.2.27.txt)
+* [www-conf-7.2.26.txt](www-conf-7.2.26.txt)
+* [www-conf-7.2.25.txt](www-conf-7.2.25.txt)
 * [www-conf-7.2.24.txt](www-conf-7.2.24.txt)
 * [www-conf-7.2.23.txt](www-conf-7.2.23.txt)
 * [www-conf-7.2.22.txt](www-conf-7.2.22.txt)
