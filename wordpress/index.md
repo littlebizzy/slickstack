@@ -2,7 +2,7 @@
 
 ----
 
-### Live Files (WordPress 5.3.2)
+### Live Files (WordPress 5.4.1)
 
 *Live configuration files and boilerplates used by current SlickStack installation that may be altered by LittleBizzy or Ubuntu for better performance.*
 
