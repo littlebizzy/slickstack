@@ -10,9 +10,9 @@ title: PHP-FPM (Public Mirrors)
 
 *Live configuration files and boilerplates used by current SlickStack installation that may be altered by LittleBizzy or Ubuntu for better performance.*
 
-* <a href="/php-fpm/php-ini.txt">php-ini.txt</a>
-* <a href="/php-fpm/php-fpm-conf.txt">php-fpm-conf.txt</a>
-* <a href="/php-fpm/www-conf.txt">www-conf.txt</a>
+* [php-ini.txt](php-ini.txt)
+* [php-fpm-conf.txt](php-fpm-conf.txt)
+* [www-conf.txt](www-conf.txt)
 
 ### Original Files
 
@@ -20,7 +20,7 @@ title: PHP-FPM (Public Mirrors)
 
 #### php.ini
 
-* php-ini-7.2.25.txt
+* [php-ini-7.2.25.txt](php-ini-7.2.25.txt)
 * <a href="/php-fpm/php-ini-7.2.24.txt">php-ini-7.2.24.txt</a>
 * <a href="/php-fpm/php-ini-7.2.23.txt">php-ini-7.2.23.txt</a>
 * <a href="/php-fpm/php-ini-7.2.22.txt">php-ini-7.2.22.txt</a>
@@ -91,11 +91,11 @@ title: PHP-FPM (Public Mirrors)
 
 *Links and resources related to the above module that may help users understand its functionality, or how it interacts with other LEMP stack modules.*
 
-* https://github.com/php/php-src/blob/php-7.2.24/php.ini-production
-* https://github.com/php/php-src/blob/php-7.2.24/sapi/fpm/php-fpm.conf.in
-* https://github.com/php/php-src/blob/php-7.2.24/sapi/fpm/www.conf.in
-* https://dev.to/robdwaller/how-php-type-declarations-actually-work-1mm5
+* [https://github.com/php/php-src/blob/php-7.2.24/php.ini-production](https://github.com/php/php-src/blob/php-7.2.24/php.ini-production)
+* [https://github.com/php/php-src/blob/php-7.2.24/sapi/fpm/php-fpm.conf.in](https://github.com/php/php-src/blob/php-7.2.24/sapi/fpm/php-fpm.conf.in)
+* [https://github.com/php/php-src/blob/php-7.2.24/sapi/fpm/www.conf.in](https://github.com/php/php-src/blob/php-7.2.24/sapi/fpm/www.conf.in)
+* [https://dev.to/robdwaller/how-php-type-declarations-actually-work-1mm5](https://dev.to/robdwaller/how-php-type-declarations-actually-work-1mm5)
 
 ----
 
-*Last updated: Apr 30, 2020*
+*Last updated: May 2, 2020*
