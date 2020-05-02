@@ -20,72 +20,83 @@ title: PHP-FPM (Public Mirrors)
 
 #### php.ini
 
+* [php-ini-7.4.5.txt](php-ini-7.4.5.txt)
+* [php-ini-7.4.4.txt](php-ini-7.4.4.txt)
+* [php-ini-7.4.3.txt](php-ini-7.4.3.txt)
+* [php-ini-7.4.2.txt](php-ini-7.4.2.txt)
+* [php-ini-7.4.1.txt](php-ini-7.4.1.txt)
+* [php-ini-7.4.0.txt](php-ini-7.4.0.txt)
+* [php-ini-7.2.30.txt](php-ini-7.2.30.txt)
+* [php-ini-7.2.29.txt](php-ini-7.2.29.txt)
+* [php-ini-7.2.28.txt](php-ini-7.2.28.txt)
+* [php-ini-7.2.27.txt](php-ini-7.2.27.txt)
+* [php-ini-7.2.26.txt](php-ini-7.2.26.txt)
 * [php-ini-7.2.25.txt](php-ini-7.2.25.txt)
-* <a href="/php-fpm/php-ini-7.2.24.txt">php-ini-7.2.24.txt</a>
-* <a href="/php-fpm/php-ini-7.2.23.txt">php-ini-7.2.23.txt</a>
-* <a href="/php-fpm/php-ini-7.2.22.txt">php-ini-7.2.22.txt</a>
-* <a href="/php-fpm/php-ini-7.2.21.txt">php-ini-7.2.21.txt</a>
-* <a href="/php-fpm/php-ini-7.2.20.txt">php-ini-7.2.20.txt</a>
-* <a href="/php-fpm/php-ini-7.2.19.txt">php-ini-7.2.19.txt</a>
-* <a href="/php-fpm/php-ini-7.2.18.txt">php-ini-7.2.18.txt</a>
-* <a href="/php-fpm/php-ini-7.2.17.txt">php-ini-7.2.17.txt</a>
-* <a href="/php-fpm/php-ini-7.2.16.txt">php-ini-7.2.16.txt</a>
-* <a href="/php-fpm/php-ini-7.2.15.txt">php-ini-7.2.15.txt</a>
-* <a href="/php-fpm/php-ini-7.2.14.txt">php-ini-7.2.14.txt</a>
-* <a href="/php-fpm/php-ini-7.2.13.txt">php-ini-7.2.13.txt</a>
-* <a href="/php-fpm/php-ini-7.2.12.txt">php-ini-7.2.12.txt</a>
-* <a href="/php-fpm/php-ini-7.2.11.txt">php-ini-7.2.11.txt</a>
-* <a href="/php-fpm/php-ini-7.2.10.txt">php-ini-7.2.10.txt</a>
-* <a href="/php-fpm/php-ini-7.2.9.txt">php-ini-7.2.9.txt</a>
-* <a href="/php-fpm/php-ini-7.2.8.txt">php-ini-7.2.8.txt</a>
-* <a href="/php-fpm/php-ini-7.2.7.txt">php-ini-7.2.7.txt</a>
-* <a href="/php-fpm/php-ini-7.2.6.txt">php-ini-7.2.6.txt</a>
+* [php-ini-7.2.24.txt](php-ini-7.2.24.txt)
+* [php-ini-7.2.23.txt](php-ini-7.2.23.txt)
+* [php-ini-7.2.22.txt](php-ini-7.2.22.txt)
+* [php-ini-7.2.21.txt](php-ini-7.2.21.txt)
+* [php-ini-7.2.20.txt](php-ini-7.2.20.txt)
+* [php-ini-7.2.19.txt](php-ini-7.2.19.txt)
+* [php-ini-7.2.18.txt](php-ini-7.2.18.txt)
+* [php-ini-7.2.17.txt](php-ini-7.2.17.txt)
+* [php-ini-7.2.16.txt](php-ini-7.2.16.txt)
+* [php-ini-7.2.15.txt](php-ini-7.2.15.txt)
+* [php-ini-7.2.14.txt](php-ini-7.2.14.txt)
+* [php-ini-7.2.13.txt](php-ini-7.2.13.txt)
+* [php-ini-7.2.12.txt](php-ini-7.2.12.txt)
+* [php-ini-7.2.11.txt](php-ini-7.2.11.txt)
+* [php-ini-7.2.10.txt](php-ini-7.2.10.txt)
+* [php-ini-7.2.9.txt](php-ini-7.2.9.txt)
+* [php-ini-7.2.8.txt](php-ini-7.2.8.txt)
+* [php-ini-7.2.7.txt](php-ini-7.2.7.txt)
+* [php-ini-7.2.6.txt](php-ini-7.2.6.txt)
 
 #### php-fpm.conf
 
 * php-fpm-conf-7.2.25.txt
-* <a href="/php-fpm/php-fpm-conf-7.2.24.txt">php-fpm-conf-7.2.24.txt</a>
-* <a href="/php-fpm/php-fpm-conf-7.2.23.txt">php-fpm-conf-7.2.23.txt</a>
-* <a href="/php-fpm/php-fpm-conf-7.2.22.txt">php-fpm-conf-7.2.22.txt</a>
-* <a href="/php-fpm/php-fpm-conf-7.2.21.txt">php-fpm-conf-7.2.21.txt</a>
-* <a href="/php-fpm/php-fpm-conf-7.2.20.txt">php-fpm-conf-7.2.20.txt</a>
-* <a href="/php-fpm/php-fpm-conf-7.2.19.txt">php-fpm-conf-7.2.19.txt</a>
-* <a href="/php-fpm/php-fpm-conf-7.2.18.txt">php-fpm-conf-7.2.18.txt</a>
-* <a href="/php-fpm/php-fpm-conf-7.2.17.txt">php-fpm-conf-7.2.17.txt</a>
-* <a href="/php-fpm/php-fpm-conf-7.2.16.txt">php-fpm-conf-7.2.16.txt</a>
-* <a href="/php-fpm/php-fpm-conf-7.2.15.txt">php-fpm-conf-7.2.15.txt</a>
-* <a href="/php-fpm/php-fpm-conf-7.2.14.txt">php-fpm-conf-7.2.14.txt</a>
-* <a href="/php-fpm/php-fpm-conf-7.2.13.txt">php-fpm-conf-7.2.13.txt</a>
-* <a href="/php-fpm/php-fpm-conf-7.2.12.txt">php-fpm-conf-7.2.12.txt</a>
-* <a href="/php-fpm/php-fpm-conf-7.2.11.txt">php-fpm-conf-7.2.11.txt</a>
-* <a href="/php-fpm/php-fpm-conf-7.2.10.txt">php-fpm-conf-7.2.10.txt</a>
-* <a href="/php-fpm/php-fpm-conf-7.2.9.txt">php-fpm-conf-7.2.9.txt</a>
-* <a href="/php-fpm/php-fpm-conf-7.2.8.txt">php-fpm-conf-7.2.8.txt</a>
-* <a href="/php-fpm/php-fpm-conf-7.2.7.txt">php-fpm-conf-7.2.7.txt</a>
-* <a href="/php-fpm/php-fpm-conf-7.2.6.txt">php-fpm-conf-7.2.6.txt</a>
+* [php-fpm-conf-7.2.24.txt](php-fpm-conf-7.2.24.txt)
+* [php-fpm-conf-7.2.23.txt](php-fpm-conf-7.2.23.txt)
+* [php-fpm-conf-7.2.22.txt](php-fpm-conf-7.2.22.txt)
+* [php-fpm-conf-7.2.21.txt](php-fpm-conf-7.2.21.txt)
+* [php-fpm-conf-7.2.20.txt](php-fpm-conf-7.2.20.txt)
+* [php-fpm-conf-7.2.19.txt](php-fpm-conf-7.2.19.txt)
+* [php-fpm-conf-7.2.18.txt](php-fpm-conf-7.2.18.txt)
+* [php-fpm-conf-7.2.17.txt](php-fpm-conf-7.2.17.txt)
+* [php-fpm-conf-7.2.16.txt](php-fpm-conf-7.2.16.txt)
+* [php-fpm-conf-7.2.15.txt](php-fpm-conf-7.2.15.txt)
+* [php-fpm-conf-7.2.14.txt](php-fpm-conf-7.2.14.txt)
+* [php-fpm-conf-7.2.13.txt](php-fpm-conf-7.2.13.txt)
+* [php-fpm-conf-7.2.12.txt](php-fpm-conf-7.2.12.txt)
+* [php-fpm-conf-7.2.11.txt](php-fpm-conf-7.2.11.txt)
+* [php-fpm-conf-7.2.10.txt](php-fpm-conf-7.2.10.txt)
+* [php-fpm-conf-7.2.9.txt](php-fpm-conf-7.2.9.txt)
+* [php-fpm-conf-7.2.8.txt](php-fpm-conf-7.2.8.txt)
+* [php-fpm-conf-7.2.7.txt](php-fpm-conf-7.2.7.txt)
+* [php-fpm-conf-7.2.6.txt](php-fpm-conf-7.2.6.txt)
 
 #### www.conf
 
 * www-conf-7.2.25.txt
-* <a href="/php-fpm/www-conf-7.2.24.txt">www-conf-7.2.24.txt</a>
-* <a href="/php-fpm/www-conf-7.2.23.txt">www-conf-7.2.23.txt</a>
-* <a href="/php-fpm/www-conf-7.2.22.txt">www-conf-7.2.22.txt</a>
-* <a href="/php-fpm/www-conf-7.2.21.txt">www-conf-7.2.21.txt</a>
-* <a href="/php-fpm/www-conf-7.2.20.txt">www-conf-7.2.20.txt</a>
-* <a href="/php-fpm/www-conf-7.2.19.txt">www-conf-7.2.19.txt</a>
-* <a href="/php-fpm/www-conf-7.2.18.txt">www-conf-7.2.18.txt</a>
-* <a href="/php-fpm/www-conf-7.2.17.txt">www-conf-7.2.17.txt</a>
-* <a href="/php-fpm/www-conf-7.2.16.txt">www-conf-7.2.16.txt</a>
-* <a href="/php-fpm/www-conf-7.2.15.txt">www-conf-7.2.15.txt</a>
-* <a href="/php-fpm/www-conf-7.2.14.txt">www-conf-7.2.14.txt</a>
-* <a href="/php-fpm/www-conf-7.2.13.txt">www-conf-7.2.13.txt</a>
-* <a href="/php-fpm/www-conf-7.2.12.txt">www-conf-7.2.12.txt</a>
-* <a href="/php-fpm/www-conf-7.2.11.txt">www-conf-7.2.11.txt</a>
-* <a href="/php-fpm/www-conf-7.2.10.txt">www-conf-7.2.10.txt</a>
-* <a href="/php-fpm/www-conf-7.2.9.txt">www-conf-7.2.9.txt</a>
-* <a href="/php-fpm/www-conf-7.2.8.txt">www-conf-7.2.8.txt</a>
-* <a href="/php-fpm/www-conf-7.2.7.txt">www-conf-7.2.7.txt</a>
-* <a href="/php-fpm/www-conf-7.2.6.txt">www-conf-7.2.6.txt</a>
+* [www-conf-7.2.24.txt](www-conf-7.2.24.txt)
+* [www-conf-7.2.23.txt](www-conf-7.2.23.txt)
+* [www-conf-7.2.22.txt](www-conf-7.2.22.txt)
+* [www-conf-7.2.21.txt](www-conf-7.2.21.txt)
+* [www-conf-7.2.20.txt](www-conf-7.2.20.txt)
+* [www-conf-7.2.19.txt](www-conf-7.2.19.txt)
+* [www-conf-7.2.18.txt](www-conf-7.2.18.txt)
+* [www-conf-7.2.17.txt](www-conf-7.2.17.txt)
+* [www-conf-7.2.16.txt](www-conf-7.2.16.txt)
+* [www-conf-7.2.15.txt](www-conf-7.2.15.txt)
+* [www-conf-7.2.14.txt](www-conf-7.2.14.txt)
+* [www-conf-7.2.13.txt](www-conf-7.2.13.txt)
+* [www-conf-7.2.12.txt](www-conf-7.2.12.txt)
+* [www-conf-7.2.11.txt](www-conf-7.2.11.txt)
+* [www-conf-7.2.10.txt](www-conf-7.2.10.txt)
+* [www-conf-7.2.9.txt](www-conf-7.2.9.txt)
+* [www-conf-7.2.8.txt](www-conf-7.2.8.txt)
+* [www-conf-7.2.7.txt](www-conf-7.2.7.txt)
+* [www-conf-7.2.6.txt](www-conf-7.2.6.txt)
 
 ### Related Links
 
