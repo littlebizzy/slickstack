@@ -46,7 +46,7 @@ NOTE: The self-healing function will respect any custom Cron Job schedules found
 
 ## Core Modules [[read more](https://slickstack.io/modules)]
 
-*Last updated: Apr 26, 2020*
+*Last updated: May 2, 2020*
 
 *Default Ports: 80 (HTTP), 443 (HTTPS), 6969 (SSH)*
 
@@ -60,7 +60,7 @@ NOTE: The self-healing function will respect any custom Cron Job schedules found
 | **MySQL** | [mirrors](http://mirrors.slickstack.io/mysql/) | 8.0.x | `my.cnf` |
 | **PHP-FPM** | [mirrors](http://mirrors.slickstack.io/php-fpm/) | 7.4.x | `php.ini` + `php-fpm.conf` + `www.conf` |
 | **Zend / OPcache** | [mirrors](http://mirrors.slickstack.io/opcache/) | 3.4.x / 7.4.x | (same as PHP-FPM) |
-| **WordPress** | [mirrors](http://mirrors.slickstack.io/wordpress/) | 5.3.2 | some WP Core junk files are removed by `ss-clean` |
+| **WordPress** | [mirrors](http://mirrors.slickstack.io/wordpress/) | 5.4.1 | some WP Core junk files are removed by `ss-clean` |
 | **MU Plugins** | [mirrors](http://mirrors.slickstack.io/mu-plugins/) | (n/a) | optional `mu-plugins` by LittleBizzy |
 | **WP-CLI** | [mirrors](http://mirrors.slickstack.io/wp-cli/) | 2.4.0 | default config |
 | **Redis (Obj Cache)** | [mirrors](http://mirrors.slickstack.io/redis/) | 5.0.x | `redis.conf` + `object-cache.php` |
