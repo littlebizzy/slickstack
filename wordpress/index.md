@@ -6,11 +6,11 @@
 
 *Live configuration files and boilerplates used by current SlickStack installation that may be altered by LittleBizzy or Ubuntu for better performance.*
 
-* <a href="wordpress.zip">wordpress.zip</a>
-* <a href="wp-config.txt">wp-config.txt</a>
-* <a href="functions.txt">functions.txt</a>
-* <a href="blacklist.txt">blacklist.txt</a>
-* <a href="throwaway.zip">throwaway.zip</a>
+* [wordpress.zip](wordpress.zip)
+* [wp-config.txt](wp-config.txt)
+* [functions.txt](functions.txt)
+* [blacklist.txt](blacklist.txt)
+* [throwaway.zip](throwaway.zip)
 
 ### Original Files
 
@@ -18,6 +18,7 @@
 
 #### wordpress.zip
 
+* [wordpress-5.4.1.zip](wordpress-5.4.1.zip)
 * [wordpress-5.4.0.zip](wordpress-5.4.0.zip)
 * [wordpress-5.3.2.zip](wordpress-5.3.2.zip)
 * <a href="wordpress-5.3.1.zip">wordpress-5.3.1.zip</a>
@@ -158,4 +159,4 @@
 
 ----
 
-*Last updated: Apr 1, 2020*
+*Last updated: May 2, 2020*
