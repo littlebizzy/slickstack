@@ -160,6 +160,16 @@ CLOUDFLARE_WIDGET_DNS="true"
 ## for stability reasons several WP defined constants are hard-coded in the wp-config ##
 ## define additional constants using the included Custom Functions MU plugin ##
 
+## WP_LANG =
+## WP_POST_REVISIONS =
+## WP_AUTOSAVE_INTERVAL =
+## WP_HTTP_BLOCK_EXTERNAL =
+## WP_ACCESSIBLE_HOSTS =
+## WP_AUTO_UPDATE_CORE =
+## WP_DISALLOW_FILE_EDIT =
+## WP_DISALLOW_FILE_MODS =
+## WP_ALLOW_UNFILTERED_UPLOADS =
+
 WP_LANG="en-US"
 WP_POST_REVISIONS="3"
 WP_AUTOSAVE_INTERVAL="60"
@@ -174,7 +184,7 @@ WP_ALLOW_UNFILTERED_UPLOADS="true"
 #### SS-Config: OpenSSL + Cerbot (Let's Encrypt) SSL Settings (CSR Optional) #######################
 ####################################################################################################
 
-## MODULE VERSION: OpenSSL 1.1.1x + Certbot 0.31.0
+## MODULE VERSION: OpenSSL 1.1.1x + Certbot 0.40.x
 
 ## we recommend OpenSSL because it is infinitely simpler and more reliable to maintain ##
 ## even if you choose Cerbot you will still need CloudFlare active during setup ##
@@ -198,7 +208,6 @@ SSL_BUFFER_SIZE="16k"
 
 SSL_EMAIL="user@example.com"
 SSL_EMAIL_ALERTS="false"
-# CERTBOT_CHALLENGE_TYPE="http"
 
 ## CSR_COUNTRY = [US|etc] country to be used with your SSL CSR request data ##
 ## CSR_STATE = [Nevada|etc] state or province to be used with your SSL CSR request data ##
@@ -267,7 +276,7 @@ OPEN_FILE_CACHE_ERRORS="on"
 #### SS-Config: FastCGI Cache (Nginx) + TMPFS (RAM Disk) Settings ##################################
 ####################################################################################################
 
-## MODULE VERSION: Nginx 1.17.x + Ubuntu 18.04 LTS
+## MODULE VERSION: Nginx 1.17.x + Ubuntu 20.04 LTS
 
 ## nearly every WordPress site should be using FastCGI Cache at least for micro-caching ##
 ## Nginx pre-configured to skip cache on /cart* /checkout* /account* pages (etc) ##
@@ -319,7 +328,7 @@ FCGI_CACHE_TMPFS="false"
 ## SQL_NET_READ_TIMEOUT = [30|60|etc] usually this should be fine at 30 seconds ##
 ## SQL_NET_WRITE_TIMEOUT = [30|60|etc] usually this should be fine at 60 seconds ##
 
-SQL_MODE="STRICT_TRANS_TABLES,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION"
+SQL_MODE="STRICT_TRANS_TABLES,NO_ENGINE_SUBSTITUTION"
 SQL_MAX_ALLOWED_PACKET="256M"
 SQL_CONNECT_TIMEOUT="30"
 SQL_WAIT_TIMEOUT="3600"
@@ -343,7 +352,7 @@ INNODB_FLUSH_METHOD="O_DIRECT_NO_FSYNC"
 #### PHP-FPM: General PHP Settings (php.ini) #######################################################
 ####################################################################################################
 
-## MODULE VERSION: PHP-FPM 7.2.x
+## MODULE VERSION: PHP-FPM 7.4.x
 
 ## many well-known PHP settings are hardcoded to ensure server stability and security ##
 ## below settings can be modified before ss-install to customize PHP as needed ##
@@ -386,7 +395,7 @@ PHP_DEFAULT_SOCKET_TIMEOUT="60"
 #### PHP-FPM: FastCGI Process Manager Settings (php-fpm.conf) ######################################
 ####################################################################################################
 
-## MODULE VERSION: PHP-FPM 7.2.x
+## MODULE VERSION: PHP-FPM 7.4.x
 
 ## the vast majority of SlickStack servers should not need to adjust any FPM settings ##
 ## in most cases the php.ini settings and www.conf settings are more relevant ##
@@ -413,7 +422,7 @@ FPM_SYSTEMD_INTERVAL="10"
 #### SS-Config: WWW Pool Settings ##################################################################
 ####################################################################################################
 
-## MODULE VERSION: PHP-FPM 7.2.x
+## MODULE VERSION: PHP-FPM 7.4.x
 
 ## modifying this tiny file can have drastic effects on scaling LEMP to high traffic ##
 ## ondemand is more efficient for most servers, be very careful tuning these ##
@@ -446,7 +455,7 @@ WWW_RLIMIT_CORE="0"
 #### SS-Config: OPcache Settings (Always Enabled On Production Servers) ############################
 ####################################################################################################
 
-## MODULE VERSION: PHP-FPM 7.2.x
+## MODULE VERSION: PHP-FPM 7.4.x
 
 ## OPcache is one of the most powerful (and underrated) ways to scale cheap VPS servers ##
 ## high traffic sites that understand how it works can adjust it with big results ##
@@ -470,8 +479,10 @@ OPCACHE_HUGE_CODE_PAGES="false"
 # etc
 
 ####################################################################################################
-#### SS-Config: General SlickStack Settings ########################################################
+#### SS-Config: General SlickStack Settings + Config Files Sources #################################
 ####################################################################################################
+
+## MODULE VERSION: Ubuntu 20.04 LTS
 
 ## SS_APP = [wordpress] only WordPress currently supported (feedback? tell us!) ##
 ## SS_MU_PLUGINS = [default|custom] use default LittleBizzy MU plugins or custom ones ##
@@ -488,9 +499,20 @@ SS_REBOOT="false"
 SS_DOS2UNIX="false"
 # SS_CLEAN_PHP_HACKS="true"
 
+## MODULE VERSION: WordPress 5.4.x
+
+## for custom configuration use the below settings to define configuration file sources ##
+## source files must be publicly accessible via wget over either HTTP or HTTPS ##
+
+PLUGIN_BLACKLIST_SOURCE="http://mirrors.slickstack.io/wordpress/blacklist.txt"
+CUSTOM_FUNCTIONS_SOURCE="http://mirrors.slickstack.io/wordpress/functions.txt"
+THROWAWAY_THEME_SOURCE="http://mirrors.slickstack.io/wordpress/throwaway.zip"
+
 ####################################################################################################
 #### SS-Config: SlickStack Core Cron Job Schedules (Interval Settings) #############################
 ####################################################################################################
+
+## MODULE VERSION: Ubuntu 20.04 LTS
 
 ## modifying the below SlickStack intervals could affect server stability and updates ##
 ## disable any given cron job by setting interval to random string e.g. never ##
@@ -518,23 +540,10 @@ SS_INTERVAL_ENCRYPT="never"
 SS_INTERVAL_UPDATE="never"
 
 ####################################################################################################
-#### SlickStack: Custom Config File Sources ########################################################
-####################################################################################################
-
-## MODULE VERSION: WordPress 5.3.x
-
-## for custom configuration use the below settings to define configuration file sources ##
-## source files must be publicly accessible via wget over either HTTP or HTTPS ##
-
-PLUGIN_BLACKLIST_SOURCE="http://mirrors.slickstack.io/wordpress/blacklist.txt"
-CUSTOM_FUNCTIONS_SOURCE="http://mirrors.slickstack.io/wordpress/functions.txt"
-THROWAWAY_THEME_SOURCE="http://mirrors.slickstack.io/wordpress/throwaway.zip"
-
-####################################################################################################
 #### SS-Config: MU (Must-Use) WordPress Plugins (Custom List) ######################################
 ####################################################################################################
 
-## MODULE VERSION: WordPress 5.3.x
+## MODULE VERSION: WordPress 5.4.x
 
 ## activate this custom list of MU (Must-Use) plugins using the SS_MU_PLUGINS variable ##
 ## NOTE: Autoloader, Custom Functions, Object Cache, and XXX Notices are required ##
@@ -612,6 +621,8 @@ MU_PLUGIN_23_DIR="virtual-robotstxt"
 #### SS-Config: Included WordPress Plugins (Not MU Plugins) ########################################
 ####################################################################################################
 
+## MODULE VERSION: WordPress 5.4.x
+
 ## these plugins will be added to your WP website whenever ss-install or ss-update runs ##
 ## the activation status of these plugins will not be effected or modified (ever) ##
 
@@ -624,6 +635,8 @@ MU_PLUGIN_23_DIR="virtual-robotstxt"
 #### Included Themes + Default Active Theme ########################################################
 ####################################################################################################
 
+## MODULE VERSION: WordPress 5.4.x
+
 ## these themes will be installed after Throwaway Theme setup completes (and is deleted) ##
 ## all default WordPress Core themes will be deleted (only below themes installed) ##
 
@@ -633,6 +646,8 @@ MU_PLUGIN_23_DIR="virtual-robotstxt"
 ####################################################################################################
 #### Superuser (MU Plugin): Various Settings #######################################################
 ####################################################################################################
+
+## MODULE VERSION: WordPress 5.4.x
 
 # SUPERUSER_LOGIN
 # SUPERUSER_PASSWORD
@@ -650,3 +665,5 @@ MU_PLUGIN_23_DIR="virtual-robotstxt"
 # mailalert="user@example.com"
 # MAIL_USER="example"
 # MAIL_PASSWORD="password"
+
+## EOF ##
