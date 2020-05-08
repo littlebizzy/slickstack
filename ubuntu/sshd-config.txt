@@ -5,10 +5,11 @@
 #### path: n/a (boilerplate) #######################################################################
 #### destination: /etc/ssh/sshd_config (after install) #############################################
 #### purpose: SSH configuration file boilerplate (inclues settings for jailed SFTP user) ###########
-#### module version: Ubuntu 18.04 ##################################################################
+#### module version: Ubuntu 20.04 LTS ##############################################################
 ####################################################################################################
 
 ## SLICKSTACK CURRENTLY RELIES ON PASSWORD AUTHENTICATION AND DOES NOT SUPPORT SSH KEYS ##
+## THE SFTP USER IS JAILED AND CAN BE SHARED WITH TRUSTED WEB DESIGNERS (ETC) ##
 
 ####################################################################################################
 #### OpenSSH: SSH (SFTP) Port Number + SSH Protocol Settings #######################################
@@ -30,7 +31,7 @@ HostKey /etc/ssh/ssh_host_ed25519_key
 ## privilege security ##
 UsePrivilegeSeparation yes
 
-# Lifetime and size of ephemeral version 1 server key
+## lifetime and size of ephemeral version 1 server key ##
 KeyRegenerationInterval 3600
 ServerKeyBits 1024
 
@@ -45,6 +46,9 @@ LogLevel INFO
 ####################################################################################################
 #### OpenSSH: User Login Authentication Settings ###################################################
 ####################################################################################################
+
+## the root user cannot access SSH after the first ss-install setup process is completed ##
+## ensure that you remember your sudo user and password (set in your ss-config) ##
 
 ## allowed users ##
 AllowUsers @SUDO_USER @SFTP_USER
@@ -70,15 +74,15 @@ HostbasedAuthentication no
 # Uncomment if you don't trust ~/.ssh/known_hosts for RhostsRSAAuthentication
 #IgnoreUserKnownHosts yes
 
-# Kerberos options
-#KerberosAuthentication no
-#KerberosGetAFSToken no
-#KerberosOrLocalPasswd yes
-#KerberosTicketCleanup yes
+## Kerberos options ##
+# KerberosAuthentication no
+# KerberosGetAFSToken no
+# KerberosOrLocalPasswd yes
+# KerberosTicketCleanup yes
 
-# GSSAPI options
-#GSSAPIAuthentication no
-#GSSAPICleanupCredentials yes
+## GSSAPI options ##
+# GSSAPIAuthentication no
+# GSSAPICleanupCredentials yes
 
 X11Forwarding yes
 X11DisplayOffset 10
@@ -110,8 +114,11 @@ AcceptEnv LANG LC_*
 UsePAM yes
 
 ####################################################################################################
-#### SSH Config: Jailed (Chroot) SFTP User Settings ################################################
+#### OpenSSH: Jailed (Chroot) SFTP User Settings ###################################################
 ####################################################################################################
+
+## the SFTP user must be different than your sudo user and has limited server access ##
+## you can share this login with trusted developers or remote backup services ##
 
 Subsystem sftp internal-sftp
 Match User @SFTP_USER
@@ -121,7 +128,7 @@ AllowTcpForwarding no
 X11Forwarding no
 
 ####################################################################################################
-#### External References Used By SlickStack To Improve This Script #################################
+#### External References Used By SlickStack To Improve This Script (Thanks, Interwebz) #############
 ####################################################################################################
 
 ## Ref: https://www.simplified.guide/ssh/disable-timeout
