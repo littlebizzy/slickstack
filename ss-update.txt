@@ -1576,7 +1576,10 @@ source /var/www/ss-muplugs
 ## the main purpose of ss-update is to upgrade all currently installed Ubuntu packages ##
 ## because we use apt (not apt-get) this will also upgrade the Linux kernel ##
 
-## set confold as dpkg default (fail-safe in case apt upgrade called directly) ##
+## temporarily disable UFW Firewall ##
+ufw --force disable
+
+## set confold as dpkg default (applies to ss-update only) ##
 DEBIAN_FRONTEND=noninteractive dpkg --configure -a --force-confold
 
 ## update Ubuntu repo cache ##
@@ -1606,6 +1609,60 @@ source /var/www/ss-check
 
 ## run ss-purge ##
 source /var/www/ss-purge
+
+####################################################################################################
+#### SS-Update: Configure UFW Firewall + Set UFW Rules (In Case Apt Overwrites UFW Files) ##########
+####################################################################################################
+
+## at least one case reported where ss-update resulted in UFW config being overwritten ##
+## therefore we include this reinstallation of UFW to ensure no port lockouts ##
+
+## delete tmp files ##
+rm /tmp/ufw*
+rm /tmp/user*
+
+## install UFW firewall ##
+apt install ufw
+
+## set UFW rules ##
+ufw default deny incoming
+ufw default allow outgoing
+ufw allow @SSH_PORT
+ufw allow 80
+ufw allow 443
+ufw allow 6379
+
+## re-enable UFW Firewall (prevously disabled above) ##
+ufw --force enable
+echo "y" | ufw enable
+
+# retrieve latest versions ##
+wget -O /tmp/ufw http://mirrors.slickstack.io/ufw-firewall/ufw.txt
+wget -O /tmp/ufw.conf http://mirrors.slickstack.io/ufw-firewall/ufw-conf.txt
+wget -O /tmp/user.rules http://mirrors.slickstack.io/ufw-firewall/user-rules.txt
+
+if [[ -z "$SSH_PORT" ]]; then 
+    sed -i "s/@SSH_PORT/6969/g" /tmp/user.rules
+else 
+    sed -i "s/@SSH_PORT/${SSH_PORT}/g" /tmp/user.rules
+fi
+
+## copy files to their destinations ##
+cp /tmp/ufw /etc/default/ufw
+cp /tmp/ufw.conf /etc/ufw/ufw.conf
+cp /tmp/user.rules /etc/ufw/user.rules
+
+## reset permissions ##
+chown root:root /etc/default/ufw
+chown root:root /etc/ufw/ufw.conf
+chown root:root /etc/ufw/user.rules
+chmod 0664 /etc/default/ufw
+chmod 0664 /etc/ufw/ufw.conf
+chmod 0664 /etc/ufw/user.rules
+
+## delete tmp files ##
+rm /tmp/ufw*
+rm /tmp/user*
 
 ####################################################################################################
 #### SS-Update: Restart All Services (Via SS-Restart) ##############################################
@@ -1666,3 +1723,4 @@ fi
 ## Ref: https://unix.stackexchange.com/questions/372733/get-output-and-return-value-of-grep-in-single-operation-in-bash
 ## Ref: https://stackoverflow.com/questions/18789907/read-values-from-configuration-file-and-use-in-shell-script
 ## Ref: https://stackoverflow.com/questions/38385963/sed-replacing-string-with-quotation-marks
+## Ref: https://github.com/littlebizzy/slickstack/issues/36
