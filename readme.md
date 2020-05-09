@@ -10,6 +10,10 @@ SlickStack is a free LEMP stack automation script written in Bash designed to en
 | :--------------: | :------: | :-----: | :--------------: | :-------------: | :-------------: |
 | [**A**](https://developers.google.com/speed/pagespeed/insights/?url=https%3A%2F%2Fslickstack.io%2F) | [**A**](https://gtmetrix.com/reports/slickstack.io/zpLMZ1eb) | [**A**](https://tools.pingdom.com/#5aeba9dea8000000) | [**A**](https://securityheaders.com/?q=https%3A%2F%2Fslickstack.io%2F&followRedirects=on) | [**A**](https://www.ssllabs.com/ssltest/analyze.html?d=slickstack.io&latest) | [**A**](https://www.webpagetest.org/result/190920_68_a4a541db9847ce601ef264b41df9d0f3/) |
 
+* **NEW!** We briefly disabled `SQL_MODE` in the `my.cnf` boilerplate due to a conflict with `ss-config` default settings for the recommended MySQL mode. After realizing that MySQL 8.0 no longer supports NO_AUTO_CREATE_USER, we removed that submode from the default SQL_MODE in the `ss-config` boilerplate default settings, and re-enabled SQL_MODE in the `my.cnf` boilerplate.
+
+* **NEW!** SlickStack is now considered Beta (no longer Alpha) and has been moved to supporting Ubuntu 20.04 LTS only, along with PHP 7.4 and MySQL 8.0 which are the new Ubuntu defaults. We have ensured no critical conflicts exist, but some of the documentation and configuration are still being fully optimized for these updated module versions.
+
 * **NEW!** To avoid potential conflicts we've added a `SS_MU_PLUGINS` variable that should be set to either `default` or `custom` in order to activate the custom list of MU plugins that you can edit in your `ss-config` file...
 
 * **NEW!** `ss-update` now performs a "safety" check before running to ensure that it is compatible with the latest version of `ss-config` in order to avoid overwriting the current `ss-config` version with an outdated boilerplate...
