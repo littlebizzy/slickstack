@@ -31,7 +31,7 @@ title: Ubuntu (Public Mirrors)
 
 #### sudoers
 
-* sudoers-20.04.txt
+* [sudoers-20.04.txt](sudoers-20.04.txt)
 * [sudoers-18.04.txt](sudoers-18.04.txt)
 * [sudoers-16.04.txt](sudoers-16.04.txt)
 
@@ -43,7 +43,7 @@ title: Ubuntu (Public Mirrors)
 
 #### gai.conf
 
-* gai-conf-20.04.txt
+* [gai-conf-20.04.txt](gai-conf-20.04.txt)
 * [gai-conf-18.04.txt](gai-conf-18.04.txt)
 * [gai-conf-16.04.txt](gai-conf-16.04.txt)
 
@@ -72,4 +72,4 @@ title: Ubuntu (Public Mirrors)
 
 ----
 
-*Last updated: Apr 30, 2020*
+*Last updated: May 11, 2020*
