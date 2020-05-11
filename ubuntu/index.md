@@ -25,7 +25,7 @@ title: Ubuntu (Public Mirrors)
 
 #### sshd_config
 
-* sshd-config-20.04.txt
+* [sshd-config-20.04.txt](sshd-config-20.04.txt)
 * [sshd-config-18.04.txt](sshd-config-18.04.txt)
 * [sshd-config-16.04.txt](sshd-config-16.04.txt)
 
