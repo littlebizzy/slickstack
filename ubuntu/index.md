@@ -37,7 +37,7 @@ title: Ubuntu (Public Mirrors)
 
 #### sysctl.conf
 
-* sysctl-conf-20.04.txt
+* [sysctl-conf-20.04.txt](sysctl-conf-20.04.txt)
 * [sysctl-conf-18.04.txt](sysctl-conf-18.04.txt)
 * [sysctl-conf-16.04.txt](sysctl-conf-16.04.txt)
 
