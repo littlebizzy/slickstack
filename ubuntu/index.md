@@ -49,7 +49,7 @@ title: Ubuntu (Public Mirrors)
 
 #### nanorc
 
-* nanorc-20.04.txt
+* [nanorc-20.04.txt](nanorc-20.04.txt)
 * [nanorc-18.04.txt](nanorc-18.04.txt)
 * [nanorc-16.04.txt](nanorc-16.04.txt)
 
