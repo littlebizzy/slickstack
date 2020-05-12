@@ -17,10 +17,13 @@ Include /etc/ssh/sshd_config.d/*.conf
 #### OpenSSH: SSH (SFTP) Port Number + Address Settings ############################################
 ####################################################################################################
 
+## we only allow IPv4 connections and disable DNS lookups to speed up SSH connections ##
+## to ensure SSH usability we do not restrict IP addresses that are allowed ##
+
 Port @SSH_PORT
-#AddressFamily any
-#ListenAddress 0.0.0.0
-#ListenAddress ::
+AddressFamily inet
+ListenAddress 0.0.0.0
+UseDNS no
 
 ####################################################################################################
 #### OpenSSH: Keying + Cipher Settings #############################################################
@@ -46,7 +49,8 @@ LogLevel INFO
 ## ensure that you remember your sudo user and password (set in your ss-config) ##
 
 AllowUsers @SUDO_USER @SFTP_USER
-LoginGraceTime 120
+
+LoginGraceTime 30s
 MaxAuthTries 6
 MaxSessions 10
 PermitRootLogin no
@@ -54,13 +58,11 @@ PermitEmptyPasswords no
 PasswordAuthentication yes
 ChallengeResponseAuthentication no
 StrictModes yes
-
 PubkeyAuthentication yes
 #AuthorizedKeysFile     .ssh/authorized_keys .ssh/authorized_keys2
 #AuthorizedPrincipalsFile none
 #AuthorizedKeysCommand none
 #AuthorizedKeysCommandUser nobody
-
 HostbasedAuthentication no
 IgnoreUserKnownHosts yes
 IgnoreRhosts yes
@@ -87,29 +89,31 @@ IgnoreRhosts yes
 
 UsePAM yes
 
+ClientAliveInterval 0
+ClientAliveCountMax 3
+#TCPKeepAlive yes
+
 #AllowAgentForwarding yes
-#AllowTcpForwarding yes
-#GatewayPorts no
+AllowTcpForwarding no
+GatewayPorts no
+PermitTunnel no
+
 X11Forwarding yes
 #X11DisplayOffset 10
 #X11UseLocalhost yes
 #PermitTTY yes
 PrintMotd no
 #PrintLastLog yes
-#TCPKeepAlive yes
 #PermitUserEnvironment no
 #Compression delayed
-#ClientAliveInterval 0
-#ClientAliveCountMax 3
-#UseDNS no
+
 #PidFile /var/run/sshd.pid
 #MaxStartups 10:30:100
-#PermitTunnel no
+
 #ChrootDirectory none
 #VersionAddendum none
 
 Banner none
-
 AcceptEnv LANG LC_*
 
 ####################################################################################################
@@ -131,3 +135,11 @@ X11Forwarding no
 ####################################################################################################
 
 ## Ref: https://www.simplified.guide/ssh/disable-timeout
+## Ref: https://unix.stackexchange.com/questions/470905/why-addressfamily-needs-to-be-configured-for-x11-forwarding
+## Ref: https://www.tecmint.com/speed-up-ssh-connections-in-linux/
+## Ref: https://www.ssh.com/ssh/sshd_config/
+## Ref: https://www.cyberciti.biz/tips/howto-openssh-sshd-listen-multiple-ip-address.html
+## Ref: https://www.howtoforge.com/ssh-best-practices
+## Ref: https://security.stackexchange.com/questions/74634/whats-the-importance-of-sshds-setting-rekeylimit
+## Ref: https://www.thegeekstuff.com/2011/05/openssh-options/
+## Ref: https://www.brennan.id.au/16-Secure_Shell.html
