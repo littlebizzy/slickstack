@@ -46,6 +46,11 @@ function cp {
     command cp -R -f -d --no-preserve=mode,ownership "$@"
 }
 
+## rsync alias flags ##
+function rsync {
+    command rsync -aI "$@"
+}
+
 ## mkdir alias flags ##
 function mkdir {
     command mkdir -p "$@"
@@ -1302,46 +1307,45 @@ chmod 0775 /etc/mysql/my.cnf
 ####################################################################################################
 
 ## cleanup files ##
+rm /tmp/wordpress.zip*
 rm /var/www/html/wordpress*
 rm /var/www/html/staging/wordpress*
 
-## change dir (temp fix) ##
-cd /var/www/html
+## make dirs ##
+mkdir /var/www/html
+mkdir /var/www/html/staging
 
-## download latest version ##
-wget -O /var/www/html/wordpress.zip http://mirrors.slickstack.io/wordpress/wordpress.zip
-unzip -o /var/www/html/wordpress.zip
+## brief permissions reset ##
+chown -R $SFTP_USER:wordpress /var/www/html
+chown -R $SFTP_USER:wordpress /var/www/html/staging
+chmod 6775 /var/www/html
+chmod 6775 /var/www/html/staging
+
+## download latest (patched) WordPress version ##
+wget -O /tmp/wordpress.zip http://mirrors.slickstack.io/wordpress/wordpress.zip
+
+## install WordPress to web directory ##
+cp /tmp/wordpress.zip /var/www/html
+unzip /var/www/html/wordpress.zip -d /var/www/html
 chown -R www-data:wordpress /var/www/html/wordpress
 chmod 775 /var/www/html/wordpress
-rm /var/www/html/wp-admin*
-rm /var/www/html/wp-includes*
-rm /var/www/html/wp*.php*
-rm /var/www/html/index*.php*
-rm /var/www/html/composer.json*
-rsync -raqI /var/www/html/wordpress/* ./
+rsync /var/www/html/wordpress/* /var/www/html
 
-## change dir (temp fix) ##
-cd /var/www/html/staging
-
-## download latest version (staging subdirectory) ##
-rm /var/www/html/staging/wp-admin*
-rm /var/www/html/staging/wp-includes*
-rm /var/www/html/staging/wp*.php*
-rm /var/www/html/staging/index*.php*
-rm /var/www/html/staging/composer.json*
-wget -O /var/www/html/staging/wordpress.zip http://mirrors.slickstack.io/wordpress/wordpress.zip
-unzip -o /var/www/html/staging/wordpress.zip
+## install WordPress to staging subdirectory ##
+cp /tmp/wordpress.zip /var/www/html/staging
+unzip /var/www/html/staging/wordpress.zip -d /var/www/html/staging
 chown -R www-data:wordpress /var/www/html/staging/wordpress
 chmod 775 /var/www/html/staging/wordpress
-rsync -raqI /var/www/html/staging/wordpress/* ./
+rsync /var/www/html/staging/wordpress/* /var/www/html/staging
 
 ## cleanup files ##
-rm /var/www/html/wordpress*
-rm /var/www/html/staging/wordpress*
-rm /var/www/html/classicpress*
-rm /var/www/html/staging/classicpress*
-rm /var/www/html/wp-content/plugins/hello.php
-rm /var/www/html/staging/wp-content/plugins/hello.php
+rm /tmp/wordpress.zip* &> /dev/null
+rm /var/www/html/wordpress* &> /dev/null
+rm /var/www/html/staging/wordpress* &> /dev/null
+rm /var/www/html/classicpress* &> /dev/null
+rm /var/www/html/staging/classicpress* &> /dev/null
+rm /var/www/html/wp-content/plugins/hello.php &> /dev/null
+rm /var/www/html/staging/wp-content/plugins/hello.php &> /dev/null
 
 ####################################################################################################
 #### SlickStack: Install + Configure Throwaway Theme ###############################################
@@ -1735,3 +1739,5 @@ echo -e "\e[36mSlickStack installation complete! Please reboot server and ensure
 ## Ref: https://magc.co/box/notes/change-wp-urls-mysql/
 ## Ref: https://wordpress.stackexchange.com/questions/281814/wordpress-multisite-redirecting-to-wp-signup-php
 ## Ref: https://wordpress.stackexchange.com/questions/165507/site-redirecting-to-wp-signup-php
+## Ref: https://askubuntu.com/questions/86849/how-to-unzip-a-zip-file-from-the-terminal
+## Ref: https://www.computerhope.com/unix/rsync.htm
