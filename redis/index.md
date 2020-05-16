@@ -16,7 +16,7 @@ title: Redis (Public Mirrors)
 
 *Raw files from the vendor’s original release (e.g. official repo), not altered by other providers, included for reference and documentation purposes.*
 
-#### redis.tar.gz
+#### redis.zip
 
 * [redis-6.0.1.zip](redis-6.0.1.zip)
 * [redis-6.0.0.zip](redis-6.0.0.zip)
