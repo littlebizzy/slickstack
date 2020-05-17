@@ -15,6 +15,7 @@ title: MU (Must-Use) Plugins (Public Mirrors)
 * [autoloader.txt](autoloader.txt)
 * [custom-functions.zip](custom-functions.zip)
 * [xxx-notices.txt](xxx-notices.txt)
+* [xxx-staging.txt](xxx-staging.txt)
 
 #### Required Drop-In Plugins
 
@@ -187,4 +188,4 @@ title: MU (Must-Use) Plugins (Public Mirrors)
 
 ----
 
-*Last updated: Dec 13, 2019*
+*Last updated: May 17, 2020*
