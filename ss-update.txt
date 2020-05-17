@@ -79,6 +79,15 @@ function ln {
 source /var/www/ss-dump
 
 ####################################################################################################
+#### SS-Update: Retrieve Latest SS-Check + SS-Worker Scripts #######################################
+####################################################################################################
+
+## run ss-check and ss-worker (in case SlickStack crons have not been running) ##
+source /var/www/ss-check
+source /var/www/ss-worker
+source /var/www/ss-check
+
+####################################################################################################
 #### SS-Update: Install Latest SS-Config File (Safely Replicates Existing Variables) ###############
 ####################################################################################################
 
@@ -1562,11 +1571,47 @@ mysql -uroot -p${DB_PASSWORD_ROOT} -e "GRANT ALL PRIVILEGES ON ${DB_NAME}.* TO '
 mysql --user=root --execute="FLUSH PRIVILEGES;"
 
 ####################################################################################################
-#### SS-Update: Update WP-Config (Via Boilerplate) #################################################
+#### SS-Update: Update WordPress Core + WP-Config To Latest Boilerplate ############################
 ####################################################################################################
 
-# coming soon
-# maybe should leave it to ss-install?
+## cleanup files ##
+rm /tmp/wordpress.zip*
+rm /var/www/html/wordpress*
+rm /var/www/html/staging/wordpress*
+
+## ensure directories exist ##
+mkdir /var/www/html
+mkdir /var/www/html/staging
+
+## brief permissions reset ##
+chown -R $SFTP_USER:wordpress /var/www/html
+chown -R $SFTP_USER:wordpress /var/www/html/staging
+chmod 6775 /var/www/html
+chmod 6775 /var/www/html/staging
+
+## download latest (patched) WordPress version ##
+wget -O /tmp/wordpress.zip http://mirrors.slickstack.io/wordpress/wordpress.zip
+
+## install WordPress to web directory ##
+cp /tmp/wordpress.zip /var/www/html
+unzip /var/www/html/wordpress.zip -d /var/www/html
+chown -R www-data:wordpress /var/www/html/wordpress
+chmod 775 /var/www/html/wordpress
+rsync /var/www/html/wordpress/* /var/www/html
+
+## install WordPress to staging subdirectory ##
+cp /tmp/wordpress.zip /var/www/html/staging
+unzip /var/www/html/staging/wordpress.zip -d /var/www/html/staging
+chown -R www-data:wordpress /var/www/html/staging/wordpress
+chmod 775 /var/www/html/staging/wordpress
+rsync /var/www/html/staging/wordpress/* /var/www/html/staging
+
+## cleanup files ##
+rm /tmp/wordpress.zip* &> /dev/null
+rm /var/www/html/wordpress* &> /dev/null
+rm /var/www/html/staging/wordpress* &> /dev/null
+rm /var/www/html/wp-content/plugins/hello.php &> /dev/null
+rm /var/www/html/staging/wp-content/plugins/hello.php &> /dev/null
 
 ####################################################################################################
 #### SS-Update: Update MU (Must-Use) Plugins (Via SS-Muplugs) ######################################
@@ -1599,15 +1644,6 @@ apt autoremove
 
 ## autoclean Ubuntu packages ##
 apt autoclean
-
-####################################################################################################
-#### SS-Update: Force Retrieve Latest Versions Of SS-Check + SS-Worker #############################
-####################################################################################################
-
-## run ss-check and ss-worker (in case SlickStack crons have not been running) ##
-source /var/www/ss-check
-source /var/www/ss-worker
-source /var/www/ss-check
 
 ####################################################################################################
 #### SS-Update: Purge All Caches (Via SS-Purge) ####################################################
