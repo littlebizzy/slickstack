@@ -178,6 +178,24 @@ server {
     }
     
 ####################################################################################################
+#### Server Block: Adminer (phpMyAdmin) Settings ###################################################
+####################################################################################################
+    
+    location /adminer {
+           root /var/www/tools/adminer/;
+           index adminer.php;
+           location ~ ^/adminer/(.+\.php)$ {
+	   	## we must re-include this routing for php-fpm ##
+        	include /etc/nginx/fastcgi.conf;
+        	try_files $uri =404;
+        	fastcgi_split_path_info ^(.+\.php)(/.+)$;
+		fastcgi_pass 127.0.0.1:9000;
+		fastcgi_read_timeout 300;
+        	fastcgi_index index.php;
+        	fastcgi_cache off;
+    }
+    
+####################################################################################################
 #### Server Block: Staging URI Settings (Supports WP-Staging, Etc) #################################
 ####################################################################################################
     
@@ -349,3 +367,4 @@ server {
 ## Ref: https://stackoverflow.com/questions/30379940/how-do-i-get-the-wordpress-json-api-to-work-on-nginx-server
 ## Ref: https://community.letsencrypt.org/t/letsencrypt-webroot-verification-follows-http-to-https-redirect-for-self-signed-cert/19917
 ## Ref: https://letsencrypt.org/docs/challenge-types/
+## Ref: https://serverfault.com/questions/397421/phpmyadmin-location-for-nginx
