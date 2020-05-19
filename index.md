@@ -26,6 +26,7 @@ title: SlickStack (Public Mirrors)
 * [ufw-firewall](/ufw-firewall/)
 * [clamav](/clamav/)
 * [git](/git/)
+* [adminer](/adminer/)
 
 ### Core Cron Jobs
 
@@ -70,4 +71,4 @@ title: SlickStack (Public Mirrors)
 
 ----
 
-*Last updated: Dec 11, 2019*
+*Last updated: May 19, 2020*
