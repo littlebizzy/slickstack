@@ -69,5 +69,47 @@ function ln {
 }
 
 ####################################################################################################
-#### SS-Check: Delete Any Previous / Leftover (Conflicting) Temporary Files ########################
+#### SS-Import: Delete Any Previous / Leftover (Conflicting) Temporary Files #######################
 ####################################################################################################
+
+
+####################################################################################################
+#### SS-Import: Import Database + Static Files Archives (Overwrites Data) ##########################
+####################################################################################################
+
+## MESSAGE ##
+echo -e "\e[36mImporting (and overwriting) production files and database (don't worry, we will backup first)...\e[0m" >&2
+
+## backup database before proceeding ##
+source /var/www/ss-dump
+
+## reset permissions ##
+chown -R $SFTP_USER:www-data /var/www/archive/import.sql
+chmod 6775 /var/www/archive/import.sql
+chown -R $SFTP_USER:www-data /var/www/archive/import.sql.zip
+chmod 6775 /var/www/archive/import.sql.zip
+chown -R $SFTP_USER:www-data /var/www/archive/import.sql.gz
+chmod 6775 /var/www/archive/import.sql.gz
+chown -R $SFTP_USER:www-data /var/www/archive/import.zip
+chmod 6775 /var/www/archive/import.zip
+chown -R $SFTP_USER:www-data /var/www/archive/import.tar
+chmod 6775 /var/www/archive/import.tar
+chown -R $SFTP_USER:www-data /var/www/archive/import.tar.gz
+chmod 6775 /var/www/archive/import.tar.gz
+
+## prepare MySQL root password (suppresses MySQL security warnings) ##
+export MYSQL_PWD=$DB_PASSWORD_ROOT
+
+## import (overwite) production database ##
+# mysql --user=root --host="$DB_HOST" --protocol=tcp --port=3306 --flush-privileges --force "$DB_NAME" < /var/www/archive/import.sql
+
+## import (overwrite) static files (filename hierarchy will choose best archive format) ##
+# unzip /var/www/archive/migrate.zip
+# tar -xzf /var/www/archive/migrate.tar.gz
+
+####################################################################################################
+#### SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ###############
+####################################################################################################
+
+## Ref: https://collegetimes.co/lemp-server/
+
