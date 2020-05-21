@@ -52,6 +52,7 @@ title: SlickStack (Public Mirrors)
 * [ss-config-sample.txt](ss-config-sample.txt)
 * [ss-dump.txt](ss-dump.txt)
 * [ss-encrypt.txt](ss-encrypt.txt)
+* [ss-import.txt](ss-import.txt)
 * [ss-install.txt](ss-install.txt)
 * [ss-muplugs.txt](ss-muplugs.txt)
 * [ss-perms.txt](ss-perms.txt)
@@ -71,4 +72,4 @@ title: SlickStack (Public Mirrors)
 
 ----
 
-*Last updated: May 19, 2020*
+*Last updated: May 22, 2020*
