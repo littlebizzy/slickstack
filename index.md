@@ -10,23 +10,23 @@ title: SlickStack (Public Mirrors)
 
 *Main modules of SlickStack's optimized WordPress LEMP stack, including Ubuntu LTS, Nginx, MySQL, PHP-FPM, Redis, and several LittleBizzy MU plugins.*
 
-* [ubuntu](/ubuntu/)
-* [nginx](/nginx/)
-* [mysql](/mysql/)
-* [php-fpm](/php-fpm/)
-* [openssl](/openssl/)
-* [fastcgi-cache](/fastcgi-cache/)
-* [letsencrypt (certbot)](/letsencrypt/)
-* [redis](/redis/)
-* [opcache](/opcache/)
-* [wordpress](/wordpress/)
-* [mu-plugins](/mu-plugins/)
-* [starter-themes](/starter-themes/)
-* [wp-cli](/wp-cli/)
-* [ufw-firewall](/ufw-firewall/)
-* [clamav](/clamav/)
-* [git](/git/)
 * [adminer](/adminer/)
+* [clamav](/clamav/)
+* [fastcgi-cache](/fastcgi-cache/)
+* [git](/git/)
+* [letsencrypt (certbot)](/letsencrypt/)
+* [mu-plugins](/mu-plugins/)
+* [mysql](/mysql/)
+* [nginx](/nginx/)
+* [opcache](/opcache/)
+* [openssl](/openssl/)
+* [php-fpm](/php-fpm/)
+* [redis](/redis/)
+* [starter-themes](/starter-themes/)
+* [ubuntu](/ubuntu/)
+* [ufw-firewall](/ufw-firewall/)
+* [wordpress](/wordpress/)
+* [wp-cli](/wp-cli/)
 
 ### Core Cron Jobs
 
@@ -66,10 +66,10 @@ title: SlickStack (Public Mirrors)
 
 *Various meta files that are not part of SlickStack's functionality but provide key information about licensing, general "readme" summary files, etc.*
 
-* [readme.md](readme.md)
-* [license.md](license.md)
 * [changelog.md](changelog.md)
+* [license.md](license.md)
+* [readme.md](readme.md)
 
 ----
 
-*Last updated: May 22, 2020*
+*Last updated: May 23, 2020*
