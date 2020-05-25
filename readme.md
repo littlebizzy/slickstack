@@ -140,7 +140,6 @@ After completing the installation steps above, your `/var/www/` directory should
     /var/www/ss-scan
     /var/www/ss-update
     /var/www/ss-worker
-    /var/www/wp.sql
     
 ...likewise, your `/var/www/html/` (WordPress) directory should look like this:    
     
