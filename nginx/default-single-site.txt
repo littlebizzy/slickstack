@@ -183,17 +183,26 @@ server {
     
     location /adminer {
         alias /var/www/meta/adminer.php;
-        # location ~ ^/adminer/(.+\.php)$ 
-	location ~ \.php$ {
-	    ## we must re-include this routing for php-fpm ##
-            include /etc/nginx/fastcgi.conf;
-            try_files $uri =404;
-            fastcgi_split_path_info ^(.+\.php)(/.+)$;
-            fastcgi_pass 127.0.0.1:9000;
-            fastcgi_read_timeout 300;
-            fastcgi_index index.php;
-            fastcgi_cache off;
-        }
+        ## PHP-FPM routing must be re-included here to ensure processing ##
+        include /etc/nginx/fastcgi.conf;
+        try_files $uri =404;
+        fastcgi_split_path_info ^(.+\.php)(/.+)$;
+        fastcgi_pass 127.0.0.1:9000;
+        fastcgi_read_timeout 300;
+        fastcgi_index index.php;
+        fastcgi_cache off;
+    }
+    
+    location /phpmyadmin {
+        alias /var/www/meta/adminer.php;
+        ## PHP-FPM routing must be re-included here to ensure processing ##
+        include /etc/nginx/fastcgi.conf;
+        try_files $uri =404;
+        fastcgi_split_path_info ^(.+\.php)(/.+)$;
+        fastcgi_pass 127.0.0.1:9000;
+        fastcgi_read_timeout 300;
+        fastcgi_index index.php;
+        fastcgi_cache off;
     }
     
 ####################################################################################################
@@ -368,5 +377,8 @@ server {
 ## Ref: https://stackoverflow.com/questions/30379940/how-do-i-get-the-wordpress-json-api-to-work-on-nginx-server
 ## Ref: https://community.letsencrypt.org/t/letsencrypt-webroot-verification-follows-http-to-https-redirect-for-self-signed-cert/19917
 ## Ref: https://letsencrypt.org/docs/challenge-types/
+## Ref: https://www.techcoil.com/blog/understanding-the-difference-between-the-root-and-alias-directives-in-nginx/
+
 ## Ref: https://serverfault.com/questions/397421/phpmyadmin-location-for-nginx
 ## Ref: https://serverfault.com/questions/748634/how-to-alias-directories-in-nginx
+## Ref: https://stackoverflow.com/questions/35320674/how-can-i-have-same-rule-for-two-locations-in-nginx-config
