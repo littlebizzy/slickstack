@@ -75,13 +75,13 @@ function ln {
 ####################################################################################################
 
 ## MESSAGE ##
-echo -e "\e[36mDumping the live MySQL database to /var/www/wp.sql...\e[0m" >&2
+echo -e "\e[36mDumping the live MySQL database to /var/www/meta/wp.sql...\e[0m" >&2
 
 ## prepare MySQL root password (suppresses MySQL security warnings) ##
 export MYSQL_PWD=$DB_PASSWORD_ROOT
 
 ## dump MySQL database to /var/www/wp.sql (overwrites) ##
-mysqldump --user=root --host="$DB_HOST" --protocol=tcp --port=3306 --dump-date --flush-privileges --force "$DB_NAME" > /var/www/wp.sql
+mysqldump --user=root --host="$DB_HOST" --protocol=tcp --port=3306 --dump-date --flush-privileges --force "$DB_NAME" > /var/www/meta/wp.sql
 
 ####################################################################################################
 #### SS-Dump: Reset Permissions (Allows SFTP User To Access The SQL Dump File) #####################
@@ -90,6 +90,8 @@ mysqldump --user=root --host="$DB_HOST" --protocol=tcp --port=3306 --dump-date -
 ## reset permissions ##
 chown -R $SFTP_USER:www-data /var/www/wp.sql
 chmod 6775 /var/www/wp.sql
+chown -R $SFTP_USER:www-data /var/www/meta/wp.sql
+chmod 6775 /var/www/meta/wp.sql
 
 ####################################################################################################
 #### SS-Dump: SUCCESS (OR FAIL) MESSAGE ############################################################
