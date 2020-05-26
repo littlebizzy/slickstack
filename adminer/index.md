@@ -19,6 +19,8 @@ title: Adminer (Public Mirrors)
 #### adminer.php
 
 * [adminer-4.7.7.txt](adminer-4.7.7.txt)
+* [adminer-4.7.6.txt](adminer-4.7.6.txt)
+* [adminer-4.7.5.txt](adminer-4.7.5.txt)
 
 ### Related Links
 
@@ -28,4 +30,4 @@ title: Adminer (Public Mirrors)
 
 ----
 
-*Last updated: May 19, 2020*
+*Last updated: May 27, 2020*
