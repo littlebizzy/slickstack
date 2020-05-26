@@ -52,12 +52,13 @@ NOTE: The self-healing function will respect any custom Cron Job schedules found
 
 ## Core Modules [[read more](https://slickstack.io/modules)]
 
-*Last updated: May 2, 2020*
+*Last updated: May 27, 2020*
 
 *Default Ports: 80 (HTTP), 443 (HTTPS), 6969 (SSH)*
 
 | LEMP Module | Mirrors | Version | What does SlickStack [ss] customize? |
 | :------------- | :----------: | :----------: | :----------: |
+| **Adminer** | [mirrors](http://mirrors.slickstack.io/adminer/) | 4.7.7 | default config |
 | **Ubuntu** | [mirrors](http://mirrors.slickstack.io/ubuntu/) | 20.04 (LTS) | `crontab` + `gai.conf` + `sshd_config` + `sudoers` + `sysctl.conf` |
 | **Nginx (Extras)** | [mirrors](http://mirrors.slickstack.io/nginx/) | 1.17.x | `nginx.conf` + `default` (server block) |
 | **FastCGI Cache** | [mirrors](http://mirrors.slickstack.io/fastcgi-cache/) | 1.17.x | `fastcgi-cache.conf` (moved to `nginx.conf`) |
@@ -134,6 +135,7 @@ After completing the installation steps above, your `/var/www/` directory should
     /var/www/ss-config-sample
     /var/www/ss-dump
     /var/www/ss-encrypt
+    /var/www/ss-import
     /var/www/ss-install
     /var/www/ss-muplugs
     /var/www/ss-perms
