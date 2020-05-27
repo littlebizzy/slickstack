@@ -83,7 +83,7 @@ if [[ "${UBUNTU_VERSION}" != "20.04" ]]; then
 fi
 
 ## ensure ss-config build version matches ss-install build version ##
-if [[ "$SS_BUILD" != "APR2020B" ]]; then 
+if [[ "$SS_BUILD" != "MAY2020A" ]]; then 
     echo -e "\e[93mYour ss-config file is outdated. Please update it by running ss-update and then run ss-install again.\e[0m" >&2
     exit 1
 fi
@@ -184,6 +184,20 @@ if [[ -z "$SSH_PORT" ]]; then
     sed -i "s/@SSH_PORT/6969/g" /tmp/sshd_config
 else 
     sed -i "s/@SSH_PORT/${SSH_PORT}/g" /tmp/sshd_config
+fi
+
+## enable/disable password authentication (depending on if SSH_KEYS is enabled) ##
+if [[ "$SSH_KEYS" == "true" ]]; then 
+    sed -i "s/@SSH_PASSWORD_AUTHENTICATION/no/g" /tmp/sshd_config
+else 
+    sed -i "s/@SSH_PASSWORD_AUTHENTICATION/yes/g" /tmp/sshd_config
+fi
+
+## enable/disable public key authentication (depending on if SSH_KEYS is enabled) ##
+if [[ "$SSH_KEYS" == "true" ]]; then 
+    sed -i "s/@SSH_PUBKEY_AUTHENTICATION/yes/g" /tmp/sshd_config
+else 
+    sed -i "s/@SSH_PUBKEY_AUTHENTICATION/no/g" /tmp/sshd_config
 fi
 
 ## allow IPv6 SSH sessions (any) if no IPv4 address is detected on the server ##
