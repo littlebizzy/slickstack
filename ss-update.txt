@@ -75,12 +75,18 @@ function ln {
 #### SS-Update: Backup MySQL Database Before Proceeding (Via SS-Dump) ##############################
 ####################################################################################################
 
+## MESSAGE ##
+echo -e "\e[36mRunning a quick backup...\e[0m"
+
 ## run ss-dump ##
 source /var/www/ss-dump
 
 ####################################################################################################
 #### SS-Update: Retrieve Latest SS-Check + SS-Worker Scripts #######################################
 ####################################################################################################
+
+## MESSAGE ##
+echo -e "\e[36mMaking sure SS core crons + core scripts are latest versions...\e[0m"
 
 ## run ss-check and ss-worker (in case SlickStack crons have not been running) ##
 source /var/www/ss-check
@@ -93,6 +99,9 @@ source /var/www/ss-check
 
 ## variables will only be copied over from the previous ss-config file if they are defined ##
 ## otherwise default (recommended) variable values will be implemented automatically ##
+
+## MESSAGE ##
+echo -e "\e[36mUpdating ss-config file to the latest boilerplate (all settings will be copied over)...\e[0m"
 
 ## compability for updating ss-config ##
 SS_UPDATE_BUILD="MAY2020A"
@@ -1574,6 +1583,9 @@ mysql --user=root --execute="FLUSH PRIVILEGES;"
 #### SS-Update: Update WordPress Core + WP-Config To Latest Boilerplate ############################
 ####################################################################################################
 
+## MESSAGE ##
+echo -e "\e[36mUpating WordPress to latest stable (patched) version...\e[0m"
+
 ## cleanup files ##
 rm /tmp/wordpress.zip*
 rm /var/www/html/wordpress*
@@ -1617,6 +1629,9 @@ rm /var/www/html/staging/wp-content/plugins/hello.php &> /dev/null
 #### SS-Update: Update MU (Must-Use) Plugins (Via SS-Muplugs) ######################################
 ####################################################################################################
 
+## MESSAGE ##
+echo -e "\e[36mEnsuring MU plugins are the latest version...\e[0m"
+
 ## run ss-muplugs ##
 source /var/www/ss-muplugs
 
@@ -1626,6 +1641,9 @@ source /var/www/ss-muplugs
 
 ## the main purpose of ss-update is to upgrade all currently installed Ubuntu packages ##
 ## because we use apt (not apt-get) this will also upgrade the Linux kernel ##
+
+## MESSAGE ##
+echo -e "\e[36mUpdating all LEMP stack modules (Ubuntu packages) and retaining existing config files...\e[0m"
 
 ## temporarily disable UFW Firewall ##
 ufw --force disable
@@ -1649,6 +1667,9 @@ apt autoclean
 #### SS-Update: Purge All Caches (Via SS-Purge) ####################################################
 ####################################################################################################
 
+## MESSAGE ##
+echo -e "\e[36mPurging all server caches...\e[0m"
+
 ## run ss-purge ##
 source /var/www/ss-purge
 
@@ -1658,6 +1679,9 @@ source /var/www/ss-purge
 
 ## at least one case reported where ss-update resulted in UFW config being overwritten ##
 ## therefore we include this reinstallation of UFW to ensure no port lockouts ##
+
+## MESSAGE ##
+echo -e "\e[36mResetting the UFW firewall to avoid potential conflicts...\e[0m"
 
 ## delete tmp files ##
 rm /tmp/ufw*
@@ -1707,8 +1731,14 @@ rm /tmp/ufw*
 rm /tmp/user*
 
 ####################################################################################################
-#### SS-Update: Restart All Services (Via SS-Restart) ##############################################
+#### SS-Update: Reset Permissions + Restart All Services ###########################################
 ####################################################################################################
+
+## MESSAGE ##
+echo -e "\e[36mResetting all file/user permissions on the server and restarting all services (modules)...\e[0m"
+
+## run ss-perms ##
+source /var/www/ss-perms
 
 ## run ss-restart ##
 source /var/www/ss-restart
