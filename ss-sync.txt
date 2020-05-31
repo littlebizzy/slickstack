@@ -3,11 +3,11 @@
 ####################################################################################################
 #### author: SlickStack ############################################################################
 #### link: https://slickstack.io ###################################################################
-#### mirror: http://mirrors.slickstack.io/ss-check.txt #############################################
-#### path: /var/www/ss-check #######################################################################
+#### mirror: http://mirrors.slickstack.io/ss-sync.txt ##############################################
+#### path: /var/www/ss-sync ########################################################################
 #### destination: n/a (not a boilerplate) ##########################################################
-#### purpose: Downloads latest SlickStack Core files (except itself = done by ss-worker) ###########
-#### module version: Ubuntu 20.04 LTS ##############################################################
+#### purpose: Syncs relevant files and database from production site to the staging site ###########
+#### module version: Ubuntu 20.04 LTS + MySQL 8.0.x + WordPress 5.4.x ##############################
 ####################################################################################################
 
 ## include SlickStack configuration ##
@@ -66,12 +66,21 @@ function mkdir {
 ## ln alias flags ##
 function ln {
     command ln -s -f "$@"
-    
+  
+####################################################################################################
+#### SS-Sync: Copy All Files + Database From Production To Staging #################################
+####################################################################################################
+
+# cp /var/www/html/wp-content/functions.php /var/www/html/staging/wp-content/functions.php
+rsync --exclude 'uploads' /var/www/html/wp-content/* /var/www/html/staging/wp-content
+ 
 ####################################################################################################
 #### SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ###############
 ####################################################################################################
 
 ## Ref: https://community.centminmod.com/threads/wp-engine-type-production-staging-file-and-db-sync.19720/
+## Ref: https://softwareengineering.stackexchange.com/questions/117945/staging-environment-vs-production-environment
+## Ref: https://www.thegeekstuff.com/2011/01/rsync-exclude-files-and-folders/
 
 #################################
 ## DO NOT DELETE: SS_CHECK_EOF ##
