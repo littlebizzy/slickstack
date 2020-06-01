@@ -83,16 +83,17 @@ rsync --exclude 'uploads' /var/www/html/wp-content/* /var/www/html/staging/wp-co
 source /var/www/ss-dump
 
 ## change production SQL dump to staging_ prefix (shared database) ##
-sed 's#https://${SITE_DOMAIN}/https://${SITE_DOMAIN}/staging#g' /var/www/meta/wp.sql > /var/www/meta/staging.sql
+sed 's#https://${SITE_DOMAIN}/https://${SITE_DOMAIN}/staging#g' /var/www/meta/wp.sql > /tmp/staging.sql
 
 ## prepare MySQL root password (suppresses MySQL security warnings) ##
 export MYSQL_PWD=$DB_PASSWORD_ROOT
 
 ## import database ##
-mysql --user=root --host="$DB_HOST" --protocol=tcp --port=3306 --flush-privileges --force "$DB_NAME" < /var/www/meta/staging.sql
+mysql --user=root --host="$DB_HOST" --protocol=tcp --port=3306 --flush-privileges --force "$DB_NAME" < /tmp/staging.sql
 
 ## cleanup ##
 rm /var/www/meta/staging.sql
+rm /tmp/*.sql*
 
 ####################################################################################################
 #### SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ###############
