@@ -79,23 +79,20 @@ rsync --exclude 'uploads' /var/www/html/wp-content/* /var/www/html/staging/wp-co
 #### SS-Sync: Copy Database From Production To Staging (Changes Table Prefix) ######################
 ####################################################################################################
 
+## cleanup ##
+rm /var/www/meta/staging.sql*
+rm /tmp/*.sql*
+
 ## run ss-dump ##
 source /var/www/ss-dump
 
 ## ensure files exist ##
-if [ ! -f "/var/www/meta/wp.sql" ]; then touch "/var/www/meta/wp.sql"; fi
-
-chown -R $SFTP_USER:www-data /var/www/meta/wp.sql
-chmod 6775 /var/www/meta/wp.sql
-
-## ensure files exist ##
 if [ ! -f "/var/www/meta/staging.sql" ]; then touch "/var/www/meta/staging.sql"; fi
-
 chown -R $SFTP_USER:www-data /var/www/meta/staging.sql
 chmod 6775 /var/www/meta/staging.sql
 
 ## change production SQL dump to staging_ prefix (shared database) ##
-sed "s#https://${SITE_DOMAIN}#https://${SITE_DOMAIN}/staging#g" /var/www/meta/wp.sql > /var/www/meta/staging.sql
+sed "s#https://$SITE_DOMAIN#https://$SITE_DOMAIN/staging#g" /var/www/meta/wp.sql > /var/www/meta/staging.sql
 
 ## prepare MySQL root password (suppresses MySQL security warnings) ##
 export MYSQL_PWD=$DB_PASSWORD_ROOT
@@ -104,7 +101,7 @@ export MYSQL_PWD=$DB_PASSWORD_ROOT
 mysql --user=root --host="$DB_HOST" --protocol=tcp --port=3306 --force "$DB_NAME" < /var/www/meta/staging.sql
 
 ## cleanup ##
-rm /var/www/meta/staging.sql
+rm /var/www/meta/staging.sql*
 rm /tmp/*.sql*
 
 ####################################################################################################
@@ -125,6 +122,8 @@ rm /tmp/*.sql*
 ## Ref: https://linuxize.com/post/how-to-back-up-and-restore-mysql-databases-with-mysqldump/
 ## Ref: https://stackoverflow.com/questions/12677037/how-to-import-a-mysql-dump-from-command-line-with-overwrite
 ## Ref: https://dba.stackexchange.com/questions/35847/mysqldump-flush-privileges-option
+## Ref: https://stackoverflow.com/questions/11263018/mysql-ignore-errors-when-importing
+## Ref: https://askubuntu.com/questions/76808/how-do-i-use-variables-in-a-sed-command
 
 #################################
 ## DO NOT DELETE: SS_CHECK_EOF ##
