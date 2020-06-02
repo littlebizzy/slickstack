@@ -92,13 +92,14 @@ chown -R $SFTP_USER:www-data /var/www/meta/staging.sql
 chmod 6775 /var/www/meta/staging.sql
 
 ## change production SQL dump to staging_ prefix (shared database) ##
-sed "s#https://$SITE_DOMAIN#https://$SITE_DOMAIN/staging#g" /var/www/meta/wp.sql > /var/www/meta/staging.sql
+cp /var/www/meta/wp.sql /tmp/wp.sql
+sed "s#https://$SITE_DOMAIN#https://$SITE_DOMAIN/staging#g" /tmp/wp.sql > /tmp/staging.sql
 
 ## prepare MySQL root password (suppresses MySQL security warnings) ##
 export MYSQL_PWD=$DB_PASSWORD_ROOT
 
 ## import database ##
-mysql --user=root --host="$DB_HOST" --protocol=tcp --port=3306 --force "$DB_NAME" < /var/www/meta/staging.sql
+mysql --user=root --host="$DB_HOST" --protocol=tcp --port=3306 --force "$DB_NAME" < /tmp/staging.sql
 
 ## cleanup ##
 # rm /var/www/meta/staging.sql*
@@ -124,5 +125,6 @@ mysql --user=root --host="$DB_HOST" --protocol=tcp --port=3306 --force "$DB_NAME
 ## Ref: https://dba.stackexchange.com/questions/35847/mysqldump-flush-privileges-option
 ## Ref: https://stackoverflow.com/questions/11263018/mysql-ignore-errors-when-importing
 ## Ref: https://askubuntu.com/questions/76808/how-do-i-use-variables-in-a-sed-command
+## Ref: https://stackoverflow.com/questions/54460445/sed-permission-denied-on-temporary-file
 
 ## SS_EOF
