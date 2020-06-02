@@ -88,7 +88,10 @@ source /var/www/ss-dump
 
 ## change production SQL dump to staging_ prefix (shared database) ##
 cp /var/www/meta/wp.sql /tmp/wp.sql
-sed "s#https://$SITE_DOMAIN#https://$SITE_DOMAIN/staging#g" /tmp/wp.sql > /tmp/staging.sql
+# sed "s#/staging/staging.*#/staging#g" /tmp/wp.sql
+sed "s#https://$SITE_DOMAIN#https://$SITE_DOMAIN/staging#g" /tmp/wp.sql
+sed "s#$DB_PREFIX#staging_#g" /tmp/wp.sql
+mv /tmp/wp.sql /tmp/staging.sql
 
 ## prepare MySQL root password (suppresses MySQL security warnings) ##
 export MYSQL_PWD=$DB_PASSWORD_ROOT
@@ -121,5 +124,7 @@ mysql --user=root --host="$DB_HOST" --protocol=tcp --port=3306 --force "$DB_NAME
 ## Ref: https://stackoverflow.com/questions/11263018/mysql-ignore-errors-when-importing
 ## Ref: https://askubuntu.com/questions/76808/how-do-i-use-variables-in-a-sed-command
 ## Ref: https://stackoverflow.com/questions/54460445/sed-permission-denied-on-temporary-file
+## Ref: https://www.unix.com/shell-programming-and-scripting/31583-wildcards-sed.html
+## Ref: https://stackoverflow.com/questions/9189120/using-sed-with-wildcard
 
 ## SS_EOF
