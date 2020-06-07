@@ -147,8 +147,10 @@ cp /tmp/ss-worker /var/www/ss-worker
 ## ensure core directories exist (except html) ##
 mkdir /var/www
 mkdir /var/www/cache
+mkdir /var/www/cache/opcache
 mkdir /var/www/logs
 mkdir /var/www/meta
+mkdir /var/www/meta/.ssh
 
 ## ensure misc files exist (makes things look pretty and suppresses error messages) ##
 if [[ ! -f "/var/www/meta/wp.sql" ]]; then 
@@ -163,17 +165,21 @@ chmod 0755 /var/www ## must be 0755
 ## SlickStack core scripts ##
 chown root:root /var/www/*cron* ## must be root:root
 chown root:root /var/www/ss* ## must be root:root
-chown www-data:www-data /var/www/meta/wp.sql ## root:root should also work
 chmod 6770 /var/www/*cron* ## 4700 should also work
 chmod 6770 /var/www/ss* ## 4700 should also work
 chmod 0700 /var/www/ss-config
-chmod 6770 /var/www/wp.sql
 
-## its okay if the SFTP user accesses this stuff (but www-data access is the priority) ##
+## SQL dump file (we want SFTP users to be able to access) ##
+chown -R $SFTP_USER:www-data /var/www/meta/wp.sql
+chmod 6775 /var/www/meta/wp.sql
+
+## no worries if the SFTP user accesses this stuff (but www-data access is the priority) ##
 chown www-data:www-data /var/www/cache ## must be www-data:www-data
+chown www-data:www-data /var/www/cache/opcache ## must be www-data:www-data
 chown www-data:www-data /var/www/logs ## must be www-data:www-data
 chown www-data:www-data /var/www/meta ## must be www-data:www-data
 chmod 6775 /var/www/cache ## 6755 should also work
+chmod 6775 /var/www/cache/opcache ## 6755 should also work
 chmod 6775 /var/www/logs ## 6755 should also work
 chmod 6775 /var/www/meta ## 6755 should also work
 
