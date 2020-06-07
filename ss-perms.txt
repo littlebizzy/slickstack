@@ -108,43 +108,44 @@ chmod 0664 /var/www/meta/.ssh/authorized_keys ## should be 0664 as per Ubuntu do
 ## SlickStack Core bash scripts and cron jobs are still executable by root regardless ##
 ## but these permissions help ensure consistency and better overall security ##
 
-## ensure directories exist (will not overwrite) ##
+## ensure core directories exist (except html) ##
 mkdir /var/www
 mkdir /var/www/cache
 mkdir /var/www/cache/opcache
 mkdir /var/www/logs
 mkdir /var/www/meta
+mkdir /var/www/meta/.ssh
 
-## ensure files exist ##
-if [ ! -f "/var/www/meta/wp.sql" ]; then touch "/var/www/meta/wp.sql"; fi
+## ensure misc files exist (makes things look pretty and suppresses error messages) ##
+if [[ ! -f "/var/www/meta/wp.sql" ]]; then 
+    touch "/var/www/meta/wp.sql"; 
+fi
 
 ## chroot (SFTP) user directory ##
-chown root:root /var &> /dev/null ## must be root:root
-chown root:root /var/www &> /dev/null ## must be root:root
-chmod 0755 /var/www &> /dev/null ## must be 0755
+chown root:root /var ## must be root:root
+chown root:root /var/www ## must be root:root
+chmod 0755 /var/www ## must be 0755
 
 ## SlickStack core scripts ##
-chown root:root /var/www/*cron* &> /dev/null ## must be root:root
-chown root:root /var/www/ss* &> /dev/null ## must be root:root
-chmod 6770 /var/www/*cron* &> /dev/null ## 4700 should also work
-chmod 6770 /var/www/ss* &> /dev/null ## 4700 should also work
-chmod 0700 /var/www/ss-config &> /dev/null
+chown root:root /var/www/*cron* ## must be root:root
+chown root:root /var/www/ss* ## must be root:root
+chmod 6770 /var/www/*cron* ## 4700 should also work
+chmod 6770 /var/www/ss* ## 4700 should also work
+chmod 0700 /var/www/ss-config
 
 ## SQL dump file (we want SFTP users to be able to access) ##
-# chown www-data:www-data /var/www/wp.sql &> /dev/null ## root:root should also work
-# chmod 6770 /var/www/wp.sql &> /dev/null
 chown -R $SFTP_USER:www-data /var/www/meta/wp.sql
 chmod 6775 /var/www/meta/wp.sql
 
-## its okay if the SFTP user accesses this stuff (but www-data access is the priority) ##
-chown www-data:www-data /var/www/cache &> /dev/null ## must be www-data:www-data
-chown www-data:www-data /var/www/cache/opcache &> /dev/null ## must be www-data:www-data
-chown www-data:www-data /var/www/logs &> /dev/null ## must be www-data:www-data
-chown www-data:www-data /var/www/meta &> /dev/null ## must be www-data:www-data
-chmod 6775 /var/www/cache &> /dev/null ## 6755 should also work
-chmod 6775 /var/www/cache/opcache &> /dev/null ## 6755 should also work
-chmod 6775 /var/www/logs &> /dev/null ## 6755 should also work
-chmod 6775 /var/www/meta &> /dev/null ## 6755 should also work
+## no worries if the SFTP user accesses this stuff (but www-data access is the priority) ##
+chown www-data:www-data /var/www/cache ## must be www-data:www-data
+chown www-data:www-data /var/www/cache/opcache ## must be www-data:www-data
+chown www-data:www-data /var/www/logs ## must be www-data:www-data
+chown www-data:www-data /var/www/meta ## must be www-data:www-data
+chmod 6775 /var/www/cache ## 6755 should also work
+chmod 6775 /var/www/cache/opcache ## 6755 should also work
+chmod 6775 /var/www/logs ## 6755 should also work
+chmod 6775 /var/www/meta ## 6755 should also work
 
 ## ensure log files exist ##
 if [ ! -f "/var/www/logs/clamav.log" ]; then touch "/var/www/logs/clamav.log"; fi
@@ -154,11 +155,15 @@ if [ ! -f "/var/www/logs/nginx.log" ]; then touch "/var/www/logs/nginx.log"; fi
 if [ ! -f "/var/www/logs/redis.log" ]; then touch "/var/www/logs/redis.log"; fi
 
 ## individual log files ##
-chown clamav:clamav /var/www/logs/clamav*.log* &> /dev/null
-chown www-data:www-data /var/www/logs/error*.log* &> /dev/null
-chown mysql:mysql /var/www/logs/mysql*.log* &> /dev/null
-chown www-data:www-data /var/www/logs/nginx*.log* &> /dev/null
-chown redis:redis /var/www/logs/redis*.log* &> /dev/null
+chown clamav:clamav /var/www/logs/clamav*.log*
+chown www-data:www-data /var/www/logs/error*.log*
+chown mysql:mysql /var/www/logs/mysql*.log*
+chown www-data:www-data /var/www/logs/nginx*.log*
+chown redis:redis /var/www/logs/redis*.log*
+
+## ensure unix formatting (avoids syntax errors and otherwise) ##
+dos2unix /var/www/*cron*
+dos2unix /var/www/ss*
 
 ####################################################################################################
 #### SS-Perms: Adminer Permissions #################################################################
