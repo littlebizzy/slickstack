@@ -102,6 +102,11 @@ export MYSQL_PWD=$DB_PASSWORD_ROOT
 ## import database ##
 mysql --user=root --host="$DB_HOST" --protocol=tcp --port=3306 --force "$DB_NAME" < /tmp/staging.sql
 
+## fix home and siteurl fields (no mass search/replace to avoid potential conflicts) ##
+mysql --user=root --host="$DB_HOST" --database="$DB_NAME" --protocol=tcp --port=3306 --execute="UPDATE wp_options SET option_value="https://$SITE_DOMAIN/staging" WHERE option_name = "home";"
+
+mysql --user=root --host="$DB_HOST" --database="$DB_NAME" --protocol=tcp --port=3306 --execute="UPDATE wp_options SET option_value="https://$SITE_DOMAIN/staging" WHERE option_name = "siteurl";"
+
 ## cleanup ##
 # rm /var/www/meta/staging.sql*
 # rm /tmp/*.sql*
@@ -130,5 +135,7 @@ mysql --user=root --host="$DB_HOST" --protocol=tcp --port=3306 --force "$DB_NAME
 ## Ref: https://www.unix.com/shell-programming-and-scripting/31583-wildcards-sed.html
 ## Ref: https://stackoverflow.com/questions/9189120/using-sed-with-wildcard
 ## Ref: http://helpdoco.com/Linux-Unix/sed-cannot-rename-permission-denied.htm
+## Ref: https://precisionsec.com/changing-the-wordpress-site-url-using-the-mysql-command-line/
+## Ref: https://stackoverflow.com/questions/20033648/how-to-run-mysql-command-on-bash
 
 ## SS_EOF
