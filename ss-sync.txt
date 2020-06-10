@@ -72,6 +72,9 @@ function ln {
 #### SS-Sync: Copy All Relevant Files From Production To Staging ###################################
 ####################################################################################################
 
+## run ss-clean ##
+source /var/www/ss-clean
+
 ## copy relevant web root files over ##
 rsync --exclude 'uploads' /var/www/html/wp-content/* /var/www/html/staging/wp-content
 
@@ -86,12 +89,9 @@ rm /tmp/*.sql*
 ## run ss-dump ##
 source /var/www/ss-dump
 
-## change production SQL dump to staging_ prefix (shared database) ##
-cp /var/www/meta/wp.sql /tmp/wp.sql
-# sed "s#/staging/staging.*#/staging#g" /tmp/wp.sql
-sed -i "s/${DB_PREFIX}/staging_/g" /tmp/wp.sql
-sed -i "s#https://${SITE_DOMAIN}#https://${SITE_DOMAIN}/staging#g" /tmp/wp.sql
-mv /tmp/wp.sql /tmp/staging.sql
+## change production SQL dump to staging_ prefix (shared database with hardcoded URIs) ##
+cp /var/www/meta/wp.sql /tmp/staging.sql
+sed -i "s/${DB_PREFIX}/staging_/g" /tmp/staging.sql
 
 ## prepare MySQL root password (suppresses MySQL security warnings) ##
 export MYSQL_PWD=$DB_PASSWORD_ROOT
