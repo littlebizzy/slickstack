@@ -79,7 +79,7 @@ function ln {
 source /var/www/ss-clean
 
 ## copy web root files over (skips uploads) ##
-rsync --exclude 'uploads' /var/www/html/wp-content/* /var/www/html/staging/wp-content
+rsync --exclude 'uploads' /var/www/html/wp-content/ /var/www/html/staging/wp-content
 
 ####################################################################################################
 #### SS-Sync: Copy Database From Production To Staging (Changes Table Prefix) ######################
@@ -97,7 +97,7 @@ source /var/www/ss-dump
 
 ## change production SQL dump to staging_ prefix (shared database with hardcoded URIs) ##
 cp /var/www/meta/wp.sql /tmp/staging.sql
-sed -i "s/${DB_PREFIX}/staging_${DB_PREFIX}/g" /tmp/staging.sql
+sed -i "s#${DB_PREFIX}#staging_${DB_PREFIX}#g" /tmp/staging.sql
 sed -i "s#staging/staging/staging/staging/staging/staging/staging/staging/staging/staging#staging#g" /tmp/staging.sql
 sed -i "s#staging/staging/staging/staging/staging/staging/staging/staging/staging#staging#g" /tmp/staging.sql
 sed -i "s#staging/staging/staging/staging/staging/staging/staging/staging#staging#g" /tmp/staging.sql
@@ -312,5 +312,8 @@ mkdir /var/www/html/staging/wp-content/upgrade
 ## Ref: https://blog.room34.com/archives/5091/wheres-the-option-to-change-the-uploads-path-in-wordpress-3-5/
 ## Ref: https://premium.wpmudev.org/blog/sync-staging-live-sites-wordpress/
 ## Ref: https://poststatus.com/functions-constants-referencing-wordpress-content-uploads-plugin-directories/
+## Ref: https://phoenixnap.com/kb/rsync-exclude-files-and-directories
+## Ref: http://qdosmsq.dunbar-it.co.uk/blog/2013/02/rsync-to-slash-or-not-to-slash/
+## Ref: http://lucasb.eyer.be/snips/rsync-skipping-directory.html
 
 ## SS_EOF
