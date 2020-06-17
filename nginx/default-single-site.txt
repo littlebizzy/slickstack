@@ -213,6 +213,9 @@ server {
 #### Server Block: Staging URI Settings (Supports WP-Staging, Etc) #################################
 ####################################################################################################
     
+## staging sites are noindexed, FastCGI caching is disabled, and paths are hardcoded ## 
+## media files (uploads) are aliased to existing files from the production site ##
+    
     location /staging/* {
         ## first try files, then directories, otherwise query index ##
         try_files $uri $uri/ /staging/index.php?$args;
@@ -238,7 +241,7 @@ server {
     #    return 302             https://@DOMAIN/wp-content/uploads/$1;
     # }
     
-    location /staging/wp-content/uploads/ {
+    location ^~ /staging/wp-content/uploads/ {
         alias /var/www/html/wp-content/uploads/;
     }
 
