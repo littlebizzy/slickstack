@@ -2,7 +2,7 @@
 
 ----
 
-### Live Files (WordPress 5.4.1)
+### Live Files (WordPress 5.4.2)
 
 *Live configuration files and boilerplates used by current SlickStack installation that may be altered by LittleBizzy or Ubuntu for better performance.*
 
@@ -19,6 +19,7 @@
 
 #### wordpress.zip
 
+* [wordpress-5.4.2.zip](wordpress-5.4.2.zip)
 * [wordpress-5.4.1.zip](wordpress-5.4.1.zip)
 * [wordpress-5.4.0.zip](wordpress-5.4.0.zip)
 * [wordpress-5.3.2.zip](wordpress-5.3.2.zip)
@@ -160,4 +161,4 @@
 
 ----
 
-*Last updated: Jun 16, 2020*
+*Last updated: Jun 19, 2020*
