@@ -1,0 +1,1954 @@
+#!/bin/bash
+
+####################################################################################################
+#### author: SlickStack ############################################################################
+#### link: https://slickstack.io ###################################################################
+#### mirror: http://mirrors.slickstack.io/ss-install.txt ###########################################
+#### path: /var/www/ss-install #####################################################################
+#### destination: n/a (not a boilerplate) ##########################################################
+#### purpose: Reinstalls the entire SlickStack server and all LEMP modules, etc (idempotent) #######
+#### module version: Ubuntu 20.04 LTS ##############################################################
+####################################################################################################
+
+## SS-CONFIG MUST BE PROPERLY CONFIGURED (AND CURRENT BUILD) BEFORE RUNNING SS-INSTALL ##
+## ENSURE THAT SS-CONFIG BUILD IS CURRENT BY RUNNING SS-UPDATE OCCASIONALLY ##
+
+## include SlickStack configuration ##
+source /var/www/ss-config
+
+####################################################################################################
+#### SlickStack: Critical Bash Functions (Aliases) For This Script To Work #########################
+####################################################################################################
+
+## apt alias flags ##
+function apt {
+    export DEBIAN_FRONTEND=noninteractive
+    export DEBIAN_PRIORITY=critical
+    export PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'
+    command /usr/bin/apt -q -y -o Dpkg::Options::=--force-confold -o Dpkg::Options::=--force-confdef "$@"
+}
+
+## add-apt-repository alias flags ##
+function add-apt-repository {
+    export DEBIAN_FRONTEND=noninteractive
+    export DEBIAN_PRIORITY=critical
+    export PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'
+    command /usr/bin/add-apt-repository -y "$@"
+}
+
+## wget alias flags ##
+function wget {
+    command wget --no-check-certificate --no-cache --no-cookies --tries=3 --timeout=15 "$@"
+}
+
+## cp alias flags ##
+function cp {
+    command cp -R -f -d --no-preserve=mode,ownership "$@"
+}
+
+## rsync alias flags ##
+function rsync {
+    command rsync -aI "$@"
+}
+
+## unzip alias flags ##
+function unzip {
+    command unzip -o "$@"
+}
+
+## rm alias flags ##
+function rm {
+    command rm -R -f "$@"
+}
+
+## mkdir alias flags ##
+function mkdir {
+    command mkdir -p "$@"
+}
+
+## ln alias flags ##
+function ln {
+    command ln -s -f "$@"
+}
+
+####################################################################################################
+#### SS-Install: Check OS Compability + Verify SS-Config Freshness + Backup Database ###############
+####################################################################################################
+
+## ensure correct Ubuntu version is installed ##
+UBUNTU_VERSION=`lsb_release -rs`
+if [[ "${UBUNTU_VERSION}" != "20.04" ]]; then
+    echo -e "\e[93mSlickStack is designed for Ubuntu 20.04, but this server is running Ubuntu ${UBUNTU_VERSION}.\e[0m" >&2
+    exit 1
+fi
+
+## ensure ss-config build version matches ss-install build version ##
+if [[ "$SS_BUILD" != "MAY2020A" ]]; then 
+    echo -e "\e[93mYour ss-config file is outdated. Please update it by running ss-update and then run ss-install again.\e[0m" >&2
+    exit 1
+fi
+
+## ensure enough disk space exists before proceeding ##
+# COMING SOON
+
+## backup database before proceeding ##
+source /var/www/ss-dump
+
+####################################################################################################
+#### SS-Install: Configure Ubuntu (SlickStack) Users + Set Various System Defaults #################
+####################################################################################################
+
+## MESSAGE ##
+echo -e "\e[36mConfiguring users, permissions and Ubuntu defaults...\e[0m"
+
+## set root password ##
+echo root:$ROOT_PASSWORD | /usr/sbin/chpasswd
+
+## ensure root password never expires ##
+chage -E -1 -m 0 -M -1 -I -1 -W 99999 root
+
+## create sudo user ##
+adduser --disabled-password --gecos "" $SUDO_USER
+echo $SUDO_USER:$SUDO_PASSWORD | /usr/sbin/chpasswd
+
+## create sftp user ##
+adduser --disabled-password --gecos "" $SFTP_USER
+echo $SFTP_USER:$SFTP_PASSWORD | /usr/sbin/chpasswd
+
+## set default editor to nano ##
+update-alternatives --set editor /bin/nano
+
+## set timezone ##
+if [[ -z "$SS_TIMEZONE" ]]; then 
+    timedatectl set-timezone UTC
+else 
+    timedatectl set-timezone $SS_TIMEZONE
+fi
+
+####################################################################################################
+#### SS-Install: Download Latest SlickStack Core Scripts + Cron Jobs (Via SS-Check) ################
+####################################################################################################
+
+## MESSAGE ##
+echo -e "\e[36mRetrieving latest SlickStack files and copying them to local server...\e[0m"
+
+## download latest versions ##
+wget -O /tmp/ss-check http://mirrors.slickstack.io/ss-check.txt
+
+## copy files to their destinations ##
+cp /tmp/ss-check /var/www/ss-check
+
+## reset permissions ##
+chown root:root /var/www/ss-check
+chmod 6770 /var/www/ss-check
+
+## run scripts ##
+source /var/www/ss-check
+
+####################################################################################################
+#### SS-Install: Configure Ubuntu Root + Sudo User Permissions (Sudoers File) ######################
+####################################################################################################
+
+## MESSAGE ##
+echo -e "\e[36mConfiguring the Sudoers file (root and sudo users)...\e[0m"
+
+## download latest versions ##
+wget -O /tmp/sudoers http://mirrors.slickstack.io/ubuntu/sudoers.txt
+
+## replace variables ##
+sed -i "s/@SUDO_USER/${SUDO_USER}/g" /tmp/sudoers
+
+## copy files to their destinations ##
+cp /tmp/sudoers /etc/sudoers
+
+## reset permissions ##
+chown root:root /etc/sudoers
+chmod 0440 /etc/sudoers
+
+####################################################################################################
+#### Configure Ubuntu: SSH + SFTP Settings (a.k.a. SSHD Configuration) #############################
+####################################################################################################
+
+## MESSAGE ##
+echo -e "\e[36mConfiguring SSH (SFTP) settings, user permissions, and port number...\e[0m"
+
+## download latest versions ##
+wget -O /tmp/sshd_config http://mirrors.slickstack.io/ubuntu/sshd-config.txt
+
+## replace variables ##
+sed -i "s/@SUDO_USER/${SUDO_USER}/g" /tmp/sshd_config
+sed -i "s/@SFTP_USER/${SFTP_USER}/g" /tmp/sshd_config
+
+## set SSH port number (optional) ##
+if [[ -z "$SSH_PORT" ]]; then 
+    sed -i "s/@SSH_PORT/6969/g" /tmp/sshd_config
+else 
+    sed -i "s/@SSH_PORT/${SSH_PORT}/g" /tmp/sshd_config
+fi
+
+## enable/disable password authentication (depending on if SSH_KEYS is enabled) ##
+if [[ "$SSH_KEYS" == "true" ]]; then 
+    sed -i "s/@SSH_PASSWORD_AUTHENTICATION/no/g" /tmp/sshd_config
+else 
+    sed -i "s/@SSH_PASSWORD_AUTHENTICATION/yes/g" /tmp/sshd_config
+fi
+
+## enable/disable public key authentication (depending on if SSH_KEYS is enabled) ##
+if [[ "$SSH_KEYS" == "true" ]]; then 
+    sed -i "s/@SSH_PUBKEY_AUTHENTICATION/yes/g" /tmp/sshd_config
+else 
+    sed -i "s/@SSH_PUBKEY_AUTHENTICATION/no/g" /tmp/sshd_config
+fi
+
+## allow IPv6 SSH sessions (any) if no IPv4 address is detected on the server ##
+# if [[ CURRENT IP ADDRESS IS IPV6 ONLY ]]; then 
+#    sed -i "s/AddressFamily inet/AddressFamily any/g" /tmp/sshd_config
+# fi
+## Ref: https://stackoverflow.com/questions/5281341/get-local-network-interface-addresses-using-only-proc
+## Ref: https://stackoverflow.com/questions/39983121/how-to-detect-if-system-has-ipv6-enabled-in-a-unix-shell-script
+## Ref: https://www.cyberciti.biz/faq/bash-shell-command-to-find-get-ip-address/
+
+## copy files to their destinations ##
+cp /tmp/sshd_config /etc/ssh/sshd_config
+
+## reset permissions ##
+chown root:root /etc/ssh/sshd_config
+chmod 0440 /etc/ssh/sshd_config
+
+mkdir /var/www/meta/.ssh
+chown $SUDO_USER:$SUDO_USER /var/www/meta/.ssh
+chmod 0755 /var/www/meta/.ssh ## should be 0775 as per Ubuntu docs
+
+touch /var/www/meta/.ssh/authorized_keys
+chown $SUDO_USER:$SUDO_USER /var/www/meta/.ssh/authorized_keys
+chmod 0664 /var/www/meta/.ssh/authorized_keys ## should be 0664 as per Ubuntu docs
+
+## restart services ##
+/etc/init.d/ssh restart
+
+####################################################################################################
+#### SS-Install: Install SlickStack (Ubuntu) Root Crontab File #####################################
+####################################################################################################
+
+## MESSAGE ##
+echo -e "\e[36mInstalling the SlickStack crontab file to Ubuntu root user crontab...\e[0m"
+
+## install crontab ##
+crontab /var/www/0-crontab
+
+## reset permissions ##
+chown root:root /var/spool/cron/crontabs/root
+chmod 0600 /var/spool/cron/crontabs/root
+
+## reload crontab ##
+/etc/init.d/cron reload
+
+####################################################################################################
+#### SlickStack: Install Various Modules Via Default Ubuntu Packages ###############################
+####################################################################################################
+
+## MESSAGE ##
+echo -e "\e[36mInstalling various SlickStack modules from most recent Ubuntu repos...\e[0m"
+
+## set confold as dpkg default (fail-safe in case apt upgrade called directly) ##
+DEBIAN_FRONTEND=noninteractive dpkg --configure -a --force-confold
+
+## update repo cache ##
+apt update
+
+## upgrade installed Ubuntu packages (LEMP modules) + Linux kernel (apt feature) ##
+apt full-upgrade
+
+## install update-manager-core ##
+apt install update-manager-core
+
+## install Linux utilities (Zip, Unzip, DOS2Unix) ##
+apt install zip unzip dos2unix
+
+## install Git ##
+apt install git
+
+## install ClamAV ##
+apt install clamav
+
+####################################################################################################
+#### Install Cerbot (Let's Encrypt) Packages Via PPA Repos #########################################
+####################################################################################################
+
+## install software-properties-common (for Certbot) ##
+# apt install software-properties-common
+
+## add custom PPAs (for Certbot) ##
+# add-apt-repository universe
+# add-apt-repository ppa:certbot/certbot ## Ubuntu 20.04 now includes Certbot
+
+## update again after adding custom ppas ##
+# apt update
+
+apt remove certbot 
+add-apt-repository --remove ppa:certbot/certbot
+
+## install Certbot ##
+apt install certbot python3-certbot-nginx
+
+####################################################################################################
+#### Install PHP-FPM 7.2 + Required Extensions #####################################################
+####################################################################################################
+
+## purge PHP 7.0 + PHP 7.1 ##
+apt purge php7.0
+apt purge php7.1
+apt purge php7.2
+apt purge php7.3
+
+## delete PHP 7.0 + PHP 7.1 files ##
+rm /etc/php/7.0*
+rm /etc/php/7.1*
+rm /etc/php/7.2*
+rm /etc/php/7.3*
+
+## temp purge PHP 7.4 (so we can install again fresh) ##
+apt purge php7.4
+
+## install PHP-FPM 7.4 and extensions (php7.4 not needed when php7.4-fpm is used) ##
+apt install php7.4-bcmath php7.4-curl php7.4-fpm php7.4-gd php7.4-imagick php7.4-json php7.4-mbstring php7.4-mysql php7.4-soap php7.4-xml php7.4-zip
+
+## delete tmp files ##
+rm /tmp/php-fpm*
+rm /tmp/php-ini*
+rm /tmp/www*
+
+## download latest versions ##
+wget -O /tmp/php-fpm.conf http://mirrors.slickstack.io/php-fpm/php-fpm-conf.txt
+wget -O /tmp/php.ini http://mirrors.slickstack.io/php-fpm/php-ini.txt
+wget -O /tmp/www.conf http://mirrors.slickstack.io/php-fpm/www-conf.txt
+
+
+######### set php.ini stuff ########
+
+## max execution time ##
+if [[ -z "$PHP_MAX_EXECUTION_TIME" ]]; then 
+    sed -i "s/@PHP_MAX_EXECUTION_TIME/60/g" /tmp/php.ini
+else 
+    sed -i "s/@PHP_MAX_EXECUTION_TIME/${PHP_MAX_EXECUTION_TIME}/g" /tmp/php.ini
+fi
+
+## max input time ##
+if [[ -z "$PHP_MAX_INPUT_TIME" ]]; then 
+    sed -i "s/@PHP_MAX_INPUT_TIME/60/g" /tmp/php.ini
+else 
+    sed -i "s/@PHP_MAX_INPUT_TIME/${PHP_MAX_INPUT_TIME}/g" /tmp/php.ini
+fi
+
+## memory limit ##
+if [[ -z "$PHP_MEMORY_LIMIT" ]]; then 
+    sed -i "s/@PHP_MEMORY_LIMIT/512M/g" /tmp/php.ini
+else 
+    sed -i "s/@PHP_MEMORY_LIMIT/${PHP_MEMORY_LIMIT}/g" /tmp/php.ini
+fi
+
+## max input vars ##
+if [[ -z "$PHP_MAX_INPUT_VARS" ]]; then 
+    sed -i "s/@PHP_MAX_INPUT_VARS/5000/g" /tmp/php.ini
+else 
+    sed -i "s/@PHP_MAX_INPUT_VARS/${PHP_MAX_INPUT_VARS}/g" /tmp/php.ini
+fi
+
+## max input nesting level ##
+if [[ -z "$PHP_MAX_INPUT_NESTING_LEVEL" ]]; then 
+    sed -i "s/@PHP_MAX_INPUT_NESTING_LEVEL/64/g" /tmp/php.ini
+else 
+    sed -i "s/@PHP_MAX_INPUT_NESTING_LEVEL/${PHP_MAX_INPUT_NESTING_LEVEL}/g" /tmp/php.ini
+fi
+
+## upload max filesize ##
+if [[ -z "$PHP_UPLOAD_MAX_FILESIZE" ]]; then 
+    sed -i "s/@PHP_UPLOAD_MAX_FILESIZE/512M/g" /tmp/php.ini
+else 
+    sed -i "s/@PHP_UPLOAD_MAX_FILESIZE/${PHP_UPLOAD_MAX_FILESIZE}/g" /tmp/php.ini
+fi
+
+## max file uploads ##
+if [[ -z "$PHP_MAX_FILE_UPLOADS" ]]; then 
+    sed -i "s/@PHP_MAX_FILE_UPLOADS/100/g" /tmp/php.ini
+else 
+    sed -i "s/@PHP_MAX_FILE_UPLOADS/${PHP_MAX_FILE_UPLOADS}/g" /tmp/php.ini
+fi
+
+## php precision ##
+if [[ -z "$PHP_PRECISION" ]]; then 
+    sed -i "s/@PHP_PRECISION/14/g" /tmp/php.ini
+else 
+    sed -i "s/@PHP_PRECISION/${PHP_PRECISION}/g" /tmp/php.ini
+fi
+
+## php output buffering ##
+if [[ -z "$PHP_OUTPUT_BUFFERING" ]]; then 
+    sed -i "s/@PHP_OUTPUT_BUFFERING/4096/g" /tmp/php.ini
+else 
+    sed -i "s/@PHP_OUTPUT_BUFFERING/${PHP_OUTPUT_BUFFERING}/g" /tmp/php.ini
+fi
+
+## php unserialize max depth ##
+if [[ -z "$PHP_UNSERIALIZE_MAX_DEPTH" ]]; then 
+    sed -i "s/@PHP_UNSERIALIZE_MAX_DEPTH/4096/g" /tmp/php.ini
+else 
+    sed -i "s/@PHP_UNSERIALIZE_MAX_DEPTH/${PHP_UNSERIALIZE_MAX_DEPTH}/g" /tmp/php.ini
+fi
+
+## php serialize precision ##
+if [[ -z "$PHP_SERIALIZE_PRECISION" ]]; then 
+    sed -i "s/@PHP_SERIALIZE_PRECISION/-1/g" /tmp/php.ini
+else 
+    sed -i "s/@PHP_SERIALIZE_PRECISION/${PHP_SERIALIZE_PRECISION}/g" /tmp/php.ini
+fi
+
+## php allow url fopen ##
+if [[ -z "$PHP_ALLOW_URL_FOPEN" ]]; then 
+    sed -i "s/@PHP_ALLOW_URL_FOPEN/On/g" /tmp/php.ini
+elif [[ "$PHP_ALLOW_URL_FOPEN" == "true" ]]; then
+    sed -i "s/@PHP_ALLOW_URL_FOPEN/On/g" /tmp/php.ini
+elif [[ "$PHP_ALLOW_URL_FOPEN" == "On" ]]; then
+    sed -i "s/@PHP_ALLOW_URL_FOPEN/On/g" /tmp/php.ini
+elif [[ "$PHP_ALLOW_URL_FOPEN" == "false" ]]; then
+    sed -i "s/@PHP_ALLOW_URL_FOPEN/Off/g" /tmp/php.ini
+elif [[ "$PHP_ALLOW_URL_FOPEN" == "Off" ]]; then
+    sed -i "s/@PHP_ALLOW_URL_FOPEN/Off/g" /tmp/php.ini
+fi
+
+## php default socket timeout ##
+if [[ -z "$PHP_DEFAULT_SOCKET_TIMEOUT" ]]; then 
+    sed -i "s/@PHP_DEFAULT_SOCKET_TIMEOUT/60/g" /tmp/php.ini
+else 
+    sed -i "s/@PHP_DEFAULT_SOCKET_TIMEOUT/${PHP_DEFAULT_SOCKET_TIMEOUT}/g" /tmp/php.ini
+fi
+
+## php post max size ##
+if [[ -z "$PHP_POST_MAX_SIZE" ]]; then 
+    sed -i "s/@PHP_POST_MAX_SIZE/512M/g" /tmp/php.ini
+else 
+    sed -i "s/@PHP_POST_MAX_SIZE/${PHP_POST_MAX_SIZE}/g" /tmp/php.ini
+fi
+
+## php disable classes ##
+if [[ -z "$PHP_DISABLE_CLASSES" ]]; then 
+    sed -i "s/@PHP_DISABLE_CLASSES//g" /tmp/php.ini
+else 
+    sed -i "s/@PHP_DISABLE_CLASSES/${PHP_DISABLE_CLASSES}/g" /tmp/php.ini
+fi
+
+## php disable functions ##
+if [[ -z "$PHP_DISABLE_FUNCTIONS" ]]; then 
+    sed -i "s/@PHP_DISABLE_FUNCTIONS//g" /tmp/php.ini
+else 
+    sed -i "s/@PHP_DISABLE_FUNCTIONS/${PHP_DISABLE_FUNCTIONS}/g" /tmp/php.ini
+fi
+
+######### set php.ini opcache stuff ########
+
+## opcache huge code pages ##
+if [[ -z "$OPCACHE_HUGE_CODE_PAGES" ]]; then 
+    sed -i "s/@OPCACHE_HUGE_CODE_PAGES/0/g" /tmp/php.ini
+elif [[ "$OPCACHE_HUGE_CODE_PAGES" == "true" ]]; then
+    sed -i "s/@OPCACHE_HUGE_CODE_PAGES/1/g" /tmp/php.ini
+elif [[ "$OPCACHE_HUGE_CODE_PAGES" == "On" ]]; then
+    sed -i "s/@OPCACHE_HUGE_CODE_PAGES/1/g" /tmp/php.ini
+elif [[ "$OPCACHE_HUGE_CODE_PAGES" == "false" ]]; then
+    sed -i "s/@OPCACHE_HUGE_CODE_PAGES/0/g" /tmp/php.ini
+elif [[ "$OPCACHE_HUGE_CODE_PAGES" == "Off" ]]; then
+    sed -i "s/@OPCACHE_HUGE_CODE_PAGES/0/g" /tmp/php.ini
+fi
+
+## opcache revalidate frequency ##
+if [[ -z "$OPCACHE_REVALIDATE_FREQUENCY" ]]; then 
+    sed -i "s/@OPCACHE_REVALIDATE_FREQUENCY/2/g" /tmp/php.ini
+else 
+    sed -i "s/@OPCACHE_REVALIDATE_FREQUENCY/${OPCACHE_REVALIDATE_FREQUENCY}/g" /tmp/php.ini
+fi
+
+## opcache max wasted percentage ##
+if [[ -z "$OPCACHE_MAX_WASTED_PERCENTAGE" ]]; then 
+    sed -i "s/@OPCACHE_MAX_WASTED_PERCENTAGE/5/g" /tmp/php.ini
+else 
+    sed -i "s/@OPCACHE_MAX_WASTED_PERCENTAGE/${OPCACHE_MAX_WASTED_PERCENTAGE}/g" /tmp/php.ini
+fi
+
+## opcache max accelerated files ##
+if [[ -z "$OPCACHE_MAX_ACCELERATED_FILES" ]]; then 
+    sed -i "s/@OPCACHE_MAX_ACCELERATED_FILES/10000/g" /tmp/php.ini
+else 
+    sed -i "s/@OPCACHE_MAX_ACCELERATED_FILES/${OPCACHE_MAX_ACCELERATED_FILES}/g" /tmp/php.ini
+fi
+
+## opcache interned strings buffer ##
+if [[ -z "$OPCACHE_INTERNED_STRINGS_BUFFER" ]]; then 
+    sed -i "s/@OPCACHE_INTERNED_STRINGS_BUFFER/64/g" /tmp/php.ini
+else 
+    sed -i "s/@OPCACHE_INTERNED_STRINGS_BUFFER/${OPCACHE_INTERNED_STRINGS_BUFFER}/g" /tmp/php.ini
+fi
+
+## opcache memory consumption ##
+if [[ -z "$OPCACHE_MEMORY_CONSUMPTION" ]]; then 
+    sed -i "s/@OPCACHE_MEMORY_CONSUMPTION/256/g" /tmp/php.ini
+else 
+    sed -i "s/@OPCACHE_MEMORY_CONSUMPTION/${OPCACHE_MEMORY_CONSUMPTION}/g" /tmp/php.ini
+fi
+
+
+######### set php-fpm.conf stuff ########
+
+## emerg restart threshold ##
+if [[ -z "$FPM_EMERGENCY_RESTART_THRESHOLD" ]]; then 
+    sed -i "s/@FPM_EMERGENCY_RESTART_THRESHOLD/10/g" /tmp/php-fpm.conf
+else 
+    sed -i "s/@FPM_EMERGENCY_RESTART_THRESHOLD/${FPM_EMERGENCY_RESTART_THRESHOLD}/g" /tmp/php-fpm.conf
+fi
+
+## emerg restart time ##
+if [[ -z "$FPM_EMERGENCY_RESTART_INTERVAL" ]]; then 
+    sed -i "s/@FPM_EMERGENCY_RESTART_INTERVAL/1m/g" /tmp/php-fpm.conf
+else 
+    sed -i "s/@FPM_EMERGENCY_RESTART_INTERVAL/${FPM_EMERGENCY_RESTART_INTERVAL}/g" /tmp/php-fpm.conf
+fi
+
+## process control timeout ##
+if [[ -z "$FPM_PROCESS_CONTROL_TIMEOUT" ]]; then 
+    sed -i "s/@FPM_PROCESS_CONTROL_TIMEOUT/10s/g" /tmp/php-fpm.conf
+else 
+    sed -i "s/@FPM_PROCESS_CONTROL_TIMEOUT/${FPM_PROCESS_CONTROL_TIMEOUT}/g" /tmp/php-fpm.conf
+fi
+
+## process max ##
+if [[ -z "$FPM_PROCESS_MAX" ]]; then 
+    sed -i "s/@FPM_PROCESS_MAX/128/g" /tmp/php-fpm.conf
+else 
+    sed -i "s/@FPM_PROCESS_MAX/${FPM_PROCESS_MAX}/g" /tmp/php-fpm.conf
+fi
+
+## process priority ##
+if [[ -z "$FPM_PROCESS_PRIORITY" ]]; then 
+    sed -i "s/@FPM_PROCESS_PRIORITY/-19/g" /tmp/php-fpm.conf
+else 
+    sed -i "s/@FPM_PROCESS_PRIORITY/${FPM_PROCESS_PRIORITY}/g" /tmp/php-fpm.conf
+fi
+
+## rlimit files ##
+if [[ -z "$FPM_RLIMIT_FILES" ]]; then 
+    sed -i "s/@FPM_RLIMIT_FILES/1024/g" /tmp/php-fpm.conf
+else 
+    sed -i "s/@FPM_RLIMIT_FILES/${FPM_RLIMIT_FILES}/g" /tmp/php-fpm.conf
+fi
+
+## rlimit core ##
+if [[ -z "$FPM_RLIMIT_CORE" ]]; then 
+    sed -i "s/@FPM_RLIMIT_CORE/0/g" /tmp/php-fpm.conf
+else 
+    sed -i "s/@FPM_RLIMIT_CORE/${FPM_RLIMIT_CORE}/g" /tmp/php-fpm.conf
+fi
+
+## systemd interval ##
+if [[ -z "$FPM_SYSTEMD_INTERVAL" ]]; then 
+    sed -i "s/@FPM_SYSTEMD_INTERVAL/10/g" /tmp/php-fpm.conf
+else 
+    sed -i "s/@FPM_SYSTEMD_INTERVAL/${FPM_SYSTEMD_INTERVAL}/g" /tmp/php-fpm.conf
+fi
+
+
+######### set www.conf stuff ########
+
+## pool listen backlog ##
+if [[ -z "$WWW_LISTEN_BACKLOG" ]]; then 
+    sed -i "s/@WWW_LISTEN_BACKLOG/65535/g" /tmp/www.conf
+else 
+    sed -i "s/@WWW_LISTEN_BACKLOG/${WWW_LISTEN_BACKLOG}/g" /tmp/www.conf
+fi
+
+## pool type ##
+if [[ -z "$WWW_PM_MODE" ]]; then 
+    sed -i "s/@WWW_PM_MODE/ondemand/g" /tmp/www.conf
+else 
+    sed -i "s/@WWW_PM_MODE/${WWW_PM_MODE}/g" /tmp/www.conf
+fi
+
+## pool max children ##
+if [[ -z "$WWW_PM_MAX_CHILDREN" ]]; then 
+    sed -i "s/@WWW_PM_MAX_CHILDREN/20/g" /tmp/www.conf
+else 
+    sed -i "s/@WWW_PM_MAX_CHILDREN/${WWW_PM_MAX_CHILDREN}/g" /tmp/www.conf
+fi
+
+## pool start servers ##
+if [[ -z "$WWW_PM_START_SERVERS" ]]; then 
+    sed -i "s/@WWW_PM_START_SERVERS/2/g" /tmp/www.conf
+else 
+    sed -i "s/@WWW_PM_START_SERVERS/${WWW_PM_START_SERVERS}/g" /tmp/www.conf
+fi
+
+## pool min spare servers ##
+if [[ -z "$WWW_PM_MIN_SPARE_SERVERS" ]]; then 
+    sed -i "s/@WWW_PM_MIN_SPARE_SERVERS/1/g" /tmp/www.conf
+else 
+    sed -i "s/@WWW_PM_MIN_SPARE_SERVERS/${WWW_PM_MIN_SPARE_SERVERS}/g" /tmp/www.conf
+fi
+
+## pool max spare servers ##
+if [[ -z "$WWW_PM_MAX_SPARE_SERVERS" ]]; then 
+    sed -i "s/@WWW_PM_MAX_SPARE_SERVERS/3/g" /tmp/www.conf
+else 
+    sed -i "s/@WWW_PM_MAX_SPARE_SERVERS/${WWW_PM_MAX_SPARE_SERVERS}/g" /tmp/www.conf
+fi
+
+## pool process idle timeout ##
+if [[ -z "$WWW_PM_PROCESS_IDLE_TIMEOUT" ]]; then 
+    sed -i "s/@WWW_PM_PROCESS_IDLE_TIMEOUT/10s/g" /tmp/www.conf
+else 
+    sed -i "s/@WWW_PM_PROCESS_IDLE_TIMEOUT/${WWW_PM_PROCESS_IDLE_TIMEOUT}/g" /tmp/www.conf
+fi
+
+## pool max requests ##
+if [[ -z "$WWW_PM_MAX_REQUESTS" ]]; then 
+    sed -i "s/@WWW_PM_MAX_REQUESTS/500/g" /tmp/www.conf
+else 
+    sed -i "s/@WWW_PM_MAX_REQUESTS/${WWW_PM_MAX_REQUESTS}/g" /tmp/www.conf
+fi
+
+## pool request terminate timeout ##
+if [[ -z "$WWW_REQUEST_TERMINATE_TIMEOUT" ]]; then 
+    sed -i "s/@WWW_REQUEST_TERMINATE_TIMEOUT/300/g" /tmp/www.conf
+else 
+    sed -i "s/@WWW_REQUEST_TERMINATE_TIMEOUT/${WWW_REQUEST_TERMINATE_TIMEOUT}/g" /tmp/www.conf
+fi
+
+## pool rlimit files ##
+if [[ -z "$WWW_RLIMIT_FILES" ]]; then 
+    sed -i "s/@WWW_RLIMIT_FILES/65535/g" /tmp/www.conf
+else 
+    sed -i "s/@WWW_RLIMIT_FILES/${WWW_RLIMIT_FILES}/g" /tmp/www.conf
+fi
+
+## pool rlimit core ##
+if [[ -z "$WWW_RLIMIT_CORE" ]]; then 
+    sed -i "s/@WWW_RLIMIT_CORE/0/g" /tmp/www.conf
+else 
+    sed -i "s/@WWW_RLIMIT_CORE/${WWW_RLIMIT_CORE}/g" /tmp/www.conf
+fi
+
+## copy files to their destinations ##
+cp /tmp/php-fpm.conf /etc/php/7.4/fpm/php-fpm.conf
+cp /tmp/php.ini /etc/php/7.4/fpm/php.ini
+cp /tmp/php.ini /etc/php/7.4/cli/php.ini
+cp /tmp/www.conf /etc/php/7.4/fpm/pool.d/www.conf
+
+## customize PHP settings ##
+# sed -i '/error_log/c\error_log = /var/www/logs/error.log' /etc/php/7.4/fpm/php-fpm.conf
+
+## set Ubuntu default PHP version ##
+update-alternatives --set php /usr/bin/php7.4
+
+## reset permissions ##
+chown root:root /etc/php/7.4/fpm/php-fpm.conf
+chown root:root /etc/php/7.4/fpm/php.ini
+chown root:root /etc/php/7.4/cli/php.ini
+chown root:root /etc/php/7.4/fpm/pool.d/www.conf
+
+## restart services ##
+/etc/init.d/php7.4-fpm restart
+
+## delete tmp files ##
+rm /tmp/php-fpm*
+rm /tmp/php-ini*
+rm /tmp/www*
+
+####################################################################################################
+### Prepare WP-CLI Configuration (Installation Completed Via Bash Aliases) #########################
+####################################################################################################
+
+## MESSAGE: explain repos ##
+echo -e "\e[36mInstalling the WP-CLI module directly from SlickStack mirrors...\e[0m"
+
+## uninstall current wp-cli versions ##
+rm /usr/local/bin/wp
+rm /home/wp-completion.bash
+rm /home/${SUDO_USER}/wp-cli.yml
+rm /var/www/meta/.wp-completion*
+rm /var/www/meta/wp-cli.yml
+rm /var/www/html/.wp-cli
+rm /var/www/html/wp-cli
+sed -i '/WP-CLI/d' /home/${SUDO_USER}/.bashrc
+sed -i '/wp-completion/d' /home/${SUDO_USER}/.bashrc
+
+## symlinks for wp-cli.yml ##
+ln /home/${SUDO_USER}/.wp-cli/config.yml /var/www/meta/wp-cli.yml &> /dev/null
+ln /root/.wp-cli/config.yml /var/www/meta/wp-cli.yml &> /dev/null
+
+## download latest versions ##
+wget -O /tmp/wp-cli.phar http://mirrors.slickstack.io/wp-cli/wp-cli.phar
+wget -O /tmp/wp-cli.yml http://mirrors.slickstack.io/wp-cli/wp-cli-yml.txt
+wget -O /tmp/wp-completion.txt http://mirrors.slickstack.io/wp-cli/wp-completion.txt
+
+## make files executable ##
+chmod +x /tmp/wp-cli.phar
+
+## copy files to destinations ##
+cp /tmp/wp-cli.phar /usr/local/bin/wp
+cp /tmp/wp-cli.yml /var/www/meta/wp-cli.yml
+cp /tmp/wp-completion.txt /var/www/meta/.wp-completion
+
+## reset permissions ##
+## Ref: https://www.alexgeorgiou.gr/wp-cli-www-data-user-permissions-linux/
+chown root:root /usr/local/bin/
+chown www-data:www-data /usr/local/bin/wp
+chown www-data:www-data /var/www/meta/wp-cli.yml
+chown www-data:www-data /var/www/meta/.wp-completion
+chown root:root /home/${SUDO_USER}/.wp-cli/config.yml
+chown root:root /root/.wp-cli/config.yml
+chmod 6775 /usr/local/bin/wp
+chmod 6775 /var/www/meta/wp-cli.yml
+chmod 6775 /var/www/meta/.wp-completion
+
+####################################################################################################
+### Install Bash Aliases (Supports Basic SlickStack Commands) + Finalize WP-CLI ####################
+####################################################################################################
+
+## MESSAGE: explain repos ##
+echo -e "\e[36mInstalling Bash aliases for basic SlickStack commands...\e[0m"
+
+## uninstall old ##
+rm /home/${SUDO_USER}/.bash-aliases
+rm /var/www/meta/.bash-aliases
+sed -i '/include Bash aliases/d' /home/${SUDO_USER}/.bashrc
+sed -i '\:var/www/meta:d' /home/${SUDO_USER}/.bashrc
+
+## download ##
+wget -O /tmp/bash-aliases.txt http://mirrors.slickstack.io/ubuntu/bash-aliases.txt
+
+## copy files ##
+cp /tmp/bash-aliases.txt /var/www/meta/.bash-aliases
+
+## reset permissions ##
+chown root:root /var/www/meta/.bash-aliases
+chmod 6775 /var/www/meta/.bash-aliases
+
+## modify .bashrc file ##
+echo '
+## include Bash aliases ##
+source /var/www/meta/.bash-aliases' >> /home/${SUDO_USER}/.bashrc
+
+## reload .bashrc ##
+source /home/${SUDO_USER}/.bashrc
+
+####################################################################################################
+#### SlickStack: Install Nginx Server (Single Server Block) + FastCGI Cache ########################
+####################################################################################################
+
+## purge nginx-extras (and all nginx packages) ##
+apt purge nginx
+apt purge nginx-extras
+
+## update Ubuntu package cache ##
+apt update
+
+## add Nginx mainline (dev) branch ppa ##
+# add-apt-repository --remove ppa:nginx/development
+# add-apt-repository ppa:nginx/development
+
+add-apt-repository --remove ppa:nginx/development
+
+## update package cache (again... not needed in Ubuntu 18.04+ but just for fun) ##
+apt update
+
+## install Nginx Extras ##
+apt install nginx-extras
+
+## download latest versions ##
+wget -O /tmp/nginx.conf http://mirrors.slickstack.io/nginx/nginx-conf.txt
+
+## noindex entire site (server) if desired ##
+if [[ "$SITE_NOINDEX" == "true" ]]; then 
+    sed -i "s/#@NOINDEX# //g" /tmp/nginx.conf
+else 
+    sed -i "/#@NOINDEX# /d" /tmp/nginx.conf
+fi
+
+
+##### nginx fastcgi cache settings ########
+
+## fastcgi cache memory ##
+if [[ -z "$FCGI_CACHE_MEMORY" ]]; then 
+    sed -i "s/@FCGI_CACHE_MEMORY/256m/g" /tmp/nginx.conf
+else 
+    sed -i "s/@FCGI_CACHE_MEMORY/${FCGI_CACHE_MEMORY}/g" /tmp/nginx.conf
+fi
+
+## fastcgi cache inactive ##
+if [[ -z "$FCGI_CACHE_INACTIVE" ]]; then 
+    sed -i "s/@FCGI_CACHE_INACTIVE/1440m/g" /tmp/nginx.conf
+else 
+    sed -i "s/@FCGI_CACHE_INACTIVE/${FCGI_CACHE_INACTIVE}/g" /tmp/nginx.conf
+fi
+
+## fastcgi cache max size ##
+if [[ -z "$FCGI_CACHE_MAX_SIZE" ]]; then 
+    sed -i "s/@FCGI_CACHE_MAX_SIZE/4096m/g" /tmp/nginx.conf
+else 
+    sed -i "s/@FCGI_CACHE_MAX_SIZE/${FCGI_CACHE_MAX_SIZE}/g" /tmp/nginx.conf
+fi
+
+## fastcgi cache connect timeout ##
+if [[ -z "$FCGI_CONNECT_TIMEOUT" ]]; then 
+    sed -i "s/@FCGI_CONNECT_TIMEOUT/60s/g" /tmp/nginx.conf
+else 
+    sed -i "s/@FCGI_CONNECT_TIMEOUT/${FCGI_CONNECT_TIMEOUT}/g" /tmp/nginx.conf
+fi
+
+## fastcgi cache read timeout ##
+if [[ -z "$FCGI_READ_TIMEOUT" ]]; then 
+    sed -i "s/@FCGI_READ_TIMEOUT/60s/g" /tmp/nginx.conf
+else 
+    sed -i "s/@FCGI_READ_TIMEOUT/${FCGI_READ_TIMEOUT}/g" /tmp/nginx.conf
+fi
+
+## fastcgi cache send timeout ##
+if [[ -z "$FCGI_SEND_TIMEOUT" ]]; then 
+    sed -i "s/@FCGI_SEND_TIMEOUT/60s/g" /tmp/nginx.conf
+else 
+    sed -i "s/@FCGI_SEND_TIMEOUT/${FCGI_SEND_TIMEOUT}/g" /tmp/nginx.conf
+fi
+
+## fastcgi cache buffers ##
+if [[ -z "$FCGI_BUFFERS" ]]; then 
+    sed -i "s/@FCGI_BUFFERS/32 32k/g" /tmp/nginx.conf
+else 
+    sed -i "s/@FCGI_BUFFERS/${FCGI_BUFFERS}/g" /tmp/nginx.conf
+fi
+
+## fastcgi cache buffer size ##
+if [[ -z "$FCGI_BUFFER_SIZE" ]]; then 
+    sed -i "s/@FCGI_BUFFER_SIZE/32k/g" /tmp/nginx.conf
+else 
+    sed -i "s/@FCGI_BUFFER_SIZE/${FCGI_BUFFER_SIZE}/g" /tmp/nginx.conf
+fi
+
+## fastcgi cache busy buffers size ##
+if [[ -z "$FCGI_BUSY_BUFFERS_SIZE" ]]; then 
+    sed -i "s/@FCGI_BUSY_BUFFERS_SIZE/256k/g" /tmp/nginx.conf
+else 
+    sed -i "s/@FCGI_BUSY_BUFFERS_SIZE/${FCGI_BUSY_BUFFERS_SIZE}/g" /tmp/nginx.conf
+fi
+
+## fastcgi cache temp file write size ##
+if [[ -z "$FCGI_TEMP_FILE_WRITE_SIZE" ]]; then 
+    sed -i "s/@FCGI_TEMP_FILE_WRITE_SIZE/256k/g" /tmp/nginx.conf
+else 
+    sed -i "s/@FCGI_TEMP_FILE_WRITE_SIZE/${FCGI_TEMP_FILE_WRITE_SIZE}/g" /tmp/nginx.conf
+fi
+
+
+
+#### nginx ssl settings #####
+
+## ssl protocols ##
+if [[ -z "$SSL_PROTOCOLS" ]]; then 
+    sed -i "s/@SSL_PROTOCOLS/TLSv1.2 TLSv1.3/g" /tmp/nginx.conf
+else 
+    sed -i "s/@SSL_PROTOCOLS/${SSL_PROTOCOLS}/g" /tmp/nginx.conf
+fi
+
+## ssl ciphers ##
+if [[ -z "$SSL_CIPHERS" ]]; then 
+    sed -i "s/@SSL_CIPHERS/ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384/g" /tmp/nginx.conf
+else 
+    sed -i "s/@SSL_CIPHERS/${SSL_CIPHERS}/g" /tmp/nginx.conf
+fi
+
+## ssl session timeout ##
+if [[ -z "$SSL_SESSION_TIMEOUT" ]]; then 
+    sed -i "s/@SSL_SESSION_TIMEOUT/1d/g" /tmp/nginx.conf
+else 
+    sed -i "s/@SSL_SESSION_TIMEOUT/${SSL_SESSION_TIMEOUT}/g" /tmp/nginx.conf
+fi
+
+## ssl session cache ##
+if [[ -z "$SSL_SESSION_CACHE" ]]; then 
+    sed -i "s/@SSL_SESSION_CACHE/shared:SSL:64m/g" /tmp/nginx.conf
+else 
+    sed -i "s/@SSL_SESSION_CACHE/${SSL_SESSION_CACHE}/g" /tmp/nginx.conf
+fi
+
+## ssl buffer size ##
+if [[ -z "$SSL_BUFFER_SIZE" ]]; then 
+    sed -i "s/@SSL_BUFFER_SIZE/16k/g" /tmp/nginx.conf
+else 
+    sed -i "s/@SSL_BUFFER_SIZE/${SSL_BUFFER_SIZE}/g" /tmp/nginx.conf
+fi
+
+
+########## various nginx settings ######
+
+## nginx worker rlimit nofile ##
+if [[ -z "$NGINX_WORKER_RLIMIT_NOFILE" ]]; then 
+    sed -i "s/@NGINX_WORKER_RLIMIT_NOFILE/65535/g" /tmp/nginx.conf
+else 
+    sed -i "s/@NGINX_WORKER_RLIMIT_NOFILE/${NGINX_WORKER_RLIMIT_NOFILE}/g" /tmp/nginx.conf
+fi
+
+## nginx worker connections ##
+if [[ -z "$NGINX_WORKER_CONNECTIONS" ]]; then 
+    sed -i "s/@NGINX_WORKER_CONNECTIONS/8192/g" /tmp/nginx.conf
+else 
+    sed -i "s/@NGINX_WORKER_CONNECTIONS/${NGINX_WORKER_CONNECTIONS}/g" /tmp/nginx.conf
+fi
+
+## nginx server names hash bucket size ##
+if [[ -z "$NGINX_SERVER_NAMES_HASH_BUCKET_SIZE" ]]; then 
+    sed -i "s/@NGINX_SERVER_NAMES_HASH_BUCKET_SIZE/64/g" /tmp/nginx.conf
+else 
+    sed -i "s/@NGINX_SERVER_NAMES_HASH_BUCKET_SIZE/${NGINX_SERVER_NAMES_HASH_BUCKET_SIZE}/g" /tmp/nginx.conf
+fi
+
+## nginx server names max hash size ##
+if [[ -z "$NGINX_SERVER_NAMES_MAX_HASH_SIZE" ]]; then 
+    sed -i "s/@NGINX_SERVER_NAMES_MAX_HASH_SIZE/64/g" /tmp/nginx.conf
+else 
+    sed -i "s/@NGINX_SERVER_NAMES_MAX_HASH_SIZE/${NGINX_SERVER_NAMES_MAX_HASH_SIZE}/g" /tmp/nginx.conf
+fi
+
+## nginx types max hash size ##
+if [[ -z "$NGINX_TYPES_MAX_HASH_SIZE" ]]; then 
+    sed -i "s/@NGINX_TYPES_MAX_HASH_SIZE/2048/g" /tmp/nginx.conf
+else 
+    sed -i "s/@NGINX_TYPES_MAX_HASH_SIZE/${NGINX_TYPES_MAX_HASH_SIZE}/g" /tmp/nginx.conf
+fi
+
+#### more nginx stuff ###
+
+## client max body size ##
+if [[ -z "$NGINX_CLIENT_MAX_BODY_SIZE" ]]; then 
+    sed -i "s/@NGINX_CLIENT_MAX_BODY_SIZE/512M/g" /tmp/nginx.conf
+else 
+    sed -i "s/@NGINX_CLIENT_MAX_BODY_SIZE/${NGINX_CLIENT_MAX_BODY_SIZE}/g" /tmp/nginx.conf
+fi
+
+## client body buffer size ##
+if [[ -z "$NGINX_CLIENT_BODY_BUFFER_SIZE" ]]; then 
+    sed -i "s/@NGINX_CLIENT_BODY_BUFFER_SIZE/16k/g" /tmp/nginx.conf
+else 
+    sed -i "s/@NGINX_CLIENT_BODY_BUFFER_SIZE/${NGINX_CLIENT_BODY_BUFFER_SIZE}/g" /tmp/nginx.conf
+fi
+
+## client header buffer size ##
+if [[ -z "$NGINX_CLIENT_HEADER_BUFFER_SIZE" ]]; then 
+    sed -i "s/@NGINX_CLIENT_HEADER_BUFFER_SIZE/4k/g" /tmp/nginx.conf
+else 
+    sed -i "s/@NGINX_CLIENT_HEADER_BUFFER_SIZE/${NGINX_CLIENT_HEADER_BUFFER_SIZE}/g" /tmp/nginx.conf
+fi
+
+## large client header buffers ##
+if [[ -z "$NGINX_LARGE_CLIENT_HEADER_BUFFERS" ]]; then 
+    sed -i "s/@NGINX_LARGE_CLIENT_HEADER_BUFFERS/4 64k/g" /tmp/nginx.conf
+else 
+    sed -i "s/@NGINX_LARGE_CLIENT_HEADER_BUFFERS/${NGINX_LARGE_CLIENT_HEADER_BUFFERS}/g" /tmp/nginx.conf
+fi
+
+#### nginx timeouts ets ##
+
+## client body timeout ##
+if [[ -z "$NGINX_CLIENT_BODY_TIMEOUT" ]]; then 
+    sed -i "s/@NGINX_CLIENT_BODY_TIMEOUT/15s/g" /tmp/nginx.conf
+else 
+    sed -i "s/@NGINX_CLIENT_BODY_TIMEOUT/${NGINX_CLIENT_BODY_TIMEOUT}/g" /tmp/nginx.conf
+fi
+
+## client header timeout ##
+if [[ -z "$NGINX_CLIENT_HEADER_TIMEOUT" ]]; then 
+    sed -i "s/@NGINX_CLIENT_HEADER_TIMEOUT/15s/g" /tmp/nginx.conf
+else 
+    sed -i "s/@NGINX_CLIENT_HEADER_TIMEOUT/${NGINX_CLIENT_HEADER_TIMEOUT}/g" /tmp/nginx.conf
+fi
+
+## keepalive timeout ##
+if [[ -z "$NGINX_KEEPALIVE_TIMEOUT" ]]; then 
+    sed -i "s/@NGINX_KEEPALIVE_TIMEOUT/15s/g" /tmp/nginx.conf
+else 
+    sed -i "s/@NGINX_KEEPALIVE_TIMEOUT/${NGINX_KEEPALIVE_TIMEOUT}/g" /tmp/nginx.conf
+fi
+
+## keepalive requests ##
+if [[ -z "$NGINX_KEEPALIVE_REQUESTS" ]]; then 
+    sed -i "s/@NGINX_KEEPALIVE_REQUESTS/65535/g" /tmp/nginx.conf
+else 
+    sed -i "s/@NGINX_KEEPALIVE_REQUESTS/${NGINX_KEEPALIVE_REQUESTS}/g" /tmp/nginx.conf
+fi
+
+## send timeout ##
+if [[ -z "$NGINX_SEND_TIMEOUT" ]]; then 
+    sed -i "s/@NGINX_SEND_TIMEOUT/15s/g" /tmp/nginx.conf
+else 
+    sed -i "s/@NGINX_SEND_TIMEOUT/${NGINX_SEND_TIMEOUT}/g" /tmp/nginx.conf
+fi
+
+
+
+#### open file cache ####
+
+## open file cache max files ##
+if [[ -z "$OPEN_FILE_CACHE_MAX" ]]; then 
+    sed -i "s/@OPEN_FILE_CACHE_MAX/200000/g" /tmp/nginx.conf
+else 
+    sed -i "s/@OPEN_FILE_CACHE_MAX/${OPEN_FILE_CACHE_MAX}/g" /tmp/nginx.conf
+fi
+
+## open file cache inactive ##
+if [[ -z "$OPEN_FILE_CACHE_INACTIVE" ]]; then 
+    sed -i "s/@OPEN_FILE_CACHE_INACTIVE/20s/g" /tmp/nginx.conf
+else 
+    sed -i "s/@OPEN_FILE_CACHE_INACTIVE/${OPEN_FILE_CACHE_INACTIVE}/g" /tmp/nginx.conf
+fi
+
+## open file cache valid ##
+if [[ -z "$OPEN_FILE_CACHE_VALID" ]]; then 
+    sed -i "s/@OPEN_FILE_CACHE_VALID/30s/g" /tmp/nginx.conf
+else 
+    sed -i "s/@OPEN_FILE_CACHE_VALID/${OPEN_FILE_CACHE_VALID}/g" /tmp/nginx.conf
+fi
+
+## open file cache min uses ##
+if [[ -z "$OPEN_FILE_CACHE_MIN_USES" ]]; then 
+    sed -i "s/@OPEN_FILE_CACHE_MIN_USES/2/g" /tmp/nginx.conf
+else 
+    sed -i "s/@OPEN_FILE_CACHE_MIN_USES/${OPEN_FILE_CACHE_MIN_USES}/g" /tmp/nginx.conf
+fi
+
+## open file cache errors ##
+if [[ -z "$OPEN_FILE_CACHE_ERRORS" ]]; then 
+    sed -i "s/@OPEN_FILE_CACHE_ERRORS/on/g" /tmp/nginx.conf
+else 
+    sed -i "s/@OPEN_FILE_CACHE_ERRORS/${OPEN_FILE_CACHE_ERRORS}/g" /tmp/nginx.conf
+fi
+
+
+
+
+## copy files to their destinations ##
+cp /tmp/nginx.conf /etc/nginx/nginx.conf
+
+## ensure cache directory exists (will not overwrite) ##
+mkdir /var/www/cache
+
+## reset permissions ##
+chown www-data:www-data /var/www/cache
+chown root:root /etc/nginx/nginx.conf
+
+## set TMPFS cache storage if enabled ##
+if [[ "$FCGI_CACHE_TMPFS" == "true" ]]; then
+    mount -t tmpfs -o size=${FCGI_CACHE_MEMORY} tmpfs /var/www/cache
+    sed -i '/tmpfs/d' /etc/fstab
+    echo "tmpfs /var/www/cache tmpfs defaults,size=${FCGI_CACHE_MEMORY} 0 0" >> /etc/fstab
+else
+    sed -i '/tmpfs/d' /etc/fstab
+fi
+
+## download latest server block (depends on WP single site or multisite) ##
+
+if [[ "$WP_MULTISITE" == "true" ]]; then 
+    wget -O /tmp/default http://mirrors.slickstack.io/nginx/default-multisite-subdomains.txt
+    # elif [[ "$WP_MULTISITE" == "true" ]] && [[ "$WP_MULTISITE_SUBDOMAINS" == "false" ]]; then 
+else 
+    wget -O /tmp/default http://mirrors.slickstack.io/nginx/default-single-site.txt
+fi
+
+
+
+## replace variables ##
+sed -i "s/@DOMAIN/${SITE_DOMAIN}/g" /tmp/default
+sed -i "s/@SITE_DOMAIN/${SITE_DOMAIN}/g" /tmp/default
+sed -i "s/@CACHEVALID/${FCGI_CACHE_VALID}/g" /tmp/default
+
+## replace conditional variables ##
+if [[ "$WP_MULTISITE_DOMAIN_MAPPING" == "true" ]]; then 
+   sed -i "s/#@WP_MULTISITE_DOMAIN_MAPPING# //g" /tmp/default
+else
+    sed -i "s/#@WP_MULTISITE_DOMAIN_MAPPING_FALSE# //g" /tmp/default
+fi
+
+if [[ "$WP_MULTISITE_SUBDOMAINS" == "true" ]]; then 
+    sed -i "s/#@WP_MULTISITE_SUBDOMAINS# //g" /tmp/default
+fi
+
+
+## set FastCGI Cache if enabled ##
+if [[ "$FCGI_CACHE" == "false" ]]; then 
+    sed -i "s/@FCGI_CACHE/1/g" /tmp/default
+else 
+    sed -i "s/@FCGI_CACHE/0/g" /tmp/default
+fi
+
+## copy files to destinations ##
+cp /tmp/default /etc/nginx/sites-available/default
+
+## reset permissions ##
+chown root:root /etc/nginx/sites-available/default
+
+## restart services ##
+/etc/init.d/nginx restart
+
+####################################################################################################
+#### SS-Install: Install OpenSSL + Certbot (Let's Encrypt) Free SSL Certificates ###################
+####################################################################################################
+
+## run ss-encrypt ##
+source /var/www/ss-encrypt
+
+####################################################################################################
+#### SS-Install: Install MySQL 5.7 (Single Database Only) ##########################################
+####################################################################################################
+
+## set noninteractive ##
+export DEBIAN_FRONTEND=noninteractive;
+
+echo debconf mysql-server/root_password password ${DB_PASSWORD_ROOT} | debconf-set-selections
+echo debconf mysql-server/root_password_again password ${DB_PASSWORD_ROOT} | debconf-set-selections
+
+# echo "mysql-server-5.7 mysql-server/root_password password ${dbrootpass}" | debconf-set-selections
+# echo "mysql-server-5.7 mysql-server/root_password_again password ${dbrootpass}" | debconf-set-selections
+# debconf-set-selections <<< "mysql-server-5.7 mysql-server/root_password password ${dbrootpass}"
+# debconf-set-selections <<< "mysql-server-5.7 mysql-server/root_password_again password ${dbrootpass}"
+
+## remove MySQL 8.0 (but do not purge to retain database) ##
+apt remove mysql-server-5.5
+apt remove mysql-server-5.6
+apt remove mysql-server-5.7
+apt remove mysql-server-8.0
+apt remove mysql-server
+
+## install mysql 8.0 ##
+apt install mysql-server-8.0
+
+## MESSAGE ##
+echo -e "\e[36mMySQL 8.0 is installed, now we will secure it...\e[0m"
+
+## install expect ##
+apt install expect
+
+## build expect script ##
+tee ~/secure_our_mysql.sh > /dev/null << EOF
+spawn $(which mysql_secure_installation)
+
+## re-enter root password ##
+expect "Enter password for user root:"
+send "${DB_PASSWORD_ROOT}\r"
+
+## skip the validate password plugin ##
+expect "Press y|Y for Yes, any other key for No:"
+send "n\r"
+
+## skip change root password ##
+expect "Change the password for root ? ((Press y|Y for Yes, any other key for No) :"
+send "n\r"
+
+## remove anonymous users ##
+expect "Remove anonymous users? (Press y|Y for Yes, any other key for No) :"
+send "y\r"
+
+## disable remote connections ##
+expect "Disallow root login remotely? (Press y|Y for Yes, any other key for No) :"
+send "y\r"
+
+## remote test database ##
+expect "Remove test database and access to it? (Press y|Y for Yes, any other key for No) :"
+send "y\r"
+
+## reload privileges ##
+expect "Reload privilege tables now? (Press y|Y for Yes, any other key for No) :"
+send "y\r"
+
+## end of script ##
+EOF
+
+## run expect script ##
+expect ~/secure_our_mysql.sh
+
+## cleanup ##
+rm -v ~/secure_our_mysql.sh
+
+## uninstall expect ##
+# apt purge expect
+
+## confirm secured ##
+echo "Congratulations, MySQL 8.0 is installed and secured. Onward!"
+
+####################################################################################################
+#### SS-Install: Configure MySQL Users + Connections (Supports IPv4 + IPv6) ########################
+####################################################################################################
+
+## prepare MySQL root password (suppresses MySQL security warnings) ##
+export MYSQL_PWD=$DB_PASSWORD_ROOT
+
+## create wordpress database as per ss-config ##
+mysql --user=root --host="$DB_HOST" --protocol=tcp --port=3306 --force --execute="CREATE DATABASE ${DB_NAME};"
+
+## create root user (required before granting privileges after MySQL 8.0) ##
+mysql -uroot -p${DB_PASSWORD_ROOT} -e "CREATE USER 'root'@'localhost' IDENTIFIED BY '${DB_PASSWORD_ROOT}';"
+mysql -uroot -p${DB_PASSWORD_ROOT} -e "CREATE USER 'root'@'127.0.0.1' IDENTIFIED BY '${DB_PASSWORD_ROOT}';"
+mysql -uroot -p${DB_PASSWORD_ROOT} -e "CREATE USER 'root'@'::1' IDENTIFIED BY '${DB_PASSWORD_ROOT}';"
+
+## grant root user all privileges on wordpress database (all connections) ##
+mysql -uroot -p${DB_PASSWORD_ROOT} -e "GRANT ALL PRIVILEGES ON ${DB_NAME}.* TO 'root'@'localhost';"
+mysql -uroot -p${DB_PASSWORD_ROOT} -e "GRANT ALL PRIVILEGES ON ${DB_NAME}.* TO 'root'@'127.0.0.1';"
+mysql -uroot -p${DB_PASSWORD_ROOT} -e "GRANT ALL PRIVILEGES ON ${DB_NAME}.* TO 'root'@'::1';"
+
+## create database user as per ss-config ##
+mysql -uroot -p${DB_PASSWORD_ROOT} -e "CREATE USER '${DB_USER}'@'localhost' IDENTIFIED BY '${DB_PASSWORD}';"
+mysql -uroot -p${DB_PASSWORD_ROOT} -e "CREATE USER '${DB_USER}'@'127.0.0.1' IDENTIFIED BY '${DB_PASSWORD}';"
+mysql -uroot -p${DB_PASSWORD_ROOT} -e "CREATE USER '${DB_USER}'@'::1' IDENTIFIED BY '${DB_PASSWORD}';"
+
+## grant database user all privileges on wordpress database only (all connections) ##
+mysql -uroot -p${DB_PASSWORD_ROOT} -e "GRANT ALL PRIVILEGES ON ${DB_NAME}.* TO '${DB_USER}'@'localhost';"
+mysql -uroot -p${DB_PASSWORD_ROOT} -e "GRANT ALL PRIVILEGES ON ${DB_NAME}.* TO '${DB_USER}'@'127.0.0.1';"
+mysql -uroot -p${DB_PASSWORD_ROOT} -e "GRANT ALL PRIVILEGES ON ${DB_NAME}.* TO '${DB_USER}'@'::1';"
+
+## flush MySQL privileges ##
+mysql --user=root --execute="FLUSH PRIVILEGES;"
+
+####################################################################################################
+#### SS-Install: Optimize MySQL Settings ###########################################################
+####################################################################################################
+
+## cleanup leftover files ##
+rm /tmp/my.cnf
+
+## install custom my.cnf config file ##
+wget -O /tmp/my.cnf http://mirrors.slickstack.io/mysql/my-cnf.txt
+
+
+
+#### MySQL Settings ####
+
+## SQL mode ##
+if [[ -z "$SQL_MODE" ]]; then 
+    sed -i "s/@SQL_MODE/STRICT_TRANS_TABLES,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION/g" /tmp/my.cnf
+else 
+    sed -i "s/@SQL_MODE/${SQL_MODE}/g" /tmp/my.cnf
+fi
+
+## max allowed packet ##
+if [[ -z "$SQL_MAX_ALLOWED_PACKET" ]]; then 
+    sed -i "s/@SQL_MAX_ALLOWED_PACKET/256M/g" /tmp/my.cnf
+else 
+    sed -i "s/@SQL_MAX_ALLOWED_PACKET/${SQL_MAX_ALLOWED_PACKET}/g" /tmp/my.cnf
+fi
+
+## connect timeout ##
+if [[ -z "$SQL_CONNECT_TIMEOUT" ]]; then 
+    sed -i "s/@SQL_CONNECT_TIMEOUT/30/g" /tmp/my.cnf
+else 
+    sed -i "s/@SQL_CONNECT_TIMEOUT/${SQL_CONNECT_TIMEOUT}/g" /tmp/my.cnf
+fi
+
+## wait timeout ##
+if [[ -z "$SQL_WAIT_TIMEOUT" ]]; then 
+    sed -i "s/@SQL_WAIT_TIMEOUT/3600/g" /tmp/my.cnf
+else 
+    sed -i "s/@SQL_WAIT_TIMEOUT/${SQL_WAIT_TIMEOUT}/g" /tmp/my.cnf
+fi
+
+## interactive timeout ##
+if [[ -z "$SQL_INTERACTIVE_TIMEOUT" ]]; then 
+    sed -i "s/@SQL_INTERACTIVE_TIMEOUT/43200/g" /tmp/my.cnf
+else 
+    sed -i "s/@SQL_INTERACTIVE_TIMEOUT/${SQL_INTERACTIVE_TIMEOUT}/g" /tmp/my.cnf
+fi
+
+## net read timeout ##
+if [[ -z "$SQL_NET_READ_TIMEOUT" ]]; then 
+    sed -i "s/@SQL_NET_READ_TIMEOUT/30/g" /tmp/my.cnf
+else 
+    sed -i "s/@SQL_NET_READ_TIMEOUT/${SQL_NET_READ_TIMEOUT}/g" /tmp/my.cnf
+fi
+
+## net write timeout ##
+if [[ -z "$SQL_NET_WRITE_TIMEOUT" ]]; then 
+    sed -i "s/@SQL_NET_WRITE_TIMEOUT/60/g" /tmp/my.cnf
+else 
+    sed -i "s/@SQL_NET_WRITE_TIMEOUT/${SQL_NET_WRITE_TIMEOUT}/g" /tmp/my.cnf
+fi
+
+
+## set InnoDB buffer pool size (supports "auto" or manual via ss-config) ##
+PERCENT_RAM_MB=$(free -m | awk 'NR==2{printf "%d", $2*0.50 }')
+
+if [[ "$INNODB_BUFFER_POOL_SIZE" == "auto" ]]; then 
+    sed -i "s/@INNODB_BUFFER_POOL_SIZE/${PERCENT_RAM_MB}M/g" /tmp/my.cnf
+else 
+    sed -i "s/@INNODB_BUFFER_POOL_SIZE/${INNODB_BUFFER_POOL_SIZE}/g" /tmp/my.cnf
+fi
+
+## set InnoDB flush method ##
+if [[ -z "$INNODB_FLUSH_METHOD" ]]; then 
+    sed -i "s/@INNODB_FLUSH_METHOD/O_DIRECT/g" /tmp/my.cnf
+else 
+    sed -i "s/@INNODB_FLUSH_METHOD/${INNODB_FLUSH_METHOD}/g" /tmp/my.cnf
+fi
+
+## set InnoDB log file size ##
+if [[ -z "$INNODB_LOG_FILE_SIZE" ]]; then 
+    sed -i "s/@INNODB_LOG_FILE_SIZE/256M/g" /tmp/my.cnf
+else 
+    sed -i "s/@INNODB_LOG_FILE_SIZE/${INNODB_LOG_FILE_SIZE}/g" /tmp/my.cnf
+fi
+
+## set InnoDB log files in group ##
+if [[ -z "$INNODB_LOG_FILES_IN_GROUP" ]]; then 
+    sed -i "s/@INNODB_LOG_FILES_IN_GROUP/1/g" /tmp/my.cnf
+else 
+    sed -i "s/@INNODB_LOG_FILES_IN_GROUP/${INNODB_LOG_FILES_IN_GROUP}/g" /tmp/my.cnf
+fi
+
+## set InnoDB flush_log_at_trx_commit ##
+if [[ "$INNODB_FLUSH_LOG_AT_TRX_COMMIT" == "false" ]]; then
+    sed -i "s/@INNODB_FLUSH_LOG_AT_TRX_COMMIT/0/g" /tmp/my.cnf
+else 
+    sed -i "s/@INNODB_FLUSH_LOG_AT_TRX_COMMIT/1/g" /tmp/my.cnf
+fi
+
+## safe/clean/slow shutdown MySQL before update config ##
+/etc/init.d/mysql stop
+
+## copy files to their destinations ##
+cp /tmp/my.cnf /etc/mysql/my.cnf
+
+## reset permissions ##
+chown root:root /etc/mysql/my.cnf
+chmod 0775 /etc/mysql/my.cnf
+
+## start the MySQL service again ##
+/etc/init.d/mysql start
+ 
+####################################################################################################
+#### SlickStack: Install WordPress CMS (Download + Unzip WordPress Archive) ########################
+####################################################################################################
+
+## cleanup files ##
+rm /tmp/wordpress.zip*
+rm /var/www/html/wordpress*
+rm /var/www/html/staging/wordpress*
+
+## make dirs ##
+mkdir /var/www/html
+mkdir /var/www/html/staging
+
+## brief permissions reset ##
+chown -R $SFTP_USER:wordpress /var/www/html
+chown -R $SFTP_USER:wordpress /var/www/html/staging
+chmod 6775 /var/www/html
+chmod 6775 /var/www/html/staging
+
+## download latest (patched) WordPress version ##
+wget -O /tmp/wordpress.zip http://mirrors.slickstack.io/wordpress/wordpress.zip
+
+## install WordPress to web directory ##
+cp /tmp/wordpress.zip /var/www/html
+unzip /var/www/html/wordpress.zip -d /var/www/html
+chown -R www-data:wordpress /var/www/html/wordpress
+chmod 775 /var/www/html/wordpress
+rsync /var/www/html/wordpress/* /var/www/html
+
+## install WordPress to staging subdirectory ##
+cp /tmp/wordpress.zip /var/www/html/staging
+unzip /var/www/html/staging/wordpress.zip -d /var/www/html/staging
+chown -R www-data:wordpress /var/www/html/staging/wordpress
+chmod 775 /var/www/html/staging/wordpress
+rsync /var/www/html/staging/wordpress/* /var/www/html/staging
+
+## cleanup files ##
+rm /tmp/wordpress.zip* &> /dev/null
+rm /var/www/html/wordpress* &> /dev/null
+rm /var/www/html/staging/wordpress* &> /dev/null
+rm /var/www/html/classicpress* &> /dev/null
+rm /var/www/html/staging/classicpress* &> /dev/null
+rm /var/www/html/wp-content/plugins/hello.php &> /dev/null
+rm /var/www/html/staging/wp-content/plugins/hello.php &> /dev/null
+
+####################################################################################################
+#### SlickStack: Install + Configure Throwaway Theme ###############################################
+####################################################################################################
+
+## cleanup files ##
+rm /tmp/throwaway*
+
+## retrieve latest throwaway theme ##
+wget -O /tmp/throwaway.zip http://mirrors.slickstack.io/wordpress/throwaway.zip
+
+## unzip ##
+unzip -d /tmp/throwaway/ -o -j /tmp/throwaway.zip
+
+## replace placeholders with ss-config variables ##
+sed -i "s/@SITE_EMAIL/${SITE_EMAIL}/g" /tmp/throwaway/functions.php
+sed -i "s/@SITE_NAME/${SITE_NAME}/g" /tmp/throwaway/functions.php
+sed -i "s/@SITE_DOMAIN/${SITE_DOMAIN}/g" /tmp/throwaway/functions.php
+sed -i "s/@WP_LANG/${WP_LANG}/g" /tmp/throwaway/functions.php
+
+## copy files to destinations ##
+cp /tmp/throwaway /var/www/html/wp-content/themes/
+
+## cleanup files ##
+rm /tmp/throwaway*
+
+####################################################################################################
+#### SlickStack: Modify Database Options For WordPress #############################################
+####################################################################################################
+
+## prepare MySQL root password (suppresses MySQL security warnings) ##
+export MYSQL_PWD=$DB_PASSWORD_ROOT
+
+## ensure home option is correct in WordPress database ##
+mysql --user=root --host="$DB_HOST" --database="$DB_NAME" --protocol=tcp --port=3306 --force --execute="UPDATE ${DB_PREFIX}options SET option_value='https://$SITE_DOMAIN' WHERE option_name='home'";
+
+## ensure siteurl option is correct in WordPress database ##
+mysql --user=root --host="$DB_HOST" --database="$DB_NAME" --protocol=tcp --port=3306 --force --execute="UPDATE ${DB_PREFIX}options SET option_value='https://$SITE_DOMAIN' WHERE option_name='siteurl'";
+
+####################################################################################################
+#### SlickStack: Configure WP-Config File (Production) #############################################
+####################################################################################################
+
+## delete tmp files ##
+rm /tmp/wp-config*
+
+## retrieve latest wp-config boilerplate ##
+wget -O /tmp/wp-config.txt http://mirrors.slickstack.io/wordpress/wp-config.txt
+
+###### WP Multisite settings ########
+
+## set multisite subdomains ##
+if [[ -z "$WP_MULTISITE_SUBDOMAINS" ]]; then 
+    sed -i "s/@WP_MULTISITE_SUBDOMAINS/true/g" /tmp/wp-config.txt
+else 
+    sed -i "s/@WP_MULTISITE_SUBDOMAINS/${WP_MULTISITE_SUBDOMAINS}/g" /tmp/wp-config.txt
+fi
+
+## set multisite ##
+if [[ -z "$WP_MULTISITE" ]]; then 
+    sed -i "s/@WP_MULTISITE/false/g" /tmp/wp-config.txt
+else 
+    sed -i "s/@WP_MULTISITE/${WP_MULTISITE}/g" /tmp/wp-config.txt
+fi
+
+
+####### other WP Config settings ##########
+
+## replace database placeholders ##
+sed -i "s/@DB_NAME/${DB_NAME}/g" /tmp/wp-config.txt
+sed -i "s/@DB_USER/${DB_USER}/g" /tmp/wp-config.txt
+sed -i "s/@DB_PASSWORD/${DB_PASSWORD}/g" /tmp/wp-config.txt
+sed -i "s/@DB_HOST/${DB_HOST}/g" /tmp/wp-config.txt
+sed -i "s/@DB_CHARSET/${DB_CHARSET}/g" /tmp/wp-config.txt
+sed -i "s/@DB_COLLATE/${DB_COLLATE}/g" /tmp/wp-config.txt
+sed -i "s/@DB_PREFIX/${DB_PREFIX}/g" /tmp/wp-config.txt
+
+## set object cache (optional) ##
+if [[ -z "$OBJECT_CACHE" ]]; then 
+    sed -i "s/@OBJECT_CACHE/true/g" /tmp/wp-config.txt
+else 
+    sed -i "s/@OBJECT_CACHE/${OBJECT_CACHE}/g" /tmp/wp-config.txt
+fi
+
+## set object cache (optional) ##
+if [[ -z "$WP_LANG" ]]; then 
+    sed -i "s/@WP_LANG/en-US/g" /tmp/wp-config.txt
+else 
+    sed -i "s/@WP_LANG/${WP_LANG}/g" /tmp/wp-config.txt
+fi
+
+## replace domain placeholders ##
+sed -i "s/@SITE_DOMAIN/${SITE_DOMAIN}/g" /tmp/wp-config.txt
+sed -i "s/@SITE_TLD/${SITE_TLD}/g" /tmp/wp-config.txt
+
+## replace SFTP Details placeholders ##
+sed -i "s/@SFTP_USER/${SFTP_USER}/g" /tmp/wp-config.txt
+sed -i "s/@SFTP_PASSWORD/${SFTP_PASSWORD}/g" /tmp/wp-config.txt
+if [[ -z "$SSH_PORT" ]]; then 
+    sed -i "s/@SSH_PORT/6969/g" /tmp/wp-config.txt
+else 
+    sed -i "s/@SSH_PORT/${SSH_PORT}/g" /tmp/wp-config.txt
+fi
+
+## replace CloudFlare placeholders ##
+sed -i "s/@CLOUDFLARE_API_KEY/${CLOUDFLARE_API_KEY}/g" /tmp/wp-config.txt
+sed -i "s/@CLOUDFLARE_API_EMAIL/${CLOUDFLARE_API_EMAIL}/g" /tmp/wp-config.txt
+
+## CloudFlare DNS widget ##
+if [[ -z "$CLOUDFLARE_WIDGET_DNS" ]]; then 
+    sed -i "s/@CLOUDFLARE_WIDGET_DNS/true/g" /tmp/wp-config.txt
+else 
+    sed -i "s/@CLOUDFLARE_WIDGET_DNS/${CLOUDFLARE_WIDGET_DNS}/g" /tmp/wp-config.txt
+fi
+
+## replace salt keys ##
+sed -i "s/@AUTHKEY/$(openssl rand -hex 48)/g" /tmp/wp-config.txt
+sed -i "s/@SECUREAUTHKEY/$(openssl rand -hex 48)/g" /tmp/wp-config.txt
+sed -i "s/@LOGGEDINKEY/$(openssl rand -hex 48)/g" /tmp/wp-config.txt
+sed -i "s/@NONCEKEY/$(openssl rand -hex 48)/g" /tmp/wp-config.txt
+sed -i "s/@AUTHSALT/$(openssl rand -hex 48)/g" /tmp/wp-config.txt
+sed -i "s/@SECUREAUTHSALT/$(openssl rand -hex 48)/g" /tmp/wp-config.txt
+sed -i "s/@LOGGEDINSALT/$(openssl rand -hex 48)/g" /tmp/wp-config.txt
+sed -i "s/@NONCESALT/$(openssl rand -hex 48)/g" /tmp/wp-config.txt
+
+## Replace Placeholders: Debug and Dev/staging server ##
+if [[ "$SS_TYPE" != "production" ]]; then 
+    sed -i "s/@WP_DEBUG/true/g" /tmp/wp-config.txt
+    sed -i "s/@WP_LOCAL_DEV/true/g" /tmp/wp-config.txt
+else 
+    sed -i "s/@WP_DEBUG/false/g" /tmp/wp-config.txt
+    sed -i "s/@WP_LOCAL_DEV/false/g" /tmp/wp-config.txt
+fi
+
+## multisite ##
+if [[ "$WP_MULTISITE" == "true" ]]; then 
+    sed -i "s/@WP_MULTISITE/true/g" /tmp/wp-config.txt
+else 
+    sed -i "s/@WP_MULTISITE/false/g" /tmp/wp-config.txt
+fi
+
+## core auto updates ##
+if [[ -z "$WP_AUTO_UPDATE_CORE" ]]; then 
+    sed -i "s/@WP_AUTO_UPDATE_CORE/minor/g" /tmp/wp-config.txt
+else 
+    sed -i "s/@WP_AUTO_UPDATE_CORE/${WP_AUTO_UPDATE_CORE}/g" /tmp/wp-config.txt
+fi
+
+## autosave (drafts) ##
+if [[ -z "$WP_AUTOSAVE_INTERVAL" ]]; then 
+    sed -i "s/@WP_AUTOSAVE_INTERVAL/60/g" /tmp/wp-config.txt
+else 
+    sed -i "s/@WP_AUTOSAVE_INTERVAL/${WP_AUTOSAVE_INTERVAL}/g" /tmp/wp-config.txt
+fi
+
+## revisions ##
+if [[ -z "$WP_POST_REVISIONS" ]]; then 
+    sed -i "s/@WP_POST_REVISIONS/5/g" /tmp/wp-config.txt
+else 
+    sed -i "s/@WP_POST_REVISIONS/${WP_POST_REVISIONS}/g" /tmp/wp-config.txt
+fi
+
+## block external requests ##
+if [[ -z "$WP_HTTP_BLOCK_EXTERNAL" ]]; then 
+    sed -i "s/@WP_HTTP_BLOCK_EXTERNAL/false/g" /tmp/wp-config.txt
+else 
+    sed -i "s/@WP_HTTP_BLOCK_EXTERNAL/${WP_HTTP_BLOCK_EXTERNAL}/g" /tmp/wp-config.txt
+fi
+
+## allowed hosts ##
+if [[ -z "$WP_ACCESSIBLE_HOSTS" ]]; then 
+    sed -i "s/@WP_ACCESSIBLE_HOSTS/api.wordpress.org/g" /tmp/wp-config.txt
+else 
+    sed -i "s/@WP_ACCESSIBLE_HOSTS/${WP_ACCESSIBLE_HOSTS}/g" /tmp/wp-config.txt
+fi
+
+## file edits ##
+if [[ -z "$WP_DISALLOW_FILE_EDIT" ]]; then 
+    sed -i "s/@WP_DISALLOW_FILE_EDIT/false/g" /tmp/wp-config.txt
+else 
+    sed -i "s/@WP_DISALLOW_FILE_EDIT/${WP_DISALLOW_FILE_EDIT}/g" /tmp/wp-config.txt
+fi
+
+## file mods ##
+if [[ -z "$WP_DISALLOW_FILE_MODS" ]]; then 
+    sed -i "s/@WP_DISALLOW_FILE_MODS/false/g" /tmp/wp-config.txt
+else 
+    sed -i "s/@WP_DISALLOW_FILE_MODS/${WP_DISALLOW_FILE_MODS}/g" /tmp/wp-config.txt
+fi
+
+## file uploads ##
+if [[ -z "$WP_ALLOW_UNFILTERED_UPLOADS" ]]; then 
+    sed -i "s/@WP_ALLOW_UNFILTERED_UPLOADS/true/g" /tmp/wp-config.txt
+else 
+    sed -i "s/@WP_ALLOW_UNFILTERED_UPLOADS/${WP_ALLOW_UNFILTERED_UPLOADS}/g" /tmp/wp-config.txt
+fi
+
+## for fresh (virgin) WP installs enable certain items ##
+if [ ! -f "/var/www/meta/.cherry" ]; then 
+    sed -i "s#//VIRGIN//##g" /tmp/wp-config.txt
+fi
+
+## rename files ##
+mv /tmp/wp-config.txt /tmp/wp-config.php
+
+## copy files to destinations ##
+cp /tmp/wp-config.php /var/www/html/wp-config.php
+
+## delete tmp files ##
+rm /tmp/wp-config*
+
+## create directories if doesn't exist (will not overwrite) ##
+mkdir /var/www/html/wp-content/temp
+mkdir /var/www/html/wp-content/uploads
+mkdir /var/www/html/wp-content/upgrade
+
+## for fresh (virgin) WP installs delete some of the WP Core junk plugins and themes ##
+if [ ! -f "/var/www/meta/.cherry" ]; then 
+    rm /var/www/html/wp-content/plugins/akismet*
+    # rm /var/www/html/wp-content/themes/twenty*
+fi
+
+####################################################################################################
+#### SlickStack: Configure WP-Config File (Staging) ################################################
+####################################################################################################
+
+## delete tmp files ##
+rm /tmp/wp-config*
+
+## change dir ##
+cd /var/www/html/staging
+
+## retrieve latest wp-config boilerplate ##
+wget -O /tmp/wp-config.txt http://mirrors.slickstack.io/wordpress/wp-config-staging.txt
+
+###### WP Multisite settings ########
+
+## set multisite subdomains ##
+if [[ -z "$WP_MULTISITE_SUBDOMAINS" ]]; then 
+    sed -i "s/@WP_MULTISITE_SUBDOMAINS/true/g" /tmp/wp-config.txt
+else 
+    sed -i "s/@WP_MULTISITE_SUBDOMAINS/${WP_MULTISITE_SUBDOMAINS}/g" /tmp/wp-config.txt
+fi
+
+## set multisite ##
+if [[ -z "$WP_MULTISITE" ]]; then 
+    sed -i "s/@WP_MULTISITE/false/g" /tmp/wp-config.txt
+else 
+    sed -i "s/@WP_MULTISITE/${WP_MULTISITE}/g" /tmp/wp-config.txt
+fi
+
+## multisite ##
+if [[ "$WP_MULTISITE" == "true" ]]; then 
+    sed -i "s/@WP_MULTISITE/true/g" /tmp/wp-config.txt
+else 
+    sed -i "s/@WP_MULTISITE/false/g" /tmp/wp-config.txt
+fi
+
+
+####### other WP Config settings ##########
+
+## replace database placeholders ##
+sed -i "s/@DB_NAME/${DB_NAME}/g" /tmp/wp-config.txt
+sed -i "s/@DB_USER/${DB_USER}/g" /tmp/wp-config.txt
+sed -i "s/@DB_PASSWORD/${DB_PASSWORD}/g" /tmp/wp-config.txt
+sed -i "s/@DB_HOST/${DB_HOST}/g" /tmp/wp-config.txt
+sed -i "s/@DB_CHARSET/${DB_CHARSET}/g" /tmp/wp-config.txt
+sed -i "s/@DB_COLLATE/${DB_COLLATE}/g" /tmp/wp-config.txt
+sed -i "s/@DB_PREFIX/staging_/g" /tmp/wp-config.txt
+
+## disable object cache (staging) ##
+sed -i "s/@OBJECT_CACHE/false/g" /tmp/wp-config.txt
+
+## set language ##
+if [[ -z "$WP_LANG" ]]; then 
+    sed -i "s/@WP_LANG/en-US/g" /tmp/wp-config.txt
+else 
+    sed -i "s/@WP_LANG/${WP_LANG}/g" /tmp/wp-config.txt
+fi
+
+## replace domain placeholders ##
+sed -i "s#@SITE_DOMAIN#${SITE_DOMAIN}#g" /tmp/wp-config.txt
+sed -i "s/@SITE_TLD/${SITE_TLD}/g" /tmp/wp-config.txt
+
+## replace SFTP Details placeholders ##
+sed -i "s/@SFTP_USER/${SFTP_USER}/g" /tmp/wp-config.txt
+sed -i "s/@SFTP_PASSWORD/${SFTP_PASSWORD}/g" /tmp/wp-config.txt
+if [[ -z "$SSH_PORT" ]]; then 
+    sed -i "s/@SSH_PORT/6969/g" /tmp/wp-config.txt
+else 
+    sed -i "s/@SSH_PORT/${SSH_PORT}/g" /tmp/wp-config.txt
+fi
+
+## replace CloudFlare placeholders ##
+sed -i "s/@CLOUDFLARE_API_KEY/${CLOUDFLARE_API_KEY}/g" /tmp/wp-config.txt
+sed -i "s/@CLOUDFLARE_API_EMAIL/${CLOUDFLARE_API_EMAIL}/g" /tmp/wp-config.txt
+
+## CloudFlare DNS widget ##
+if [[ -z "$CLOUDFLARE_WIDGET_DNS" ]]; then 
+    sed -i "s/@CLOUDFLARE_WIDGET_DNS/true/g" /tmp/wp-config.txt
+else 
+    sed -i "s/@CLOUDFLARE_WIDGET_DNS/${CLOUDFLARE_WIDGET_DNS}/g" /tmp/wp-config.txt
+fi
+
+## replace salt keys ##
+sed -i "s/@AUTHKEY/$(openssl rand -hex 48)/g" /tmp/wp-config.txt
+sed -i "s/@SECUREAUTHKEY/$(openssl rand -hex 48)/g" /tmp/wp-config.txt
+sed -i "s/@LOGGEDINKEY/$(openssl rand -hex 48)/g" /tmp/wp-config.txt
+sed -i "s/@NONCEKEY/$(openssl rand -hex 48)/g" /tmp/wp-config.txt
+sed -i "s/@AUTHSALT/$(openssl rand -hex 48)/g" /tmp/wp-config.txt
+sed -i "s/@SECUREAUTHSALT/$(openssl rand -hex 48)/g" /tmp/wp-config.txt
+sed -i "s/@LOGGEDINSALT/$(openssl rand -hex 48)/g" /tmp/wp-config.txt
+sed -i "s/@NONCESALT/$(openssl rand -hex 48)/g" /tmp/wp-config.txt
+
+## Replace Placeholders: Debug and Dev/staging server ##
+sed -i "s/@WP_DEBUG/true/g" /tmp/wp-config.txt
+sed -i "s/@WP_LOCAL_DEV/false/g" /tmp/wp-config.txt
+
+
+
+## core auto updates ##
+if [[ -z "$WP_AUTO_UPDATE_CORE" ]]; then 
+    sed -i "s/@WP_AUTO_UPDATE_CORE/minor/g" /tmp/wp-config.txt
+else 
+    sed -i "s/@WP_AUTO_UPDATE_CORE/${WP_AUTO_UPDATE_CORE}/g" /tmp/wp-config.txt
+fi
+
+## autosave (drafts) ##
+if [[ -z "$WP_AUTOSAVE_INTERVAL" ]]; then 
+    sed -i "s/@WP_AUTOSAVE_INTERVAL/60/g" /tmp/wp-config.txt
+else 
+    sed -i "s/@WP_AUTOSAVE_INTERVAL/${WP_AUTOSAVE_INTERVAL}/g" /tmp/wp-config.txt
+fi
+
+## revisions ##
+if [[ -z "$WP_POST_REVISIONS" ]]; then 
+    sed -i "s/@WP_POST_REVISIONS/5/g" /tmp/wp-config.txt
+else 
+    sed -i "s/@WP_POST_REVISIONS/${WP_POST_REVISIONS}/g" /tmp/wp-config.txt
+fi
+
+## block external requests ##
+if [[ -z "$WP_HTTP_BLOCK_EXTERNAL" ]]; then 
+    sed -i "s/@WP_HTTP_BLOCK_EXTERNAL/false/g" /tmp/wp-config.txt
+else 
+    sed -i "s/@WP_HTTP_BLOCK_EXTERNAL/${WP_HTTP_BLOCK_EXTERNAL}/g" /tmp/wp-config.txt
+fi
+
+## allowed hosts ##
+if [[ -z "$WP_ACCESSIBLE_HOSTS" ]]; then 
+    sed -i "s/@WP_ACCESSIBLE_HOSTS/api.wordpress.org/g" /tmp/wp-config.txt
+else 
+    sed -i "s/@WP_ACCESSIBLE_HOSTS/${WP_ACCESSIBLE_HOSTS}/g" /tmp/wp-config.txt
+fi
+
+## file edits ##
+sed -i "s/@WP_DISALLOW_FILE_EDIT/false/g" /tmp/wp-config.txt
+
+## file mods ##
+sed -i "s/@WP_DISALLOW_FILE_MODS/false/g" /tmp/wp-config.txt
+
+## file uploads ##
+if [[ -z "$WP_ALLOW_UNFILTERED_UPLOADS" ]]; then 
+    sed -i "s/@WP_ALLOW_UNFILTERED_UPLOADS/true/g" /tmp/wp-config.txt
+else 
+    sed -i "s/@WP_ALLOW_UNFILTERED_UPLOADS/${WP_ALLOW_UNFILTERED_UPLOADS}/g" /tmp/wp-config.txt
+fi
+
+## rename files ##
+mv /tmp/wp-config.txt /tmp/wp-config.php
+
+## copy files to destinations ##
+cp /tmp/wp-config.php /var/www/html/staging/wp-config.php
+
+## delete tmp files ##
+rm /tmp/wp-config*
+
+## create directories if doesn't exist (will not overwrite) ##
+mkdir /var/www/html/staging/wp-content/temp
+mkdir /var/www/html/staging/wp-content/uploads
+mkdir /var/www/html/staging/wp-content/upgrade
+
+####################################################################################################
+#### SlickStack: Install Redis-Server (Includes Redis-CLI) + PHP-Redis #############################
+####################################################################################################
+
+## purge redis-server + php-redis (if installed) ##
+apt purge redis-server
+apt purge php-redis
+
+## install redis-server + php-redis ##
+apt install redis-server
+apt install php-redis
+
+## configure redis-server for object caching (only) ##
+sed -i '/maxmemory.*bytes.*/c\maxmemory 256mb' /etc/redis/redis.conf
+sed -i '/maxmemory-policy noeviction/c\maxmemory-policy allkeys-lru' /etc/redis/redis.conf
+sed -i '/always-show-logo yes/c\always-show-logo no' /etc/redis/redis.conf
+# sed -i '/logfile/c\logfile /var/www/logs/redis.log' /etc/redis/redis.conf
+# sed -i '/dir /c\dir /tmp' /etc/redis/redis.conf
+
+## create log files if do not exist ##
+# if [ ! -f "/var/www/logs/redis.log" ]; then touch "/var/www/logs/redis.log"; fi
+# mkdir /var/run/redis
+
+## reset permissions ##
+chown redis:redis /var/www/logs/redis.log
+chown redis:redis /etc/redis/redis.conf
+chown redis:redis /var/run/redis
+chmod 6775 /var/www/logs/redis.log
+chmod 775 /etc/redis/redis.conf
+chmod 775 /var/run/redis
+
+####################################################################################################
+#### SS-Install: Install MU (Must-Use) Plugins (After PHP-FPM And Redis Installed) #################
+####################################################################################################
+
+## run ss-muplugs ##
+source /var/www/ss-muplugs
+
+####################################################################################################
+#### SS-Install: Install Adminer (phpMyAdmin) ######################################################
+####################################################################################################
+
+## MESSAGE ##
+echo -e "\e[36mInstalling Adminer script for SQL database management...\e[0m"
+
+## download latest versions ##
+wget -O /tmp/adminer.php http://mirrors.slickstack.io/adminer/adminer.txt
+
+## copy files to their destinations ##
+cp /tmp/adminer.php /var/www/meta/adminer.php
+
+## reset permissions ##
+chown -R www-data:www-data /var/www/tools/adminer
+chmod 6775 /var/www/tools/adminer &> /dev/null
+chmod 6664 /var/www/tools/adminer/adminer.php &> /dev/null
+
+chmod 6664 /var/www/meta/adminer.php &> /dev/null
+
+####################################################################################################
+#### SS-Install: Configure UFW Firewall + Set UFW Rules ############################################
+####################################################################################################
+
+## delete tmp files ##
+rm /tmp/ufw*
+rm /tmp/user*
+
+## install ufw ##
+apt install ufw
+
+## ufw rules ##
+ufw default deny incoming
+ufw default allow outgoing
+ufw allow $SSH_PORT
+ufw allow 80
+ufw allow 443
+ufw allow 6379
+ufw --force disable
+ufw --force enable
+echo "y" | ufw enable
+
+# retrieve latest versions ##
+wget -O /tmp/ufw http://mirrors.slickstack.io/ufw-firewall/ufw.txt
+wget -O /tmp/ufw.conf http://mirrors.slickstack.io/ufw-firewall/ufw-conf.txt
+wget -O /tmp/user.rules http://mirrors.slickstack.io/ufw-firewall/user-rules.txt
+
+if [[ -z "$SSH_PORT" ]]; then 
+    sed -i "s/@SSH_PORT/6969/g" /tmp/user.rules
+else 
+    sed -i "s/@SSH_PORT/${SSH_PORT}/g" /tmp/user.rules
+fi
+
+## copy files to their destinations ##
+cp /tmp/ufw /etc/default/ufw
+cp /tmp/ufw.conf /etc/ufw/ufw.conf
+cp /tmp/user.rules /etc/ufw/user.rules
+
+## reset permissions ##
+chown root:root /etc/default/ufw
+chown root:root /etc/ufw/ufw.conf
+chown root:root /etc/ufw/user.rules
+chmod 0664 /etc/default/ufw
+chmod 0664 /etc/ufw/ufw.conf
+chmod 0664 /etc/ufw/user.rules
+
+## delete tmp files ##
+rm /tmp/ufw*
+rm /tmp/user*
+
+####################################################################################################
+#### Configure ClamAV ##############################################################################
+####################################################################################################
+
+## update ClamAV malware cache ##
+## NO LONGER NEEDED DURING INITIAL INSTALL (RUNS AUTOMATICALLY) ##
+# freshclam
+
+# sed -i '/UpdateLogFile/c\UpdateLogFile /var/www/logs/clamav.log' /etc/clamav/freshclam.conf
+sed -i '/LogRotate/c\LogRotate true' /etc/clamav/freshclam.conf
+sed -i '/Checks/c\Checks 2' /etc/clamav/freshclam.conf
+sed -i '/MaxAttempts/c\MaxAttempts 3' /etc/clamav/freshclam.conf
+
+####################################################################################################
+#### Configure Ubuntu: Optimize The System Kernel ##################################################
+####################################################################################################
+
+## delete tmp files ##
+rm /tmp/sysctl*
+
+## backup current Ubunt kernel file ##
+cp /etc/sysctl.conf /etc/sysctl.conf.bak
+
+## download latest versions ##
+wget -O /tmp/sysctl.conf http://mirrors.slickstack.io/ubuntu/sysctl.txt
+
+## copy files to their destinations ##
+cp /tmp/sysctl.conf /etc/sysctl.conf
+
+## reset permissions ##
+chown root:root /etc/sysctl.conf
+chmod 0664 /etc/sysctl.conf
+
+####################################################################################################
+#### SlickStack: Finish Up Installation + Confirmation Message #####################################
+####################################################################################################
+
+## not a virgin install anymore ##
+mkdir /var/www/meta/ && touch /var/www/meta/.cherry
+
+## run scripts ##
+source /var/www/ss-purge
+source /var/www/ss-perms
+
+## reset all logs to NULL ##
+cat /dev/null > /var/www/logs/clamav.log
+cat /dev/null > /var/www/logs/error.log
+cat /dev/null > /var/www/logs/mysql.log
+cat /dev/null > /var/www/logs/nginx.log
+cat /dev/null > /var/www/logs/redis.log
+
+## restart services ##
+source /var/www/ss-restart
+
+## confirm installation complete ##
+echo -e "\e[36mSlickStack installation complete! Please reboot server and ensure CloudFlare is activated with Full SSL mode.\e[0m"
+
+####################################################################################################
+#### SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ###############
+####################################################################################################
+
+## Ref: http://wproller.com ##
+## Ref: https://github.com/bjornjohansen/deploy-wp-on-vps/blob/master/deploy.sh ##
+## Ref: https://github.com/sm0k3net/Useful-Scripts/blob/master/wordpress.sh ##
+## Ref: https://github.com/techandme/wordpress-vm ##
+## Ref: https://github.com/QROkes/webinoly ##
+## Ref: https://github.com/WordOps/WordOps ##
+## Ref: https://www.isicca.com/en/lemp-howto-install-nginx-php7-mariadb/ ##
+## Ref: https://gist.github.com/FeChagas/54b0cdf354b197dc8e417357d7687e8b ##
+## Ref: https://github.com/GeekPress/WP-Quick-Install ##
+## Ref: https://github.com/bajpangosh/High-Traffic-wordpress-server-configuration ##
+## Ref: https://gist.github.com/nickfox-taterli/2c283d73ba817392fb0f9f15d9cfa514 ##
+## Ref: https://gist.github.com/beardedinbinary/79d7ad34f9980f0a4c23 ##
+## Ref: https://www.linuxbabe.com/security/letsencrypt-webroot-tls-certificate
+## Ref: https://stackoverflow.com/questions/49668542/create-a-script-that-adds-lines-of-code-to-bashrc-then-reloads-the-terminal
+## Ref: https://peteris.rocks/blog/unattended-installation-of-wordpress-on-ubuntu-server/
+## Ref: https://serverfault.com/questions/783527/non-interactive-silent-install-of-mysql-5-7-on-ubuntu-16-04-lts/830352#830352
+## Ref: https://www.percona.com/blog/2016/10/18/upgrading-to-mysql-5-7-beware-of-the-new-strict-mode/
+## Ref: https://stackoverflow.com/questions/3601515/how-to-check-if-a-variable-is-set-in-bash
+## Ref: https://serverfault.com/questions/773964/calculating-the-percentage-of-the-total-available-memory-on-linux-as-an-integer
+## Ref: https://stackoverflow.com/questions/29271593/bash-check-for-amount-of-memory-installed-on-a-system-as-sanity-check
+## Ref: https://stackoverflow.com/questions/50177216/how-to-grant-all-privileges-to-root-user-in-mysql-8-0
+## Ref: https://stackoverflow.com/questions/28118296/bash-script-is-super-slow
+## Ref: https://stackoverflow.com/questions/15445361/speeding-up-bash-scripts
+## Ref: https://unix.stackexchange.com/questions/67057/bash-script-optimization-of-processing-speed
+## Ref: https://unix.stackexchange.com/questions/313256/why-write-an-entire-bash-script-in-functions
+## Ref: http://nginx.org/en/linux_packages.html
+## Ref: https://www.digitalocean.com/community/questions/nginx-stable-or-mainline-for-production-server
+## Ref: https://precisionsec.com/changing-the-wordpress-site-url-using-the-mysql-command-line/
+## Ref: https://magc.co/box/notes/change-wp-urls-mysql/
+## Ref: https://wordpress.stackexchange.com/questions/281814/wordpress-multisite-redirecting-to-wp-signup-php
+## Ref: https://wordpress.stackexchange.com/questions/165507/site-redirecting-to-wp-signup-php
+## Ref: https://askubuntu.com/questions/86849/how-to-unzip-a-zip-file-from-the-terminal
+## Ref: https://www.computerhope.com/unix/rsync.htm
