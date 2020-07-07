@@ -91,6 +91,17 @@ mysql --execute="SHOW TABLES LIKE 'staging\_staging%'" > /var/www/meta/drop_tabl
 # mysql --execute="SHOW TABLES LIKE 'staging\_${DB_PREFIX}\%'" > /var/www/meta/drop_tables.txt
 
 ####################################################################################################
+#### SS-Clean: Delete Junk Tables From MySQL Database ##############################################
+####################################################################################################
+
+## prepare MySQL root password (suppresses MySQL security warnings) ##
+export MYSQL_PWD=$DB_PASSWORD_ROOT
+
+## delete various junk tables from MySQL ##
+mysql --execute="DROP TABLE ${DB_PREFIX}links;" &> /dev/null ## wp_links virtually deprecated
+# more soon (cache plugins etc)
+
+####################################################################################################
 #### SS-Clean: Delete Bash Command History (Root + Sudo + SFTP User) ###############################
 ####################################################################################################
 
@@ -118,17 +129,6 @@ rm /var/www/html/wp-content/mu-plugins/index-autoload* ## included in WP 5.3+
 rm /var/www/html/staging/wp-content/mu-plugins/index-autoload* ## included in WP 5.3+
 rm /var/www/html/wp-content/mu-plugins/remove-query-strings* ## no longer recommended
 rm /var/www/html/staging/wp-content/mu-plugins/remove-query-strings* ## no longer recommended
-
-####################################################################################################
-#### SS-Clean: Delete Junk Tables From MySQL Database ##############################################
-####################################################################################################
-
-## prepare MySQL root password (suppresses MySQL security warnings) ##
-export MYSQL_PWD=$DB_PASSWORD_ROOT
-
-## delete various junk tables from MySQL ##
-mysql --user=root --host="$DB_HOST" --database="$DB_NAME" --protocol=tcp --port=3306 --force --execute="DROP TABLE ${DB_PREFIX}links;" &> /dev/null ## wp_links virtually deprecated
-# more soon (cache plugins etc)
 
 ####################################################################################################
 #### SS-Clean: Delete Unsafe + Unnecessary WordPress Core Files ####################################
