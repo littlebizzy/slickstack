@@ -36,6 +36,12 @@ function add-apt-repository {
     command /usr/bin/add-apt-repository -y "$@"
 }
 
+## mysql alias flags ##
+function mysql {
+    export MYSQL_PWD=$DB_PASSWORD_ROOT
+    command mysql --user=root --database="$DB_NAME" --host="$DB_HOST" --protocol=tcp --port=3306 --force "$@"
+}
+
 ## wget alias flags ##
 function wget {
     command wget --no-check-certificate --no-cache --no-cookies --tries=3 --timeout=15 "$@"
@@ -70,6 +76,19 @@ function mkdir {
 function ln {
     command ln -s -f "$@"
 }
+
+####################################################################################################
+#### SS-Clean: Drop Unused (Conflicting) Staging Site Tables From MySQL Database ###################
+####################################################################################################
+
+## prepare MySQL root password (suppresses MySQL security warnings) ##
+# moved to alias
+
+## manually delete unused (conflicting) staging site tables ##
+# mysql --user=root --host="$DB_HOST" --database="$DB_NAME" --protocol=tcp --port=3306 --force --execute="DELETE FROM ${DB_PREFIX}options WHERE option_name LIKE ('%\_transient\_%');"
+
+mysql --execute="SHOW TABLES LIKE 'staging\_staging%'" > /var/www/meta/drop_tables.txt
+# mysql --execute="SHOW TABLES LIKE 'staging\_${DB_PREFIX}\%'" > /var/www/meta/drop_tables.txt
 
 ####################################################################################################
 #### SS-Clean: Delete Bash Command History (Root + Sudo + SFTP User) ###############################
@@ -879,3 +898,9 @@ rm /var/www/html/wp-content/uploads/cache* ## improper cache path
 ## Ref: https://unix.stackexchange.com/questions/324118/replace-string-in-multiple-files-using-find-and-sed
 ## Ref: https://unix.stackexchange.com/questions/474505/how-to-use-sed-on-all-matching-files
 ## Ref: https://wordpress.org/plugins/old-core-files/
+## Ref: https://dba.stackexchange.com/questions/56804/mysql-how-to-drop-all-tables-starting-with-a-prefix/56806
+## Ref: https://azimyasin.wordpress.com/2007/08/11/mysql-dropping-multiple-tables/
+## Ref: https://stackoverflow.com/questions/19283740/save-mysql-query-results-into-a-text-file
+## Ref: https://stackoverflow.com/questions/21253704/how-to-save-mysql-query-output-to-excel-or-txt-file
+
+## SS_EOF
