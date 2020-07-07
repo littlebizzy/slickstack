@@ -105,10 +105,12 @@ rm /tmp/staging*.sql*
 ## duplicate production SQL dump to temporary staging SQL dump ##
 cp /var/www/meta/wp.sql /tmp/staging.sql
 
-## change production SQL dump to staging_ prefix (shared database with hardcoded URIs) ##
-sed -i "s#staging_${DB_PREFIX}#staging_#g" /tmp/staging.sql
-sed -i "s#${DB_PREFIX}#staging_#g" /tmp/staging.sql
-# sed -i "s#wp_#staging_#g" /tmp/staging.sql ## if DB_PREFIX not defined
+## change production table prefixes to staging_ prefix (shared database) ##
+if [[ -z "$DB_PREFIX" ]]; then 
+    sed -i "s#wp_#staging_#g" /tmp/staging.sql
+else 
+    sed -i "s#${DB_PREFIX}#staging_#g" /tmp/staging.sql
+fi
 
 ## fix potential run-on paths in temporary staging SQL dump ##
 sed -i "s#staging/staging/staging/staging/staging/staging/staging/staging/staging/staging/staging/staging/staging/staging/staging#staging#g" /tmp/staging.sql
@@ -190,18 +192,15 @@ find /var/www/html/staging/wp-content/themes/ -type f -exec sed -i "s#staging///
 find /var/www/html/staging/wp-content/themes/ -type f -exec sed -i "s#staging///#staging/#g" {} +
 find /var/www/html/staging/wp-content/themes/ -type f -exec sed -i "s#staging//#staging/#g" {} +
 
-## fix Jetpack hacks ##
-# https://i0.wp.com/example.com/wp-content/uploads/2019/02/something.jpg
-
 ## prepare MySQL root password (suppresses MySQL security warnings) ##
 export MYSQL_PWD=$DB_PASSWORD_ROOT
 
 ## import database ##
 mysql --user=root --host="$DB_HOST" --protocol=tcp --port=3306 --force "$DB_NAME" < /tmp/staging.sql
 
-## fix home and siteurl fields (no mass search/replace to avoid potential conflicts) ##
-mysql --user=root --host="$DB_HOST" --database="$DB_NAME" --protocol=tcp --port=3306 --execute="UPDATE staging_options SET option_value='https://$SITE_DOMAIN/staging' WHERE option_name = 'home';"
-mysql --user=root --host="$DB_HOST" --database="$DB_NAME" --protocol=tcp --port=3306 --execute="UPDATE staging_options SET option_value='https://$SITE_DOMAIN/staging' WHERE option_name = 'siteurl';"
+## fix staging home and siteurl fields (no mass search/replace to avoid potential conflicts) ##
+mysql --user=root --host="$DB_HOST" --database="$DB_NAME" --protocol=tcp --port=3306 --execute="UPDATE staging_options SET option_value='https://$SITE_DOMAIN/staging/' WHERE option_name = 'home';"
+mysql --user=root --host="$DB_HOST" --database="$DB_NAME" --protocol=tcp --port=3306 --execute="UPDATE staging_options SET option_value='https://$SITE_DOMAIN/staging/' WHERE option_name = 'siteurl';"
 
 ## cleanup tmp files ##
 rm /var/www/meta/staging*.sql*
