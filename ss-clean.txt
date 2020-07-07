@@ -87,24 +87,32 @@ function ln {
 ## manually delete unused (conflicting) staging site tables ##
 # mysql --user=root --host="$DB_HOST" --database="$DB_NAME" --protocol=tcp --port=3306 --force --execute="DELETE FROM ${DB_PREFIX}options WHERE option_name LIKE ('%\_transient\_%');"
 
-# mysql --execute="SHOW TABLES LIKE 'staging\_staging%'" > /var/www/meta/drop_tables.txt
-mysql --execute="SHOW TABLES LIKE 'staging\_${DB_PREFIX}\%'" > /var/www/meta/drop_tables.txt
-
+## drop run-on staging tables ##
+cat /dev/null > /var/www/meta/drop_tables.txt
+cat /dev/null > /var/www/meta/drop_tables.sql
+mysql --execute="SHOW TABLES LIKE 'staging_staging%'" > /var/www/meta/drop_tables.txt
 sed -i '/Tables_in/d' /var/www/meta/drop_tables.txt
 sed -i 's/^/DROP TABLE IF EXISTS /' /var/www/meta/drop_tables.txt
 sed -i 's/$/\;/' /var/www/meta/drop_tables.txt
+cp /var/www/meta/drop_tables.txt /var/www/meta/drop_tables.sql
+mysql $DB_NAME < /var/www/meta/drop_tables.sql
 
+## drop outdated staging tables ##
+cat /dev/null > /var/www/meta/drop_tables.txt
+cat /dev/null > /var/www/meta/drop_tables.sql
+mysql --execute="SHOW TABLES LIKE 'staging_${DB_PREFIX}%'" > /var/www/meta/drop_tables.txt
+sed -i '/Tables_in/d' /var/www/meta/drop_tables.txt
+sed -i 's/^/DROP TABLE IF EXISTS /' /var/www/meta/drop_tables.txt
+sed -i 's/$/\;/' /var/www/meta/drop_tables.txt
+cp /var/www/meta/drop_tables.txt /var/www/meta/drop_tables.sql
+mysql $DB_NAME < /var/www/meta/drop_tables.sql
+
+## TEMP STORAGE ##
 # sed -i '$!s/$/\;/' /var/www/meta/drop_tables.txt
 # sed -i '$!s/$/,/' /var/www/meta/drop_tables.txt
 # sed -i '$s/$/\;/' /var/www/meta/drop_tables.txt
-
 ## sed -i '$s/,$/[;]/' /var/www/meta/drop_tables.txt
-
 # sed -i "/Tables_in/c\DROP TABLE IF EXISTS " /var/www/meta/drop_tables.txt
-
-## import sql file to drop specified tables ##
-cp /var/www/meta/drop_tables.txt /var/www/meta/drop_tables.sql
-#mysql $DB_NAME < /var/www/meta/drop_tables.sql
 
 ####################################################################################################
 #### SS-Clean: Delete Junk Tables From MySQL Database ##############################################
