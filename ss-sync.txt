@@ -95,19 +95,27 @@ rm /var/www/html/staging/staging*
 #### SS-Sync: Copy Database From Production To Staging (Changes Table Prefix) ######################
 ####################################################################################################
 
-## ss-sync dumps the live SQL database immediately before duplicating to staging site ##
+## schedule ss-dump beforehand to dump the MySQL database optimally before ss-sync runs ##
 ## the table prefix will be staging_ (hardcoded) and minor search/replace occurs ##
 
-## cleanup ##
-rm /var/www/meta/staging.sql*
-rm /tmp/*.sql*
+## cleanup tmp files ##
+rm /var/www/meta/staging*.sql*
+rm /tmp/staging*.sql*
 
-## run ss-dump ##
-# source /var/www/ss-dump ## (disabled for now, ss-sync by default will run hourly AFTER ss-dump)
+## duplicate production SQL dump to temporary staging SQL dump ##
+cp /var/www/meta/wp.sql /tmp/staging.sql
 
 ## change production SQL dump to staging_ prefix (shared database with hardcoded URIs) ##
-cp /var/www/meta/wp.sql /tmp/staging.sql
-sed -i "s#${DB_PREFIX}#staging_${DB_PREFIX}#g" /tmp/staging.sql
+sed -i "s#staging_${DB_PREFIX}#staging_#g" /tmp/staging.sql
+sed -i "s#${DB_PREFIX}#staging_#g" /tmp/staging.sql
+# sed -i "s#wp_#staging_#g" /tmp/staging.sql ## if DB_PREFIX not defined
+
+## fix potential run-on paths in temporary staging SQL dump ##
+sed -i "s#staging/staging/staging/staging/staging/staging/staging/staging/staging/staging/staging/staging/staging/staging/staging#staging#g" /tmp/staging.sql
+sed -i "s#staging/staging/staging/staging/staging/staging/staging/staging/staging/staging/staging/staging/staging/staging#staging#g" /tmp/staging.sql
+sed -i "s#staging/staging/staging/staging/staging/staging/staging/staging/staging/staging/staging/staging/staging#staging#g" /tmp/staging.sql
+sed -i "s#staging/staging/staging/staging/staging/staging/staging/staging/staging/staging/staging/staging#staging#g" /tmp/staging.sql
+sed -i "s#staging/staging/staging/staging/staging/staging/staging/staging/staging/staging/staging#staging#g" /tmp/staging.sql
 sed -i "s#staging/staging/staging/staging/staging/staging/staging/staging/staging/staging#staging#g" /tmp/staging.sql
 sed -i "s#staging/staging/staging/staging/staging/staging/staging/staging/staging#staging#g" /tmp/staging.sql
 sed -i "s#staging/staging/staging/staging/staging/staging/staging/staging#staging#g" /tmp/staging.sql
@@ -118,7 +126,28 @@ sed -i "s#staging/staging/staging/staging#staging#g" /tmp/staging.sql
 sed -i "s#staging/staging/staging#staging#g" /tmp/staging.sql
 sed -i "s#staging/staging#staging#g" /tmp/staging.sql
 
+## fix potential excessive forward-slashes in temporary staging SQL dump ##
+sed -i "s#staging///////////////#staging/#g" /tmp/staging.sql
+sed -i "s#staging//////////////#staging/#g" /tmp/staging.sql
+sed -i "s#staging/////////////#staging/#g" /tmp/staging.sql
+sed -i "s#staging////////////#staging/#g" /tmp/staging.sql
+sed -i "s#staging///////////#staging/#g" /tmp/staging.sql
+sed -i "s#staging//////////#staging/#g" /tmp/staging.sql
+sed -i "s#staging/////////#staging/#g" /tmp/staging.sql
+sed -i "s#staging////////#staging/#g" /tmp/staging.sql
+sed -i "s#staging///////#staging/#g" /tmp/staging.sql
+sed -i "s#staging//////#staging/#g" /tmp/staging.sql
+sed -i "s#staging/////#staging/#g" /tmp/staging.sql
+sed -i "s#staging////#staging/#g" /tmp/staging.sql
+sed -i "s#staging///#staging/#g" /tmp/staging.sql
+sed -i "s#staging//#staging/#g" /tmp/staging.sql
+
 ## fix potential run-on table prefixes ##
+sed -i "s#staging_staging_staging_staging_staging_staging_staging_staging_staging_staging_staging_staging_staging_staging_staging_#staging_#g" /tmp/staging.sql
+sed -i "s#staging_staging_staging_staging_staging_staging_staging_staging_staging_staging_staging_staging_staging_staging_#staging_#g" /tmp/staging.sql
+sed -i "s#staging_staging_staging_staging_staging_staging_staging_staging_staging_staging_staging_staging_staging_#staging_#g" /tmp/staging.sql
+sed -i "s#staging_staging_staging_staging_staging_staging_staging_staging_staging_staging_staging_staging_#staging_#g" /tmp/staging.sql
+sed -i "s#staging_staging_staging_staging_staging_staging_staging_staging_staging_staging_staging_#staging_#g" /tmp/staging.sql
 sed -i "s#staging_staging_staging_staging_staging_staging_staging_staging_staging_staging_#staging_#g" /tmp/staging.sql
 sed -i "s#staging_staging_staging_staging_staging_staging_staging_staging_staging_#staging_#g" /tmp/staging.sql
 sed -i "s#staging_staging_staging_staging_staging_staging_staging_staging_#staging_#g" /tmp/staging.sql
@@ -129,7 +158,12 @@ sed -i "s#staging_staging_staging_staging_#staging_#g" /tmp/staging.sql
 sed -i "s#staging_staging_staging_#staging_#g" /tmp/staging.sql
 sed -i "s#staging_staging_#staging_#g" /tmp/staging.sql
 
-## fix any harcoded path conflicts in physical theme files ##
+## fix potential (hardcoded) run-on paths in theme files ##
+find /var/www/html/staging/wp-content/themes/ -type f -exec sed -i "s#staging/staging/staging/staging/staging/staging/staging/staging/staging/staging/staging/staging/staging/staging/staging#staging#g" {} +
+find /var/www/html/staging/wp-content/themes/ -type f -exec sed -i "s#staging/staging/staging/staging/staging/staging/staging/staging/staging/staging/staging/staging/staging/staging#staging#g" {} +
+find /var/www/html/staging/wp-content/themes/ -type f -exec sed -i "s#staging/staging/staging/staging/staging/staging/staging/staging/staging/staging/staging/staging/staging#staging#g" {} +
+find /var/www/html/staging/wp-content/themes/ -type f -exec sed -i "s#staging/staging/staging/staging/staging/staging/staging/staging/staging/staging/staging/staging#staging#g" {} +
+find /var/www/html/staging/wp-content/themes/ -type f -exec sed -i "s#staging/staging/staging/staging/staging/staging/staging/staging/staging/staging/staging#staging#g" {} +
 find /var/www/html/staging/wp-content/themes/ -type f -exec sed -i "s#staging/staging/staging/staging/staging/staging/staging/staging/staging/staging#staging#g" {} +
 find /var/www/html/staging/wp-content/themes/ -type f -exec sed -i "s#staging/staging/staging/staging/staging/staging/staging/staging/staging#staging#g" {} +
 find /var/www/html/staging/wp-content/themes/ -type f -exec sed -i "s#staging/staging/staging/staging/staging/staging/staging/staging#staging#g" {} +
@@ -139,6 +173,22 @@ find /var/www/html/staging/wp-content/themes/ -type f -exec sed -i "s#staging/st
 find /var/www/html/staging/wp-content/themes/ -type f -exec sed -i "s#staging/staging/staging/staging#staging#g" {} +
 find /var/www/html/staging/wp-content/themes/ -type f -exec sed -i "s#staging/staging/staging#staging#g" {} +
 find /var/www/html/staging/wp-content/themes/ -type f -exec sed -i "s#staging/staging#staging#g" {} +
+
+## fix potential excessive forward-slashes in theme files ##
+find /var/www/html/staging/wp-content/themes/ -type f -exec sed -i "s#staging///////////////#staging/#g" {} +
+find /var/www/html/staging/wp-content/themes/ -type f -exec sed -i "s#staging//////////////#staging/#g" {} +
+find /var/www/html/staging/wp-content/themes/ -type f -exec sed -i "s#staging/////////////#staging/#g" {} +
+find /var/www/html/staging/wp-content/themes/ -type f -exec sed -i "s#staging////////////#staging/#g" {} +
+find /var/www/html/staging/wp-content/themes/ -type f -exec sed -i "s#staging///////////#staging/#g" {} +
+find /var/www/html/staging/wp-content/themes/ -type f -exec sed -i "s#staging//////////#staging/#g" {} +
+find /var/www/html/staging/wp-content/themes/ -type f -exec sed -i "s#staging/////////#staging/#g" {} +
+find /var/www/html/staging/wp-content/themes/ -type f -exec sed -i "s#staging////////#staging/#g" {} +
+find /var/www/html/staging/wp-content/themes/ -type f -exec sed -i "s#staging///////#staging/#g" {} +
+find /var/www/html/staging/wp-content/themes/ -type f -exec sed -i "s#staging//////#staging/#g" {} +
+find /var/www/html/staging/wp-content/themes/ -type f -exec sed -i "s#staging/////#staging/#g" {} +
+find /var/www/html/staging/wp-content/themes/ -type f -exec sed -i "s#staging////#staging/#g" {} +
+find /var/www/html/staging/wp-content/themes/ -type f -exec sed -i "s#staging///#staging/#g" {} +
+find /var/www/html/staging/wp-content/themes/ -type f -exec sed -i "s#staging//#staging/#g" {} +
 
 ## fix Jetpack hacks ##
 # https://i0.wp.com/example.com/wp-content/uploads/2019/02/something.jpg
@@ -153,9 +203,9 @@ mysql --user=root --host="$DB_HOST" --protocol=tcp --port=3306 --force "$DB_NAME
 mysql --user=root --host="$DB_HOST" --database="$DB_NAME" --protocol=tcp --port=3306 --execute="UPDATE staging_options SET option_value='https://$SITE_DOMAIN/staging' WHERE option_name = 'home';"
 mysql --user=root --host="$DB_HOST" --database="$DB_NAME" --protocol=tcp --port=3306 --execute="UPDATE staging_options SET option_value='https://$SITE_DOMAIN/staging' WHERE option_name = 'siteurl';"
 
-## cleanup ##
-rm /var/www/meta/staging.sql*
-rm /tmp/*.sql*
+## cleanup tmp files ##
+rm /var/www/meta/staging*.sql*
+rm /tmp/staging*.sql*
 
 ####################################################################################################
 #### SS-Sync: Configure Staging Site WP-Config File (Same As SS-Install) ###########################
