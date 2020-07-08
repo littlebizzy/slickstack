@@ -36,6 +36,12 @@ function add-apt-repository {
     command /usr/bin/add-apt-repository -y "$@"
 }
 
+## mysql alias flags ##
+function mysql {
+    export MYSQL_PWD=$DB_PASSWORD_ROOT
+    command mysql --user=root --database="$DB_NAME" --host="$DB_HOST" --protocol=tcp --port=3306 --force "$@"
+}
+
 ## wget alias flags ##
 function wget {
     command wget --no-check-certificate --no-cache --no-cookies --tries=3 --timeout=15 "$@"
@@ -48,7 +54,7 @@ function cp {
 
 ## rsync alias flags ##
 function rsync {
-    command rsync -aI "$@"
+    command rsync -aI --ignore-errors "$@"
 }
 
 ## unzip alias flags ##
@@ -104,7 +110,7 @@ source /var/www/ss-check
 echo -e "\e[36mUpdating ss-config file to the latest boilerplate (all settings will be copied over)...\e[0m"
 
 ## compability for updating ss-config ##
-SS_UPDATE_BUILD="MAY2020A"
+SS_UPDATE_BUILD="JULY2020A"
 
 ## delete leftover files ##
 rm /tmp/ss-config*
@@ -708,6 +714,10 @@ fi
 
 if [[ -n "$SS_INTERVAL_SCAN" ]]; then
 sed -i "s|\(^SS_INTERVAL_SCAN=\).*|SS_INTERVAL_SCAN=\"$SS_INTERVAL_SCAN\"|g" /tmp/ss-config
+fi
+
+if [[ -n "$SS_INTERVAL_SYNC" ]]; then
+sed -i "s|\(^SS_INTERVAL_SYNC=\).*|SS_INTERVAL_SYNC=\"$SS_INTERVAL_SYNC\"|g" /tmp/ss-config
 fi
 
 if [[ -n "$SS_INTERVAL_PURGE" ]]; then
