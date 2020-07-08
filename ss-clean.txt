@@ -124,15 +124,15 @@ mysql --execute="DROP TABLE IF EXISTS ${DB_PREFIX}links;" ## wp_links virtually 
 #### SS-Clean: Convert Any MyISAM Tables To InnoDB Engine (Better Performance) #####################
 ####################################################################################################
 
-## drop outdated staging tables ##
-cat /dev/null > /var/www/meta/myisam-tables.txt
-cat /dev/null > /var/www/meta/myisam-tables.sql
-mysql --execute="SELECT table_name FROM INFORMATION_SCHEMA.TABLES WHERE engine = 'InnoDB';" > /var/www/meta/myisam-tables.txt
-# sed -i '/Tables_in/d' /var/www/meta/drop_tables.txt
-sed -i 's/^/ALTER TABLE /' /var/www/meta/myisam-tables.txt
-sed -i 's/$/ ENGINE=InnoDB\;/' /var/www/meta/myisam-tables.txt
-cp /var/www/meta/myisam-tables.txt /var/www/meta/myisam-tables.sql
-# mysql $DB_NAME < /var/www/meta/myisam-tables.sql
+## find and convert MyISAM tables ##
+cat /dev/null > /var/www/meta/myisam_tables.txt
+cat /dev/null > /var/www/meta/myisam_tables.sql
+mysql --execute="SELECT table_name FROM INFORMATION_SCHEMA.TABLES WHERE engine = 'InnoDB';" > /var/www/meta/myisam_tables.txt
+# sed -i '/Tables_in/d' /var/www/meta/myisam_tables.txt
+sed -i 's/^/ALTER TABLE /' /var/www/meta/myisam_tables.txt
+sed -i 's/$/ ENGINE=InnoDB\;/' /var/www/meta/myisam_tables.txt
+cp /var/www/meta/myisam-tables.txt /var/www/meta/myisam_tables.sql
+# mysql $DB_NAME < /var/www/meta/myisam_tables.sql
 
 ####################################################################################################
 #### SS-Clean: Delete Bash Command History (Root + Sudo + SFTP User) ###############################
