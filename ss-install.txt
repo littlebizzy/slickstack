@@ -244,17 +244,24 @@ chmod 0600 /var/spool/cron/crontabs/root
 /etc/init.d/cron reload
 
 ####################################################################################################
-#### SlickStack: Install Various Modules Via Default Ubuntu Packages ###############################
+#### SlickStack: Set Dpkg Basic Settings + Update Apt (Package) Cache ##############################
 ####################################################################################################
 
 ## MESSAGE ##
-echo -e "\e[36mInstalling various SlickStack modules from most recent Ubuntu repos...\e[0m"
+echo -e "\e[36mSet dpkg to noneractive and force confold and update apt cache...\e[0m"
 
 ## set confold as dpkg default (fail-safe in case apt upgrade called directly) ##
 DEBIAN_FRONTEND=noninteractive dpkg --configure -a --force-confold
 
 ## update repo cache ##
 apt update
+
+####################################################################################################
+#### SlickStack: Install Various Modules Via Default Ubuntu Packages ###############################
+####################################################################################################
+
+## MESSAGE ##
+echo -e "\e[36mInstalling various SlickStack modules from most recent Ubuntu repos...\e[0m"
 
 ## upgrade installed Ubuntu packages (LEMP modules) + Linux kernel (apt feature) ##
 apt full-upgrade
@@ -738,359 +745,11 @@ source /var/www/meta/.bash-aliases' >> /home/${SUDO_USER}/.bashrc
 source /home/${SUDO_USER}/.bashrc
 
 ####################################################################################################
-#### SlickStack: Install Nginx Server (Single Server Block) + FastCGI Cache ########################
+#### SlickStack: Install Nginx Server + FastCGI Cache + OpenSSL ####################################
 ####################################################################################################
 
-## purge nginx-extras (and all nginx packages) ##
-apt purge nginx
-apt purge nginx-extras
-
-## update Ubuntu package cache ##
-apt update
-
-## add Nginx mainline (dev) branch ppa ##
-# add-apt-repository --remove ppa:nginx/development
-# add-apt-repository ppa:nginx/development
-
-add-apt-repository --remove ppa:nginx/development
-
-## update package cache (again... not needed in Ubuntu 18.04+ but just for fun) ##
-apt update
-
-## install Nginx Extras ##
-apt install nginx-extras
-
-## download latest versions ##
-wget -O /tmp/nginx.conf http://mirrors.slickstack.io/nginx/nginx-conf.txt
-
-## noindex entire site (server) if desired ##
-if [[ "$SITE_NOINDEX" == "true" ]]; then 
-    sed -i "s/#@NOINDEX# //g" /tmp/nginx.conf
-else 
-    sed -i "/#@NOINDEX# /d" /tmp/nginx.conf
-fi
-
-
-##### nginx fastcgi cache settings ########
-
-## fastcgi cache memory ##
-if [[ -z "$FCGI_CACHE_MEMORY" ]]; then 
-    sed -i "s/@FCGI_CACHE_MEMORY/256m/g" /tmp/nginx.conf
-else 
-    sed -i "s/@FCGI_CACHE_MEMORY/${FCGI_CACHE_MEMORY}/g" /tmp/nginx.conf
-fi
-
-## fastcgi cache inactive ##
-if [[ -z "$FCGI_CACHE_INACTIVE" ]]; then 
-    sed -i "s/@FCGI_CACHE_INACTIVE/1440m/g" /tmp/nginx.conf
-else 
-    sed -i "s/@FCGI_CACHE_INACTIVE/${FCGI_CACHE_INACTIVE}/g" /tmp/nginx.conf
-fi
-
-## fastcgi cache max size ##
-if [[ -z "$FCGI_CACHE_MAX_SIZE" ]]; then 
-    sed -i "s/@FCGI_CACHE_MAX_SIZE/4096m/g" /tmp/nginx.conf
-else 
-    sed -i "s/@FCGI_CACHE_MAX_SIZE/${FCGI_CACHE_MAX_SIZE}/g" /tmp/nginx.conf
-fi
-
-## fastcgi cache connect timeout ##
-if [[ -z "$FCGI_CONNECT_TIMEOUT" ]]; then 
-    sed -i "s/@FCGI_CONNECT_TIMEOUT/60s/g" /tmp/nginx.conf
-else 
-    sed -i "s/@FCGI_CONNECT_TIMEOUT/${FCGI_CONNECT_TIMEOUT}/g" /tmp/nginx.conf
-fi
-
-## fastcgi cache read timeout ##
-if [[ -z "$FCGI_READ_TIMEOUT" ]]; then 
-    sed -i "s/@FCGI_READ_TIMEOUT/60s/g" /tmp/nginx.conf
-else 
-    sed -i "s/@FCGI_READ_TIMEOUT/${FCGI_READ_TIMEOUT}/g" /tmp/nginx.conf
-fi
-
-## fastcgi cache send timeout ##
-if [[ -z "$FCGI_SEND_TIMEOUT" ]]; then 
-    sed -i "s/@FCGI_SEND_TIMEOUT/60s/g" /tmp/nginx.conf
-else 
-    sed -i "s/@FCGI_SEND_TIMEOUT/${FCGI_SEND_TIMEOUT}/g" /tmp/nginx.conf
-fi
-
-## fastcgi cache buffers ##
-if [[ -z "$FCGI_BUFFERS" ]]; then 
-    sed -i "s/@FCGI_BUFFERS/32 32k/g" /tmp/nginx.conf
-else 
-    sed -i "s/@FCGI_BUFFERS/${FCGI_BUFFERS}/g" /tmp/nginx.conf
-fi
-
-## fastcgi cache buffer size ##
-if [[ -z "$FCGI_BUFFER_SIZE" ]]; then 
-    sed -i "s/@FCGI_BUFFER_SIZE/32k/g" /tmp/nginx.conf
-else 
-    sed -i "s/@FCGI_BUFFER_SIZE/${FCGI_BUFFER_SIZE}/g" /tmp/nginx.conf
-fi
-
-## fastcgi cache busy buffers size ##
-if [[ -z "$FCGI_BUSY_BUFFERS_SIZE" ]]; then 
-    sed -i "s/@FCGI_BUSY_BUFFERS_SIZE/256k/g" /tmp/nginx.conf
-else 
-    sed -i "s/@FCGI_BUSY_BUFFERS_SIZE/${FCGI_BUSY_BUFFERS_SIZE}/g" /tmp/nginx.conf
-fi
-
-## fastcgi cache temp file write size ##
-if [[ -z "$FCGI_TEMP_FILE_WRITE_SIZE" ]]; then 
-    sed -i "s/@FCGI_TEMP_FILE_WRITE_SIZE/256k/g" /tmp/nginx.conf
-else 
-    sed -i "s/@FCGI_TEMP_FILE_WRITE_SIZE/${FCGI_TEMP_FILE_WRITE_SIZE}/g" /tmp/nginx.conf
-fi
-
-
-
-#### nginx ssl settings #####
-
-## ssl protocols ##
-if [[ -z "$SSL_PROTOCOLS" ]]; then 
-    sed -i "s/@SSL_PROTOCOLS/TLSv1.2 TLSv1.3/g" /tmp/nginx.conf
-else 
-    sed -i "s/@SSL_PROTOCOLS/${SSL_PROTOCOLS}/g" /tmp/nginx.conf
-fi
-
-## ssl ciphers ##
-if [[ -z "$SSL_CIPHERS" ]]; then 
-    sed -i "s/@SSL_CIPHERS/ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384/g" /tmp/nginx.conf
-else 
-    sed -i "s/@SSL_CIPHERS/${SSL_CIPHERS}/g" /tmp/nginx.conf
-fi
-
-## ssl session timeout ##
-if [[ -z "$SSL_SESSION_TIMEOUT" ]]; then 
-    sed -i "s/@SSL_SESSION_TIMEOUT/1d/g" /tmp/nginx.conf
-else 
-    sed -i "s/@SSL_SESSION_TIMEOUT/${SSL_SESSION_TIMEOUT}/g" /tmp/nginx.conf
-fi
-
-## ssl session cache ##
-if [[ -z "$SSL_SESSION_CACHE" ]]; then 
-    sed -i "s/@SSL_SESSION_CACHE/shared:SSL:64m/g" /tmp/nginx.conf
-else 
-    sed -i "s/@SSL_SESSION_CACHE/${SSL_SESSION_CACHE}/g" /tmp/nginx.conf
-fi
-
-## ssl buffer size ##
-if [[ -z "$SSL_BUFFER_SIZE" ]]; then 
-    sed -i "s/@SSL_BUFFER_SIZE/16k/g" /tmp/nginx.conf
-else 
-    sed -i "s/@SSL_BUFFER_SIZE/${SSL_BUFFER_SIZE}/g" /tmp/nginx.conf
-fi
-
-
-########## various nginx settings ######
-
-## nginx worker rlimit nofile ##
-if [[ -z "$NGINX_WORKER_RLIMIT_NOFILE" ]]; then 
-    sed -i "s/@NGINX_WORKER_RLIMIT_NOFILE/65535/g" /tmp/nginx.conf
-else 
-    sed -i "s/@NGINX_WORKER_RLIMIT_NOFILE/${NGINX_WORKER_RLIMIT_NOFILE}/g" /tmp/nginx.conf
-fi
-
-## nginx worker connections ##
-if [[ -z "$NGINX_WORKER_CONNECTIONS" ]]; then 
-    sed -i "s/@NGINX_WORKER_CONNECTIONS/8192/g" /tmp/nginx.conf
-else 
-    sed -i "s/@NGINX_WORKER_CONNECTIONS/${NGINX_WORKER_CONNECTIONS}/g" /tmp/nginx.conf
-fi
-
-## nginx server names hash bucket size ##
-if [[ -z "$NGINX_SERVER_NAMES_HASH_BUCKET_SIZE" ]]; then 
-    sed -i "s/@NGINX_SERVER_NAMES_HASH_BUCKET_SIZE/64/g" /tmp/nginx.conf
-else 
-    sed -i "s/@NGINX_SERVER_NAMES_HASH_BUCKET_SIZE/${NGINX_SERVER_NAMES_HASH_BUCKET_SIZE}/g" /tmp/nginx.conf
-fi
-
-## nginx server names max hash size ##
-if [[ -z "$NGINX_SERVER_NAMES_MAX_HASH_SIZE" ]]; then 
-    sed -i "s/@NGINX_SERVER_NAMES_MAX_HASH_SIZE/64/g" /tmp/nginx.conf
-else 
-    sed -i "s/@NGINX_SERVER_NAMES_MAX_HASH_SIZE/${NGINX_SERVER_NAMES_MAX_HASH_SIZE}/g" /tmp/nginx.conf
-fi
-
-## nginx types max hash size ##
-if [[ -z "$NGINX_TYPES_MAX_HASH_SIZE" ]]; then 
-    sed -i "s/@NGINX_TYPES_MAX_HASH_SIZE/2048/g" /tmp/nginx.conf
-else 
-    sed -i "s/@NGINX_TYPES_MAX_HASH_SIZE/${NGINX_TYPES_MAX_HASH_SIZE}/g" /tmp/nginx.conf
-fi
-
-#### more nginx stuff ###
-
-## client max body size ##
-if [[ -z "$NGINX_CLIENT_MAX_BODY_SIZE" ]]; then 
-    sed -i "s/@NGINX_CLIENT_MAX_BODY_SIZE/512M/g" /tmp/nginx.conf
-else 
-    sed -i "s/@NGINX_CLIENT_MAX_BODY_SIZE/${NGINX_CLIENT_MAX_BODY_SIZE}/g" /tmp/nginx.conf
-fi
-
-## client body buffer size ##
-if [[ -z "$NGINX_CLIENT_BODY_BUFFER_SIZE" ]]; then 
-    sed -i "s/@NGINX_CLIENT_BODY_BUFFER_SIZE/16k/g" /tmp/nginx.conf
-else 
-    sed -i "s/@NGINX_CLIENT_BODY_BUFFER_SIZE/${NGINX_CLIENT_BODY_BUFFER_SIZE}/g" /tmp/nginx.conf
-fi
-
-## client header buffer size ##
-if [[ -z "$NGINX_CLIENT_HEADER_BUFFER_SIZE" ]]; then 
-    sed -i "s/@NGINX_CLIENT_HEADER_BUFFER_SIZE/4k/g" /tmp/nginx.conf
-else 
-    sed -i "s/@NGINX_CLIENT_HEADER_BUFFER_SIZE/${NGINX_CLIENT_HEADER_BUFFER_SIZE}/g" /tmp/nginx.conf
-fi
-
-## large client header buffers ##
-if [[ -z "$NGINX_LARGE_CLIENT_HEADER_BUFFERS" ]]; then 
-    sed -i "s/@NGINX_LARGE_CLIENT_HEADER_BUFFERS/4 64k/g" /tmp/nginx.conf
-else 
-    sed -i "s/@NGINX_LARGE_CLIENT_HEADER_BUFFERS/${NGINX_LARGE_CLIENT_HEADER_BUFFERS}/g" /tmp/nginx.conf
-fi
-
-#### nginx timeouts ets ##
-
-## client body timeout ##
-if [[ -z "$NGINX_CLIENT_BODY_TIMEOUT" ]]; then 
-    sed -i "s/@NGINX_CLIENT_BODY_TIMEOUT/15s/g" /tmp/nginx.conf
-else 
-    sed -i "s/@NGINX_CLIENT_BODY_TIMEOUT/${NGINX_CLIENT_BODY_TIMEOUT}/g" /tmp/nginx.conf
-fi
-
-## client header timeout ##
-if [[ -z "$NGINX_CLIENT_HEADER_TIMEOUT" ]]; then 
-    sed -i "s/@NGINX_CLIENT_HEADER_TIMEOUT/15s/g" /tmp/nginx.conf
-else 
-    sed -i "s/@NGINX_CLIENT_HEADER_TIMEOUT/${NGINX_CLIENT_HEADER_TIMEOUT}/g" /tmp/nginx.conf
-fi
-
-## keepalive timeout ##
-if [[ -z "$NGINX_KEEPALIVE_TIMEOUT" ]]; then 
-    sed -i "s/@NGINX_KEEPALIVE_TIMEOUT/15s/g" /tmp/nginx.conf
-else 
-    sed -i "s/@NGINX_KEEPALIVE_TIMEOUT/${NGINX_KEEPALIVE_TIMEOUT}/g" /tmp/nginx.conf
-fi
-
-## keepalive requests ##
-if [[ -z "$NGINX_KEEPALIVE_REQUESTS" ]]; then 
-    sed -i "s/@NGINX_KEEPALIVE_REQUESTS/65535/g" /tmp/nginx.conf
-else 
-    sed -i "s/@NGINX_KEEPALIVE_REQUESTS/${NGINX_KEEPALIVE_REQUESTS}/g" /tmp/nginx.conf
-fi
-
-## send timeout ##
-if [[ -z "$NGINX_SEND_TIMEOUT" ]]; then 
-    sed -i "s/@NGINX_SEND_TIMEOUT/15s/g" /tmp/nginx.conf
-else 
-    sed -i "s/@NGINX_SEND_TIMEOUT/${NGINX_SEND_TIMEOUT}/g" /tmp/nginx.conf
-fi
-
-
-
-#### open file cache ####
-
-## open file cache max files ##
-if [[ -z "$OPEN_FILE_CACHE_MAX" ]]; then 
-    sed -i "s/@OPEN_FILE_CACHE_MAX/200000/g" /tmp/nginx.conf
-else 
-    sed -i "s/@OPEN_FILE_CACHE_MAX/${OPEN_FILE_CACHE_MAX}/g" /tmp/nginx.conf
-fi
-
-## open file cache inactive ##
-if [[ -z "$OPEN_FILE_CACHE_INACTIVE" ]]; then 
-    sed -i "s/@OPEN_FILE_CACHE_INACTIVE/20s/g" /tmp/nginx.conf
-else 
-    sed -i "s/@OPEN_FILE_CACHE_INACTIVE/${OPEN_FILE_CACHE_INACTIVE}/g" /tmp/nginx.conf
-fi
-
-## open file cache valid ##
-if [[ -z "$OPEN_FILE_CACHE_VALID" ]]; then 
-    sed -i "s/@OPEN_FILE_CACHE_VALID/30s/g" /tmp/nginx.conf
-else 
-    sed -i "s/@OPEN_FILE_CACHE_VALID/${OPEN_FILE_CACHE_VALID}/g" /tmp/nginx.conf
-fi
-
-## open file cache min uses ##
-if [[ -z "$OPEN_FILE_CACHE_MIN_USES" ]]; then 
-    sed -i "s/@OPEN_FILE_CACHE_MIN_USES/2/g" /tmp/nginx.conf
-else 
-    sed -i "s/@OPEN_FILE_CACHE_MIN_USES/${OPEN_FILE_CACHE_MIN_USES}/g" /tmp/nginx.conf
-fi
-
-## open file cache errors ##
-if [[ -z "$OPEN_FILE_CACHE_ERRORS" ]]; then 
-    sed -i "s/@OPEN_FILE_CACHE_ERRORS/on/g" /tmp/nginx.conf
-else 
-    sed -i "s/@OPEN_FILE_CACHE_ERRORS/${OPEN_FILE_CACHE_ERRORS}/g" /tmp/nginx.conf
-fi
-
-
-
-
-## copy files to their destinations ##
-cp /tmp/nginx.conf /etc/nginx/nginx.conf
-
-## ensure cache directory exists (will not overwrite) ##
-mkdir /var/www/cache
-
-## reset permissions ##
-chown www-data:www-data /var/www/cache
-chown root:root /etc/nginx/nginx.conf
-
-## set TMPFS cache storage if enabled ##
-if [[ "$FCGI_CACHE_TMPFS" == "true" ]]; then
-    mount -t tmpfs -o size=${FCGI_CACHE_MEMORY} tmpfs /var/www/cache
-    sed -i '/tmpfs/d' /etc/fstab
-    echo "tmpfs /var/www/cache tmpfs defaults,size=${FCGI_CACHE_MEMORY} 0 0" >> /etc/fstab
-else
-    sed -i '/tmpfs/d' /etc/fstab
-fi
-
-## download latest server block (depends on WP single site or multisite) ##
-
-if [[ "$WP_MULTISITE" == "true" ]]; then 
-    wget -O /tmp/default http://mirrors.slickstack.io/nginx/default-multisite-subdomains.txt
-    # elif [[ "$WP_MULTISITE" == "true" ]] && [[ "$WP_MULTISITE_SUBDOMAINS" == "false" ]]; then 
-else 
-    wget -O /tmp/default http://mirrors.slickstack.io/nginx/default-single-site.txt
-fi
-
-
-
-## replace variables ##
-sed -i "s/@DOMAIN/${SITE_DOMAIN}/g" /tmp/default
-sed -i "s/@SITE_DOMAIN/${SITE_DOMAIN}/g" /tmp/default
-sed -i "s/@CACHEVALID/${FCGI_CACHE_VALID}/g" /tmp/default
-
-## replace conditional variables ##
-if [[ "$WP_MULTISITE_DOMAIN_MAPPING" == "true" ]]; then 
-   sed -i "s/#@WP_MULTISITE_DOMAIN_MAPPING# //g" /tmp/default
-else
-    sed -i "s/#@WP_MULTISITE_DOMAIN_MAPPING_FALSE# //g" /tmp/default
-fi
-
-if [[ "$WP_MULTISITE_SUBDOMAINS" == "true" ]]; then 
-    sed -i "s/#@WP_MULTISITE_SUBDOMAINS# //g" /tmp/default
-fi
-
-
-## set FastCGI Cache if enabled ##
-if [[ "$FCGI_CACHE" == "false" ]]; then 
-    sed -i "s/@FCGI_CACHE/1/g" /tmp/default
-else 
-    sed -i "s/@FCGI_CACHE/0/g" /tmp/default
-fi
-
-## copy files to destinations ##
-cp /tmp/default /etc/nginx/sites-available/default
-
-## reset permissions ##
-chown root:root /etc/nginx/sites-available/default
-
-## restart services ##
-/etc/init.d/nginx restart
+## run ss-install-nginx ##
+source /var/www/ss-install-nginx
 
 ####################################################################################################
 #### SS-Install: Install OpenSSL + Certbot (Let's Encrypt) Free SSL Certificates ###################
@@ -1952,3 +1611,5 @@ echo -e "\e[36mSlickStack installation complete! Please reboot server and ensure
 ## Ref: https://wordpress.stackexchange.com/questions/165507/site-redirecting-to-wp-signup-php
 ## Ref: https://askubuntu.com/questions/86849/how-to-unzip-a-zip-file-from-the-terminal
 ## Ref: https://www.computerhope.com/unix/rsync.htm
+
+## SS_EOF
