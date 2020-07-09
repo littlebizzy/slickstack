@@ -10,6 +10,9 @@
 #### module version: Ubuntu 20.04 LTS + MySQL 8.0.x + PHP-FPM 7.4.x + Redis 5.0.x ##################
 ####################################################################################################
 
+## RUNNING SS-PURGE DURING TRAFFIC SPIKES MIGHT CAUSE SUDDEN STRESS TO SERVER RESOURCES ##
+## KEEP IN MIND THAT FASTCGI CACHE IS DISABLED ALREADY ON STAGING SUBDIRECTORIES ##
+
 ## include SlickStack configuration ##
 source /var/www/ss-config
 
@@ -33,6 +36,12 @@ function add-apt-repository {
     command /usr/bin/add-apt-repository -y "$@"
 }
 
+## mysql alias flags ##
+function mysql {
+    export MYSQL_PWD=$DB_PASSWORD_ROOT
+    command mysql --user=root --database="$DB_NAME" --host="$DB_HOST" --protocol=tcp --port=3306 --force "$@"
+}
+
 ## wget alias flags ##
 function wget {
     command wget --no-check-certificate --no-cache --no-cookies --tries=3 --timeout=15 "$@"
@@ -45,7 +54,7 @@ function cp {
 
 ## rsync alias flags ##
 function rsync {
-    command rsync -aI "$@"
+    command rsync -aI --ignore-errors "$@"
 }
 
 ## unzip alias flags ##
@@ -99,11 +108,14 @@ rm /var/www/html/purge-${RANDOM_RESET_OPCACHE}.php
 export MYSQL_PWD=$DB_PASSWORD_ROOT
 
 ## manually delete all WP transients from database ##
-mysql --user=root --host="$DB_HOST" --database="$DB_NAME" --protocol=tcp --port=3306 --force --execute="DELETE FROM ${DB_PREFIX}options WHERE option_name LIKE ('%\_transient\_%');"
+mysql --execute="DELETE FROM ${DB_PREFIX}options WHERE option_name LIKE ('%\_transient\_%');"
 
 ####################################################################################################
-#### SS-Purge: Flush Redis (Object Cache) ##########################################################
+#### SS-Purge: Flush Redis (Object Cache i.e. Transients) ##########################################
 ####################################################################################################
+
+## when a persistent object cache is installed in WordPress it retains all WP transients ##
+## therefore flushing Redis is similar to manually deleting WP transients in MySQL ##
 
 ## flush Redis object cache using redis-cli (and suppress messages) ##
 redis-cli flushall &> /dev/null
@@ -112,9 +124,10 @@ redis-cli flushall &> /dev/null
 ### SS-Purge: Clear Nginx FastCGI Cache (Deletes All Cache Files On Disk / TMPFS) ##################
 ####################################################################################################
 
-## manually delete all FastCGI cache files ##
-## fix later to not delete opcache subdirectory ##
-rm /var/www/cache/*
+## here we manually delete all FastCGI cache files without touching OPcache file cache ##
+## when running TMPFS this script clears the FastCGI cache files from RAM memory ##
+
+find /var/www/cache/ -not -path "*/opcache*" -type f -delete
 
 ####################################################################################################
 #### SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ###############
@@ -130,3 +143,9 @@ rm /var/www/cache/*
 ## Ref: https://stackoverflow.com/questions/33067909/bash-variable-under-a-mysql-query
 ## Ref: https://dev.mysql.com/doc/refman/5.7/en/examples.html
 ## Ref: https://stackoverflow.com/questions/25044817/zend-opcache-opcache-enable-cli-1-or-0-what-does-it-do#comment91052089_35880017
+## Ref: https://codex.wordpress.org/Class_Reference/WP_Object_Cache
+## Ref: https://pressidium.com/blog/2017/wordpress-object-caching-redis-memcached-and-native-apis/
+## Ref: https://pressjitsu.com/blog/transient-cache-alternatives/
+## Ref: https://unix.stackexchange.com/questions/87258/delete-all-files-except-in-a-certain-subdirectory-with-find
+
+## SS_EOF
