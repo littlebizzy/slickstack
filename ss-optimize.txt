@@ -1,0 +1,167 @@
+#!/bin/bash
+
+####################################################################################################
+#### author: SlickStack ############################################################################
+#### link: https://slickstack.io ###################################################################
+#### mirror: http://mirrors.slickstack.io/ss-optimize.txt ##########################################
+#### path: /var/www/ss-optimize ####################################################################
+#### destination: n/a (not a boilerplate) ##########################################################
+#### purpose: Removes junk SQL data, converts MyISAM to InnoDB, and optimizes the database #########
+#### module version: Ubuntu 20.04 LTS + MySQL 8.0.x ################################################
+####################################################################################################
+
+## include SlickStack configuration ##
+source /var/www/ss-config
+
+####################################################################################################
+#### SlickStack: Critical Bash Functions (Aliases) For This Script To Work #########################
+####################################################################################################
+
+## apt alias flags ##
+function apt {
+    export DEBIAN_FRONTEND=noninteractive
+    export DEBIAN_PRIORITY=critical
+    export PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'
+    command /usr/bin/apt -q -y -o Dpkg::Options::=--force-confold -o Dpkg::Options::=--force-confdef "$@"
+}
+
+## add-apt-repository alias flags ##
+function add-apt-repository {
+    export DEBIAN_FRONTEND=noninteractive
+    export DEBIAN_PRIORITY=critical
+    export PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'
+    command /usr/bin/add-apt-repository -y "$@"
+}
+
+## mysql alias flags ##
+function mysql {
+    export MYSQL_PWD=$DB_PASSWORD_ROOT
+    command mysql --user=root --database="$DB_NAME" --host="$DB_HOST" --protocol=tcp --port=3306 --force "$@"
+}
+
+## wget alias flags ##
+function wget {
+    command wget --no-check-certificate --no-cache --no-cookies --tries=3 --timeout=15 "$@"
+}
+
+## cp alias flags ##
+function cp {
+    command cp -R -f -d --no-preserve=mode,ownership "$@"
+}
+
+## rsync alias flags ##
+function rsync {
+    command rsync -aI --ignore-errors "$@"
+}
+
+## unzip alias flags ##
+function unzip {
+    command unzip -o "$@"
+}
+
+## rm alias flags ##
+function rm {
+    command rm -R -f "$@"
+}
+
+## mkdir alias flags ##
+function mkdir {
+    command mkdir -p "$@"
+}
+
+## ln alias flags ##
+function ln {
+    command ln -s -f "$@"
+}
+
+####################################################################################################
+#### SS-Clean: Drop Unused (Conflicting) Staging Site Tables From MySQL Database ###################
+####################################################################################################
+
+## cleans up various duplicate and junk tables from staging due to past testing (etc) ##
+## also a cool example of batch table cleanup that we might use in the future ##
+
+## drop run-on staging tables ##
+cat /dev/null > /var/www/meta/drop_tables.txt
+cat /dev/null > /var/www/meta/drop_tables.sql
+mysql --execute="SHOW TABLES LIKE 'staging\_staging%';" > /var/www/meta/drop_tables.txt
+sed -i '/Tables_in/d' /var/www/meta/drop_tables.txt
+sed -i 's/^/DROP TABLE IF EXISTS /' /var/www/meta/drop_tables.txt
+sed -i 's/$/\;/' /var/www/meta/drop_tables.txt
+cp /var/www/meta/drop_tables.txt /var/www/meta/drop_tables.sql
+mysql $DB_NAME < /var/www/meta/drop_tables.sql
+
+## drop outdated staging tables ##
+DB_PREFIX_ESCAPED=${DB_PREFIX/_/\\_}
+cat /dev/null > /var/www/meta/drop_tables.txt
+cat /dev/null > /var/www/meta/drop_tables.sql
+mysql --execute="SHOW TABLES LIKE 'staging\_${DB_PREFIX_ESCAPED}%';" > /var/www/meta/drop_tables.txt
+sed -i '/Tables_in/d' /var/www/meta/drop_tables.txt
+sed -i 's/^/DROP TABLE IF EXISTS /' /var/www/meta/drop_tables.txt
+sed -i 's/$/\;/' /var/www/meta/drop_tables.txt
+cp /var/www/meta/drop_tables.txt /var/www/meta/drop_tables.sql
+mysql $DB_NAME < /var/www/meta/drop_tables.sql
+
+## TEMP STORAGE ##
+# sed -i '$!s/$/\;/' /var/www/meta/drop_tables.txt
+# sed -i '$!s/$/,/' /var/www/meta/drop_tables.txt
+# sed -i '$s/$/\;/' /var/www/meta/drop_tables.txt
+## sed -i '$s/,$/[;]/' /var/www/meta/drop_tables.txt
+# sed -i "/Tables_in/c\DROP TABLE IF EXISTS " /var/www/meta/drop_tables.txt
+
+####################################################################################################
+#### SS-Clean: Delete Junk Tables From MySQL Database ##############################################
+####################################################################################################
+
+## delete various junk tables from MySQL ##
+mysql --execute="DROP TABLE IF EXISTS ${DB_PREFIX}links;" ## wp_links virtually deprecated
+# more soon (cache plugins etc)
+
+####################################################################################################
+#### SS-Clean: Convert Any MyISAM Tables To InnoDB Engine (Better Performance) #####################
+####################################################################################################
+
+## the InnoDB engine is infinitely more robust for scaling and stability of LEMP stacks ##
+## this script force-converts MyISAM tables (fulltext indexes no longer relevant) ##
+
+## find and convert MyISAM tables ##
+cat /dev/null > /var/www/meta/myisam_tables.txt
+cat /dev/null > /var/www/meta/myisam_tables.sql
+mysql --silent --batch --skip-column-names --execute="SELECT table_name FROM information_schema.tables WHERE engine='MyISAM' AND table_schema='${DB_NAME}';" > /var/www/meta/myisam_tables.txt
+# sed -i '/TABLE_NAME/d' /var/www/meta/myisam_tables.txt
+sed -i 's/^/ALTER TABLE /' /var/www/meta/myisam_tables.txt
+sed -i 's/$/ ENGINE=InnoDB\;/' /var/www/meta/myisam_tables.txt
+cp /var/www/meta/myisam_tables.txt /var/www/meta/myisam_tables.sql
+# mysql $DB_NAME < /var/www/meta/myisam_tables.sql
+
+####################################################################################################
+#### SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ###############
+####################################################################################################
+
+## Ref: https://dba.stackexchange.com/questions/56804/mysql-how-to-drop-all-tables-starting-with-a-prefix/56806
+## Ref: https://azimyasin.wordpress.com/2007/08/11/mysql-dropping-multiple-tables/
+## Ref: https://stackoverflow.com/questions/19283740/save-mysql-query-results-into-a-text-file
+## Ref: https://stackoverflow.com/questions/21253704/how-to-save-mysql-query-output-to-excel-or-txt-file
+## Ref: https://stackoverflow.com/questions/5410757/how-to-delete-from-a-text-file-all-lines-that-contain-a-specific-string
+## Ref: https://blog.sqlauthority.com/2018/10/23/sql-server-how-to-drop-multiple-tables-using-single-drop-statement/
+## Ref: https://stackoverflow.com/questions/11245144/replace-whole-line-containing-a-string-using-sed
+## Ref: https://stackoverflow.com/questions/3657860/bash-append-text-to-last-line-of-file
+## Ref: https://stackoverflow.com/questions/35021524/how-can-i-add-a-comma-at-the-end-of-every-line-except-the-last-line/35021663
+## Ref: https://stackoverflow.com/questions/17075837/append-space-and-character-to-each-line-except-the-last
+## Ref: https://stackoverflow.com/questions/49169243/add-comma-at-end-of-all-lines-except-1-2-3-and-last-line
+## Ref: https://stackoverflow.com/questions/17666249/how-do-i-import-an-sql-file-using-the-command-line-in-mysql/56250785
+## Ref: https://www.unix.com/unix-for-dummies-questions-and-answers/69518-removing-semicolon-using-sed-aix-urgent.html
+## Ref: https://stackoverflow.com/questions/5833086/shell-script-variable-replacing-characters
+## Ref: https://unix.stackexchange.com/questions/162221/shortest-way-to-replace-characters-in-a-variable
+## Ref: https://stackoverflow.com/questions/6744006/can-i-use-sed-to-manipulate-a-variable-in-bash
+## Ref: https://silicondales.com/tutorials/wordpress/convert-wordpress-mysql-database-tables-myisam-innodb-better-scale/
+## Ref: https://stackoverflow.com/questions/4107599/show-a-tables-fulltext-indexed-columns
+## Ref: https://stackoverflow.com/questions/4898653/mysql-to-find-all-tables-with-a-full-text-indexed-column-in-them
+## Ref: https://stackoverflow.com/questions/1718126/show-tables-by-engine-in-mysql
+## Ref: http://redino.net/blog/2016/12/mysql-find-myisam-tables/
+## Ref: https://stackoverflow.com/questions/16711598/get-the-sql-query-result-without-the-table-format
+## Ref: https://dev.mysql.com/doc/refman/8.0/en/option-modifiers.html
+## Ref: https://alvinalexander.com/mysql/how-to-list-mysql-table-column-field-names-without-table-formatting-headers/
+## Ref: https://dev.mysql.com/doc/refman/8.0/en/mysql-command-options.html
+
+## SS_EOF
