@@ -10,6 +10,9 @@
 #### module version: Ubuntu 20.04 LTS + MySQL 8.0.x ################################################
 ####################################################################################################
 
+## WE RECOMMEND RUNNING SS-OPTIMIZE MANUALLY OR NOT OFTEN IN CASE RESTORATION IS NEEDED ##
+## UNLIKE SS-CLEAN (PHYSICAL FILES) THIS SCRIPT IS FOCUSED ONLY ON THE DATABASE ##
+
 ## include SlickStack configuration ##
 source /var/www/ss-config
 
@@ -75,10 +78,10 @@ function ln {
 }
 
 ####################################################################################################
-#### SS-Clean: Drop Unused (Conflicting) Staging Site Tables From MySQL Database ###################
+#### SS-Optimize: Drop Unused (Junk) Staging Site Tables From MySQL Database #######################
 ####################################################################################################
 
-## cleans up various duplicate and junk tables from staging due to past testing (etc) ##
+## cleans up various erroneous and junk tables from staging due to past testing (etc) ##
 ## also a cool example of batch table cleanup that we might use in the future ##
 
 ## drop run-on staging tables ##
@@ -102,23 +105,25 @@ sed -i 's/$/\;/' /var/www/meta/drop_tables.txt
 cp /var/www/meta/drop_tables.txt /var/www/meta/drop_tables.sql
 mysql $DB_NAME < /var/www/meta/drop_tables.sql
 
-## TEMP STORAGE ##
+## TEMP REFERENCE ##
 # sed -i '$!s/$/\;/' /var/www/meta/drop_tables.txt
 # sed -i '$!s/$/,/' /var/www/meta/drop_tables.txt
 # sed -i '$s/$/\;/' /var/www/meta/drop_tables.txt
 ## sed -i '$s/,$/[;]/' /var/www/meta/drop_tables.txt
-# sed -i "/Tables_in/c\DROP TABLE IF EXISTS " /var/www/meta/drop_tables.txt
 
 ####################################################################################################
-#### SS-Clean: Delete Junk Tables From MySQL Database ##############################################
+#### SS-Optimize: Delete Various (Blacklisted) Tables From MySQL Database ##########################
 ####################################################################################################
 
-## delete various junk tables from MySQL ##
+## delete junk WordPress core tables ##
 mysql --execute="DROP TABLE IF EXISTS ${DB_PREFIX}links;" ## wp_links virtually deprecated
-# more soon (cache plugins etc)
+
+## delete blacklisted plugins tables (etc) ##
+
+# coming soon (depends on ss-config settings to avoid data loss)
 
 ####################################################################################################
-#### SS-Clean: Convert Any MyISAM Tables To InnoDB Engine (Better Performance) #####################
+#### SS-Optimize: Convert Any MyISAM Tables To InnoDB Engine (Better Performance) ##################
 ####################################################################################################
 
 ## the InnoDB engine is infinitely more robust for scaling and stability of LEMP stacks ##
@@ -128,11 +133,11 @@ mysql --execute="DROP TABLE IF EXISTS ${DB_PREFIX}links;" ## wp_links virtually 
 cat /dev/null > /var/www/meta/myisam_tables.txt
 cat /dev/null > /var/www/meta/myisam_tables.sql
 mysql --silent --batch --skip-column-names --execute="SELECT table_name FROM information_schema.tables WHERE engine='MyISAM' AND table_schema='${DB_NAME}';" > /var/www/meta/myisam_tables.txt
-# sed -i '/TABLE_NAME/d' /var/www/meta/myisam_tables.txt
+sed -i '/TABLE_NAME/d' /var/www/meta/myisam_tables.txt
 sed -i 's/^/ALTER TABLE /' /var/www/meta/myisam_tables.txt
 sed -i 's/$/ ENGINE=InnoDB\;/' /var/www/meta/myisam_tables.txt
 cp /var/www/meta/myisam_tables.txt /var/www/meta/myisam_tables.sql
-# mysql $DB_NAME < /var/www/meta/myisam_tables.sql
+mysql $DB_NAME < /var/www/meta/myisam_tables.sql
 
 ####################################################################################################
 #### SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ###############
