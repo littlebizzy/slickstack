@@ -124,11 +124,14 @@ mysql --execute="DROP TABLE IF EXISTS ${DB_PREFIX}links;" ## wp_links virtually 
 #### SS-Clean: Convert Any MyISAM Tables To InnoDB Engine (Better Performance) #####################
 ####################################################################################################
 
+## the InnoDB engine is infinitely more robust for scaling and stability of LEMP stacks ##
+## this script force-converts MyISAM tables (fulltext indexes no longer relevant) ##
+
 ## find and convert MyISAM tables ##
 cat /dev/null > /var/www/meta/myisam_tables.txt
 cat /dev/null > /var/www/meta/myisam_tables.sql
-mysql --silent --batch --disable-column-names --execute="SELECT * FROM information_schema.tables WHERE engine='MyISAM' AND table_schema='${DB_NAME}';" > /var/www/meta/myisam_tables.txt
-# sed -i '/Tables_in/d' /var/www/meta/myisam_tables.txt
+mysql --silent --batch --skip-column-names --execute="SELECT table_name FROM information_schema.tables WHERE engine='MyISAM' AND table_schema='${DB_NAME}';" > /var/www/meta/myisam_tables.txt
+# sed -i '/TABLE_NAME/d' /var/www/meta/myisam_tables.txt
 sed -i 's/^/ALTER TABLE /' /var/www/meta/myisam_tables.txt
 sed -i 's/$/ ENGINE=InnoDB\;/' /var/www/meta/myisam_tables.txt
 cp /var/www/meta/myisam_tables.txt /var/www/meta/myisam_tables.sql
@@ -955,5 +958,8 @@ rm /var/www/html/wp-content/uploads/cache* ## improper cache path
 ## Ref: https://stackoverflow.com/questions/1718126/show-tables-by-engine-in-mysql
 ## Ref: http://redino.net/blog/2016/12/mysql-find-myisam-tables/
 ## Ref: https://stackoverflow.com/questions/16711598/get-the-sql-query-result-without-the-table-format
+## Ref: https://dev.mysql.com/doc/refman/8.0/en/option-modifiers.html
+## Ref: https://alvinalexander.com/mysql/how-to-list-mysql-table-column-field-names-without-table-formatting-headers/
+## Ref: https://dev.mysql.com/doc/refman/8.0/en/mysql-command-options.html
 
 ## SS_EOF
