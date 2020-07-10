@@ -98,16 +98,21 @@ DEBIAN_FRONTEND=noninteractive dpkg --configure -a --force-confold
 apt update
 
 ####################################################################################################
-#### SS-Install-PHP: Install PHP-FPM 7.4.x + Required PHP Extensions (Besides PHP-Redis) ###############################
+#### SS-Install-PHP: Install PHP-FPM 7.4.x + Required PHP Extensions (Except PHP-Redis) ############
 ####################################################################################################
 
-## purge PHP 7.0 + PHP 7.1 ##
-apt purge php7.0
-apt purge php7.1
-apt purge php7.2
-apt purge php7.3
+## MODULE VERSION: PHP-FPM 7.4.x
 
-## delete PHP 7.0 + PHP 7.1 files ##
+## here we first purge any existing PHP packages and then reinstall PHP-FPM with OPcache ##
+## several common PHP settings are hardcoded to improve LEMP server stability ##
+
+## purge outdated versions of PHP (not supported) ##
+apt purge php7.0*
+apt purge php7.1*
+apt purge php7.2*
+apt purge php7.3*
+
+## delete any leftover files from outdated versions of PHP ##
 rm /etc/php/7.0*
 rm /etc/php/7.1*
 rm /etc/php/7.2*
