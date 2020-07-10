@@ -1,0 +1,474 @@
+#!/bin/bash
+
+####################################################################################################
+#### author: SlickStack ############################################################################
+#### link: https://slickstack.io ###################################################################
+#### mirror: http://mirrors.slickstack.io/ss-install-php.txt #######################################
+#### path: /var/www/ss-install-php #################################################################
+#### destination: n/a (not a boilerplate) ##########################################################
+#### purpose: Reinstalls the entire PHP-FPM module for SlickStack servers (idempotent) #############
+#### module version: Ubuntu 20.04 LTS + PHP-FPM 7.4.x ##############################################
+####################################################################################################
+
+## SS-CONFIG MUST BE PROPERLY CONFIGURED (AND CURRENT BUILD) BEFORE RUNNING SS-INSTALL ##
+## ENSURE SS-CONFIG OPTIONS REMAIN CURRENT BY RUNNING SS-UPDATE OCCASIONALLY ##
+
+## include SlickStack configuration ##
+source /var/www/ss-config
+
+####################################################################################################
+#### SlickStack: Critical Bash Functions (Aliases) For This Script To Work #########################
+####################################################################################################
+
+## apt alias flags ##
+function apt {
+    export DEBIAN_FRONTEND=noninteractive
+    export DEBIAN_PRIORITY=critical
+    export PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'
+    command /usr/bin/apt -q -y -o Dpkg::Options::=--force-confold -o Dpkg::Options::=--force-confdef "$@"
+}
+
+## add-apt-repository alias flags ##
+function add-apt-repository {
+    export DEBIAN_FRONTEND=noninteractive
+    export DEBIAN_PRIORITY=critical
+    export PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'
+    command /usr/bin/add-apt-repository -y "$@"
+}
+
+## mysql alias flags ##
+function mysql {
+    export MYSQL_PWD=$DB_PASSWORD_ROOT
+    command mysql --user=root --database="$DB_NAME" --host="$DB_HOST" --protocol=tcp --port=3306 --force "$@"
+}
+
+## wget alias flags ##
+function wget {
+    command wget --no-check-certificate --no-cache --no-cookies --tries=3 --timeout=15 "$@"
+}
+
+## cp alias flags ##
+function cp {
+    command cp -R -f -d --no-preserve=mode,ownership "$@"
+}
+
+## rsync alias flags ##
+function rsync {
+    command rsync -aI --ignore-errors "$@"
+}
+
+## unzip alias flags ##
+function unzip {
+    command unzip -o "$@"
+}
+
+## rm alias flags ##
+function rm {
+    command rm -R -f "$@"
+}
+
+## mkdir alias flags ##
+function mkdir {
+    command mkdir -p "$@"
+}
+
+## ln alias flags ##
+function ln {
+    command ln -s -f "$@"
+}
+
+####################################################################################################
+#### SS-Install: Check OS Compability + Verify SS-Config Freshness + Backup Database ###############
+####################################################################################################
+
+## backup database before proceeding ##
+source /var/www/ss-dump
+
+####################################################################################################
+#### SlickStack: Set Dpkg Basic Settings + Update Apt (Package) Cache ##############################
+####################################################################################################
+
+## MESSAGE ##
+echo -e "\e[36mSet dpkg to noneractive and force confold and update apt cache...\e[0m"
+
+## set confold as dpkg default (fail-safe in case apt upgrade called directly) ##
+DEBIAN_FRONTEND=noninteractive dpkg --configure -a --force-confold
+
+## update repo cache ##
+apt update
+
+####################################################################################################
+#### SS-Install-PHP: Install PHP-FPM 7.4.x + Required PHP Extensions (Besides PHP-Redis) ###############################
+####################################################################################################
+
+## purge PHP 7.0 + PHP 7.1 ##
+apt purge php7.0
+apt purge php7.1
+apt purge php7.2
+apt purge php7.3
+
+## delete PHP 7.0 + PHP 7.1 files ##
+rm /etc/php/7.0*
+rm /etc/php/7.1*
+rm /etc/php/7.2*
+rm /etc/php/7.3*
+
+## temp purge PHP 7.4 (so we can install again fresh) ##
+apt purge php7.4
+
+## install PHP-FPM 7.4 and extensions (php7.4 not needed when php7.4-fpm is used) ##
+apt install php7.4-bcmath php7.4-curl php7.4-fpm php7.4-gd php7.4-imagick php7.4-json php7.4-mbstring php7.4-mysql php7.4-soap php7.4-xml php7.4-zip
+
+## delete tmp files ##
+rm /tmp/php-fpm*
+rm /tmp/php-ini*
+rm /tmp/www*
+
+## download latest versions ##
+wget -O /tmp/php-fpm.conf http://mirrors.slickstack.io/php-fpm/php-fpm-conf.txt
+wget -O /tmp/php.ini http://mirrors.slickstack.io/php-fpm/php-ini.txt
+wget -O /tmp/www.conf http://mirrors.slickstack.io/php-fpm/www-conf.txt
+
+
+######### set php.ini stuff ########
+
+## max execution time ##
+if [[ -z "$PHP_MAX_EXECUTION_TIME" ]]; then 
+    sed -i "s/@PHP_MAX_EXECUTION_TIME/60/g" /tmp/php.ini
+else 
+    sed -i "s/@PHP_MAX_EXECUTION_TIME/${PHP_MAX_EXECUTION_TIME}/g" /tmp/php.ini
+fi
+
+## max input time ##
+if [[ -z "$PHP_MAX_INPUT_TIME" ]]; then 
+    sed -i "s/@PHP_MAX_INPUT_TIME/60/g" /tmp/php.ini
+else 
+    sed -i "s/@PHP_MAX_INPUT_TIME/${PHP_MAX_INPUT_TIME}/g" /tmp/php.ini
+fi
+
+## memory limit ##
+if [[ -z "$PHP_MEMORY_LIMIT" ]]; then 
+    sed -i "s/@PHP_MEMORY_LIMIT/512M/g" /tmp/php.ini
+else 
+    sed -i "s/@PHP_MEMORY_LIMIT/${PHP_MEMORY_LIMIT}/g" /tmp/php.ini
+fi
+
+## max input vars ##
+if [[ -z "$PHP_MAX_INPUT_VARS" ]]; then 
+    sed -i "s/@PHP_MAX_INPUT_VARS/5000/g" /tmp/php.ini
+else 
+    sed -i "s/@PHP_MAX_INPUT_VARS/${PHP_MAX_INPUT_VARS}/g" /tmp/php.ini
+fi
+
+## max input nesting level ##
+if [[ -z "$PHP_MAX_INPUT_NESTING_LEVEL" ]]; then 
+    sed -i "s/@PHP_MAX_INPUT_NESTING_LEVEL/64/g" /tmp/php.ini
+else 
+    sed -i "s/@PHP_MAX_INPUT_NESTING_LEVEL/${PHP_MAX_INPUT_NESTING_LEVEL}/g" /tmp/php.ini
+fi
+
+## upload max filesize ##
+if [[ -z "$PHP_UPLOAD_MAX_FILESIZE" ]]; then 
+    sed -i "s/@PHP_UPLOAD_MAX_FILESIZE/512M/g" /tmp/php.ini
+else 
+    sed -i "s/@PHP_UPLOAD_MAX_FILESIZE/${PHP_UPLOAD_MAX_FILESIZE}/g" /tmp/php.ini
+fi
+
+## max file uploads ##
+if [[ -z "$PHP_MAX_FILE_UPLOADS" ]]; then 
+    sed -i "s/@PHP_MAX_FILE_UPLOADS/100/g" /tmp/php.ini
+else 
+    sed -i "s/@PHP_MAX_FILE_UPLOADS/${PHP_MAX_FILE_UPLOADS}/g" /tmp/php.ini
+fi
+
+## php precision ##
+if [[ -z "$PHP_PRECISION" ]]; then 
+    sed -i "s/@PHP_PRECISION/14/g" /tmp/php.ini
+else 
+    sed -i "s/@PHP_PRECISION/${PHP_PRECISION}/g" /tmp/php.ini
+fi
+
+## php output buffering ##
+if [[ -z "$PHP_OUTPUT_BUFFERING" ]]; then 
+    sed -i "s/@PHP_OUTPUT_BUFFERING/4096/g" /tmp/php.ini
+else 
+    sed -i "s/@PHP_OUTPUT_BUFFERING/${PHP_OUTPUT_BUFFERING}/g" /tmp/php.ini
+fi
+
+## php unserialize max depth ##
+if [[ -z "$PHP_UNSERIALIZE_MAX_DEPTH" ]]; then 
+    sed -i "s/@PHP_UNSERIALIZE_MAX_DEPTH/4096/g" /tmp/php.ini
+else 
+    sed -i "s/@PHP_UNSERIALIZE_MAX_DEPTH/${PHP_UNSERIALIZE_MAX_DEPTH}/g" /tmp/php.ini
+fi
+
+## php serialize precision ##
+if [[ -z "$PHP_SERIALIZE_PRECISION" ]]; then 
+    sed -i "s/@PHP_SERIALIZE_PRECISION/-1/g" /tmp/php.ini
+else 
+    sed -i "s/@PHP_SERIALIZE_PRECISION/${PHP_SERIALIZE_PRECISION}/g" /tmp/php.ini
+fi
+
+## php allow url fopen ##
+if [[ -z "$PHP_ALLOW_URL_FOPEN" ]]; then 
+    sed -i "s/@PHP_ALLOW_URL_FOPEN/On/g" /tmp/php.ini
+elif [[ "$PHP_ALLOW_URL_FOPEN" == "true" ]]; then
+    sed -i "s/@PHP_ALLOW_URL_FOPEN/On/g" /tmp/php.ini
+elif [[ "$PHP_ALLOW_URL_FOPEN" == "On" ]]; then
+    sed -i "s/@PHP_ALLOW_URL_FOPEN/On/g" /tmp/php.ini
+elif [[ "$PHP_ALLOW_URL_FOPEN" == "false" ]]; then
+    sed -i "s/@PHP_ALLOW_URL_FOPEN/Off/g" /tmp/php.ini
+elif [[ "$PHP_ALLOW_URL_FOPEN" == "Off" ]]; then
+    sed -i "s/@PHP_ALLOW_URL_FOPEN/Off/g" /tmp/php.ini
+fi
+
+## php default socket timeout ##
+if [[ -z "$PHP_DEFAULT_SOCKET_TIMEOUT" ]]; then 
+    sed -i "s/@PHP_DEFAULT_SOCKET_TIMEOUT/60/g" /tmp/php.ini
+else 
+    sed -i "s/@PHP_DEFAULT_SOCKET_TIMEOUT/${PHP_DEFAULT_SOCKET_TIMEOUT}/g" /tmp/php.ini
+fi
+
+## php post max size ##
+if [[ -z "$PHP_POST_MAX_SIZE" ]]; then 
+    sed -i "s/@PHP_POST_MAX_SIZE/512M/g" /tmp/php.ini
+else 
+    sed -i "s/@PHP_POST_MAX_SIZE/${PHP_POST_MAX_SIZE}/g" /tmp/php.ini
+fi
+
+## php disable classes ##
+if [[ -z "$PHP_DISABLE_CLASSES" ]]; then 
+    sed -i "s/@PHP_DISABLE_CLASSES//g" /tmp/php.ini
+else 
+    sed -i "s/@PHP_DISABLE_CLASSES/${PHP_DISABLE_CLASSES}/g" /tmp/php.ini
+fi
+
+## php disable functions ##
+if [[ -z "$PHP_DISABLE_FUNCTIONS" ]]; then 
+    sed -i "s/@PHP_DISABLE_FUNCTIONS//g" /tmp/php.ini
+else 
+    sed -i "s/@PHP_DISABLE_FUNCTIONS/${PHP_DISABLE_FUNCTIONS}/g" /tmp/php.ini
+fi
+
+######### set php.ini opcache stuff ########
+
+## opcache huge code pages ##
+if [[ -z "$OPCACHE_HUGE_CODE_PAGES" ]]; then 
+    sed -i "s/@OPCACHE_HUGE_CODE_PAGES/0/g" /tmp/php.ini
+elif [[ "$OPCACHE_HUGE_CODE_PAGES" == "true" ]]; then
+    sed -i "s/@OPCACHE_HUGE_CODE_PAGES/1/g" /tmp/php.ini
+elif [[ "$OPCACHE_HUGE_CODE_PAGES" == "On" ]]; then
+    sed -i "s/@OPCACHE_HUGE_CODE_PAGES/1/g" /tmp/php.ini
+elif [[ "$OPCACHE_HUGE_CODE_PAGES" == "false" ]]; then
+    sed -i "s/@OPCACHE_HUGE_CODE_PAGES/0/g" /tmp/php.ini
+elif [[ "$OPCACHE_HUGE_CODE_PAGES" == "Off" ]]; then
+    sed -i "s/@OPCACHE_HUGE_CODE_PAGES/0/g" /tmp/php.ini
+fi
+
+## opcache revalidate frequency ##
+if [[ -z "$OPCACHE_REVALIDATE_FREQUENCY" ]]; then 
+    sed -i "s/@OPCACHE_REVALIDATE_FREQUENCY/2/g" /tmp/php.ini
+else 
+    sed -i "s/@OPCACHE_REVALIDATE_FREQUENCY/${OPCACHE_REVALIDATE_FREQUENCY}/g" /tmp/php.ini
+fi
+
+## opcache max wasted percentage ##
+if [[ -z "$OPCACHE_MAX_WASTED_PERCENTAGE" ]]; then 
+    sed -i "s/@OPCACHE_MAX_WASTED_PERCENTAGE/5/g" /tmp/php.ini
+else 
+    sed -i "s/@OPCACHE_MAX_WASTED_PERCENTAGE/${OPCACHE_MAX_WASTED_PERCENTAGE}/g" /tmp/php.ini
+fi
+
+## opcache max accelerated files ##
+if [[ -z "$OPCACHE_MAX_ACCELERATED_FILES" ]]; then 
+    sed -i "s/@OPCACHE_MAX_ACCELERATED_FILES/10000/g" /tmp/php.ini
+else 
+    sed -i "s/@OPCACHE_MAX_ACCELERATED_FILES/${OPCACHE_MAX_ACCELERATED_FILES}/g" /tmp/php.ini
+fi
+
+## opcache interned strings buffer ##
+if [[ -z "$OPCACHE_INTERNED_STRINGS_BUFFER" ]]; then 
+    sed -i "s/@OPCACHE_INTERNED_STRINGS_BUFFER/64/g" /tmp/php.ini
+else 
+    sed -i "s/@OPCACHE_INTERNED_STRINGS_BUFFER/${OPCACHE_INTERNED_STRINGS_BUFFER}/g" /tmp/php.ini
+fi
+
+## opcache memory consumption ##
+if [[ -z "$OPCACHE_MEMORY_CONSUMPTION" ]]; then 
+    sed -i "s/@OPCACHE_MEMORY_CONSUMPTION/256/g" /tmp/php.ini
+else 
+    sed -i "s/@OPCACHE_MEMORY_CONSUMPTION/${OPCACHE_MEMORY_CONSUMPTION}/g" /tmp/php.ini
+fi
+
+
+######### set php-fpm.conf stuff ########
+
+## emerg restart threshold ##
+if [[ -z "$FPM_EMERGENCY_RESTART_THRESHOLD" ]]; then 
+    sed -i "s/@FPM_EMERGENCY_RESTART_THRESHOLD/10/g" /tmp/php-fpm.conf
+else 
+    sed -i "s/@FPM_EMERGENCY_RESTART_THRESHOLD/${FPM_EMERGENCY_RESTART_THRESHOLD}/g" /tmp/php-fpm.conf
+fi
+
+## emerg restart time ##
+if [[ -z "$FPM_EMERGENCY_RESTART_INTERVAL" ]]; then 
+    sed -i "s/@FPM_EMERGENCY_RESTART_INTERVAL/1m/g" /tmp/php-fpm.conf
+else 
+    sed -i "s/@FPM_EMERGENCY_RESTART_INTERVAL/${FPM_EMERGENCY_RESTART_INTERVAL}/g" /tmp/php-fpm.conf
+fi
+
+## process control timeout ##
+if [[ -z "$FPM_PROCESS_CONTROL_TIMEOUT" ]]; then 
+    sed -i "s/@FPM_PROCESS_CONTROL_TIMEOUT/10s/g" /tmp/php-fpm.conf
+else 
+    sed -i "s/@FPM_PROCESS_CONTROL_TIMEOUT/${FPM_PROCESS_CONTROL_TIMEOUT}/g" /tmp/php-fpm.conf
+fi
+
+## process max ##
+if [[ -z "$FPM_PROCESS_MAX" ]]; then 
+    sed -i "s/@FPM_PROCESS_MAX/128/g" /tmp/php-fpm.conf
+else 
+    sed -i "s/@FPM_PROCESS_MAX/${FPM_PROCESS_MAX}/g" /tmp/php-fpm.conf
+fi
+
+## process priority ##
+if [[ -z "$FPM_PROCESS_PRIORITY" ]]; then 
+    sed -i "s/@FPM_PROCESS_PRIORITY/-19/g" /tmp/php-fpm.conf
+else 
+    sed -i "s/@FPM_PROCESS_PRIORITY/${FPM_PROCESS_PRIORITY}/g" /tmp/php-fpm.conf
+fi
+
+## rlimit files ##
+if [[ -z "$FPM_RLIMIT_FILES" ]]; then 
+    sed -i "s/@FPM_RLIMIT_FILES/1024/g" /tmp/php-fpm.conf
+else 
+    sed -i "s/@FPM_RLIMIT_FILES/${FPM_RLIMIT_FILES}/g" /tmp/php-fpm.conf
+fi
+
+## rlimit core ##
+if [[ -z "$FPM_RLIMIT_CORE" ]]; then 
+    sed -i "s/@FPM_RLIMIT_CORE/0/g" /tmp/php-fpm.conf
+else 
+    sed -i "s/@FPM_RLIMIT_CORE/${FPM_RLIMIT_CORE}/g" /tmp/php-fpm.conf
+fi
+
+## systemd interval ##
+if [[ -z "$FPM_SYSTEMD_INTERVAL" ]]; then 
+    sed -i "s/@FPM_SYSTEMD_INTERVAL/10/g" /tmp/php-fpm.conf
+else 
+    sed -i "s/@FPM_SYSTEMD_INTERVAL/${FPM_SYSTEMD_INTERVAL}/g" /tmp/php-fpm.conf
+fi
+
+
+######### set www.conf stuff ########
+
+## pool listen backlog ##
+if [[ -z "$WWW_LISTEN_BACKLOG" ]]; then 
+    sed -i "s/@WWW_LISTEN_BACKLOG/65535/g" /tmp/www.conf
+else 
+    sed -i "s/@WWW_LISTEN_BACKLOG/${WWW_LISTEN_BACKLOG}/g" /tmp/www.conf
+fi
+
+## pool type ##
+if [[ -z "$WWW_PM_MODE" ]]; then 
+    sed -i "s/@WWW_PM_MODE/ondemand/g" /tmp/www.conf
+else 
+    sed -i "s/@WWW_PM_MODE/${WWW_PM_MODE}/g" /tmp/www.conf
+fi
+
+## pool max children ##
+if [[ -z "$WWW_PM_MAX_CHILDREN" ]]; then 
+    sed -i "s/@WWW_PM_MAX_CHILDREN/20/g" /tmp/www.conf
+else 
+    sed -i "s/@WWW_PM_MAX_CHILDREN/${WWW_PM_MAX_CHILDREN}/g" /tmp/www.conf
+fi
+
+## pool start servers ##
+if [[ -z "$WWW_PM_START_SERVERS" ]]; then 
+    sed -i "s/@WWW_PM_START_SERVERS/2/g" /tmp/www.conf
+else 
+    sed -i "s/@WWW_PM_START_SERVERS/${WWW_PM_START_SERVERS}/g" /tmp/www.conf
+fi
+
+## pool min spare servers ##
+if [[ -z "$WWW_PM_MIN_SPARE_SERVERS" ]]; then 
+    sed -i "s/@WWW_PM_MIN_SPARE_SERVERS/1/g" /tmp/www.conf
+else 
+    sed -i "s/@WWW_PM_MIN_SPARE_SERVERS/${WWW_PM_MIN_SPARE_SERVERS}/g" /tmp/www.conf
+fi
+
+## pool max spare servers ##
+if [[ -z "$WWW_PM_MAX_SPARE_SERVERS" ]]; then 
+    sed -i "s/@WWW_PM_MAX_SPARE_SERVERS/3/g" /tmp/www.conf
+else 
+    sed -i "s/@WWW_PM_MAX_SPARE_SERVERS/${WWW_PM_MAX_SPARE_SERVERS}/g" /tmp/www.conf
+fi
+
+## pool process idle timeout ##
+if [[ -z "$WWW_PM_PROCESS_IDLE_TIMEOUT" ]]; then 
+    sed -i "s/@WWW_PM_PROCESS_IDLE_TIMEOUT/10s/g" /tmp/www.conf
+else 
+    sed -i "s/@WWW_PM_PROCESS_IDLE_TIMEOUT/${WWW_PM_PROCESS_IDLE_TIMEOUT}/g" /tmp/www.conf
+fi
+
+## pool max requests ##
+if [[ -z "$WWW_PM_MAX_REQUESTS" ]]; then 
+    sed -i "s/@WWW_PM_MAX_REQUESTS/500/g" /tmp/www.conf
+else 
+    sed -i "s/@WWW_PM_MAX_REQUESTS/${WWW_PM_MAX_REQUESTS}/g" /tmp/www.conf
+fi
+
+## pool request terminate timeout ##
+if [[ -z "$WWW_REQUEST_TERMINATE_TIMEOUT" ]]; then 
+    sed -i "s/@WWW_REQUEST_TERMINATE_TIMEOUT/300/g" /tmp/www.conf
+else 
+    sed -i "s/@WWW_REQUEST_TERMINATE_TIMEOUT/${WWW_REQUEST_TERMINATE_TIMEOUT}/g" /tmp/www.conf
+fi
+
+## pool rlimit files ##
+if [[ -z "$WWW_RLIMIT_FILES" ]]; then 
+    sed -i "s/@WWW_RLIMIT_FILES/65535/g" /tmp/www.conf
+else 
+    sed -i "s/@WWW_RLIMIT_FILES/${WWW_RLIMIT_FILES}/g" /tmp/www.conf
+fi
+
+## pool rlimit core ##
+if [[ -z "$WWW_RLIMIT_CORE" ]]; then 
+    sed -i "s/@WWW_RLIMIT_CORE/0/g" /tmp/www.conf
+else 
+    sed -i "s/@WWW_RLIMIT_CORE/${WWW_RLIMIT_CORE}/g" /tmp/www.conf
+fi
+
+## copy files to their destinations ##
+cp /tmp/php-fpm.conf /etc/php/7.4/fpm/php-fpm.conf
+cp /tmp/php.ini /etc/php/7.4/fpm/php.ini
+cp /tmp/php.ini /etc/php/7.4/cli/php.ini
+cp /tmp/www.conf /etc/php/7.4/fpm/pool.d/www.conf
+
+## customize PHP settings ##
+# sed -i '/error_log/c\error_log = /var/www/logs/error.log' /etc/php/7.4/fpm/php-fpm.conf
+
+## set Ubuntu default PHP version ##
+update-alternatives --set php /usr/bin/php7.4
+
+## reset permissions ##
+chown root:root /etc/php/7.4/fpm/php-fpm.conf
+chown root:root /etc/php/7.4/fpm/php.ini
+chown root:root /etc/php/7.4/cli/php.ini
+chown root:root /etc/php/7.4/fpm/pool.d/www.conf
+
+## restart services ##
+/etc/init.d/php*-fpm restart
+
+## delete tmp files ##
+rm /tmp/php-fpm*
+rm /tmp/php-ini*
+rm /tmp/www*
+
+####################################################################################################
+#### SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ###############
+####################################################################################################
+
+## Ref:
+
+## SS_EOF
