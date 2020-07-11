@@ -75,8 +75,10 @@ function ln {
 }
 
 ####################################################################################################
-#### SS-Install: Install MySQL 5.7 (Single Database Only) ##########################################
+#### SS-Install-MySQL: Install MySQL 8.0.x (Single Database Only) ##################################
 ####################################################################################################
+
+## MODULE VERSION: MySQL 8.0.x
 
 ## set noninteractive ##
 export DEBIAN_FRONTEND=noninteractive;
@@ -97,57 +99,57 @@ apt remove mysql-server*
 apt install mysql-server-8.0
 
 ## MESSAGE ##
-echo -e "\e[36mMySQL 8.0 is installed, now we will secure it...\e[0m"
+# echo -e "\e[36mMySQL 8.0 is installed, now we will secure it...\e[0m"
 
 ## install expect ##
-apt install expect
+# apt install expect
 
 ## build expect script ##
-tee ~/secure_our_mysql.sh > /dev/null << EOF
-spawn $(which mysql_secure_installation)
+# tee ~/secure_our_mysql.sh > /dev/null << EOF
+# spawn $(which mysql_secure_installation)
 
 ## re-enter root password ##
-expect "Enter password for user root:"
-send "${DB_PASSWORD_ROOT}\r"
+# expect "Enter password for user root:"
+# send "${DB_PASSWORD_ROOT}\r"
 
 ## skip the validate password plugin ##
-expect "Press y|Y for Yes, any other key for No:"
-send "n\r"
+# expect "Press y|Y for Yes, any other key for No:"
+# send "n\r"
 
 ## skip change root password ##
-expect "Change the password for root ? ((Press y|Y for Yes, any other key for No) :"
-send "n\r"
+# expect "Change the password for root ? ((Press y|Y for Yes, any other key for No) :"
+# send "n\r"
 
 ## remove anonymous users ##
-expect "Remove anonymous users? (Press y|Y for Yes, any other key for No) :"
-send "y\r"
+# expect "Remove anonymous users? (Press y|Y for Yes, any other key for No) :"
+# send "y\r"
 
 ## disable remote connections ##
-expect "Disallow root login remotely? (Press y|Y for Yes, any other key for No) :"
-send "y\r"
+# expect "Disallow root login remotely? (Press y|Y for Yes, any other key for No) :"
+# send "y\r"
 
 ## remote test database ##
-expect "Remove test database and access to it? (Press y|Y for Yes, any other key for No) :"
-send "y\r"
+# expect "Remove test database and access to it? (Press y|Y for Yes, any other key for No) :"
+# send "y\r"
 
 ## reload privileges ##
-expect "Reload privilege tables now? (Press y|Y for Yes, any other key for No) :"
-send "y\r"
+# expect "Reload privilege tables now? (Press y|Y for Yes, any other key for No) :"
+# send "y\r"
 
 ## end of script ##
-EOF
+# EOF
 
 ## run expect script ##
-expect ~/secure_our_mysql.sh
+# expect ~/secure_our_mysql.sh
 
 ## cleanup ##
-rm -v ~/secure_our_mysql.sh
+# rm -v ~/secure_our_mysql.sh
 
 ## uninstall expect ##
 # apt purge expect
 
 ## confirm secured ##
-echo "Congratulations, MySQL 8.0 is installed and secured. Onward!"
+# echo "Congratulations, MySQL 8.0 is installed and secured. Onward!"
 
 ####################################################################################################
 #### SS-Install: Configure MySQL Users + Connections (Supports IPv4 + IPv6) ########################
