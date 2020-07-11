@@ -291,15 +291,27 @@ else
     sed -i "s/@CLOUDFLARE_WIDGET_DNS/${CLOUDFLARE_WIDGET_DNS}/g" /tmp/wp-config.txt
 fi
 
-## replace salt keys ##
-sed -i "s/@AUTHKEY/$(openssl rand -hex 48)/g" /tmp/wp-config.txt
-sed -i "s/@SECUREAUTHKEY/$(openssl rand -hex 48)/g" /tmp/wp-config.txt
-sed -i "s/@LOGGEDINKEY/$(openssl rand -hex 48)/g" /tmp/wp-config.txt
-sed -i "s/@NONCEKEY/$(openssl rand -hex 48)/g" /tmp/wp-config.txt
-sed -i "s/@AUTHSALT/$(openssl rand -hex 48)/g" /tmp/wp-config.txt
-sed -i "s/@SECUREAUTHSALT/$(openssl rand -hex 48)/g" /tmp/wp-config.txt
-sed -i "s/@LOGGEDINSALT/$(openssl rand -hex 48)/g" /tmp/wp-config.txt
-sed -i "s/@NONCESALT/$(openssl rand -hex 48)/g" /tmp/wp-config.txt
+## lookup salt keys from production wp-config ##
+PROD_AUTH_KEY=$(grep "'AUTH_KEY'" /var/www/html/wp-config.php)
+PROD_SECURE_AUTH_KEY=$(grep "'SECURE_AUTH_KEY'" /var/www/html/wp-config.php)
+PROD_LOGGED_IN_KEY=$(grep "'LOGGED_IN_KEY'" /var/www/html/wp-config.php)
+PROD_NONCE_KEY=$(grep "'NONCE_KEY'" /var/www/html/wp-config.php)
+PROD_AUTH_SALT=$(grep "'AUTH_SALT'" /var/www/html/wp-config.php)
+PROD_SECURE_AUTH_SALT=$(grep "'SECURE_AUTH_SALT'" /var/www/html/wp-config.php)
+PROD_LOGGED_IN_SALT=$(grep "'LOGGED_IN_SALT'" /var/www/html/wp-config.php)
+PROD_NONCE_SALT=$(grep "'NONCE_SALT'" /var/www/html/wp-config.php)
+
+## copy salt keys from production to staging (enables permanent login on both production/staging) ##
+sed -i -n "/@AUTHKEY/c\$PROD_AUTH_KEY/p" /tmp/wp-config.txt
+sed -i -n "/@SECUREAUTHKEY/c\$PROD_SECURE_AUTH_KEY/p" /tmp/wp-config.txt
+sed -i -n "/@LOGGEDINKEY/c\$PROD_LOGGED_IN_KEY/p" /tmp/wp-config.txt
+sed -i -n "/@NONCEKEY/c\$PROD_NONCE_KEY/p" /tmp/wp-config.txt
+sed -i -n "/@AUTHSALT/c\$PROD_AUTH_SALT/p" /tmp/wp-config.txt
+sed -i -n "/@SECUREAUTHSALT/c\$PROD_SECURE_AUTH_SALT/p" /tmp/wp-config.txt
+sed -i -n "/@LOGGEDINSALT/c\$PROD_LOGGED_IN_SALT/p" /tmp/wp-config.txt
+sed -i -n "/@NONCESALT/c\$PROD_NONCE_SALT/p" /tmp/wp-config.txt
+
+# sed -i -n "/@AUTHKEY/c\$PROD_AUTH_KEY/p" /tmp/wp-config.txt
 
 ## Replace Placeholders: Debug and Dev/staging server ##
 sed -i "s/@WP_DEBUG/true/g" /tmp/wp-config.txt
@@ -407,5 +419,8 @@ mkdir /var/www/html/staging/wp-content/upgrade
 ## Ref: https://stackoverflow.com/questions/9952000/using-rsync-include-and-exclude-options-to-include-directory-and-file-by-pattern
 ## Ref: https://askubuntu.com/questions/476041/how-do-i-make-rsync-delete-files-that-have-been-deleted-from-the-source-folder
 ## Ref: https://www.cyberciti.biz/faq/linux-bash-delete-all-files-in-directory-except-few/
+## Ref: https://superuser.com/questions/783622/how-to-make-grep-command-return-entire-matching-line
+## Ref: https://stackoverflow.com/questions/22319345/copy-lines-containing-word-from-one-file-to-another-file-in-linux
+## Ref: https://stackoverflow.com/questions/6749128/store-output-of-sed-into-a-variable
 
 ## SS_EOF
