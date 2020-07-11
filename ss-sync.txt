@@ -36,6 +36,12 @@ function add-apt-repository {
     command /usr/bin/add-apt-repository -y "$@"
 }
 
+## mysql alias flags ##
+function mysql {
+    export MYSQL_PWD=$DB_PASSWORD_ROOT
+    command mysql --user=root --database="$DB_NAME" --host="$DB_HOST" --protocol=tcp --port=3306 --force "$@"
+}
+
 ## wget alias flags ##
 function wget {
     command wget --no-check-certificate --no-cache --no-cookies --tries=3 --timeout=15 "$@"
@@ -192,15 +198,12 @@ find /var/www/html/staging/wp-content/themes/ -type f -exec sed -i "s#staging///
 find /var/www/html/staging/wp-content/themes/ -type f -exec sed -i "s#staging///#staging/#g" {} +
 find /var/www/html/staging/wp-content/themes/ -type f -exec sed -i "s#staging//#staging/#g" {} +
 
-## prepare MySQL root password (suppresses MySQL security warnings) ##
-export MYSQL_PWD=$DB_PASSWORD_ROOT
-
 ## import database ##
-mysql --user=root --host="$DB_HOST" --protocol=tcp --port=3306 --force "$DB_NAME" < /tmp/staging.sql
+mysql "$DB_NAME" < /tmp/staging.sql
 
 ## fix staging home and siteurl fields (no mass search/replace to avoid potential conflicts) ##
-mysql --user=root --host="$DB_HOST" --database="$DB_NAME" --protocol=tcp --port=3306 --execute="UPDATE staging_options SET option_value='https://$SITE_DOMAIN/staging' WHERE option_name = 'home';"
-mysql --user=root --host="$DB_HOST" --database="$DB_NAME" --protocol=tcp --port=3306 --execute="UPDATE staging_options SET option_value='https://$SITE_DOMAIN/staging' WHERE option_name = 'siteurl';"
+mysql --execute="UPDATE staging_options SET option_value='https://$SITE_DOMAIN/staging' WHERE option_name = 'home';"
+mysql --execute="UPDATE staging_options SET option_value='https://$SITE_DOMAIN/staging' WHERE option_name = 'siteurl';"
 
 ## cleanup tmp files ##
 rm /var/www/meta/staging*.sql*
