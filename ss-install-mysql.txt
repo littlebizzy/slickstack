@@ -92,10 +92,10 @@ echo debconf mysql-server/root_password_again password ${DB_PASSWORD_ROOT} | deb
 # debconf-set-selections <<< "mysql-server-5.7 mysql-server/root_password password ${dbrootpass}"
 # debconf-set-selections <<< "mysql-server-5.7 mysql-server/root_password_again password ${dbrootpass}"
 
-## remove MySQL 8.0 (but do not purge to retain database) ##
-apt remove mysql-server*
+## remove all MySQL packages (avoid purge to retain database) ##
+apt remove ^mysql-server
 
-## install mysql 8.0 ##
+## install MySQL 8.0.x ##
 apt install mysql-server-8.0
 
 ## MESSAGE ##
@@ -104,7 +104,7 @@ echo -e "\e[36mMySQL 8.0 is installed, now we will secure it...\e[0m"
 ## manually secure MySQL using queries (reliable noninteractive version of the mysql_secure_installation wizard) ##
 mysql -e "UNINSTALL COMPONENT 'file://component_validate_password';"
 mysql -e "FLUSH PRIVILEGES;"
-mysql -e "ALTER USER 'root'@'127.0.0.1' IDENTIFIED BY '${DB_PASSWORD_ROOT}';
+mysql -e "ALTER USER 'root'@'127.0.0.1' IDENTIFIED BY '${DB_PASSWORD_ROOT}';"
 mysql -e "FLUSH PRIVILEGES;"
 mysql -e "DELETE FROM mysql.user WHERE user='';"
 mysql -e "FLUSH PRIVILEGES;"
@@ -274,5 +274,6 @@ chmod 0775 /etc/mysql/my.cnf
 ## Ref: https://www.networkinghowtos.com/howto/disable-remote-root-logins-into-mysql/
 ## Ref: https://www.oreilly.com/library/view/mysql-in-a/9780596514334/re39.html
 ## Ref: https://stackoverflow.com/questions/36463966/when-is-flush-privileges-in-mysql-really-needed
+## Ref: https://askubuntu.com/questions/210976/apt-get-remove-with-wildcard-removed-way-more-than-expected-why
 
 ## SS_EOF
