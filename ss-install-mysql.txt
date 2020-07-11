@@ -1,0 +1,299 @@
+#!/bin/bash
+
+####################################################################################################
+#### author: SlickStack ############################################################################
+#### link: https://slickstack.io ###################################################################
+#### mirror: http://mirrors.slickstack.io/ss-check.txt #############################################
+#### path: /var/www/ss-check #######################################################################
+#### destination: n/a (not a boilerplate) ##########################################################
+#### purpose: Downloads latest SlickStack Core files (except itself = done by ss-worker) ###########
+#### module version: Ubuntu 20.04 LTS ##############################################################
+####################################################################################################
+
+## include SlickStack configuration ##
+source /var/www/ss-config
+
+####################################################################################################
+#### SlickStack: Critical Bash Functions (Aliases) For This Script To Work #########################
+####################################################################################################
+
+## apt alias flags ##
+function apt {
+    export DEBIAN_FRONTEND=noninteractive
+    export DEBIAN_PRIORITY=critical
+    export PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'
+    command /usr/bin/apt -q -y -o Dpkg::Options::=--force-confold -o Dpkg::Options::=--force-confdef "$@"
+}
+
+## add-apt-repository alias flags ##
+function add-apt-repository {
+    export DEBIAN_FRONTEND=noninteractive
+    export DEBIAN_PRIORITY=critical
+    export PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'
+    command /usr/bin/add-apt-repository -y "$@"
+}
+
+## mysql alias flags ##
+function mysql {
+    export MYSQL_PWD=$DB_PASSWORD_ROOT
+    command mysql --user=root --database="$DB_NAME" --host="$DB_HOST" --protocol=tcp --port=3306 --force "$@"
+}
+
+## wget alias flags ##
+function wget {
+    command wget --no-check-certificate --no-cache --no-cookies --tries=3 --timeout=15 "$@"
+}
+
+## cp alias flags ##
+function cp {
+    command cp -R -f -d --no-preserve=mode,ownership "$@"
+}
+
+## rsync alias flags ##
+function rsync {
+    command rsync -aI --ignore-errors "$@"
+}
+
+## unzip alias flags ##
+function unzip {
+    command unzip -o "$@"
+}
+
+## rm alias flags ##
+function rm {
+    command rm -R -f "$@"
+}
+
+## mkdir alias flags ##
+function mkdir {
+    command mkdir -p "$@"
+}
+
+## ln alias flags ##
+function ln {
+    command ln -s -f "$@"
+}
+
+####################################################################################################
+#### SS-Install: Install MySQL 5.7 (Single Database Only) ##########################################
+####################################################################################################
+
+## set noninteractive ##
+export DEBIAN_FRONTEND=noninteractive;
+
+echo debconf mysql-server/root_password password ${DB_PASSWORD_ROOT} | debconf-set-selections
+echo debconf mysql-server/root_password_again password ${DB_PASSWORD_ROOT} | debconf-set-selections
+
+# echo "mysql-server-5.7 mysql-server/root_password password ${dbrootpass}" | debconf-set-selections
+# echo "mysql-server-5.7 mysql-server/root_password_again password ${dbrootpass}" | debconf-set-selections
+# debconf-set-selections <<< "mysql-server-5.7 mysql-server/root_password password ${dbrootpass}"
+# debconf-set-selections <<< "mysql-server-5.7 mysql-server/root_password_again password ${dbrootpass}"
+
+## remove MySQL 8.0 (but do not purge to retain database) ##
+apt remove mysql-server-5.5
+apt remove mysql-server-5.6
+apt remove mysql-server-5.7
+apt remove mysql-server-8.0
+apt remove mysql-server
+
+## install mysql 8.0 ##
+apt install mysql-server-8.0
+
+## MESSAGE ##
+echo -e "\e[36mMySQL 8.0 is installed, now we will secure it...\e[0m"
+
+## install expect ##
+apt install expect
+
+## build expect script ##
+tee ~/secure_our_mysql.sh > /dev/null << EOF
+spawn $(which mysql_secure_installation)
+
+## re-enter root password ##
+expect "Enter password for user root:"
+send "${DB_PASSWORD_ROOT}\r"
+
+## skip the validate password plugin ##
+expect "Press y|Y for Yes, any other key for No:"
+send "n\r"
+
+## skip change root password ##
+expect "Change the password for root ? ((Press y|Y for Yes, any other key for No) :"
+send "n\r"
+
+## remove anonymous users ##
+expect "Remove anonymous users? (Press y|Y for Yes, any other key for No) :"
+send "y\r"
+
+## disable remote connections ##
+expect "Disallow root login remotely? (Press y|Y for Yes, any other key for No) :"
+send "y\r"
+
+## remote test database ##
+expect "Remove test database and access to it? (Press y|Y for Yes, any other key for No) :"
+send "y\r"
+
+## reload privileges ##
+expect "Reload privilege tables now? (Press y|Y for Yes, any other key for No) :"
+send "y\r"
+
+## end of script ##
+EOF
+
+## run expect script ##
+expect ~/secure_our_mysql.sh
+
+## cleanup ##
+rm -v ~/secure_our_mysql.sh
+
+## uninstall expect ##
+# apt purge expect
+
+## confirm secured ##
+echo "Congratulations, MySQL 8.0 is installed and secured. Onward!"
+
+####################################################################################################
+#### SS-Install: Configure MySQL Users + Connections (Supports IPv4 + IPv6) ########################
+####################################################################################################
+
+## create wordpress database as per ss-config ##
+mysql --execute="CREATE DATABASE ${DB_NAME};"
+
+## create root user (required before granting privileges after MySQL 8.0) ##
+mysql -e "CREATE USER 'root'@'localhost' IDENTIFIED BY '${DB_PASSWORD_ROOT}';"
+mysql -e "CREATE USER 'root'@'127.0.0.1' IDENTIFIED BY '${DB_PASSWORD_ROOT}';"
+mysql -e "CREATE USER 'root'@'::1' IDENTIFIED BY '${DB_PASSWORD_ROOT}';"
+
+## grant root user all privileges on wordpress database (all connections) ##
+mysql -e "GRANT ALL PRIVILEGES ON ${DB_NAME}.* TO 'root'@'localhost';"
+mysql -e "GRANT ALL PRIVILEGES ON ${DB_NAME}.* TO 'root'@'127.0.0.1';"
+mysql -e "GRANT ALL PRIVILEGES ON ${DB_NAME}.* TO 'root'@'::1';"
+
+## create database user as per ss-config ##
+mysql -e "CREATE USER '${DB_USER}'@'localhost' IDENTIFIED BY '${DB_PASSWORD}';"
+mysql -e "CREATE USER '${DB_USER}'@'127.0.0.1' IDENTIFIED BY '${DB_PASSWORD}';"
+mysql -e "CREATE USER '${DB_USER}'@'::1' IDENTIFIED BY '${DB_PASSWORD}';"
+
+## grant database user all privileges on wordpress database only (all connections) ##
+mysql -e "GRANT ALL PRIVILEGES ON ${DB_NAME}.* TO '${DB_USER}'@'localhost';"
+mysql -e "GRANT ALL PRIVILEGES ON ${DB_NAME}.* TO '${DB_USER}'@'127.0.0.1';"
+mysql -e "GRANT ALL PRIVILEGES ON ${DB_NAME}.* TO '${DB_USER}'@'::1';"
+
+## flush MySQL privileges ##
+mysql --execute="FLUSH PRIVILEGES;"
+
+####################################################################################################
+#### SS-Install: Optimize MySQL Settings ###########################################################
+####################################################################################################
+
+## cleanup leftover files ##
+rm /tmp/my.cnf
+
+## install custom my.cnf config file ##
+wget -O /tmp/my.cnf http://mirrors.slickstack.io/mysql/my-cnf.txt
+
+
+
+#### MySQL Settings ####
+
+## SQL mode ##
+if [[ -z "$SQL_MODE" ]]; then 
+    sed -i "s/@SQL_MODE/STRICT_TRANS_TABLES,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION/g" /tmp/my.cnf
+else 
+    sed -i "s/@SQL_MODE/${SQL_MODE}/g" /tmp/my.cnf
+fi
+
+## max allowed packet ##
+if [[ -z "$SQL_MAX_ALLOWED_PACKET" ]]; then 
+    sed -i "s/@SQL_MAX_ALLOWED_PACKET/256M/g" /tmp/my.cnf
+else 
+    sed -i "s/@SQL_MAX_ALLOWED_PACKET/${SQL_MAX_ALLOWED_PACKET}/g" /tmp/my.cnf
+fi
+
+## connect timeout ##
+if [[ -z "$SQL_CONNECT_TIMEOUT" ]]; then 
+    sed -i "s/@SQL_CONNECT_TIMEOUT/30/g" /tmp/my.cnf
+else 
+    sed -i "s/@SQL_CONNECT_TIMEOUT/${SQL_CONNECT_TIMEOUT}/g" /tmp/my.cnf
+fi
+
+## wait timeout ##
+if [[ -z "$SQL_WAIT_TIMEOUT" ]]; then 
+    sed -i "s/@SQL_WAIT_TIMEOUT/3600/g" /tmp/my.cnf
+else 
+    sed -i "s/@SQL_WAIT_TIMEOUT/${SQL_WAIT_TIMEOUT}/g" /tmp/my.cnf
+fi
+
+## interactive timeout ##
+if [[ -z "$SQL_INTERACTIVE_TIMEOUT" ]]; then 
+    sed -i "s/@SQL_INTERACTIVE_TIMEOUT/43200/g" /tmp/my.cnf
+else 
+    sed -i "s/@SQL_INTERACTIVE_TIMEOUT/${SQL_INTERACTIVE_TIMEOUT}/g" /tmp/my.cnf
+fi
+
+## net read timeout ##
+if [[ -z "$SQL_NET_READ_TIMEOUT" ]]; then 
+    sed -i "s/@SQL_NET_READ_TIMEOUT/30/g" /tmp/my.cnf
+else 
+    sed -i "s/@SQL_NET_READ_TIMEOUT/${SQL_NET_READ_TIMEOUT}/g" /tmp/my.cnf
+fi
+
+## net write timeout ##
+if [[ -z "$SQL_NET_WRITE_TIMEOUT" ]]; then 
+    sed -i "s/@SQL_NET_WRITE_TIMEOUT/60/g" /tmp/my.cnf
+else 
+    sed -i "s/@SQL_NET_WRITE_TIMEOUT/${SQL_NET_WRITE_TIMEOUT}/g" /tmp/my.cnf
+fi
+
+
+## set InnoDB buffer pool size (supports "auto" or manual via ss-config) ##
+PERCENT_RAM_MB=$(free -m | awk 'NR==2{printf "%d", $2*0.50 }')
+
+if [[ "$INNODB_BUFFER_POOL_SIZE" == "auto" ]]; then 
+    sed -i "s/@INNODB_BUFFER_POOL_SIZE/${PERCENT_RAM_MB}M/g" /tmp/my.cnf
+else 
+    sed -i "s/@INNODB_BUFFER_POOL_SIZE/${INNODB_BUFFER_POOL_SIZE}/g" /tmp/my.cnf
+fi
+
+## set InnoDB flush method ##
+if [[ -z "$INNODB_FLUSH_METHOD" ]]; then 
+    sed -i "s/@INNODB_FLUSH_METHOD/O_DIRECT/g" /tmp/my.cnf
+else 
+    sed -i "s/@INNODB_FLUSH_METHOD/${INNODB_FLUSH_METHOD}/g" /tmp/my.cnf
+fi
+
+## set InnoDB log file size ##
+if [[ -z "$INNODB_LOG_FILE_SIZE" ]]; then 
+    sed -i "s/@INNODB_LOG_FILE_SIZE/256M/g" /tmp/my.cnf
+else 
+    sed -i "s/@INNODB_LOG_FILE_SIZE/${INNODB_LOG_FILE_SIZE}/g" /tmp/my.cnf
+fi
+
+## set InnoDB log files in group ##
+if [[ -z "$INNODB_LOG_FILES_IN_GROUP" ]]; then 
+    sed -i "s/@INNODB_LOG_FILES_IN_GROUP/1/g" /tmp/my.cnf
+else 
+    sed -i "s/@INNODB_LOG_FILES_IN_GROUP/${INNODB_LOG_FILES_IN_GROUP}/g" /tmp/my.cnf
+fi
+
+## set InnoDB flush_log_at_trx_commit ##
+if [[ "$INNODB_FLUSH_LOG_AT_TRX_COMMIT" == "false" ]]; then
+    sed -i "s/@INNODB_FLUSH_LOG_AT_TRX_COMMIT/0/g" /tmp/my.cnf
+else 
+    sed -i "s/@INNODB_FLUSH_LOG_AT_TRX_COMMIT/1/g" /tmp/my.cnf
+fi
+
+## safe/clean/slow shutdown MySQL before update config ##
+/etc/init.d/mysql stop
+
+## copy files to their destinations ##
+cp /tmp/my.cnf /etc/mysql/my.cnf
+
+## reset permissions ##
+chown root:root /etc/mysql/my.cnf
+chmod 0775 /etc/mysql/my.cnf
+
+## start the MySQL service again ##
+/etc/init.d/mysql start
+
+## SS_EOF
