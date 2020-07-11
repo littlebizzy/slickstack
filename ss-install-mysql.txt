@@ -84,17 +84,14 @@ export DEBIAN_FRONTEND=noninteractive;
 echo debconf mysql-server/root_password password ${DB_PASSWORD_ROOT} | debconf-set-selections
 echo debconf mysql-server/root_password_again password ${DB_PASSWORD_ROOT} | debconf-set-selections
 
+## TEMP STORAGE ##
 # echo "mysql-server-5.7 mysql-server/root_password password ${dbrootpass}" | debconf-set-selections
 # echo "mysql-server-5.7 mysql-server/root_password_again password ${dbrootpass}" | debconf-set-selections
 # debconf-set-selections <<< "mysql-server-5.7 mysql-server/root_password password ${dbrootpass}"
 # debconf-set-selections <<< "mysql-server-5.7 mysql-server/root_password_again password ${dbrootpass}"
 
 ## remove MySQL 8.0 (but do not purge to retain database) ##
-apt remove mysql-server-5.5
-apt remove mysql-server-5.6
-apt remove mysql-server-5.7
-apt remove mysql-server-8.0
-apt remove mysql-server
+apt remove mysql-server*
 
 ## install mysql 8.0 ##
 apt install mysql-server-8.0
@@ -160,22 +157,24 @@ echo "Congratulations, MySQL 8.0 is installed and secured. Onward!"
 mysql --execute="CREATE DATABASE ${DB_NAME};"
 
 ## create root user (required before granting privileges after MySQL 8.0) ##
-mysql -e "CREATE USER 'root'@'localhost' IDENTIFIED BY '${DB_PASSWORD_ROOT}';"
+# mysql -e "CREATE USER 'root'@'localhost' IDENTIFIED BY '${DB_PASSWORD_ROOT}';"
+mysql -e "DROP USER 'root'@'localhost';"
 mysql -e "CREATE USER 'root'@'127.0.0.1' IDENTIFIED BY '${DB_PASSWORD_ROOT}';"
 mysql -e "CREATE USER 'root'@'::1' IDENTIFIED BY '${DB_PASSWORD_ROOT}';"
 
 ## grant root user all privileges on wordpress database (all connections) ##
-mysql -e "GRANT ALL PRIVILEGES ON ${DB_NAME}.* TO 'root'@'localhost';"
+# mysql -e "GRANT ALL PRIVILEGES ON ${DB_NAME}.* TO 'root'@'localhost';"
 mysql -e "GRANT ALL PRIVILEGES ON ${DB_NAME}.* TO 'root'@'127.0.0.1';"
 mysql -e "GRANT ALL PRIVILEGES ON ${DB_NAME}.* TO 'root'@'::1';"
 
 ## create database user as per ss-config ##
-mysql -e "CREATE USER '${DB_USER}'@'localhost' IDENTIFIED BY '${DB_PASSWORD}';"
+# mysql -e "CREATE USER '${DB_USER}'@'localhost' IDENTIFIED BY '${DB_PASSWORD}';"
+mysql -e "DROP USER '${DB_USER}'@'localhost';"
 mysql -e "CREATE USER '${DB_USER}'@'127.0.0.1' IDENTIFIED BY '${DB_PASSWORD}';"
 mysql -e "CREATE USER '${DB_USER}'@'::1' IDENTIFIED BY '${DB_PASSWORD}';"
 
 ## grant database user all privileges on wordpress database only (all connections) ##
-mysql -e "GRANT ALL PRIVILEGES ON ${DB_NAME}.* TO '${DB_USER}'@'localhost';"
+# mysql -e "GRANT ALL PRIVILEGES ON ${DB_NAME}.* TO '${DB_USER}'@'localhost';"
 mysql -e "GRANT ALL PRIVILEGES ON ${DB_NAME}.* TO '${DB_USER}'@'127.0.0.1';"
 mysql -e "GRANT ALL PRIVILEGES ON ${DB_NAME}.* TO '${DB_USER}'@'::1';"
 
