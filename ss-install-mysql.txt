@@ -83,15 +83,10 @@ function ln {
 ## remove all MySQL packages (avoid purge to retain database) ##
 apt remove ^mysql-server
 
-## update repo cache ##
-apt update
-
-## set noninteractive ##
-export DEBIAN_FRONTEND=noninteractive;
-
 ## prepare root user password ##
-echo debconf mysql-server/root_password password ${DB_PASSWORD_ROOT} | debconf-set-selections
-echo debconf mysql-server/root_password_again password ${DB_PASSWORD_ROOT} | debconf-set-selections
+# export DEBIAN_FRONTEND=noninteractive
+# echo debconf mysql-server/root_password password ${DB_PASSWORD_ROOT} | debconf-set-selections
+# echo debconf mysql-server/root_password_again password ${DB_PASSWORD_ROOT} | debconf-set-selections
 
 ## TEMP STORAGE ##
 # echo "mysql-server-5.7 mysql-server/root_password password ${dbrootpass}" | debconf-set-selections
@@ -99,31 +94,38 @@ echo debconf mysql-server/root_password_again password ${DB_PASSWORD_ROOT} | deb
 # debconf-set-selections <<< "mysql-server-5.7 mysql-server/root_password password ${dbrootpass}"
 # debconf-set-selections <<< "mysql-server-5.7 mysql-server/root_password_again password ${dbrootpass}"
 
+## update repo cache ##
+apt update
+
 ## install MySQL 8.0.x ##
 apt install mysql-server-8.0
 
 ## MESSAGE ##
-echo -e "\e[36mMySQL 8.0 is installed, now we will secure it...\e[0m"
+# echo -e "\e[36mMySQL 8.0 is installed, now we will secure it...\e[0m"
 
 ## manually secure MySQL using queries (reliable noninteractive version of the mysql_secure_installation wizard) ##
-mysql -e "UNINSTALL COMPONENT 'file://component_validate_password';"
-mysql -e "FLUSH PRIVILEGES;"
-mysql -e "ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD_ROOT}';"
-mysql -e "ALTER USER 'root'@'127.0.0.1' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD_ROOT}';"
-mysql -e "ALTER USER 'root'@'::1' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD_ROOT}';"
+# mysql -e "UNINSTALL COMPONENT 'file://component_validate_password';"
+# mysql -e "FLUSH PRIVILEGES;"
+mysql -e "CREATE USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD_ROOT}';"
+mysql -e "CREATE USER 'root'@'127.0.0.1' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD_ROOT}';"
+mysql -e "CREATE USER 'root'@'::1' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD_ROOT}';"
+mysql -e "GRANT ALL ON ${DB_NAME}.* TO 'root'@'localhost';"
+mysql -e "GRANT ALL ON ${DB_NAME}.* TO 'root'@'127.0.0.1';"
+mysql -e "GRANT ALL ON ${DB_NAME}.* TO 'root'@'::1';"
+# mysql -e "UPDATE mysql.user SET plugin = 'mysql_native_password' WHERE user = 'root';"
 mysql -e "FLUSH PRIVILEGES;"
 mysql -e "DELETE FROM mysql.user WHERE user='';"
-mysql -e "FLUSH PRIVILEGES;"
 mysql -e "DELETE FROM mysql.user WHERE user='root' AND host NOT IN ('localhost', '127.0.0.1', '::1');"
 mysql -e "FLUSH PRIVILEGES;"
 mysql -e "DROP DATABASE IF EXISTS test;"
+mysql -e "CREATE DATABASE ${DB_NAME};"
+mysql -e "CREATE USER '${DB_USER}'@'localhost' IDENTIFIED BY '${DB_PASSWORD}';"
+mysql -e "CREATE USER '${DB_USER}'@'127.0.0.1' IDENTIFIED BY '${DB_PASSWORD}';"
+mysql -e "CREATE USER '${DB_USER}'@'::1' IDENTIFIED BY '${DB_PASSWORD}';"
+mysql -e "GRANT ALL ON ${DB_NAME}.* TO '${DB_USER}'@'localhost';"
+mysql -e "GRANT ALL ON ${DB_NAME}.* TO '${DB_USER}'@'127.0.0.1';"
+mysql -e "GRANT ALL ON ${DB_NAME}.* TO '${DB_USER}'@'::1';"
 mysql -e "FLUSH PRIVILEGES;"
-
-## cleanup ##
-rm -v ~/secure_our_mysql.sh
-
-## uninstall expect ##
-apt purge expect
 
 ## confirm secured ##
 echo "Congratulations, MySQL 8.0 is installed and secured. Onward!"
@@ -140,14 +142,9 @@ echo "Congratulations, MySQL 8.0 is installed and secured. Onward!"
 # SELECT user,authentication_string,plugin,host FROM mysql.user;
 # UPDATE mysql.user SET plugin = 'mysql_native_password' WHERE user = 'root' AND plugin = 'auth_socket';
 
-mysql -e "UPDATE mysql.user SET plugin = 'mysql_native_password' WHERE user = 'root';"
-
-## flush MySQL privileges ##
-mysql -e "FLUSH PRIVILEGES;"
-
 ## create wordpress database as per ss-config ##
-mysql -e "CREATE DATABASE ${DB_NAME};"
-mysql -e "use ${DB_NAME};"
+
+# mysql -e "use ${DB_NAME};"
 
 ## create root user (required before granting privileges after MySQL 8.0) ##
 # mysql -e "CREATE USER 'root'@'localhost' IDENTIFIED BY '${DB_PASSWORD_ROOT}';"
@@ -158,27 +155,20 @@ mysql -e "use ${DB_NAME};"
 # mysql -e "ALTER USER 'root'@'::1' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD_ROOT}';"
 
 ## grant root user all privileges on wordpress database (all connections) ##
-mysql -e "GRANT ALL ON ${DB_NAME}.* TO 'root'@'localhost';"
-mysql -e "GRANT ALL ON ${DB_NAME}.* TO 'root'@'127.0.0.1';"
-mysql -e "GRANT ALL ON ${DB_NAME}.* TO 'root'@'::1';"
 
-mysql -e "UPDATE mysql.user SET plugin = 'mysql_native_password' WHERE user = 'root';"
+
+# mysql -e "UPDATE mysql.user SET plugin = 'mysql_native_password' WHERE user = 'root';"
 
 ## flush MySQL privileges ##
-mysql -e "FLUSH PRIVILEGES;"
+# mysql -e "FLUSH PRIVILEGES;"
 
 ## create database user as per ss-config ##
-mysql -e "CREATE USER '${DB_USER}'@'localhost' IDENTIFIED BY '${DB_PASSWORD}';"
-mysql -e "CREATE USER '${DB_USER}'@'127.0.0.1' IDENTIFIED BY '${DB_PASSWORD}';"
-mysql -e "CREATE USER '${DB_USER}'@'::1' IDENTIFIED BY '${DB_PASSWORD}';"
+
 
 ## grant database user all privileges on wordpress database only (all connections) ##
-mysql -e "GRANT ALL ON ${DB_NAME}.* TO '${DB_USER}'@'localhost';"
-mysql -e "GRANT ALL ON ${DB_NAME}.* TO '${DB_USER}'@'127.0.0.1';"
-mysql -e "GRANT ALL ON ${DB_NAME}.* TO '${DB_USER}'@'::1';"
+
 
 ## flush MySQL privileges ##
-mysql -e "FLUSH PRIVILEGES;"
 
 ####################################################################################################
 #### SS-Install: Optimize MySQL Settings ###########################################################
