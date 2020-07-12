@@ -86,6 +86,10 @@ export DEBIAN_FRONTEND=noninteractive;
 ## update repo cache ##
 apt update
 
+## remove all MySQL packages (avoid purge to retain database) ##
+apt remove ^mysql-server
+
+## prepare root user password ##
 echo debconf mysql-server/root_password password ${DB_PASSWORD_ROOT} | debconf-set-selections
 echo debconf mysql-server/root_password_again password ${DB_PASSWORD_ROOT} | debconf-set-selections
 
@@ -94,9 +98,6 @@ echo debconf mysql-server/root_password_again password ${DB_PASSWORD_ROOT} | deb
 # echo "mysql-server-5.7 mysql-server/root_password_again password ${dbrootpass}" | debconf-set-selections
 # debconf-set-selections <<< "mysql-server-5.7 mysql-server/root_password password ${dbrootpass}"
 # debconf-set-selections <<< "mysql-server-5.7 mysql-server/root_password_again password ${dbrootpass}"
-
-## remove all MySQL packages (avoid purge to retain database) ##
-apt remove ^mysql-server
 
 ## install MySQL 8.0.x ##
 apt install mysql-server-8.0
