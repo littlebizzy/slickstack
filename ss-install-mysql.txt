@@ -131,16 +131,15 @@ echo "Congratulations, MySQL 8.0 is installed and secured. Onward!"
 #### SS-Install: Configure MySQL Users + Connections (Supports IPv4 + IPv6) ########################
 ####################################################################################################
 
-## caching_sha2_password is better than mysql_native_password for MySQL passwords ##
+## caching_sha2_password is better but mysql_native_password is still more compatible ##
 ## 
 
 # SELECT plugin from mysql.user where User='root';
 # SELECT User,plugin from mysql.user where User='root';
 # SELECT user,authentication_string,plugin,host FROM mysql.user;
-
 # UPDATE mysql.user SET plugin = 'mysql_native_password' WHERE user = 'root' AND plugin = 'auth_socket';
 
-mysql -e "UPDATE mysql.user SET plugin = 'caching_sha2_password' WHERE user = 'root';"
+mysql -e "UPDATE mysql.user SET plugin = 'mysql_native_password' WHERE user = 'root';"
 
 ## flush MySQL privileges ##
 mysql -e "FLUSH PRIVILEGES;"
@@ -159,7 +158,7 @@ mysql -e "GRANT ALL ON ${DB_NAME}.* TO 'root'@'localhost';"
 mysql -e "GRANT ALL ON ${DB_NAME}.* TO 'root'@'127.0.0.1';"
 mysql -e "GRANT ALL ON ${DB_NAME}.* TO 'root'@'::1';"
 
-mysql -e "UPDATE mysql.user SET plugin = 'caching_sha2_password' WHERE user = 'root';"
+mysql -e "UPDATE mysql.user SET plugin = 'mysql_native_password' WHERE user = 'root';"
 
 ## flush MySQL privileges ##
 mysql -e "FLUSH PRIVILEGES;"
