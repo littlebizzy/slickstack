@@ -131,6 +131,7 @@ echo "Congratulations, MySQL 8.0 is installed and secured. Onward!"
 
 ## create wordpress database as per ss-config ##
 mysql --execute="CREATE DATABASE ${DB_NAME};"
+use ${DB_NAME};
 
 ## create root user (required before granting privileges after MySQL 8.0) ##
 mysql -e "CREATE USER 'root'@'localhost' IDENTIFIED BY '${DB_PASSWORD_ROOT}';"
@@ -141,6 +142,9 @@ mysql -e "CREATE USER 'root'@'::1' IDENTIFIED BY '${DB_PASSWORD_ROOT}';"
 mysql -e "GRANT ALL ON ${DB_NAME}.* TO 'root'@'localhost';"
 mysql -e "GRANT ALL ON ${DB_NAME}.* TO 'root'@'127.0.0.1';"
 mysql -e "GRANT ALL ON ${DB_NAME}.* TO 'root'@'::1';"
+
+## flush MySQL privileges ##
+mysql --execute="FLUSH PRIVILEGES;"
 
 ## create database user as per ss-config ##
 mysql -e "CREATE USER '${DB_USER}'@'localhost' IDENTIFIED BY '${DB_PASSWORD}';"
@@ -278,5 +282,6 @@ chmod 0775 /etc/mysql/my.cnf
 ## Ref: https://askubuntu.com/questions/210976/apt-get-remove-with-wildcard-removed-way-more-than-expected-why
 ## Ref: https://dev.mysql.com/doc/refman/8.0/en/grant.html
 ## Ref: https://geert.vanderkelen.org/2018/mysql8-unattended-dpkg/
+## Ref: https://stackoverflow.com/questions/50177216/how-to-grant-all-privileges-to-root-user-in-mysql-8-0
 
 ## SS_EOF
