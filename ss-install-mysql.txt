@@ -111,7 +111,10 @@ apt upgrade
 mkdir /var/run/mysqld
 chown mysql:mysql /var/run/mysqld
 /usr/sbin/mysqld --skip-grant-tables --skip-networking &
+
+## reset root user password in case of problems ##
 mysql -e "FLUSH PRIVILEGES;"
+mysql -e "ALTER USER IF EXISTS 'root'@'127.0.0.1' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD_ROOT}';"
 
 ## manually secure MySQL using queries (reliable noninteractive version of the mysql_secure_installation wizard) ##
 # mysql -e "UNINSTALL COMPONENT 'file://component_validate_password';"
@@ -182,9 +185,6 @@ echo "Congratulations, MySQL 8.0 is installed and secured. Onward!"
 
 ## grant database user all privileges on wordpress database only (all connections) ##
 
-
-## flush MySQL privileges ##
-
 ####################################################################################################
 #### SS-Install: Optimize MySQL Settings ###########################################################
 ####################################################################################################
@@ -195,10 +195,7 @@ rm /tmp/my.cnf
 ## install custom my.cnf config file ##
 wget -O /tmp/my.cnf http://mirrors.slickstack.io/mysql/my-cnf.txt
 
-
-
 #### MySQL Settings ####
-
 ## SQL mode ##
 if [[ -z "$SQL_MODE" ]]; then 
     sed -i "s/@SQL_MODE/STRICT_TRANS_TABLES,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION/g" /tmp/my.cnf
@@ -325,5 +322,6 @@ chmod 0775 /etc/mysql/my.cnf
 ## Ref: https://www.digitalocean.com/community/questions/connecting-to-mysql-without-pw-can-t-connect-to-local-mysql-server-through-socket-var-run-mysqld-mysqld-sock-2
 ## Ref: https://serverfault.com/questions/582866/mysql-socket-configuration-issue-in-my-cnf
 ## Ref: https://stackoverflow.com/questions/11990708/error-cant-connect-to-local-mysql-server-through-socket-var-run-mysqld-mysq
+## Ref: https://medium.com/@aungzanbaw/how-to-reset-root-user-password-in-mysql-8-0-a5c328d098a8
 
 ## SS_EOF
