@@ -36,7 +36,7 @@ function add-apt-repository {
 ## mysql alias flags ##
 function mysql {
     export MYSQL_PWD=$DB_PASSWORD_ROOT
-    command mysql --user=root --database="$DB_NAME" --host="$DB_HOST" --protocol=tcp --port=3306 --force "$@"
+    command mysql --user=root --host="$DB_HOST" --protocol=tcp --port=3306 --force "$@"
 }
 
 ## wget alias flags ##
@@ -113,8 +113,9 @@ chown mysql:mysql /var/run/mysqld
 /usr/sbin/mysqld --skip-grant-tables --skip-networking &
 
 ## reset root user password in case of problems ##
-mysql -e "FLUSH PRIVILEGES;"
-mysql -e "ALTER USER IF EXISTS 'root'@'127.0.0.1' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD_ROOT}';"
+mysql --database="mysql" -e "FLUSH PRIVILEGES;"
+mysql --database="mysql" -e "ALTER USER IF EXISTS 'root'@'127.0.0.1' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD_ROOT}';"
+mysql --database="mysql" -e "FLUSH PRIVILEGES;"
 
 ## manually secure MySQL using queries (reliable noninteractive version of the mysql_secure_installation wizard) ##
 # mysql -e "UNINSTALL COMPONENT 'file://component_validate_password';"
