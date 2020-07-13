@@ -80,12 +80,20 @@ function ln {
 
 ## MODULE VERSION: MySQL 8.0.x
 
-## remove all MySQL packages (avoid purge to retain database) ##
-apt remove ^mysql-server
-apt autoclean
+## update repo cache ##
+apt update
 
-## prepare root user password ##
-# export DEBIAN_FRONTEND=noninteractive
+echo PURGE | debconf-communicate mysql-community-server
+
+debconf-set-selections <<< \
+  "mysql-community-server mysql-community-server/root-pass password ${DB_PASSWORD_ROOT}"
+
+debconf-set-selections <<< \
+  "mysql-community-server mysql-community-server/re-root-pass password ${DB_PASSWORD_ROOT}"
+
+debconf-set-selections <<< \
+  "mysql-community-server mysql-server/default-auth-override select Use Legacy Authentication Method (Retain MySQL 5.x Compatibility)"
+
 # echo debconf mysql-server/root_password password ${DB_PASSWORD_ROOT} | debconf-set-selections
 # echo debconf mysql-server/root_password_again password ${DB_PASSWORD_ROOT} | debconf-set-selections
 
@@ -95,22 +103,21 @@ apt autoclean
 # debconf-set-selections <<< "mysql-server-5.7 mysql-server/root_password password ${dbrootpass}"
 # debconf-set-selections <<< "mysql-server-5.7 mysql-server/root_password_again password ${dbrootpass}"
 
-## update repo cache ##
-apt update
+## remove all MySQL packages (avoid purge to retain database) ##
+apt remove ^mysql-server
 
 ## install MySQL 8.0.x ##
 apt install mysql-server-8.0
-
 apt upgrade
 
 ## MESSAGE ##
 # echo -e "\e[36mMySQL 8.0 is installed, now we will secure it...\e[0m"
 
 ## safe/clean/slow shutdown MySQL before update config ##
-/etc/init.d/mysql stop
-mkdir /var/run/mysqld
-chown mysql:mysql /var/run/mysqld
-/usr/sbin/mysqld --skip-grant-tables --skip-networking &
+# /etc/init.d/mysql stop
+# mkdir /var/run/mysqld
+# chown mysql:mysql /var/run/mysqld
+# /usr/sbin/mysqld --skip-grant-tables --skip-networking &
 
 ## reset root user password in case of problems ##
 mysql --database="mysql" -e "FLUSH PRIVILEGES;"
@@ -324,5 +331,6 @@ chmod 0775 /etc/mysql/my.cnf
 ## Ref: https://serverfault.com/questions/582866/mysql-socket-configuration-issue-in-my-cnf
 ## Ref: https://stackoverflow.com/questions/11990708/error-cant-connect-to-local-mysql-server-through-socket-var-run-mysqld-mysq
 ## Ref: https://medium.com/@aungzanbaw/how-to-reset-root-user-password-in-mysql-8-0-a5c328d098a8
+## Ref: https://stackoverflow.com/questions/49931541/mysql-changing-authentication-type-from-standard-to-caching-sha2-password
 
 ## SS_EOF
