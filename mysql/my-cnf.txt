@@ -8,21 +8,33 @@
 #### module version: Ubuntu 20.04 LTS + MySQL 8.0.x ################################################
 ####################################################################################################
 
-[mysqld]
+
+####################################################################################################
+#### MySQL: Optimized Client Settings (Applies To CLI As Well) #####################################
+####################################################################################################
+
+[client]
+
+host=127.0.0.1
+protocol=tcp
+port=3306
+# socket=/tmp/mysql.sock
 
 ####################################################################################################
 #### MySQL: Optimized General Settings (Overrides Default MySQL Settings) ##########################
 ####################################################################################################
+
+[mysqld]
 
 sql-mode="@SQL_MODE"
 
 ## here we hardcode a few connection settings to avoid DNS lookups and MyISAM locking ##
 ## keep in mind that below settings will not apply if using a remote database ##
 
-bind_address = 127.0.0.1
-# /var/run/mysqld/mysqlx.sock
-port = 3306
-tmpdir = /tmp
+bind_address=127.0.0.1
+port=3306
+# socket=/tmp/mysql.sock
+tmpdir=/tmp
 skip_external_locking
 skip_name_resolve
 default-authentication-plugin=mysql_native_password
@@ -111,5 +123,7 @@ innodb_flush_method = @INNODB_FLUSH_METHOD
 ## Ref: https://bugs.mysql.com/bug.php?id=90967
 ## Ref: https://dev.mysql.com/doc/relnotes/mysql/8.0/en/news-8-0-11.html
 ## Ref: https://medium.com/@crmcmullen/how-to-run-mysql-8-0-with-native-password-authentication-502de5bac661
+## Ref: https://stackoverflow.com/questions/15453555/mysql-configuration-file-sections
+## Ref: https://serverfault.com/questions/337818/how-to-force-mysql-to-connect-by-tcp-instead-of-a-unix-socket
 
 ## SS_EOF
