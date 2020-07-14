@@ -10,8 +10,11 @@
 
 
 ####################################################################################################
-#### MySQL: Optimized Client Settings (Applies To CLI As Well) #####################################
+#### My.cnf: Select Client Settings (Applies To CLI As Well) #######################################
 ####################################################################################################
+
+## here we hardcode a few key settings to force all MySQL clients to use TCP (IP) only ##
+## this generally improves performance and avoids issues with Linux sockets ##
 
 [client]
 
@@ -21,8 +24,11 @@ port=3306
 socket=/tmp/mysql.sock
 
 ####################################################################################################
-#### MySQL: Optimized General Settings (Overrides Default MySQL Settings) ##########################
+#### My.cnf: Select General Settings (Overrides Default MySQL Settings) ############################
 ####################################################################################################
+
+## InnoDB (and MySQL 8.0.x) is very intuitive, but we optimize networking and logging ##
+## you can run ss-optimize to convert any MyISAM tables to the InnoDB engine ##
 
 [mysqld]
 
@@ -35,12 +41,14 @@ bind_address=127.0.0.1
 port=3306
 socket=/tmp/mysql.sock
 tmpdir=/tmp
-skip_external_locking
-skip_name_resolve
 default-authentication-plugin=mysql_native_password
+skip_name_resolve
+skip_external_locking
 
-# log_error=/var/www/logs/mysql.log
-
+# log_error=/var/www/logs/mysql-error.log
+# log_slow_queries=/var/www/logs/mysql-slow.log
+# long_query_time=2
+ 
 ## net_buffer_length will autoscale up to the value of max_allowed_packet in MySQL 5.7+ ##
 ## below values help to avoid MySQL timeouts esp. for staging/backup services ##
 
@@ -62,7 +70,7 @@ innodb_flush_log_at_trx_commit = @INNODB_FLUSH_LOG_AT_TRX_COMMIT
 innodb_flush_method = @INNODB_FLUSH_METHOD
 
 ####################################################################################################
-#### MySQL: Include Other Configuration Files ######################################################
+#### My.cnf: Include Other Configuration Files #####################################################
 ####################################################################################################
 
 !includedir /etc/mysql/conf.d/
@@ -128,5 +136,7 @@ innodb_flush_method = @INNODB_FLUSH_METHOD
 ## Ref: https://stackoverflow.com/questions/15453555/mysql-configuration-file-sections
 ## Ref: https://serverfault.com/questions/337818/how-to-force-mysql-to-connect-by-tcp-instead-of-a-unix-socket
 ## Ref: https://jira.percona.com/browse/PS-5622?attachmentOrder=desc
+## Ref: https://tecadmin.net/enable-logs-in-mysql/
+## Ref: https://stackoverflow.com/questions/26471316/mariadb-error-log-configuration
 
 ## SS_EOF
