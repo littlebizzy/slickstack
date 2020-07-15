@@ -45,9 +45,17 @@ default-authentication-plugin=mysql_native_password
 # skip_name_resolve
 skip_external_locking
 
-log_error=/var/www/logs/mysql-error.log
-log_slow_queries=/var/www/logs/mysql-slow.log
-long_query_time=2
+# pid-file      = /var/run/mysqld/mysqld.pid
+# socket        = /var/run/mysqld/mysqld.sock
+# port          = 3306
+# datadir       = /var/lib/mysql
+
+general_log = 0
+general_log_file = /var/www/logs/mysql.log
+slow_query_log = 1
+slow_query_log_file = /var/www/logs/mysql-slow.log
+long_query_time = 2
+log-queries-not-using-indexes
  
 ## net_buffer_length will autoscale up to the value of max_allowed_packet in MySQL 5.7+ ##
 ## below values help to avoid MySQL timeouts esp. for staging/backup services ##
@@ -59,6 +67,23 @@ interactive_timeout = @SQL_INTERACTIVE_TIMEOUT
 net_read_timeout = @SQL_NET_READ_TIMEOUT
 net_write_timeout = @SQL_NET_WRITE_TIMEOUT
 
+key_buffer_size         = 16M
+# thread_stack          = 256K
+# thread_cache_size       = -1
+myisam-recover-options  = BACKUP
+# max_connections        = 151
+# table_open_cache       = 4000
+
+# The following can be used as easy to replay backup logs or for replication.
+# note: if you are setting up a replication slave, see README.Debian about
+#       other settings you may need to change.
+# server-id             = 1
+# log_bin                       = /var/log/mysql/mysql-bin.log
+# binlog_expire_logs_seconds    = 2592000
+max_binlog_size   = 100M
+# binlog_do_db          = include_database_name
+# binlog_ignore_db      = include_database_name
+
 ## buffer pool size at least 1GB+ will automatically trigger 8 buffer pools (not just 1) ##
 ## a bigger log file size is generally better but can cause slower crash recovery ##
 
@@ -69,12 +94,18 @@ innodb_log_files_in_group = @INNODB_LOG_FILES_IN_GROUP
 innodb_flush_log_at_trx_commit = @INNODB_FLUSH_LOG_AT_TRX_COMMIT
 innodb_flush_method = @INNODB_FLUSH_METHOD
 
+[mysqldump]
+
+quick
+quote-names
+max_allowed_packet      = 16M
+
 ####################################################################################################
 #### My.cnf: Include Other Configuration Files #####################################################
 ####################################################################################################
 
-!includedir /etc/mysql/conf.d/
-!includedir /etc/mysql/mysql.conf.d/
+# !includedir /etc/mysql/conf.d/
+# !includedir /etc/mysql/mysql.conf.d/
 
 ####################################################################################################
 #### SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ###############
