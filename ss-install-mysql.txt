@@ -36,7 +36,7 @@ function add-apt-repository {
 ## mysql alias flags ##
 function mysql {
     export MYSQL_PWD=$DB_PASSWORD_ROOT
-    command mysql --user=root --host="$DB_HOST" --protocol=tcp --port=3306 --force "$@"
+    command mysql --user=root --port=3306 --force "$@"
 }
 
 ## wget alias flags ##
@@ -91,6 +91,9 @@ chown mysql:mysql /var/run/mysqld
 chmod -R 775 /var/run/mysqld
 chown mysql:mysql /var/www/logs/mysql*.log
 
+## remove all MySQL packages (avoid purge to retain database) ##
+apt remove ^mysql-server
+
 ## update repo cache ##
 apt update
 
@@ -114,12 +117,8 @@ debconf-set-selections <<< \
 # debconf-set-selections <<< "mysql-server-5.7 mysql-server/root_password password ${dbrootpass}"
 # debconf-set-selections <<< "mysql-server-5.7 mysql-server/root_password_again password ${dbrootpass}"
 
-## remove all MySQL packages (avoid purge to retain database) ##
-apt remove ^mysql-server
-
 ## install MySQL 8.0.x ##
 apt install mysql-server-8.0
-apt upgrade
 
 ## MESSAGE ##
 # echo -e "\e[36mMySQL 8.0 is installed, now we will secure it...\e[0m"
@@ -130,7 +129,7 @@ apt upgrade
 # /usr/sbin/mysqld --skip-grant-tables --skip-networking &
 
 ## reset root user password in case of problems ##
-mysql --database="mysql" -e "FLUSH PRIVILEGES;"
+mysql --user=root --host="$DB_HOST" --protocol=tcp --port=3306 --force --database="mysql" -e "FLUSH PRIVILEGES;"
 mysql --database="mysql" -e "ALTER USER IF EXISTS 'root'@'127.0.0.1' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD_ROOT}';"
 mysql --database="mysql" -e "FLUSH PRIVILEGES;"
 
@@ -318,6 +317,7 @@ chmod -R 0775 /var/run/mysqld
 chown mysql:mysql /var/www/logs/mysql*.log
 
 ## start the MySQL service again ##
+systemctl unmask mysql.service
 /etc/init.d/mysql restart
 
 ####################################################################################################
