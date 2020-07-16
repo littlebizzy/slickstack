@@ -93,8 +93,13 @@ function ln {
 # chmod -R 775 /var/run/mysqld
 # chown mysql:mysql /var/www/logs/mysql*.log
 
+## copy old data ##
+source /var/www/ss-dump
+cp /var/lib/mysql /var/www/meta/mysql.bak
+
 ## remove all MySQL packages (avoid purge to retain database) ##
-apt remove ^mysql-server
+kill $(pgrep mysql)
+apt purge ^mysql-server
 apt autoremove
 apt autoclean
 
@@ -356,5 +361,6 @@ systemctl restart mysqld.service
 ## Ref: https://www.tecmint.com/reset-root-password-in-mysql-8/
 ## Ref: https://dev.mysql.com/doc/refman/8.0/en/default-privileges.html
 ## Ref: https://serverfault.com/questions/500739/reinstall-mysql-and-keep-existing-database-tables-and-data
+## Ref: https://askubuntu.com/questions/643251/having-trouble-installing-and-removing-mysql-in-ubuntu
 
 ## SS_EOF
