@@ -96,6 +96,7 @@ chown mysql:mysql /var/www/logs/mysql*.log
 ## remove all MySQL packages (avoid purge to retain database) ##
 apt remove ^mysql-server
 apt autoremove
+apt autoclean
 
 ## update repo cache ##
 apt update
@@ -106,45 +107,65 @@ apt install mysql-server-8.0
 ## MESSAGE ##
 # echo -e "\e[36mMySQL 8.0 is installed, now we will secure it...\e[0m"
 
-## safe/clean/slow shutdown MySQL before update config ##
-# /etc/init.d/mysql stop
-# mysqld_safe --skip-grant-tables --skip-networking &
+
+####################################################################################################
+#### SS-Install-MySQL: Configure Root + Admin User (Localhost/IPv4/IPv6) ###########################
+####################################################################################################
+
+## MySQL 8.0.x now defaults to using Linux auth_socket (not passwords) for the root user ##
+## this means we must change to passwords + loopback IP host and TCP manually ##
+
+## start MySQL without authentication (safe mode) ##
+systemctl stop mysqld.service
+mysqld --skip-grant-tables --user=mysql &
 # /usr/sbin/mysqld --skip-grant-tables --skip-networking &
-bin/mysqld --initialize-insecure --user=mysql
+# bin/mysqld --initialize-insecure --user=mysql
 
-## reset root user password in case of problems ##
-mysql -u root --skip-password
-mysql --user=root --host="$DB_HOST" --protocol=tcp --port=3306 --force --database="mysql" -e "FLUSH PRIVILEGES;"
-mysql --database="mysql" -e "ALTER USER IF EXISTS 'root'@'127.0.0.1' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD_ROOT}';"
-mysql --database="mysql" -e "FLUSH PRIVILEGES;"
+## start MySQL ##
+mysql --skip-password
+mysql -e "FLUSH PRIVILEGES;"
 
-####################################################################################################
-#### SS-Install-MySQL: Configure MySQL Users + Connections (Supports IPv4 + IPv6) ##################
-####################################################################################################
-
-## manually secure MySQL (noninteractive version of the mysql_secure_installation wizard) ##
-## caching_sha2_password is better but mysql_native_password is more compatible ##
-
-# mysql -e "UNINSTALL COMPONENT 'file://component_validate_password';"
-# mysql -e "FLUSH PRIVILEGES;"
-mysql -e "CREATE USER IF NOT EXISTS 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD_ROOT}';"
-mysql -e "CREATE USER IF NOT EXISTS 'root'@'127.0.0.1' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD_ROOT}';"
-mysql -e "CREATE USER IF NOT EXISTS 'root'@'::1' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD_ROOT}';"
+## reset root password and make mysql_native_password the default ##
 mysql -e "ALTER USER IF EXISTS 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD_ROOT}';"
 mysql -e "ALTER USER IF EXISTS 'root'@'127.0.0.1' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD_ROOT}';"
 mysql -e "ALTER USER IF EXISTS 'root'@'::1' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD_ROOT}';"
+mysql -e "CREATE USER IF NOT EXISTS 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD_ROOT}';"
+mysql -e "CREATE USER IF NOT EXISTS 'root'@'127.0.0.1' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD_ROOT}';"
+mysql -e "CREATE USER IF NOT EXISTS 'root'@'::1' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD_ROOT}';"
 
-## grant root user all privileges on all databases (localhost/IPv4/IPv6) ##
-mysql -e "GRANT ALL ON *.* TO 'root'@'localhost';"
-mysql -e "GRANT ALL ON *.* TO 'root'@'127.0.0.1';"
-mysql -e "GRANT ALL ON *.* TO 'root'@'::1';"
-mysql -e "FLUSH PRIVILEGES;"
+## grant root all privileges on all databases ##
+mysql -e "GRANT ALL ON *.* TO 'root'@'localhost' WITH GRANT OPTION;"
+mysql -e "GRANT ALL ON *.* TO 'root'@'127.0.0.1' WITH GRANT OPTION;"
+mysql -e "GRANT ALL ON *.* TO 'root'@'::1' WITH GRANT OPTION;"
+
+## reset admin (root alternative) password and make mysql_native_password the default ##
+mysql -e "ALTER USER IF EXISTS 'admin'@'localhost' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD_ROOT}';"
+mysql -e "ALTER USER IF EXISTS 'admin'@'127.0.0.1' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD_ROOT}';"
+mysql -e "ALTER USER IF EXISTS 'admin'@'::1' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD_ROOT}';"
+mysql -e "CREATE USER IF NOT EXISTS 'admin'@'localhost' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD_ROOT}';"
+mysql -e "CREATE USER IF NOT EXISTS 'admin'@'127.0.0.1' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD_ROOT}';"
+mysql -e "CREATE USER IF NOT EXISTS 'admin'@'::1' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD_ROOT}';"
+
+## grant admin (root alternative) all privileges on all databases ##
+mysql -e "GRANT ALL ON *.* TO 'admin'@'localhost' WITH GRANT OPTION;"
+mysql -e "GRANT ALL ON *.* TO 'admin'@'127.0.0.1' WITH GRANT OPTION;"
+mysql -e "GRANT ALL ON *.* TO 'admin'@'::1' WITH GRANT OPTION;"
 
 ## cleanup some default junk stuff ##
 mysql -e "DELETE FROM mysql.user WHERE user='';"
 mysql -e "DELETE FROM mysql.user WHERE user='root' AND host NOT IN ('localhost', '127.0.0.1', '::1');"
 mysql -e "DROP DATABASE IF EXISTS test;"
+mysql -e "UNINSTALL COMPONENT 'file://component_validate_password';"
+
+## flush privileges ##
 mysql -e "FLUSH PRIVILEGES;"
+
+####################################################################################################
+#### SS-Install-MySQL: Configure WordPress Database + User + Privileges ############################
+####################################################################################################
+
+## manually secure MySQL (noninteractive version of the mysql_secure_installation wizard) ##
+## caching_sha2_password is better but mysql_native_password is more compatible ##
 
 ## create WordPress database ##
 mysql -e "CREATE DATABASE IF NOT EXISTS ${DB_NAME};"
@@ -161,10 +182,12 @@ mysql -e "ALTER USER IF EXISTS ''@'::1' IDENTIFIED WITH mysql_native_password BY
 mysql -e "GRANT ALL ON ${DB_NAME}.* TO '${DB_USER}'@'localhost';"
 mysql -e "GRANT ALL ON ${DB_NAME}.* TO '${DB_USER}'@'127.0.0.1';"
 mysql -e "GRANT ALL ON ${DB_NAME}.* TO '${DB_USER}'@'::1';"
+
+## flush privileges ##
 mysql -e "FLUSH PRIVILEGES;"
 
 ## confirm secured ##
-echo "Congratulations, MySQL 8.0 is installed and secured. Onward!"
+# echo "Congratulations, MySQL 8.0 is installed and secured. Onward!"
 
 # SELECT plugin from mysql.user where User='root';
 # SELECT User,plugin from mysql.user where User='root';
@@ -173,7 +196,7 @@ echo "Congratulations, MySQL 8.0 is installed and secured. Onward!"
 # mysql -e "UPDATE mysql.user SET plugin = 'mysql_native_password' WHERE user = 'root';"
 
 ####################################################################################################
-#### SS-Install-MySQL: Optimize MySQL Settings #####################################################
+#### SS-Install-MySQL: Optimize My.cnf (MySQL Configuration) Settings ##############################
 ####################################################################################################
 
 ## here we overwrite the default my.cnf with an optimized version (sub-config disabled) ##
@@ -291,7 +314,7 @@ chown mysql:mysql /var/www/logs/mysql*.log
 
 ## start the MySQL service again ##
 systemctl unmask mysql.service
-/etc/init.d/mysql restart
+systemctl restart mysqld.service
 
 ####################################################################################################
 #### SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ###############
@@ -328,5 +351,9 @@ systemctl unmask mysql.service
 ## Ref: https://dev.mysql.com/doc/refman/8.0/en/server-options.html
 ## Ref: https://dev.mysql.com/doc/refman/8.0/en/server-system-variables.html#sysvar_init_file
 ## Ref: https://www.pixelstech.net/article/1545701135-How-to-reset-root-password-in-MySQL-8
+## Ref: https://stackoverflow.com/questions/61430362/ubuntu-20-04-set-mysql-phpmyadmin-root-password
+## Ref: https://www.cloudbooklet.com/how-to-install-mysql-on-ubuntu-20-04/
+## Ref: https://www.tecmint.com/reset-root-password-in-mysql-8/
+## Ref: https://dev.mysql.com/doc/refman/8.0/en/default-privileges.html
 
 ## SS_EOF
