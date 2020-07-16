@@ -80,6 +80,8 @@ function ln {
 
 ## MODULE VERSION: MySQL 8.0.x
 
+## 
+
 ## create MySQL log files if they do not exist ##
 if [ ! -f "/var/www/logs/mysql.log" ]; then touch "/var/www/logs/mysql.log"; fi
 if [ ! -f "/var/www/logs/mysql-error.log" ]; then touch "/var/www/logs/mysql-error.log"; fi
@@ -97,26 +99,6 @@ apt remove ^mysql-server
 ## update repo cache ##
 apt update
 
-echo PURGE | debconf-communicate mysql-community-server
-
-debconf-set-selections <<< \
-  "mysql-community-server mysql-community-server/root-pass password ${DB_PASSWORD_ROOT}"
-
-debconf-set-selections <<< \
-  "mysql-community-server mysql-community-server/re-root-pass password ${DB_PASSWORD_ROOT}"
-
-debconf-set-selections <<< \
-  "mysql-community-server mysql-server/default-auth-override select Use Legacy Authentication Method (Retain MySQL 5.x Compatibility)"
-
-# echo debconf mysql-server/root_password password ${DB_PASSWORD_ROOT} | debconf-set-selections
-# echo debconf mysql-server/root_password_again password ${DB_PASSWORD_ROOT} | debconf-set-selections
-
-## TEMP STORAGE ##
-# echo "mysql-server-5.7 mysql-server/root_password password ${dbrootpass}" | debconf-set-selections
-# echo "mysql-server-5.7 mysql-server/root_password_again password ${dbrootpass}" | debconf-set-selections
-# debconf-set-selections <<< "mysql-server-5.7 mysql-server/root_password password ${dbrootpass}"
-# debconf-set-selections <<< "mysql-server-5.7 mysql-server/root_password_again password ${dbrootpass}"
-
 ## install MySQL 8.0.x ##
 apt install mysql-server-8.0
 
@@ -127,13 +109,21 @@ apt install mysql-server-8.0
 # /etc/init.d/mysql stop
 # mysqld_safe --skip-grant-tables --skip-networking &
 # /usr/sbin/mysqld --skip-grant-tables --skip-networking &
+bin/mysqld --initialize-insecure --user=mysql
 
 ## reset root user password in case of problems ##
+mysql -u root --skip-password
 mysql --user=root --host="$DB_HOST" --protocol=tcp --port=3306 --force --database="mysql" -e "FLUSH PRIVILEGES;"
 mysql --database="mysql" -e "ALTER USER IF EXISTS 'root'@'127.0.0.1' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD_ROOT}';"
 mysql --database="mysql" -e "FLUSH PRIVILEGES;"
 
-## manually secure MySQL using queries (reliable noninteractive version of the mysql_secure_installation wizard) ##
+####################################################################################################
+#### SS-Install-MySQL: Configure MySQL Users + Connections (Supports IPv4 + IPv6) ##################
+####################################################################################################
+
+## manually secure MySQL (noninteractive version of the mysql_secure_installation wizard) ##
+## caching_sha2_password is better but mysql_native_password is more compatible ##
+
 # mysql -e "UNINSTALL COMPONENT 'file://component_validate_password';"
 # mysql -e "FLUSH PRIVILEGES;"
 mysql -e "CREATE USER IF NOT EXISTS 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD_ROOT}';"
@@ -142,21 +132,31 @@ mysql -e "CREATE USER IF NOT EXISTS 'root'@'::1' IDENTIFIED WITH mysql_native_pa
 mysql -e "ALTER USER IF EXISTS 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD_ROOT}';"
 mysql -e "ALTER USER IF EXISTS 'root'@'127.0.0.1' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD_ROOT}';"
 mysql -e "ALTER USER IF EXISTS 'root'@'::1' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD_ROOT}';"
+
+## grant root user all privileges on all databases (localhost/IPv4/IPv6) ##
 mysql -e "GRANT ALL ON *.* TO 'root'@'localhost';"
 mysql -e "GRANT ALL ON *.* TO 'root'@'127.0.0.1';"
 mysql -e "GRANT ALL ON *.* TO 'root'@'::1';"
 mysql -e "FLUSH PRIVILEGES;"
+
+## cleanup some default junk stuff ##
 mysql -e "DELETE FROM mysql.user WHERE user='';"
 mysql -e "DELETE FROM mysql.user WHERE user='root' AND host NOT IN ('localhost', '127.0.0.1', '::1');"
-mysql -e "FLUSH PRIVILEGES;"
 mysql -e "DROP DATABASE IF EXISTS test;"
+mysql -e "FLUSH PRIVILEGES;"
+
+## create WordPress database ##
 mysql -e "CREATE DATABASE IF NOT EXISTS ${DB_NAME};"
+
+## create database user (no root privileges) ##
 mysql -e "CREATE USER IF NOT EXISTS '${DB_USER}'@'localhost' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD}';"
 mysql -e "CREATE USER IF NOT EXISTS '${DB_USER}'@'127.0.0.1' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD}';"
 mysql -e "CREATE USER IF NOT EXISTS '${DB_USER}'@'::1' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD}';"
 mysql -e "ALTER USER IF EXISTS '${DB_USER}'@'localhost' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD_ROOT}';"
 mysql -e "ALTER USER IF EXISTS '${DB_USER}'@'127.0.0.1' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD_ROOT}';"
 mysql -e "ALTER USER IF EXISTS ''@'::1' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD_ROOT}';"
+
+## grant non-root user all privileges on WordPress database (localhost/IPv4/IPv6) ##
 mysql -e "GRANT ALL ON ${DB_NAME}.* TO '${DB_USER}'@'localhost';"
 mysql -e "GRANT ALL ON ${DB_NAME}.* TO '${DB_USER}'@'127.0.0.1';"
 mysql -e "GRANT ALL ON ${DB_NAME}.* TO '${DB_USER}'@'::1';"
@@ -165,46 +165,18 @@ mysql -e "FLUSH PRIVILEGES;"
 ## confirm secured ##
 echo "Congratulations, MySQL 8.0 is installed and secured. Onward!"
 
-####################################################################################################
-#### SS-Install: Configure MySQL Users + Connections (Supports IPv4 + IPv6) ########################
-####################################################################################################
-
-## caching_sha2_password is better but mysql_native_password is still more compatible ##
-## 
-
 # SELECT plugin from mysql.user where User='root';
 # SELECT User,plugin from mysql.user where User='root';
 # SELECT user,authentication_string,plugin,host FROM mysql.user;
 # UPDATE mysql.user SET plugin = 'mysql_native_password' WHERE user = 'root' AND plugin = 'auth_socket';
-
-## create wordpress database as per ss-config ##
-
-# mysql -e "use ${DB_NAME};"
-
-## create root user (required before granting privileges after MySQL 8.0) ##
-# mysql -e "CREATE USER 'root'@'localhost' IDENTIFIED BY '${DB_PASSWORD_ROOT}';"
-# mysql -e "CREATE USER 'root'@'127.0.0.1' IDENTIFIED BY '${DB_PASSWORD_ROOT}';"
-# mysql -e "CREATE USER 'root'@'::1' IDENTIFIED BY '${DB_PASSWORD_ROOT}';"
-# mysql -e "ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD_ROOT}';"
-# mysql -e "ALTER USER 'root'@'127.0.0.1' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD_ROOT}';"
-# mysql -e "ALTER USER 'root'@'::1' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD_ROOT}';"
-
-## grant root user all privileges on wordpress database (all connections) ##
-
-
 # mysql -e "UPDATE mysql.user SET plugin = 'mysql_native_password' WHERE user = 'root';"
 
-## flush MySQL privileges ##
-# mysql -e "FLUSH PRIVILEGES;"
-
-## create database user as per ss-config ##
-
-
-## grant database user all privileges on wordpress database only (all connections) ##
-
 ####################################################################################################
-#### SS-Install: Optimize MySQL Settings ###########################################################
+#### SS-Install-MySQL: Optimize MySQL Settings #####################################################
 ####################################################################################################
+
+## here we overwrite the default my.cnf with an optimized version (sub-config disabled) ##
+
 
 ## cleanup leftover files ##
 rm /tmp/my.cnf
@@ -351,5 +323,9 @@ systemctl unmask mysql.service
 ## Ref: https://stackoverflow.com/questions/35978228/how-to-solve-innodb-unable-to-lock-ibdata1-mysql-error
 ## Ref: https://bobcares.com/blog/innodb-unable-to-lock-ibdata1-error-11/
 ## Ref: https://stackoverflow.com/questions/34954455/mysql-daemon-lock-issue/46779157
+## Ref: https://dev.mysql.com/doc/refman/8.0/en/data-directory-initialization.html
+## Ref: https://dev.mysql.com/doc/refman/8.0/en/server-options.html
+## Ref: https://dev.mysql.com/doc/refman/8.0/en/server-system-variables.html#sysvar_init_file
+## Ref: https://www.pixelstech.net/article/1545701135-How-to-reset-root-password-in-MySQL-8
 
 ## SS_EOF
