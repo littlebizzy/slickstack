@@ -249,6 +249,10 @@ chown mysql:mysql /var/www/logs/mysql*.log
 ## MESSAGE ##
 # echo -e "\e[36mMySQL 8.0 is installed, now we will secure it...\e[0m"
 
+wget -O /var/www/meta/init-mysql.txt http://mirrors.slickstack.io/mysql/init-mysql.txt
+chown mysql:mysql /var/www/meta/init-mysql.txt
+chmod 0775 /var/www/meta/init-mysql.txt
+
 ## start MySQL without authentication (safe mode) ##
 # mysqld --skip-grant-tables --user=mysql &
 # bin/mysqld --initialize-insecure --user=mysql
@@ -258,13 +262,15 @@ chown mysql:mysql /var/www/logs/mysql*.log
 ## grep "A temporary password" /var/log/mysqld.log
 
 ## start the MySQL service again ##
-systemctl unmask mysql.service
-/usr/sbin/mysqld --skip-grant-tables &
+# systemctl unmask mysql.service
+/usr/sbin/mysqld --skip-grant-tables --init-file=/var/www/meta/init-mysql.txt &
 
 ## force auth_socket for root user (we have seen some cases using caching_sha2_password) ##
-mysql_auth -e "ALTER USER IF EXISTS 'root'@'localhost' IDENTIFIED WITH auth_socket;"
-# mysql -e "GRANT ALL ON *.* TO 'root'@'localhost' WITH GRANT OPTION;"
-# mysql -e "FLUSH PRIVILEGES;"
+##### mysql_auth -e "ALTER USER IF EXISTS 'root'@'localhost' IDENTIFIED WITH auth_socket;"
+#### mysql -e "GRANT ALL ON *.* TO 'root'@'localhost' WITH GRANT OPTION;"
+#### mysql -e "FLUSH PRIVILEGES;"
+
+
 
 ## reset root password and make mysql_native_password the default ##
 # mysql -e "ALTER USER IF EXISTS 'root'@'127.0.0.1' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD_ROOT}';"
@@ -388,5 +394,8 @@ mysql_auth -e "FLUSH PRIVILEGES;"
 ## Ref: https://dev.mysql.com/doc/mysql-secure-deployment-guide/8.0/en/secure-deployment-configure-authentication.html
 ## Ref: https://phoenixnap.com/kb/access-denied-for-user-root-localhost
 ## Ref: https://www.sqlshack.com/how-to-install-mysql-on-ubuntu-18-04/
+## Ref: https://mysql.tutorials24x7.com/blog/reset-root-password-of-mysql
+## Ref: https://phoenixnap.com/kb/how-to-reset-mysql-root-password-windows-linux
+## Ref: https://www.oreilly.com/library/view/mysql-8-cookbook/9781788395809/7ea345a8-d753-48cd-a11b-8e6b6a06cacc.xhtml
 
 ## SS_EOF
