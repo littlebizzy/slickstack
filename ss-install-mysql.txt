@@ -42,6 +42,10 @@ function add-apt-repository {
 #     command mysql --user=root --database="$DB_NAME" --host="$DB_HOST" --protocol=tcp --port=3306 --force "$@"
 # }
 
+function mysql_auth {
+    command mysql --user=root --host="localhost" --protocol=socket --port=3306 --force "$@"
+}
+
 ## wget alias flags ##
 function wget {
     command wget --no-check-certificate --no-cache --no-cookies --tries=3 --timeout=15 "$@"
@@ -265,7 +269,7 @@ systemctl unmask mysql.service
 /usr/sbin/mysqld --skip-grant-tables --user=root &
 
 ## force auth_socket for root user (we have seen some cases using caching_sha2_password) ##
-mysql -e "ALTER USER IF EXISTS 'root'@'localhost' IDENTIFIED WITH auth_socket;"
+mysql_auth -e "ALTER USER IF EXISTS 'root'@'localhost' IDENTIFIED WITH auth_socket;"
 # mysql -e "GRANT ALL ON *.* TO 'root'@'localhost' WITH GRANT OPTION;"
 # mysql -e "FLUSH PRIVILEGES;"
 
@@ -281,26 +285,26 @@ mysql -e "ALTER USER IF EXISTS 'root'@'localhost' IDENTIFIED WITH auth_socket;"
 
 ## reset admin (root alternative) password and make mysql_native_password the default ##
 #  -u root --skip-password --host="localhost" --protocol=socket --port=3306 
-mysql -e "ALTER USER IF EXISTS 'admin'@'localhost' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD_ROOT}';"
-mysql -e "ALTER USER IF EXISTS 'admin'@'127.0.0.1' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD_ROOT}';"
-mysql -e "ALTER USER IF EXISTS 'admin'@'::1' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD_ROOT}';"
-mysql -e "CREATE USER IF NOT EXISTS 'admin'@'localhost' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD_ROOT}';"
-mysql -e "CREATE USER IF NOT EXISTS 'admin'@'127.0.0.1' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD_ROOT}';"
-mysql -e "CREATE USER IF NOT EXISTS 'admin'@'::1' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD_ROOT}';"
+mysql_auth -e "ALTER USER IF EXISTS 'admin'@'localhost' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD_ROOT}';"
+mysql_auth -e "ALTER USER IF EXISTS 'admin'@'127.0.0.1' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD_ROOT}';"
+mysql_auth -e "ALTER USER IF EXISTS 'admin'@'::1' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD_ROOT}';"
+mysql_auth -e "CREATE USER IF NOT EXISTS 'admin'@'localhost' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD_ROOT}';"
+mysql_auth -e "CREATE USER IF NOT EXISTS 'admin'@'127.0.0.1' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD_ROOT}';"
+mysql_auth -e "CREATE USER IF NOT EXISTS 'admin'@'::1' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD_ROOT}';"
 
 ## grant admin (root alternative) all privileges on all databases ##
-mysql -e "GRANT ALL ON *.* TO 'admin'@'localhost' WITH GRANT OPTION;"
-mysql -e "GRANT ALL ON *.* TO 'admin'@'127.0.0.1' WITH GRANT OPTION;"
-mysql -e "GRANT ALL ON *.* TO 'admin'@'::1' WITH GRANT OPTION;"
+mysql_auth -e "GRANT ALL ON *.* TO 'admin'@'localhost' WITH GRANT OPTION;"
+mysql_auth -e "GRANT ALL ON *.* TO 'admin'@'127.0.0.1' WITH GRANT OPTION;"
+mysql_auth -e "GRANT ALL ON *.* TO 'admin'@'::1' WITH GRANT OPTION;"
 
 ## cleanup some default junk stuff ##
-mysql -e "DELETE FROM mysql.user WHERE user='';"
-mysql -e "DELETE FROM mysql.user WHERE user='root' AND host NOT IN ('localhost', '127.0.0.1', '::1');"
-mysql -e "DELETE FROM mysql.user WHERE user='admin' AND host NOT IN ('localhost', '127.0.0.1', '::1');"
-mysql -e "DROP DATABASE IF EXISTS test;"
-mysql -e "UNINSTALL COMPONENT 'file://component_validate_password';"
+mysql_auth -e "DELETE FROM mysql.user WHERE user='';"
+mysql_auth -e "DELETE FROM mysql.user WHERE user='root' AND host NOT IN ('localhost', '127.0.0.1', '::1');"
+mysql_auth -e "DELETE FROM mysql.user WHERE user='admin' AND host NOT IN ('localhost', '127.0.0.1', '::1');"
+mysql_auth -e "DROP DATABASE IF EXISTS test;"
+mysql_auth -e "UNINSTALL COMPONENT 'file://component_validate_password';"
 # UPDATE mysql.user SET plugin = 'mysql_native_password' WHERE user = 'root' AND plugin = 'auth_socket';
-mysql -e "UPDATE mysql.user SET plugin = 'mysql_native_password' WHERE user = 'admin';"
+mysql_auth -e "UPDATE mysql.user SET plugin = 'mysql_native_password' WHERE user = 'admin';"
 
 ## flush privileges ##
 # mysql -e "FLUSH PRIVILEGES;"
@@ -313,28 +317,28 @@ mysql -e "UPDATE mysql.user SET plugin = 'mysql_native_password' WHERE user = 'a
 ## caching_sha2_password is better but mysql_native_password is more compatible ##
 
 ## create WordPress database ##
-mysql -e "CREATE DATABASE IF NOT EXISTS ${DB_NAME};"
+mysql_auth -e "CREATE DATABASE IF NOT EXISTS ${DB_NAME};"
 
 ## create database user (no root privileges) ##
 ## caching_sha2_password requires TLS, sockets, or shared memory ##
-mysql -e "CREATE USER IF NOT EXISTS '${DB_USER}'@'localhost' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD}';"
-mysql -e "CREATE USER IF NOT EXISTS '${DB_USER}'@'127.0.0.1' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD}';"
-mysql -e "CREATE USER IF NOT EXISTS '${DB_USER}'@'::1' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD}';"
-mysql -e "ALTER USER IF EXISTS '${DB_USER}'@'localhost' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD_ROOT}';"
-mysql -e "ALTER USER IF EXISTS '${DB_USER}'@'127.0.0.1' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD_ROOT}';"
-mysql -e "ALTER USER IF EXISTS '${DB_USER}'@'::1' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD_ROOT}';"
+mysql_auth -e "CREATE USER IF NOT EXISTS '${DB_USER}'@'localhost' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD}';"
+mysql_auth -e "CREATE USER IF NOT EXISTS '${DB_USER}'@'127.0.0.1' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD}';"
+mysql_auth -e "CREATE USER IF NOT EXISTS '${DB_USER}'@'::1' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD}';"
+mysql_auth -e "ALTER USER IF EXISTS '${DB_USER}'@'localhost' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD_ROOT}';"
+mysql_auth -e "ALTER USER IF EXISTS '${DB_USER}'@'127.0.0.1' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD_ROOT}';"
+mysql_auth -e "ALTER USER IF EXISTS '${DB_USER}'@'::1' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD_ROOT}';"
 
 ## grant non-root user all privileges on WordPress database (localhost/IPv4/IPv6) ##
-mysql -e "GRANT ALL ON ${DB_NAME}.* TO '${DB_USER}'@'localhost';"
-mysql -e "GRANT ALL ON ${DB_NAME}.* TO '${DB_USER}'@'127.0.0.1';"
-mysql -e "GRANT ALL ON ${DB_NAME}.* TO '${DB_USER}'@'::1';"
+mysql_auth -e "GRANT ALL ON ${DB_NAME}.* TO '${DB_USER}'@'localhost';"
+mysql_auth -e "GRANT ALL ON ${DB_NAME}.* TO '${DB_USER}'@'127.0.0.1';"
+mysql_auth -e "GRANT ALL ON ${DB_NAME}.* TO '${DB_USER}'@'::1';"
 
 # SELECT plugin from mysql.user where User='root';
 # SELECT User,plugin from mysql.user where User='root';
 # SELECT user,authentication_string,plugin,host FROM mysql.user;
 
 ## flush privileges ##
-mysql -e "FLUSH PRIVILEGES;"
+mysql_auth -e "FLUSH PRIVILEGES;"
 
 /etc/init.d/mysql restart
 
