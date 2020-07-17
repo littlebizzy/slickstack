@@ -110,12 +110,18 @@ apt update
 ## install MySQL 8.0.x ##
 apt install mysql-server-8.0
 
+## force auth_socket for root user (we have seen some cases using caching_sha2_password) ##
+mysql -e "ALTER USER IF EXISTS 'root'@'localhost' IDENTIFIED WITH auth_socket;"
+mysql -e "FLUSH PRIVILEGES;"
+
+## grep "A temporary password" /var/log/mysqld.log
+
 ####################################################################################################
 #### SS-Install-MySQL: Configure Root + Admin User (Localhost/IPv4/IPv6) ###########################
 ####################################################################################################
 
-## MySQL 8.0.x now defaults to using Linux auth_socket (not passwords) for the root user ##
-## this means we must change to passwords + loopback IP host and TCP manually ##
+## we use the new auth_socket for MySQL root but 127.0.0.1 (TCP) for WordPress database ##
+## another user (admin) is also created that can be used with phpMyAdmin, etc ##
 
 ## MESSAGE ##
 # echo -e "\e[36mMySQL 8.0 is installed, now we will secure it...\e[0m"
@@ -131,6 +137,7 @@ apt install mysql-server-8.0
 # mysql --skip-password
 # mysql -u root
 # mysql -e "FLUSH PRIVILEGES;"
+
 
 ## reset root password and make mysql_native_password the default ##
 # mysql -e "ALTER USER IF EXISTS 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD_ROOT}';"
@@ -181,6 +188,7 @@ mysql -u root --host="localhost" --protocol=socket --port=3306 -e "UPDATE mysql.
 mysql -u root --host="localhost" --protocol=socket --port=3306 -e "CREATE DATABASE IF NOT EXISTS ${DB_NAME};"
 
 ## create database user (no root privileges) ##
+## caching_sha2_password requires TLS, sockets, or shared memory ##
 mysql -u root --host="localhost" --protocol=socket --port=3306 -e "CREATE USER IF NOT EXISTS '${DB_USER}'@'localhost' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD}';"
 mysql -u root --host="localhost" --protocol=socket --port=3306 -e "CREATE USER IF NOT EXISTS '${DB_USER}'@'127.0.0.1' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD}';"
 mysql -u root --host="localhost" --protocol=socket --port=3306 -e "CREATE USER IF NOT EXISTS '${DB_USER}'@'::1' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD}';"
@@ -372,5 +380,8 @@ systemctl unmask mysql.service
 ## Ref: https://stackoverflow.com/questions/50093144/mysql-8-0-client-does-not-support-authentication-protocol-requested-by-server
 ## Ref: https://stackoverflow.com/questions/49194719/authentication-plugin-caching-sha2-password-cannot-be-loaded
 ## Ref: https://docs.oracle.com/cd/E17952_01/mysql-8.0-en/upgrading-from-previous-series.html
+## Ref: https://dev.mysql.com/doc/mysql-secure-deployment-guide/8.0/en/secure-deployment-configure-authentication.html
+## Ref: https://phoenixnap.com/kb/access-denied-for-user-root-localhost
+## Ref: https://www.sqlshack.com/how-to-install-mysql-on-ubuntu-18-04/
 
 ## SS_EOF
