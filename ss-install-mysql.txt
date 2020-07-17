@@ -250,23 +250,16 @@ chown mysql:mysql /var/www/logs/mysql*.log
 # echo -e "\e[36mMySQL 8.0 is installed, now we will secure it...\e[0m"
 
 ## start MySQL without authentication (safe mode) ##
-# systemctl stop mysqld.service
-# /etc/init.d/mysql stop
 # mysqld --skip-grant-tables --user=mysql &
-# /usr/sbin/mysqld --skip-grant-tables --skip-networking &
 # bin/mysqld --initialize-insecure --user=mysql
 
 ## start MySQL ##
 # mysql --skip-password
-# mysql -u root
-# mysql -e "FLUSH PRIVILEGES;"
 ## grep "A temporary password" /var/log/mysqld.log
 
 ## start the MySQL service again ##
 systemctl unmask mysql.service
-# systemctl start mysql.service
-# /etc/init.d/mysql start
-/usr/sbin/mysqld --skip-grant-tables --user=root &
+/usr/sbin/mysqld --skip-grant-tables &
 
 ## force auth_socket for root user (we have seen some cases using caching_sha2_password) ##
 mysql_auth -e "ALTER USER IF EXISTS 'root'@'localhost' IDENTIFIED WITH auth_socket;"
