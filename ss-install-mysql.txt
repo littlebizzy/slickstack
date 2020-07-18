@@ -98,16 +98,23 @@ function ln {
 # chmod -R 775 /var/run/mysqld
 # chown mysql:mysql /var/www/logs/mysql*.log
 
-## run ss-dump ##
+## run ss-dump (also copies /var/lib/mysql to /var/www/meta/mysql.bak) ##
 source /var/www/ss-dump
 
-## remove all MySQL packages (avoid purge to retain database) ##
-# /etc/init.d/mysql stop
-# sleep 10s
-# kill $(pgrep mysql)
-# sleep 10s
+## stop MySQL and kill any remaining MySQL processes ##
+/bin/systemctl stop mysql.service
+sleep 10s
+/etc/init.d/mysql stop
+sleep 10s
 killall mysqld
-apt purge ^mysql-server
+killall mysql
+sleep 10s
+
+## purge all MySQL packages and remove any previous MySQL configuration files ##
+apt purge ^mysql
+rm /etc/mysql/*
+
+## cleanup potential conflicting files ##
 apt autoremove
 apt autoclean
 
@@ -126,6 +133,8 @@ apt install mysql-server-8.0
 
 ## stop MySQL ##
 killall mysqld
+killall mysql
+sleep 10s
 
 ## cleanup leftover files ##
 rm /tmp/my.cnf
@@ -228,14 +237,19 @@ fi
 cp /tmp/my.cnf /etc/mysql/my.cnf
 
 ## reset permissions ##
-chown mysql:mysql /etc/mysql/my.cnf
-chmod 0775 /etc/mysql/my.cnf
+chown root:root /etc/mysql/my.cnf
+chmod 0777 /etc/mysql/my.cnf ## symlink to /etc/alternatives/my.cnf
 
 ## reset permissions ##
-mkdir /var/run/mysqld
-chown mysql:mysql /var/run/mysqld
-chmod -R 0775 /var/run/mysqld
-chown mysql:mysql /var/www/logs/mysql*.log
+# mkdir /var/run/mysqld
+# chown mysql:mysql /var/run/mysqld
+# chmod -R 0775 /var/run/mysqld
+# chown mysql:mysql /var/www/logs/mysql*.log
+
+# chown mysql:mysql /var/lib/mysql ## drwx------
+# chown mysql:mysql /var/lib/mysql-files ## drwx------
+# chown mysql:mysql /var/lib/mysql-keyring ## drwx------
+# chown root:root /var/lib/mysql-upgrade ## must be root:root ## drwxr-xr-x
 
 ####################################################################################################
 #### SS-Install-MySQL: Configure Root + Admin User (Localhost/IPv4/IPv6) ###########################
