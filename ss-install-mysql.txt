@@ -296,15 +296,16 @@ if [ ! -f "/var/www/logs/mysql-slow.log" ]; then touch "/var/www/logs/mysql-slow
 
 # mysqld --init-file=/tmp/init-mysql.txt &
 
-## mysql_secure_installation (alternative method) ##
+## mysql_secure_installation (alternative) via root@localhost auth_socket ##
 # mysql -e "UNINSTALL COMPONENT 'file://component_validate_password';" ## not installed by default on MySQL 8.0.x
 # mysql -e "UNINSTALL PLUGIN validate_password;" ## not installed by default on MySQL 8.0.x
-mysql -e "ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD_ROOT}';"
 mysql -e "DELETE FROM mysql.user WHERE user='';"
 mysql -e "DELETE FROM mysql.user WHERE user='root' AND host NOT IN ('localhost', '127.0.0.1', '::1');"
 mysql -e "DELETE FROM mysql.user WHERE user='admin' AND host NOT IN ('localhost', '127.0.0.1', '::1');"
 mysql -e "DROP DATABASE IF EXISTS test;"
-mysql -e "FLUSH PRIVILEGES;"
+
+# export MYSQL_PWD=$DB_PASSWORD_ROOT
+# mysql --user=root --host="$DB_HOST" --protocol=tcp --port=3306 -e "FLUSH PRIVILEGES;"
 
 ########
 
@@ -326,6 +327,21 @@ mysql -e "CREATE DATABASE IF NOT EXISTS ${DB_NAME};"
 
 ## create database user (no root privileges) ##
 ## caching_sha2_password requires TLS, sockets, or shared memory ##
+
+## alter/create admin user for all MySQL databases (can be used with Adminer/phpMyAdmin) ##
+mysql -e "ALTER USER IF EXISTS 'admin'@'localhost' IDENTIFIED WITH mysql_native_password BY '@DB_PASSWORD_ROOT';"
+mysql -e "ALTER USER IF EXISTS 'admin'@'127.0.0.1' IDENTIFIED WITH mysql_native_password BY '@DB_PASSWORD_ROOT';"
+mysql -e "ALTER USER IF EXISTS 'admin'@'::1' IDENTIFIED WITH mysql_native_password BY '@DB_PASSWORD_ROOT';"
+mysql -e "CREATE USER IF NOT EXISTS 'admin'@'localhost' IDENTIFIED WITH mysql_native_password BY '@DB_PASSWORD_ROOT';"
+mysql -e "CREATE USER IF NOT EXISTS 'admin'@'127.0.0.1' IDENTIFIED WITH mysql_native_password BY '@DB_PASSWORD_ROOT';"
+mysql -e "CREATE USER IF NOT EXISTS 'admin'@'::1' IDENTIFIED WITH mysql_native_password BY '@DB_PASSWORD_ROOT';"
+
+## grant admin user all privileges on all databases (localhost/IPv4/IPv6) ##
+GRANT ALL ON *.* TO 'admin'@'localhost' WITH GRANT OPTION;
+GRANT ALL ON *.* TO 'admin'@'127.0.0.1' WITH GRANT OPTION;
+GRANT ALL ON *.* TO 'admin'@'::1' WITH GRANT OPTION;
+
+## alter/create DB_USER for WordPress database ##
 mysql -e "ALTER USER IF EXISTS '${DB_USER}'@'localhost' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD}';"
 mysql -e "ALTER USER IF EXISTS '${DB_USER}'@'127.0.0.1' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD}';"
 mysql -e "ALTER USER IF EXISTS '${DB_USER}'@'::1' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD}';"
@@ -333,10 +349,23 @@ mysql -e "CREATE USER IF NOT EXISTS '${DB_USER}'@'localhost' IDENTIFIED WITH mys
 mysql -e "CREATE USER IF NOT EXISTS '${DB_USER}'@'127.0.0.1' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD}';"
 mysql -e "CREATE USER IF NOT EXISTS '${DB_USER}'@'::1' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD}';"
 
-## grant non-root user all privileges on WordPress database (localhost/IPv4/IPv6) ##
+## grant DB_USER all privileges on WordPress database (localhost/IPv4/IPv6) ##
 mysql -e "GRANT ALL ON ${DB_NAME}.* TO '${DB_USER}'@'localhost';"
 mysql -e "GRANT ALL ON ${DB_NAME}.* TO '${DB_USER}'@'127.0.0.1';"
 mysql -e "GRANT ALL ON ${DB_NAME}.* TO '${DB_USER}'@'::1';"
+
+# ALTER USER IF EXISTS 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY '@DB_PASSWORD_ROOT';
+ALTER USER IF EXISTS 'root'@'127.0.0.1' IDENTIFIED WITH mysql_native_password BY '@DB_PASSWORD_ROOT';
+ALTER USER IF EXISTS 'root'@'::1' IDENTIFIED WITH mysql_native_password BY '@DB_PASSWORD_ROOT';
+# CREATE USER IF NOT EXISTS 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY '@DB_PASSWORD_ROOT';
+CREATE USER IF NOT EXISTS 'root'@'127.0.0.1' IDENTIFIED WITH mysql_native_password BY '@DB_PASSWORD_ROOT';
+CREATE USER IF NOT EXISTS 'root'@'::1' IDENTIFIED WITH mysql_native_password BY '@DB_PASSWORD_ROOT';
+
+# GRANT ALL ON *.* TO 'root'@'localhost' WITH GRANT OPTION;
+GRANT ALL ON *.* TO 'root'@'127.0.0.1' WITH GRANT OPTION;
+GRANT ALL ON *.* TO 'root'@'::1' WITH GRANT OPTION;
+
+# mysql --flush-privileges -e "ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD_ROOT}';"
 
 # SELECT plugin from mysql.user where User='root';
 # SELECT User,plugin from mysql.user where User='root';
