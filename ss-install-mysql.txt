@@ -87,17 +87,6 @@ function ln {
 
 ## 
 
-## create MySQL log files if they do not exist ##
-# if [ ! -f "/var/www/logs/mysql.log" ]; then touch "/var/www/logs/mysql.log"; fi
-# if [ ! -f "/var/www/logs/mysql-error.log" ]; then touch "/var/www/logs/mysql-error.log"; fi
-# if [ ! -f "/var/www/logs/mysql-slow.log" ]; then touch "/var/www/logs/mysql-slow.log"; fi
-
-## reset permissions ##
-# mkdir /var/run/mysqld
-# chown mysql:mysql /var/run/mysqld
-# chmod -R 775 /var/run/mysqld
-# chown mysql:mysql /var/www/logs/mysql*.log
-
 ## run ss-dump (also copies /var/lib/mysql to /var/www/meta/mysql.bak) ##
 source /var/www/ss-dump
 
@@ -123,6 +112,9 @@ apt update
 
 ## install MySQL 8.0.x ##
 apt install mysql-server-8.0
+
+## copy the default socket for keeps ##
+sudo cp -rp /var/run/mysqld /var/run/mysqld.bak
 
 ####################################################################################################
 #### SS-Install-MySQL: Optimize My.cnf (MySQL Configuration) Settings ##############################
@@ -279,11 +271,28 @@ chmod 0775 /tmp/init-mysql.txt
 # mysql --skip-password
 ## grep "A temporary password" /var/log/mysqld.log
 
+## create MySQL log files if they do not exist ##
+if [ ! -f "/var/www/logs/mysql.log" ]; then touch "/var/www/logs/mysql.log"; fi
+if [ ! -f "/var/www/logs/mysql-error.log" ]; then touch "/var/www/logs/mysql-error.log"; fi
+if [ ! -f "/var/www/logs/mysql-slow.log" ]; then touch "/var/www/logs/mysql-slow.log"; fi
+
+## reset permissions ##
+mkdir /var/run/mysqld
+chown mysql:mysql /var/run/mysqld
+# chmod -R 775 /var/run/mysqld
+# chown mysql:mysql /var/www/logs/mysql*.log
+
+## put back socket
+if [ ! -f "/var/run/mysqld/*sock" ]; then 
+    mv /var/run/mysqld.bak /var/run/mysqld;
+fi
+
 ## start the MySQL service again ##
 # systemctl unmask mysql.service
 # mysqld_safe --init-file=<path to init file>init-file.txt &
 # mysqld --init-file=<path to init file>init-file.txt &
 # /usr/sbin/mysqld --user=mysql --skip-grant-tables --init-file=/tmp/init-mysql.txt &
+# mysqld_safe --skip-grant-tables &
 mysqld --init-file=/tmp/init-mysql.txt &
 
 # ALTER USER IF EXISTS 'root'@'localhost' IDENTIFIED WITH auth_socket BY '';
@@ -337,6 +346,7 @@ mysql -e "FLUSH PRIVILEGES;"
 
 ## cleanup tmp files ##
 rm /tmp/init-mysql.txt*
+rm /var/run/mysqld.bak*
 
 ## confirm secured ##
 # echo "Congratulations, MySQL 8.0 is installed and secured. Onward!"
