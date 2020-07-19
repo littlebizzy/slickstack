@@ -89,16 +89,13 @@ function ln {
 ## first we backup the live database (if exists) and stop/kill existing MySQL processes ##
 ## then we proceed with purge/cleanup of MySQL packages and install from scratch ##
 
-## run ss-dump (also copies /var/lib/mysql to /var/www/meta/mysql.bak) ##
+## run ss-dump (copies /var/lib/mysql to /var/www/meta/mysql-lib.bak) ##
 source /var/www/ss-dump
 
 ## stop MySQL and kill any remaining MySQL processes ##
-/bin/systemctl stop mysql.service
+/etc/init.d/mysql* stop
 sleep 10s
-/etc/init.d/mysql stop
-sleep 10s
-killall mysqld
-killall mysql
+killall mysql*
 sleep 10s
 
 ## purge all MySQL packages and remove any previous MySQL configuration files ##
@@ -112,11 +109,139 @@ apt autoclean
 ## update repo cache ##
 apt update
 
-## install MySQL 8.0.x ##
+## install MySQL ##
 apt install mysql-server-8.0
 
-## copy the default socket for keeps ##
-cp /var/run/mysqld /var/run/mysqld.bak
+####################################################################################################
+#### SS-Install-MySQL: Configure Root + Admin User (Localhost/IPv4/IPv6) ###########################
+####################################################################################################
+
+## we use the new auth_socket for MySQL root but 127.0.0.1 (TCP) for WordPress database ##
+## another user (admin) is also created that can be used with phpMyAdmin, etc ##
+
+## MESSAGE ##
+# echo -e "\e[36mMySQL 8.0 is installed, now we will secure it...\e[0m"
+
+# rm /tmp/init-mysql.txt*
+# wget -O /tmp/init-mysql.txt http://mirrors.slickstack.io/mysql/init-mysql.txt
+# sed -i "s/@DB_PASSWORD_ROOT/${DB_PASSWORD_ROOT}/g" /tmp/init-mysql.txt
+# chown mysql:mysql /tmp/init-mysql.txt
+# chmod 0775 /tmp/init-mysql.txt
+
+## start MySQL without authentication (safe mode) ##
+# mysqld --skip-grant-tables --user=mysql &
+# bin/mysqld --initialize-insecure --user=mysql
+
+## start MySQL ##
+# mysql --skip-password
+## grep "A temporary password" /var/log/mysqld.log
+
+## create MySQL log files if they do not exist ##
+if [ ! -f "/var/www/logs/mysql.log" ]; then touch "/var/www/logs/mysql.log"; fi
+if [ ! -f "/var/www/logs/mysql-error.log" ]; then touch "/var/www/logs/mysql-error.log"; fi
+if [ ! -f "/var/www/logs/mysql-slow.log" ]; then touch "/var/www/logs/mysql-slow.log"; fi
+
+## reset permissions ##
+# mkdir /var/run/mysqld
+# chown mysql:mysql /var/run/mysqld
+# chmod -R 775 /var/run/mysqld
+# chown mysql:mysql /var/www/logs/mysql*.log
+
+
+## copy the default socket for keeps (might disappear during stop MySQL) ##
+# cp /var/run/mysqld /var/run/mysqld.bak
+
+## put back socket
+# if [ ! -f "/var/run/mysqld/*sock" ]; then 
+ #   mv /var/run/mysqld.bak /var/run/mysqld;
+# fi
+
+## start the MySQL service again ##
+# systemctl unmask mysql.service
+# mysqld_safe --init-file=<path to init file>init-file.txt &
+# mysqld --init-file=<path to init file>init-file.txt &
+# /usr/sbin/mysqld --user=mysql --skip-grant-tables --init-file=/tmp/init-mysql.txt &
+# mysqld_safe --skip-grant-tables &
+
+# mysqld --init-file=/tmp/init-mysql.txt &
+
+## mysql_secure_installation (alternative) via root@localhost auth_socket ##
+# mysql -e "UNINSTALL COMPONENT 'file://component_validate_password';" ## not installed by default on MySQL 8.0.x
+# mysql -e "UNINSTALL PLUGIN validate_password;" ## not installed by default on MySQL 8.0.x
+mysql -e "DELETE FROM mysql.user WHERE user='';"
+mysql -e "DELETE FROM mysql.user WHERE user='root' AND host NOT IN ('localhost', '127.0.0.1', '::1');"
+mysql -e "DELETE FROM mysql.user WHERE user='admin' AND host NOT IN ('localhost', '127.0.0.1', '::1');"
+mysql -e "DROP DATABASE IF EXISTS test;"
+
+# export MYSQL_PWD=$DB_PASSWORD_ROOT
+# mysql --user=root --host="$DB_HOST" --protocol=tcp --port=3306 -e "FLUSH PRIVILEGES;"
+
+########
+
+# ALTER USER IF EXISTS 'root'@'localhost' IDENTIFIED WITH auth_socket BY '';
+## reset admin (root alternative) password and make mysql_native_password the default ##
+#  -u root --skip-password --host="localhost" --protocol=socket --port=3306 
+# UPDATE mysql.user SET plugin = 'mysql_native_password' WHERE user = 'root' AND plugin = 'auth_socket';
+# mysql -e "UPDATE mysql.user SET plugin = 'mysql_native_password' WHERE user = 'admin';"
+
+####################################################################################################
+#### SS-Install-MySQL: Configure WordPress Database + User + Privileges ############################
+####################################################################################################
+
+## manually secure MySQL (noninteractive version of the mysql_secure_installation wizard) ##
+## caching_sha2_password is better but mysql_native_password is more compatible ##
+
+## create WordPress database ##
+mysql -e "CREATE DATABASE IF NOT EXISTS ${DB_NAME};"
+
+## create database user (no root privileges) ##
+## caching_sha2_password requires TLS, sockets, or shared memory ##
+
+## alter/create admin user for all MySQL databases (can be used with Adminer/phpMyAdmin) ##
+mysql -e "ALTER USER IF EXISTS 'admin'@'localhost' IDENTIFIED WITH mysql_native_password BY '@DB_PASSWORD_ROOT';"
+mysql -e "ALTER USER IF EXISTS 'admin'@'127.0.0.1' IDENTIFIED WITH mysql_native_password BY '@DB_PASSWORD_ROOT';"
+mysql -e "ALTER USER IF EXISTS 'admin'@'::1' IDENTIFIED WITH mysql_native_password BY '@DB_PASSWORD_ROOT';"
+mysql -e "CREATE USER IF NOT EXISTS 'admin'@'localhost' IDENTIFIED WITH mysql_native_password BY '@DB_PASSWORD_ROOT';"
+mysql -e "CREATE USER IF NOT EXISTS 'admin'@'127.0.0.1' IDENTIFIED WITH mysql_native_password BY '@DB_PASSWORD_ROOT';"
+mysql -e "CREATE USER IF NOT EXISTS 'admin'@'::1' IDENTIFIED WITH mysql_native_password BY '@DB_PASSWORD_ROOT';"
+
+## grant admin user all privileges on all databases (localhost/IPv4/IPv6) ##
+mysql -e "GRANT ALL ON *.* TO 'admin'@'localhost' WITH GRANT OPTION;"
+mysql -e "GRANT ALL ON *.* TO 'admin'@'127.0.0.1' WITH GRANT OPTION;"
+mysql -e "GRANT ALL ON *.* TO 'admin'@'::1' WITH GRANT OPTION;"
+
+## alter/create DB_USER for WordPress database ##
+mysql -e "ALTER USER IF EXISTS '${DB_USER}'@'localhost' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD}';"
+mysql -e "ALTER USER IF EXISTS '${DB_USER}'@'127.0.0.1' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD}';"
+mysql -e "ALTER USER IF EXISTS '${DB_USER}'@'::1' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD}';"
+mysql -e "CREATE USER IF NOT EXISTS '${DB_USER}'@'localhost' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD}';"
+mysql -e "CREATE USER IF NOT EXISTS '${DB_USER}'@'127.0.0.1' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD}';"
+mysql -e "CREATE USER IF NOT EXISTS '${DB_USER}'@'::1' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD}';"
+
+## grant DB_USER all privileges on WordPress database (localhost/IPv4/IPv6) ##
+mysql -e "GRANT ALL ON ${DB_NAME}.* TO '${DB_USER}'@'localhost';"
+mysql -e "GRANT ALL ON ${DB_NAME}.* TO '${DB_USER}'@'127.0.0.1';"
+mysql -e "GRANT ALL ON ${DB_NAME}.* TO '${DB_USER}'@'::1';"
+
+# ALTER USER IF EXISTS 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY '@DB_PASSWORD_ROOT';
+mysql -e "ALTER USER IF EXISTS 'root'@'127.0.0.1' IDENTIFIED WITH mysql_native_password BY '@DB_PASSWORD_ROOT';"
+mysql -e "ALTER USER IF EXISTS 'root'@'::1' IDENTIFIED WITH mysql_native_password BY '@DB_PASSWORD_ROOT';"
+# CREATE USER IF NOT EXISTS 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY '@DB_PASSWORD_ROOT';
+mysql -e "CREATE USER IF NOT EXISTS 'root'@'127.0.0.1' IDENTIFIED WITH mysql_native_password BY '@DB_PASSWORD_ROOT';"
+mysql -e "CREATE USER IF NOT EXISTS 'root'@'::1' IDENTIFIED WITH mysql_native_password BY '@DB_PASSWORD_ROOT';"
+
+# GRANT ALL ON *.* TO 'root'@'localhost' WITH GRANT OPTION;
+mysql -e "GRANT ALL ON *.* TO 'root'@'127.0.0.1' WITH GRANT OPTION;"
+mysql -e "GRANT ALL ON *.* TO 'root'@'::1' WITH GRANT OPTION;"
+
+# mysql --flush-privileges -e "ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD_ROOT}';"
+
+# SELECT plugin from mysql.user where User='root';
+# SELECT User,plugin from mysql.user where User='root';
+# SELECT user,authentication_string,plugin,host FROM mysql.user;
+
+## flush privileges ##
+mysql -e "FLUSH PRIVILEGES;"
 
 ####################################################################################################
 #### SS-Install-MySQL: Optimize My.cnf (MySQL Configuration) Settings ##############################
@@ -126,12 +251,9 @@ cp /var/run/mysqld /var/run/mysqld.bak
 ## all MySQL logs should be found under /var/www/logs/ after install complete ##
 
 ## stop MySQL ##
-/bin/systemctl stop mysql.service
+/etc/init.d/mysql* stop
 sleep 10s
-/etc/init.d/mysql stop
-sleep 10s
-killall mysqld
-killall mysql
+killall mysql*
 sleep 10s
 
 ## cleanup leftover files ##
@@ -248,133 +370,6 @@ cp /tmp/my.cnf /etc/mysql/my.cnf
 # chown mysql:mysql /var/lib/mysql-files ## drwx------
 # chown mysql:mysql /var/lib/mysql-keyring ## drwx------
 # chown root:root /var/lib/mysql-upgrade ## must be root:root ## drwxr-xr-x
-
-####################################################################################################
-#### SS-Install-MySQL: Configure Root + Admin User (Localhost/IPv4/IPv6) ###########################
-####################################################################################################
-
-## we use the new auth_socket for MySQL root but 127.0.0.1 (TCP) for WordPress database ##
-## another user (admin) is also created that can be used with phpMyAdmin, etc ##
-
-## MESSAGE ##
-# echo -e "\e[36mMySQL 8.0 is installed, now we will secure it...\e[0m"
-
-rm /tmp/init-mysql.txt*
-wget -O /tmp/init-mysql.txt http://mirrors.slickstack.io/mysql/init-mysql.txt
-sed -i "s/@DB_PASSWORD_ROOT/${DB_PASSWORD_ROOT}/g" /tmp/init-mysql.txt
-chown mysql:mysql /tmp/init-mysql.txt
-chmod 0775 /tmp/init-mysql.txt
-
-## start MySQL without authentication (safe mode) ##
-# mysqld --skip-grant-tables --user=mysql &
-# bin/mysqld --initialize-insecure --user=mysql
-
-## start MySQL ##
-# mysql --skip-password
-## grep "A temporary password" /var/log/mysqld.log
-
-## create MySQL log files if they do not exist ##
-if [ ! -f "/var/www/logs/mysql.log" ]; then touch "/var/www/logs/mysql.log"; fi
-if [ ! -f "/var/www/logs/mysql-error.log" ]; then touch "/var/www/logs/mysql-error.log"; fi
-if [ ! -f "/var/www/logs/mysql-slow.log" ]; then touch "/var/www/logs/mysql-slow.log"; fi
-
-## reset permissions ##
-# mkdir /var/run/mysqld
-# chown mysql:mysql /var/run/mysqld
-# chmod -R 775 /var/run/mysqld
-# chown mysql:mysql /var/www/logs/mysql*.log
-
-## put back socket
-# if [ ! -f "/var/run/mysqld/*sock" ]; then 
- #   mv /var/run/mysqld.bak /var/run/mysqld;
-# fi
-
-## start the MySQL service again ##
-# systemctl unmask mysql.service
-# mysqld_safe --init-file=<path to init file>init-file.txt &
-# mysqld --init-file=<path to init file>init-file.txt &
-# /usr/sbin/mysqld --user=mysql --skip-grant-tables --init-file=/tmp/init-mysql.txt &
-# mysqld_safe --skip-grant-tables &
-
-# mysqld --init-file=/tmp/init-mysql.txt &
-
-## mysql_secure_installation (alternative) via root@localhost auth_socket ##
-# mysql -e "UNINSTALL COMPONENT 'file://component_validate_password';" ## not installed by default on MySQL 8.0.x
-# mysql -e "UNINSTALL PLUGIN validate_password;" ## not installed by default on MySQL 8.0.x
-mysql -e "DELETE FROM mysql.user WHERE user='';"
-mysql -e "DELETE FROM mysql.user WHERE user='root' AND host NOT IN ('localhost', '127.0.0.1', '::1');"
-mysql -e "DELETE FROM mysql.user WHERE user='admin' AND host NOT IN ('localhost', '127.0.0.1', '::1');"
-mysql -e "DROP DATABASE IF EXISTS test;"
-
-# export MYSQL_PWD=$DB_PASSWORD_ROOT
-# mysql --user=root --host="$DB_HOST" --protocol=tcp --port=3306 -e "FLUSH PRIVILEGES;"
-
-########
-
-# ALTER USER IF EXISTS 'root'@'localhost' IDENTIFIED WITH auth_socket BY '';
-## reset admin (root alternative) password and make mysql_native_password the default ##
-#  -u root --skip-password --host="localhost" --protocol=socket --port=3306 
-# UPDATE mysql.user SET plugin = 'mysql_native_password' WHERE user = 'root' AND plugin = 'auth_socket';
-# mysql -e "UPDATE mysql.user SET plugin = 'mysql_native_password' WHERE user = 'admin';"
-
-####################################################################################################
-#### SS-Install-MySQL: Configure WordPress Database + User + Privileges ############################
-####################################################################################################
-
-## manually secure MySQL (noninteractive version of the mysql_secure_installation wizard) ##
-## caching_sha2_password is better but mysql_native_password is more compatible ##
-
-## create WordPress database ##
-mysql -e "CREATE DATABASE IF NOT EXISTS ${DB_NAME};"
-
-## create database user (no root privileges) ##
-## caching_sha2_password requires TLS, sockets, or shared memory ##
-
-## alter/create admin user for all MySQL databases (can be used with Adminer/phpMyAdmin) ##
-mysql -e "ALTER USER IF EXISTS 'admin'@'localhost' IDENTIFIED WITH mysql_native_password BY '@DB_PASSWORD_ROOT';"
-mysql -e "ALTER USER IF EXISTS 'admin'@'127.0.0.1' IDENTIFIED WITH mysql_native_password BY '@DB_PASSWORD_ROOT';"
-mysql -e "ALTER USER IF EXISTS 'admin'@'::1' IDENTIFIED WITH mysql_native_password BY '@DB_PASSWORD_ROOT';"
-mysql -e "CREATE USER IF NOT EXISTS 'admin'@'localhost' IDENTIFIED WITH mysql_native_password BY '@DB_PASSWORD_ROOT';"
-mysql -e "CREATE USER IF NOT EXISTS 'admin'@'127.0.0.1' IDENTIFIED WITH mysql_native_password BY '@DB_PASSWORD_ROOT';"
-mysql -e "CREATE USER IF NOT EXISTS 'admin'@'::1' IDENTIFIED WITH mysql_native_password BY '@DB_PASSWORD_ROOT';"
-
-## grant admin user all privileges on all databases (localhost/IPv4/IPv6) ##
-mysql -e "GRANT ALL ON *.* TO 'admin'@'localhost' WITH GRANT OPTION;"
-mysql -e "GRANT ALL ON *.* TO 'admin'@'127.0.0.1' WITH GRANT OPTION;"
-mysql -e "GRANT ALL ON *.* TO 'admin'@'::1' WITH GRANT OPTION;"
-
-## alter/create DB_USER for WordPress database ##
-mysql -e "ALTER USER IF EXISTS '${DB_USER}'@'localhost' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD}';"
-mysql -e "ALTER USER IF EXISTS '${DB_USER}'@'127.0.0.1' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD}';"
-mysql -e "ALTER USER IF EXISTS '${DB_USER}'@'::1' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD}';"
-mysql -e "CREATE USER IF NOT EXISTS '${DB_USER}'@'localhost' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD}';"
-mysql -e "CREATE USER IF NOT EXISTS '${DB_USER}'@'127.0.0.1' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD}';"
-mysql -e "CREATE USER IF NOT EXISTS '${DB_USER}'@'::1' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD}';"
-
-## grant DB_USER all privileges on WordPress database (localhost/IPv4/IPv6) ##
-mysql -e "GRANT ALL ON ${DB_NAME}.* TO '${DB_USER}'@'localhost';"
-mysql -e "GRANT ALL ON ${DB_NAME}.* TO '${DB_USER}'@'127.0.0.1';"
-mysql -e "GRANT ALL ON ${DB_NAME}.* TO '${DB_USER}'@'::1';"
-
-# ALTER USER IF EXISTS 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY '@DB_PASSWORD_ROOT';
-mysql -e "ALTER USER IF EXISTS 'root'@'127.0.0.1' IDENTIFIED WITH mysql_native_password BY '@DB_PASSWORD_ROOT';"
-mysql -e "ALTER USER IF EXISTS 'root'@'::1' IDENTIFIED WITH mysql_native_password BY '@DB_PASSWORD_ROOT';"
-# CREATE USER IF NOT EXISTS 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY '@DB_PASSWORD_ROOT';
-mysql -e "CREATE USER IF NOT EXISTS 'root'@'127.0.0.1' IDENTIFIED WITH mysql_native_password BY '@DB_PASSWORD_ROOT';"
-mysql -e "CREATE USER IF NOT EXISTS 'root'@'::1' IDENTIFIED WITH mysql_native_password BY '@DB_PASSWORD_ROOT';"
-
-# GRANT ALL ON *.* TO 'root'@'localhost' WITH GRANT OPTION;
-mysql -e "GRANT ALL ON *.* TO 'root'@'127.0.0.1' WITH GRANT OPTION;"
-mysql -e "GRANT ALL ON *.* TO 'root'@'::1' WITH GRANT OPTION;"
-
-# mysql --flush-privileges -e "ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD_ROOT}';"
-
-# SELECT plugin from mysql.user where User='root';
-# SELECT User,plugin from mysql.user where User='root';
-# SELECT user,authentication_string,plugin,host FROM mysql.user;
-
-## flush privileges ##
-mysql -e "FLUSH PRIVILEGES;"
 
 /etc/init.d/mysql restart
 
