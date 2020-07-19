@@ -116,26 +116,29 @@ apt update
 apt install debconf-utils
 
 ## prepare root password for APT (sudo debconf-show mysql-community-server-8.0) ##
-echo "mysql-community-server mysql-community-server/root-pass password $DB_PASSWORD_ROOT" | debconf-set-selections
-echo "mysql-community-server mysql-community-server/re-root-pass password $DB_PASSWORD_ROOT" | debconf-set-selections
-echo "mysql-server mysql-server/root_password password $DB_PASSWORD_ROOT" | debconf-set-selections
-echo "mysql-server mysql-server/root_password_again password $DB_PASSWORD_ROOT" | debconf-set-selections
-echo "mysql-community-server mysql-server/default-auth-override select Use Legacy Authentication Method (Retain MySQL 5.x Compatibility)" | debconf-set-selections
+echo "mysql-community-server mysql-community-server/root-pass password ${DB_PASSWORD_ROOT}" | debconf-set-selections
+echo "mysql-community-server mysql-community-server/re-root-pass password ${DB_PASSWORD_ROOT}" | debconf-set-selections
+# echo "mysql-server mysql-server/root_password password ${DB_PASSWORD_ROOT}" | debconf-set-selections
+# echo "mysql-server mysql-server/root_password_again password ${DB_PASSWORD_ROOT}" | debconf-set-selections
+# echo "mysql-community-server mysql-server/default-auth-override select Use Legacy Authentication Method (Retain MySQL 5.x Compatibility)" | debconf-set-selections
 
-sudo DEBIAN_FRONTEND=noninteractive apt install mysql-server
+# sudo DEBIAN_FRONTEND=noninteractive apt install mysql-server
+
+# WORKS 5.7 ... echo debconf mysql-server/root_password password ${DB_PASSWORD_ROOT} | debconf-set-selections	
+# WORKS 5.7 ... echo debconf mysql-server/root_password_again password ${DB_PASSWORD_ROOT} | debconf-set-selections
 
 # debconf-set-selections <<< "mysql-server mysql-server/root_password password $DB_PASSWORD_ROOT"
 # debconf-set-selections <<< "mysql-server mysql-server/root_password_again password $DB_PASSWORD_ROOT"
-# sudo debconf-set-selections <<< 'mysql-community-server mysql-community-server/re-root-pass password rot'
-# sudo debconf-set-selections <<< 'mysql-community-server mysql-community-server/root-pass password rot'
-# sudo debconf-set-selections <<< "mysql-server mysql-server/root_password password rootpw"
-# sudo debconf-set-selections <<< "mysql-server mysql-server/root_password_again password rootpw"
+# debconf-set-selections <<< 'mysql-community-server mysql-community-server/re-root-pass password rot'
+# debconf-set-selections <<< 'mysql-community-server mysql-community-server/root-pass password rot'
+# debconf-set-selections <<< "mysql-server mysql-server/root_password password rootpw"
+# debconf-set-selections <<< "mysql-server mysql-server/root_password_again password rootpw"
 
 # sudo apt-get install -y mysql-server-5.6
-DEBIAN_FRONTEND=noninteractive apt install mysql-server
+# DEBIAN_FRONTEND=noninteractive apt install mysql-server
 
 ## install MySQL ##
-# apt install mysql-server-8.0
+apt install mysql-server
 
 ## ensure root@localhost has a non-empty password ##
 # mysql --database=mysql -e "ALTER USER IF EXISTS 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY '@DB_PASSWORD_ROOT';"
