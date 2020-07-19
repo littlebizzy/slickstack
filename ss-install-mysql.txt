@@ -42,11 +42,11 @@ function add-apt-repository {
 #     command mysql --user=root --database="$DB_NAME" --host="$DB_HOST" --protocol=tcp --port=3306 --force "$@"
 # }
 
-# function mysql {
+function mysql {
   #   command mysql --user=mysql --host=localhost --port=3306 --force "$@"
     # command mysql --no-defaults --user=root --host=localhost --protocol=socket --socket=/var/run/mysqld/mysqld.sock --port=3306 --force "$@"
-    # command mysql --no-defaults --user=root --host=localhost --protocol=socket --port=3306 --force "$@"
-# }
+    command mysql --no-defaults --user=root --host=localhost --protocol=socket --port=3306 --force "$@"
+}
 
 ## wget alias flags ##
 function wget {
@@ -110,6 +110,10 @@ apt autoclean
 ## update repo cache ##
 apt update
 
+## prepare root password for MySQL setup ##
+debconf-set-selections <<< "mysql-community-server mysql-community-server/root-pass password ${DB_PASSWORD_ROOT}"
+debconf-set-selections <<< "mysql-community-server mysql-community-server/re-root-pass password ${DB_PASSWORD_ROOT}"
+
 ## install MySQL ##
 apt install mysql-server-8.0
 
@@ -117,8 +121,8 @@ apt install mysql-server-8.0
 # mysql --database=mysql -e "ALTER USER IF EXISTS 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY '@DB_PASSWORD_ROOT';"
 # mysql --database=mysql -e "CREATE USER IF NOT EXISTS 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY '@DB_PASSWORD_ROOT';"
 # mysql -e "GRANT ALL ON *.* TO 'root'@'localhost' WITH GRANT OPTION;"
- mysql --no-defaults --user=root --host=localhost --protocol=socket --port=3306 --force -e "UPDATE mysql.user SET plugin = 'mysql_native_password' WHERE user = 'root' AND host = 'localhost';"
- mysql --no-defaults --user=root --host=localhost --protocol=socket --port=3306 --force -e "FLUSH PRIVILEGES;"
+# mysql -e "UPDATE mysql.user SET plugin = 'mysql_native_password' WHERE user = 'root' AND host = 'localhost';"
+# mysql -e "FLUSH PRIVILEGES;"
 
 ####################################################################################################
 #### SS-Install-MySQL: Configure Root + Admin User (Localhost/IPv4/IPv6) ###########################
@@ -449,5 +453,6 @@ rm /var/run/mysqld.bak*
 ## Ref: https://www.percona.com/live/e18/sites/default/files/slides/Upgrading%20to%20MySQL%208.0%20and%20a%20More%20Automated%20Experience%20-%20FileId%20-%20159893.pdf
 ## Ref: https://superuser.com/questions/603026/mysql-how-to-fix-access-denied-for-user-rootlocalhost
 ## Ref: https://github.com/GoogleCloudPlatform/click-to-deploy/blob/master/vm/chef/cookbooks/mysql8-book/recipes/configure-apt-repo-version-8.0.rb
+## Ref: https://dev.mysql.com/doc/mysql-apt-repo-quick-guide/en/
 
 ## SS_EOF
