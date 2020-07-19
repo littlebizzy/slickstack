@@ -24,7 +24,8 @@ function apt {
     export DEBIAN_FRONTEND=noninteractive
     export DEBIAN_PRIORITY=critical
     export PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'
-    command /usr/bin/apt -q -y -o Dpkg::Options::=--force-confold -o Dpkg::Options::=--force-confdef "$@"
+    # command /usr/bin/apt -q -y -o Dpkg::Options::=--force-confold -o Dpkg::Options::=--force-confdef "$@"
+    command /usr/bin/apt -q -y -o "$@"
 }
 
 ## add-apt-repository alias flags ##
@@ -119,6 +120,10 @@ echo "mysql-community-server mysql-community-server/root-pass password $DB_PASSW
 echo "mysql-community-server mysql-community-server/re-root-pass password $DB_PASSWORD_ROOT" | debconf-set-selections
 echo "mysql-server mysql-server/root_password password $DB_PASSWORD_ROOT" | debconf-set-selections
 echo "mysql-server mysql-server/root_password_again password $DB_PASSWORD_ROOT" | debconf-set-selections
+echo "mysql-community-server mysql-server/default-auth-override select Use Legacy Authentication Method (Retain MySQL 5.x Compatibility)" | debconf-set-selections
+
+sudo DEBIAN_FRONTEND=noninteractive apt install mysql-server
+
 # debconf-set-selections <<< "mysql-server mysql-server/root_password password $DB_PASSWORD_ROOT"
 # debconf-set-selections <<< "mysql-server mysql-server/root_password_again password $DB_PASSWORD_ROOT"
 # sudo debconf-set-selections <<< 'mysql-community-server mysql-community-server/re-root-pass password rot'
