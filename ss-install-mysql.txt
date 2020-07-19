@@ -112,8 +112,11 @@ apt autoclean
 apt update
 
 ## prepare root password for APT (sudo debconf-show mysql-server-8.0) ##
-debconf-set-selections <<< "mysql-server mysql-server/root_password password $DB_PASSWORD_ROOT"
-debconf-set-selections <<< "mysql-server mysql-server/root_password_again password $DB_PASSWORD_ROOT"
+# debconf-set-selections <<< "mysql-server mysql-server/root_password password $DB_PASSWORD_ROOT"
+# debconf-set-selections <<< "mysql-server mysql-server/root_password_again password $DB_PASSWORD_ROOT"
+
+echo "mysql-server mysql-server/root_password password $DB_PASSWORD_ROOT" | debconf-set-selections
+echo "mysql-server mysql-server/root_password_again password $DB_PASSWORD_ROOT" | debconf-set-selections
 
 ## install MySQL ##
 apt install mysql-server-8.0
@@ -456,5 +459,6 @@ rm /var/run/mysqld.bak*
 ## Ref: https://github.com/GoogleCloudPlatform/click-to-deploy/blob/master/vm/chef/cookbooks/mysql8-book/recipes/configure-apt-repo-version-8.0.rb
 ## Ref: https://dev.mysql.com/doc/mysql-apt-repo-quick-guide/en/
 ## Ref: https://unix.stackexchange.com/questions/457388/how-to-find-out-the-variable-names-for-debconf-set-selections
+## Ref: https://www.codementor.io/@slaith/setting-a-root-password-on-mysql-in-silent-mode-in-ubuntu-y6do6ug2u
 
 ## SS_EOF
