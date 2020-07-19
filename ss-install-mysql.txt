@@ -111,15 +111,26 @@ apt autoclean
 ## update repo cache ##
 apt update
 
-## prepare root password for APT (sudo debconf-show mysql-server-8.0) ##
-# debconf-set-selections <<< "mysql-server mysql-server/root_password password $DB_PASSWORD_ROOT"
-# debconf-set-selections <<< "mysql-server mysql-server/root_password_again password $DB_PASSWORD_ROOT"
+## install debconf-utils for some APT debug tools ##
+apt install debconf-utils
 
+## prepare root password for APT (sudo debconf-show mysql-community-server-8.0) ##
+echo "mysql-community-server mysql-community-server/root-pass password $DB_PASSWORD_ROOT" | debconf-set-selections
+echo "mysql-community-server mysql-community-server/re-root-pass password $DB_PASSWORD_ROOT" | debconf-set-selections
 echo "mysql-server mysql-server/root_password password $DB_PASSWORD_ROOT" | debconf-set-selections
 echo "mysql-server mysql-server/root_password_again password $DB_PASSWORD_ROOT" | debconf-set-selections
+# debconf-set-selections <<< "mysql-server mysql-server/root_password password $DB_PASSWORD_ROOT"
+# debconf-set-selections <<< "mysql-server mysql-server/root_password_again password $DB_PASSWORD_ROOT"
+# sudo debconf-set-selections <<< 'mysql-community-server mysql-community-server/re-root-pass password rot'
+# sudo debconf-set-selections <<< 'mysql-community-server mysql-community-server/root-pass password rot'
+# sudo debconf-set-selections <<< "mysql-server mysql-server/root_password password rootpw"
+# sudo debconf-set-selections <<< "mysql-server mysql-server/root_password_again password rootpw"
+
+# sudo apt-get install -y mysql-server-5.6
+DEBIAN_FRONTEND=noninteractive apt install mysql-server
 
 ## install MySQL ##
-apt install mysql-server-8.0
+# apt install mysql-server-8.0
 
 ## ensure root@localhost has a non-empty password ##
 # mysql --database=mysql -e "ALTER USER IF EXISTS 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY '@DB_PASSWORD_ROOT';"
@@ -460,5 +471,7 @@ rm /var/run/mysqld.bak*
 ## Ref: https://dev.mysql.com/doc/mysql-apt-repo-quick-guide/en/
 ## Ref: https://unix.stackexchange.com/questions/457388/how-to-find-out-the-variable-names-for-debconf-set-selections
 ## Ref: https://www.codementor.io/@slaith/setting-a-root-password-on-mysql-in-silent-mode-in-ubuntu-y6do6ug2u
+## Ref: https://stackoverflow.com/questions/23358918/preconfigure-an-empty-password-for-mysql-via-debconf-set-selections
+## Ref: https://forums.mysql.com/read.php?11,666369,666533#msg-666533
 
 ## SS_EOF
