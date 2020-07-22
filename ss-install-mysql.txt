@@ -115,9 +115,18 @@ apt update
 ## install debconf-utils for some APT debug tools ##
 apt install debconf-utils
 
+## purge any previous debconf/MySQL data ##
+echo PURGE | sudo debconf-communicate mysql-community-server
+# sudo debconf-set-selections <<< 'mysql-community-server mysql-community-server/remove-data-dir boolean true'
+
 ## prepare root password for APT (sudo debconf-show mysql-community-server-8.0) ##
-echo "mysql-community-server mysql-community-server/root-pass password ${DB_PASSWORD_ROOT}" | debconf-set-selections
-echo "mysql-community-server mysql-community-server/re-root-pass password ${DB_PASSWORD_ROOT}" | debconf-set-selections
+# echo "mysql-community-server mysql-community-server/root-pass password ${DB_PASSWORD_ROOT}" | debconf-set-selections
+# echo "mysql-community-server mysql-community-server/re-root-pass password ${DB_PASSWORD_ROOT}" | debconf-set-selections
+
+sudo debconf-set-selections <<< "mysql-community-server mysql-community-server/root-pass password ${DB_PASSWORD_ROOT}"
+sudo debconf-set-selections <<< "mysql-community-server mysql-community-server/re-root-pass password ${DB_PASSWORD_ROOT}"
+sudo debconf-set-selections <<< "mysql-community-server mysql-server/default-auth-override select Use Legacy Authentication Method (Retain MySQL 5.x Compatibility)"
+
 # echo "mysql-server mysql-server/root_password password ${DB_PASSWORD_ROOT}" | debconf-set-selections
 # echo "mysql-server mysql-server/root_password_again password ${DB_PASSWORD_ROOT}" | debconf-set-selections
 # echo "mysql-community-server mysql-server/default-auth-override select Use Legacy Authentication Method (Retain MySQL 5.x Compatibility)" | debconf-set-selections
@@ -482,5 +491,6 @@ rm /var/run/mysqld.bak*
 ## Ref: https://www.codementor.io/@slaith/setting-a-root-password-on-mysql-in-silent-mode-in-ubuntu-y6do6ug2u
 ## Ref: https://stackoverflow.com/questions/23358918/preconfigure-an-empty-password-for-mysql-via-debconf-set-selections
 ## Ref: https://forums.mysql.com/read.php?11,666369,666533#msg-666533
+## Ref: https://gist.github.com/ziadoz/dc935a0167c68fc23b4f35ee8593125f
 
 ## SS_EOF
