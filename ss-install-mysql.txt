@@ -92,7 +92,7 @@ function ln {
 ## first we backup the live database (if exists) and stop/kill existing MySQL processes ##
 ## then we proceed with purge/cleanup of MySQL packages and install from scratch ##
 
-## run ss-dump (copies /var/lib/mysql to /var/www/meta/mysql-lib.bak) ##
+## run ss-dump ##
 source /var/www/ss-dump
 
 ## stop MySQL and kill any remaining MySQL processes ##
@@ -112,11 +112,12 @@ apt autoclean
 ## update repo cache ##
 apt update
 
-## install debconf-utils for some APT debug tools ##
+## install debconf-utils for some APT debug tools (move this to ss-install-misc) ##
 apt install debconf-utils
 
 ## purge any previous debconf/MySQL data ##
 echo PURGE | sudo debconf-communicate mysql-community-server
+# echo PURGE | sudo debconf-communicate mysql-server
 # sudo debconf-set-selections <<< 'mysql-community-server mysql-community-server/remove-data-dir boolean true'
 
 ## prepare root password for APT (sudo debconf-show mysql-community-server-8.0) ##
@@ -147,7 +148,7 @@ sudo debconf-set-selections <<< "mysql-community-server mysql-server/default-aut
 # DEBIAN_FRONTEND=noninteractive apt install mysql-server
 
 ## install MySQL ##
-apt install mysql-server
+apt install mysql-server-8.0
 
 ## ensure root@localhost has a non-empty password ##
 # mysql --database=mysql -e "ALTER USER IF EXISTS 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD_ROOT}';"
@@ -492,5 +493,7 @@ rm /var/run/mysqld.bak*
 ## Ref: https://stackoverflow.com/questions/23358918/preconfigure-an-empty-password-for-mysql-via-debconf-set-selections
 ## Ref: https://forums.mysql.com/read.php?11,666369,666533#msg-666533
 ## Ref: https://gist.github.com/ziadoz/dc935a0167c68fc23b4f35ee8593125f
+## Ref: https://www.reddit.com/r/mysql/comments/3vch8p/uninstall_mysql_via_shell_without_prompt/
+## Ref: https://ubuntu.pkgs.org/19.10/ubuntu-main-amd64/mysql-server-8.0_8.0.17-0ubuntu2_amd64.deb.html
 
 ## SS_EOF
