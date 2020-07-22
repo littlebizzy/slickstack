@@ -124,9 +124,15 @@ sudo debconf-set-selections <<< "mysql-community-server mysql-community-server/r
 # echo "mysql-community-server mysql-community-server/root-pass password ${DB_PASSWORD_ROOT}" | debconf-set-selections
 # echo "mysql-community-server mysql-community-server/re-root-pass password ${DB_PASSWORD_ROOT}" | debconf-set-selections
 
-sudo debconf-set-selections <<< "mysql-community-server mysql-community-server/root-pass password ${DB_PASSWORD_ROOT}"
-sudo debconf-set-selections <<< "mysql-community-server mysql-community-server/re-root-pass password ${DB_PASSWORD_ROOT}"
-sudo debconf-set-selections <<< "mysql-community-server mysql-server/default-auth-override select Use Legacy Authentication Method (Retain MySQL 5.x Compatibility)"
+## PSA: sudo the shit out of these or it will fail ##
+sudo echo "mysql-community-server mysql-community-server/root-pass password ${DB_PASSWORD_ROOT}" | sudo debconf-set-selections
+sudo echo "mysql-community-server mysql-community-server/re-root-pass password ${DB_PASSWORD_ROOT}" | sudo debconf-set-selections
+sudo echo "mysql-community-server mysql-server/default-auth-override select Use Legacy Authentication Method (Retain MySQL 5.x Compatibility)" | sudo debconf-set-selections
+
+
+# sudo debconf-set-selections <<< "mysql-community-server mysql-community-server/root-pass password ${DB_PASSWORD_ROOT}"
+# sudo debconf-set-selections <<< "mysql-community-server mysql-community-server/re-root-pass password ${DB_PASSWORD_ROOT}"
+# sudo debconf-set-selections <<< "mysql-community-server mysql-server/default-auth-override select Use Legacy Authentication Method (Retain MySQL 5.x Compatibility)"
 
 # echo "mysql-server mysql-server/root_password password ${DB_PASSWORD_ROOT}" | debconf-set-selections
 # echo "mysql-server mysql-server/root_password_again password ${DB_PASSWORD_ROOT}" | debconf-set-selections
@@ -496,5 +502,6 @@ rm /var/run/mysqld.bak*
 ## Ref: https://www.reddit.com/r/mysql/comments/3vch8p/uninstall_mysql_via_shell_without_prompt/
 ## Ref: https://ubuntu.pkgs.org/19.10/ubuntu-main-amd64/mysql-server-8.0_8.0.17-0ubuntu2_amd64.deb.html
 ## Ref: https://serverfault.com/questions/813210/does-debconf-set-selections-automatically-deletes-values-from-debconf-database-o
+## Ref: https://askubuntu.com/questions/399903/unattended-phpmyadmin-install-end-up-throwing-errors
 
 ## SS_EOF
