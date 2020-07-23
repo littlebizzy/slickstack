@@ -47,7 +47,7 @@ function mysql {
   #   command mysql --user=mysql --host=localhost --port=3306 --force "$@"
     # command mysql --no-defaults --user=root --host=localhost --protocol=socket --socket=/var/run/mysqld/mysqld.sock --port=3306 --force "$@"
     export MYSQL_PWD=$DB_PASSWORD_ROOT
-    command mysql --host=localhost --protocol=socket --port=3306 --force "$@"
+    command mysql --user=root --host=localhost --protocol=socket --port=3306 --force "$@"
 }
 
 ## wget alias flags ##
@@ -117,7 +117,8 @@ apt update
 #### SS-Install-MySQL: Install MySQL 8.0.x (Single Database Only) ##################################
 ####################################################################################################
 
-## USEFUL UTILITY: sudo debconf-show packagename
+## USEFUL UTILITY: sudo debconf-show mysql-community-server-8.0
+## sudo /usr/share/debconf/fix_db.pl ## fixes broken debconf
 
 ## purge any previous debconf/MySQL data ##
 sudo echo PURGE | sudo debconf-communicate mysql-community-server
@@ -125,32 +126,27 @@ sudo echo PURGE | sudo debconf-communicate mysql-server
 # sudo debconf-set-selections <<< "mysql-community-server mysql-community-server/remove-data-dir boolean true"
 sudo echo "mysql-community-server mysql-community-server/remove-data-dir boolean true" | sudo debconf-set-selections
 
-## prepare root password for APT (sudo debconf-show mysql-community-server-8.0) ##
-# echo "mysql-community-server mysql-community-server/root-pass password ${DB_PASSWORD_ROOT}" | debconf-set-selections
-# echo "mysql-community-server mysql-community-server/re-root-pass password ${DB_PASSWORD_ROOT}" | debconf-set-selections
-
-## PSA: sudo the shit out of these or it will fail ##
+## prepare root password for apt (PSA: sudo the shit out of these or it will fail) ##
 sudo echo "mysql-community-server mysql-community-server/root-pass password ${DB_PASSWORD_ROOT}" | sudo debconf-set-selections
 sudo echo "mysql-community-server mysql-community-server/re-root-pass password ${DB_PASSWORD_ROOT}" | sudo debconf-set-selections
 sudo echo "mysql-community-server mysql-server/default-auth-override select Use Legacy Authentication Method (Retain MySQL 5.x Compatibility)" | sudo debconf-set-selections
 
+# echo "mysql-community-server mysql-community-server/root-pass password ${DB_PASSWORD_ROOT}" | debconf-set-selections
+# echo "mysql-community-server mysql-community-server/re-root-pass password ${DB_PASSWORD_ROOT}" | debconf-set-selections
 # sudo debconf-set-selections <<< "mysql-community-server mysql-community-server/root-pass password ${DB_PASSWORD_ROOT}"
 # sudo debconf-set-selections <<< "mysql-community-server mysql-community-server/re-root-pass password ${DB_PASSWORD_ROOT}"
 # sudo debconf-set-selections <<< "mysql-community-server mysql-server/default-auth-override select Use Legacy Authentication Method (Retain MySQL 5.x Compatibility)"
-
 # echo "mysql-server mysql-server/root_password password ${DB_PASSWORD_ROOT}" | debconf-set-selections
 # echo "mysql-server mysql-server/root_password_again password ${DB_PASSWORD_ROOT}" | debconf-set-selections
 # echo "mysql-community-server mysql-server/default-auth-override select Use Legacy Authentication Method (Retain MySQL 5.x Compatibility)" | debconf-set-selections
-
-# WORKS 5.7 ... echo debconf mysql-server/root_password password ${DB_PASSWORD_ROOT} | debconf-set-selections	
-# WORKS 5.7 ... echo debconf mysql-server/root_password_again password ${DB_PASSWORD_ROOT} | debconf-set-selections
-
 # debconf-set-selections <<< "mysql-server mysql-server/root_password password $DB_PASSWORD_ROOT"
 # debconf-set-selections <<< "mysql-server mysql-server/root_password_again password $DB_PASSWORD_ROOT"
 # debconf-set-selections <<< 'mysql-community-server mysql-community-server/re-root-pass password rot'
 # debconf-set-selections <<< 'mysql-community-server mysql-community-server/root-pass password rot'
 # debconf-set-selections <<< "mysql-server mysql-server/root_password password rootpw"
 # debconf-set-selections <<< "mysql-server mysql-server/root_password_again password rootpw"
+# WORKS 5.7 ... echo debconf mysql-server/root_password password ${DB_PASSWORD_ROOT} | debconf-set-selections	
+# WORKS 5.7 ... echo debconf mysql-server/root_password_again password ${DB_PASSWORD_ROOT} | debconf-set-selections
 
 ## install MySQL ##
 apt install mysql-server-8.0
@@ -197,7 +193,6 @@ if [ ! -f "/var/www/logs/mysql-slow.log" ]; then touch "/var/www/logs/mysql-slow
 # chown mysql:mysql /var/run/mysqld
 # chmod -R 775 /var/run/mysqld
 # chown mysql:mysql /var/www/logs/mysql*.log
-
 
 ## copy the default socket for keeps (might disappear during stop MySQL) ##
 # cp /var/run/mysqld /var/run/mysqld.bak
