@@ -213,82 +213,78 @@ rm /tmp/staging*.sql*
 #### SS-Sync: Configure Staging Site WP-Config File (Same As SS-Install) ###########################
 ####################################################################################################
 
-## delete tmp files ##
-rm /tmp/wp-config*
-
-## change dir ##
-cd /var/www/html/staging
+## MODULE VERSION: WP-Config Build #
 
 ## retrieve latest wp-config boilerplate ##
-wget -O /tmp/wp-config.txt http://mirrors.slickstack.io/wordpress/wp-config-staging.txt
+wget -O /var/www/html/staging/wp-config.php http://mirrors.slickstack.io/wordpress/wp-config-staging.txt
 
 ###### WP Multisite settings ########
 
 ## set multisite subdomains ##
 if [[ -z "$WP_MULTISITE_SUBDOMAINS" ]]; then 
-    sed -i "s/@WP_MULTISITE_SUBDOMAINS/true/g" /tmp/wp-config.txt
+    sed -i "s/@WP_MULTISITE_SUBDOMAINS/true/g" /var/www/html/staging/wp-config.php
 else 
-    sed -i "s/@WP_MULTISITE_SUBDOMAINS/${WP_MULTISITE_SUBDOMAINS}/g" /tmp/wp-config.txt
+    sed -i "s/@WP_MULTISITE_SUBDOMAINS/${WP_MULTISITE_SUBDOMAINS}/g" /var/www/html/staging/wp-config.php
 fi
 
 ## set multisite ##
 if [[ -z "$WP_MULTISITE" ]]; then 
-    sed -i "s/@WP_MULTISITE/false/g" /tmp/wp-config.txt
+    sed -i "s/@WP_MULTISITE/false/g" /var/www/html/staging/wp-config.php
 else 
-    sed -i "s/@WP_MULTISITE/${WP_MULTISITE}/g" /tmp/wp-config.txt
+    sed -i "s/@WP_MULTISITE/${WP_MULTISITE}/g" /var/www/html/staging/wp-config.php
 fi
 
 ## multisite ##
 if [[ "$WP_MULTISITE" == "true" ]]; then 
-    sed -i "s/@WP_MULTISITE/true/g" /tmp/wp-config.txt
+    sed -i "s/@WP_MULTISITE/true/g" /var/www/html/staging/wp-config.php
 else 
-    sed -i "s/@WP_MULTISITE/false/g" /tmp/wp-config.txt
+    sed -i "s/@WP_MULTISITE/false/g" /var/www/html/staging/wp-config.php
 fi
 
 
 ####### other WP Config settings ##########
 
 ## replace database placeholders ##
-sed -i "s/@DB_NAME/${DB_NAME}/g" /tmp/wp-config.txt
-sed -i "s/@DB_USER/${DB_USER}/g" /tmp/wp-config.txt
-sed -i "s/@DB_PASSWORD/${DB_PASSWORD}/g" /tmp/wp-config.txt
-sed -i "s/@DB_HOST/${DB_HOST}/g" /tmp/wp-config.txt
-sed -i "s/@DB_CHARSET/${DB_CHARSET}/g" /tmp/wp-config.txt
-sed -i "s/@DB_COLLATE/${DB_COLLATE}/g" /tmp/wp-config.txt
-sed -i "s/@DB_PREFIX/staging_${DB_PREFIX}/g" /tmp/wp-config.txt
+sed -i "s/@DB_NAME/${DB_NAME}/g" /var/www/html/staging/wp-config.php
+sed -i "s/@DB_USER/${DB_USER}/g" /var/www/html/staging/wp-config.php
+sed -i "s/@DB_PASSWORD/${DB_PASSWORD}/g" /var/www/html/staging/wp-config.php
+sed -i "s/@DB_HOST/${DB_HOST}/g" /var/www/html/staging/wp-config.php
+sed -i "s/@DB_CHARSET/${DB_CHARSET}/g" /var/www/html/staging/wp-config.php
+sed -i "s/@DB_COLLATE/${DB_COLLATE}/g" /var/www/html/staging/wp-config.php
+sed -i "s/@DB_PREFIX/staging_${DB_PREFIX}/g" /var/www/html/staging/wp-config.php
 
 ## disable object cache (staging) ##
-sed -i "s/@OBJECT_CACHE/false/g" /tmp/wp-config.txt
+sed -i "s/@OBJECT_CACHE/false/g" /var/www/html/staging/wp-config.php
 
 ## set language ##
 if [[ -z "$WP_LANG" ]]; then 
-    sed -i "s/@WP_LANG/en-US/g" /tmp/wp-config.txt
+    sed -i "s/@WP_LANG/en-US/g" /var/www/html/staging/wp-config.php
 else 
-    sed -i "s/@WP_LANG/${WP_LANG}/g" /tmp/wp-config.txt
+    sed -i "s/@WP_LANG/${WP_LANG}/g" /var/www/html/staging/wp-config.php
 fi
 
 ## replace domain placeholders ##
-sed -i "s#@SITE_DOMAIN#${SITE_DOMAIN}#g" /tmp/wp-config.txt
-sed -i "s/@SITE_TLD/${SITE_TLD}/g" /tmp/wp-config.txt
+sed -i "s#@SITE_DOMAIN#${SITE_DOMAIN}#g" /var/www/html/staging/wp-config.php
+sed -i "s/@SITE_TLD/${SITE_TLD}/g" /var/www/html/staging/wp-config.php
 
 ## replace SFTP Details placeholders ##
-sed -i "s/@SFTP_USER/${SFTP_USER}/g" /tmp/wp-config.txt
-sed -i "s/@SFTP_PASSWORD/${SFTP_PASSWORD}/g" /tmp/wp-config.txt
+sed -i "s/@SFTP_USER/${SFTP_USER}/g" /var/www/html/staging/wp-config.php
+sed -i "s/@SFTP_PASSWORD/${SFTP_PASSWORD}/g" /var/www/html/staging/wp-config.php
 if [[ -z "$SSH_PORT" ]]; then 
-    sed -i "s/@SSH_PORT/6969/g" /tmp/wp-config.txt
+    sed -i "s/@SSH_PORT/6969/g" /var/www/html/staging/wp-config.php
 else 
-    sed -i "s/@SSH_PORT/${SSH_PORT}/g" /tmp/wp-config.txt
+    sed -i "s/@SSH_PORT/${SSH_PORT}/g" /var/www/html/staging/wp-config.php
 fi
 
 ## replace CloudFlare placeholders ##
-sed -i "s/@CLOUDFLARE_API_KEY/${CLOUDFLARE_API_KEY}/g" /tmp/wp-config.txt
-sed -i "s/@CLOUDFLARE_API_EMAIL/${CLOUDFLARE_API_EMAIL}/g" /tmp/wp-config.txt
+sed -i "s/@CLOUDFLARE_API_KEY/${CLOUDFLARE_API_KEY}/g" /var/www/html/staging/wp-config.php
+sed -i "s/@CLOUDFLARE_API_EMAIL/${CLOUDFLARE_API_EMAIL}/g" /var/www/html/staging/wp-config.php
 
 ## CloudFlare DNS widget ##
 if [[ -z "$CLOUDFLARE_WIDGET_DNS" ]]; then 
-    sed -i "s/@CLOUDFLARE_WIDGET_DNS/true/g" /tmp/wp-config.txt
+    sed -i "s/@CLOUDFLARE_WIDGET_DNS/true/g" /var/www/html/staging/wp-config.php
 else 
-    sed -i "s/@CLOUDFLARE_WIDGET_DNS/${CLOUDFLARE_WIDGET_DNS}/g" /tmp/wp-config.txt
+    sed -i "s/@CLOUDFLARE_WIDGET_DNS/${CLOUDFLARE_WIDGET_DNS}/g" /var/www/html/staging/wp-config.php
 fi
 
 ## lookup salt keys from production wp-config ##
@@ -302,77 +298,66 @@ PROD_LOGGED_IN_SALT=$(grep "'LOGGED_IN_SALT'" /var/www/html/wp-config.php)
 PROD_NONCE_SALT=$(grep "'NONCE_SALT'" /var/www/html/wp-config.php)
 
 ## copy salt keys from production to staging (enables permanent login on both production/staging) ##
-sed -i -n "/@AUTHKEY/c\$PROD_AUTH_KEY/p" /tmp/wp-config.txt
-sed -i -n "/@SECUREAUTHKEY/c\$PROD_SECURE_AUTH_KEY/p" /tmp/wp-config.txt
-sed -i -n "/@LOGGEDINKEY/c\$PROD_LOGGED_IN_KEY/p" /tmp/wp-config.txt
-sed -i -n "/@NONCEKEY/c\$PROD_NONCE_KEY/p" /tmp/wp-config.txt
-sed -i -n "/@AUTHSALT/c\$PROD_AUTH_SALT/p" /tmp/wp-config.txt
-sed -i -n "/@SECUREAUTHSALT/c\$PROD_SECURE_AUTH_SALT/p" /tmp/wp-config.txt
-sed -i -n "/@LOGGEDINSALT/c\$PROD_LOGGED_IN_SALT/p" /tmp/wp-config.txt
-sed -i -n "/@NONCESALT/c\$PROD_NONCE_SALT/p" /tmp/wp-config.txt
-
-# sed -i -n "/@AUTHKEY/c\$PROD_AUTH_KEY/p" /tmp/wp-config.txt
+sed -i -n "/@AUTHKEY/c\$PROD_AUTH_KEY/p" /var/www/html/staging/wp-config.php
+sed -i -n "/@SECUREAUTHKEY/c\$PROD_SECURE_AUTH_KEY/p" /var/www/html/staging/wp-config.php
+sed -i -n "/@LOGGEDINKEY/c\$PROD_LOGGED_IN_KEY/p" /var/www/html/staging/wp-config.php
+sed -i -n "/@NONCEKEY/c\$PROD_NONCE_KEY/p" /var/www/html/staging/wp-config.php
+sed -i -n "/@AUTHSALT/c\$PROD_AUTH_SALT/p" /var/www/html/staging/wp-config.php
+sed -i -n "/@SECUREAUTHSALT/c\$PROD_SECURE_AUTH_SALT/p" /var/www/html/staging/wp-config.php
+sed -i -n "/@LOGGEDINSALT/c\$PROD_LOGGED_IN_SALT/p" /var/www/html/staging/wp-config.php
+sed -i -n "/@NONCESALT/c\$PROD_NONCE_SALT/p" /var/www/html/staging/wp-config.php
 
 ## Replace Placeholders: Debug and Dev/staging server ##
-sed -i "s/@WP_DEBUG/true/g" /tmp/wp-config.txt
-sed -i "s/@WP_LOCAL_DEV/false/g" /tmp/wp-config.txt
+sed -i "s/@WP_DEBUG/true/g" /var/www/html/staging/wp-config.php
+sed -i "s/@WP_LOCAL_DEV/false/g" /var/www/html/staging/wp-config.php
 
 ## core auto updates ##
 if [[ -z "$WP_AUTO_UPDATE_CORE" ]]; then 
-    sed -i "s/@WP_AUTO_UPDATE_CORE/minor/g" /tmp/wp-config.txt
+    sed -i "s/@WP_AUTO_UPDATE_CORE/minor/g" /var/www/html/staging/wp-config.php
 else 
-    sed -i "s/@WP_AUTO_UPDATE_CORE/${WP_AUTO_UPDATE_CORE}/g" /tmp/wp-config.txt
+    sed -i "s/@WP_AUTO_UPDATE_CORE/${WP_AUTO_UPDATE_CORE}/g" /var/www/html/staging/wp-config.php
 fi
 
 ## autosave (drafts) ##
 if [[ -z "$WP_AUTOSAVE_INTERVAL" ]]; then 
-    sed -i "s/@WP_AUTOSAVE_INTERVAL/60/g" /tmp/wp-config.txt
+    sed -i "s/@WP_AUTOSAVE_INTERVAL/60/g" /var/www/html/staging/wp-config.php
 else 
-    sed -i "s/@WP_AUTOSAVE_INTERVAL/${WP_AUTOSAVE_INTERVAL}/g" /tmp/wp-config.txt
+    sed -i "s/@WP_AUTOSAVE_INTERVAL/${WP_AUTOSAVE_INTERVAL}/g" /var/www/html/staging/wp-config.php
 fi
 
 ## revisions ##
 if [[ -z "$WP_POST_REVISIONS" ]]; then 
-    sed -i "s/@WP_POST_REVISIONS/5/g" /tmp/wp-config.txt
+    sed -i "s/@WP_POST_REVISIONS/5/g" /var/www/html/staging/wp-config.php
 else 
-    sed -i "s/@WP_POST_REVISIONS/${WP_POST_REVISIONS}/g" /tmp/wp-config.txt
+    sed -i "s/@WP_POST_REVISIONS/${WP_POST_REVISIONS}/g" /var/www/html/staging/wp-config.php
 fi
 
 ## block external requests ##
 if [[ -z "$WP_HTTP_BLOCK_EXTERNAL" ]]; then 
-    sed -i "s/@WP_HTTP_BLOCK_EXTERNAL/false/g" /tmp/wp-config.txt
+    sed -i "s/@WP_HTTP_BLOCK_EXTERNAL/false/g" /var/www/html/staging/wp-config.php
 else 
-    sed -i "s/@WP_HTTP_BLOCK_EXTERNAL/${WP_HTTP_BLOCK_EXTERNAL}/g" /tmp/wp-config.txt
+    sed -i "s/@WP_HTTP_BLOCK_EXTERNAL/${WP_HTTP_BLOCK_EXTERNAL}/g" /var/www/html/staging/wp-config.php
 fi
 
 ## allowed hosts ##
 if [[ -z "$WP_ACCESSIBLE_HOSTS" ]]; then 
-    sed -i "s/@WP_ACCESSIBLE_HOSTS/api.wordpress.org/g" /tmp/wp-config.txt
+    sed -i "s/@WP_ACCESSIBLE_HOSTS/api.wordpress.org/g" /var/www/html/staging/wp-config.php
 else 
-    sed -i "s/@WP_ACCESSIBLE_HOSTS/${WP_ACCESSIBLE_HOSTS}/g" /tmp/wp-config.txt
+    sed -i "s/@WP_ACCESSIBLE_HOSTS/${WP_ACCESSIBLE_HOSTS}/g" /var/www/html/staging/wp-config.php
 fi
 
 ## file edits ##
-sed -i "s/@WP_DISALLOW_FILE_EDIT/false/g" /tmp/wp-config.txt
+sed -i "s/@WP_DISALLOW_FILE_EDIT/false/g" /var/www/html/staging/wp-config.php
 
 ## file mods ##
-sed -i "s/@WP_DISALLOW_FILE_MODS/false/g" /tmp/wp-config.txt
+sed -i "s/@WP_DISALLOW_FILE_MODS/false/g" /var/www/html/staging/wp-config.php
 
 ## file uploads ##
 if [[ -z "$WP_ALLOW_UNFILTERED_UPLOADS" ]]; then 
-    sed -i "s/@WP_ALLOW_UNFILTERED_UPLOADS/true/g" /tmp/wp-config.txt
+    sed -i "s/@WP_ALLOW_UNFILTERED_UPLOADS/true/g" /var/www/html/staging/wp-config.php
 else 
-    sed -i "s/@WP_ALLOW_UNFILTERED_UPLOADS/${WP_ALLOW_UNFILTERED_UPLOADS}/g" /tmp/wp-config.txt
+    sed -i "s/@WP_ALLOW_UNFILTERED_UPLOADS/${WP_ALLOW_UNFILTERED_UPLOADS}/g" /var/www/html/staging/wp-config.php
 fi
-
-## rename files ##
-mv /tmp/wp-config.txt /tmp/wp-config.php
-
-## copy files to destinations ##
-cp /tmp/wp-config.php /var/www/html/staging/wp-config.php
-
-## delete tmp files ##
-rm /tmp/wp-config*
 
 ## create directories if doesn't exist (will not overwrite) ##
 mkdir /var/www/html/staging/wp-content/temp
