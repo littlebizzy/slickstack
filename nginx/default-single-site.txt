@@ -181,7 +181,7 @@ server {
 #### Server Block: Adminer (phpMyAdmin) Settings ###################################################
 ####################################################################################################
     
-    location /adminer {
+    location ^~ /adminer {
         ## limit access to one request per second per IP address
         limit_req zone=adminer burst=1 nodelay;
         alias /var/www/meta/adminer.php;
@@ -195,7 +195,7 @@ server {
         fastcgi_cache off;
     }
     
-    location /phpmyadmin {
+    location ^~ /phpmyadmin {
         ## limit access to one request per 30 second per IP address
         limit_req zone=phpmyadmin burst=1 nodelay;
         alias /var/www/meta/adminer.php;
@@ -216,13 +216,12 @@ server {
 ## staging sites are noindexed, FastCGI caching is disabled, and paths are hardcoded ## 
 ## media files (uploads) are aliased to existing files from the production site ##
     
-    location /staging/* {
+    location /staging/ {
         ## first try files, then directories, otherwise query index ##
         try_files $uri $uri/ /staging/index.php?$args;
         ## tweak FastCGI Cache (needs to be improved with mild cache settings) ##
         include /etc/nginx/fastcgi.conf;
         fastcgi_split_path_info ^(.+\.php)(/.+)$;
-        ## fastcgi_pass unix:/run/php/php7.4-fpm.sock;
 	fastcgi_pass 127.0.0.1:9000;
         fastcgi_read_timeout 300;
         fastcgi_index index.php;
@@ -249,8 +248,9 @@ server {
 #### Server Block: Static Resource Settings (Expiration Headers) ###################################
 ####################################################################################################
 
-    ## CloudFlare (or CDNs) overwrite these headers ##
-    location ~* \.(atom|bmp|bz2|css|doc|docx|eot|gif|gz|ico|jpeg|jpg|js|mid|midi|mp4|ogg|ogv|otf|png|ppt|rar|rss|rtf|svg|svgz|tar|tgz|ttf|wav|woff|xls|zip)$ {
+## CloudFlare (or CDNs) overwrite these headers ##
+    
+    location ~* .(atom|bmp|bz2|css|doc|docx|eot|gif|gz|ico|jpeg|jpg|js|mid|midi|mp4|ogg|ogv|otf|png|ppt|rar|rss|rtf|svg|svgz|tar|tgz|ttf|wav|woff|xls|zip)$ {
         expires max;
     }
 
@@ -258,8 +258,9 @@ server {
 #### Server Block: Browser Resource (Render) Settings ##############################################
 ####################################################################################################
 
-    location ~ \.(eot|ttf|ttc|otf|woff|woff2|svg|css|js)$ {
-        ## avoid render security errors in certain browsers e.g. Firefox/IE ##
+## avoid render security errors in certain browsers e.g. Firefox/IE ##
+
+    location ~* .(eot|ttf|ttc|otf|woff|woff2|svg|css|js)$ {
         add_header Access-Control-Allow-Origin "*";
 	expires max;
     }
@@ -268,8 +269,9 @@ server {
 #### Server Block: Favicon Settings ################################################################
 ####################################################################################################
 
+## 204 error better than 404 error if not found ##
+
     location = /favicon.ico {
-        ## 204 error better than 404 error if not found ##
         try_files $uri =204;
     }
     
@@ -408,5 +410,7 @@ server {
 ## Ref: https://www.digitalocean.com/community/questions/redirect-any-and-all-traffic-to-a-folder-to-another-url
 ## Ref: https://stackoverflow.com/questions/10631933/nginx-static-file-serving-confusion-with-root-alias
 ## Ref: https://www.peterbe.com/plog/be-very-careful-with-your-add_header-in-nginx
+## Ref: https://www.digitalocean.com/community/tutorials/understanding-nginx-server-and-location-block-selection-algorithms
+## Ref: https://www.keycdn.com/support/nginx-location-directive
 
 ## SS_EOF
