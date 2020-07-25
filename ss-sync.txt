@@ -54,7 +54,7 @@ function cp {
 
 ## rsync alias flags ##
 function rsync {
-    command rsync -aI --ignore-errors "$@"
+    command rsync -aI --delete-after --ignore-errors "$@"
 }
 
 ## unzip alias flags ##
@@ -84,15 +84,16 @@ function ln {
 ## here we copy over everything from production to staging besides uploads (media files) ##
 ## schedule ss-clean beforehand in order to remove various (large) junk type files ##
 
-## copy WordPress Core (PHP) files in web root ##
-rsync --delete-after --include="index.php" --include="wp-*.php" --exclude="*" /var/www/html/ /var/www/html/staging
-
 ## copy WordPress Core directories (wp-admin and wp-includes) ##
-rsync --delete-after /var/www/html/wp-admin/ /var/www/html/staging/wp-admin
-rsync --delete-after /var/www/html/wp-includes/ /var/www/html/staging/wp-includes
+rsync /var/www/html/wp-admin/ /var/www/html/staging/wp-admin
+rsync /var/www/html/wp-includes/ /var/www/html/staging/wp-includes
+
+## copy WordPress Core (PHP) files in web root ##
+# --exclude="*"
+rsync --exclude="wp-config.php*" --exclude="wp-admin*" --exclude="wp-includes*" --include="index.php" --include="wp-*.php" /var/www/html/ /var/www/html/staging
 
 ## copy wp-content files over (skips media uploads) ##
-rsync --delete-after --max-size=5mb --exclude 'mu-plugins' --exclude 'uploads' /var/www/html/wp-content/ /var/www/html/staging/wp-content
+rsync --max-size=5mb --exclude="mu-plugins*" --exclude="uploads*" /var/www/html/wp-content/ /var/www/html/staging/wp-content
 
 ## remove potential run-on subdirectories ##
 rm /var/www/html/staging/staging*
