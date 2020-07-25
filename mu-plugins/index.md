@@ -47,6 +47,10 @@ title: MU (Must-Use) Plugins (Public Mirrors)
 * [sftp-details.zip](sftp-details.zip)
 * [virtual-robotstxt.zip](virtual-robotstxt.zip)
 
+#### Staging MU (Must-Use) Plugins (Optional)
+
+* [disable-default-runner]
+
 ### Original Files
 
 *Raw files from the vendor’s original release (e.g. official repo), not altered by other providers, included for reference and documentation purposes.*
@@ -181,7 +185,8 @@ title: MU (Must-Use) Plugins (Public Mirrors)
 * [https://github.com/roots/bedrock/blob/master/web/app/mu-plugins/bedrock-autoloader.php](https://github.com/roots/bedrock/blob/master/web/app/mu-plugins/bedrock-autoloader.php)
 * [https://core.trac.wordpress.org/ticket/24044](https://core.trac.wordpress.org/ticket/24044)
 * [https://wordpress.stackexchange.com/questions/98284/how-come-wp-options-table-does-not-have-an-index-on-autoload](https://wordpress.stackexchange.com/questions/98284/how-come-wp-options-table-does-not-have-an-index-on-autoload)
+* [https://github.com/woocommerce/action-scheduler-disable-default-runner](https://github.com/woocommerce/action-scheduler-disable-default-runner)
 
 ----
 
-*Last updated: May 17, 2020*
+*Last updated: July 26, 2020*
