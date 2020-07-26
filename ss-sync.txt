@@ -124,6 +124,22 @@ else
     sed "s#${DB_PREFIX}#staging_#g" /tmp/staging.sql
 fi
 
+## fix hyperlinks (but not media src as they are shared with production uploads folder) ##
+sed 's#href="https://$SITE_DOMAIN#href="https://$SITE_DOMAIN/staging#g' /tmp/staging.sql
+sed 's#href="http://$SITE_DOMAIN#href="https://$SITE_DOMAIN/staging#g' /tmp/staging.sql
+sed 's#href="//$SITE_DOMAIN#href="https://$SITE_DOMAIN/staging#g' /tmp/staging.sql
+sed "s#href='https://$SITE_DOMAIN#href='https://$SITE_DOMAIN/staging#g" /tmp/staging.sql
+sed "s#href='http://$SITE_DOMAIN#href='https://$SITE_DOMAIN/staging#g" /tmp/staging.sql
+sed "s#href='//$SITE_DOMAIN#href='https://$SITE_DOMAIN/staging#g" /tmp/staging.sql
+
+## fix sources (mirrors to production uploads folder using Nginx alias so this is just for cleaner source code) ##
+sed 's#src="https://$SITE_DOMAIN#src="https://$SITE_DOMAIN/staging#g' /tmp/staging.sql
+sed 's#src="http://$SITE_DOMAIN#src="https://$SITE_DOMAIN/staging#g' /tmp/staging.sql
+sed 's#src="//$SITE_DOMAIN#src="https://$SITE_DOMAIN/staging#g' /tmp/staging.sql
+sed "s#src='https://$SITE_DOMAIN#src='https://$SITE_DOMAIN/staging#g" /tmp/staging.sql
+sed "s#src='http://$SITE_DOMAIN#src='https://$SITE_DOMAIN/staging#g" /tmp/staging.sql
+sed "s#src='//$SITE_DOMAIN#src='https://$SITE_DOMAIN/staging#g" /tmp/staging.sql
+
 ## fix potential run-on paths in temporary staging SQL dump ##
 sed "s#staging/staging/staging/staging/staging/staging/staging/staging/staging/staging/staging/staging/staging/staging/staging#staging#g" /tmp/staging.sql
 sed "s#staging/staging/staging/staging/staging/staging/staging/staging/staging/staging/staging/staging/staging/staging#staging#g" /tmp/staging.sql
@@ -155,6 +171,12 @@ sed "s#staging/////#staging/#g" /tmp/staging.sql
 sed "s#staging////#staging/#g" /tmp/staging.sql
 sed "s#staging///#staging/#g" /tmp/staging.sql
 sed "s#staging//#staging/#g" /tmp/staging.sql
+
+## fix potential double forward slashes between domain and subdirectory (caused by sed rules above) ##
+# sed "s#/////staging#/staging#g" /tmp/staging.sql
+# sed "s#////staging#/staging#g" /tmp/staging.sql
+# sed "s#///staging#/staging#g" /tmp/staging.sql
+# sed "s#//staging#/staging#g" /tmp/staging.sql
 
 ## fix potential run-on table prefixes ##
 sed "s#staging_staging_staging_staging_staging_staging_staging_staging_staging_staging_staging_staging_staging_staging_staging_#staging_#g" /tmp/staging.sql
@@ -206,6 +228,12 @@ find /var/www/html/staging/wp-content/themes/ -type f -exec sed -i "s#staging///
 find /var/www/html/staging/wp-content/themes/ -type f -exec sed -i "s#staging////#staging/#g" {} +
 find /var/www/html/staging/wp-content/themes/ -type f -exec sed -i "s#staging///#staging/#g" {} +
 find /var/www/html/staging/wp-content/themes/ -type f -exec sed -i "s#staging//#staging/#g" {} +
+
+## fix potential double forward slashes between domain and subdirectory (caused by sed rules above) ##
+# find /var/www/html/staging/wp-content/themes/ -type f -exec sed -i "s#/////staging#/staging#g" {} +
+# find /var/www/html/staging/wp-content/themes/ -type f -exec sed -i "s#////staging#/staging#g" {} +
+# find /var/www/html/staging/wp-content/themes/ -type f -exec sed -i "s#///staging#/staging#g" {} +
+# find /var/www/html/staging/wp-content/themes/ -type f -exec sed -i "s#//staging#/staging#g" {} +
 
 ## import database ##
 mysql "$DB_NAME" < /tmp/staging.sql
