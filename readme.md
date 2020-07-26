@@ -58,15 +58,15 @@ NOTE: The self-healing function will respect any custom Cron Job schedules found
 
 ## Core Modules [[read more](https://slickstack.io/modules)]
 
-*Last updated: Jun 19, 2020*
+*Last updated: Jul 27, 2020*
 
 *Default Ports: 80 (HTTP), 443 (HTTPS), 6969 (SSH)*
 
 | LEMP Module | Mirrors | Version | What does SlickStack [ss] customize? |
 | :------------- | :----------: | :----------: | :----------: |
 | **Ubuntu** | [mirrors](http://mirrors.slickstack.io/ubuntu/) | 20.04 (LTS) | `crontab` + `gai.conf` + `sshd_config` + `sudoers` + `sysctl.conf` |
-| **Nginx (Extras)** | [mirrors](http://mirrors.slickstack.io/nginx/) | 1.17.x | `nginx.conf` + `default` (server block) |
-| **FastCGI Cache** | [mirrors](http://mirrors.slickstack.io/fastcgi-cache/) | 1.17.x | `fastcgi-cache.conf` (moved to `nginx.conf`) |
+| **Nginx (Extras)** | [mirrors](http://mirrors.slickstack.io/nginx/) | 1.18.x | `nginx.conf` + `default` (server block) |
+| **FastCGI Cache** | [mirrors](http://mirrors.slickstack.io/fastcgi-cache/) | 1.18.x | `fastcgi-cache.conf` (moved to `nginx.conf`) |
 | **OpenSSL** | [mirrors](http://mirrors.slickstack.io/openssl/) | 1.1.1x | `nginx.crt` + `nginx.key` |
 | **Let's Encrypt** | [mirrors](http://mirrors.slickstack.io/letsencrypt/) | 0.40.x | `cert.perm` + `privkey.pem` + `chain.pem` + `fullchain.pem` |
 | **MySQL** | [mirrors](http://mirrors.slickstack.io/mysql/) | 8.0.x | `my.cnf` |
@@ -79,7 +79,7 @@ NOTE: The self-healing function will respect any custom Cron Job schedules found
 | **Adminer** | [mirrors](http://mirrors.slickstack.io/adminer/) | 4.7.7 | default config |
 | **Git** | [mirrors](http://mirrors.slickstack.io/git/) | 2.25.x | default config |
 | **UFW Firewall** | [mirrors](http://mirrors.slickstack.io/ufw-firewall/) | 0.36 | `ufw` + `ufw.conf` + `user-rules` |
-| **ClamAV** | [mirrors](http://mirrors.slickstack.io/clamav/) | 0.101.x | `freshclam.conf` |
+| **ClamAV** | [mirrors](http://mirrors.slickstack.io/clamav/) | 0.102.x | `freshclam.conf` |
 
 ## Abstract [[read more](https://slickstack.io/about)]
 
