@@ -173,10 +173,10 @@ sed "s#staging///#staging/#g" /tmp/staging.sql
 sed "s#staging//#staging/#g" /tmp/staging.sql
 
 ## fix potential double forward slashes between domain and subdirectory (caused by sed rules above) ##
-# sed "s#/////staging#/staging#g" /tmp/staging.sql
-# sed "s#////staging#/staging#g" /tmp/staging.sql
-# sed "s#///staging#/staging#g" /tmp/staging.sql
-# sed "s#//staging#/staging#g" /tmp/staging.sql
+sed "s#/////staging#/staging#g" /tmp/staging.sql
+sed "s#////staging#/staging#g" /tmp/staging.sql
+sed "s#///staging#/staging#g" /tmp/staging.sql
+sed "s#//staging#/staging#g" /tmp/staging.sql
 
 ## fix potential run-on table prefixes ##
 sed "s#staging_staging_staging_staging_staging_staging_staging_staging_staging_staging_staging_staging_staging_staging_staging_#staging_#g" /tmp/staging.sql
@@ -194,10 +194,33 @@ sed "s#staging_staging_staging_staging_#staging_#g" /tmp/staging.sql
 sed "s#staging_staging_staging_#staging_#g" /tmp/staging.sql
 sed "s#staging_staging_#staging_#g" /tmp/staging.sql
 
-## fix hardcoded links in theme files ##
+####################################################################################################
+#### SS-Sync: Fix Any Hardcoded Links In Theme Files ###############################################
+####################################################################################################
+
+## many themes (or custom-coded themes) often contain hardcoded HTML assets and links ##
+## here we forcefully fix these links to ensure staging sites render properly ##
+
+## fix hyperlinks (but not media src as they are shared with production uploads folder) ##
+find /var/www/html/staging/wp-content/themes/ -type f -exec sed -i 's#href="https://$SITE_DOMAIN#href="https://$SITE_DOMAIN/staging#g' {} +
+find /var/www/html/staging/wp-content/themes/ -type f -exec sed -i 's#href="http://$SITE_DOMAIN#href="https://$SITE_DOMAIN/staging#g' {} +
+find /var/www/html/staging/wp-content/themes/ -type f -exec sed -i 's#href="//$SITE_DOMAIN#href="https://$SITE_DOMAIN/staging#g' {} +
+find /var/www/html/staging/wp-content/themes/ -type f -exec sed -i "s#href='https://$SITE_DOMAIN#href='https://$SITE_DOMAIN/staging#g" {} +
+find /var/www/html/staging/wp-content/themes/ -type f -exec sed -i "s#href='http://$SITE_DOMAIN#href='https://$SITE_DOMAIN/staging#g" {} +
+find /var/www/html/staging/wp-content/themes/ -type f -exec sed -i "s#href='//$SITE_DOMAIN#href='https://$SITE_DOMAIN/staging#g" {} +
+
+## fix sources (mirrors to production uploads folder using Nginx alias so this is just for cleaner source code) ##
+find /var/www/html/staging/wp-content/themes/ -type f -exec sed -i 's#src="https://$SITE_DOMAIN#src="https://$SITE_DOMAIN/staging#g' {} +
+find /var/www/html/staging/wp-content/themes/ -type f -exec sed -i 's#src="http://$SITE_DOMAIN#src="https://$SITE_DOMAIN/staging#g' {} +
+find /var/www/html/staging/wp-content/themes/ -type f -exec sed -i 's#src="//$SITE_DOMAIN#src="https://$SITE_DOMAIN/staging#g' {} +
+find /var/www/html/staging/wp-content/themes/ -type f -exec sed -i "s#src='https://$SITE_DOMAIN#src='https://$SITE_DOMAIN/staging#g" {} +
+find /var/www/html/staging/wp-content/themes/ -type f -exec sed -i "s#src='http://$SITE_DOMAIN#src='https://$SITE_DOMAIN/staging#g" {} +
+find /var/www/html/staging/wp-content/themes/ -type f -exec sed -i "s#src='//$SITE_DOMAIN#src='https://$SITE_DOMAIN/staging#g" {} +
+
+## one last scorched earth approach ##
 find /var/www/html/staging/wp-content/themes/ -type f -exec sed -i "s#$SITE_DOMAIN#$SITE_DOMAIN/staging#g" {} +
 
-## fix potential (hardcoded) run-on paths in theme files ##
+## now we fix potential hardcoded run-on paths in theme files (caused by previous seds) ##
 find /var/www/html/staging/wp-content/themes/ -type f -exec sed -i "s#staging/staging/staging/staging/staging/staging/staging/staging/staging/staging/staging/staging/staging/staging/staging#staging#g" {} +
 find /var/www/html/staging/wp-content/themes/ -type f -exec sed -i "s#staging/staging/staging/staging/staging/staging/staging/staging/staging/staging/staging/staging/staging/staging#staging#g" {} +
 find /var/www/html/staging/wp-content/themes/ -type f -exec sed -i "s#staging/staging/staging/staging/staging/staging/staging/staging/staging/staging/staging/staging/staging#staging#g" {} +
@@ -230,10 +253,10 @@ find /var/www/html/staging/wp-content/themes/ -type f -exec sed -i "s#staging///
 find /var/www/html/staging/wp-content/themes/ -type f -exec sed -i "s#staging//#staging/#g" {} +
 
 ## fix potential double forward slashes between domain and subdirectory (caused by sed rules above) ##
-# find /var/www/html/staging/wp-content/themes/ -type f -exec sed -i "s#/////staging#/staging#g" {} +
-# find /var/www/html/staging/wp-content/themes/ -type f -exec sed -i "s#////staging#/staging#g" {} +
-# find /var/www/html/staging/wp-content/themes/ -type f -exec sed -i "s#///staging#/staging#g" {} +
-# find /var/www/html/staging/wp-content/themes/ -type f -exec sed -i "s#//staging#/staging#g" {} +
+find /var/www/html/staging/wp-content/themes/ -type f -exec sed -i "s#/////staging#/staging#g" {} +
+find /var/www/html/staging/wp-content/themes/ -type f -exec sed -i "s#////staging#/staging#g" {} +
+find /var/www/html/staging/wp-content/themes/ -type f -exec sed -i "s#///staging#/staging#g" {} +
+find /var/www/html/staging/wp-content/themes/ -type f -exec sed -i "s#//staging#/staging#g" {} +
 
 ## import database ##
 mysql "$DB_NAME" < /tmp/staging.sql
