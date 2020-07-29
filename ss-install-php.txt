@@ -111,18 +111,22 @@ apt purge php7.0*
 apt purge php7.1*
 apt purge php7.2*
 apt purge php7.3*
+apt purge php7.4*
 
 ## delete any leftover files from outdated versions of PHP ##
 rm /etc/php/7.0*
 rm /etc/php/7.1*
 rm /etc/php/7.2*
 rm /etc/php/7.3*
-
-## temp purge PHP 7.4 (so we can install again fresh) ##
-apt purge php7.4
+rm /etc/php/7.4*
 
 ## install PHP-FPM 7.4 and extensions (php7.4 not needed when php7.4-fpm is used) ##
 apt install php7.4-bcmath php7.4-curl php7.4-fpm php7.4-gd php7.4-imagick php7.4-json php7.4-mbstring php7.4-mysql php7.4-soap php7.4-xml php7.4-zip
+
+UBUNTU_VERSION=`lsb_release -rs`
+if [[ "${UBUNTU_VERSION}" = "18.04" ]]; then
+    apt install php7.2-bcmath php7.2-curl php7.2-fpm php7.2-gd php7.2-imagick php7.2-json php7.2-mbstring php7.2-mysql php7.2-soap php7.2-xml php7.2-zip
+fi
 
 ## delete tmp files ##
 rm /tmp/php-fpm*
@@ -455,6 +459,11 @@ cp /tmp/www.conf /etc/php/7.4/fpm/pool.d/www.conf
 
 ## set Ubuntu default PHP version ##
 update-alternatives --set php /usr/bin/php7.4
+
+UBUNTU_VERSION=`lsb_release -rs`
+if [[ "${UBUNTU_VERSION}" = "18.04" ]]; then
+    update-alternatives --set php /usr/bin/php7.2
+fi
 
 ## reset permissions ##
 chown root:root /etc/php/7.4/fpm/php-fpm.conf
