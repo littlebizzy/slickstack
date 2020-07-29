@@ -19,6 +19,9 @@ source /var/www/ss-config
 #### SlickStack: Critical Bash Functions (Aliases) For This Script To Work #########################
 ####################################################################################################
 
+## the below functions are hardcoded into every SlickStack script to ensure reliability ##
+## this also speeds up processing times by avoiding repeated inline commands ##
+
 ## apt alias flags ##
 function apt {
     export DEBIAN_FRONTEND=noninteractive
@@ -83,21 +86,25 @@ function ln {
 ####################################################################################################
 
 ## first we backup the live database (if exists) and stop/kill existing MySQL processes ##
-## then we proceed with purge/cleanup of MySQL packages to install from scratch ##
+## then we proceed with purge/cleanup of MySQL packages to pepare a clean install ##
 
-## run ss-dump ##
+## MESSAGE ##
+echo -e "\e[36mWARNING: to ensure a clean MySQL install this script will remove /var/lib/mysql and /etc/mysql ... although ss-dump will attempt to dump your live database to /var/www/meta/wp.sql it is still recommended to manually export your database for safe-keeping ... (EXIT NOW to avoid proceeding?)...\e[0m"
+sleep 15s
+
+## run ss-dump (also copies /var/lib/mysql to /var/www/meta/mysql.bak) ##
 source /var/www/ss-dump
 
-## stop MySQL and kill any remaining MySQL processes ##
+## stop MySQL service and kill any remaining processes ##
 /etc/init.d/mysql* stop
-sleep 10s
+sleep 15s
 killall mysql*
-sleep 10s
+sleep 15s
 
 ## purge all MySQL packages and remove any previous MySQL configuration files ##
 apt purge ^mysql
 rm /etc/mysql/*
-# rm /var/lib/mysql/*
+rm /var/lib/mysql/*
 
 ## cleanup potential conflicting files ##
 apt autoremove
@@ -494,5 +501,13 @@ rm /var/run/mysqld.bak*
 ## Ref: https://medium.com/@benmorel/remove-the-mysql-root-password-ba3fcbe29870
 ## Ref: https://dev.mysql.com/doc/refman/8.0/en/validate-password-installation.html
 ## Ref: https://dev.mysql.com/doc/refman/8.0/en/default-privileges.html
+## Ref: https://vander.host/knowledgebase/databases/cant-login-as-root-to-phpmyadmin-on-new-server-install/
+## Ref: https://devanswers.co/phpmyadmin-access-denied-for-user-root-localhost/
+## Ref:https://serverfault.com/questions/906490/mysql-rejects-connections-with-auth-socket
+## Ref: https://bugs.mysql.com/bug.php?id=79269
+## Ref: https://php.watch/articles/PHP-7.4-MySQL-8-server-gone-away-fix
+## Ref: https://stackoverflow.com/questions/39281594/error-1698-28000-access-denied-for-user-rootlocalhost
+## Ref: https://stackoverflow.com/questions/52364415/php-with-mysql-8-0-error-the-server-requested-authentication-method-unknown-to
+## Ref: https://www.digitalocean.com/community/tutorials/how-to-install-mysql-on-ubuntu-20-04-quickstart
 
 ## SS_EOF
