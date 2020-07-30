@@ -124,13 +124,17 @@ After completing the installation steps above, your `/var/www/` directory should
     /var/www/0-crontab
     /var/www/1-cron-often
     /var/www/2-cron-regular
-    /var/www/3-cron-hourly
-    /var/www/4-cron-quarter-daily
-    /var/www/5-cron-half-daily
-    /var/www/6-cron-daily
-    /var/www/7-cron-weekly
-    /var/www/8-cron-monthly
-    /var/www/9-cron-sometimes
+    /var/www/3-cron-quarter-hourly
+    /var/www/4-cron-half-hourly
+    /var/www/5-cron-hourly
+    /var/www/6-cron-quarter-daily
+    /var/www/7-cron-half-daily
+    /var/www/8-cron-daily
+    /var/www/9-cron-half-weekly
+    /var/www/10-cron-weekly
+    /var/www/11-cron-half-monthly
+    /var/www/12-cron-monthly
+    /var/www/13-cron-sometimes
     /var/www/cache/
     /var/www/html/
     /var/www/logs/
