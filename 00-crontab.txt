@@ -4,11 +4,12 @@
 #### mirror: http://mirrors.slickstack.io/00-crontab.txt ###########################################
 #### path: /var/www/00-crontab (boilerplate remains here for reference) ############################
 #### destination: /var/spool/cron/crontabs/root (after install) ####################################
-#### purpose: SlickStack crontab boilerplate (never, ever, ever modify SlickStack crontab) #########
+#### purpose: SlickStack crontab boilerplate (never, ever, ever modify the root crontab) ###########
 #### module version: Ubuntu 20.04 LTS ##############################################################
 ####################################################################################################
 
-## NEVER MODIFY THE SLICKSTACK CRONTAB OR CRON JOBS (MODIFY SS-CONFIG OR SS-CUSTOM ONLY) ##
+## NEVER MODIFY THE SLICKSTACK CRONTAB AND CRON JOBS OR YOUR STACK WILL LOSE FUCTIONALITY ##
+## INSTEAD YOU CAN MODIFY INTERVAL SETTINGS IN SS-CONFIG OR CUSTOMIZE SS-CUSTOM ##
 
 ####################################################################################################
 #### Crontab: Use Bash Instead Of Sh + Set Default System Path #####################################
@@ -31,8 +32,8 @@ PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 ## this Crontab schedule is hardcoded to run SlickStack Core cron jobs and nothing else ##
 ## the purpose of this approach is to achieve top-notch stability and security ##
 
-
-
+*/3 * * * * /usr/bin/flock -w 0 /tmp/01-cron-often.lock /var/www/01-cron-often > /dev/null 2>&1
+*/7 * * * * /usr/bin/flock -w 0 /tmp/02-cron-regular.lock /var/www/02-cron-regular > /dev/null 2>&1
 */15 * * * * /usr/bin/flock -w 0 /tmp/03-cron-quarter-hourly.lock /var/www/03-cron-quarter-hourly > /dev/null 2>&1
 */30 * * * * /usr/bin/flock -w 0 /tmp/04-cron-half-hourly.lock /var/www/04-cron-half-hourly > /dev/null 2>&1
 0 * * * * /usr/bin/flock -w 0 /tmp/05-cron-hourly.lock /var/www/05-cron-hourly > /dev/null 2>&1
@@ -54,8 +55,8 @@ PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 ## these minimal Crontab commands are emergency attempts to reinstall missing cron jobs ##
 ## this approach is not foolproof (better to reinstall SlickStack occasionally) ##
 
-0 9 * * * /bin/bash -c 'test -f /var/www/1-cron-often || wget --no-check-certificate --no-cache --no-cookies --tries=3 --timeout=15 -O /var/www/1-cron-often http://mirrors.slickstack.io/1-cron-often.txt' > /dev/null 2>&1
-0 9 * * * /bin/bash -c 'test -f /var/www/2-cron-regular || wget --no-check-certificate --no-cache --no-cookies --tries=3 --timeout=15 -O /var/www/2-cron-regular http://mirrors.slickstack.io/2-cron-regular.txt' > /dev/null 2>&1
+13 9 * * * /bin/bash -c 'test -f /var/www/01-cron-often || wget --no-check-certificate --no-cache --no-cookies --tries=3 --timeout=15 -O /var/www/01-cron-often http://mirrors.slickstack.io/01-cron-often.txt' > /dev/null 2>&1
+13 9 * * * /bin/bash -c 'test -f /var/www/02-cron-regular || wget --no-check-certificate --no-cache --no-cookies --tries=3 --timeout=15 -O /var/www/02-cron-regular http://mirrors.slickstack.io/02-cron-regular.txt' > /dev/null 2>&1
 
 ## new line to avoid conflicts ##
 
