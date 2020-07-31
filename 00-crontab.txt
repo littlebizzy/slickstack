@@ -1,0 +1,80 @@
+####################################################################################################
+#### author: SlickStack ############################################################################
+#### link: https://slickstack.io ###################################################################
+#### mirror: http://mirrors.slickstack.io/0-crontab.txt ############################################
+#### path: /var/www/0-crontab (boilerplate remains here for reference) #############################
+#### destination: /var/spool/cron/crontabs/root (after install) ####################################
+#### purpose: SlickStack crontab boilerplate (never, ever, ever modify SlickStack crontab) #########
+#### module version: Ubuntu 20.04 LTS ##############################################################
+####################################################################################################
+
+## NEVER MODIFY THE SLICKSTACK CRONTAB OR CRON JOBS (ADD CUSTOM SCRIPTS TO SS-CUSTOM) ##
+
+####################################################################################################
+#### Crontab: Use Bash Instead Of Sh + Set Default System Path #####################################
+####################################################################################################
+
+## to take advantage of various formatting benefits (etc) SlickStack uses Bash only ##
+## make sure to follow Bash coding standards for any custom shell scripts ##
+
+SHELL=/bin/bash
+
+## we include this default system path setting below to ensure wget (etc) works properly ##
+## this path setting is also reincluded at the top of SlickStack Core scripts ##
+
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+
+####################################################################################################
+#### Crontab: SlickStack Core Cron Jobs (The Sky Will Fall If You Modify This) #####################
+####################################################################################################
+
+## this Crontab schedule is hardcoded to run SlickStack Core cron jobs and nothing else ##
+## the purpose of this approach is to achieve top-notch stability and security ##
+
+*/15 * * * * /usr/bin/flock -w 0 /tmp/1-cron-often.lock /var/www/1-cron-often > /dev/null 2>&1
+*/30 * * * * /usr/bin/flock -w 0 /tmp/2-cron-regular.lock /var/www/2-cron-regular > /dev/null 2>&1
+0 * * * * /usr/bin/flock -w 0 /tmp/3-cron-hourly.lock /var/www/3-cron-hourly > /dev/null 2>&1
+0 */6 * * * /usr/bin/flock -w 0 /tmp/4-cron-quarter-daily.lock /var/www/4-cron-quarter-daily > /dev/null 2>&1
+0 */12 * * * /usr/bin/flock -w 0 /tmp/5-cron-half-daily.lock /var/www/5-cron-half-daily > /dev/null 2>&1
+0 0 * * * /usr/bin/flock -w 0 /tmp/6-cron-daily.lock /var/www/6-cron-daily > /dev/null 2>&1
+0 0 * * 0 /usr/bin/flock -w 0 /tmp/7-cron-weekly.lock /var/www/7-cron-weekly > /dev/null 2>&1
+0 0 1 * * /usr/bin/flock -w 0 /tmp/8-cron-monthly.lock /var/www/8-cron-monthly > /dev/null 2>&1
+0 0 1 */2 * /usr/bin/flock -w 0 /tmp/9-cron-sometimes.lock /var/www/9-cron-sometimes > /dev/null 2>&1
+
+## new line to avoid conflicts ##
+
+####################################################################################################
+#### Crontab: SlickStack Self-Healing (If Core Cron Jobs Not Found) ################################
+####################################################################################################
+
+## these minimal Crontab commands are emergency attempts to reinstall missing cron jobs ##
+## this approach is not foolproof (better to reinstall SlickStack occasionally) ##
+
+0 9 * * * /bin/bash -c 'test -f /var/www/1-cron-often || wget --no-check-certificate --no-cache --no-cookies --tries=3 --timeout=15 -O /var/www/1-cron-often http://mirrors.slickstack.io/1-cron-often.txt' > /dev/null 2>&1
+0 9 * * * /bin/bash -c 'test -f /var/www/2-cron-regular || wget --no-check-certificate --no-cache --no-cookies --tries=3 --timeout=15 -O /var/www/2-cron-regular http://mirrors.slickstack.io/2-cron-regular.txt' > /dev/null 2>&1
+
+## new line to avoid conflicts ##
+
+####################################################################################################
+#### SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ###############
+####################################################################################################
+
+## Ref: https://linuxize.com/post/scheduling-cron-jobs-with-crontab/
+## Ref: https://unix.stackexchange.com/questions/26133/are-multiple-daily-crontab-entries-processed-in-order-serially
+## Ref: https://askubuntu.com/questions/143666/in-what-order-do-cron-jobs-with-the-same-schedule-run
+## Ref: https://askubuntu.com/questions/23009/why-crontab-scripts-are-not-working/23337#23337
+## Ref: https://www.freebsd.org/doc/handbook/configtuning-cron.html
+## Ref: https://superuser.com/questions/290093/difference-between-etc-crontab-and-crontab-e
+## Ref: https://stackoverflow.com/questions/22203120/cronjob-entry-in-crontab-e-vs-etc-crontab-which-one-is-better
+## Ref: https://unix.stackexchange.com/questions/127732/system-crontab-or-root-crontab
+## Ref: https://stackoverflow.com/questions/31778785/crontab-not-running-wget
+## Ref: https://serverfault.com/questions/748943/using-flock-with-cron
+## Ref: https://superuser.com/questions/1391999/is-there-a-downside-to-using-flock-in-cron-jobs
+## Ref: https://simpleit.rocks/linux/shell/prevent-running-of-duplicate-cron-jobs/
+## Ref: https://ma.ttias.be/prevent-cronjobs-from-overlapping-in-linux/
+## Ref: https://stackoverflow.com/questions/655149/i-want-to-make-a-conditional-cronjob
+## Ref: https://serverfault.com/questions/571321/linux-bash-if-conditions-not-processing-when-running-as-crontab
+## Ref: https://stackoverflow.com/questions/10204562/difference-between-if-e-and-if-f
+## Ref: https://arachnoid.com/linux/shell_programming.html
+
+## SS_EOF
