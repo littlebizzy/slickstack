@@ -23,6 +23,9 @@ source /var/www/ss-config
 ## the below functions are hardcoded into every SlickStack script to ensure reliability ##
 ## this also speeds up processing times by avoiding repeated inline commands ##
 
+## Ubuntu version ##
+UBUNTU_VERSION=`lsb_release -rs`
+
 ## apt alias flags ##
 function apt {
     export DEBIAN_FRONTEND=noninteractive
@@ -81,49 +84,38 @@ function ln {
 }
 
 ####################################################################################################
-#### SS-Install: Check OS Compability + Verify SS-Config Freshness + Backup Database ###############
+#### SS-Install-PHP: Backup Database Before Proceeding #############################################
 ####################################################################################################
 
 ## run ss-dump ##
 source /var/www/ss-dump
 
 ####################################################################################################
-#### SlickStack: Set Dpkg Basic Settings + Update Apt (Package) Cache ##############################
+#### SS-Install-PHP: Install PHP-FPM 7.4.x + PHP Extensions + PHP-Redis ############################
 ####################################################################################################
+
+## here we first purge any existing PHP packages and then reinstall PHP-FPM with OPcache ##
 
 ## MESSAGE ##
 echo -e "\e[36mSet dpkg to noneractive and force confold and update apt cache...\e[0m"
 
-####################################################################################################
-#### SS-Install-PHP: Install PHP-FPM 7.4.x + Required PHP Extensions + PHP-Redis ###################
-####################################################################################################
-
-## here we first purge any existing PHP packages and then reinstall PHP-FPM with OPcache ##
-## several common PHP settings are hardcoded to improve LEMP server stability ##
-
-## purge outdated versions of PHP (not supported) ##
-apt purge php7.0*
-apt purge php7.1*
-apt purge php7.2*
-apt purge php7.3*
-apt purge php7.4*
+## purge any installed PHP packages ##
+apt purge ^php
 
 ## delete any leftover PHP files (disable for now because apt will not create these files if it notices the php directory exists already) ##
-# rm /etc/php/7.0*
-# rm /etc/php/7.1*
-# rm /etc/php/7.2*
-# rm /etc/php/7.3*
-# rm /etc/php/7.4*
+# rm /etc/php*
 
-## update repo cache ##
+## cleanup any outdated packages and system files ##
 apt autoremove
 apt autoclean
+
+## update repo cache ##
 apt update
 
-## install PHP-FPM 7.4 and extensions (php7.4 not needed when php7.4-fpm is used) ##
+## install PHP-FPM 7.4 and extensions (php7.4 not needed when php7.4-fpm is installed) ##
 apt install php7.4-fpm php7.4-bcmath php7.4-curl  php7.4-gd php7.4-imagick php7.4-json php7.4-mbstring php7.4-mysql php7.4-soap php7.4-xml php7.4-zip
 
-UBUNTU_VERSION=`lsb_release -rs`
+## install PHP-FPM 7.2 if server is running Ubuntu 18.04 ##
 if [[ "${UBUNTU_VERSION}" = "18.04" ]]; then
     apt install php7.2-fpm php7.2-bcmath php7.2-curl php7.2-gd php7.2-imagick php7.2-json php7.2-mbstring php7.2-mysql php7.2-soap php7.2-xml php7.2-zip
 fi
@@ -135,6 +127,9 @@ apt install php-redis
 #### SS-Install-PHP: Optimize PHP-FPM Configuration Files ##########################################
 ####################################################################################################
 
+## next we optimize the PHP-FPM configuration files based on settings from ss-config ##
+## several common PHP settings are hardcoded to improve LEMP server stability ##
+
 ## delete tmp files ##
 rm /tmp/php-fpm*
 rm /tmp/php-ini*
@@ -145,8 +140,9 @@ wget -O /tmp/php-fpm.conf http://mirrors.slickstack.io/php-fpm/php-fpm-conf.txt
 wget -O /tmp/php.ini http://mirrors.slickstack.io/php-fpm/php-ini.txt
 wget -O /tmp/www.conf http://mirrors.slickstack.io/php-fpm/www-conf.txt
 
-
-######### set php.ini stuff ########
+#################
+#### PHP.ini ####
+#################
 
 ## max execution time ##
 if [[ -z "$PHP_MAX_EXECUTION_TIME" ]]; then 
@@ -266,8 +262,6 @@ else
     sed -i "s/@PHP_DISABLE_FUNCTIONS/${PHP_DISABLE_FUNCTIONS}/g" /tmp/php.ini
 fi
 
-######### set php.ini opcache stuff ########
-
 ## opcache huge code pages ##
 if [[ -z "$OPCACHE_HUGE_CODE_PAGES" ]]; then 
     sed -i "s/@OPCACHE_HUGE_CODE_PAGES/0/g" /tmp/php.ini
@@ -316,8 +310,9 @@ else
     sed -i "s/@OPCACHE_MEMORY_CONSUMPTION/${OPCACHE_MEMORY_CONSUMPTION}/g" /tmp/php.ini
 fi
 
-
-######### set php-fpm.conf stuff ########
+######################
+#### PHP-FPM.conf ####
+######################
 
 ## emerg restart threshold ##
 if [[ -z "$FPM_EMERGENCY_RESTART_THRESHOLD" ]]; then 
@@ -375,8 +370,9 @@ else
     sed -i "s/@FPM_SYSTEMD_INTERVAL/${FPM_SYSTEMD_INTERVAL}/g" /tmp/php-fpm.conf
 fi
 
-
-######### set www.conf stuff ########
+##################
+#### WWW.conf ####
+##################
 
 ## pool listen backlog ##
 if [[ -z "$WWW_LISTEN_BACKLOG" ]]; then 
@@ -455,6 +451,10 @@ else
     sed -i "s/@WWW_RLIMIT_CORE/${WWW_RLIMIT_CORE}/g" /tmp/www.conf
 fi
 
+####################################################################################################
+#### SS-Install-PHP: Install PHP-FPM Configuration Files + Reset Permissions #######################
+####################################################################################################
+
 ## copy files to their destinations ##
 cp /tmp/php-fpm.conf /etc/php/7.4/fpm/php-fpm.conf
 cp /tmp/php.ini /etc/php/7.4/fpm/php.ini
@@ -464,10 +464,10 @@ cp /tmp/www.conf /etc/php/7.4/fpm/pool.d/www.conf
 ## customize PHP settings ##
 # sed -i '/error_log/c\error_log = /var/www/logs/error.log' /etc/php/7.4/fpm/php-fpm.conf
 
-## set Ubuntu default PHP version ##
+## make PHP 7.4 the default version ##
 update-alternatives --set php /usr/bin/php7.4
 
-UBUNTU_VERSION=`lsb_release -rs`
+## make PHP 7.2 the default version if server is running Ubuntu 18.04 ##
 if [[ "${UBUNTU_VERSION}" = "18.04" ]]; then
     update-alternatives --set php /usr/bin/php7.2
 fi
