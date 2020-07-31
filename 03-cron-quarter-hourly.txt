@@ -10,7 +10,8 @@
 #### module version: Ubuntu 20.04 LTS ##############################################################
 ####################################################################################################
 
-## NEVER MODIFY THE SLICKSTACK CRONTAB OR CRON JOBS (MODIFY SS-CONFIG OR SS-CUSTOM ONLY) ##
+## NEVER MODIFY THE SLICKSTACK CRONTAB AND CRON JOBS OR YOUR STACK WILL LOSE FUCTIONALITY ##
+## INSTEAD YOU CAN MODIFY INTERVAL SETTINGS IN SS-CONFIG OR CUSTOMIZE SS-CUSTOM ##
 
 ## include SlickStack configuration ##
 source /var/www/ss-config
@@ -77,7 +78,7 @@ function ln {
 }
 
 ####################################################################################################
-#### Cron Job (Often): Ensure SS-Check + SS-Worker (Core Scripts) Exist ############################
+#### Cron Job (Quarter-Hourly): Ensure SS-Check + SS-Worker (Core Scripts) Exist ###################
 ####################################################################################################
 
 ## ensure ss-check intact ##
@@ -115,16 +116,19 @@ if [[ ! -f "$FILE_SS_WORKER" ]] || [[ -z $(grep -q "$STRING_SS_WORKER" "$FILE_SS
 fi
 
 ####################################################################################################
-#### SlickStack Cron Job: *Often* ##################################################################
+#### Cron Job (Quarter-Hourly): Run Scheduled Tasks ################################################
 ####################################################################################################
 
-## run ss-check if set to often or if not defined (default) ##
-if [[ "$SS_INTERVAL_CHECK" == "often" || -z "$SS_INTERVAL_CHECK" ]]; then 
+## the below tasks will be called if configured to run at this interval in ss-config ##
+## certain tasks are automatically called if the relevant interval is missing ##
+
+## run ss-check if set to quarter-hourly or if not defined (default) ##
+if [[ "$SS_INTERVAL_CHECK" == "quarter-hourly" || -z "$SS_INTERVAL_CHECK" ]]; then 
     source /var/www/ss-check
 fi
 
-## run ss-dump if set to often ##
-if [[ "$SS_INTERVAL_DUMP" == "often" ]]; then 
+## run ss-dump if set to quarter-hourly ##
+if [[ "$SS_INTERVAL_DUMP" == "quarter-hourly" ]]; then 
     source /var/www/ss-dump
 fi
 
