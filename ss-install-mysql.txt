@@ -22,6 +22,9 @@ source /var/www/ss-config
 ## the below functions are hardcoded into every SlickStack script to ensure reliability ##
 ## this also speeds up processing times by avoiding repeated inline commands ##
 
+## Ubuntu version ##
+UBUNTU_VERSION=`lsb_release -rs`
+
 ## apt alias flags ##
 function apt {
     export DEBIAN_FRONTEND=noninteractive
@@ -103,8 +106,8 @@ sleep 15s
 
 ## purge all MySQL packages and remove any previous MySQL configuration files ##
 apt purge ^mysql
-rm /etc/mysql/*
-rm /var/lib/mysql/*
+# rm /etc/mysql/*
+# rm /var/lib/mysql/*
 
 ## cleanup potential conflicting files ##
 apt autoremove
@@ -124,8 +127,8 @@ apt update
 ## sudo /usr/share/debconf/fix_db.pl ## fixes broken debconf
 
 ## purge any previous debconf/MySQL data ##
-sudo echo PURGE | sudo debconf-communicate mysql-community-server
-sudo echo PURGE | sudo debconf-communicate mysql-server
+# sudo echo PURGE | sudo debconf-communicate mysql-community-server
+# sudo echo PURGE | sudo debconf-communicate mysql-server
 # sudo debconf-set-selections <<< "mysql-community-server mysql-community-server/remove-data-dir boolean true"
 #####sudo echo "mysql-community-server mysql-community-server/remove-data-dir boolean true" | sudo debconf-set-selections
 
@@ -151,13 +154,17 @@ sudo echo PURGE | sudo debconf-communicate mysql-server
 # WORKS 5.7 ... echo debconf mysql-server/root_password password ${DB_PASSWORD_ROOT} | debconf-set-selections	
 # WORKS 5.7 ... echo debconf mysql-server/root_password_again password ${DB_PASSWORD_ROOT} | debconf-set-selections
 
-## install MySQL ##
+## purge any previous debconf/MySQL data ##
+sudo echo PURGE | sudo debconf-communicate mysql-community-server
+sudo echo PURGE | sudo debconf-communicate mysql-server
+
+## install MySQL 8.0 ##
 apt install mysql-server-8.0
 
-## ensure root@localhost uses mysql_native_password ##
-#####sudo mysql -e "ALTER USER IF EXISTS 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD_ROOT}';"
-#####sudo mysql -e "GRANT ALL ON *.* TO 'root'@'localhost' WITH GRANT OPTION;"
-#####sudo mysql -e "FLUSH PRIVILEGES;"
+## install MySQL 5.7 if server is running Ubuntu 18.04 ##
+if [[ "${UBUNTU_VERSION}" = "18.04" ]]; then
+    apt install mysql-server-5.7
+fi
 
 ####################################################################################################
 #### SS-Install-MySQL: Configure Root + Admin User (Localhost/IPv4/IPv6) ###########################
@@ -165,6 +172,11 @@ apt install mysql-server-8.0
 
 ## we use the new auth_socket for MySQL root but 127.0.0.1 (TCP) for WordPress database ##
 ## another user (admin) is also created that can be used with phpMyAdmin, etc ##
+
+## ensure root@localhost uses mysql_native_password ##
+#####sudo mysql -e "ALTER USER IF EXISTS 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD_ROOT}';"
+#####sudo mysql -e "GRANT ALL ON *.* TO 'root'@'localhost' WITH GRANT OPTION;"
+#####sudo mysql -e "FLUSH PRIVILEGES;"
 
 ## MESSAGE ##
 # echo -e "\e[36mMySQL 8.0 is installed, now we will secure it...\e[0m"
@@ -218,9 +230,6 @@ sudo mysql -e "DELETE FROM mysql.user WHERE user='';"
 sudo mysql -e "DELETE FROM mysql.user WHERE user='root' AND host NOT IN ('localhost', '127.0.0.1', '::1');"
 sudo mysql -e "DELETE FROM mysql.user WHERE user='admin' AND host NOT IN ('localhost', '127.0.0.1', '::1');"
 sudo mysql -e "DROP DATABASE IF EXISTS test;"
-
-# export MYSQL_PWD=$DB_PASSWORD_ROOT
-# mysql --user=root --host="$DB_HOST" --protocol=tcp --port=3306 -e "FLUSH PRIVILEGES;"
 
 ########
 
