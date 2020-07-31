@@ -78,6 +78,47 @@ function ln {
 }
 
 ####################################################################################################
+#### SlickStack: Ensure SS-Check + SS-Worker (Core Scripts) Exist ##################################
+####################################################################################################
+
+## this snippet improves redundancy by having Core Crons ensure that Core Scripts exist ##
+## additionally the root Crontab in SlickStack ensures that Core Crons exist too ##
+
+## ensure ss-check intact ##
+FILE_SS_CHECK="/var/www/ss-check"
+STRING_SS_CHECK="SS_CHECK_EOF"
+if [[ ! -f "$FILE_SS_CHECK" ]] || [[ -z $(grep -q "$STRING_SS_CHECK" "$FILE_SS_CHECK") ]]; then
+    ## delete temp files ##
+    rm /tmp/ss-check*
+    ## download latest versions ##
+    wget -O /tmp/ss-check http://mirrors.slickstack.io/ss-check.txt
+    ## copy files to their destinations ##
+    cp /tmp/ss-check /var/www/ss-check
+    ## reset permissions ##
+    chown root:root /var/www/ss-check
+    chmod 6770 /var/www/ss-check
+    ## delete temp files ##
+    rm /tmp/ss-check*
+fi
+
+## ensure ss-worker intact ##
+FILE_SS_WORKER="/var/www/ss-worker"
+STRING_SS_WORKER="SS_EOF"
+if [[ ! -f "$FILE_SS_WORKER" ]] || [[ -z $(grep -q "$STRING_SS_WORKER" "$FILE_SS_WORKER") ]]; then
+    ## delete temp files ##
+    rm /tmp/ss-worker*
+    ## download latest versions ##
+    wget -O /tmp/ss-worker http://mirrors.slickstack.io/ss-worker.txt
+    ## copy files to their destinations ##
+    cp /tmp/ss-worker /var/www/ss-worker
+    ## reset permissions ##
+    chown root:root /var/www/ss-worker
+    chmod 6770 /var/www/ss-worker
+    ## delete temp files ##
+    rm /tmp/ss-worker*
+fi
+
+####################################################################################################
 #### Cron Job (Weekly): Run Scheduled Tasks ########################################################
 ####################################################################################################
 
