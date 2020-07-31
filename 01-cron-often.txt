@@ -1,0 +1,147 @@
+#!/bin/bash
+
+####################################################################################################
+#### author: SlickStack ############################################################################
+#### link: https://slickstack.io ###################################################################
+#### mirror: http://mirrors.slickstack.io/1-cron-often.txt #########################################
+#### path: /var/www/1-cron-often ###################################################################
+#### destination: n/a (not a boilerplate) ##########################################################
+#### purpose: SlickStack cron job *often* (1/9) will run every 15 minutes ##########################
+#### module version: Ubuntu 20.04 LTS ##############################################################
+####################################################################################################
+
+## !!! DO NOT MODIFY SLICKSTACK CRONTAB OR CRON JOBS (ADD CUSTOM SCRIPTS TO SS-CUSTOM) ##
+
+## include SlickStack configuration ##
+source /var/www/ss-config
+
+####################################################################################################
+#### SlickStack: Critical Bash Functions (Aliases) For This Script To Work #########################
+####################################################################################################
+
+## apt alias flags ##
+function apt {
+    export DEBIAN_FRONTEND=noninteractive
+    export DEBIAN_PRIORITY=critical
+    export PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'
+    command /usr/bin/apt -q -y -o Dpkg::Options::=--force-confold -o Dpkg::Options::=--force-confdef "$@"
+}
+
+## add-apt-repository alias flags ##
+function add-apt-repository {
+    export DEBIAN_FRONTEND=noninteractive
+    export DEBIAN_PRIORITY=critical
+    export PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'
+    command /usr/bin/add-apt-repository -y "$@"
+}
+
+## mysql alias flags ##
+function mysql {
+    export MYSQL_PWD=$DB_PASSWORD_ROOT
+    command mysql --user=root --database="$DB_NAME" --host="$DB_HOST" --protocol=tcp --port=3306 --force "$@"
+}
+
+## wget alias flags ##
+function wget {
+    command wget --no-check-certificate --no-cache --no-cookies --tries=3 --timeout=15 "$@"
+}
+
+## cp alias flags ##
+function cp {
+    command cp -R -f -d --no-preserve=mode,ownership "$@"
+}
+
+## rsync alias flags ##
+function rsync {
+    command rsync -aI --ignore-errors "$@"
+}
+
+## unzip alias flags ##
+function unzip {
+    command unzip -o "$@"
+}
+
+## rm alias flags ##
+function rm {
+    command rm -R -f "$@"
+}
+
+## mkdir alias flags ##
+function mkdir {
+    command mkdir -p "$@"
+}
+
+## ln alias flags ##
+function ln {
+    command ln -s -f "$@"
+}
+
+####################################################################################################
+#### Cron Job (Often): Ensure SS-Check + SS-Worker (Bash Scripts) Exist ############################
+####################################################################################################
+
+## ensure ss-check intact ##
+FILE_SS_CHECK="/var/www/ss-check"
+STRING_SS_CHECK="SS_CHECK_EOF"
+if [[ ! -f "$FILE_SS_CHECK" ]] || [[ -z $(grep -q "$STRING_SS_CHECK" "$FILE_SS_CHECK") ]]; then
+    ## delete temp files ##
+    rm /tmp/ss-check*
+    ## download latest versions ##
+    wget -O /tmp/ss-check http://mirrors.slickstack.io/ss-check.txt
+    ## copy files to their destinations ##
+    cp /tmp/ss-check /var/www/ss-check
+    ## reset permissions ##
+    chown root:root /var/www/ss-check
+    chmod 6770 /var/www/ss-check
+    ## delete temp files ##
+    rm /tmp/ss-check*
+fi
+
+## ensure ss-worker intact ##
+FILE_SS_WORKER="/var/www/ss-worker"
+STRING_SS_WORKER="SS_EOF"
+if [[ ! -f "$FILE_SS_WORKER" ]] || [[ -z $(grep -q "$STRING_SS_WORKER" "$FILE_SS_WORKER") ]]; then
+    ## delete temp files ##
+    rm /tmp/ss-worker*
+    ## download latest versions ##
+    wget -O /tmp/ss-worker http://mirrors.slickstack.io/ss-worker.txt
+    ## copy files to their destinations ##
+    cp /tmp/ss-worker /var/www/ss-worker
+    ## reset permissions ##
+    chown root:root /var/www/ss-worker
+    chmod 6770 /var/www/ss-worker
+    ## delete temp files ##
+    rm /tmp/ss-worker*
+fi
+
+####################################################################################################
+#### SlickStack Cron Job: *Often* ##################################################################
+####################################################################################################
+
+## run ss-check if set to often or if not defined (default) ##
+if [[ "$SS_INTERVAL_CHECK" == "often" || -z "$SS_INTERVAL_CHECK" ]]; then 
+    source /var/www/ss-check
+fi
+
+## run ss-dump if set to often ##
+if [[ "$SS_INTERVAL_DUMP" == "often" ]]; then 
+    source /var/www/ss-dump
+fi
+
+## TEMP ##
+source /var/www/ss-check
+
+## delete lock files ##
+rm /tmp/1-cron-often*.lock*
+
+####################################################################################################
+#### SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ###############
+####################################################################################################
+
+## Ref: https://stackoverflow.com/questions/22861580/bash-script-check-if-a-file-contains-a-specific-line
+## Ref: https://stackoverflow.com/questions/4749330/how-to-test-if-string-exists-in-file-with-bash/14201583
+## Ref: https://stackoverflow.com/questions/11287861/how-to-check-if-a-file-contains-a-specific-string-using-bash
+## Ref: https://stackoverflow.com/questions/4749330/how-to-test-if-string-exists-in-file-with-bash-
+## Ref: https://stackoverflow.com/questions/42377739/while-file-doesnt-contain-string-bash
+
+## SS_EOF
