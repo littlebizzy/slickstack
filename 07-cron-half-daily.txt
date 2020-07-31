@@ -1,1 +1,117 @@
-#
+#!/bin/bash
+
+####################################################################################################
+#### author: SlickStack ############################################################################
+#### link: https://slickstack.io ###################################################################
+#### mirror: http://mirrors.slickstack.io/07-cron-half-daily.txt ###################################
+#### path: /var/www/07-cron-half-daily #############################################################
+#### destination: n/a (not a boilerplate) ##########################################################
+#### purpose: SlickStack cron job *half-daily* (07/13) will run ever 12 hours ######################
+#### module version: Ubuntu 20.04 LTS ##############################################################
+####################################################################################################
+
+## NEVER MODIFY THE SLICKSTACK CRONTAB OR CRON JOBS (MODIFY SS-CONFIG OR SS-CUSTOM ONLY) ##
+
+## include SlickStack configuration ##
+source /var/www/ss-config
+
+####################################################################################################
+#### SlickStack: Critical Bash Functions (Aliases) For This Script To Work #########################
+####################################################################################################
+
+## apt alias flags ##
+function apt {
+    export DEBIAN_FRONTEND=noninteractive
+    export DEBIAN_PRIORITY=critical
+    export PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'
+    command /usr/bin/apt -q -y -o Dpkg::Options::=--force-confold -o Dpkg::Options::=--force-confdef "$@"
+}
+
+## add-apt-repository alias flags ##
+function add-apt-repository {
+    export DEBIAN_FRONTEND=noninteractive
+    export DEBIAN_PRIORITY=critical
+    export PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'
+    command /usr/bin/add-apt-repository -y "$@"
+}
+
+## mysql alias flags ##
+function mysql {
+    export MYSQL_PWD=$DB_PASSWORD_ROOT
+    command mysql --user=root --database="$DB_NAME" --host="$DB_HOST" --protocol=tcp --port=3306 --force "$@"
+}
+
+## wget alias flags ##
+function wget {
+    command wget --no-check-certificate --no-cache --no-cookies --tries=3 --timeout=15 "$@"
+}
+
+## cp alias flags ##
+function cp {
+    command cp -R -f -d --no-preserve=mode,ownership "$@"
+}
+
+## rsync alias flags ##
+function rsync {
+    command rsync -aI --ignore-errors "$@"
+}
+
+## unzip alias flags ##
+function unzip {
+    command unzip -o "$@"
+}
+
+## rm alias flags ##
+function rm {
+    command rm -R -f "$@"
+}
+
+## mkdir alias flags ##
+function mkdir {
+    command mkdir -p "$@"
+}
+
+## ln alias flags ##
+function ln {
+    command ln -s -f "$@"
+}
+
+####################################################################################################
+#### SlickStack Cron Job: *Half-Daily* #############################################################
+####################################################################################################
+
+## run ss-dump if set to half-daily ##
+if [[ "$SS_INTERVAL_DUMP" == "half-daily" ]]; then 
+    source /var/www/ss-dump
+fi
+
+## run ss-perms if set to half-daily ##
+if [[ "$SS_INTERVAL_PERMS" == "half-daily" ]]; then 
+    source /var/www/ss-perms
+fi
+
+## run ss-clean if set to half-daily or if not defined (default) ##
+if [[ "$SS_INTERVAL_CLEAN" == "half-daily" || -z "$SS_INTERVAL_CLEAN" ]]; then 
+    source /var/www/ss-clean
+fi
+
+## run ss-sync if set to half-daily or if not defined (default) ##
+if [[ "$SS_INTERVAL_SYNC" == "half-daily" || -z "$SS_INTERVAL_SYNC" ]]; then 
+    source /var/www/ss-sync
+fi
+
+## run ss-install-wpconfig if set to half-daily ##
+if [[ "$SS_INTERVAL_INSTALL_WPCONFIG" == "half-daily" ]]; then 
+    source /var/www/ss-install-wpconfig
+fi
+
+## delete lock files ##
+rm /tmp/07-cron-half-daily*.lock*
+
+####################################################################################################
+#### SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ###############
+####################################################################################################
+
+## Ref:
+
+## SS_EOF
