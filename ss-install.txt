@@ -488,54 +488,10 @@ chmod 6664 /var/www/tools/adminer/adminer.php &> /dev/null
 chmod 6664 /var/www/meta/adminer.php &> /dev/null
 
 ####################################################################################################
-#### SS-Install: Configure UFW Firewall + Set UFW Rules ############################################
+#### SS-Install: Install UFW Firewall + Configure Firewall Rules ###################################
 ####################################################################################################
 
-## delete tmp files ##
-rm /tmp/ufw*
-rm /tmp/user*
-
-## install ufw ##
-apt install ufw
-
-## ufw rules ##
-ufw default deny incoming
-ufw default allow outgoing
-ufw allow $SSH_PORT
-ufw allow 80
-ufw allow 443
-ufw allow 6379
-ufw --force disable
-ufw --force enable
-echo "y" | ufw enable
-
-# retrieve latest versions ##
-wget -O /tmp/ufw http://mirrors.slickstack.io/ufw-firewall/ufw.txt
-wget -O /tmp/ufw.conf http://mirrors.slickstack.io/ufw-firewall/ufw-conf.txt
-wget -O /tmp/user.rules http://mirrors.slickstack.io/ufw-firewall/user-rules.txt
-
-if [[ -z "$SSH_PORT" ]]; then 
-    sed -i "s/@SSH_PORT/6969/g" /tmp/user.rules
-else 
-    sed -i "s/@SSH_PORT/${SSH_PORT}/g" /tmp/user.rules
-fi
-
-## copy files to their destinations ##
-cp /tmp/ufw /etc/default/ufw
-cp /tmp/ufw.conf /etc/ufw/ufw.conf
-cp /tmp/user.rules /etc/ufw/user.rules
-
-## reset permissions ##
-chown root:root /etc/default/ufw
-chown root:root /etc/ufw/ufw.conf
-chown root:root /etc/ufw/user.rules
-chmod 0664 /etc/default/ufw
-chmod 0664 /etc/ufw/ufw.conf
-chmod 0664 /etc/ufw/user.rules
-
-## delete tmp files ##
-rm /tmp/ufw*
-rm /tmp/user*
+source /var/www/ss-install-ufw
 
 ####################################################################################################
 #### Configure ClamAV ##############################################################################
