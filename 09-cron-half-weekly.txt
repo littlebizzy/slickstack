@@ -20,6 +20,12 @@ source /var/www/ss-config
 #### SlickStack: Critical Bash Functions (Aliases) For This Script To Work #########################
 ####################################################################################################
 
+## the below functions are hardcoded into every SlickStack script to ensure reliability ##
+## this also speeds up processing times by avoiding repeated inline commands ##
+
+## Ubuntu version ##
+UBUNTU_VERSION=`lsb_release -rs`
+
 ## apt alias flags ##
 function apt {
     export DEBIAN_FRONTEND=noninteractive
@@ -125,7 +131,45 @@ fi
 ## the below tasks will be called if configured to run at this interval in ss-config ##
 ## certain tasks are automatically called if the relevant interval is missing ##
 
+## run ss-clean if set to half-weekly ##
+if [[ "$SS_INTERVAL_CLEAN" == "half-weekly" ]]; then 
+    source /var/www/ss-clean
+fi
 
+## run ss-sync if set to half-weekly ##
+if [[ "$SS_INTERVAL_SYNC" == "half-weekly" ]]; then 
+    source /var/www/ss-sync
+fi
+
+## run ss-install-wpconfig if set to half-weekly ##
+if [[ "$SS_INTERVAL_INSTALL_WPCONFIG" == "half-weekly" ]]; then 
+    source /var/www/ss-install-wpconfig
+fi
+
+## run ss-muplugs if set to half-weekly ##
+if [[ "$SS_INTERVAL_MUPLUGS" == "half-weekly" ]]; then 
+    source /var/www/ss-muplugs
+fi
+
+## run ss-scan if set to half-weekly ##
+if [[ "$SS_INTERVAL_SCAN" == "half-weekly" ]]; then 
+    source /var/www/ss-scan
+fi
+
+## run ss-optimize if set to half-weekly ##
+if [[ "$SS_INTERVAL_OPTIMIZE" == "half-weekly" ]]; then 
+    source /var/www/ss-optimize
+fi
+
+## run ss-encrypt if set to half-weekly ##
+if [[ "$SS_INTERVAL_ENCRYPT" == "half-weekly" ]]; then 
+    source /var/www/ss-encrypt
+fi
+
+## run ss-purge if set to half-weekly ##
+if [[ "$SS_INTERVAL_PURGE" == "half-weekly" ]]; then 
+    source /var/www/ss-purge
+fi
 
 ## delete lock files ##
 rm /tmp/09-cron-half-weekly*.lock*
