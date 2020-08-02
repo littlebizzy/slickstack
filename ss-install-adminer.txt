@@ -1,0 +1,111 @@
+#!/bin/bash
+
+####################################################################################################
+#### author: SlickStack ############################################################################
+#### link: https://slickstack.io ###################################################################
+#### mirror: http://mirrors.slickstack.io/ss-install-adminer.txt ###################################
+#### path: /var/www/ss-install-adminer #############################################################
+#### destination: n/a (not a boilerplate) ##########################################################
+#### purpose: Reinstalls the Adminer (phpMyAdmin) module for database management (idempotent) ######
+#### module version: Ubuntu 20.04 LTS + Adminer 4.7.7 ##############################################
+####################################################################################################
+
+## SS-CONFIG MUST BE PROPERLY CONFIGURED (AND CURRENT BUILD) BEFORE RUNNING SS-INSTALL ##
+## ENSURE SS-CONFIG OPTIONS REMAIN CURRENT BY RUNNING SS-UPDATE OCCASIONALLY ##
+
+## include SlickStack configuration ##
+source /var/www/ss-config
+
+####################################################################################################
+#### SlickStack: Critical Bash Functions (Aliases) For This Script To Work #########################
+####################################################################################################
+
+## the below functions are hardcoded into every SlickStack script to ensure reliability ##
+## this also speeds up processing times by avoiding repeated inline commands ##
+
+## apt alias flags ##
+function apt {
+    export DEBIAN_FRONTEND=noninteractive
+    export DEBIAN_PRIORITY=critical
+    export PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'
+    command /usr/bin/apt -q -y -o Dpkg::Options::=--force-confold -o Dpkg::Options::=--force-confdef "$@"
+}
+
+## add-apt-repository alias flags ##
+function add-apt-repository {
+    export DEBIAN_FRONTEND=noninteractive
+    export DEBIAN_PRIORITY=critical
+    export PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'
+    command /usr/bin/add-apt-repository -y "$@"
+}
+
+## mysql alias flags ##
+function mysql {
+    export MYSQL_PWD=$DB_PASSWORD_ROOT
+    command mysql --user=root --database="$DB_NAME" --host="$DB_HOST" --protocol=tcp --port=3306 --force "$@"
+}
+
+## wget alias flags ##
+function wget {
+    command wget --no-check-certificate --no-cache --no-cookies --tries=3 --timeout=15 "$@"
+}
+
+## cp alias flags ##
+function cp {
+    command cp -R -f -d --no-preserve=mode,ownership "$@"
+}
+
+## rsync alias flags ##
+function rsync {
+    command rsync -aI --ignore-errors "$@"
+}
+
+## unzip alias flags ##
+function unzip {
+    command unzip -o "$@"
+}
+
+## rm alias flags ##
+function rm {
+    command rm -R -f "$@"
+}
+
+## mkdir alias flags ##
+function mkdir {
+    command mkdir -p "$@"
+}
+
+## ln alias flags ##
+function ln {
+    command ln -s -f "$@"
+}
+
+####################################################################################################
+#### SS-Install: Install Adminer (phpMyAdmin) ######################################################
+####################################################################################################
+
+## MESSAGE ##
+echo -e "\e[36mInstalling Adminer script for SQL database management...\e[0m"
+
+## download latest versions ##
+wget -O /tmp/adminer.php http://mirrors.slickstack.io/adminer/adminer.txt
+
+## copy files to their destinations ##
+cp /tmp/adminer.php /var/www/meta/adminer.php
+
+## reset permissions ##
+chown -R www-data:www-data /var/www/tools/adminer
+chmod 6775 /var/www/tools/adminer &> /dev/null
+chmod 6664 /var/www/tools/adminer/adminer.php &> /dev/null
+
+chmod 6664 /var/www/meta/adminer.php &> /dev/null
+
+## add script to check Nginx server block for adminer location if not exist run ss-install-nginx ##
+
+####################################################################################################
+#### SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ###############
+####################################################################################################
+
+## Ref: 
+
+## SS_EOF
