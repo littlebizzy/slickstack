@@ -20,6 +20,12 @@ source /var/www/ss-config
 #### SlickStack: Critical Bash Functions (Aliases) For This Script To Work #########################
 ####################################################################################################
 
+## the below functions are hardcoded into every SlickStack script to ensure reliability ##
+## this also speeds up processing times by avoiding repeated inline commands ##
+
+## Ubuntu version ##
+UBUNTU_VERSION=`lsb_release -rs`
+
 ## apt alias flags ##
 function apt {
     export DEBIAN_FRONTEND=noninteractive
@@ -128,6 +134,11 @@ fi
 ## run ss-check if set to quarter-hourly or if not defined (default) ##
 if [[ "$SS_INTERVAL_CHECK" == "quarter-hourly" || -z "$SS_INTERVAL_CHECK" ]]; then 
     source /var/www/ss-check
+fi
+
+## run ss-worker if set to quarter-hourly ##
+if [[ "$SS_INTERVAL_WORKER" == "quarter-hourly" ]]; then 
+    source /var/www/ss-worker
 fi
 
 ## run ss-dump if set to quarter-hourly ##
