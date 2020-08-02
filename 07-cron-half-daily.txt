@@ -20,6 +20,12 @@ source /var/www/ss-config
 #### SlickStack: Critical Bash Functions (Aliases) For This Script To Work #########################
 ####################################################################################################
 
+## the below functions are hardcoded into every SlickStack script to ensure reliability ##
+## this also speeds up processing times by avoiding repeated inline commands ##
+
+## Ubuntu version ##
+UBUNTU_VERSION=`lsb_release -rs`
+
 ## apt alias flags ##
 function apt {
     export DEBIAN_FRONTEND=noninteractive
@@ -130,14 +136,14 @@ if [[ "$SS_INTERVAL_DUMP" == "half-daily" ]]; then
     source /var/www/ss-dump
 fi
 
-## run ss-perms if set to half-daily ##
-if [[ "$SS_INTERVAL_PERMS" == "half-daily" ]]; then 
-    source /var/www/ss-perms
-fi
-
 ## run ss-clean if set to half-daily or if not defined (default) ##
 if [[ "$SS_INTERVAL_CLEAN" == "half-daily" || -z "$SS_INTERVAL_CLEAN" ]]; then 
     source /var/www/ss-clean
+fi
+
+## run ss-install-wpconfig if set to half-daily ##
+if [[ "$SS_INTERVAL_INSTALL_WPCONFIG" == "half-daily" ]]; then 
+    source /var/www/ss-install-wpconfig
 fi
 
 ## run ss-sync if set to half-daily or if not defined (default) ##
@@ -145,9 +151,9 @@ if [[ "$SS_INTERVAL_SYNC" == "half-daily" || -z "$SS_INTERVAL_SYNC" ]]; then
     source /var/www/ss-sync
 fi
 
-## run ss-install-wpconfig if set to half-daily ##
-if [[ "$SS_INTERVAL_INSTALL_WPCONFIG" == "half-daily" ]]; then 
-    source /var/www/ss-install-wpconfig
+## run ss-perms if set to half-daily ##
+if [[ "$SS_INTERVAL_PERMS" == "half-daily" ]]; then 
+    source /var/www/ss-perms
 fi
 
 ## delete lock files ##
