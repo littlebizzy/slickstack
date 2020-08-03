@@ -10,7 +10,8 @@
 #### module version: Ubuntu 20.04 LTS + MySQL 8.0.x ################################################
 ####################################################################################################
 
-## THIS SCRIPT IS CURRENTLY BROKEN / ALPHA ... DO NOT USE IN PRODUCTION ##
+## MYSQL IS PHASING OUT NATIVE PASSWORDS IN FAVOR OF UNIX SOCKETS AND/OR SHA2 HASHING ##
+## WE USE SOCKETS FOR CORE SCRIPTS AND AIM TO USE TCP/SSL/SHA2 FOR WORDPRESS ##
 
 ## include SlickStack configuration ##
 source /var/www/ss-config
@@ -43,11 +44,10 @@ function add-apt-repository {
 }
 
 ## mysql alias flags ##
-# function mysql {
-    ## export MYSQL_PWD=$DB_PASSWORD_ROOT ## deprecated MySQL 8.0
-    #####command mysql --user=root --password=$DB_PASSWORD_ROOT --host=localhost --protocol=socket --port=3306 --force "$@"
-    # command mysql --no-defaults --user=root --host=localhost --protocol=socket --socket=/var/run/mysqld/mysqld.sock --port=3306 --force "$@"
-# }
+function mysql {
+    command mysql --user=root --host=localhost --protocol=socket --port=3306 --force "$@"
+    # command mysql --no-defaults --user=root --password=$DB_PASSWORD_ROOT --host=localhost --protocol=socket --socket=/var/run/mysqld/mysqld.sock --port=3306 --force "$@"
+}
 
 ## wget alias flags ##
 function wget {
@@ -117,111 +117,50 @@ apt autoclean
 apt update
 
 ####################################################################################################
-#### SS-Install-MySQL: Install MySQL 8.0.x (Single Database Only) ##################################
+#### SS-Install-MySQL: Prepare Root User Authentication (Debconf) ##################################
 ####################################################################################################
 
 ## here we prepare the MySQL root password using the Debian/Ubuntu debconf utilities ##
 ## all SlickStack scripts connect to MySQL via root@localhost using sockets ##
 
-## USEFUL UTILITY: sudo debconf-show mysql-community-server-8.0
-## sudo /usr/share/debconf/fix_db.pl ## fixes broken debconf
-
-## purge any previous debconf/MySQL data ##
-# sudo echo PURGE | sudo debconf-communicate mysql-community-server
-# sudo echo PURGE | sudo debconf-communicate mysql-server
-# sudo debconf-set-selections <<< "mysql-community-server mysql-community-server/remove-data-dir boolean true"
-#####sudo echo "mysql-community-server mysql-community-server/remove-data-dir boolean true" | sudo debconf-set-selections
-
-## prepare root password for apt (PSA: sudo the shit out of these or it will fail) ##
-#####sudo echo "mysql-community-server mysql-community-server/root-pass password ${DB_PASSWORD_ROOT}" | sudo debconf-set-selections
-#####sudo echo "mysql-community-server mysql-community-server/re-root-pass password ${DB_PASSWORD_ROOT}" | sudo debconf-set-selections
-#####sudo echo "mysql-community-server mysql-server/default-auth-override select Use Legacy Authentication Method (Retain MySQL 5.x Compatibility)" | sudo debconf-set-selections
-
-# echo "mysql-community-server mysql-community-server/root-pass password ${DB_PASSWORD_ROOT}" | debconf-set-selections
-# echo "mysql-community-server mysql-community-server/re-root-pass password ${DB_PASSWORD_ROOT}" | debconf-set-selections
-# sudo debconf-set-selections <<< "mysql-community-server mysql-community-server/root-pass password ${DB_PASSWORD_ROOT}"
-# sudo debconf-set-selections <<< "mysql-community-server mysql-community-server/re-root-pass password ${DB_PASSWORD_ROOT}"
-# sudo debconf-set-selections <<< "mysql-community-server mysql-server/default-auth-override select Use Legacy Authentication Method (Retain MySQL 5.x Compatibility)"
-# echo "mysql-server mysql-server/root_password password ${DB_PASSWORD_ROOT}" | debconf-set-selections
-# echo "mysql-server mysql-server/root_password_again password ${DB_PASSWORD_ROOT}" | debconf-set-selections
-# echo "mysql-community-server mysql-server/default-auth-override select Use Legacy Authentication Method (Retain MySQL 5.x Compatibility)" | debconf-set-selections
-# debconf-set-selections <<< "mysql-server mysql-server/root_password password $DB_PASSWORD_ROOT"
-# debconf-set-selections <<< "mysql-server mysql-server/root_password_again password $DB_PASSWORD_ROOT"
-# debconf-set-selections <<< 'mysql-community-server mysql-community-server/re-root-pass password rot'
-# debconf-set-selections <<< 'mysql-community-server mysql-community-server/root-pass password rot'
-# debconf-set-selections <<< "mysql-server mysql-server/root_password password rootpw"
-# debconf-set-selections <<< "mysql-server mysql-server/root_password_again password rootpw"
-# WORKS 5.7 ... echo debconf mysql-server/root_password password ${DB_PASSWORD_ROOT} | debconf-set-selections	
-# WORKS 5.7 ... echo debconf mysql-server/root_password_again password ${DB_PASSWORD_ROOT} | debconf-set-selections
+# sudo debconf-show mysql-community-server-8.0
+# sudo /usr/share/debconf/fix_db.pl ## fixes debconf
 
 ## purge any previous debconf/MySQL data ##
 sudo echo PURGE | sudo debconf-communicate mysql-community-server
 sudo echo PURGE | sudo debconf-communicate mysql-server
+# sudo echo "mysql-community-server mysql-community-server/remove-data-dir boolean true" | sudo debconf-set-selections
 
-## install MySQL 8.0 ##
-apt install mysql-server-8.0
+## prepare root password for apt (PSA: sudo the shit out of these or it will fail) ##
+# sudo echo "mysql-community-server mysql-community-server/root-pass password ${DB_PASSWORD_ROOT}" | sudo debconf-set-selections
+# sudo echo "mysql-community-server mysql-community-server/re-root-pass password ${DB_PASSWORD_ROOT}" | sudo debconf-set-selections
+# sudo echo "mysql-community-server mysql-server/default-auth-override select Use Legacy Authentication Method (Retain MySQL 5.x Compatibility)" | sudo debconf-set-selections
+
+####################################################################################################
+#### SS-Install-MySQL: Install MySQL Package #######################################################
+####################################################################################################
+
+## install MySQL 8.0 if server is running Ubuntu 20.04 ##
+if [[ "${UBUNTU_VERSION}" = "20.04" || -z "${UBUNTU_VERSION}" ]]; then 
+    apt install mysql-server-8.0
+fi
 
 ## install MySQL 5.7 if server is running Ubuntu 18.04 ##
 if [[ "${UBUNTU_VERSION}" = "18.04" ]]; then
     apt install mysql-server-5.7
 fi
 
-####################################################################################################
-#### SS-Install-MySQL: Configure Root + Admin User (Localhost/IPv4/IPv6) ###########################
-####################################################################################################
-
-## we use the new auth_socket for MySQL root but 127.0.0.1 (TCP) for WordPress database ##
-## another user (admin) is also created that can be used with phpMyAdmin, etc ##
-
-## ensure root@localhost uses mysql_native_password ##
-#####sudo mysql -e "ALTER USER IF EXISTS 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD_ROOT}';"
-#####sudo mysql -e "GRANT ALL ON *.* TO 'root'@'localhost' WITH GRANT OPTION;"
-#####sudo mysql -e "FLUSH PRIVILEGES;"
-
-## MESSAGE ##
-# echo -e "\e[36mMySQL 8.0 is installed, now we will secure it...\e[0m"
-
-# rm /tmp/init-mysql.txt*
-# wget -O /tmp/init-mysql.txt http://mirrors.slickstack.io/mysql/init-mysql.txt
-# sed -i "s/@DB_PASSWORD_ROOT/${DB_PASSWORD_ROOT}/g" /tmp/init-mysql.txt
-# chown mysql:mysql /tmp/init-mysql.txt
-# chmod 0775 /tmp/init-mysql.txt
-
-## start MySQL without authentication (safe mode) ##
-# mysqld --skip-grant-tables --user=mysql &
-# bin/mysqld --initialize-insecure --user=mysql
-
-## start MySQL ##
-# mysql --skip-password
-## grep "A temporary password" /var/log/mysqld.log
-
 ## create MySQL log files if they do not exist ##
 if [ ! -f "/var/www/logs/mysql-gen.log" ]; then touch "/var/www/logs/mysql-gen.log"; fi
 if [ ! -f "/var/www/logs/mysql-error.log" ]; then touch "/var/www/logs/mysql-error.log"; fi
 if [ ! -f "/var/www/logs/mysql-slow.log" ]; then touch "/var/www/logs/mysql-slow.log"; fi
 
-## reset permissions ##
-# mkdir /var/run/mysqld
-# chown mysql:mysql /var/run/mysqld
-# chmod -R 775 /var/run/mysqld
-# chown mysql:mysql /var/www/logs/mysql*.log
+####################################################################################################
+#### SS-Install-MySQL: Configure Root + Admin User (Localhost/IPv4/IPv6) ###########################
+####################################################################################################
 
-## copy the default socket for keeps (might disappear during stop MySQL) ##
-# cp /var/run/mysqld /var/run/mysqld.bak
-
-## put back socket
-# if [ ! -f "/var/run/mysqld/*sock" ]; then 
- #   mv /var/run/mysqld.bak /var/run/mysqld;
-# fi
-
-## start the MySQL service again ##
-# systemctl unmask mysql.service
-# mysqld_safe --init-file=<path to init file>init-file.txt &
-# mysqld --init-file=<path to init file>init-file.txt &
-# /usr/sbin/mysqld --user=mysql --skip-grant-tables --init-file=/tmp/init-mysql.txt &
-# mysqld_safe --skip-grant-tables &
-
-# mysqld --init-file=/tmp/init-mysql.txt &
+## we use the auth_socket for MySQL root but 127.0.0.1 (TCP) for WordPress database ##
+## another user (admin) is also created that can be used with phpMyAdmin, etc ##
 
 ## mysql_secure_installation (alternative) via root@localhost auth_socket ##
 # mysql -e "UNINSTALL COMPONENT 'file://component_validate_password';" ## not installed by default on MySQL 8.0.x
@@ -230,14 +169,6 @@ sudo mysql -e "DELETE FROM mysql.user WHERE user='';"
 sudo mysql -e "DELETE FROM mysql.user WHERE user='root' AND host NOT IN ('localhost', '127.0.0.1', '::1');"
 sudo mysql -e "DELETE FROM mysql.user WHERE user='admin' AND host NOT IN ('localhost', '127.0.0.1', '::1');"
 sudo mysql -e "DROP DATABASE IF EXISTS test;"
-
-########
-
-# ALTER USER IF EXISTS 'root'@'localhost' IDENTIFIED WITH auth_socket BY '';
-## reset admin (root alternative) password and make mysql_native_password the default ##
-#  -u root --skip-password --host="localhost" --protocol=socket --port=3306 
-# UPDATE mysql.user SET plugin = 'mysql_native_password' WHERE user = 'root' AND plugin = 'auth_socket';
-# mysql -e "UPDATE mysql.user SET plugin = 'mysql_native_password' WHERE user = 'admin';"
 
 ####################################################################################################
 #### SS-Install-MySQL: Configure WordPress Database + User + Privileges ############################
@@ -249,10 +180,7 @@ sudo mysql -e "DROP DATABASE IF EXISTS test;"
 ## create WordPress database ##
 sudo mysql -e "CREATE DATABASE IF NOT EXISTS ${DB_NAME};"
 
-## create database user (no root privileges) ##
-## caching_sha2_password requires TLS, sockets, or shared memory ##
-
-## alter/create admin user for all MySQL databases (can be used with Adminer/phpMyAdmin) ##
+## create admin superuser (can be used with Adminer/phpMyAdmin) ##
 sudo mysql -e "ALTER USER IF EXISTS 'admin'@'localhost' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD_ROOT}';"
 sudo mysql -e "ALTER USER IF EXISTS 'admin'@'127.0.0.1' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD_ROOT}';"
 sudo mysql -e "ALTER USER IF EXISTS 'admin'@'::1' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD_ROOT}';"
@@ -260,12 +188,12 @@ sudo mysql -e "CREATE USER IF NOT EXISTS 'admin'@'localhost' IDENTIFIED WITH mys
 sudo mysql -e "CREATE USER IF NOT EXISTS 'admin'@'127.0.0.1' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD_ROOT}';"
 sudo mysql -e "CREATE USER IF NOT EXISTS 'admin'@'::1' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD_ROOT}';"
 
-## grant admin user all privileges on all databases (localhost/IPv4/IPv6) ##
+## grant admin superuser all privileges on all databases (localhost/IPv4/IPv6) ##
 sudo mysql -e "GRANT ALL ON *.* TO 'admin'@'localhost' WITH GRANT OPTION;"
 sudo mysql -e "GRANT ALL ON *.* TO 'admin'@'127.0.0.1' WITH GRANT OPTION;"
 sudo mysql -e "GRANT ALL ON *.* TO 'admin'@'::1' WITH GRANT OPTION;"
 
-## alter/create DB_USER for WordPress database ##
+## create limited user for WordPress database ##
 sudo mysql -e "ALTER USER IF EXISTS '${DB_USER}'@'localhost' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD}';"
 sudo mysql -e "ALTER USER IF EXISTS '${DB_USER}'@'127.0.0.1' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD}';"
 sudo mysql -e "ALTER USER IF EXISTS '${DB_USER}'@'::1' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD}';"
@@ -273,29 +201,23 @@ sudo mysql -e "CREATE USER IF NOT EXISTS '${DB_USER}'@'localhost' IDENTIFIED WIT
 sudo mysql -e "CREATE USER IF NOT EXISTS '${DB_USER}'@'127.0.0.1' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD}';"
 sudo mysql -e "CREATE USER IF NOT EXISTS '${DB_USER}'@'::1' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD}';"
 
-## grant DB_USER all privileges on WordPress database (localhost/IPv4/IPv6) ##
+## grant limited user privileges on WordPress database only (localhost/IPv4/IPv6) ##
 sudo mysql -e "GRANT ALL ON ${DB_NAME}.* TO '${DB_USER}'@'localhost';"
 sudo mysql -e "GRANT ALL ON ${DB_NAME}.* TO '${DB_USER}'@'127.0.0.1';"
 sudo mysql -e "GRANT ALL ON ${DB_NAME}.* TO '${DB_USER}'@'::1';"
 
-# ALTER USER IF EXISTS 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD_ROOT}';
-sudo mysql -e "ALTER USER IF EXISTS 'root'@'127.0.0.1' IDENTIFIED WITH caching_sha2_password BY '${DB_PASSWORD_ROOT}';"
-sudo mysql -e "ALTER USER IF EXISTS 'root'@'::1' IDENTIFIED WITH caching_sha2_password BY '${DB_PASSWORD_ROOT}';"
-# CREATE USER IF NOT EXISTS 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD_ROOT}';
-sudo mysql -e "CREATE USER IF NOT EXISTS 'root'@'127.0.0.1' IDENTIFIED WITH caching_sha2_password BY '${DB_PASSWORD_ROOT}';"
-sudo mysql -e "CREATE USER IF NOT EXISTS 'root'@'::1' IDENTIFIED WITH caching_sha2_password BY '${DB_PASSWORD_ROOT}';"
+## install auth_socket plugin ##
+sudo mysql -e "INSTALL PLUGIN auth_socket SONAME 'auth_socket.so';"
 
-# GRANT ALL ON *.* TO 'root'@'localhost' WITH GRANT OPTION;
-sudo mysql -e "GRANT ALL ON *.* TO 'root'@'127.0.0.1' WITH GRANT OPTION;"
-sudo mysql -e "GRANT ALL ON *.* TO 'root'@'::1' WITH GRANT OPTION;"
+## create sudo@localhost user via auth_socket ##
+sudo mysql -e "ALTER USER IF EXISTS '${SUDO_USER}'@'localhost' IDENTIFIED WITH auth_socket BY '';"
+sudo mysql -e "CREATE USER IF NOT EXISTS '${SUDO_USER}'@'localhost' IDENTIFIED WITH auth_socket BY '';"
+sudo mysql -e "GRANT ALL ON *.* TO '${SUDO_USER}'@'localhost' WITH GRANT OPTION;"
 
-# mysql --flush-privileges -e "ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD_ROOT}';"
-
-# SELECT plugin from mysql.user where User='root';
-# SELECT User,plugin from mysql.user where User='root';
-# SELECT user,authentication_string,plugin,host FROM mysql.user;
-
-## flush privileges ##
+## ensure root@localhost user is using auth_socket ##
+sudo mysql -e "ALTER USER IF EXISTS 'root'@'localhost' IDENTIFIED WITH auth_socket BY '';"
+sudo mysql -e "CREATE USER IF NOT EXISTS 'root'@'localhost' IDENTIFIED WITH auth_socket BY '';"
+sudo mysql -e "GRANT ALL ON *.* TO 'root'@'localhost' WITH GRANT OPTION;"
 sudo mysql -e "FLUSH PRIVILEGES;"
 
 ####################################################################################################
@@ -432,12 +354,77 @@ cp /tmp/my.cnf /etc/mysql/my.cnf
 rm /tmp/init-mysql.txt*
 rm /var/run/mysqld.bak*
 
-## confirm secured ##
-# echo "Congratulations, MySQL 8.0 is installed and secured. Onward!"
-
 ####################################################################################################
 #### SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ###############
 ####################################################################################################
+
+# sudo mysql -e "ALTER USER IF EXISTS 'root'@'127.0.0.1' IDENTIFIED WITH caching_sha2_password BY '${DB_PASSWORD_ROOT}';"
+# sudo mysql -e "ALTER USER IF EXISTS 'root'@'::1' IDENTIFIED WITH caching_sha2_password BY '${DB_PASSWORD_ROOT}';"
+# sudo mysql -e "CREATE USER IF NOT EXISTS 'root'@'127.0.0.1' IDENTIFIED WITH caching_sha2_password BY '${DB_PASSWORD_ROOT}';"
+# sudo mysql -e "CREATE USER IF NOT EXISTS 'root'@'::1' IDENTIFIED WITH caching_sha2_password BY '${DB_PASSWORD_ROOT}';"
+# sudo mysql -e "GRANT ALL ON *.* TO 'root'@'127.0.0.1' WITH GRANT OPTION;"
+# sudo mysql -e "GRANT ALL ON *.* TO 'root'@'::1' WITH GRANT OPTION;"
+
+
+
+## SAFE MODE reset permissions ##
+# mkdir /var/run/mysqld
+# chown mysql:mysql /var/run/mysqld
+# chmod -R 775 /var/run/mysqld
+# chown mysql:mysql /var/www/logs/mysql*.log
+
+## copy the default socket for keeps (might disappear during stop MySQL) ##
+# cp /var/run/mysqld /var/run/mysqld.bak
+
+## put back socket
+# if [ ! -f "/var/run/mysqld/*sock" ]; then 
+ #   mv /var/run/mysqld.bak /var/run/mysqld;
+# fi
+
+## start the MySQL service again ##
+# systemctl unmask mysql.service
+# mysqld_safe --init-file=<path to init file>init-file.txt &
+# mysqld --init-file=<path to init file>init-file.txt &
+# /usr/sbin/mysqld --user=mysql --skip-grant-tables --init-file=/tmp/init-mysql.txt &
+# mysqld_safe --skip-grant-tables &
+
+# mysqld --init-file=/tmp/init-mysql.txt &
+
+
+
+# rm /tmp/init-mysql.txt*
+# wget -O /tmp/init-mysql.txt http://mirrors.slickstack.io/mysql/init-mysql.txt
+# sed -i "s/@DB_PASSWORD_ROOT/${DB_PASSWORD_ROOT}/g" /tmp/init-mysql.txt
+# chown mysql:mysql /tmp/init-mysql.txt
+# chmod 0775 /tmp/init-mysql.txt
+
+## start MySQL without authentication (safe mode) ##
+# mysqld --skip-grant-tables --user=mysql &
+# bin/mysqld --initialize-insecure --user=mysql
+
+## start MySQL ##
+# mysql --skip-password
+## grep "A temporary password" /var/log/mysqld.log
+
+
+
+## ensure root@localhost uses mysql_native_password ##
+#####sudo mysql -e "ALTER USER IF EXISTS 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD_ROOT}';"
+#####sudo mysql -e "GRANT ALL ON *.* TO 'root'@'localhost' WITH GRANT OPTION;"
+#####sudo mysql -e "FLUSH PRIVILEGES;"
+
+
+## reset admin (root alternative) password and make mysql_native_password the default ##
+#  -u root --skip-password --host="localhost" --protocol=socket --port=3306 
+# UPDATE mysql.user SET plugin = 'mysql_native_password' WHERE user = 'root' AND plugin = 'auth_socket';
+# mysql -e "UPDATE mysql.user SET plugin = 'mysql_native_password' WHERE user = 'admin';"
+
+## caching_sha2_password requires TLS, sockets, or shared memory ##
+
+# mysql --flush-privileges -e "ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD_ROOT}';"
+# SELECT plugin from mysql.user where User='root';
+# SELECT User,plugin from mysql.user where User='root';
+# SELECT user,authentication_string,plugin,host FROM mysql.user;
 
 ## Ref: https://github.com/littlebizzy/slickstack/issues/23
 ## Ref: https://stackoverflow.com/questions/36301100/how-do-i-turn-off-the-mysql-password-validation
@@ -518,5 +505,8 @@ rm /var/run/mysqld.bak*
 ## Ref: https://stackoverflow.com/questions/39281594/error-1698-28000-access-denied-for-user-rootlocalhost
 ## Ref: https://stackoverflow.com/questions/52364415/php-with-mysql-8-0-error-the-server-requested-authentication-method-unknown-to
 ## Ref: https://www.digitalocean.com/community/tutorials/how-to-install-mysql-on-ubuntu-20-04-quickstart
+## Ref: https://www.percona.com/blog/2016/03/16/change-user-password-in-mysql-5-7-with-plugin-auth_socket/
+## Ref: https://www.percona.com/blog/2019/11/01/use-mysql-without-a-password/
+## Ref: https://gist.github.com/jessuppi/ab5517aa50b3bc83ac37abb8267e005b
 
 ## SS_EOF
