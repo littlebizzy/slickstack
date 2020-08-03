@@ -17,6 +17,12 @@ source /var/www/ss-config
 #### SlickStack: Critical Bash Functions (Aliases) For This Script To Work #########################
 ####################################################################################################
 
+## the below functions are hardcoded into every SlickStack script to ensure reliability ##
+## this also speeds up processing times by avoiding repeated inline commands ##
+
+## Ubuntu version ##
+UBUNTU_VERSION=`lsb_release -rs`
+
 ## apt alias flags ##
 function apt {
     export DEBIAN_FRONTEND=noninteractive
@@ -96,11 +102,15 @@ rm /tmp/blacklist*
 ####################################################################################################
 
 ## download ss-check and redundant 1-cron-often script ##
-wget -O /tmp/1-cron-often http://mirrors.slickstack.io/1-cron-often.txt
+wget -O /tmp/00-crontab http://mirrors.slickstack.io/00-crontab.txt
+wget -O /tmp/01-cron-often http://mirrors.slickstack.io/01-cron-often.txt
+wget -O /tmp/02-cron-regular http://mirrors.slickstack.io/02-cron-regular.txt
 wget -O /tmp/ss-check http://mirrors.slickstack.io/ss-check.txt
 
 ## copy files to /var/www/ ##
-cp /tmp/1-cron-often /var/www/1-cron-often
+cp /tmp/00-crontab /var/www/00-crontab
+cp /tmp/01-cron-often /var/www/01-cron-often
+cp /tmp/02-cron-regular /var/www/02-cron-regular
 cp /tmp/ss-check /var/www/ss-check
 
 ####################################################################################################
@@ -110,6 +120,8 @@ cp /tmp/ss-check /var/www/ss-check
 ## ensure core directories exist (except html) ##
 mkdir /var/www
 mkdir /var/www/cache
+mkdir /var/www/cache/fastcgi
+mkdir /var/www/cache/opcache
 mkdir /var/www/logs
 mkdir /var/www/meta
 
@@ -154,6 +166,8 @@ chown mysql:mysql /var/www/logs/mysql*.log*
 chown www-data:www-data /var/www/logs/nginx*.log*
 chown redis:redis /var/www/logs/redis*.log*
 
+chmod 0755 /var/www/logs/*.log ## 6755 should also work
+
 ## ensure unix formatting (avoids syntax errors and otherwise) ##
 dos2unix /var/www/*cron*
 dos2unix /var/www/ss*
@@ -162,6 +176,9 @@ dos2unix /var/www/ss*
 ## SS-Worker: Download Latest Blacklist.txt File For Plugin Blacklist (MU Plugin) ##################
 ####################################################################################################
 
+## here we retrieve the latest plugin blacklist file which might contain urgent changes ##
+## maintaining a thoughtful blacklist vastly improves WP performance and security ##
+
 ## download latest blacklist (or custom blacklist) ##
 if [[ -z "$PLUGIN_BLACKLIST_SOURCE" ]]; then 
     wget -O /tmp/blacklist.txt http://mirrors.slickstack.io/wordpress/blacklist.txt
@@ -169,7 +186,7 @@ else
     wget -O /tmp/blacklist.txt "$PLUGIN_BLACKLIST_SOURCE"
 fi
 
-## copy files to /var/www/html/wp-content/ ##
+## copy file to wp-content directory ##
 cp /tmp/blacklist.txt /var/www/html/wp-content/blacklist.txt
 
 ## reset permissions ##
