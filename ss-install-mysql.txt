@@ -23,7 +23,7 @@ source /var/www/ss-config
 ## the below functions are hardcoded into every SlickStack script to ensure reliability ##
 ## this also speeds up processing times by avoiding repeated inline commands ##
 
-## Ubuntu version ##
+## variables ##
 UBUNTU_VERSION=`lsb_release -rs`
 
 ## apt alias flags ##
@@ -43,15 +43,14 @@ function add-apt-repository {
     command /usr/bin/add-apt-repository -y "$@"
 }
 
-## mysql alias flags ##
-function mysql {
-    command mysql --user=root --host=localhost --protocol=socket --port=3306 --force "$@"
-    # command mysql --no-defaults --user=root --password=$DB_PASSWORD_ROOT --host=localhost --protocol=socket --socket=/var/run/mysqld/mysqld.sock --port=3306 --force "$@"
-}
-
 ## wget alias flags ##
 function wget {
     command wget --no-check-certificate --no-cache --no-cookies --tries=3 --timeout=15 "$@"
+}
+
+## mysql alias flags ##
+function mysql {
+    command mysql --user=root --host=localhost --protocol=socket --port=3306 --force "$@"
 }
 
 ## cp alias flags ##
@@ -69,14 +68,14 @@ function unzip {
     command unzip -o "$@"
 }
 
-## rm alias flags ##
-function rm {
-    command rm -R -f "$@"
-}
-
 ## mkdir alias flags ##
 function mkdir {
     command mkdir -p "$@"
+}
+
+## rm alias flags ##
+function rm {
+    command rm -R -f "$@"
 }
 
 ## ln alias flags ##
@@ -85,22 +84,20 @@ function ln {
 }
 
 ####################################################################################################
-#### SS-Install-MySQL: Cleanup Any Existing (Conflicting) MySQL Packages + Data ####################
+#### SS-Install-MySQL: Cleanup Any Existing MySQL Packages + Data ##################################
 ####################################################################################################
 
-## first we backup the live database (if exists) and stop/kill existing MySQL processes ##
+## first we backup the live database (and /var/lib/mysql) and kill any leftover processes ##
 ## then we proceed with purge/cleanup of MySQL packages to pepare a clean install ##
 
-## MESSAGE ##
-echo -e "\e[36mWARNING: to ensure a clean MySQL install this script will remove /var/lib/mysql and /etc/mysql ... although ss-dump will attempt to dump your live database to /var/www/meta/wp.sql it is still recommended to manually export your database for safe-keeping ... (EXIT NOW to avoid proceeding?)...\e[0m"
-sleep 15s
-
-## run ss-dump (also copies /var/lib/mysql to /var/www/meta/mysql.bak) ##
+## run ss-dump (copies /var/lib/mysql to /var/www/meta/mysql.bak) ##
 source /var/www/ss-dump
 
-## stop MySQL service and kill any remaining processes ##
+## stop MySQL ##
 /etc/init.d/mysql* stop
 sleep 15s
+
+## kill any remaining MySQL processes ##
 killall mysql*
 sleep 15s
 
@@ -123,8 +120,8 @@ apt update
 ## here we prepare the MySQL root password using the Debian/Ubuntu debconf utilities ##
 ## all SlickStack scripts connect to MySQL via root@localhost using sockets ##
 
-# sudo debconf-show mysql-community-server-8.0
-# sudo /usr/share/debconf/fix_db.pl ## fixes debconf
+# repair debconf (see: sudo debconf-show mysql-community-server-8.0) ##
+sudo /usr/share/debconf/fix_db.pl
 
 ## purge any previous debconf/MySQL data ##
 sudo echo PURGE | sudo debconf-communicate mysql-community-server
@@ -132,9 +129,11 @@ sudo echo PURGE | sudo debconf-communicate mysql-server
 # sudo echo "mysql-community-server mysql-community-server/remove-data-dir boolean true" | sudo debconf-set-selections
 
 ## prepare root password for apt (PSA: sudo the shit out of these or it will fail) ##
+# if [[ "${UBUNTU_VERSION}" = "20.04" || -z "${UBUNTU_VERSION}" ]]; then 
 # sudo echo "mysql-community-server mysql-community-server/root-pass password ${DB_PASSWORD_ROOT}" | sudo debconf-set-selections
 # sudo echo "mysql-community-server mysql-community-server/re-root-pass password ${DB_PASSWORD_ROOT}" | sudo debconf-set-selections
 # sudo echo "mysql-community-server mysql-server/default-auth-override select Use Legacy Authentication Method (Retain MySQL 5.x Compatibility)" | sudo debconf-set-selections
+# fi
 
 ####################################################################################################
 #### SS-Install-MySQL: Install MySQL Package #######################################################
@@ -150,21 +149,16 @@ if [[ "${UBUNTU_VERSION}" = "18.04" ]]; then
     apt install mysql-server-5.7
 fi
 
-## create MySQL log files if they do not exist ##
-if [ ! -f "/var/www/logs/mysql-gen.log" ]; then touch "/var/www/logs/mysql-gen.log"; fi
-if [ ! -f "/var/www/logs/mysql-error.log" ]; then touch "/var/www/logs/mysql-error.log"; fi
-if [ ! -f "/var/www/logs/mysql-slow.log" ]; then touch "/var/www/logs/mysql-slow.log"; fi
-
 ####################################################################################################
 #### SS-Install-MySQL: Configure Root + Admin User (Localhost/IPv4/IPv6) ###########################
 ####################################################################################################
 
-## we use the auth_socket for MySQL root but 127.0.0.1 (TCP) for WordPress database ##
-## another user (admin) is also created that can be used with phpMyAdmin, etc ##
+## manually secure MySQL (noninteractive version of the mysql_secure_installation wizard) ##
+## caching_sha2_password is better but mysql_native_password is more compatible ##
 
-## mysql_secure_installation (alternative) via root@localhost auth_socket ##
-# mysql -e "UNINSTALL COMPONENT 'file://component_validate_password';" ## not installed by default on MySQL 8.0.x
-# mysql -e "UNINSTALL PLUGIN validate_password;" ## not installed by default on MySQL 8.0.x
+## mysql_secure_installation (alternative) via root@localhost ##
+sudo mysql -e "UNINSTALL COMPONENT 'file://component_validate_password';" ## not installed by default on MySQL 8.0.x
+sudo mysql -e "UNINSTALL PLUGIN validate_password;" ## not installed by default on MySQL 8.0.x
 sudo mysql -e "DELETE FROM mysql.user WHERE user='';"
 sudo mysql -e "DELETE FROM mysql.user WHERE user='root' AND host NOT IN ('localhost', '127.0.0.1', '::1');"
 sudo mysql -e "DELETE FROM mysql.user WHERE user='admin' AND host NOT IN ('localhost', '127.0.0.1', '::1');"
@@ -174,8 +168,8 @@ sudo mysql -e "DROP DATABASE IF EXISTS test;"
 #### SS-Install-MySQL: Configure WordPress Database + User + Privileges ############################
 ####################################################################################################
 
-## manually secure MySQL (noninteractive version of the mysql_secure_installation wizard) ##
-## caching_sha2_password is better but mysql_native_password is more compatible ##
+## we use root@localhost (auth_socket) and user@127.0.0.1 (TCP) for WordPress database ##
+## the superuser admin@127.0.0.1 is also created to be used with phpMyAdmin, etc ##
 
 ## create WordPress database ##
 sudo mysql -e "CREATE DATABASE IF NOT EXISTS ${DB_NAME};"
@@ -348,7 +342,13 @@ cp /tmp/my.cnf /etc/mysql/my.cnf
 # chown mysql:mysql /var/lib/mysql-keyring ## drwx------
 # chown root:root /var/lib/mysql-upgrade ## must be root:root ## drwxr-xr-x
 
-/etc/init.d/mysql restart
+## create MySQL log files if they do not exist ##
+if [ ! -f "/var/www/logs/mysql-gen.log" ]; then touch "/var/www/logs/mysql-gen.log"; fi
+if [ ! -f "/var/www/logs/mysql-error.log" ]; then touch "/var/www/logs/mysql-error.log"; fi
+if [ ! -f "/var/www/logs/mysql-slow.log" ]; then touch "/var/www/logs/mysql-slow.log"; fi
+
+## restart MySQL ##
+/etc/init.d/mysql* restart
 
 ## cleanup tmp files ##
 rm /tmp/init-mysql.txt*
@@ -357,6 +357,9 @@ rm /var/run/mysqld.bak*
 ####################################################################################################
 #### SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ###############
 ####################################################################################################
+
+## mysql alias flags ##
+    # command mysql --no-defaults --user=root --password=$DB_PASSWORD_ROOT --host=localhost --protocol=socket --socket=/var/run/mysqld/mysqld.sock --port=3306 --force "$@"
 
 # sudo mysql -e "ALTER USER IF EXISTS 'root'@'127.0.0.1' IDENTIFIED WITH caching_sha2_password BY '${DB_PASSWORD_ROOT}';"
 # sudo mysql -e "ALTER USER IF EXISTS 'root'@'::1' IDENTIFIED WITH caching_sha2_password BY '${DB_PASSWORD_ROOT}';"
@@ -508,5 +511,9 @@ rm /var/run/mysqld.bak*
 ## Ref: https://www.percona.com/blog/2016/03/16/change-user-password-in-mysql-5-7-with-plugin-auth_socket/
 ## Ref: https://www.percona.com/blog/2019/11/01/use-mysql-without-a-password/
 ## Ref: https://gist.github.com/jessuppi/ab5517aa50b3bc83ac37abb8267e005b
+## Ref: https://dev.mysql.com/doc/refman/8.0/en/option-file-options.html
+## Ref: https://docs.oracle.com/cd/E17952_01/mysql-5.6-en/mysqld-safe.html
+## Ref: http://doc.mawan.de/dictionaries-common/README.problems
+## Ref: https://askubuntu.com/questions/429512/dpkg-or-something-related-is-corrupted
 
 ## SS_EOF
