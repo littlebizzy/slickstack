@@ -27,7 +27,8 @@ title: Adminer (Public Mirrors)
 *Links and resources related to the above module that may help users understand its functionality, or how it interacts with other LEMP stack modules.*
 
 * [https://www.adminer.org](https://www.adminer.org)
+* https://sourceforge.net/p/adminer/bugs-and-features/630/
 
 ----
 
-*Last updated: May 27, 2020*
+*Last updated: Aug 5, 2020*
