@@ -34,16 +34,20 @@ title: SlickStack (Public Mirrors)
 
 *These cron jobs are the most critical part of SlickStack's setup, as they allow your LEMP stack to receive updates to modules and scripts via GitHub.*
 
-* [0-crontab.txt](0-crontab.txt)
-* [1-cron-often.txt](1-cron-often.txt)
-* [2-cron-regular.txt](2-cron-regular.txt)
-* [3-cron-hourly.txt](3-cron-hourly.txt)
-* [4-cron-quarter-daily.txt](4-cron-quarter-daily.txt)
-* [5-cron-half-daily.txt](5-cron-half-daily.txt)
-* [6-cron-daily.txt](6-cron-daily.txt)
-* [7-cron-weekly.txt](7-cron-weekly.txt)
-* [8-cron-monthly.txt](8-cron-monthly.txt)
-* [9-cron-sometimes.txt](9-cron-sometimes.txt)
+* [00-crontab.txt](00-crontab.txt)
+* [01-cron-often.txt](01-cron-often.txt)
+* [02-cron-regular.txt](02-cron-regular.txt)
+* [03-cron-quarter-hourly](03-cron-quarter-hourly)
+* [04-cron-half-hourly](04-cron-half-hourly)
+* [05-cron-hourly](05-cron-hourly)
+* [06-cron-quarter-daily](06-cron-quarter-daily)
+* [07-cron-half-daily](07-cron-half-daily)
+* [08-cron-daily](08-cron-daily)
+* [09-cron-half-weekly](09-cron-half-weekly)
+* [10-cron-weekly](10-cron-weekly)
+* [11-cron-half-monthly](11-cron-half-monthly)
+* [12-cron-monthly](12-cron-monthly)
+* [13-cron-sometimes](13-cron-sometimes)
 
 ### Core Bash Scripts
 
@@ -74,4 +78,4 @@ title: SlickStack (Public Mirrors)
 
 ----
 
-*Last updated: May 26, 2020*
+*Last updated: Aug 4, 2020*
