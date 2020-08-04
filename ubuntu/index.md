@@ -69,7 +69,7 @@ title: Ubuntu (Public Mirrors)
 * https://unix.stackexchange.com/questions/554908/disable-spectre-and-meltdown-mitigations
 * https://www.reddit.com/r/linux/comments/b1ltnr/disabling_kernel_cpu_vulnerabilities_mitigations/
 * https://linuxreviews.org/HOWTO_make_Linux_run_blazing_fast_(again)_on_Intel_CPUs
-
+* https://askubuntu.com/questions/429512/dpkg-or-something-related-is-corrupted
 ----
 
 *Last updated: May 11, 2020*
