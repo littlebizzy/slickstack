@@ -315,82 +315,11 @@ apt install certbot python3-certbot-nginx
 source /var/www/ss-install-php
 
 ####################################################################################################
-### Prepare WP-CLI Configuration (Installation Completed Via Bash Aliases) #########################
+#### SS-Install: Install WP-CLI Bash Aliases [wp] + SlickStack Bash Aliases [ss] ###################
 ####################################################################################################
 
-## MESSAGE: explain repos ##
-echo -e "\e[36mInstalling the WP-CLI module directly from SlickStack mirrors...\e[0m"
-
-## uninstall current wp-cli versions ##
-rm /usr/local/bin/wp
-rm /home/wp-completion.bash
-rm /home/${SUDO_USER}/wp-cli.yml
-rm /var/www/meta/.wp-completion*
-rm /var/www/meta/wp-cli.yml
-rm /var/www/html/.wp-cli
-rm /var/www/html/wp-cli
-sed -i '/WP-CLI/d' /home/${SUDO_USER}/.bashrc
-sed -i '/wp-completion/d' /home/${SUDO_USER}/.bashrc
-
-## symlinks for wp-cli.yml ##
-ln /home/${SUDO_USER}/.wp-cli/config.yml /var/www/meta/wp-cli.yml &> /dev/null
-ln /root/.wp-cli/config.yml /var/www/meta/wp-cli.yml &> /dev/null
-
-## download latest versions ##
-wget -O /tmp/wp-cli.phar http://mirrors.slickstack.io/wp-cli/wp-cli.phar
-wget -O /tmp/wp-cli.yml http://mirrors.slickstack.io/wp-cli/wp-cli-yml.txt
-wget -O /tmp/wp-completion.txt http://mirrors.slickstack.io/wp-cli/wp-completion.txt
-
-## make files executable ##
-chmod +x /tmp/wp-cli.phar
-
-## copy files to destinations ##
-cp /tmp/wp-cli.phar /usr/local/bin/wp
-cp /tmp/wp-cli.yml /var/www/meta/wp-cli.yml
-cp /tmp/wp-completion.txt /var/www/meta/.wp-completion
-
-## reset permissions ##
-## Ref: https://www.alexgeorgiou.gr/wp-cli-www-data-user-permissions-linux/
-chown root:root /usr/local/bin/
-chown www-data:www-data /usr/local/bin/wp
-chown www-data:www-data /var/www/meta/wp-cli.yml
-chown www-data:www-data /var/www/meta/.wp-completion
-chown root:root /home/${SUDO_USER}/.wp-cli/config.yml
-chown root:root /root/.wp-cli/config.yml
-chmod 6775 /usr/local/bin/wp
-chmod 6775 /var/www/meta/wp-cli.yml
-chmod 6775 /var/www/meta/.wp-completion
-
-####################################################################################################
-### Install Bash Aliases (Supports Basic SlickStack Commands) + Finalize WP-CLI ####################
-####################################################################################################
-
-## MESSAGE: explain repos ##
-echo -e "\e[36mInstalling Bash aliases for basic SlickStack commands...\e[0m"
-
-## uninstall old ##
-rm /home/${SUDO_USER}/.bash-aliases
-rm /var/www/meta/.bash-aliases
-sed -i '/include Bash aliases/d' /home/${SUDO_USER}/.bashrc
-sed -i '\:var/www/meta:d' /home/${SUDO_USER}/.bashrc
-
-## download ##
-wget -O /tmp/bash-aliases.txt http://mirrors.slickstack.io/ubuntu/bash-aliases.txt
-
-## copy files ##
-cp /tmp/bash-aliases.txt /var/www/meta/.bash-aliases
-
-## reset permissions ##
-chown root:root /var/www/meta/.bash-aliases
-chmod 6775 /var/www/meta/.bash-aliases
-
-## modify .bashrc file ##
-echo '
-## include Bash aliases ##
-source /var/www/meta/.bash-aliases' >> /home/${SUDO_USER}/.bashrc
-
-## reload .bashrc ##
-source /home/${SUDO_USER}/.bashrc
+## run ss-install-bash ##
+source /var/www/ss-install-bash
 
 ####################################################################################################
 #### SlickStack: Install Nginx Server + FastCGI Cache + OpenSSL ####################################
