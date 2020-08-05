@@ -1,4 +1,4 @@
-# UFW (Firewall)
+# UFW Firewall
 
 ----
 
