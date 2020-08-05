@@ -2,7 +2,7 @@
 
 ----
 
-### Live Files (for Nginx 1.18.0)
+### Live Files (for Nginx 1.18.x)
 
 *Live configuration files and boilerplates used by current SlickStack installation that may be altered by LittleBizzy or Ubuntu for better performance.*
 
