@@ -31,8 +31,7 @@ function apt {
     export DEBIAN_FRONTEND=noninteractive
     export DEBIAN_PRIORITY=critical
     export PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'
-    # command /usr/bin/apt -q -y -o Dpkg::Options::=--force-confold -o Dpkg::Options::=--force-confdef "$@"
-    command /usr/bin/apt -q -y -o "$@"
+    command /usr/bin/apt --yes --quiet --option Dpkg::Options::=--force-confold --option Dpkg::Options::=--force-confdef "$@"
 }
 
 ## add-apt-repository alias flags ##
@@ -40,7 +39,7 @@ function add-apt-repository {
     export DEBIAN_FRONTEND=noninteractive
     export DEBIAN_PRIORITY=critical
     export PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'
-    command /usr/bin/add-apt-repository -y "$@"
+    command /usr/bin/add-apt-repository --yes "$@"
 }
 
 ## wget alias flags ##
@@ -175,8 +174,8 @@ sudo mysql -e "DROP DATABASE IF EXISTS test;"
 sudo mysql -e "CREATE DATABASE IF NOT EXISTS ${DB_NAME};"
 
 ## create admin superuser (can be used with Adminer/phpMyAdmin) ##
-sudo mysql -e "ALTER USER IF EXISTS 'admin'@'localhost' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD_ROOT}';"
-sudo mysql -e "ALTER USER IF EXISTS 'admin'@'127.0.0.1' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD_ROOT}';"
+sudo mysql -e "ALTER USER IF EXISTS 'admin'@'localhost' IDENTIFIED WITH caching_sha2_password BY '${DB_PASSWORD_ROOT}';"
+sudo mysql -e "ALTER USER IF EXISTS 'admin'@'127.0.0.1' IDENTIFIED WITH caching_sha2_password BY '${DB_PASSWORD_ROOT}';"
 sudo mysql -e "ALTER USER IF EXISTS 'admin'@'::1' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD_ROOT}';"
 sudo mysql -e "CREATE USER IF NOT EXISTS 'admin'@'localhost' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD_ROOT}';"
 sudo mysql -e "CREATE USER IF NOT EXISTS 'admin'@'127.0.0.1' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD_ROOT}';"
