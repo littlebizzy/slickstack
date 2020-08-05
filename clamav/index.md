@@ -10,7 +10,7 @@ title: ClamAV (Public Mirrors)
 
 *Live configuration files and boilerplates used by current SlickStack installation that may be altered by LittleBizzy or Ubuntu for better performance.*
 
-* [freshclam-conf.txt](freshclam-conf.txt)
+* [freshclam.conf](freshclam-conf.txt)
 
 ### Original Files
 
@@ -28,4 +28,4 @@ title: ClamAV (Public Mirrors)
 
 ----
 
-*Last updated: Nov 13, 2019*
+*Last updated: Aug 5, 2020*
