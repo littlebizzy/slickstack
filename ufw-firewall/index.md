@@ -1,17 +1,14 @@
-# UFW Firewall
+# UFW (Firewall)
 
 ----
 
-### Live Files
+### Live Files (UFW 0.36.x)
 
 *Live configuration files and boilerplates used by current SlickStack installation that may be altered by LittleBizzy or Ubuntu for better performance.*
 
-* [ufw.txt](ufw.txt)
-* [user-rules.txt](user-rules.txt)
-* [ufw-conf.txt](ufw-conf.txt)
-* before.rules
-* after.rules
-* sysctl-conf.txt
+* [ufw](ufw.txt)
+* [ufw.conf](ufw-conf.txt)
+* [user.rules](user-rules.txt)
 
 ### Original Files
 
@@ -61,4 +58,4 @@
 
 ----
 
-*Last updated: Nov 15, 2019*
+*Last updated: Aug 5, 2020*
