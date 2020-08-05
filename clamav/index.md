@@ -6,7 +6,7 @@ title: ClamAV (Public Mirrors)
 
 ----
 
-### Live Files
+### Live Files (ClamAV 0.102.x)
 
 *Live configuration files and boilerplates used by current SlickStack installation that may be altered by LittleBizzy or Ubuntu for better performance.*
 
