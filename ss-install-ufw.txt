@@ -106,12 +106,22 @@ ufw --force enable
 echo "y" | ufw enable
 
 ####################################################################################################
-#### SS-Install-UFW: Configure UFW + User Rules ####################################################
+#### SS-Install-UFW: Configure UFW General Settings ################################################
 ####################################################################################################
 
 # retrieve latest versions ##
 wget -O /tmp/ufw http://mirrors.slickstack.io/ufw-firewall/ufw.txt
 wget -O /tmp/ufw.conf http://mirrors.slickstack.io/ufw-firewall/ufw-conf.txt
+
+## copy files to their destinations ##
+cp /tmp/ufw /etc/default/ufw
+cp /tmp/ufw.conf /etc/ufw/ufw.conf
+
+####################################################################################################
+#### SS-Install-UFW: Configure After Rules (Default Rules For SlickStack) ##########################
+####################################################################################################
+
+# retrieve latest versions ##
 wget -O /tmp/user.rules http://mirrors.slickstack.io/ufw-firewall/user-rules.txt
 
 if [[ -z "$SSH_PORT" ]]; then 
@@ -121,9 +131,11 @@ else
 fi
 
 ## copy files to their destinations ##
-cp /tmp/ufw /etc/default/ufw
-cp /tmp/ufw.conf /etc/ufw/ufw.conf
 cp /tmp/user.rules /etc/ufw/user.rules
+
+####################################################################################################
+#### SS-Install-UFW: Reset Permissions + Restart UFW Firewall ######################################
+####################################################################################################
 
 ## reset permissions ##
 chown root:root /etc/default/ufw
@@ -132,6 +144,8 @@ chown root:root /etc/ufw/user.rules
 chmod 0664 /etc/default/ufw
 chmod 0664 /etc/ufw/ufw.conf
 chmod 0664 /etc/ufw/user.rules
+
+# /etc/init.d/ufw restart
 
 ## delete tmp files ##
 rm /tmp/ufw*
