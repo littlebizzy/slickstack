@@ -31,7 +31,7 @@ function apt {
     export DEBIAN_FRONTEND=noninteractive
     export DEBIAN_PRIORITY=critical
     export PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'
-    command /usr/bin/apt --yes --quiet --fix-broken --option Dpkg::Options::=--force-confold --option Dpkg::Options::=--force-confdef "$@"
+    command /usr/bin/apt --yes --quiet --option Dpkg::Options::=--force-confold --option Dpkg::Options::=--force-confdef "$@"
 }
 
 ## add-apt-repository alias flags ##
@@ -97,12 +97,15 @@ sudo ufw --force disable
 apt purge ^ufw
 # rm /etc/ufw/*
 
+## update repo cache ##
+apt update
+
+## attempt fixing any broken package depencies ##
+apt install --fix-broken
+
 ## cleanup potential conflicting files ##
 apt autoremove
 apt autoclean
-
-## update repo cache ##
-apt update
 
 ## install ufw ##
 apt install ufw
@@ -166,5 +169,7 @@ rm /tmp/user*
 ## Ref: https://askubuntu.com/questions/1006834/ufw-rules-disappear-after-manually-adding-them-to-user-rules-ubuntu-16-04
 ## Ref: https://serverfault.com/questions/198398/ubuntu-how-to-add-an-iptables-rule-that-ufw-cant-create
 ## Ref: https://askubuntu.com/questions/104899/make-apt-get-or-aptitude-run-with-y-but-not-prompt-for-replacement-of-configu
+## Ref: https://linuxhint.com/apt_get_fix_missing_broken_packages/
+## Ref: https://bugs.launchpad.net/ubuntu/+source/apt/+bug/1341611
 
 ## SS_EOF
