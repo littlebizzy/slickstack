@@ -10,7 +10,7 @@ title: Adminer (Public Mirrors)
 
 *Live configuration files and boilerplates used by current SlickStack installation that may be altered by LittleBizzy or Ubuntu for better performance.*
 
-* [adminer.txt](adminer.txt)
+* [adminer.php](adminer.txt)
 
 ### Original Files
 
@@ -18,9 +18,9 @@ title: Adminer (Public Mirrors)
 
 #### adminer.php
 
-* [adminer-4.7.7.txt](adminer-4.7.7.txt)
-* [adminer-4.7.6.txt](adminer-4.7.6.txt)
-* [adminer-4.7.5.txt](adminer-4.7.5.txt)
+* [adminer.php-4.7.7](adminer-4.7.7.txt)
+* [adminer.php-4.7.6](adminer-4.7.6.txt)
+* [adminer.php-4.7.5](adminer-4.7.5.txt)
 
 ### Related Links
 
