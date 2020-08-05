@@ -1,15 +1,12 @@
 ####################################################################################################
 #### author: SlickStack ############################################################################
 #### link: https://slickstack.io ###################################################################
-#### mirror: http://mirrors.slickstack.io/ufw-firewall/after-rules.txt #############################
+#### mirror: http://mirrors.slickstack.io/ufw-firewall/user-rules.txt ##############################
 #### path: n/a (boilerplate) #######################################################################
-#### destination: /etc/ufw/after.rules (after install) #############################################
+#### destination: /etc/ufw/user.rules (after install) ##############################################
 #### purpose: UFW user rules configuration file boilerplate (supports custom SSH port) #############
 #### module version: Ubuntu 20.04 LTS + UFW Firewall 0.36.x ########################################
 ####################################################################################################
-
-## SLICKSTACK INSTALLS RECOMMENDED UFW RULES USING THE AFTER.RULES FILE (BEST PRACTICE) ##
-## CUSTOM UFW FIREWALL RULES SHOULD BE ADDED TO USER.RULES USING THE CLI ONLY ##
 
 *filter
 :ufw-user-input - [0:0]
@@ -33,12 +30,14 @@
 #### User Rules: Port Settings #####################################################################
 ####################################################################################################
 
--A ufw-user-input -p tcp --dport 80 -j ACCEPT
--A ufw-user-input -p udp --dport 80 -j ACCEPT
--A ufw-user-input -p tcp --dport 443 -j ACCEPT
--A ufw-user-input -p udp --dport 443 -j ACCEPT
+## here we manually allow TCP connections for both HTTP (80) and HTTPS (443) frontend ##
+## SSH (custom port) connections are also allowed based on ss-config settings ##
+
+### tuple ### allow tcp 80,443 0.0.0.0/0 any 0.0.0.0/0 in
+-A ufw-user-input -p tcp -m multiport --dports 80,443 -j ACCEPT
+
+### tuple ### allow tcp @SSH_PORT 0.0.0.0/0 any 0.0.0.0/0 in
 -A ufw-user-input -p tcp --dport @SSH_PORT -j ACCEPT
--A ufw-user-input -p udp --dport @SSH_PORT -j ACCEPT
 
 ####################################################################################################
 #### User Rules: Logging Settings ##################################################################
@@ -72,5 +71,6 @@ COMMIT
 ## Ref: https://bugs.launchpad.net/ufw/+bug/728128
 ## Ref: https://askubuntu.com/questions/1006834/ufw-rules-disappear-after-manually-adding-them-to-user-rules-ubuntu-16-04
 ## Ref: https://serverfault.com/questions/198398/ubuntu-how-to-add-an-iptables-rule-that-ufw-cant-create
+## Ref: https://www.digitalocean.com/community/tutorials/ufw-essentials-common-firewall-rules-and-commands
 
 ## SS_EOF
