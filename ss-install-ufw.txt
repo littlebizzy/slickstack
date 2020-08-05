@@ -84,7 +84,7 @@ function ln {
 }
 
 ####################################################################################################
-#### SS-Install-UFW: Install UFW Firewall + Set Temporary Rules ####################################
+#### SS-Install-UFW: Install UFW Firewall ##########################################################
 ####################################################################################################
 
 ## delete tmp files ##
@@ -94,16 +94,8 @@ rm /tmp/user*
 ## install ufw ##
 apt install ufw
 
-## ufw rules ##
-ufw default deny incoming
-ufw default allow outgoing
-ufw allow $SSH_PORT
-ufw allow 80
-ufw allow 443
-ufw allow 6379
-ufw --force disable
-ufw --force enable
-echo "y" | ufw enable
+## disable UFW temporarily while we configure various settings ##
+sudo ufw --force disable
 
 ####################################################################################################
 #### SS-Install-UFW: Configure UFW General Settings ################################################
@@ -118,7 +110,7 @@ cp /tmp/ufw /etc/default/ufw
 cp /tmp/ufw.conf /etc/ufw/ufw.conf
 
 ####################################################################################################
-#### SS-Install-UFW: Configure After Rules (Default Rules For SlickStack) ##########################
+#### SS-Install-UFW: Configure User Rules (Default Rules For SlickStack) ###########################
 ####################################################################################################
 
 # retrieve latest versions ##
@@ -145,7 +137,8 @@ chmod 0664 /etc/default/ufw
 chmod 0664 /etc/ufw/ufw.conf
 chmod 0664 /etc/ufw/user.rules
 
-# /etc/init.d/ufw restart
+## enable UFW because we are done configuring settings (ss-install-ufw run last) ##
+sudo ufw --force enable
 
 ## delete tmp files ##
 rm /tmp/ufw*
