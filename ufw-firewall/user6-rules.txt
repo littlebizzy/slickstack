@@ -1,3 +1,13 @@
+####################################################################################################
+#### author: SlickStack ############################################################################
+#### link: https://slickstack.io ###################################################################
+#### mirror: http://mirrors.slickstack.io/ufw-firewall/user6-rules.txt #############################
+#### path: n/a (boilerplate) #######################################################################
+#### destination: /etc/ufw/user6.rules (after install) #############################################
+#### purpose: UFW user rules IPv6 configuration file boilerplate (supports custom SSH port) ########
+#### module version: Ubuntu 20.04 LTS + UFW Firewall 0.36.x ########################################
+####################################################################################################
+
 *filter
 :ufw6-user-input - [0:0]
 :ufw6-user-output - [0:0]
@@ -15,9 +25,27 @@
 :ufw6-logging-allow - [0:0]
 :ufw6-user-limit - [0:0]
 :ufw6-user-limit-accept - [0:0]
+
+####################################################################################################
+#### User Rules IPv6: Port Settings ################################################################
+####################################################################################################
+
+## here we manually allow TCP connections for both HTTP (80) and HTTPS (443) frontend ##
+## SSH (custom port) connections are also allowed based on ss-config settings ##
+
 ### RULES ###
 
+### tuple ### allow tcp 80,443 ::/0 any ::/0 in
+-A ufw6-user-input -p tcp -m multiport --dports 80,443 -j ACCEPT
+
+### tuple ### allow tcp @SSH_PORT ::/0 any ::/0 in
+-A ufw6-user-input -p tcp --dport @SSH_PORT -j ACCEPT
+
 ### END RULES ###
+
+####################################################################################################
+#### User Rules IPv6: Logging Settings #############################################################
+####################################################################################################
 
 ### LOGGING ###
 -A ufw6-after-logging-input -j LOG --log-prefix "[UFW BLOCK] " -m limit --limit 3/min --limit-burst 10
@@ -27,9 +55,30 @@
 -A ufw6-logging-allow -j LOG --log-prefix "[UFW ALLOW] " -m limit --limit 3/min --limit-burst 10
 ### END LOGGING ###
 
+####################################################################################################
+#### User Rules IPv4: Rate Limiting Settings #######################################################
+####################################################################################################
+
 ### RATE LIMITING ###
 -A ufw6-user-limit -m limit --limit 3/minute -j LOG --log-prefix "[UFW LIMIT BLOCK] "
 -A ufw6-user-limit -j REJECT
 -A ufw6-user-limit-accept -j ACCEPT
 ### END RATE LIMITING ###
+
+####################################################################################################
+#### User Rules IPv4: Commit Rules #################################################################
+####################################################################################################
+
 COMMIT
+
+####################################################################################################
+#### SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ###############
+####################################################################################################
+
+## Ref: https://wiki.ubuntu.com/UncomplicatedFirewall
+## Ref: https://bugs.launchpad.net/ufw/+bug/728128
+## Ref: https://askubuntu.com/questions/1006834/ufw-rules-disappear-after-manually-adding-them-to-user-rules-ubuntu-16-04
+## Ref: https://serverfault.com/questions/198398/ubuntu-how-to-add-an-iptables-rule-that-ufw-cant-create
+## Ref: https://www.digitalocean.com/community/tutorials/ufw-essentials-common-firewall-rules-and-commands
+
+## SS_EOF
