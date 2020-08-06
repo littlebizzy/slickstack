@@ -9,6 +9,7 @@
 * [ufw](ufw.txt)
 * [ufw.conf](ufw-conf.txt)
 * [user.rules](user-rules.txt)
+* [user6.rules](user6-rules.txt)
 
 ### Original Files
 
@@ -67,4 +68,4 @@
 
 ----
 
-*Last updated: Aug 5, 2020*
+*Last updated: Aug 6, 2020*
