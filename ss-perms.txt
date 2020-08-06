@@ -189,53 +189,50 @@ dos2unix /var/www/ss*
 chmod 6664 /var/www/meta/adminer.php &> /dev/null
 
 ####################################################################################################
-#### SS-Perms: Reset Public HTML Directory Permissions (WordPress) #################################
+#### SS-Perms: Ensure Critical Public HTML Subdirectories + Files Exist ############################
 ####################################################################################################
 
-## ensure directories exist (will not overwrite) ##
+## ensure critical directories exist (will not overwrite) ##
 mkdir /var/www/html
 mkdir /var/www/html/.well-known
 mkdir /var/www/html/.well-known/acme-challenge
-mkdir /var/www/html/wp-admin
 mkdir /var/www/html/wp-content
 mkdir /var/www/html/wp-content/languages
 mkdir /var/www/html/wp-content/mu-plugins
 mkdir /var/www/html/wp-content/temp
 mkdir /var/www/html/wp-content/uploads
 mkdir /var/www/html/wp-content/upgrade
-mkdir /var/www/html/wp-includes
 
 ## ensure staging directories exist (will not overwrite) ##
 mkdir /var/www/html/staging
 
-## ensure files exist ##
+## ensure files exist (production only because ss-sync will copy to staging) ##
 if [ ! -f "/var/www/html/wp-content/blacklist.txt" ]; then touch "/var/www/html/wp-content/blacklist.txt"; fi
 if [ ! -f "/var/www/html/wp-content/functions.php" ]; then touch "/var/www/html/wp-content/functions.php"; fi
 
-## public files ##
-chown -R $SFTP_USER:wordpress /var/www/html
+####################################################################################################
+#### SS-Perms: Reset Public HTML Directory Permissions #############################################
+####################################################################################################
 
-# chown -R www-data:wordpress /var/www/html/wp-content/temp
-# chown -R www-data:wordpress /var/www/html/wp-content/uploads
-chmod 6775 /var/www/html &> /dev/null
-find /var/www/html/ -type d -exec chmod 6775 {} \;
-
-## reset file permissions ##
-# chown www-data:www-data /var/www/html/wp-content/blacklist.txt
-# find /var/www/html/ -type f -not -path "*var/www/html/wp-content/uploads*" -exec chmod 6664 {} \;
-# find /var/www/html/wp-content/uploads/ -not -name "*.jpg" -not -name "*.jpeg" -not -name "*.png" -not -name "*.bmp" -not -name "*.webp" -not -name "*.gif" -not -name "*.tiff" -not -name "*.mp4" -not -name "*.vid" -type f -exec chmod 0664 {} \;
-
-find /var/www/html/ -type f -exec chmod 6664 {} \;
-
-chmod 0660 /var/www/html/wp-config.php
-chmod 0440 /var/www/html/wp-content/blacklist.txt
-
-chmod 0660 /var/www/html/staging/wp-config.php
-chmod 0440 /var/www/html/staging/wp-content/blacklist.txt
-
-## this folder used by server for e.g. Cerbot but also SFTP for things like Stripe ##
+## accessed by server for e.g. Cerbot but also by SFTP user for things like Stripe ##
 chown -R $SFTP_USER:www-data /var/www/html/.well-known
 chmod 6775 /var/www/html/.well-known
+
+## production ##
+chown -R $SFTP_USER:wordpress /var/www/html
+chown -R www-data:wordpress /var/www/html/wp-content/temp
+chown -R www-data:wordpress /var/www/html/wp-content/upgrade
+chown www-data:wordpress /var/www/html/wp-content/blacklist.txt
+chmod 6775 /var/www/html
+chmod 0660 /var/www/html/wp-config.php
+chmod 0440 /var/www/html/wp-content/blacklist.txt
+find /var/www/html/ -type d -exec chmod 6775 {} \;
+find /var/www/html/ -type f -exec chmod 6664 {} \;
+
+## staging ##
+chown www-data:wordpress /var/www/html/staging/wp-content/blacklist.txt
+chmod 0660 /var/www/html/staging/wp-config.php
+chmod 0440 /var/www/html/staging/wp-content/blacklist.txt
 
 ####################################################################################################
 #### SS-Perms: Reset MU (Must-Use) Plugins Permissions #############################################
