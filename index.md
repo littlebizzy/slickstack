@@ -13,6 +13,7 @@ title: SlickStack (Public Mirrors)
 * [adminer](/adminer/)
 * [clamav](/clamav/)
 * [cloudflare](/cloudflare/)
+* [craft-cms](/craft-cms/)
 * [fastcgi-cache](/fastcgi-cache/)
 * [git](/git/)
 * [letsencrypt](/letsencrypt/)
@@ -92,4 +93,4 @@ title: SlickStack (Public Mirrors)
 
 ----
 
-*Last updated: Aug 5, 2020*
+*Last updated: Aug 6, 2020*
