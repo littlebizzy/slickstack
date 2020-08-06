@@ -21,7 +21,7 @@
 
 *Links and resources related to the above module that may help users understand its functionality, or how it interacts with other LEMP stack modules.*
 
-
+* https://github.com/craftcms/cms/releases
 
 ----
 
