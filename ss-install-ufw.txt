@@ -131,15 +131,19 @@ cp /tmp/ufw.conf /etc/ufw/ufw.conf
 
 # retrieve latest versions ##
 wget -O /tmp/user.rules http://mirrors.slickstack.io/ufw-firewall/user-rules.txt
+wget -O /tmp/user6.rules http://mirrors.slickstack.io/ufw-firewall/user6-rules.txt
 
 if [[ -z "$SSH_PORT" ]]; then 
     sed -i "s/@SSH_PORT/6969/g" /tmp/user.rules
+    sed -i "s/@SSH_PORT/6969/g" /tmp/user6.rules
 else 
     sed -i "s/@SSH_PORT/${SSH_PORT}/g" /tmp/user.rules
+    sed -i "s/@SSH_PORT/${SSH_PORT}/g" /tmp/user6.rules
 fi
 
 ## copy files to their destinations ##
 cp /tmp/user.rules /etc/ufw/user.rules
+cp /tmp/user6.rules /etc/ufw/user6.rules
 
 ####################################################################################################
 #### SS-Install-UFW: Reset Permissions + Restart UFW Firewall ######################################
@@ -149,9 +153,11 @@ cp /tmp/user.rules /etc/ufw/user.rules
 chown root:root /etc/default/ufw
 chown root:root /etc/ufw/ufw.conf
 chown root:root /etc/ufw/user.rules
+chown root:root /etc/ufw/user6.rules
 chmod 0664 /etc/default/ufw
 chmod 0664 /etc/ufw/ufw.conf
 chmod 0664 /etc/ufw/user.rules
+chmod 0664 /etc/ufw/user6.rules
 
 ## enable UFW because we are done configuring settings (ss-install-ufw run last) ##
 sudo ufw --force enable
