@@ -19,6 +19,8 @@
 * [craftcms-3.4.30.zip](craftcms-3.4.30.zip)
 * [craftcms-3.4.29.1.zip](craftcms-3.4.29.1.zip)
 * [craftcms-3.4.29.zip](craftcms-3.4.29.zip)
+* [craftcms-3.4.28.1.zip](craftcms-3.4.28.1.zip)
+* [craftcms-3.4.28.zip](craftcms-3.4.28.zip)
 
 ### Related Links
 
