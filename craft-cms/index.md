@@ -15,7 +15,8 @@
 #### craftcms.zip
 
 * [craftcms-3.5.1.zip](craftcms-3.5.1.zip)
-
+* [craftcms-3.5.0.zip](craftcms-3.5.0.zip)
+* [craftcms-3.4.30.zip](craftcms-3.4.30.zip)
 
 ### Related Links
 
@@ -25,4 +26,4 @@
 
 ----
 
-*Last updated: Aug 6, 2020*
+*Last updated: Aug 7, 2020*
