@@ -51,6 +51,12 @@ function mysql {
     command mysql --user=root --host=localhost --protocol=socket --port=3306 --force "$@"
 }
 
+## mysqldump alias flags ##
+function mysqldump {
+    # /usr/bin/mysqldump
+    command mysqldump --user=$DB_USER --password=$DB_PASS --host=$DB_HOST --protocol=tcp --port=3306 --dump-date --force "$@"
+}
+
 ## cp alias flags ##
 function cp {
     command cp -R -f -d --no-preserve=mode,ownership "$@"
@@ -85,19 +91,18 @@ function ln {
 #### SS-Dump: Export The Live MySQL Database (mysqldump) ###########################################
 ####################################################################################################
 
+## here we use mysqldump to dump a copy of the live production database to /var/www/meta ##
+## to ensure support for remote databases we force the TCP protocol to be used ##
+
 ## MESSAGE ##
 echo -e "\e[36mDumping the live MySQL database to /var/www/meta/wp.sql...\e[0m" >&2
 
-## prepare MySQL root password (suppresses MySQL security warnings) ##
-export MYSQL_PWD=$DB_PASSWORD_ROOT
-
-## dump MySQL database to /var/www/wp.sql (overwrites) ##
-#### /usr/bin/mysqldump
-mysqldump --user=root --host="$DB_HOST" --protocol=tcp --port=3306 --dump-date --flush-privileges --force "$DB_NAME" > /var/www/meta/wp.sql
+## dump production MySQL database (overwrites existing) ##
+mysqldump $DB_NAME > /var/www/meta/wp.sql
 
 ## copy MySQL 8.0.x data (includes databases) ##
 cp /var/lib/mysql /var/www/meta/mysql.bak
-# cp /var/lib/mysql-files /var/www/meta/mysql-files.bak
+# cp /var/l ib/mysql-files /var/www/meta/mysql-files.bak
 # cp /var/lib/mysql-keyring /var/www/meta/mysql-keyring.bak
 
 ####################################################################################################
@@ -106,7 +111,7 @@ cp /var/lib/mysql /var/www/meta/mysql.bak
 
 ## reset permissions ##
 chown -R $SFTP_USER:www-data /var/www/meta/wp.sql
-chmod 6775 /var/www/meta/wp.sql
+chmod 0775 /var/www/meta/wp.sql
 
 ####################################################################################################
 #### SS-Dump: SUCCESS (OR FAIL) MESSAGE ############################################################
@@ -125,5 +130,8 @@ echo -e "\e[93mSUCCESS! The MySQL database was dumped to /var/www/wp.sql.\e[0m" 
 ## Ref: https://stackoverflow.com/questions/32133353/unable-to-connect-to-mysql-database-in-ubuntu
 ## Ref: https://dba.stackexchange.com/questions/35847/mysqldump-flush-privileges-option
 ## Ref: https://www.sqlshack.com/how-to-install-mysql-on-ubuntu-18-04/
+## Ref: https://stackoverflow.com/questions/2989724/how-to-mysqldump-remote-db-from-local-machine
+## Ref: https://dev.mysql.com/doc/refman/8.0/en/transport-protocols.html
+## Ref: https://dev.mysql.com/doc/refman/8.0/en/mysqldump.html
 
 ## SS_EOF
