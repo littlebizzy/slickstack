@@ -101,6 +101,7 @@ RANDOM_RESET_OPCACHE=$(openssl rand -hex 12)
 echo "<?php opcache_reset(); ?>" > /var/www/html/purge-${RANDOM_RESET_OPCACHE}.php
 /usr/bin/php /var/www/html/purge-${RANDOM_RESET_OPCACHE}.php
 rm /var/www/html/purge-${RANDOM_RESET_OPCACHE}.php
+# rm /var/www/html/purge-* ## better
 
 ## manually delete OPcache file cache (again) ##
 # rm /var/www/cache/opcache/*
@@ -109,11 +110,8 @@ rm /var/www/html/purge-${RANDOM_RESET_OPCACHE}.php
 #### SS-Purge: Delete Transients From MySQL Database (WordPress Queries Cache) #####################
 ####################################################################################################
 
-## prepare MySQL root password (suppresses MySQL security warnings) ##
-export MYSQL_PWD=$DB_PASSWORD_ROOT
-
-## manually delete all WP transients from database ##
-mysql --execute="DELETE FROM ${DB_PREFIX}options WHERE option_name LIKE ('%\_transient\_%');"
+## manually delete all transients from WordPress database ##
+mysql --execute="DELETE FROM ${DB_NAME}.${DB_PREFIX}options WHERE option_name LIKE ('%\_transient\_%');"
 
 ####################################################################################################
 #### SS-Purge: Flush Redis (Object Cache i.e. Transients) ##########################################
@@ -122,7 +120,7 @@ mysql --execute="DELETE FROM ${DB_PREFIX}options WHERE option_name LIKE ('%\_tra
 ## when a persistent object cache is installed in WordPress it retains all WP transients ##
 ## therefore flushing Redis is similar to manually deleting WP transients in MySQL ##
 
-## flush Redis object cache using redis-cli (and suppress messages) ##
+## flush Redis object cache using redis-cli ##
 redis-cli flushall &> /dev/null
 
 ####################################################################################################
@@ -152,5 +150,6 @@ find /var/www/cache/ -not -path "*/opcache*" -type f -delete
 ## Ref: https://pressidium.com/blog/2017/wordpress-object-caching-redis-memcached-and-native-apis/
 ## Ref: https://pressjitsu.com/blog/transient-cache-alternatives/
 ## Ref: https://unix.stackexchange.com/questions/87258/delete-all-files-except-in-a-certain-subdirectory-with-find
+## Ref: https://github.com/littlebizzy/slickstack/issues/57
 
 ## SS_EOF
