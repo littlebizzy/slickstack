@@ -141,13 +141,13 @@ chmod 0755 /var/www ## must be 0755
 ## SlickStack core scripts ##
 chown root:root /var/www/*cron* ## must be root:root
 chown root:root /var/www/ss* ## must be root:root
-chmod 6770 /var/www/*cron* ## 4700 should also work
-chmod 6770 /var/www/ss* ## 4700 should also work
+chmod 0770 /var/www/*cron* ## 4700 should also work
+chmod 0770 /var/www/ss* ## 4700 should also work
 chmod 0700 /var/www/ss-config
 
 ## SQL dump file (we want SFTP users to be able to access) ##
 chown -R $SFTP_USER:www-data /var/www/meta/wp.sql
-chmod 6775 /var/www/meta/wp.sql
+chmod 0775 /var/www/meta/wp.sql
 
 ## no worries if the SFTP user accesses this stuff (but www-data access is the priority) ##
 chown www-data:www-data /var/www/cache ## must be www-data:www-data
@@ -155,10 +155,10 @@ chown www-data:www-data /var/www/cache/fastcgi ## must be www-data:www-data
 chown www-data:www-data /var/www/cache/opcache ## must be www-data:www-data
 chown www-data:www-data /var/www/logs ## must be www-data:www-data
 chown www-data:www-data /var/www/meta ## must be www-data:www-data
-chmod 6775 /var/www/cache ## 6755 should also work
-chmod 6775 /var/www/cache/opcache ## 6755 should also work
-chmod 6775 /var/www/logs ## 6755 should also work
-chmod 6775 /var/www/meta ## 6755 should also work
+chmod 0775 /var/www/cache ## 755 should also work
+chmod 0775 /var/www/cache/opcache ## 755 should also work
+chmod 0775 /var/www/logs ## 755 should also work
+chmod 0775 /var/www/meta ## 755 should also work
 
 ## ensure log files exist ##
 if [ ! -f "/var/www/logs/clamav.log" ]; then touch "/var/www/logs/clamav.log"; fi
@@ -186,7 +186,7 @@ dos2unix /var/www/ss*
 #### SS-Perms: Adminer Permissions #################################################################
 ####################################################################################################
 
-chmod 6664 /var/www/meta/adminer.php &> /dev/null
+chmod 0664 /var/www/meta/adminer.php &> /dev/null
 
 ####################################################################################################
 #### SS-Perms: Ensure Critical Public HTML Subdirectories + Files Exist ############################
@@ -216,22 +216,22 @@ if [ ! -f "/var/www/html/wp-content/functions.php" ]; then touch "/var/www/html/
 
 ## accessed by server for e.g. Cerbot but also by SFTP user for things like Stripe ##
 chown -R $SFTP_USER:www-data /var/www/html/.well-known
-chmod 6775 /var/www/html/.well-known
+chmod 0755 /var/www/html/.well-known
 
 ## production ##
 chown -R $SFTP_USER:wordpress /var/www/html
 chown -R www-data:wordpress /var/www/html/wp-content/temp
 chown -R www-data:wordpress /var/www/html/wp-content/upgrade
 chown www-data:wordpress /var/www/html/wp-content/blacklist.txt
-chmod 6775 /var/www/html
+chmod 0775 /var/www/html
 chmod 0660 /var/www/html/wp-config.php
 chmod 0440 /var/www/html/wp-content/blacklist.txt
-find /var/www/html/ -type d -exec chmod 6775 {} \;
-find /var/www/html/ -type f -exec chmod 6664 {} \;
+find /var/www/html/ -type d -exec chmod 0755 {} \;
+find /var/www/html/ -type f -exec chmod 0644 {} \;
 
 ## staging ##
 chown www-data:wordpress /var/www/html/staging/wp-content/blacklist.txt
-chmod 0660 /var/www/html/staging/wp-config.php
+chmod 0640 /var/www/html/staging/wp-config.php
 chmod 0440 /var/www/html/staging/wp-content/blacklist.txt
 
 ####################################################################################################
@@ -245,19 +245,19 @@ chmod 0440 /var/www/html/staging/wp-content/blacklist.txt
 chown -R www-data:wordpress /var/www/html/wp-content/mu-plugins
 chown www-data:wordpress /var/www/html/wp-content/object-cache.php
 chown $SFTP_USER:wordpress /var/www/html/wp-content/functions.php
-find /var/www/html/wp-content/mu-plugins/ -type d -exec chmod 0775 {} \;
-find /var/www/html/wp-content/mu-plugins/ -type f -exec chmod 0664 {} \;
-chmod 0775 /var/www/html/wp-content/object-cache.php
-chmod 0775 /var/www/html/wp-content/functions.php
+find /var/www/html/wp-content/mu-plugins/ -type d -exec chmod 0755 {} \;
+find /var/www/html/wp-content/mu-plugins/ -type f -exec chmod 0644 {} \;
+chmod 0755 /var/www/html/wp-content/object-cache.php
+chmod 0755 /var/www/html/wp-content/functions.php
 
 ## staging ##
 chown -R www-data:wordpress /var/www/html/staging/wp-content/mu-plugins
 chown www-data:wordpress /var/www/html/staging/wp-content/object-cache.php
 chown $SFTP_USER:wordpress /var/www/html/staging/wp-content/functions.php
-find /var/www/html/staging/wp-content/mu-plugins/ -type d -exec chmod 0775 {} \;
-find /var/www/html/staging/wp-content/mu-plugins/ -type f -exec chmod 0664 {} \;
-chmod 0775 /var/www/html/staging/wp-content/object-cache.php
-chmod 0775 /var/www/html/staging/wp-content/functions.php
+find /var/www/html/staging/wp-content/mu-plugins/ -type d -exec chmod 0755 {} \;
+find /var/www/html/staging/wp-content/mu-plugins/ -type f -exec chmod 0644 {} \;
+chmod 0755 /var/www/html/staging/wp-content/object-cache.php
+chmod 0755 /var/www/html/staging/wp-content/functions.php
 
 ####################################################################################################
 #### Reset Permissions: SlickStack (LEMP) Modules ##################################################
@@ -286,17 +286,20 @@ chown mysql:mysql /var/run/mysqld
 chown root:root /etc/mysql/my.cnf
 chown root:root /etc/mysql/mysql.cnf
 chown root:root /etc/mysql/mysql.conf.d/mysqld.cnf
-chmod 0775 /etc/mysql/my.cnf
+chmod 0755 /etc/mysql/my.cnf
 
 ## always run WP-CLI as the www-data user (and allow SFTP user to run it) ##
 chown root:root /usr/local/bin/ &> /dev/null
 chown www-data:www-data /usr/local/bin/wp &> /dev/null
-chmod 6775 /usr/local/bin/wp &> /dev/null
+chmod 0755 /usr/local/bin/wp &> /dev/null
 
 # chown www-data:www-data /var/run/php
 chown root:root /etc/php/7.2/fpm/php.ini &> /dev/null
 chown root:root /etc/php/7.2/fpm/php-fpm.conf &> /dev/null
 chown root:root /etc/php/7.2/cli/php.ini &> /dev/null
+chown root:root /etc/php/7.4/fpm/php.ini &> /dev/null
+chown root:root /etc/php/7.4/fpm/php-fpm.conf &> /dev/null
+chown root:root /etc/php/7.4/cli/php.ini &> /dev/null
 
 chown redis:redis /var/run/redis &> /dev/null
 chown redis:redis /etc/redis/redis.conf &> /dev/null
