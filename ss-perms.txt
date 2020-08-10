@@ -83,6 +83,9 @@ function ln {
 #### SS-Perms: Reset Ubuntu (System Files + Users + Groups) Permissions ############################
 ####################################################################################################
 
+## here we ensure permissions are safe for general system (Linux) files and otherwise ##
+## since this is a single-user stack we can lock these down without issues ##
+
 ## MESSAGE ##
 echo -e "\e[36mResetting all file permissions across entire SlickStack server...\e[0m"
 
@@ -91,10 +94,10 @@ chown root:root /etc/ssh/sshd_config &> /dev/null
 chown root:root /etc/sudoers &> /dev/null
 chown root:root /var/spool/cron/crontabs/root &> /dev/null
 chown root:root /etc/sysctl.conf &> /dev/null
-chmod 0440 /etc/ssh/sshd_config &> /dev/null
-chmod 0440 /etc/sudoers &> /dev/null
+chmod 0600 /etc/ssh/sshd_config &> /dev/null
+chmod 0600 /etc/sudoers &> /dev/null
 chmod 0600 /var/spool/cron/crontabs/root &> /dev/null
-chmod 0664 /etc/sysctl.conf &> /dev/null
+chmod 0600 /etc/sysctl.conf &> /dev/null
 
 ## create wordpress group if does not exist and various SlickStack users/groups ##
 addgroup wordpress &> /dev/null
@@ -106,7 +109,7 @@ adduser www-data wordpress &> /dev/null
 ## ssh public keys ##
 mkdir /var/www/meta/.ssh
 chown $SUDO_USER:$SUDO_USER /var/www/meta/.ssh
-chmod 0755 /var/www/meta/.ssh ## should be 0775 as per Ubuntu docs
+chmod 0775 /var/www/meta/.ssh ## should be 0775 as per Ubuntu docs
 
 touch /var/www/meta/.ssh/authorized_keys
 chown $SUDO_USER:$SUDO_USER /var/www/meta/.ssh/authorized_keys
@@ -154,10 +157,11 @@ chown www-data:www-data /var/www/cache/fastcgi ## must be www-data:www-data
 chown www-data:www-data /var/www/cache/opcache ## must be www-data:www-data
 chown www-data:www-data /var/www/logs ## must be www-data:www-data
 chown www-data:www-data /var/www/meta ## must be www-data:www-data
-chmod 0775 /var/www/cache ## 755 should also work
-chmod 0775 /var/www/cache/opcache ## 755 should also work
-chmod 0775 /var/www/logs ## 755 should also work
-chmod 0775 /var/www/meta ## 755 should also work
+chmod 0755 /var/www/cache ## 775 should also work
+chmod 0755 /var/www/cache/fastcgi ## 775 should also work
+chmod 0755 /var/www/cache/opcache ## 755 should also work
+chmod 0755 /var/www/logs ## 755 should also work
+chmod 0755 /var/www/meta ## 755 should also work
 
 ## ensure log files exist ##
 if [ ! -f "/var/www/logs/clamav.log" ]; then touch "/var/www/logs/clamav.log"; fi
