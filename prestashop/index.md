@@ -2,7 +2,7 @@
 
 ----
 
-### Live Files (OpenCart 3.0.3.6)
+### Live Files (PrestaShop 1.7.6.7)
 
 *Live configuration files and boilerplates used by current SlickStack installation that may be altered by LittleBizzy or Ubuntu for better performance.*
 
@@ -14,13 +14,14 @@
 
 #### opencart.zip
 
-* 
+* [prestashop-1.7.6.7](prestashop-1.7.6.7)
 
 ### Related Links
 
 *Links and resources related to the above module that may help users understand its functionality, or how it interacts with other LEMP stack modules.*
 
-* 
+* https://www.prestashop.com
+* https://github.com/PrestaShop/PrestaShop/releases
 
 ----
 
