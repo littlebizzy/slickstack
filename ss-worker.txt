@@ -241,33 +241,81 @@ rm -R -f /tmp/blacklist*
 
 if [[ "${UBUNTU_VERSION}" = "18.04" ]]; then
 
-function mysql {
-    command mysql --user=root --password=$DB_PASSWORD_ROOT --host=$DB_HOST --protocol=tcp --port=3306 --force "$@"
-}
-
+## 1st ##
 ## create admin superuser (can be used with Adminer/phpMyAdmin) ##
-sudo mysql -e "ALTER USER IF EXISTS 'admin'@'localhost' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD_ROOT}';"
-sudo mysql -e "ALTER USER IF EXISTS 'admin'@'127.0.0.1' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD_ROOT}';"
-sudo mysql -e "ALTER USER IF EXISTS 'admin'@'::1' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD_ROOT}';"
-sudo mysql -e "CREATE USER IF NOT EXISTS 'admin'@'localhost' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD_ROOT}';"
-sudo mysql -e "CREATE USER IF NOT EXISTS 'admin'@'127.0.0.1' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD_ROOT}';"
-sudo mysql -e "CREATE USER IF NOT EXISTS 'admin'@'::1' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD_ROOT}';"
+sudo mysql --user=root --password=$DB_PASSWORD_ROOT --host=localhost --protocol=tcp --port=3306 --force -e "ALTER USER IF EXISTS 'admin'@'localhost' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD_ROOT}';"
+sudo mysql --user=root --password=$DB_PASSWORD_ROOT --host=localhost --protocol=tcp --port=3306 --force -e "ALTER USER IF EXISTS 'admin'@'127.0.0.1' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD_ROOT}';"
+sudo mysql --user=root --password=$DB_PASSWORD_ROOT --host=localhost --protocol=tcp --port=3306 --force -e "ALTER USER IF EXISTS 'admin'@'::1' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD_ROOT}';"
+sudo mysql --user=root --password=$DB_PASSWORD_ROOT --host=localhost --protocol=tcp --port=3306 --force -e "CREATE USER IF NOT EXISTS 'admin'@'localhost' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD_ROOT}';"
+sudo mysql --user=root --password=$DB_PASSWORD_ROOT --host=localhost --protocol=tcp --port=3306 --force -e "CREATE USER IF NOT EXISTS 'admin'@'127.0.0.1' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD_ROOT}';"
+sudo mysql --user=root --password=$DB_PASSWORD_ROOT --host=localhost --protocol=tcp --port=3306 --force -e "CREATE USER IF NOT EXISTS 'admin'@'::1' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD_ROOT}';"
 
 ## grant admin superuser all privileges on all databases (localhost/IPv4/IPv6) ##
-sudo mysql -e "GRANT ALL ON *.* TO 'admin'@'localhost' WITH GRANT OPTION;"
-sudo mysql -e "GRANT ALL ON *.* TO 'admin'@'127.0.0.1' WITH GRANT OPTION;"
-sudo mysql -e "GRANT ALL ON *.* TO 'admin'@'::1' WITH GRANT OPTION;"
+sudo mysql --user=root --password=$DB_PASSWORD_ROOT --host=localhost --protocol=tcp --port=3306 --force -e "GRANT ALL ON *.* TO 'admin'@'localhost' WITH GRANT OPTION;"
+sudo mysql --user=root --password=$DB_PASSWORD_ROOT --host=localhost --protocol=tcp --port=3306 --force -e "GRANT ALL ON *.* TO 'admin'@'127.0.0.1' WITH GRANT OPTION;"
+sudo mysql --user=root --password=$DB_PASSWORD_ROOT --host=localhost --protocol=tcp --port=3306 --force -e "GRANT ALL ON *.* TO 'admin'@'::1' WITH GRANT OPTION;"
 
 ## install auth_socket plugin ##
-sudo mysql -e "INSTALL PLUGIN auth_socket SONAME 'auth_socket.so';"
+sudo mysql --user=root --password=$DB_PASSWORD_ROOT --host=localhost --protocol=tcp --port=3306 --force -e "INSTALL PLUGIN auth_socket SONAME 'auth_socket.so';"
 
 ## create sudo@localhost user via auth_socket ##
-sudo mysql -e "ALTER USER IF EXISTS '${SUDO_USER}'@'localhost' IDENTIFIED WITH auth_socket BY '';"
-sudo mysql -e "CREATE USER IF NOT EXISTS '${SUDO_USER}'@'localhost' IDENTIFIED WITH auth_socket BY '';"
-sudo mysql -e "GRANT ALL ON *.* TO '${SUDO_USER}'@'localhost' WITH GRANT OPTION;"
+sudo mysql --user=root --password=$DB_PASSWORD_ROOT --host=localhost --protocol=tcp --port=3306 --force -e "ALTER USER IF EXISTS '${SUDO_USER}'@'localhost' IDENTIFIED WITH auth_socket BY '';"
+sudo mysql --user=root --password=$DB_PASSWORD_ROOT --host=localhost --protocol=tcp --port=3306 --force -e "CREATE USER IF NOT EXISTS '${SUDO_USER}'@'localhost' IDENTIFIED WITH auth_socket BY '';"
+sudo mysql --user=root --password=$DB_PASSWORD_ROOT --host=localhost --protocol=tcp --port=3306 --force -e "GRANT ALL ON *.* TO '${SUDO_USER}'@'localhost' WITH GRANT OPTION;"
 
 ## flush privileges ##
-sudo mysql -e "FLUSH PRIVILEGES;"
+sudo mysql --user=root --password=$DB_PASSWORD_ROOT --host=localhost --protocol=tcp --port=3306 --force -e "FLUSH PRIVILEGES;"
+
+## 2nd ##
+## create admin superuser (can be used with Adminer/phpMyAdmin) ##
+sudo mysql --user=root --password=$DB_PASSWORD_ROOT --host=127.0.0.1 --protocol=tcp --port=3306 --force -e "ALTER USER IF EXISTS 'admin'@'localhost' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD_ROOT}';"
+sudo mysql --user=root --password=$DB_PASSWORD_ROOT --host=127.0.0.1 --protocol=tcp --port=3306 --force -e "ALTER USER IF EXISTS 'admin'@'127.0.0.1' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD_ROOT}';"
+sudo mysql --user=root --password=$DB_PASSWORD_ROOT --host=127.0.0.1 --protocol=tcp --port=3306 --force -e "ALTER USER IF EXISTS 'admin'@'::1' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD_ROOT}';"
+sudo mysql --user=root --password=$DB_PASSWORD_ROOT --host=127.0.0.1 --protocol=tcp --port=3306 --force -e "CREATE USER IF NOT EXISTS 'admin'@'localhost' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD_ROOT}';"
+sudo mysql --user=root --password=$DB_PASSWORD_ROOT --host=127.0.0.1 --protocol=tcp --port=3306 --force -e "CREATE USER IF NOT EXISTS 'admin'@'127.0.0.1' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD_ROOT}';"
+sudo mysql --user=root --password=$DB_PASSWORD_ROOT --host=127.0.0.1 --protocol=tcp --port=3306 --force -e "CREATE USER IF NOT EXISTS 'admin'@'::1' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD_ROOT}';"
+
+## grant admin superuser all privileges on all databases (localhost/IPv4/IPv6) ##
+sudo mysql --user=root --password=$DB_PASSWORD_ROOT --host=127.0.0.1 --protocol=tcp --port=3306 --force -e "GRANT ALL ON *.* TO 'admin'@'localhost' WITH GRANT OPTION;"
+sudo mysql --user=root --password=$DB_PASSWORD_ROOT --host=127.0.0.1 --protocol=tcp --port=3306 --force -e "GRANT ALL ON *.* TO 'admin'@'127.0.0.1' WITH GRANT OPTION;"
+sudo mysql --user=root --password=$DB_PASSWORD_ROOT --host=127.0.0.1 --protocol=tcp --port=3306 --force -e "GRANT ALL ON *.* TO 'admin'@'::1' WITH GRANT OPTION;"
+
+## install auth_socket plugin ##
+sudo mysql --user=root --password=$DB_PASSWORD_ROOT --host=127.0.0.1 --protocol=tcp --port=3306 --force -e "INSTALL PLUGIN auth_socket SONAME 'auth_socket.so';"
+
+## create sudo@localhost user via auth_socket ##
+sudo mysql --user=root --password=$DB_PASSWORD_ROOT --host=127.0.0.1 --protocol=tcp --port=3306 --force -e "ALTER USER IF EXISTS '${SUDO_USER}'@'localhost' IDENTIFIED WITH auth_socket BY '';"
+sudo mysql --user=root --password=$DB_PASSWORD_ROOT --host=127.0.0.1 --protocol=tcp --port=3306 --force -e "CREATE USER IF NOT EXISTS '${SUDO_USER}'@'localhost' IDENTIFIED WITH auth_socket BY '';"
+sudo mysql --user=root --password=$DB_PASSWORD_ROOT --host=127.0.0.1 --protocol=tcp --port=3306 --force -e "GRANT ALL ON *.* TO '${SUDO_USER}'@'localhost' WITH GRANT OPTION;"
+
+## flush privileges ##
+sudo mysql --user=root --password=$DB_PASSWORD_ROOT --host=127.0.0.1 --protocol=tcp --port=3306 --force -e "FLUSH PRIVILEGES;"
+
+
+## 3rd ##
+## create admin superuser (can be used with Adminer/phpMyAdmin) ##
+sudo mysql --user=root --password=$DB_PASSWORD_ROOT --host=localhost --protocol=socket --port=3306 --force -e "ALTER USER IF EXISTS 'admin'@'localhost' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD_ROOT}';"
+sudo mysql --user=root --password=$DB_PASSWORD_ROOT --host=localhost --protocol=socket --port=3306 --force -e "ALTER USER IF EXISTS 'admin'@'127.0.0.1' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD_ROOT}';"
+sudo mysql --user=root --password=$DB_PASSWORD_ROOT --host=localhost --protocol=socket --port=3306 --force -e "ALTER USER IF EXISTS 'admin'@'::1' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD_ROOT}';"
+sudo mysql --user=root --password=$DB_PASSWORD_ROOT --host=localhost --protocol=socket --port=3306 --force -e "CREATE USER IF NOT EXISTS 'admin'@'localhost' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD_ROOT}';"
+sudo mysql --user=root --password=$DB_PASSWORD_ROOT --host=localhost --protocol=socket --port=3306 --force -e "CREATE USER IF NOT EXISTS 'admin'@'127.0.0.1' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD_ROOT}';"
+sudo mysql --user=root --password=$DB_PASSWORD_ROOT --host=localhost --protocol=socket --port=3306 --force -e "CREATE USER IF NOT EXISTS 'admin'@'::1' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD_ROOT}';"
+
+## grant admin superuser all privileges on all databases (localhost/IPv4/IPv6) ##
+sudo mysql --user=root --password=$DB_PASSWORD_ROOT --host=localhost --protocol=socket --port=3306 --force -e "GRANT ALL ON *.* TO 'admin'@'localhost' WITH GRANT OPTION;"
+sudo mysql --user=root --password=$DB_PASSWORD_ROOT --host=localhost --protocol=socket --port=3306 --force -e "GRANT ALL ON *.* TO 'admin'@'127.0.0.1' WITH GRANT OPTION;"
+sudo mysql --user=root --password=$DB_PASSWORD_ROOT --host=localhost --protocol=socket --port=3306 --force -e "GRANT ALL ON *.* TO 'admin'@'::1' WITH GRANT OPTION;"
+
+## install auth_socket plugin ##
+sudo mysql --user=root --password=$DB_PASSWORD_ROOT --host=localhost --protocol=socket --port=3306 --force -e "INSTALL PLUGIN auth_socket SONAME 'auth_socket.so';"
+
+## create sudo@localhost user via auth_socket ##
+sudo mysql --user=root --password=$DB_PASSWORD_ROOT --host=localhost --protocol=socket --port=3306 --force -e "ALTER USER IF EXISTS '${SUDO_USER}'@'localhost' IDENTIFIED WITH auth_socket BY '';"
+sudo mysql --user=root --password=$DB_PASSWORD_ROOT --host=localhost --protocol=socket --port=3306 --force -e "CREATE USER IF NOT EXISTS '${SUDO_USER}'@'localhost' IDENTIFIED WITH auth_socket BY '';"
+sudo mysql --user=root --password=$DB_PASSWORD_ROOT --host=localhost --protocol=socket --port=3306 --force -e "GRANT ALL ON *.* TO '${SUDO_USER}'@'localhost' WITH GRANT OPTION;"
+
+## flush privileges ##
+sudo mysql --user=root --password=$DB_PASSWORD_ROOT --host=localhost --protocol=socket --port=3306 --force -e "FLUSH PRIVILEGES;"
 
 fi
 
