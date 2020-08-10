@@ -148,8 +148,8 @@ chmod 0740 /var/www/*cron* ## 0740 is enough
 chmod 0740 /var/www/ss* ## 0740 is enough
 
 ## SQL dump file (we want SFTP users to be able to access) ##
-chown -R $SFTP_USER:www-data /var/www/meta/wp.sql
-chmod 0775 /var/www/meta/wp.sql
+chown -R $SFTP_USER:www-data /var/www/meta/wp.sql ## $SFTP_USER:www-data to better support SFTP access
+chmod 0640 /var/www/meta/wp.sql ## 0640 should be enough (or 644)
 
 ## no worries if the SFTP user accesses this stuff (but www-data access is the priority) ##
 chown www-data:www-data /var/www/cache ## must be www-data:www-data
@@ -226,16 +226,16 @@ chown -R $SFTP_USER:wordpress /var/www/html
 chown -R www-data:wordpress /var/www/html/wp-content/temp
 chown -R www-data:wordpress /var/www/html/wp-content/upgrade
 chown www-data:wordpress /var/www/html/wp-content/blacklist.txt
-chmod 0775 /var/www/html
-chmod 0660 /var/www/html/wp-config.php
-chmod 0440 /var/www/html/wp-content/blacklist.txt
-find /var/www/html/ -type d -exec chmod 0755 {} \;
-find /var/www/html/ -type f -exec chmod 0644 {} \;
+chmod 0775 /var/www/html ## 0775 (0755 not enough)
+chmod 0640 /var/www/html/wp-config.php  ## 0440 probably better (0660 not needed as wp-config protected in SlickStack)
+chmod 0440 /var/www/html/wp-content/blacklist.txt ## 0440 (read-only)
+find /var/www/html/ -type d -exec chmod 0775 {} \; ## 0775 (0755 not enough)
+find /var/www/html/ -type f -exec chmod 0664 {} \; ## 0664 (0644 not enough)
 
 ## staging ##
 chown www-data:wordpress /var/www/html/staging/wp-content/blacklist.txt
-chmod 0640 /var/www/html/staging/wp-config.php
-chmod 0440 /var/www/html/staging/wp-content/blacklist.txt
+chmod 0640 /var/www/html/staging/wp-config.php ## 0440 probably better (0660 not needed as wp-config protected in SlickStack)
+chmod 0440 /var/www/html/staging/wp-content/blacklist.txt ## 0440 (read-only)
 
 ####################################################################################################
 #### SS-Perms: Reset MU (Must-Use) Plugins Permissions #############################################
