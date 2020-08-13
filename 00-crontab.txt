@@ -32,19 +32,19 @@ PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 ## this Crontab schedule is hardcoded to run SlickStack Core cron jobs and nothing else ##
 ## the purpose of this approach is to achieve top-notch stability and security ##
 
-*/3 * * * * /usr/bin/flock -w 0 /tmp/01-cron-often.lock /var/www/01-cron-often > /dev/null 2>&1
-*/7 * * * * /usr/bin/flock -w 0 /tmp/02-cron-regular.lock /var/www/02-cron-regular > /dev/null 2>&1
-*/15 * * * * /usr/bin/flock -w 0 /tmp/03-cron-quarter-hourly.lock /var/www/03-cron-quarter-hourly > /dev/null 2>&1
-*/30 * * * * /usr/bin/flock -w 0 /tmp/04-cron-half-hourly.lock /var/www/04-cron-half-hourly > /dev/null 2>&1
-0 * * * * /usr/bin/flock -w 0 /tmp/05-cron-hourly.lock /var/www/05-cron-hourly > /dev/null 2>&1
-0 */6 * * * /usr/bin/flock -w 0 /tmp/06-cron-quarter-daily.lock /var/www/06-cron-quarter-daily > /dev/null 2>&1
-0 */12 * * * /usr/bin/flock -w 0 /tmp/07-cron-half-daily.lock /var/www/07-cron-half-daily > /dev/null 2>&1
-0 0 * * * /usr/bin/flock -w 0 /tmp/08-cron-daily.lock /var/www/08-cron-daily > /dev/null 2>&1
-0 0 */3 * * /usr/bin/flock -w 0 /tmp/09-cron-half-weekly.lock /var/www/09-cron-half-weekly > /dev/null 2>&1
-0 0 * * 0 /usr/bin/flock -w 0 /tmp/10-cron-weekly.lock /var/www/10-cron-weekly > /dev/null 2>&1
-0 0 13 * * /usr/bin/flock -w 0 /tmp/11-cron-half-monthly.lock /var/www/11-cron-half-monthly > /dev/null 2>&1
-0 0 1 * * /usr/bin/flock -w 0 /tmp/12-cron-monthly.lock /var/www/12-cron-monthly > /dev/null 2>&1
-0 0 1 */2 * /usr/bin/flock -w 0 /tmp/13-cron-sometimes.lock /var/www/13-cron-sometimes > /dev/null 2>&1
+*/3 * * * * /usr/bin/flock -w 0 /tmp/01-cron-often.lock /var/www/01-cron-often >> /var/www/logs/cron.log 2>&1
+*/7 * * * * /usr/bin/flock -w 0 /tmp/02-cron-regular.lock /var/www/02-cron-regular >> /var/www/logs/cron.log 2>&1
+*/15 * * * * /usr/bin/flock -w 0 /tmp/03-cron-quarter-hourly.lock /var/www/03-cron-quarter-hourly >> /var/www/logs/cron.log 2>&1
+*/30 * * * * /usr/bin/flock -w 0 /tmp/04-cron-half-hourly.lock /var/www/04-cron-half-hourly >> /var/www/logs/cron.log 2>&1
+0 * * * * /usr/bin/flock -w 0 /tmp/05-cron-hourly.lock /var/www/05-cron-hourly >> /var/www/logs/cron.log 2>&1
+0 */6 * * * /usr/bin/flock -w 0 /tmp/06-cron-quarter-daily.lock /var/www/06-cron-quarter-daily >> /var/www/logs/cron.log 2>&1
+0 */12 * * * /usr/bin/flock -w 0 /tmp/07-cron-half-daily.lock /var/www/07-cron-half-daily >> /var/www/logs/cron.log 2>&1
+0 0 * * * /usr/bin/flock -w 0 /tmp/08-cron-daily.lock /var/www/08-cron-daily > /dev/null >> /var/www/logs/cron.log 2>&1
+0 0 */3 * * /usr/bin/flock -w 0 /tmp/09-cron-half-weekly.lock /var/www/09-cron-half-weekly >> /var/www/logs/cron.log 2>&1
+0 0 * * 0 /usr/bin/flock -w 0 /tmp/10-cron-weekly.lock /var/www/10-cron-weekly >> /var/www/logs/cron.log 2>&1
+0 0 13 * * /usr/bin/flock -w 0 /tmp/11-cron-half-monthly.lock /var/www/11-cron-half-monthly >> /var/www/logs/cron.log 2>&1
+0 0 1 * * /usr/bin/flock -w 0 /tmp/12-cron-monthly.lock /var/www/12-cron-monthly >> /var/www/logs/cron.log 2>&1
+0 0 1 */2 * /usr/bin/flock -w 0 /tmp/13-cron-sometimes.lock /var/www/13-cron-sometimes >> /var/www/logs/cron.log 2>&1
 
 ## new line to avoid conflicts ##
 
@@ -55,21 +55,21 @@ PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 ## these minimal Crontab commands are emergency attempts to reinstall missing cron jobs ##
 ## this approach is not foolproof (better to run ss-install once in a while) ##
 
-13 9 * * * /bin/bash -c 'test -f /var/www/01-cron-often || wget --no-check-certificate --no-cache --no-cookies --tries=3 --timeout=15 -O /var/www/01-cron-often http://mirrors.slickstack.io/01-cron-often.txt' > /dev/null 2>&1
-13 9 * * * /bin/bash -c 'test -f /var/www/02-cron-regular || wget --no-check-certificate --no-cache --no-cookies --tries=3 --timeout=15 -O /var/www/02-cron-regular http://mirrors.slickstack.io/02-cron-regular.txt' > /dev/null 2>&1
-13 9 * * * /bin/bash -c 'test -f /var/www/03-cron-quarter-hourly || wget --no-check-certificate --no-cache --no-cookies --tries=3 --timeout=15 -O /var/www/03-cron-quarter-hourly http://mirrors.slickstack.io/03-cron-quarter-hourly.txt' > /dev/null 2>&1
-13 9 * * * /bin/bash -c 'test -f /var/www/04-cron-half-hourly || wget --no-check-certificate --no-cache --no-cookies --tries=3 --timeout=15 -O /var/www/04-cron-half-hourly http://mirrors.slickstack.io/04-cron-half-hourly.txt' > /dev/null 2>&1
-13 9 * * * /bin/bash -c 'test -f /var/www/05-cron-hourly || wget --no-check-certificate --no-cache --no-cookies --tries=3 --timeout=15 -O /var/www/05-cron-hourly http://mirrors.slickstack.io/05-cron-hourly.txt' > /dev/null 2>&1
-13 9 * * * /bin/bash -c 'test -f /var/www/06-cron-quarter-daily || wget --no-check-certificate --no-cache --no-cookies --tries=3 --timeout=15 -O /var/www/06-cron-quarter-daily http://mirrors.slickstack.io/06-cron-quarter-daily.txt' > /dev/null 2>&1
-13 9 * * * /bin/bash -c 'test -f /var/www/07-cron-half-daily || wget --no-check-certificate --no-cache --no-cookies --tries=3 --timeout=15 -O /var/www/07-cron-half-daily http://mirrors.slickstack.io/07-cron-half-daily.txt' > /dev/null 2>&1
-13 9 * * * /bin/bash -c 'test -f /var/www/08-cron-daily || wget --no-check-certificate --no-cache --no-cookies --tries=3 --timeout=15 -O /var/www/08-cron-daily http://mirrors.slickstack.io/08-cron-daily.txt' > /dev/null 2>&1
-13 9 * * * /bin/bash -c 'test -f /var/www/09-cron-half-weekly || wget --no-check-certificate --no-cache --no-cookies --tries=3 --timeout=15 -O /var/www/09-cron-half-weekly http://mirrors.slickstack.io/09-cron-half-weekly.txt' > /dev/null 2>&1
-13 9 * * * /bin/bash -c 'test -f /var/www/10-cron-weekly || wget --no-check-certificate --no-cache --no-cookies --tries=3 --timeout=15 -O /var/www/10-cron-weekly http://mirrors.slickstack.io/10-cron-weekly.txt' > /dev/null 2>&1
-13 9 * * * /bin/bash -c 'test -f /var/www/11-cron-half-monthly || wget --no-check-certificate --no-cache --no-cookies --tries=3 --timeout=15 -O /var/www/11-cron-half-monthly http://mirrors.slickstack.io/11-cron-half-monthly.txt' > /dev/null 2>&1
-13 9 * * * /bin/bash -c 'test -f /var/www/12-cron-monthly || wget --no-check-certificate --no-cache --no-cookies --tries=3 --timeout=15 -O /var/www/12-cron-monthly http://mirrors.slickstack.io/12-cron-monthly.txt' > /dev/null 2>&1
-13 9 * * * /bin/bash -c 'test -f /var/www/13-cron-sometimes || wget --no-check-certificate --no-cache --no-cookies --tries=3 --timeout=15 -O /var/www/13-cron-sometimes http://mirrors.slickstack.io/13-cron-sometimes.txt' > /dev/null 2>&1
-13 9 * * * /bin/bash -c 'chown root:root /var/www/*cron*' > /dev/null 2>&1
-13 9 * * * /bin/bash -c 'chmod 0740 /var/www/*cron*' > /dev/null 2>&1
+13 9 * * * /bin/bash -c 'test -f /var/www/01-cron-often || wget --no-check-certificate --no-cache --no-cookies --tries=3 --timeout=15 -O /var/www/01-cron-often http://mirrors.slickstack.io/01-cron-often.txt' >> /var/www/logs/cron.log 2>&1
+13 9 * * * /bin/bash -c 'test -f /var/www/02-cron-regular || wget --no-check-certificate --no-cache --no-cookies --tries=3 --timeout=15 -O /var/www/02-cron-regular http://mirrors.slickstack.io/02-cron-regular.txt' >> /var/www/logs/cron.log 2>&1
+13 9 * * * /bin/bash -c 'test -f /var/www/03-cron-quarter-hourly || wget --no-check-certificate --no-cache --no-cookies --tries=3 --timeout=15 -O /var/www/03-cron-quarter-hourly http://mirrors.slickstack.io/03-cron-quarter-hourly.txt' >> /var/www/logs/cron.log 2>&1
+13 9 * * * /bin/bash -c 'test -f /var/www/04-cron-half-hourly || wget --no-check-certificate --no-cache --no-cookies --tries=3 --timeout=15 -O /var/www/04-cron-half-hourly http://mirrors.slickstack.io/04-cron-half-hourly.txt' >> /var/www/logs/cron.log 2>&1
+13 9 * * * /bin/bash -c 'test -f /var/www/05-cron-hourly || wget --no-check-certificate --no-cache --no-cookies --tries=3 --timeout=15 -O /var/www/05-cron-hourly http://mirrors.slickstack.io/05-cron-hourly.txt' >> /var/www/logs/cron.log 2>&1
+13 9 * * * /bin/bash -c 'test -f /var/www/06-cron-quarter-daily || wget --no-check-certificate --no-cache --no-cookies --tries=3 --timeout=15 -O /var/www/06-cron-quarter-daily http://mirrors.slickstack.io/06-cron-quarter-daily.txt' >> /var/www/logs/cron.log 2>&1
+13 9 * * * /bin/bash -c 'test -f /var/www/07-cron-half-daily || wget --no-check-certificate --no-cache --no-cookies --tries=3 --timeout=15 -O /var/www/07-cron-half-daily http://mirrors.slickstack.io/07-cron-half-daily.txt' >> /var/www/logs/cron.log 2>&1
+13 9 * * * /bin/bash -c 'test -f /var/www/08-cron-daily || wget --no-check-certificate --no-cache --no-cookies --tries=3 --timeout=15 -O /var/www/08-cron-daily http://mirrors.slickstack.io/08-cron-daily.txt' >> /var/www/logs/cron.log 2>&1
+13 9 * * * /bin/bash -c 'test -f /var/www/09-cron-half-weekly || wget --no-check-certificate --no-cache --no-cookies --tries=3 --timeout=15 -O /var/www/09-cron-half-weekly http://mirrors.slickstack.io/09-cron-half-weekly.txt' >> /var/www/logs/cron.log 2>&1
+13 9 * * * /bin/bash -c 'test -f /var/www/10-cron-weekly || wget --no-check-certificate --no-cache --no-cookies --tries=3 --timeout=15 -O /var/www/10-cron-weekly http://mirrors.slickstack.io/10-cron-weekly.txt' >> /var/www/logs/cron.log 2>&1
+13 9 * * * /bin/bash -c 'test -f /var/www/11-cron-half-monthly || wget --no-check-certificate --no-cache --no-cookies --tries=3 --timeout=15 -O /var/www/11-cron-half-monthly http://mirrors.slickstack.io/11-cron-half-monthly.txt' >> /var/www/logs/cron.log 2>&1
+13 9 * * * /bin/bash -c 'test -f /var/www/12-cron-monthly || wget --no-check-certificate --no-cache --no-cookies --tries=3 --timeout=15 -O /var/www/12-cron-monthly http://mirrors.slickstack.io/12-cron-monthly.txt' >> /var/www/logs/cron.log 2>&1
+13 9 * * * /bin/bash -c 'test -f /var/www/13-cron-sometimes || wget --no-check-certificate --no-cache --no-cookies --tries=3 --timeout=15 -O /var/www/13-cron-sometimes http://mirrors.slickstack.io/13-cron-sometimes.txt' >> /var/www/logs/cron.log 2>&1
+13 9 * * * /bin/bash -c 'chown root:root /var/www/*cron*' >> /var/www/logs/cron.log 2>&1
+13 9 * * * /bin/bash -c 'chmod 0740 /var/www/*cron*' >> /var/www/logs/cron.log 2>&1
 
 ## new line to avoid conflicts ##
 
@@ -101,5 +101,7 @@ PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 ## Ref: https://stackoverflow.com/questions/39904003/when-to-use-bash-with-option-c
 ## Ref: https://stackoverflow.com/questions/4883069/debugging-crontab-jobs
 ## Ref: https://medium.com/@satishcse.mit/debug-cron-job-issues-4fbb6113c7ce
+## Ref: https://askubuntu.com/questions/56683/where-is-the-cron-crontab-log
+## Ref: https://linoxide.com/linux-how-to/check-cron-logs-ubuntu/
 
 ## SS_EOF
