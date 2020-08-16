@@ -833,8 +833,10 @@ rm /var/www/html/wp-content/mu-plugins/remove-query-strings*
 rm /var/www/html/staging/wp-content/mu-plugins/remove-query-strings*
 
 ####################################################################################################
-#### SS-Perms: Reset MU (Must-Use) Plugins Permissions #############################################
+#### SS-Install-MUPlugins: Reset MU (Must-Use) Plugins Permissions #################################
 ####################################################################################################
+
+## SNIPPET: ss-install-muplugins, ss-perms
 
 ## here we reset permissions for MU plugins, object-cache.php, and functions.php files ##
 ## functions.php might be edited via SFTP so we must keep that in mind here ##
@@ -842,20 +844,20 @@ rm /var/www/html/staging/wp-content/mu-plugins/remove-query-strings*
 ## production ##
 chown -R www-data:wordpress /var/www/html/wp-content/mu-plugins
 chown www-data:wordpress /var/www/html/wp-content/object-cache.php
-chown $SFTP_USER:wordpress /var/www/html/wp-content/functions.php
-find /var/www/html/wp-content/mu-plugins/ -type d -exec chmod 0775 {} \;
-find /var/www/html/wp-content/mu-plugins/ -type f -exec chmod 0664 {} \;
-chmod 0775 /var/www/html/wp-content/object-cache.php
-chmod 0775 /var/www/html/wp-content/functions.php
+chown $SFTP_USER:wordpress /var/www/html/wp-content/functions.php ## devs will likely want to modify via SFTP
+find /var/www/html/wp-content/mu-plugins/ -type d -exec chmod 0755 {} \; ## 0755 is enough
+find /var/www/html/wp-content/mu-plugins/ -type f -exec chmod 0644 {} \; ## 0644 is enough
+chmod 0664 /var/www/html/wp-content/object-cache.php ## 0644 is enough
+chmod 0664 /var/www/html/wp-content/functions.php ## 0664 to allow WP edit files
 
 ## staging ##
 chown -R www-data:wordpress /var/www/html/staging/wp-content/mu-plugins
 chown www-data:wordpress /var/www/html/staging/wp-content/object-cache.php
-chown $SFTP_USER:wordpress /var/www/html/staging/wp-content/functions.php
-find /var/www/html/staging/wp-content/mu-plugins/ -type d -exec chmod 0775 {} \;
-find /var/www/html/staging/wp-content/mu-plugins/ -type f -exec chmod 0664 {} \;
-chmod 0775 /var/www/html/staging/wp-content/object-cache.php
-chmod 0775 /var/www/html/staging/wp-content/functions.php
+chown $SFTP_USER:wordpress /var/www/html/staging/wp-content/functions.php ## devs will likely want to modify via SFTP
+find /var/www/html/staging/wp-content/mu-plugins/ -type d -exec chmod 0755 {} \; ## 0755 is enough
+find /var/www/html/staging/wp-content/mu-plugins/ -type f -exec chmod 0644 {} \; ## 0644 is enough
+chmod 0644 /var/www/html/staging/wp-content/object-cache.php ## 0644 is enough
+chmod 0664 /var/www/html/staging/wp-content/functions.php ## 0664 to allow WP edit files
 
 ####################################################################################################
 #### SS-Muplugs: Delete Any Previous (Leftover) Temporary Files ####################################
