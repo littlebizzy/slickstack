@@ -19,6 +19,7 @@
 
 #### wordpress.zip
 
+* [wordpress-5.5.0.zip](wordpress-5.5.0.zip)
 * [wordpress-5.4.2.zip](wordpress-5.4.2.zip)
 * [wordpress-5.4.1.zip](wordpress-5.4.1.zip)
 * [wordpress-5.4.0.zip](wordpress-5.4.0.zip)
@@ -158,7 +159,8 @@
 * https://wpengineer.com/1164/my-hacksphp/
 * https://wpseek.com
 * http://hookr.io
+* https://wpengine.com/support/php-editor-errors-wordpress-4-9-higher/
 
 ----
 
-*Last updated: Jun 19, 2020*
+*Last updated: Aug 16, 2020*
