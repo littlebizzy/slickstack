@@ -1,0 +1,115 @@
+#!/bin/bash
+
+####################################################################################################
+#### author: SlickStack ############################################################################
+#### link: https://slickstack.io ###################################################################
+#### mirror: http://mirrors.slickstack.io/ss-install-cron.txt ######################################
+#### path: /var/www/ss-install-cron ################################################################
+#### destination: n/a (not a boilerplate) ##########################################################
+#### purpose: Reinstalls the root Crontab and core SlickStack cron jobs (idempotent) ###############
+#### module version: Ubuntu 20.04 LTS ##############################################################
+####################################################################################################
+
+## SS-CONFIG MUST BE PROPERLY CONFIGURED (AND CURRENT BUILD) BEFORE RUNNING SS-INSTALL ##
+## ENSURE SS-CONFIG OPTIONS REMAIN CURRENT BY RUNNING SS-UPDATE OCCASIONALLY ##
+
+## include SlickStack configuration ##
+source /var/www/ss-config
+
+####################################################################################################
+#### SlickStack: Critical Bash Functions (Aliases) For This Script To Work #########################
+####################################################################################################
+
+## the below functions are hardcoded into every SlickStack script to ensure reliability ##
+## this also speeds up processing times by avoiding repeated inline commands ##
+
+## variables ##
+UBUNTU_VERSION=`lsb_release -rs`
+
+## apt alias flags ##
+function apt {
+    export DEBIAN_FRONTEND=noninteractive
+    export DEBIAN_PRIORITY=critical
+    export PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'
+    command /usr/bin/apt --yes --quiet --option Dpkg::Options::=--force-confold --option Dpkg::Options::=--force-confdef "$@"
+}
+
+## add-apt-repository alias flags ##
+function add-apt-repository {
+    export DEBIAN_FRONTEND=noninteractive
+    export DEBIAN_PRIORITY=critical
+    export PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'
+    command /usr/bin/add-apt-repository --yes "$@"
+}
+
+## wget alias flags ##
+function wget {
+    command wget --no-check-certificate --no-cache --no-cookies --tries=3 --timeout=15 "$@"
+}
+
+## mysql alias flags ##
+function mysql {
+    command mysql --user=root --host=localhost --protocol=socket --port=3306 --force "$@"
+}
+
+## cp alias flags ##
+function cp {
+    command cp -R -f -d --no-preserve=mode,ownership "$@"
+}
+
+## rsync alias flags ##
+function rsync {
+    command rsync -aI --ignore-errors "$@"
+}
+
+## unzip alias flags ##
+function unzip {
+    command unzip -o "$@"
+}
+
+## mkdir alias flags ##
+function mkdir {
+    command mkdir -p "$@"
+}
+
+## rm alias flags ##
+function rm {
+    command rm -R -f "$@"
+}
+
+## ln alias flags ##
+function ln {
+    command ln -s -f "$@"
+}
+
+####################################################################################################
+#### SlickStack: Critical Bash Functions (Aliases) For This Script To Work #########################
+####################################################################################################
+
+# install crontab ##
+rm /tmp/*crontab*
+cp /var/www/00-crontab /tmp/00-crontab
+sed -i "s/@RANDOM_STRING/$(openssl rand -hex 12)/g" /tmp/00-crontab
+crontab /tmp/00-crontab
+
+## reset permissions ##
+chown root:root /var/spool/cron/crontabs/root
+chmod 0600 /var/spool/cron/crontabs/root
+
+## restart services ##
+/etc/init.d/cron reload
+
+####################################################################################################
+#### SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ###############
+####################################################################################################
+
+## Ref: https://linuxize.com/post/bash-functions/
+## Ref: https://www.cyberciti.biz/faq/unix-linux-appleosx-bsd-shell-appending-date-to-filename/
+## Ref: https://wordpress.stackexchange.com/questions/199725/triggering-cron-by-calling-wp-cron-php-on-the-command-line-rather-than-with-wget
+## Ref: https://help.ubuntu.com/community/CronHowto
+## Ref: https://www.rosehosting.com/blog/ubuntu-crontab/
+## Ref: https://linuxize.com/post/scheduling-cron-jobs-with-crontab/
+## Ref: https://www.rosehosting.com/blog/ubuntu-crontab/
+## Ref: https://www.digitalocean.com/community/tutorials/how-to-use-cron-to-automate-tasks-ubuntu-1804
+
+## SS_EOF
