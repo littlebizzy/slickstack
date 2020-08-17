@@ -17,6 +17,8 @@ title: SlickStack (Public Mirrors)
 * [fastcgi-cache](/fastcgi-cache/)
 * [git](/git/)
 * [letsencrypt](/letsencrypt/)
+* [magento]
+* [mediawiki]
 * [moodle](/moodle/)
 * [mu-plugins](/mu-plugins/)
 * [mysql](/mysql/)
@@ -67,6 +69,7 @@ title: SlickStack (Public Mirrors)
 * [ss-install-adminer](ss-install-adminer.txt)
 * [ss-install-bash](ss-install-bash.txt)
 * [ss-install-clamav](ss-install-clamav.txt)
+* [ss-install-cron](ss-install-cron.txt)
 * [ss-install-misc](ss-install-misc.txt)
 * [ss-install-muplugins](ss-install-muplugins.txt)
 * [ss-install-mysql](ss-install-mysql.txt)
@@ -96,4 +99,4 @@ title: SlickStack (Public Mirrors)
 
 ----
 
-*Last updated: Aug 11, 2020*
+*Last updated: Aug 17, 2020*
