@@ -71,15 +71,16 @@ title: SlickStack (Public Mirrors)
 * [ss-install-clamav](ss-install-clamav.txt)
 * [ss-install-cron](ss-install-cron.txt)
 * [ss-install-misc](ss-install-misc.txt)
-* [ss-install-muplugins](ss-install-muplugins.txt)
 * [ss-install-mysql](ss-install-mysql.txt)
 * [ss-install-nginx](ss-install-nginx.txt)
 * [ss-install-php](ss-install-php.txt)
 * [ss-install-postfix](ss-install-postfix.txt)
 * [ss-install-redis](ss-install-redis.txt)
 * [ss-install-ufw](ss-install-ufw.txt)
-* [ss-install-wordpress](ss-install-wordpress.txt)
-* [ss-install-wpconfig](ss-install-wpconfig.txt)
+* [ss-install-wordpress-cli](ss-install-wp.txt)
+* [ss-install-wordpress-config](ss-install-wpconfig.txt)
+* [ss-install-wordpress-core](ss-install-wordpress.txt)
+* [ss-install-wordpress-muplugins](ss-install-muplugins.txt)
 * [ss-optimize](ss-optimize.txt)
 * [ss-perms](ss-perms.txt)
 * [ss-purge](ss-purge.txt)
@@ -99,4 +100,4 @@ title: SlickStack (Public Mirrors)
 
 ----
 
-*Last updated: Aug 17, 2020*
+*Last updated: Aug 18, 2020*
