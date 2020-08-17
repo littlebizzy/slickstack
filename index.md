@@ -70,11 +70,15 @@ title: SlickStack (Public Mirrors)
 * [ss-install-bash](ss-install-bash.txt)
 * [ss-install-clamav](ss-install-clamav.txt)
 * [ss-install-cron](ss-install-cron.txt)
+* ss-install-magento-core
+* ss-install-mediawiki-core
 * [ss-install-misc](ss-install-misc.txt)
 * [ss-install-mysql](ss-install-mysql.txt)
 * [ss-install-nginx](ss-install-nginx.txt)
+* ss-install-opencart-core
 * [ss-install-php](ss-install-php.txt)
 * [ss-install-postfix](ss-install-postfix.txt)
+* ss-install-prestashop-core
 * [ss-install-redis](ss-install-redis.txt)
 * [ss-install-ufw](ss-install-ufw.txt)
 * [ss-install-wordpress-cli](ss-install-wp.txt)
