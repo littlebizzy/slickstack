@@ -14,27 +14,27 @@ title: SlickStack (Public Mirrors)
 * [clamav](/clamav/)
 * [cloudflare](/cloudflare/)
 * [craft-cms](/craft-cms/)
-* [fastcgi-cache](/fastcgi-cache/)
 * [git](/git/)
 * [letsencrypt](/letsencrypt/)
-* [magento]
-* [mediawiki]
+* magento
+* mediawiki
 * [moodle](/moodle/)
-* [mu-plugins](/mu-plugins/)
 * [mysql](/mysql/)
 * [nginx](/nginx/)
-* [opcache](/opcache/)
+* [nginx fastcgi-cache](/fastcgi-cache/)
 * [opencart](/opencart/)
 * [openssl](/openssl/)
 * [php-fpm](/php-fpm/)
+* [php-fpm opcache](/opcache/)
 * [postfix](/postfix/)
 * [prestashop](/prestashop/)
 * [redis](/redis/)
-* [starter-themes](/starter-themes/)
 * [ubuntu](/ubuntu/)
 * [ufw-firewall](/ufw-firewall/)
 * [wordpress](/wordpress/)
-* [wp-cli](/wp-cli/)
+* [wordpress mu-plugins](/mu-plugins/)
+* [wordpress starter-themes](/starter-themes/)
+* [wordpress wp-cli](/wp-cli/)
 
 ### Core Cron Jobs
 
@@ -73,6 +73,7 @@ title: SlickStack (Public Mirrors)
 * ss-install-magento-core
 * ss-install-mediawiki-core
 * [ss-install-misc](ss-install-misc.txt)
+* ss-install-moodle-core
 * [ss-install-mysql](ss-install-mysql.txt)
 * [ss-install-nginx](ss-install-nginx.txt)
 * ss-install-opencart-core
