@@ -124,10 +124,6 @@ if [[ ! -f "$FILE_SS_WORKER" ]] || [[ -z $(grep -q "$STRING_SS_WORKER" "$FILE_SS
     rm /tmp/ss-worker*
 fi
 
-## ensure core scripts correct permissions (add this to all core crons) ##
-chown root:root /var/www/ss* ## must be root:root
-chmod 0740 /var/www/ss* ## 0740 is enough
-
 ####################################################################################################
 #### Cron Job (Half-Weekly): Run Scheduled Tasks ###################################################
 ####################################################################################################
@@ -179,6 +175,16 @@ fi
 if [[ "$SS_INTERVAL_PURGE" == "half-weekly" ]]; then 
     source /var/www/ss-purge
 fi
+
+####################################################################################################
+#### Core Cron Jobs: Ensure Correct Permissions For Core Bash Scripts ##############################
+####################################################################################################
+
+## SNIPPET: (core cron jobs)
+
+## ensure correct permissions ##
+chown root:root /var/www/ss* ## must be root:root
+chmod 0740 /var/www/ss* ## 0700 is enough
 
 ## delete lock files ##
 rm /tmp/09-cron-half-weekly*.lock*
