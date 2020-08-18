@@ -104,6 +104,10 @@ title: SlickStack (Public Mirrors)
 * [license](license.md)
 * [readme](readme.md)
 
+### References
+
+* https://blog.coinbase.com/container-technologies-at-coinbase-d4ae118dcb6c
+
 ----
 
 *Last updated: Aug 18, 2020*
