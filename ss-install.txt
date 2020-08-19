@@ -108,11 +108,37 @@ fi
 source /var/www/ss-dump
 
 ####################################################################################################
+#### SS-Install: Interactive Bash Setup Wizard (UNDER CONSTRUCTION) ################################
+####################################################################################################
+
+## ALPHA ##
+
+if [ ! -f "/var/www/ss-config" ]; then
+    ## ensure SlickStack root directory exists (in case running ss-install from other directories) ##
+    mkdir /var/www
+    ## get latest ss-config boilerplate ##
+    wget -O /tmp/ss-config http://mirrors.slickstack.io/ss-config-sample.txt
+    
+    ## replace all password fields with random strings ##
+    sed -i "s/@RANDOM_STRING_ROOT_PASSWORD/$(openssl rand -hex 12)/g" /tmp/ss-config
+    sed -i "s/@RANDOM_STRING_SUDO_PASSWORD/$(openssl rand -hex 12)/g" /tmp/ss-config
+    sed -i "s/@RANDOM_STRING_SFTP_PASSWORD/$(openssl rand -hex 12)/g" /tmp/ss-config
+    sed -i "s/@RANDOM_STRING_DB_PASSWORD/$(openssl rand -hex 12)/g" /tmp/ss-config
+    sed -i "s/@RANDOM_STRING_DB_PASSWORD_ROOT/$(openssl rand -hex 12)/g" /tmp/ss-config
+    
+    ## copy files to their destinations ##
+    cp /tmp/ss-config /var/www/ss-config
+    
+    echo -e "\e[36mThis wizard is under construction... your ss-config is not fully setup yet, please exit ss-install now and finalize ss-config...\e[0m"
+    exit 1
+fi
+
+####################################################################################################
 #### SS-Install: Configure Ubuntu (SlickStack) Users + Set Various System Defaults #################
 ####################################################################################################
 
 ## TEMP ##
-echo -e "\e[36mSINCE SS_BUILD JULY2020B MYSQL 8.0 IS NOT INSTALLING PROPERLY (PLEASE INSTALL MANUALLY)...\e[0m"
+echo -e "\e[36mSINCE SS_BUILD JULY2020B MYSQL 8.0 MIGHT NOT INSTALLING COMPLETELY (PLEASE INSTALL MANUALLY IF SO)...\e[0m"
 sleep 10s
 
 ## MESSAGE ##
