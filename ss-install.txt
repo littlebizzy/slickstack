@@ -351,13 +351,6 @@ chmod 0664 /var/www/meta/.ssh/authorized_keys ## should be 0664 as per Ubuntu do
 /etc/init.d/ssh restart
 
 ####################################################################################################
-#### SS-Install: Install SlickStack (Ubuntu) Root Crontab File #####################################
-####################################################################################################
-
-## run ss-install-cron ##
-source /var/www/ss-install-cron
-
-####################################################################################################
 #### SlickStack: Set Dpkg Basic Settings + Update Apt (Package) Cache ##############################
 ####################################################################################################
 
@@ -369,6 +362,16 @@ DEBIAN_FRONTEND=noninteractive dpkg --configure -a --force-confold
 
 ## update repo cache ##
 apt update
+
+####################################################################################################
+#### SS-Install: Install SlickStack (Ubuntu) Root Crontab File #####################################
+####################################################################################################
+
+## cron should be installed by default on Ubuntu but this script will install it if not ##
+## it will also install root crontab and core cron jobs from SlickStack mirrors ##
+
+## run ss-install-cron ##
+source /var/www/ss-install-cron
 
 ####################################################################################################
 #### SlickStack: Install Various Modules Via Default Ubuntu Packages ###############################
@@ -523,7 +526,14 @@ cat /dev/null > /var/www/logs/redis.log
 ## restart services ##
 source /var/www/ss-restart
 
-## print various users/passwords so sysadmin can retain them ##
+####################################################################################################
+#### SS-Install: Printout Of Critical SS-Config Settings ###########################################
+####################################################################################################
+
+## here we simply echo the most important settings from ss-config being currently used ##
+## this allows you to easily copy/paste for your records (or for your client) ##
+
+## display critical ss-config variables ##
 echo
 echo -e "site tld: $SITE_TLD"
 echo -e "site domain: $SITE_DOMAIN"
