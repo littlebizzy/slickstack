@@ -95,8 +95,8 @@ if [[ "${UBUNTU_VERSION}" != "20.04" ]]; then
     exit 1
 fi
 
-## ensure ss-config build version matches ss-install build version ##
-if [[ "$SS_BUILD" != "AUG2020E" ]]; then 
+## ensure ss-config version matches ss-install version (if ss-config exists) ##
+if [[ -f "/var/www/ss-config" ]] && [[ "$SS_BUILD" != "AUG2020E" ]]; then 
     echo -e "\e[93mYour ss-config file is outdated. Please update it by running ss-update and then run ss-install again.\e[0m" >&2
     exit 1
 fi
@@ -119,7 +119,8 @@ source /var/www/ss-dump
 if [ ! -f "/var/www/ss-config" ]; then
     ## tell the user we will attempt the wizard ##
     echo -e "\e[93mIt appears your ss-config file has not been setup yet, please follow this wizard to create your ss-config file:\e[0m" >&2
-
+    sleep 5s
+    
     ## ensure SlickStack root directory exists (in case running ss-install from other directories) ##
     mkdir /var/www
     ## get latest ss-config boilerplate ##
