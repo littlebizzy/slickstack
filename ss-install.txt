@@ -83,21 +83,52 @@ function ln {
 }
 
 ####################################################################################################
+#### SlickStack: Pretty Colors Make The Shell More Pleasing ########################################
+####################################################################################################
+
+## these color variables help maintain cleaner and prettier Bash scripts in SlickStack ##
+## we substitute e.g. ${BLUE} in an echo line end with ${NOCOLOR} to revert ##
+
+## pretty Bash colors ##
+NOCOLOR='\033[0m'
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+ORANGE='\033[0;33m'
+BLUE='\033[0;34m'
+PURPLE='\033[0;35m'
+CYAN='\033[0;36m'
+LIGHTGRAY='\033[0;37m'
+DARKGRAY='\033[1;30m'
+LIGHTRED='\033[1;31m'
+LIGHTGREEN='\033[1;32m'
+YELLOW='\033[1;33m'
+LIGHTBLUE='\033[1;34m'
+LIGHTPURPLE='\033[1;35m'
+LIGHTCYAN='\033[1;36m'
+WHITE='\033[1;37m'
+
+## pretty Bash styles ##
+BOLD=$(tput bold)
+NORMAL=$(tput sgr0)
+
+RAINBOW='echo -e "${RED}red ${LIGHTRED}lightred ${ORANGE}orange ${YELLOW}yellow ${GREEN}green ${LIGHTGREEN}lightgreen ${BLUE}blue ${LIGHTBLUE}lightblue ${CYAN}cyan ${LIGHTCYAN}lightcyan ${PURPLE}purple ${LIGHTPURPLE}lightpurple ${DARKGRAY}darkgray ${LIGHTGRAY}lightgray ${WHITE}white"';
+
+####################################################################################################
 #### SS-Install: Check OS Compability + Verify SS-Config Freshness + Backup Database ###############
 ####################################################################################################
 
 ## NEVER RUN SS-INSTALL UNLESS BUILD VERSION BELOW MATCHES CURRENT SS-CONFIG BOILERPLATE ##
 ## IN CASE OF EMERGENCY CONFLICTS THE SLICKSTACK TEAM MIGHT MISMATCH SAID BUILDS ##
 
-## ensure correct Ubuntu version is installed ##
+## verify correct Ubuntu version ##
 if [[ "${UBUNTU_VERSION}" != "20.04" ]]; then
-    echo -e "\e[93mSlickStack is designed for Ubuntu 20.04, but this server is running Ubuntu ${UBUNTU_VERSION}.\e[0m" >&2
+    echo -e "${YELLOW}SlickStack is designed for ${BOLD}Ubuntu 20.04${NORMAL}, but this server is running ${BOLD}Ubuntu ${UBUNTU_VERSION}${NORMAL}.${NOCOLOR}" >&2
     exit 1
 fi
 
 ## ensure ss-config version matches ss-install version (if ss-config exists) ##
 if [[ -f "/var/www/ss-config" ]] && [[ "$SS_BUILD" != "AUG2020E" ]]; then 
-    echo -e "\e[93mYour ss-config file is outdated. Please update it by running ss-update and then run ss-install again.\e[0m" >&2
+    echo -e "${YELLOW}It appears your ${BOLD}ss-config${NORMAL} file is outdated. Please run ${BOLD}ss-update${NORMAL} and then run ${BOLD}ss-install${NORMAL} again.${NOCOLOR}" >&2
     exit 1
 fi
 
@@ -605,5 +636,7 @@ echo -e "\e[36mSlickStack installation complete! Please reboot server and ensure
 ## Ref: https://askubuntu.com/questions/998640/bash-interactive-script
 ## Ref: https://ryanstutorials.net/bash-scripting-tutorial/bash-input.php
 ## Ref: http://www.linfo.org/clear.html
+## Ref: https://gist.github.com/jonsuh/3c89c004888dfc7352be
+## Ref: https://stackoverflow.com/questions/2924697/how-does-one-output-bold-text-in-bash/2924755
 
 ## SS_EOF
