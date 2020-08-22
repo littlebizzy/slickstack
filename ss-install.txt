@@ -120,13 +120,13 @@ NORMAL=$(tput sgr0)
 
 ## verify correct Ubuntu version ##
 if [[ "${UBUNTU_VERSION}" != "20.04" ]]; then
-    echo -e "${YELLOW}SlickStack is designed for ${BOLD}Ubuntu 20.04${NORMAL}, but this server is running ${BOLD}Ubuntu ${UBUNTU_VERSION}${NORMAL}.${NOCOLOR}" >&2
+    echo -e "${YELLOW}SS-INSTALL: SlickStack is designed for ${BOLD}Ubuntu 20.04${NORMAL}, but this server is running ${BOLD}Ubuntu ${UBUNTU_VERSION}${NORMAL}.${NOCOLOR}" >&2
     exit 1
 fi
 
 ## ensure ss-config version matches ss-install version (if ss-config exists) ##
 if [[ -f "/var/www/ss-config" ]] && [[ "$SS_BUILD" != "AUG2020E" ]]; then 
-    echo -e "${YELLOW}It appears your ${BOLD}ss-config${NORMAL} file is outdated. Please run ${BOLD}ss-update${NORMAL} and then run ${BOLD}ss-install${NORMAL} again.${NOCOLOR}" >&2
+    echo -e "${YELLOW}SS-INSTALL: It appears your ${BOLD}ss-config${NORMAL} file is outdated. Please run ${BOLD}ss-update${NORMAL} and then run ${BOLD}ss-install${NORMAL} again.${NOCOLOR}" >&2
     exit 1
 fi
 
@@ -256,16 +256,12 @@ fi
 #### SS-Install: Configure Ubuntu (SlickStack) Users + Set Various System Defaults #################
 ####################################################################################################
 
-## TEMP ##
-echo -e "${YELLOW}SINCE SS_BUILD JULY2020B MYSQL 8.0 USERS MIGHT NOT INSTALL COMPLETELY (PLEASE FINISH INSTALL MANUALLY IF ANY ISSUES)...${NOCOLOR}"
-sleep 10s
-
 ## rainbow colors test ##
 RAINBOW="${DARKRED}darkred ${LIGHTRED}lightred ${ORANGE}orange ${YELLOW}yellow ${DARKGREEN}darkgreen ${LIGHTGREEN}lightgreen ${DARKCYAN}darkcyan ${LIGHTCYAN}lightcyan ${DARKBLUE}darkblue ${LIGHTBLUE}lightblue ${DARKPURPLE}darkpurple ${LIGHTPURPLE}lightpurple ${DARKGRAY}darkgray ${LIGHTGRAY}lightgray ${WHITE}white${NOCOLOR}"
 echo "$RAINBOW"
 
 ## MESSAGE ##
-echo "${LIGHTPURPLE}Configuring users, permissions and Ubuntu defaults...${NOCOLOR}"
+echo "${LIGHTPURPLE}SS-INSTALL: Configuring users, permissions and Ubuntu defaults...${NOCOLOR}"
 
 ## set root password ##
 echo root:$ROOT_PASSWORD | /usr/sbin/chpasswd
@@ -299,7 +295,7 @@ fi
 ####################################################################################################
 
 ## MESSAGE ##
-echo -e "${LIGHTPURPLE}Retrieving latest SlickStack files and copying them to local server...${NOCOLOR}"
+echo -e "${LIGHTPURPLE}SS-INSTALL: Retrieving latest SlickStack files and copying them to local server...${NOCOLOR}"
 
 ## download latest versions ##
 wget -O /tmp/ss-check http://mirrors.slickstack.io/ss-check.txt
@@ -319,7 +315,7 @@ source /var/www/ss-check
 ####################################################################################################
 
 ## MESSAGE ##
-echo -e "${LIGHTPURPLE}Configuring the Sudoers file (root and sudo users)...${NOCOLOR}"
+echo -e "${LIGHTPURPLE}SS-INSTALL: Configuring the Sudoers file (root and sudo users)...${NOCOLOR}"
 
 ## download latest versions ##
 wget -O /tmp/sudoers http://mirrors.slickstack.io/ubuntu/sudoers.txt
@@ -339,7 +335,7 @@ chmod 0440 /etc/sudoers
 ####################################################################################################
 
 ## MESSAGE ##
-echo -e "${LIGHTPURPLE}Configuring SSH (SFTP) settings, user permissions, and port number...${NOCOLOR}"
+echo -e "${LIGHTPURPLE}SS-INSTALL: Configuring SSH (SFTP) settings, user permissions, and port number...${NOCOLOR}"
 
 ## download latest versions ##
 wget -O /tmp/sshd_config http://mirrors.slickstack.io/ubuntu/sshd-config.txt
@@ -400,7 +396,7 @@ chmod 0664 /var/www/meta/.ssh/authorized_keys ## should be 0664 as per Ubuntu do
 ####################################################################################################
 
 ## MESSAGE ##
-echo -e "${LIGHTPURPLE}Set dpkg to noneractive and force confold and update apt cache...${NOCOLOR}"
+echo -e "${LIGHTPURPLE}SS-INSTALL: Set dpkg to noneractive and force confold and update apt cache...${NOCOLOR}"
 
 ## set confold as dpkg default (fail-safe in case apt upgrade called directly) ##
 DEBIAN_FRONTEND=noninteractive dpkg --configure -a --force-confold
@@ -423,7 +419,7 @@ source /var/www/ss-install-cron
 ####################################################################################################
 
 ## MESSAGE ##
-echo -e "${LIGHTPURPLE}Installing various SlickStack modules from most recent Ubuntu repos...${NOCOLOR}"
+echo -e "${LIGHTPURPLE}SS-INSTALL: Installing various SlickStack modules from most recent Ubuntu repos...${NOCOLOR}"
 
 ## upgrade installed Ubuntu packages (LEMP modules) + Linux kernel (apt feature) ##
 apt full-upgrade
