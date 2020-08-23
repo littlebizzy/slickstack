@@ -5,8 +5,8 @@
 #### link: https://slickstack.io ###################################################################
 #### mirror: http://mirrors.slickstack.io/ss-config-sample.txt #####################################
 #### path: /var/www/ss-config-sample (for reference only) ##########################################
-#### destination: /var/www/ss-config (manual configuration currently required) #####################
-#### purpose: SlickStack configuration file (must be configured before running ss-install) #########
+#### destination: /var/www/ss-config (can be configured by ss-install wizard or manually) ##########
+#### purpose: SlickStack configuration file (required for proper functionality) ####################
 #### module version: Ubuntu 20.04 LTS ##############################################################
 ####################################################################################################
 
@@ -20,9 +20,7 @@
 ## rebuild ss-config if outdated errors: http://mirrors.slickstack.io/ss-config-sample.txt ##
 ## copy and paste entire ss-config boilerplate before modifying variables ##
 
-## SINCE SS_BUILD JULY2020B MYSQL 8.0 IS NOT INSTALLING PROPERLY (PLEASE INSTALL MANUALLY) ##
-
-SS_BUILD="AUG2020E"
+SS_BUILD="AUG2020F"
 
 ####################################################################################################
 #### SS-Config: Ubuntu Root + Sudo User Settings (Console + SSH Access) ############################
@@ -48,7 +46,7 @@ SUDO_PASSWORD="@SUDO_PASSWORD"
 ## SSH_KEYS = [false|true] for expert users only (this will disable password logins) ##
 
 SSH_PORT="@SSH_PORT"
-SSH_KEYS="false"
+SSH_KEYS="@SSH_KEYS"
 
 ####################################################################################################
 #### SS-Config: Ubuntu Jailed User Settings (SFTP Access Only = For Your Client, Etc) ##############
@@ -69,7 +67,7 @@ SFTP_PASSWORD="@SFTP_PASSWORD"
 #### SS-Config: WordPress Database Settings (Single Database Only) #################################
 ####################################################################################################
 
-## MODULE VERSION: MySQL 8.0.x + WordPress 5.4.x
+## MODULE VERSION: MySQL 8.0.x + WordPress 5.5.x
 
 ## using a remote MySQL database has not been extensively tested (use at your own risk) ##
 ## for security reasons choose a different password for the MySQL root user ##
@@ -77,18 +75,18 @@ SFTP_PASSWORD="@SFTP_PASSWORD"
 ## DB_NAME = [wordpress|etc] only one database is supported so keep it simple and easy ##
 ## DB_USER = [example|etc] for easier management it can be the same as SFTP_USER ##
 ## DB_PASSWORD = [*must be unique*] something strong but not too complex or confusing ##
-## DB_PASSWORD_ROOT = [*must be unique*] something very strong is preferrable ##
+## DB_PASSWORD_ROOT = [*must be unique*] now only used for admin@127.0.0.1 ##
 ## DB_HOST = [127.0.0.1|111.222.333.444|etc] if using a remote database server enter here ##
 ## DB_PREFIX = [wp_|etc] for easier management the default wp_ prefix recommended ##
 ## DB_CHARSET = [utf8mb4|etc] most databases these days should be using utf8mb4 ##
 ## DB_COLLATE = [NULL|etc] leave it blank unless you really know what you are doing ##
 
-DB_NAME="@DB_NAME" ## wordpress
+DB_NAME="@DB_NAME"
 DB_USER="@DB_USER"
 DB_PASSWORD="@DB_PASSWORD_USER"
-DB_PASSWORD_ROOT="@DB_PASSWORD_ROOT" ## used for admin@127.0.0.1 (Adminer, etc)
-DB_HOST="@DB_HOST" ## 127.0.0.1
-DB_PREFIX="@DB_PREFIX" ## wp_
+DB_PASSWORD_ROOT="@DB_PASSWORD_ROOT"
+DB_HOST="@DB_HOST"
+DB_PREFIX="@DB_PREFIX"
 DB_CHARSET="utf8mb4"
 DB_COLLATE=""
 
@@ -96,7 +94,7 @@ DB_COLLATE=""
 #### SS-Config: WordPress + Nginx Domain Settings (Subdirectories Not Allowed) #####################
 ####################################################################################################
 
-## MODULE VERSION: Nginx 1.17.x + WordPress 5.4.x
+## MODULE VERSION: Nginx 1.18.x + WordPress 5.5.x
 
 ## below domain values are used in order to hardcode Nginx and WordPress configuration ##
 ## database domain settings will have no effect after the ss-install completes ##
@@ -105,15 +103,15 @@ DB_COLLATE=""
 ## SITE_DOMAIN = [www.example.com|sub.example.com] w/o suffixes (for WP single sites) ##
 ## SITE_NOINDEX = [false|true] Nginx header (noindex + nofollow + noarchive + nosnippet) ##
 
-SITE_TLD="@SITE_TLD" ## example.com
-SITE_DOMAIN="@SITE_DOMAIN" ## www.example.com
-SITE_NOINDEX="false"
+SITE_TLD="@SITE_TLD"
+SITE_DOMAIN="@SITE_DOMAIN"
+SITE_NOINDEX="@SITE_NOINDEX"
 
 ####################################################################################################
 #### SS-Config: WordPress Multisite Settings (Subdomains Recommended) ##############################
 ####################################################################################################
 
-## MODULE VERSION: WordPress 5.4.x
+## MODULE VERSION: WordPress 5.5.x
 
 ## Multisite setups should not be used for high-traffic or business-critical websites ##
 ## domain mapping on Multisite installations requires the subdomains approach ##
@@ -127,13 +125,13 @@ WP_MULTISITE_SUBDOMAINS="true"
 WP_MULTISITE_DOMAIN_MAPPING="false"
 
 ####################################################################################################
-#### SS-Config: CloudFlare API + Various Settings (MU Plugin) ######################################
+#### SS-Config: CloudFlare API + Related Settings (MU Plugin) ######################################
 ####################################################################################################
 
 ## MODULE VERSION: CloudFlare API v4
 
 ## these settings are to control CloudFlare from the WP Admin for easier management ##
-## for better security and optimized performance use recommended settings ##
+## for better security and optimal performance use the recommended settings ##
 
 ## CLOUDFLARE_API_KEY = [*must be unique*] find your API key in your CloudFlare account ##
 ## CLOUDFLARE_API_EMAIL = [*must be unique*] the email address of your CloudFlare account ##
@@ -141,17 +139,31 @@ WP_MULTISITE_DOMAIN_MAPPING="false"
 ## CLOUDFLARE_WIDGET_ANALYTICS = [true|false] if you want traffic stats in WP Admin ##
 ## CLOUDFLARE_RECOMMENDED_SETTINGS = [true|false] hardcodes certain CloudFlare settings ##
 
-CLOUDFLARE_API_KEY="@CLOUDFLARE_API_KEY" ## 123456789 (etc)
-CLOUDFLARE_API_EMAIL="@CLOUDFLARE_API_EMAIL" ## user@example.com
+CLOUDFLARE_API_KEY="@CLOUDFLARE_API_KEY"
+CLOUDFLARE_API_EMAIL="@CLOUDFLARE_API_EMAIL"
 CLOUDFLARE_WIDGET_DNS="true"
 # CLOUDFLARE_WIDGET_ANALYTICS="true"
 # CLOUDFLARE_RECOMMENDED_SETTINGS="true"
 
 ####################################################################################################
+#### SS-Config: Native Staging Site Settings (Optional) ############################################
+####################################################################################################
+
+## MODULE VERSION: WordPress 5.5.x
+
+## STAGING_SITE = [true|false] enables staging site and WP Admin toolbar switcher ##
+## STAGING_REPLACE_LINKS_DB = [high|low|false] how aggressive to fix MySQL links ##
+## STAGING_REPLACE_LINKS_THEME = [high|low|false] how aggressive to fix hardcode links ##
+
+STAGING_SITE="@STAGING_SITE"
+# STAGING_REPLACE_LINKS_DB="high"
+# STAGING_REPLACE_LINKS_THEME="high"
+
+####################################################################################################
 #### SS-Config: Remote Backup (Via SFTP/API) Settings ##############################################
 ####################################################################################################
 
-## MODULE VERSION: 
+## MODULE VERSION: n/a
 
 ## not to be confused with the ss-dump script which creates a temporary local archive ##
 ## remote backups (ss-backup) push your SlickStack files to a remote server ##
@@ -175,24 +187,10 @@ CLOUDFLARE_WIDGET_DNS="true"
 ## only advanced users with sysadmin experience should mess around with these ##
 
 ####################################################################################################
-#### SS-Config: Staging Site Settings (Optional) ###################################################
-####################################################################################################
-
-## MODULE VERSION: WordPress 5.4.x
-
-## STAGING_SITE = [true|false] enables staging site and WP Admin toolbar switcher ##
-## STAGING_REPLACE_LINKS_DB = [high|low|false] how aggressive should it fix links ##
-## STAGING_REPLACE_LINKS_THEME = [high|low|false] how aggressive should it fix links ##
-
-STAGING_SITE="true"
-# STAGING_REPLACE_LINKS_DB="high"
-# STAGING_REPLACE_LINKS_THEME="high"
-
-####################################################################################################
 #### SS-Config: Select WordPress + WP-Config Settings ##############################################
 ####################################################################################################
 
-## MODULE VERSION: WordPress 5.4.x
+## MODULE VERSION: WordPress 5.5.x
 
 ## WP_CRON_METHOD = [auto|wordpress|server] auto lets SlickStack decide WP-Cron method ##
 
@@ -262,7 +260,7 @@ CSR_DEPT="DevOps"
 #### SS-Config: Select Nginx + Open File Cache Settings ############################################
 ####################################################################################################
 
-## MODULE VERSION: Nginx 1.17.x
+## MODULE VERSION: Nginx 1.18.x
 
 ## default Nginx settings assume that CloudFlare is in front of your origin VPS server ##
 ## this means that most settings are very liberal to allow for traffic scaling ##
@@ -313,7 +311,7 @@ OPEN_FILE_CACHE_ERRORS="on"
 #### SS-Config: FastCGI Cache (Nginx) + TMPFS (RAM Disk) Settings ##################################
 ####################################################################################################
 
-## MODULE VERSION: Nginx 1.17.x + Ubuntu 20.04 LTS
+## MODULE VERSION: Nginx 1.18.x + Ubuntu 20.04 LTS
 
 ## nearly every WordPress site should be using FastCGI Cache at least for micro-caching ##
 ## Nginx pre-configured to skip cache on /cart* /checkout* /account* pages (etc) ##
@@ -534,7 +532,7 @@ SS_MU_PLUGINS="default"
 # SS_CLEAN_PHP_HACKS="true"
 
 
-## MODULE VERSION: WordPress 5.4.x
+## MODULE VERSION: WordPress 5.5.x
 
 ## for custom configuration use the below settings to define configuration file sources ##
 ## source files must be publicly accessible via wget over either HTTP or HTTPS ##
@@ -590,7 +588,7 @@ SS_INTERVAL_WORKER="regular"
 #### SS-Config: MU (Must-Use) WordPress Plugins (Custom List) ######################################
 ####################################################################################################
 
-## MODULE VERSION: WordPress 5.4.x
+## MODULE VERSION: WordPress 5.5.x
 
 ## activate this custom list of MU (Must-Use) plugins using the SS_MU_PLUGINS variable ##
 ## NOTE: Autoloader, Custom Functions, Object Cache, and XXX Notices are required ##
@@ -668,7 +666,7 @@ MU_PLUGIN_23_DIR="virtual-robotstxt"
 #### SS-Config: Included WordPress Plugins (Not MU Plugins) ########################################
 ####################################################################################################
 
-## MODULE VERSION: WordPress 5.4.x
+## MODULE VERSION: WordPress 5.5.x
 
 ## these plugins will be added to your WP website whenever ss-install or ss-update runs ##
 ## the activation status of these plugins will not be effected or modified (ever) ##
@@ -682,7 +680,7 @@ MU_PLUGIN_23_DIR="virtual-robotstxt"
 #### Included Themes + Default Active Theme ########################################################
 ####################################################################################################
 
-## MODULE VERSION: WordPress 5.4.x
+## MODULE VERSION: WordPress 5.5.x
 
 ## these themes will be installed after Throwaway Theme setup completes (and is deleted) ##
 ## all default WordPress Core themes will be deleted (only below themes installed) ##
@@ -694,7 +692,7 @@ MU_PLUGIN_23_DIR="virtual-robotstxt"
 #### Superuser (MU Plugin): Various Settings #######################################################
 ####################################################################################################
 
-## MODULE VERSION: WordPress 5.4.x
+## MODULE VERSION: WordPress 5.5.x
 
 # SUPERUSER_LOGIN
 # SUPERUSER_PASSWORD
