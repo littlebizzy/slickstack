@@ -125,7 +125,7 @@ if [[ "${UBUNTU_VERSION}" != "20.04" ]]; then
 fi
 
 ## ensure ss-config version matches ss-install version (if ss-config exists) ##
-if [[ -f "/var/www/ss-config" ]] && [[ "$SS_BUILD" != "AUG2020E" ]]; then 
+if [[ -f "/var/www/ss-config" ]] && [[ "$SS_BUILD" != "AUG2020F" ]]; then 
     echo -e "${YELLOW}SS-INSTALL: It appears your ${BOLD}ss-config${NORMAL} file is outdated. Please run ${BOLD}ss-update${NORMAL} and then run ${BOLD}ss-install${NORMAL} again.${NOCOLOR}" >&2
     exit 1
 fi
@@ -187,7 +187,8 @@ if [ ! -f "/var/www/ss-config" ]; then
     sed -i "s/@SSH_PORT/$ss_var_ssh_port/g" /tmp/ss-config
     
     ## PROMPT: enable SSH keys (otherwise disabled) ##
-    # read -p 'Enable SSH keys (default = no): ' ss_var_ssh_keys
+    read -p 'Enable SSH keys (false/true): ' ss_var_ssh_keys
+    sed -i "s/@SSH_KEYS/$ss_var_ssh_keys/g" /tmp/ss-config
     
     ## PROMPT: choose SFTP username (otherwise will randomize) ##
     read -p 'Choose SFTP username (e.g. robin): ' ss_var_sftp_user
@@ -224,8 +225,10 @@ if [ ! -f "/var/www/ss-config" ]; then
     sed -i "s/@SITE_DOMAIN/$ss_var_site_domain/g" /tmp/ss-config
     
     ## PROMPT: enable noindex server (otherwise disabled) ##
-    # read -p 'Enable noindexing (no): ' ss_var_site_noindex
+    read -p 'Enable site noindexing (false/true): ' ss_var_site_noindex
+    sed -i "s/@SITE_NOINDEX/$ss_var_site_noindex/g" /tmp/ss-config
     
+    ## Multisite not supported yet ##
     ## PROMPT: enable WP multisite (otherwise disabled) ##
     # read -p 'Enable WP multisite (no): ' ss_var_wp_multisite
     
@@ -242,6 +245,10 @@ if [ ! -f "/var/www/ss-config" ]; then
     ## PROMPT: choose Cloudflare API email (otherwise user@example.com) ##
     read -p 'Choose Cloudflare API email (e.g. user@example.com): ' ss_var_cloudflare_api_email
     sed -i "s/@CLOUDFLARE_API_EMAIL/$ss_var_cloudflare_api_email/g" /tmp/ss-config
+    
+    ## PROMPT: enable native staging site features ##
+    read -p 'Enable native staging site? (true/false): ' ss_var_staging_site
+    sed -i "s/@STAGING_SITE/$ss_var_staging_site/g" /tmp/ss-config
     
     ## copy files to their destinations ##
     cp /tmp/ss-config /var/www/ss-config
@@ -598,6 +605,12 @@ echo -e "${DARKGREEN}wp multisite subdomains: ${LIGHTGREEN}${BOLD}$WP_MULTISITE_
 echo -e "${DARKGREEN}wp multisite domain mapping: ${LIGHTGREEN}${BOLD}$WP_MULTISITE_DOMAIN_MAPPING${NORMAL}${NOCOLOR}"
 echo -e "${DARKGREEN}cloudflare api key: ${LIGHTGREEN}${BOLD}$CLOUDFLARE_API_KEY${NORMAL}${NOCOLOR}"
 echo -e "${DARKGREEN}cloudflare api email: ${LIGHTGREEN}${BOLD}$CLOUDFLARE_API_EMAIL${NORMAL}${NOCOLOR}"
+
+if [[ "$SSH_KEYS" == "true" ]]; then 
+    echo -e ""
+    echo -e "${YELLOW}Since you enabled SSH keys be sure to upload your public key to: /var/www/meta/.ssh/authorized_keys${NOCOLOR}"
+    echo -e ""
+fi
     
 ## confirm installation complete ##
 echo -e ""
