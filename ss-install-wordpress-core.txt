@@ -1,0 +1,197 @@
+#!/bin/bash
+
+####################################################################################################
+#### author: SlickStack ############################################################################
+#### link: https://slickstack.io ###################################################################
+#### mirror: http://mirrors.slickstack.io/ss-install-wordpress-core.txt ############################
+#### path: /var/www/ss-install-wordpress-core ######################################################
+#### destination: n/a (not a boilerplate) ##########################################################
+#### purpose: Reinstalls the entire WordPress module for SlickStack servers (idempotent) ###########
+#### module version: Ubuntu 20.04 LTS + WordPress 5.4.x ############################################
+####################################################################################################
+
+## SS-CONFIG MUST BE PROPERLY CONFIGURED (AND CURRENT BUILD) BEFORE RUNNING SS-INSTALL ##
+## ENSURE SS-CONFIG OPTIONS REMAIN CURRENT BY RUNNING SS-UPDATE OCCASIONALLY ##
+
+## include SlickStack configuration ##
+source /var/www/ss-config
+
+####################################################################################################
+#### SlickStack: Critical Bash Functions (Aliases) For This Script To Work #########################
+####################################################################################################
+
+## the below functions are hardcoded into every SlickStack script to ensure reliability ##
+## this also speeds up processing times by avoiding repeated inline commands ##
+
+## variables ##
+UBUNTU_VERSION=`lsb_release -rs`
+
+## apt alias flags ##
+function apt {
+    export DEBIAN_FRONTEND=noninteractive
+    export DEBIAN_PRIORITY=critical
+    export PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'
+    command /usr/bin/apt --yes --quiet --option Dpkg::Options::=--force-confold --option Dpkg::Options::=--force-confdef "$@"
+}
+
+## add-apt-repository alias flags ##
+function add-apt-repository {
+    export DEBIAN_FRONTEND=noninteractive
+    export DEBIAN_PRIORITY=critical
+    export PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'
+    command /usr/bin/add-apt-repository --yes "$@"
+}
+
+## wget alias flags ##
+function wget {
+    command wget --no-check-certificate --no-cache --no-cookies --tries=3 --timeout=15 "$@"
+}
+
+## mysql alias flags ##
+function mysql {
+    command mysql --user=root --host=localhost --protocol=socket --port=3306 --force "$@"
+}
+
+## cp alias flags ##
+function cp {
+    command cp -R -f -d --no-preserve=mode,ownership "$@"
+}
+
+## rsync alias flags ##
+function rsync {
+    command rsync -aI --ignore-errors "$@"
+}
+
+## unzip alias flags ##
+function unzip {
+    command unzip -o "$@"
+}
+
+## mkdir alias flags ##
+function mkdir {
+    command mkdir -p "$@"
+}
+
+## rm alias flags ##
+function rm {
+    command rm -R -f "$@"
+}
+
+## ln alias flags ##
+function ln {
+    command ln -s -f "$@"
+}
+
+####################################################################################################
+#### SlickStack: Install WordPress CMS (Download + Unzip WordPress Archive) ########################
+####################################################################################################
+
+## cleanup files ##
+rm /tmp/wordpress.zip*
+rm /var/www/html/wordpress*
+rm /var/www/html/staging/wordpress*
+
+## make dirs ##
+mkdir /var/www/html
+mkdir /var/www/html/staging
+
+## brief permissions reset ##
+chown -R $SFTP_USER:wordpress /var/www/html
+chown -R $SFTP_USER:wordpress /var/www/html/staging
+chmod 6775 /var/www/html
+chmod 6775 /var/www/html/staging
+
+## download latest (patched) WordPress version ##
+wget -O /tmp/wordpress.zip http://mirrors.slickstack.io/wordpress/wordpress.zip
+
+## install WordPress to web directory ##
+cp /tmp/wordpress.zip /var/www/html
+unzip /var/www/html/wordpress.zip -d /var/www/html
+chown -R www-data:wordpress /var/www/html/wordpress
+chmod 775 /var/www/html/wordpress
+rsync /var/www/html/wordpress/* /var/www/html
+
+## install WordPress to staging subdirectory ##
+cp /tmp/wordpress.zip /var/www/html/staging
+unzip /var/www/html/staging/wordpress.zip -d /var/www/html/staging
+chown -R www-data:wordpress /var/www/html/staging/wordpress
+chmod 775 /var/www/html/staging/wordpress
+rsync /var/www/html/staging/wordpress/* /var/www/html/staging
+
+## cleanup files ##
+rm /tmp/wordpress.zip* &> /dev/null
+rm /var/www/html/wordpress* &> /dev/null
+rm /var/www/html/staging/wordpress* &> /dev/null
+rm /var/www/html/classicpress* &> /dev/null
+rm /var/www/html/staging/classicpress* &> /dev/null
+rm /var/www/html/wp-content/plugins/hello.php &> /dev/null
+rm /var/www/html/staging/wp-content/plugins/hello.php &> /dev/null
+
+####################################################################################################
+#### SS-Install-WordPress: Install + Configure Throwaway Theme (For Virgin Installs) ###############
+####################################################################################################
+
+## a throwaway theme is an easy way to customize the cleanup routine for new installs ##
+
+
+## cleanup files ##
+rm /tmp/throwaway*
+
+## retrieve latest throwaway theme ##
+wget -O /tmp/throwaway.zip http://mirrors.slickstack.io/wordpress/throwaway.zip
+
+## unzip ##
+unzip -d /tmp/throwaway/ -o -j /tmp/throwaway.zip
+
+## replace placeholders with ss-config variables ##
+sed -i "s/@SITE_EMAIL/${SITE_EMAIL}/g" /tmp/throwaway/functions.php
+sed -i "s/@SITE_NAME/${SITE_NAME}/g" /tmp/throwaway/functions.php
+sed -i "s/@SITE_DOMAIN/${SITE_DOMAIN}/g" /tmp/throwaway/functions.php
+sed -i "s/@WP_LANG/${WP_LANG}/g" /tmp/throwaway/functions.php
+
+## copy files to destinations ##
+cp /tmp/throwaway /var/www/html/wp-content/themes/
+
+## cleanup files ##
+rm /tmp/throwaway*
+
+####################################################################################################
+#### SS-Install-WordPress: Modify Database Options For WordPress ###################################
+####################################################################################################
+
+## ensure home + siteurl options are correct in the wp_options table ##
+mysql --execute="UPDATE ${DB_PREFIX}options SET option_value='https://$SITE_DOMAIN' WHERE option_name='home'";
+mysql --execute="UPDATE ${DB_PREFIX}options SET option_value='https://$SITE_DOMAIN' WHERE option_name='siteurl'";
+
+####################################################################################################
+#### SS-Install-WordPress: Configure WP-Config File (Production + Staging) #########################
+####################################################################################################
+
+## this wp-config setup script is distinct so that it can be run separately if needed ##
+## it will also be called whenever the ss-sync (staging sync) script is run ##
+
+## run ss-install-wpconfig ##
+source /var/www/ss-install-wpconfig
+
+####################################################################################################
+#### SS-Install-WordPress: Reset Permissions, Etc ##################################################
+####################################################################################################
+
+## create directories if doesn't exist (will not overwrite) ##
+mkdir /var/www/html/wp-content/temp
+mkdir /var/www/html/wp-content/uploads
+mkdir /var/www/html/wp-content/upgrade
+
+## for fresh (virgin) WP installs delete some of the WP Core junk plugins and themes ##
+if [ ! -f "/var/www/meta/.cherry" ]; then 
+    rm /var/www/html/wp-content/plugins/akismet*
+    # rm /var/www/html/wp-content/themes/twenty*
+fi
+
+####################################################################################################
+#### SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ###############
+####################################################################################################
+
+## Ref: 
+
+## SS_EOF
