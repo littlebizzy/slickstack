@@ -71,21 +71,21 @@ title: SlickStack (Public Mirrors)
 * [ss-install-bash](ss-install-bash.txt)
 * [ss-install-clamav](ss-install-clamav.txt)
 * [ss-install-cron](ss-install-cron.txt)
-* ss-install-magento-core
-* ss-install-mediawiki-core
+* [ss-install-magento-core](ss-install-magento-core.txt)
+* [ss-install-mediawiki-core](ss-install-mediawiki-core.txt)
 * [ss-install-misc](ss-install-misc.txt)
-* ss-install-moodle-core
+* [ss-install-moodle-core](ss-install-moodle-core.txt)
 * [ss-install-mysql](ss-install-mysql.txt)
 * [ss-install-nginx](ss-install-nginx.txt)
-* ss-install-opencart-core
+* [ss-install-opencart-core](ss-install-opencart-core.txt)
 * [ss-install-php](ss-install-php.txt)
 * [ss-install-postfix](ss-install-postfix.txt)
-* ss-install-prestashop-core
+* [ss-install-prestashop-core](ss-install-prestashop-core.txt)
 * [ss-install-redis](ss-install-redis.txt)
 * [ss-install-ufw](ss-install-ufw.txt)
 * [ss-install-wordpress-cli](ss-install-wp.txt)
 * [ss-install-wordpress-config](ss-install-wpconfig.txt)
-* [ss-install-wordpress-core](ss-install-wordpress.txt)
+* [ss-install-wordpress-core](ss-install-wordpress-core.txt)
 * [ss-install-wordpress-muplugins](ss-install-muplugins.txt)
 * [ss-optimize](ss-optimize.txt)
 * [ss-perms](ss-perms.txt)
@@ -110,4 +110,4 @@ title: SlickStack (Public Mirrors)
 
 ----
 
-*Last updated: Aug 18, 2020*
+*Last updated: Aug 26, 2020*
