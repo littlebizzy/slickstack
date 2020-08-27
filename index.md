@@ -6,37 +6,6 @@ title: SlickStack (Public Mirrors)
 
 ----
 
-### Core Modules
-
-*Main modules of SlickStack's optimized WordPress LEMP stack, including Ubuntu LTS, Nginx, MySQL, PHP-FPM, Redis, and optional LittleBizzy MU plugins.*
-
-* [adminer](/adminer/)
-* [clamav](/clamav/)
-* [cloudflare](/cloudflare/)
-* [craft-cms](/craft-cms/)
-* [git](/git/)
-* [letsencrypt](/letsencrypt/)
-* magento
-* mediawiki
-* [moodle](/moodle/)
-* [mysql](/mysql/)
-* [nginx](/nginx/)
-* [nginx-fastcgi-cache](/fastcgi-cache/)
-* [opencart](/opencart/)
-* [openssl](/openssl/)
-* [php-fpm](/php-fpm/)
-* [php-fpm opcache](/opcache/)
-* [postfix](/postfix/)
-* [prestashop](/prestashop/)
-* [redis](/redis/)
-* [ubuntu](/ubuntu/)
-* [ufw-firewall](/ufw-firewall/)
-* [wordpress-cli](/wp-cli/)
-* [wordpress-core](/wordpress/)
-* [wordpress-mu-plugins](/mu-plugins/)
-* [wordpress-starter-themes](/starter-themes/)
-
-
 ### Core Cron Jobs
 
 *These cron jobs are the most critical part of SlickStack's setup, as they allow your LEMP stack to receive updates to modules and scripts via GitHub.*
@@ -95,6 +64,36 @@ title: SlickStack (Public Mirrors)
 * [ss-sync](ss-sync.txt)
 * [ss-update](ss-update.txt)
 * [ss-worker](ss-worker.txt)
+
+### Core Modules
+
+*Main modules of SlickStack's optimized WordPress LEMP stack, including Ubuntu LTS, Nginx, MySQL, PHP-FPM, Redis, and optional LittleBizzy MU plugins.*
+
+* [adminer](/adminer/)
+* [clamav](/clamav/)
+* [cloudflare](/cloudflare/)
+* [craft-cms](/craft-cms/)
+* [git](/git/)
+* [letsencrypt](/letsencrypt/)
+* magento
+* mediawiki
+* [moodle](/moodle/)
+* [mysql](/mysql/)
+* [nginx](/nginx/)
+* [nginx-fastcgi-cache](/fastcgi-cache/)
+* [opencart](/opencart/)
+* [openssl](/openssl/)
+* [php-fpm](/php-fpm/)
+* [php-fpm opcache](/opcache/)
+* [postfix](/postfix/)
+* [prestashop](/prestashop/)
+* [redis](/redis/)
+* [ubuntu](/ubuntu/)
+* [ufw-firewall](/ufw-firewall/)
+* [wordpress-cli](/wp-cli/)
+* [wordpress-core](/wordpress/)
+* [wordpress-mu-plugins](/mu-plugins/)
+* [wordpress-starter-themes](/starter-themes/)
 
 ### Core Meta Files
 
