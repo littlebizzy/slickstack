@@ -165,8 +165,18 @@ RAINBOW="${DARKRED}darkred ${LIGHTRED}lightred ${ORANGE}orange ${YELLOW}yellow $
 if [[ ! -f "/var/www/ss-config" ]]; then
     ## tell the user we will attempt the wizard ##
     echo -e "${YELLOW}SS-INSTALL: It appears your ${BOLD}ss-config${NORMAL}${YELLOW} file has not been setup yet, please follow this wizard to configure options:${NOCOLOR}" >&2
-    sleep 10s
-
+    
+    ## give users a chance to exit if they prefer setting up ss-config manually ##
+    wait_time=10 # seconds
+    temp_cnt=${wait_time}
+    while [[ ${temp_cnt} -gt 0 ]];
+    do
+        printf "\rYou have %2d second(s) remaining to hit Ctrl+C to cancel that operation!" ${temp_cnt}
+        sleep 1
+        ((temp_cnt--))
+    done
+    echo -e ""
+    
     echo -e ""
     echo -e "${LIGHTPURPLE}####################################################################################################${NOCOLOR}"
     echo -e "${LIGHTPURPLE}#### SlickStack: Interactive Bash Setup Wizard (SS-Config): ########################################${NOCOLOR}"
@@ -692,5 +702,6 @@ echo -e ""
 ## Ref: https://tldp.org/LDP/abs/html/options.html
 ## Ref: https://fernandobasso.dev/shell/shell-script-input-default-values.html
 ## Ref: https://stackoverflow.com/questions/10735574/include-source-script-if-it-exists-in-bash
+## Ref: https://scripter.co/count-down-timer-in-shell/
 
 ## SS_EOF
