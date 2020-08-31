@@ -65,7 +65,8 @@
 * https://www.scaleway.com/en/docs/configure-ufw-firewall-on-ubuntu-bionic-beaver/
 * https://serverfault.com/questions/745995/enabling-ufw-disables-some-of-the-settings-in-sysctl-conf
 * https://debian-facile.org/viewtopic.php?id=14970
+* https://serverfault.com/questions/443038/what-does-incoming-and-outgoing-traffic-mean
 
 ----
 
-*Last updated: Aug 6, 2020*
+*Last updated: Aug 31, 2020*
