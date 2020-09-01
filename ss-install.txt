@@ -613,36 +613,48 @@ source /var/www/ss-encrypt
 #### SS-Install: Install MySQL 8.0.x (Single Database Only) ########################################
 ####################################################################################################
 
+## here we install MySQL server (no client) and users based on the ss-config settings ##
+## root@localhost will use sockets and PHP apps will connect via 127.0.0.1 ##
+
 ## run ss-install-mysql ##
 source /var/www/ss-install-mysql
+
+####################################################################################################
+#### SS-Install: Install Redis Server + PHP-Redis (For PHP-FPM) Extension ##########################
+####################################################################################################
+
+## Redis is only installed to enable our default (optional) Object Cache (MU plugin) ##
+## full page caching is provided solely by Nginx FastCGI and not by Redis ##
+
+## run ss-install-redis ##
+source /var/www/ss-install-redis
  
 ####################################################################################################
-#### SlickStack: Install WordPress (Prod) + Configure WP-Config File (Prod + Staging) ##############
+#### SS-Install: Install WordPress (Prod) + Configure WP-Config File (Prod + Staging) ##############
 ####################################################################################################
 
 ## this script fetches the latest stable version of WordPress from SlickStack mirrors ##
 ## major releases (unpatched) are never considered stable for our purposes ##
 
-## run ss-install-wordpress ##
+## run ss-install-wordpress-core ##
 source /var/www/ss-install-wordpress
 
 ####################################################################################################
-#### SlickStack: Install Redis Server + PHP-Redis Extension ########################################
+#### SS-Install: Install MU (Must-Use) WordPress Plugins #####################################3#####
 ####################################################################################################
 
-## run ss-install-redis ##
-source /var/www/ss-install-redis
+## this will install the designated MU plugins and also Custom Functions and Object Cache ##
+## with a few exceptions these can all be customized using ss-config settings ##
 
-####################################################################################################
-#### SS-Install: Install MU (Must-Use) Plugins (After PHP-FPM And Redis Installed) #################
-####################################################################################################
-
-## run ss-muplugs ##
+## run ss-install-wordpress-mu-plugins (formerly ss-muplugs) ##
 source /var/www/ss-install-muplugins
 
 ####################################################################################################
 #### SS-Install: Install Adminer (phpMyAdmin) ######################################################
 ####################################################################################################
+
+## should be installed after PHP-FPM and Nginx modules to ensure proper installation ##
+## Adminer (similar to phpMyAdmin) can be publicly accessed at /adminer URI ##
 
 ## run ss-install-adminer ##
 source /var/www/ss-install-adminer
