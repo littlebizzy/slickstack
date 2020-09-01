@@ -551,26 +551,6 @@ apt full-upgrade
 source /var/www/ss-install-misc
 
 ####################################################################################################
-#### Install Cerbot (Let's Encrypt) Packages Via PPA Repos #########################################
-####################################################################################################
-
-## install software-properties-common (for Certbot) ##
-# apt install software-properties-common
-
-## add custom PPAs (for Certbot) ##
-# add-apt-repository universe
-# add-apt-repository ppa:certbot/certbot ## Ubuntu 20.04 now includes Certbot
-
-## update again after adding custom ppas ##
-# apt update
-
-apt remove certbot 
-add-apt-repository --remove ppa:certbot/certbot
-
-## install Certbot ##
-apt install certbot python3-certbot-nginx
-
-####################################################################################################
 #### SS-Install: Install PHP-FPM 7.4.x + Required PHP Extensions ###################################
 ####################################################################################################
 
@@ -594,6 +574,24 @@ source /var/www/ss-install-nginx
 ####################################################################################################
 #### SS-Install: Install OpenSSL + Certbot (Let's Encrypt) Free SSL Certificates ###################
 ####################################################################################################
+
+## required to install Certbot on Ubuntu 18.04 ##
+if [[ "${UBUNTU_VERSION}" = "18.04" ]]; then
+    apt install software-properties-common
+    add-apt-repository universe
+    add-apt-repository ppa:certbot/certbot ## Ubuntu 20.04 includes Certbot
+    apt update
+fi
+
+## clean reinstall for Ubuntu 20.04 ##
+if [[ "${UBUNTU_VERSION}" = "20.04" ]]; then
+    apt remove certbot 
+    apt remove python3-certbot-nginx
+    add-apt-repository --remove ppa:certbot/certbot ## just in case (shouldn't exist)
+fi
+
+## install Certbot ##
+apt install certbot python3-certbot-nginx
 
 ## run ss-encrypt ##
 source /var/www/ss-encrypt
