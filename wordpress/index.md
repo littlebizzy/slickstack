@@ -160,7 +160,8 @@
 * https://wpseek.com
 * http://hookr.io
 * https://wpengine.com/support/php-editor-errors-wordpress-4-9-higher/
+* https://heera.it/customize-admin-menu-bar-in-wordpress
 
 ----
 
-*Last updated: Aug 16, 2020*
+*Last updated: Sep 1, 2020*
