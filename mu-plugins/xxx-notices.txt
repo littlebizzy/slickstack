@@ -35,20 +35,33 @@ function slickstack_admin_notices() {
 add_action('admin_bar_menu', 'slickstack_menu', 25);
 
 function slickstack_menu() {
-    $current_user = wp_get_current_user();
-    if(current_user_can('manage_options')) {
+    if(current_user_can('manage_options') ) {
+
         global $wp_admin_bar;
-        $menu_id = 'slickstack';
-        $wp_admin_bar->add_menu(array('id' => $menu_id, 'title' => __('SlickStack'), 'href' => '/'));
-        $wp_admin_bar->add_menu(array('parent' => $menu_id, 'title' => __('Adminer (MySQL)'), 'id' => 'ss-link-adminer', 'href' => '/adminer', 'meta' => array('target' => '_blank')));
-        $wp_admin_bar->add_menu(array('parent' => $menu_id, 'title' => __('SlickStack.io portal'), 'id' => 'ss-link-homepage', 'href' => 'https://slickstack.io', 'meta' => array('target' => '_blank')));
-        $wp_admin_bar->add_menu(array('parent' => $menu_id, 'title' => __('General FAQ'), 'id' => 'ss-link-faq', 'href' => 'https://slickstack.io/faq', 'meta' => array('target' => '_blank')));
-        $wp_admin_bar->add_menu(array('parent' => $menu_id, 'title' => __('Public mirrors'), 'id' => 'ss-link-mirrors', 'href' => 'http://mirrors.slickstack.io', 'meta' => array('target' => '_blank')));
-        $wp_admin_bar->add_menu(array('parent' => $menu_id, 'title' => __('Report an issue (bug)'), 'id' => 'ss-link-issue', 'href' => 'https://github.com/littlebizzy/slickstack/issues/new', 'meta' => array('target' => '_blank')));
-        $wp_admin_bar->add_menu(array('parent' => $menu_id, 'title' => __('GitHub repo'), 'id' => 'ss-link-github', 'href' => 'https://github.com/littlebizzy/slickstack', 'meta' => array('target' => '_blank')));
-        $wp_admin_bar->add_menu(array('parent' => $menu_id, 'title' => __('Facebook group'), 'id' => 'ss-link-facebook-group', 'href' => 'https://www.facebook.com/groups/slickstack', 'meta' => array('target' => '_blank')));
-        $wp_admin_bar->add_menu(array('parent' => $menu_id, 'title' => __('Spectrum chatroom'), 'id' => 'ss-link-spectrum-chat', 'href' => 'https://spectrum.chat/slickstack', 'meta' => array('target' => '_blank')));
-        $wp_admin_bar->add_menu(array('parent' => $menu_id, 'title' => __('Email newsletter'), 'id' => 'ss-link-newsletter', 'href' => 'https://cdn.forms-content.sg-form.com/6ba39413-e148-11ea-b64b-d22850ff1ee7', 'meta' => array('target' => '_blank')));
+        $ss_menu = 'slickstack-menu';
+        $home_url = home_url();
+        $gtmetrix = 'https://gtmetrix.com/?url='. $home_url .'&location=2';
+        $security_headers = 'https://securityheaders.com/?q='. $home_url .'&hide=on&followRedirects=on';
+        $pagespeed = 'https://developers.google.com/speed/pagespeed/insights/?url='. $home_url .'';
+
+        $wp_admin_bar->add_menu( array('id' => $ss_menu, 'title' => 'SlickStack', 'href' => false) );
+        $wp_admin_bar->add_menu( array('parent' => $ss_menu, 'id' => 'ss-menu-adminer', 'title' => 'Adminer (MySQL)', 'href' => '/adminer', 'meta' => array('target' => '_blank') ) );
+        $wp_admin_bar->add_menu( array('parent' => $ss_menu, 'id' => 'ss-menu-homepage', 'title' => 'SlickStack.io portal',  'href' => 'https://slickstack.io', 'meta' => array('target' => '_blank') ) );
+        $wp_admin_bar->add_menu( array('parent' => $ss_menu, 'id' => 'ss-menu-faq', 'title' => 'General FAQ',  'href' => 'https://slickstack.io/faq', 'meta' => array('target' => '_blank') ) );
+        $wp_admin_bar->add_menu( array('parent' => $ss_menu, 'id' => 'ss-menu-mirrors', 'title' => 'Public mirrors', 'href' => 'http://mirrors.slickstack.io', 'meta' => array('target' => '_blank') ) );
+        $wp_admin_bar->add_menu( array('parent' => $ss_menu, 'id' => 'ss-menu-issue', 'title' => 'Report an issue (bug)', 'href' => 'https://github.com/littlebizzy/slickstack/issues/new', 'meta' => array('target' => '_blank') ) );
+        $wp_admin_bar->add_menu( array('parent' => $ss_menu, 'id' => 'ss-menu-github', 'title' => 'GitHub repo', 'href' => 'https://github.com/littlebizzy/slickstack', 'meta' => array('target' => '_blank') ) );
+        $wp_admin_bar->add_menu( array('parent' => $ss_menu, 'id' => 'ss_menu_benchmark', 'title' => 'Benchmarking tools',  'href' => false) );
+        $wp_admin_bar->add_menu( array('parent' => 'ss_menu_benchmark', 'id' => 'ss-menu-gtmetrix', 'title' => 'GTMetrix',  'href' => $gtmetrix, 'meta' => array('target' => '_blank') ) );
+        $wp_admin_bar->add_menu( array('parent' => 'ss_menu_benchmark', 'id' => 'ss-menu-secheaders', 'title' => 'SecurityHeaders',  'href' => $security_headers, 'meta' => array('target' => '_blank') ) );
+        $wp_admin_bar->add_menu( array('parent' => 'ss_menu_benchmark', 'id' => 'ss-menu-pagespeed', 'title' => 'Google Pagespeed',  'href' => $pagespeed, 'meta' => array('target' => '_blank') ) );
+        $wp_admin_bar->add_menu( array('parent' => $ss_menu, 'id' => 'ss-menu-facebook-group', 'title' => 'Facebook group',  'href' => 'https://www.facebook.com/groups/slickstack', 'meta' => array('target' => '_blank') ) );
+        $wp_admin_bar->add_menu( array('parent' => $ss_menu, 'id' => 'ss-menu-spectrum-chat', 'title' => 'Spectrum chatroom',  'href' => 'https://spectrum.chat/slickstack', 'meta' => array('target' => '_blank') ) );
+        $wp_admin_bar->add_menu( array('parent' => $ss_menu, 'id' => 'ss-menu-newsletter', 'title' => 'Email newsletter',  'href' => 'https://cdn.forms-content.sg-form.com/6ba39413-e148-11ea-b64b-d22850ff1ee7', 'meta' => array('target' => '_blank') ) );
+
+    } else { }
+}
+    
         // $wp_admin_bar->add_menu(array('parent' => $menu_id, 'title' => __('Client Login'), 'id' => 'slickstack-account', 'href' => 'https://www.littlebizzy.com/account', 'meta' => array('target' => '_blank')));
         // $wp_admin_bar->add_menu(array('parent' => $menu_id, 'title' => __('CloudFlare Login'), 'id' => 'slickstack-cloudflare', 'href' => 'https://dash.cloudflare.com/login', 'meta' => array('target' => '_blank')));   
         // $wp_admin_bar->add_menu(array('parent' => $menu_id, 'title' => __('CodeGuard Login'), 'id' => 'slickstack-codeguard', 'href' => 'https://www.codeguard.com/login', 'meta' => array('target' => '_blank')));
