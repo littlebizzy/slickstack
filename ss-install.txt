@@ -105,6 +105,9 @@ DARKBLUE='\033[0;34m'
 LIGHTBLUE='\033[1;34m'
 DARKPURPLE='\033[0;35m'
 LIGHTPURPLE='\033[1;35m'
+
+PINK='\033[1;35m'
+
 DARKGRAY='\033[1;30m'
 LIGHTGRAY='\033[0;37m'
 WHITE='\033[1;37m'
@@ -518,8 +521,15 @@ chmod 0664 /var/www/meta/.ssh/authorized_keys ## should be 0664 as per Ubuntu do
 #### SlickStack: Set Dpkg Basic Settings + Update Apt (Package) Cache ##############################
 ####################################################################################################
 
+## for smoother execution and to avoid conflicts we set dpkg to noninteractive/confold ##
+## it is much better to run ss-update instead of calling apt get upgrade manually ##
+
+## echo -e "${PINK}###########################################################################${RESET}"
+
 ## MESSAGE ##
-echo -e "${LIGHTPURPLE}SS-INSTALL: Set dpkg to noneractive and force confold and update apt cache...${NOCOLOR}"
+echo -e ""
+echo -e "${PINK}SS-INSTALL: Set dpkg to noninteractive and force-confold by default...${RESET}"
+echo -e ""
 
 ## set confold as dpkg default (fail-safe in case apt upgrade called directly) ##
 DEBIAN_FRONTEND=noninteractive dpkg --configure -a --force-confold
@@ -574,6 +584,9 @@ source /var/www/ss-install-nginx
 ####################################################################################################
 #### SS-Install: Install OpenSSL + Certbot (Let's Encrypt) Free SSL Certificates ###################
 ####################################################################################################
+
+## since ss-encrypt runs every few weeks (or months) we avoid aggressive reinstall there ##
+## for a cleaner SSL reinstall run ss-install or ss-update instead of ss-encrypt ##
 
 ## required to install Certbot on Ubuntu 18.04 ##
 if [[ "${UBUNTU_VERSION}" = "18.04" ]]; then
