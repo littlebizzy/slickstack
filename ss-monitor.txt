@@ -1,0 +1,30 @@
+
+#!/bin/bash
+
+####################################################################################################
+#### author: SlickStack ############################################################################
+#### link: https://slickstack.io ###################################################################
+#### mirror: http://mirrors.slickstack.io/ss-monitor.txt ###########################################
+#### path: /var/www/ss-monitor #####################################################################
+#### destination: n/a (not a boilerplate) ##########################################################
+#### purpose: Monitors localhost RAM memory usage, disk space, and CPU load in real time ###########
+#### module version: Ubuntu 20.04 LTS ##############################################################
+####################################################################################################
+
+printf "Memory\t\tDisk\t\tCPU\n"
+end=$((SECONDS+3600))
+while [ $SECONDS -lt $end ]; do
+MEMORY=$(free -m | awk 'NR==2{printf "%.2f%%\t\t", $3*100/$2 }')
+DISK=$(df -h | awk '$NF=="/"{printf "%s\t\t", $5}')
+CPU=$(top -bn1 | grep load | awk '{printf "%.2f%%\t\t\n", $(NF-2)}')
+echo "$MEMORY$DISK$CPU"
+sleep 5
+done
+
+####################################################################################################
+#### SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ###############
+####################################################################################################
+
+## Ref: http://www.systeen.com/2016/05/07/bash-script-monitor-cpu-memory-disk-usage-linux/
+
+## SS_EOF
