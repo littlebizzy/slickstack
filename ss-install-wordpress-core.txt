@@ -83,7 +83,7 @@ function ln {
 }
 
 ####################################################################################################
-#### SlickStack: Install WordPress CMS (Download + Unzip WordPress Archive) ########################
+#### SS-Install-WordPress-Core: Install Latest WordPress CMS #######################################
 ####################################################################################################
 
 ## cleanup files ##
@@ -128,11 +128,11 @@ rm /var/www/html/wp-content/plugins/hello.php &> /dev/null
 rm /var/www/html/staging/wp-content/plugins/hello.php &> /dev/null
 
 ####################################################################################################
-#### SS-Install-WordPress: Install + Configure Throwaway Theme (For Virgin Installs) ###############
+#### SS-Install-WordPress-Core: Install Throwaway Theme (For Virgin Installs) ######################
 ####################################################################################################
 
 ## a throwaway theme is an easy way to customize the cleanup routine for new installs ##
-
+## there is no reason to install this for existing sites with live themes ##
 
 ## cleanup files ##
 rm /tmp/throwaway*
@@ -147,7 +147,6 @@ unzip -d /tmp/throwaway/ -o -j /tmp/throwaway.zip
 sed -i "s/@SITE_EMAIL/${SITE_EMAIL}/g" /tmp/throwaway/functions.php
 sed -i "s/@SITE_NAME/${SITE_NAME}/g" /tmp/throwaway/functions.php
 sed -i "s/@SITE_DOMAIN/${SITE_DOMAIN}/g" /tmp/throwaway/functions.php
-sed -i "s/@WP_LANG/${WP_LANG}/g" /tmp/throwaway/functions.php
 
 ## copy files to destinations ##
 cp /tmp/throwaway /var/www/html/wp-content/themes/
@@ -156,15 +155,18 @@ cp /tmp/throwaway /var/www/html/wp-content/themes/
 rm /tmp/throwaway*
 
 ####################################################################################################
-#### SS-Install-WordPress: Modify Database Options For WordPress ###################################
+#### SS-Install-WordPress-Core: Modify Database Options For WordPress ##############################
 ####################################################################################################
+
+## here we manually fix certain fields in the MySQL database to ensure proper settings ##
+
 
 ## ensure home + siteurl options are correct in the wp_options table ##
 mysql --execute="UPDATE ${DB_PREFIX}options SET option_value='https://$SITE_DOMAIN' WHERE option_name='home'";
 mysql --execute="UPDATE ${DB_PREFIX}options SET option_value='https://$SITE_DOMAIN' WHERE option_name='siteurl'";
 
 ####################################################################################################
-#### SS-Install-WordPress: Configure WP-Config File (Production + Staging) #########################
+#### SS-Install-WordPress-Core: Configure WP-Config File (Production + Staging) ####################
 ####################################################################################################
 
 ## this wp-config setup script is distinct so that it can be run separately if needed ##
