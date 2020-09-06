@@ -74,6 +74,10 @@ function slickstack_menu() {
         global $wp_admin_bar;
         $ss_menu = 'slickstack-menu';
         $home_url = home_url();
+        $home_domain = str_replace(array('https://', ''), array('http://', ''), $home_url);
+        $homeurl_input = home_url();   
+        $homeurl_clean = preg_replace( "#^[^:/.]*[:/]+#i", "", preg_replace( "{/$}", "", urldecode( $homeurl_input ) ) ); 
+        $dnssec_refer = 'https://dnssec-analyzer.verisignlabs.com/'. $homeurl_clean .'';
         $ssllabs_refer = 'https://www.ssllabs.com/ssltest/analyze.html?d='. $home_url .'&latest';
         $gtmetrix_refer = 'https://gtmetrix.com/?url='. $home_url .'&location=2';
         $security_headers_refer = 'https://securityheaders.com/?q='. $home_url .'&hide=on&followRedirects=on';
@@ -87,11 +91,12 @@ function slickstack_menu() {
         $wp_admin_bar->add_menu( array('parent' => $ss_menu, 'id' => 'ss-menu-issue', 'title' => 'Report an issue (bug)', 'href' => 'https://github.com/littlebizzy/slickstack/issues/new', 'meta' => array('target' => '_blank') ) );
         $wp_admin_bar->add_menu( array('parent' => $ss_menu, 'id' => 'ss-menu-github', 'title' => 'GitHub repo', 'href' => 'https://github.com/littlebizzy/slickstack', 'meta' => array('target' => '_blank') ) );
         $wp_admin_bar->add_menu( array('parent' => $ss_menu, 'id' => 'ss_menu_benchmark', 'title' => 'Benchmarking tools',  'href' => false) );
-        $wp_admin_bar->add_menu( array('parent' => 'ss_menu_benchmark', 'id' => 'ss-menu-secheaders', 'title' => 'Security Headers',  'href' => $security_headers_refer, 'meta' => array('target' => '_blank') ) );
-        $wp_admin_bar->add_menu( array('parent' => 'ss_menu_benchmark', 'id' => 'ss-menu-ssllabs', 'title' => 'SSL Labs (Qualys)',  'href' => $ssllabs_refer, 'meta' => array('target' => '_blank') ) );
-        $wp_admin_bar->add_menu( array('parent' => 'ss_menu_benchmark', 'id' => 'ss-menu-gtmetrix', 'title' => 'GTmetrix',  'href' => $gtmetrix_refer, 'meta' => array('target' => '_blank') ) );
-        $wp_admin_bar->add_menu( array('parent' => 'ss_menu_benchmark', 'id' => 'ss-menu-pagespeed', 'title' => 'Google PageSpeed',  'href' => $pagespeed_refer, 'meta' => array('target' => '_blank') ) );
-        $wp_admin_bar->add_menu( array('parent' => 'ss_menu_benchmark', 'id' => 'ss-menu-mobfriendly', 'title' => 'Mobile-Friendly Test',  'href' => $mobilefriendly_refer, 'meta' => array('target' => '_blank') ) );
+        $wp_admin_bar->add_menu( array('parent' => 'ss_menu_benchmark', 'id' => 'ss-menu-dnssec', 'title' => 'DNSSEC Analyzer (By VeriSign)',  'href' => $dnssec_refer, 'meta' => array('target' => '_blank') ) );
+        $wp_admin_bar->add_menu( array('parent' => 'ss_menu_benchmark', 'id' => 'ss-menu-secheaders', 'title' => 'Security Headers (By Scott Helme)',  'href' => $security_headers_refer, 'meta' => array('target' => '_blank') ) );
+        $wp_admin_bar->add_menu( array('parent' => 'ss_menu_benchmark', 'id' => 'ss-menu-ssllabs', 'title' => 'SSL Test (By Qualys)',  'href' => $ssllabs_refer, 'meta' => array('target' => '_blank') ) );
+        $wp_admin_bar->add_menu( array('parent' => 'ss_menu_benchmark', 'id' => 'ss-menu-gtmetrix', 'title' => 'GTmetrix (By Carbon60)',  'href' => $gtmetrix_refer, 'meta' => array('target' => '_blank') ) );
+        $wp_admin_bar->add_menu( array('parent' => 'ss_menu_benchmark', 'id' => 'ss-menu-pagespeed', 'title' => 'PageSpeed Insights (By Google)',  'href' => $pagespeed_refer, 'meta' => array('target' => '_blank') ) );
+        $wp_admin_bar->add_menu( array('parent' => 'ss_menu_benchmark', 'id' => 'ss-menu-mobfriendly', 'title' => 'Mobile-Friendly Test (By Google)',  'href' => $mobilefriendly_refer, 'meta' => array('target' => '_blank') ) );
         $wp_admin_bar->add_menu( array('parent' => $ss_menu, 'id' => 'ss-menu-facebook-group', 'title' => 'Facebook group',  'href' => 'https://www.facebook.com/groups/slickstack', 'meta' => array('target' => '_blank') ) );
         $wp_admin_bar->add_menu( array('parent' => $ss_menu, 'id' => 'ss-menu-spectrum-chat', 'title' => 'Spectrum chatroom',  'href' => 'https://spectrum.chat/slickstack', 'meta' => array('target' => '_blank') ) );
         $wp_admin_bar->add_menu( array('parent' => $ss_menu, 'id' => 'ss-menu-newsletter', 'title' => 'Email newsletter',  'href' => 'https://cdn.forms-content.sg-form.com/6ba39413-e148-11ea-b64b-d22850ff1ee7', 'meta' => array('target' => '_blank') ) );
@@ -131,3 +136,7 @@ function slickstack_switcher_production() {
         $wp_admin_bar->add_menu(array('parent' => $menu_id, 'title' => __('Switch To Staging'), 'id' => 'staging-link', 'href' => $stag_total));
     } else { }
 }
+
+// Ref: https://speedysense.com/php-remove-http-https-www-and-slashes-from-url/
+
+// SS_EOF
