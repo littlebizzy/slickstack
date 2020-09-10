@@ -86,13 +86,13 @@ function ln {
 }
 
 ####################################################################################################
-#### SlickStack: Pretty Colors Make The Shell More Pleasing ########################################
+#### SlickStack: Pretty Colors + Styles For The Shell ##############################################
 ####################################################################################################
 
 ## these color variables help maintain cleaner and prettier Bash scripts in SlickStack ##
-## we substitute e.g. ${BLUE} within an echo line then use ${NOCOLOR} to revert ##
+## we substitute e.g. ${PINK} within any echo line then use ${RESET} to revert ##
 
-## pretty Bash colors ##
+## pretty colors ##
 NOCOLOR='\033[0m'
 DARKRED='\033[0;31m'
 LIGHTRED='\033[1;31m'
@@ -122,7 +122,7 @@ BGPINK=$(tput setab 5) # magenta (pink)
 BGCYAN=$(tput setab 6) # cyan
 BGWHITE=$(tput setab 7) # white
 
-## pretty Bash styles ##
+## pretty styles ##
 BOLD=$(tput bold) # bold (strong)
 DIM=$(tput dim) # dim (half-bright)
 NORMAL=$(tput sgr0) # reset all styles (normal)
@@ -135,33 +135,34 @@ STANDOUT=$(tput smso) # standout (highlight)
 ENDSTAND=$(tput rmso) # end standout
 
 ####################################################################################################
-#### SS-Install: Check OS Compability + Verify SS-Config Build + Backup Database ###################
+#### SS-Install: Check OS Compability + Disk Space + Verify SS-Config Build ########################
 ####################################################################################################
 
-## NEVER RUN SS-INSTALL UNLESS BUILD VERSION BELOW MATCHES CURRENT SS-CONFIG BOILERPLATE ##
-## IN CASE OF EMERGENCIES THE SLICKSTACK TEAM MIGHT PURPOSEFULLY MISMATCH BUILDS ##
+## never run ss-install unless the build version below matches current ss-config version ##
+## in case of emergencies the SlickStack team might purposefully mismatch builds ##
 
-## verify correct Ubuntu version ##
+## verify optimal Ubuntu version ##
 if [[ "${UBUNTU_VERSION}" != "20.04" ]]; then
     echo -e "${YELLOW}SS-INSTALL: SlickStack is designed for ${BOLD}Ubuntu 20.04${NORMAL}, but this server is running ${BOLD}Ubuntu ${UBUNTU_VERSION}${NORMAL}.${NOCOLOR}" >&2
     exit 1
 fi
 
-## ensure ss-config version matches ss-install version (if ss-config exists) ##
+## ensure at least 5GB free disk space remains ##
+if [[ $DISK_FREE -lt 5242880 ]]; then # 10G = 10485760 / 5GB = 5242880
+    echo -e "${YELLOW}SS-INSTALL: It looks like your server has less than 5GB free space available, please upgrade your server and then run ${BOLD}ss-install${NORMAL} again.${NOCOLOR}" >&2
+    exit 1
+fi
+
+## ensure ss-config build matches ss-install build (if exists) ##
 if [[ -f "/var/www/ss-config" ]] && [[ "$SS_BUILD" != "AUG2020F" ]]; then 
     echo -e "${YELLOW}SS-INSTALL: It appears your ${BOLD}ss-config${NORMAL} file is outdated. Please run ${BOLD}ss-update${NORMAL} and then run ${BOLD}ss-install${NORMAL} again.${NOCOLOR}" >&2
     exit 1
 fi
 
-## ensure at least 5GB free disk space remains #
-if [[ $DISK_FREE -lt 5242880 ]]; then # 10G = 10485760 / 5GB = 5242880
-    echo -e "${YELLOW}SS-INSTALL: It looks like your server has less than 5GB free space available, please upgrade your server and then run ${BOLD}ss-install${NORMAL} again.${NOCOLOR}" >&2
-fi
-
 ## backup database before proceeding (if ss-config exists) ##
-if [[ -f "/var/www/ss-config" ]]; then
-source /var/www/ss-dump
-fi
+# if [[ -f "/var/www/ss-config" ]]; then
+# source /var/www/ss-dump
+# fi
 
 ####################################################################################################
 #### SS-Install: Interactive Bash Setup Wizard (SS-Config) #########################################
