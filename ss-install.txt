@@ -27,6 +27,7 @@ source /var/www/ss-config
 
 ## variables ##
 UBUNTU_VERSION=`lsb_release -rs`
+DISK_FREE=`df -k --output=avail "$PWD" | tail -n1`
 
 ## apt alias flags ##
 function apt {
@@ -134,11 +135,11 @@ STANDOUT=$(tput smso) # standout (highlight)
 ENDSTAND=$(tput rmso) # end standout
 
 ####################################################################################################
-#### SS-Install: Check OS Compability + Verify SS-Config Freshness + Backup Database ###############
+#### SS-Install: Check OS Compability + Verify SS-Config Build + Backup Database ###################
 ####################################################################################################
 
 ## NEVER RUN SS-INSTALL UNLESS BUILD VERSION BELOW MATCHES CURRENT SS-CONFIG BOILERPLATE ##
-## IN CASE OF EMERGENCY CONFLICTS THE SLICKSTACK TEAM MIGHT MISMATCH SAID BUILDS ##
+## IN CASE OF EMERGENCIES THE SLICKSTACK TEAM MIGHT PURPOSEFULLY MISMATCH BUILDS ##
 
 ## verify correct Ubuntu version ##
 if [[ "${UBUNTU_VERSION}" != "20.04" ]]; then
@@ -152,8 +153,10 @@ if [[ -f "/var/www/ss-config" ]] && [[ "$SS_BUILD" != "AUG2020F" ]]; then
     exit 1
 fi
 
-## ensure enough disk space exists before proceeding ##
-# COMING SOON
+## ensure at least 5GB free disk space remains #
+if [[ $DISK_FREE -lt 5242880 ]]; then # 10G = 10485760 / 5GB = 5242880
+    echo -e "${YELLOW}SS-INSTALL: It looks like your server has less than 5GB free space available, please upgrade your server and then run ${BOLD}ss-install${NORMAL} again.${NOCOLOR}" >&2
+fi
 
 ## backup database before proceeding (if ss-config exists) ##
 if [[ -f "/var/www/ss-config" ]]; then
@@ -824,5 +827,6 @@ echo -e ""
 ## Ref: https://stackoverflow.com/questions/8467424/echo-newline-in-bash-prints-literal-n
 ## Ref: https://askubuntu.com/questions/420784/what-do-the-disabled-login-and-gecos-options-of-adduser-command-stand
 ## Ref: https://stackoverflow.com/questions/55822739/does-echo-userpass-usr-sbin-chpasswd-override-the-root-password
+## Ref: https://stackoverflow.com/questions/8110530/check-free-disk-space-for-current-partition-in-bash
 
 ## SS_EOF
