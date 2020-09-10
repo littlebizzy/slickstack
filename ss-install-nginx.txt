@@ -107,14 +107,16 @@ apt update
 ####################################################################################################
 
 ## purge installed nginx packages ##
-apt purge nginx-extras
-apt purge ^nginx
+# apt purge nginx-extras
+# apt purge ^nginx
 
 ## update Ubuntu package cache ##
 apt update
 
 ## Nginx mainline (dev) branch ppa no longer required (Ubuntu 20.04+) ##
-add-apt-repository --remove ppa:nginx/development
+if [[ "${UBUNTU_VERSION}" = "20.04" || -z "${UBUNTU_VERSION}" ]]; then 
+    add-apt-repository --remove ppa:nginx/development
+fi
 
 ## update package cache (again... not needed in Ubuntu 18.04+ but just for fun) ##
 apt update
@@ -123,7 +125,9 @@ apt update
 apt install nginx-extras
 
 ## install Certbot stuff too (helps avoids error messages) ##
-apt install certbot python3-certbot-nginx
+if [[ "${UBUNTU_VERSION}" = "20.04" || -z "${UBUNTU_VERSION}" ]]; then 
+    apt install certbot python3-certbot-nginx
+fi
 
 ####################################################################################################
 #### SlickStack: Install + Configure Nginx (General Settings) ######################################
@@ -459,6 +463,10 @@ chown root:root /etc/nginx/sites-available/default
 
 ## restart services ##
 /etc/init.d/nginx restart
+
+## TEMP FIX TO AVOID ss-install-nginx from breaking Lets Encrypt certs ##
+## run ss-encrypt ##
+source /var/www/ss-encrypt
 
 ####################################################################################################
 #### SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ###############
