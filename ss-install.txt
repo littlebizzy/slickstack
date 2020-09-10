@@ -25,9 +25,13 @@ source /var/www/ss-config
 ## the below functions are hardcoded into every SlickStack script to ensure reliability ##
 ## this also speeds up processing times by avoiding repeated inline commands ##
 
-## variables ##
-UBUNTU_VERSION=`lsb_release -rs`
-DISK_FREE=`df -k --output=avail "$PWD" | tail -n1`
+## add-apt-repository alias flags ##
+function add-apt-repository {
+    export DEBIAN_FRONTEND=noninteractive
+    export DEBIAN_PRIORITY=critical
+    export PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'
+    command /usr/bin/add-apt-repository --yes "$@"
+}
 
 ## apt alias flags ##
 function apt {
@@ -37,17 +41,19 @@ function apt {
     command /usr/bin/apt --yes --quiet --option Dpkg::Options::=--force-confold --option Dpkg::Options::=--force-confdef "$@"
 }
 
-## add-apt-repository alias flags ##
-function add-apt-repository {
-    export DEBIAN_FRONTEND=noninteractive
-    export DEBIAN_PRIORITY=critical
-    export PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'
-    command /usr/bin/add-apt-repository --yes "$@"
+## cp alias flags ##
+function cp {
+    command cp -R -f -d --no-preserve=mode,ownership "$@"
 }
 
-## wget alias flags ##
-function wget {
-    command wget --no-check-certificate --no-cache --no-cookies --tries=3 --timeout=15 "$@"
+## ln alias flags ##
+function ln {
+    command ln -s -f "$@"
+}
+
+## mkdir alias flags ##
+function mkdir {
+    command mkdir -p "$@"
 }
 
 ## mysql alias flags ##
@@ -55,9 +61,15 @@ function mysql {
     command mysql --user=root --host=localhost --protocol=socket --port=3306 --force "$@"
 }
 
-## cp alias flags ##
-function cp {
-    command cp -R -f -d --no-preserve=mode,ownership "$@"
+## mysqldump alias flags ##
+# function mysqldump {
+    # /usr/bin/mysqldump
+#     command mysqldump --user=$DB_USER --password=$DB_PASSWORD --host=$DB_HOST --protocol=tcp --port=3306 --no-tablespaces --single-transaction --skip-lock-tables --dump-date --force "$@"
+# }
+
+## rm alias flags ##
+function rm {
+    command rm -R -f "$@"
 }
 
 ## rsync alias flags ##
@@ -70,20 +82,20 @@ function unzip {
     command unzip -o "$@"
 }
 
-## mkdir alias flags ##
-function mkdir {
-    command mkdir -p "$@"
+## wget alias flags ##
+function wget {
+    command wget --no-check-certificate --no-cache --no-cookies --tries=3 --timeout=15 "$@"
 }
 
-## rm alias flags ##
-function rm {
-    command rm -R -f "$@"
-}
+####################################################################################################
+#### SlickStack: Critical Variables For This Script To Work ########################################
+####################################################################################################
 
-## ln alias flags ##
-function ln {
-    command ln -s -f "$@"
-}
+## something like environment variables but not exactly that are placed in core scripts ##
+## we keep these variables together for easy reference and better organization ##
+
+UBUNTU_VERSION=`lsb_release -rs`
+DISK_FREE=`df -k --output=avail "$PWD" | tail -n1`
 
 ####################################################################################################
 #### SlickStack: Pretty Colors + Styles For The Shell ##############################################
