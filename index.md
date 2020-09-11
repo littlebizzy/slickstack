@@ -31,7 +31,6 @@ title: SlickStack (Public Mirrors)
 
 * [ss-check](ss-check.txt)
 * [ss-clean](ss-clean.txt)
-* [ss-config-sample](ss-config-sample.txt)
 * [ss-dump](ss-dump.txt)
 * [ss-encrypt](ss-encrypt.txt)
 * [ss-import](ss-import.txt)
@@ -44,7 +43,11 @@ title: SlickStack (Public Mirrors)
 * [ss-update](ss-update.txt)
 * [ss-worker](ss-worker.txt)
 
-#### ss-install (sub-scripts)
+#### ss-config
+
+* [ss-config-sample](ss-config-sample.txt)
+
+#### ss-install (and sub-scripts)
 
 * [ss-install](ss-install.txt)
 * [ss-install-adminer](ss-install-adminer.txt)
