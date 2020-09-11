@@ -29,6 +29,7 @@ title: SlickStack (Public Mirrors)
 
 *Bash scripts that perform SlickStack's main functions as an active LEMP environment, which are called via cron jobs, and can also be run manually.*
 
+* ss-backup
 * [ss-check](ss-check.txt)
 * [ss-clean](ss-clean.txt)
 * [ss-dump](ss-dump.txt)
@@ -42,10 +43,6 @@ title: SlickStack (Public Mirrors)
 * [ss-sync](ss-sync.txt)
 * [ss-update](ss-update.txt)
 * [ss-worker](ss-worker.txt)
-
-#### ss-config
-
-* [ss-config-sample](ss-config-sample.txt)
 
 #### ss-install (and sub-scripts)
 
@@ -70,6 +67,10 @@ title: SlickStack (Public Mirrors)
 * [ss-install-wordpress-config](ss-install-wordpress-config.txt)
 * [ss-install-wordpress-core](ss-install-wordpress-core.txt)
 * [ss-install-wordpress-muplugins](ss-install-muplugins.txt)
+
+#### ss-config-sample
+
+* [ss-config-sample](ss-config-sample.txt)
 
 ### Core Modules
 
