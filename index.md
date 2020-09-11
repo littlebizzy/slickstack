@@ -35,6 +35,17 @@ title: SlickStack (Public Mirrors)
 * [ss-dump](ss-dump.txt)
 * [ss-encrypt](ss-encrypt.txt)
 * [ss-import](ss-import.txt)
+* [ss-optimize](ss-optimize.txt)
+* [ss-perms](ss-perms.txt)
+* [ss-purge](ss-purge.txt)
+* [ss-restart](ss-restart.txt)
+* [ss-scan](ss-scan.txt)
+* [ss-sync](ss-sync.txt)
+* [ss-update](ss-update.txt)
+* [ss-worker](ss-worker.txt)
+
+#### ss-install (sub-scripts)
+
 * [ss-install](ss-install.txt)
 * [ss-install-adminer](ss-install-adminer.txt)
 * [ss-install-bash](ss-install-bash.txt)
@@ -56,14 +67,6 @@ title: SlickStack (Public Mirrors)
 * [ss-install-wordpress-config](ss-install-wordpress-config.txt)
 * [ss-install-wordpress-core](ss-install-wordpress-core.txt)
 * [ss-install-wordpress-muplugins](ss-install-muplugins.txt)
-* [ss-optimize](ss-optimize.txt)
-* [ss-perms](ss-perms.txt)
-* [ss-purge](ss-purge.txt)
-* [ss-restart](ss-restart.txt)
-* [ss-scan](ss-scan.txt)
-* [ss-sync](ss-sync.txt)
-* [ss-update](ss-update.txt)
-* [ss-worker](ss-worker.txt)
 
 ### Core Modules
 
@@ -109,4 +112,4 @@ title: SlickStack (Public Mirrors)
 
 ----
 
-*Last updated: Aug 26, 2020*
+*Last updated: Sep 12, 2020*
