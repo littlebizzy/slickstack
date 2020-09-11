@@ -29,9 +29,9 @@ title: SlickStack (Public Mirrors)
 
 *Bash scripts that perform SlickStack's main functions as an active LEMP environment, which are called via cron jobs, and can also be run manually.*
 
-* ss-backup
 * [ss-check](ss-check.txt)
 * [ss-clean](ss-clean.txt)
+* [ss-dos2unix](ss-dos2unix.txt)
 * [ss-dump](ss-dump.txt)
 * [ss-encrypt](ss-encrypt.txt)
 * [ss-import](ss-import.txt)
