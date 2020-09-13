@@ -45,7 +45,7 @@ title: SlickStack (Public Mirrors)
 * [ss-update](ss-update.txt)
 * [ss-worker](ss-worker.txt)
 
-#### ss-install sub-scripts (for modules)
+#### ss-install subscripts (to install modules)
 
 * [ss-install-adminer](ss-install-adminer.txt)
 * [ss-install-bash](ss-install-bash.txt)
@@ -68,7 +68,7 @@ title: SlickStack (Public Mirrors)
 * [ss-install-wordpress-core](ss-install-wordpress-core.txt)
 * [ss-install-wordpress-mu-plugins](ss-install-wordpress-mu-plugins.txt)
 
-#### ss-config-sample (used to create ss-config)
+#### ss-config-sample (used by ss-install to create ss-config)
 
 * [ss-config-sample](ss-config-sample.txt)
 
@@ -116,4 +116,4 @@ title: SlickStack (Public Mirrors)
 
 ----
 
-*Last updated: Sep 12, 2020*
+*Last updated: Sep 14, 2020*
