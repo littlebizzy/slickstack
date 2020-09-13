@@ -162,7 +162,8 @@
 * http://hookr.io
 * https://wpengine.com/support/php-editor-errors-wordpress-4-9-higher/
 * https://heera.it/customize-admin-menu-bar-in-wordpress
+* https://make.wordpress.org/core/2020/07/24/new-wp_get_environment_type-function-in-wordpress-5-5/
 
 ----
 
-*Last updated: Sep 4, 2020*
+*Last updated: Sep 14, 2020*
