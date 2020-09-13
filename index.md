@@ -66,7 +66,7 @@ title: SlickStack (Public Mirrors)
 * [ss-install-wordpress-cli](ss-install-wp.txt)
 * [ss-install-wordpress-config](ss-install-wordpress-config.txt)
 * [ss-install-wordpress-core](ss-install-wordpress-core.txt)
-* [ss-install-wordpress-mu-plugins](ss-install-mu-plugins.txt)
+* [ss-install-wordpress-mu-plugins](ss-install-wordpress-mu-plugins.txt)
 
 #### ss-config-sample
 
