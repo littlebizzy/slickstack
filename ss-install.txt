@@ -551,15 +551,15 @@ echo -e ""
 ## set confold as dpkg default (fail-safe in case apt upgrade called directly) ##
 DEBIAN_FRONTEND=noninteractive dpkg --configure -a --force-confold
 
-## update repo cache ##
-apt update
-
 ####################################################################################################
 #### SS-Install: Install SlickStack (Ubuntu) Root Crontab File #####################################
 ####################################################################################################
 
 ## cron should be installed by default on Ubuntu but this script will install it if not ##
 ## it will also install root crontab and core cron jobs from SlickStack mirrors ##
+
+## update repo cache ##
+apt update
 
 ## run ss-install-cron ##
 source /var/www/ss-install-cron
@@ -568,11 +568,11 @@ source /var/www/ss-install-cron
 #### SlickStack: Install Various Modules Via Default Ubuntu Packages ###############################
 ####################################################################################################
 
-## MESSAGE ##
-echo -e "${LIGHTPURPLE}SS-INSTALL: Installing various SlickStack modules from most recent Ubuntu repos...${NOCOLOR}"
-
 ## upgrade installed Ubuntu packages (LEMP modules) + Linux kernel (apt feature) ##
 apt full-upgrade
+
+## TODO: replace any apt update / upgrade /etc with just ss-update ##
+# source /var/www/ss-update
 
 ## run ss-install-misc ##
 source /var/www/ss-install-misc
@@ -580,6 +580,9 @@ source /var/www/ss-install-misc
 ####################################################################################################
 #### SS-Install: Install PHP-FPM 7.4.x + Required PHP Extensions ###################################
 ####################################################################################################
+
+## here we install the PHP-FPM module which includes OPcache for better performance ##
+## FastCGI is configured to interface with Nginx using TCP 127.0.0.1:9000 ##
 
 ## run ss-install-php ##
 source /var/www/ss-install-php
@@ -592,7 +595,7 @@ source /var/www/ss-install-php
 source /var/www/ss-install-bash
 
 ####################################################################################################
-#### SlickStack: Install Nginx Server + FastCGI Cache + OpenSSL ####################################
+#### SS-Install: Install Nginx Server + FastCGI Cache + OpenSSL ####################################
 ####################################################################################################
 
 ## run ss-install-nginx ##
