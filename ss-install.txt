@@ -416,88 +416,15 @@ chmod 6770 /var/www/ss-check
 ## run scripts ##
 source /var/www/ss-check
 
-
-
 ####################################################################################################
-#### SS-Install: Configure Ubuntu Users + Sudo Permissions (Sudoers File) ##########################
+#### SS-Install: Configure Ubuntu Root + Users + Sudo Permissions + SSH/SFTP #######################
 ####################################################################################################
 
 ## run ss-install-ubuntu-users ##
 source /var/www/ss-install-ubuntu-users
 
-####################################################################################################
-#### Configure Ubuntu: SSH + SFTP Settings (a.k.a. SSHD Configuration) #############################
-####################################################################################################
-
-
-## set default editor to nano ##
-update-alternatives --set editor /bin/nano
-
-## set timezone ##
-if [[ -z "$SS_TIMEZONE" ]]; then 
-    timedatectl set-timezone UTC
-else 
-    timedatectl set-timezone $SS_TIMEZONE
-fi
-
-
-
-## MESSAGE ##
-echo -e "${LIGHTPURPLE}SS-INSTALL: Configuring SSH (SFTP) settings, user permissions, and port number...${NOCOLOR}"
-
-## download latest versions ##
-wget -O /tmp/sshd_config http://mirrors.slickstack.io/ubuntu/sshd-config.txt
-
-## replace variables ##
-sed -i "s/@SUDO_USER/${SUDO_USER}/g" /tmp/sshd_config
-sed -i "s/@SFTP_USER/${SFTP_USER}/g" /tmp/sshd_config
-
-## set SSH port number (optional) ##
-if [[ -z "$SSH_PORT" ]]; then 
-    sed -i "s/@SSH_PORT/6969/g" /tmp/sshd_config
-else 
-    sed -i "s/@SSH_PORT/${SSH_PORT}/g" /tmp/sshd_config
-fi
-
-## enable/disable password authentication (depending on if SSH_KEYS is enabled) ##
-if [[ "$SSH_KEYS" == "true" ]]; then 
-    sed -i "s/@SSH_PASSWORD_AUTHENTICATION/no/g" /tmp/sshd_config
-else 
-    sed -i "s/@SSH_PASSWORD_AUTHENTICATION/yes/g" /tmp/sshd_config
-fi
-
-## enable/disable public key authentication (depending on if SSH_KEYS is enabled) ##
-if [[ "$SSH_KEYS" == "true" ]]; then 
-    sed -i "s/@SSH_PUBKEY_AUTHENTICATION/yes/g" /tmp/sshd_config
-else 
-    sed -i "s/@SSH_PUBKEY_AUTHENTICATION/no/g" /tmp/sshd_config
-fi
-
-## allow IPv6 SSH sessions (any) if no IPv4 address is detected on the server ##
-# if [[ CURRENT IP ADDRESS IS IPV6 ONLY ]]; then 
-#    sed -i "s/AddressFamily inet/AddressFamily any/g" /tmp/sshd_config
-# fi
-## Ref: https://stackoverflow.com/questions/5281341/get-local-network-interface-addresses-using-only-proc
-## Ref: https://stackoverflow.com/questions/39983121/how-to-detect-if-system-has-ipv6-enabled-in-a-unix-shell-script
-## Ref: https://www.cyberciti.biz/faq/bash-shell-command-to-find-get-ip-address/
-
-## copy files to their destinations ##
-cp /tmp/sshd_config /etc/ssh/sshd_config
-
-## reset permissions ##
-chown root:root /etc/ssh/sshd_config
-chmod 0440 /etc/ssh/sshd_config
-
-mkdir /var/www/meta/.ssh
-chown $SUDO_USER:$SUDO_USER /var/www/meta/.ssh
-chmod 0755 /var/www/meta/.ssh ## should be 0775 as per Ubuntu docs
-
-touch /var/www/meta/.ssh/authorized_keys
-chown $SUDO_USER:$SUDO_USER /var/www/meta/.ssh/authorized_keys
-chmod 0664 /var/www/meta/.ssh/authorized_keys ## should be 0664 as per Ubuntu docs
-
-## restart services ##
-/etc/init.d/ssh restart
+## run ss-install-ubuntu-ssh ##
+source /var/www/ss-install-ubuntu-ssh
 
 ####################################################################################################
 #### SlickStack: Set Dpkg Basic Settings + Update Apt (Package) Cache ##############################
