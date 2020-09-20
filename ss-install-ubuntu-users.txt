@@ -83,6 +83,33 @@ function ln {
 }
 
 ####################################################################################################
+#### SS-Install: Configure Ubuntu (SlickStack) Users + Set Various System Defaults #################
+####################################################################################################
+
+## MESSAGE ##
+echo -e ""
+echo -e "${LIGHTPURPLE}SS-INSTALL: Configuring users, permissions and Ubuntu defaults...${NOCOLOR}"
+
+## set root password ##
+echo "root:$ROOT_PASSWORD" | sudo /usr/sbin/chpasswd
+
+## ensure root password never expires ##
+# passwd -x -1 <username>
+chage -E -1 -m 0 -M -1 -I -1 -W 99999 root
+# chage -E -1 -m 0 -M -1 -I -1 -W 99999 $SUDO_USER
+# chage -E -1 -m 0 -M -1 -I -1 -W 99999 $SFTP_USER
+
+## create sudo user ##
+adduser --disabled-password --gecos "" $SUDO_USER
+# echo "$SUDO_USER:$SUDO_PASSWORD" | sudo /usr/sbin/chpasswd
+echo "$SUDO_USER:$SUDO_PASSWORD" | sudo /usr/sbin/chpasswd
+
+## create sftp user ##
+adduser --disabled-password --gecos "" $SFTP_USER
+# echo "$SFTP_USER:$SFTP_PASSWORD" | sudo /usr/sbin/chpasswd
+echo "$SFTP_USER:$SFTP_PASSWORD" | sudo /usr/sbin/chpasswd
+
+####################################################################################################
 #### SS-Install: Configure Ubuntu Root + Sudo User Permissions (Sudoers File) ######################
 ####################################################################################################
 
