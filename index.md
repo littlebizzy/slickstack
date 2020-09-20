@@ -71,6 +71,7 @@ title: SlickStack (Public Mirrors)
 * [ss-install-prestashop-config](ss-install-prestashop-config.txt)
 * [ss-install-prestashop-core](ss-install-prestashop-core.txt)
 * [ss-install-redis](ss-install-redis.txt)
+* [ss-install-ubuntu-users](ss-install-ubuntu-users.txt)
 * [ss-install-ufw](ss-install-ufw.txt)
 * [ss-install-wordpress-cli](ss-install-wordpress-cli.txt)
 * [ss-install-wordpress-config](ss-install-wordpress-config.txt)
@@ -125,4 +126,4 @@ title: SlickStack (Public Mirrors)
 
 ----
 
-*Last updated: Sep 19, 2020*
+*Last updated: Sep 21, 2020*
