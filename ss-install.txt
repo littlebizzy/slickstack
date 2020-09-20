@@ -397,43 +397,6 @@ else
 fi
 
 ####################################################################################################
-#### SS-Install: Configure Ubuntu (SlickStack) Users + Set Various System Defaults #################
-####################################################################################################
-
-## MESSAGE ##
-echo -e ""
-echo -e "${LIGHTPURPLE}SS-INSTALL: Configuring users, permissions and Ubuntu defaults...${NOCOLOR}"
-
-## set root password ##
-echo "root:$ROOT_PASSWORD" | sudo /usr/sbin/chpasswd
-
-## ensure root password never expires ##
-# passwd -x -1 <username>
-chage -E -1 -m 0 -M -1 -I -1 -W 99999 root
-# chage -E -1 -m 0 -M -1 -I -1 -W 99999 $SUDO_USER
-# chage -E -1 -m 0 -M -1 -I -1 -W 99999 $SFTP_USER
-
-## create sudo user ##
-adduser --disabled-password --gecos "" $SUDO_USER
-# echo "$SUDO_USER:$SUDO_PASSWORD" | sudo /usr/sbin/chpasswd
-echo "$SUDO_USER:$SUDO_PASSWORD" | sudo /usr/sbin/chpasswd
-
-## create sftp user ##
-adduser --disabled-password --gecos "" $SFTP_USER
-# echo "$SFTP_USER:$SFTP_PASSWORD" | sudo /usr/sbin/chpasswd
-echo "$SFTP_USER:$SFTP_PASSWORD" | sudo /usr/sbin/chpasswd
-
-## set default editor to nano ##
-update-alternatives --set editor /bin/nano
-
-## set timezone ##
-if [[ -z "$SS_TIMEZONE" ]]; then 
-    timedatectl set-timezone UTC
-else 
-    timedatectl set-timezone $SS_TIMEZONE
-fi
-
-####################################################################################################
 #### SS-Install: Download Latest SlickStack Core Scripts + Cron Jobs (Via SS-Check) ################
 ####################################################################################################
 
@@ -453,11 +416,11 @@ chmod 6770 /var/www/ss-check
 ## run scripts ##
 source /var/www/ss-check
 
-####################################################################################################
-#### SS-Install: Configure Ubuntu Root + Sudo User Permissions (Sudoers File) ######################
-####################################################################################################
 
-## COMBINE MORE TO HERE ##
+
+####################################################################################################
+#### SS-Install: Configure Ubuntu Users + Sudo Permissions (Sudoers File) ##########################
+####################################################################################################
 
 ## run ss-install-ubuntu-users ##
 source /var/www/ss-install-ubuntu-users
@@ -465,6 +428,19 @@ source /var/www/ss-install-ubuntu-users
 ####################################################################################################
 #### Configure Ubuntu: SSH + SFTP Settings (a.k.a. SSHD Configuration) #############################
 ####################################################################################################
+
+
+## set default editor to nano ##
+update-alternatives --set editor /bin/nano
+
+## set timezone ##
+if [[ -z "$SS_TIMEZONE" ]]; then 
+    timedatectl set-timezone UTC
+else 
+    timedatectl set-timezone $SS_TIMEZONE
+fi
+
+
 
 ## MESSAGE ##
 echo -e "${LIGHTPURPLE}SS-INSTALL: Configuring SSH (SFTP) settings, user permissions, and port number...${NOCOLOR}"
