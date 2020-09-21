@@ -53,7 +53,6 @@ title: SlickStack (Public Mirrors)
 * [ss-install-clamav](ss-install-clamav.txt)
 * [ss-install-craft-config](ss-install-craft-config.txt)
 * [ss-install-craft-core](ss-install-craft-core.txt)
-* [ss-install-cron](ss-install-cron.txt)
 * [ss-install-magento-config](ss-install-magento-config.txt)
 * [ss-install-magento-core](ss-install-magento-core.txt)
 * [ss-install-mediawiki-config](ss-install-mediawiki-config.txt)
@@ -71,6 +70,7 @@ title: SlickStack (Public Mirrors)
 * [ss-install-prestashop-core](ss-install-prestashop-core.txt)
 * [ss-install-redis](ss-install-redis.txt)
 * [ss-install-ubuntu-aliases](ss-install-ubuntu-aliases.txt)
+* [ss-install-ubuntu-crontab](ss-install-ubuntu-crontab.txt)
 * [ss-install-ubuntu-kernel](ss-install-ubuntu-kernel.txt)
 * [ss-install-ubuntu-ssh](ss-install-ubuntu-ssh.txt)
 * [ss-install-ubuntu-users](ss-install-ubuntu-users.txt)
@@ -128,4 +128,4 @@ title: SlickStack (Public Mirrors)
 
 ----
 
-*Last updated: Sep 21, 2020*
+*Last updated: Sep 22, 2020*
