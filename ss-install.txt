@@ -443,6 +443,14 @@ echo -e ""
 ## set confold as dpkg default (fail-safe in case apt upgrade called directly) ##
 DEBIAN_FRONTEND=noninteractive dpkg --configure -a --force-confold
 
+
+####################################################################################################
+#### SS-Install: Run SS-Update If It Was Not Run Beforehand ########################################
+####################################################################################################
+
+## TODO: replace any apt update / upgrade /etc with just ss-update ##
+# source /var/www/ss-update
+
 ####################################################################################################
 #### SS-Install: Install SlickStack (Ubuntu) Root Crontab File #####################################
 ####################################################################################################
@@ -456,13 +464,6 @@ source /var/www/ss-install-cron
 ####################################################################################################
 #### SlickStack: Install Various Modules Via Default Ubuntu Packages ###############################
 ####################################################################################################
-
-## upgrade installed Ubuntu packages (LEMP modules) + Linux kernel (apt feature) ##
-apt update
-apt full-upgrade
-
-## TODO: replace any apt update / upgrade /etc with just ss-update ##
-# source /var/www/ss-update
 
 ## run ss-install-misc ##
 source /var/www/ss-install-misc
@@ -586,24 +587,11 @@ source /var/www/ss-install-adminer
 source /var/www/ss-install-clamav
 
 ####################################################################################################
-#### Configure Ubuntu: Optimize The System Kernel ##################################################
+#### SS-Install: Optimize The Linux (Ubuntu) System Kernel #########################################
 ####################################################################################################
 
-## delete tmp files ##
-rm /tmp/sysctl*
-
-## backup current Ubunt kernel file ##
-cp /etc/sysctl.conf /etc/sysctl.conf.bak
-
-## download latest versions ##
-wget -O /tmp/sysctl.conf http://mirrors.slickstack.io/ubuntu/sysctl.txt
-
-## copy files to their destinations ##
-cp /tmp/sysctl.conf /etc/sysctl.conf
-
-## reset permissions ##
-chown root:root /etc/sysctl.conf
-chmod 0664 /etc/sysctl.conf
+## run ss-install-ubuntu-kernel ##
+source /var/www/ss-install-ubuntu-kernel
 
 ####################################################################################################
 #### SS-Install: Install UFW Firewall + Configure Firewall Rules ###################################
