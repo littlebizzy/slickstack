@@ -187,7 +187,8 @@ title: MU (Must-Use) Plugins (Public Mirrors)
 * [https://wordpress.stackexchange.com/questions/98284/how-come-wp-options-table-does-not-have-an-index-on-autoload](https://wordpress.stackexchange.com/questions/98284/how-come-wp-options-table-does-not-have-an-index-on-autoload)
 * [https://github.com/woocommerce/action-scheduler-disable-default-runner](https://github.com/woocommerce/action-scheduler-disable-default-runner)
 * https://wordpress.programmingpedia.net/en/tutorial/9189/add-menu-page--
+* https://nimblewebdeveloper.com/blog/add-tabs-to-wordpress-plugin-admin-page
 
 ----
 
-*Last updated: Oct 10, 2020*
+*Last updated: Oct 13, 2020*
