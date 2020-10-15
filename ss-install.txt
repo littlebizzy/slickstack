@@ -240,7 +240,7 @@ if [[ ! -f "/var/www/ss-config" ]]; then
     sed -i "s/@ROOT_PASSWORD/$(openssl rand -hex 12)/g" /tmp/config
     # sed -i "s/@SUDO_PASSWORD/$(openssl rand -hex 12)/g" /tmp/config
     # sed -i "s/@SFTP_PASSWORD/$(openssl rand -hex 12)/g" /tmp/config
-    sed -i "s/@DB_PASSWORD_USER/$(openssl rand -hex 12)/g" /tmp/config
+    # sed -i "s/@DB_PASSWORD_USER/$(openssl rand -hex 12)/g" /tmp/config
     sed -i "s/@DB_PASSWORD_ROOT/$(openssl rand -hex 12)/g" /tmp/config
     
     ## PROMPT: choose sudo username (default = batman) ##
@@ -311,6 +311,15 @@ if [[ ! -f "/var/www/ss-config" ]]; then
     read -t 300 -p "$(echo -e $LIGHTPURPLE"Choose database user (e.g. robin): "$NORMAL)" -e -i 'robin' ss_var_db_user || ss_var_db_user=robin
     # read -p 'Choose database user (e.g. robin): ' -e -i 'robin' ss_var_db_user
     sed -i "s/@DB_USER/$ss_var_db_user/g" /tmp/config
+    
+    ## new line ##
+    printf "\n"
+    
+    ## PROMPT: choose database user password (default = random) ##
+    db_pass_random=$(openssl rand -hex 12)
+    read -t 300 -p "$(echo -e $LIGHTPURPLE"Choose database user password: "$NORMAL)" -e -i ${db_pass_random} ss_var_db_password || ss_var_db_password=${db_pass_random}
+    # sed -i "s/@SUDO_PASSWORD/$(openssl rand -hex 12)/g" /tmp/config
+    sed -i "s/@DB_PASSWORD_USER/$ss_var_db_password/g" /tmp/config
     
     ## new line ##
     printf "\n"
