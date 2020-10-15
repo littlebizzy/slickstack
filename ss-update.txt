@@ -167,8 +167,11 @@ sed -i "s|\(^DB_PASSWORD_ROOT=\).*|DB_PASSWORD_ROOT=\"$DB_PASSWORD_ROOT\"|g" /tm
 
 ## only copy over remote DB_HOST otherwise use new default 127.0.0.1 (present in the default new template) ##
 ## also preserves localhost if some devs prefer over TCP ##
-if [[ "$DB_HOST" != "localhost" ]] && [[ "$DB_HOST" != "127.0.0.1" ]] && [[ "$DB_HOST" != "@DB_HOST" ]]; then
+# if [[ "$DB_HOST" != "localhost" ]] && [[ "$DB_HOST" != "127.0.0.1" ]] && [[ "$DB_HOST" != "@DB_HOST" ]]; then
+if [[ -n "$DB_HOST" ]]; then 
     sed -i "s|\(^DB_HOST=\).*|DB_HOST=\"$DB_HOST\"|g" /tmp/ss-config
+    # sed replace DB_HOST="localhost" with DB_HOST="127.0.0.1"
+    # sed replace @DB_HOST with 127.0.0.1
 fi
 
 ## copy over remaining database settings ##
