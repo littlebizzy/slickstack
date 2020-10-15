@@ -86,6 +86,8 @@ function ln {
 #### SS-Install-WPConfig: Configure WP-Config File (Production) ####################################
 ####################################################################################################
 
+## SS_BUILD = OCT2020A
+
 ## here we retrieve latest wp-config.php boilerplate and customize per ss-config settings ##
 ## you should never make changes directly to wp-config.php in SlickStack servers ##
 
@@ -94,6 +96,24 @@ rm /tmp/wp-config*
 
 ## retrieve latest wp-config boilerplate ##
 wget -O /tmp/wp-config.txt http://mirrors.slickstack.io/wordpress/wp-config.txt
+
+
+###### general SlickStack settings ########
+
+## set multisite subdomains ##
+if [[ -z "$SS_DASHBOARD" ]]; then 
+    sed -i "s/@SS_DASHBOARD/true/g" /tmp/wp-config.txt
+else 
+    sed -i "s/@SS_DASHBOARD/${SS_DASHBOARD}/g" /tmp/wp-config.txt
+fi
+
+## set multisite ##
+if [[ -z "$WP_MULTISITE" ]]; then 
+    sed -i "s/@WP_MULTISITE/false/g" /tmp/wp-config.txt
+else 
+    sed -i "s/@WP_MULTISITE/${WP_MULTISITE}/g" /tmp/wp-config.txt
+fi
+
 
 ###### WP Multisite settings ########
 
