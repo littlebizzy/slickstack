@@ -239,7 +239,7 @@ if [[ ! -f "/var/www/ss-config" ]]; then
     ## replace all password fields with random strings ##
     sed -i "s/@ROOT_PASSWORD/$(openssl rand -hex 12)/g" /tmp/config
     # sed -i "s/@SUDO_PASSWORD/$(openssl rand -hex 12)/g" /tmp/config
-    sed -i "s/@SFTP_PASSWORD/$(openssl rand -hex 12)/g" /tmp/config
+    # sed -i "s/@SFTP_PASSWORD/$(openssl rand -hex 12)/g" /tmp/config
     sed -i "s/@DB_PASSWORD_USER/$(openssl rand -hex 12)/g" /tmp/config
     sed -i "s/@DB_PASSWORD_ROOT/$(openssl rand -hex 12)/g" /tmp/config
     
@@ -284,6 +284,15 @@ if [[ ! -f "/var/www/ss-config" ]]; then
     read -t 300 -p "$(echo -e $LIGHTPURPLE"Choose SFTP username (e.g. robin): "$NORMAL)" -e -i 'robin' ss_var_sftp_user || ss_var_sftp_user=robin
     # read -p 'Choose SFTP username (e.g. robin): ' -e -i 'robin' ss_var_sftp_user
     sed -i "s/@SFTP_USER/$ss_var_sftp_user/g" /tmp/config
+    
+    ## new line ##
+    printf "\n"
+    
+    ## PROMPT: choose SFTP password (default = random) ##
+    sftp_pass_random=$(openssl rand -hex 12)
+    read -t 300 -p "$(echo -e $LIGHTPURPLE"Choose SFTP password (should be memorable): "$NORMAL)" -e -i ${sftp_pass_random} ss_var_sftp_password || ss_var_sftp_password=${sftp_pass_random}
+    # sed -i "s/@SUDO_PASSWORD/$(openssl rand -hex 12)/g" /tmp/config
+    sed -i "s/@SFTP_PASSWORD/$ss_var_sftp_password/g" /tmp/config
     
     ## new line ##
     printf "\n"
