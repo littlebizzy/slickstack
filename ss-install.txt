@@ -238,7 +238,7 @@ if [[ ! -f "/var/www/ss-config" ]]; then
     
     ## replace all password fields with random strings ##
     sed -i "s/@ROOT_PASSWORD/$(openssl rand -hex 12)/g" /tmp/config
-    sed -i "s/@SUDO_PASSWORD/$(openssl rand -hex 12)/g" /tmp/config
+    # sed -i "s/@SUDO_PASSWORD/$(openssl rand -hex 12)/g" /tmp/config
     sed -i "s/@SFTP_PASSWORD/$(openssl rand -hex 12)/g" /tmp/config
     sed -i "s/@DB_PASSWORD_USER/$(openssl rand -hex 12)/g" /tmp/config
     sed -i "s/@DB_PASSWORD_ROOT/$(openssl rand -hex 12)/g" /tmp/config
@@ -248,6 +248,15 @@ if [[ ! -f "/var/www/ss-config" ]]; then
     read -t 300 -p "$(echo -e $LIGHTPURPLE"Choose sudo username (e.g. batman): "$NORMAL)" -e -i 'batman' ss_var_sudo_user || ss_var_sudo_user=batman
     # read -p 'Choose sudo username (e.g. batman): ' -e -i 'batman' ss_var_sudo_user
     sed -i "s/@SUDO_USER/$ss_var_sudo_user/g" /tmp/config
+    
+    ## new line ##
+    printf "\n"
+    
+    ## PROMPT: choose sudo password (default = random) ##
+    $sudopass_random = $(openssl rand -hex 12)
+    read -t 300 -p "$(echo -e $LIGHTPURPLE"Choose sudo password (should be complex yet memorable): "$NORMAL)" -e -i '$sudopass_random' ss_var_sudo_password || ss_var_sudo_password=$sudopass_random
+    # sed -i "s/@SUDO_PASSWORD/$(openssl rand -hex 12)/g" /tmp/config
+    sed -i "s/@SUDO_PASSWORD/$ss_var_sudo_password/g" /tmp/config
     
     ## new line ##
     printf "\n"
