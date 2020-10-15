@@ -1677,6 +1677,26 @@ echo -e "\e[36mEnsuring MU plugins are the latest version...\e[0m"
 source /var/www/ss-muplugs
 
 ####################################################################################################
+#### SS-Update: Set Dpkg Basic Settings + Update Apt (Package) Cache ##############################
+####################################################################################################
+
+## for smoother execution and to avoid conflicts we set dpkg to noninteractive/confold ##
+## it is much better to run ss-update instead of calling apt get upgrade manually ##
+
+## echo -e "${PINK}###########################################################################${RESET}"
+
+## MESSAGE ##
+echo -e ""
+echo -e "${PINK}SS-INSTALL: Set dpkg to noninteractive and force-confold by default...${RESET}"
+echo -e ""
+
+## set confold as dpkg default (fail-safe in case apt upgrade called directly) ##
+DEBIAN_FRONTEND=noninteractive dpkg --configure -a --force-confold
+
+## set confold as dpkg default (applies to ss-update only) ##
+## DEBIAN_FRONTEND=noninteractive dpkg --configure -a --force-confold
+
+####################################################################################################
 #### SS-Update: Upgrade + Autoremove + Autoclean SlickStack Modules (Ubuntu Packages) ##############
 ####################################################################################################
 
@@ -1688,9 +1708,6 @@ echo -e "\e[36mUpdating all LEMP stack modules (Ubuntu packages) and retaining e
 
 ## temporarily disable UFW Firewall ##
 ufw --force disable
-
-## set confold as dpkg default (applies to ss-update only) ##
-DEBIAN_FRONTEND=noninteractive dpkg --configure -a --force-confold
 
 ## update Ubuntu repo cache ##
 apt update
