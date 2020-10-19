@@ -100,11 +100,25 @@ wget -O /tmp/wp-config.txt http://mirrors.slickstack.io/wordpress/wp-config.txt
 
 ###### general SlickStack settings ########
 
-## set multisite subdomains ##
+## set SlickStack dashboard ##
 if [[ -z "$SS_DASHBOARD" ]]; then 
     sed -i "s/@SS_DASHBOARD/true/g" /tmp/wp-config.txt
 else 
     sed -i "s/@SS_DASHBOARD/${SS_DASHBOARD}/g" /tmp/wp-config.txt
+fi
+
+
+
+###### WP Multisite settings ########
+
+
+## set multisite subdomains ##
+## THIS MUST COME BEFORE WP_MULTISITE REPLACEMENTS OTHERWISE IT WILL BE OVERWRITTEN ##
+## in the future fix this to have a more unique set of placeholders ##
+if [[ -z "$WP_MULTISITE_SUBDOMAINS" ]]; then 
+    sed -i "s/@WP_MULTISITE_SUBDOMAINS/true/g" /tmp/wp-config.txt
+else 
+    sed -i "s/@WP_MULTISITE_SUBDOMAINS/${WP_MULTISITE_SUBDOMAINS}/g" /tmp/wp-config.txt
 fi
 
 ## set multisite ##
@@ -112,16 +126,6 @@ if [[ -z "$WP_MULTISITE" ]]; then
     sed -i "s/@WP_MULTISITE/false/g" /tmp/wp-config.txt
 else 
     sed -i "s/@WP_MULTISITE/${WP_MULTISITE}/g" /tmp/wp-config.txt
-fi
-
-
-###### WP Multisite settings ########
-
-## set multisite subdomains ##
-if [[ -z "$WP_MULTISITE_SUBDOMAINS" ]]; then 
-    sed -i "s/@WP_MULTISITE_SUBDOMAINS/true/g" /tmp/wp-config.txt
-else 
-    sed -i "s/@WP_MULTISITE_SUBDOMAINS/${WP_MULTISITE_SUBDOMAINS}/g" /tmp/wp-config.txt
 fi
 
 ## set multisite ##
