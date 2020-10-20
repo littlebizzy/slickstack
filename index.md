@@ -129,6 +129,7 @@ title: SlickStack (Public Mirrors)
 * https://www.cyberciti.biz/tips/finding-bash-perl-python-portably-using-env.html
 * https://unix.stackexchange.com/questions/119655/when-is-it-important-to-write-portable-scripts
 * https://unix.stackexchange.com/questions/603286/how-to-make-a-shell-script-as-portable-as-possible-posix-and-non-posix
+* https://www.infoq.com/articles/serverless-stalled/
 
 ----
 
