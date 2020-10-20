@@ -5,7 +5,7 @@
 #### path: n/a (boilerplate) #######################################################################
 #### destination: /etc/nginx/sites-available/default (after install) ###############################
 #### purpose: Nginx server block boilerplate (for WordPress single site installations only) ########
-#### module version: Nginx 1.17.x ##################################################################
+#### module version: Nginx 1.18.x ##################################################################
 ####################################################################################################
 
 ## SLICKSTACK SUPPORTS HTTPS-ONLY NGINX SERVER BLOCKS WITH HSTS ENABLED BY DEFAULT ##
@@ -104,7 +104,12 @@ server {
         set $skip_cache 1;
     }
     
-    ## logged in users or recent commenters etc should always skip the cache
+    ## do not cache RSS feeds or sitemaps (special 5 minute cache rule or something would be better in the future) ##
+    if ($request_uri ~* "/feed/|sitemap(_index)?.xml") {
+        set $skip_cache 1;
+    }
+    
+    ## certain cookies (logged in users or recent commenters etc) should always skip the cache
     if ($http_cookie ~* "wordpress_logged_in|wp-postpass|woocommerce_items_in_cart|woocommerce_cart_hash|comment_author") {
         set $skip_cache 1;
     }
@@ -412,5 +417,6 @@ server {
 ## Ref: https://www.peterbe.com/plog/be-very-careful-with-your-add_header-in-nginx
 ## Ref: https://www.digitalocean.com/community/tutorials/understanding-nginx-server-and-location-block-selection-algorithms
 ## Ref: https://www.keycdn.com/support/nginx-location-directive
+## Ref: https://community.easyengine.io/t/caching-of-feeds/868
 
 ## SS_EOF
