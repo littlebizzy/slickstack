@@ -130,7 +130,8 @@ title: SlickStack (Public Mirrors)
 * https://unix.stackexchange.com/questions/119655/when-is-it-important-to-write-portable-scripts
 * https://unix.stackexchange.com/questions/603286/how-to-make-a-shell-script-as-portable-as-possible-posix-and-non-posix
 * https://www.infoq.com/articles/serverless-stalled/
+* https://utkusen.com/blog/security-by-obscurity-is-underrated.html
 
 ----
 
-*Last updated: Oct 20, 2020*
+*Last updated: Oct 21, 2020*
