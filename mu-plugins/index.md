@@ -188,7 +188,8 @@ title: MU (Must-Use) Plugins (Public Mirrors)
 * [https://github.com/woocommerce/action-scheduler-disable-default-runner](https://github.com/woocommerce/action-scheduler-disable-default-runner)
 * https://wordpress.programmingpedia.net/en/tutorial/9189/add-menu-page--
 * https://nimblewebdeveloper.com/blog/add-tabs-to-wordpress-plugin-admin-page
+* https://softwareengineering.stackexchange.com/questions/12807/make-a-big-deal-out-of-true
 
 ----
 
-*Last updated: Oct 13, 2020*
+*Last updated: Oct 23, 2020*
