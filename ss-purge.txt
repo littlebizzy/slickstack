@@ -136,11 +136,22 @@ rm /var/www/html/purge-${RANDOM_RESET_OPCACHE}.php
 # rm /var/www/cache/opcache/*
 
 ####################################################################################################
-#### SS-Purge: Delete Transients From MySQL Database (WordPress Queries Cache) #####################
+#### SS-Purge: Delete All Transients From MySQL Database ###########################################
 ####################################################################################################
 
-## manually delete all transients from WordPress database ##
-mysql --execute="DELETE FROM ${DB_NAME}.${DB_PREFIX}options WHERE option_name LIKE ('%\_transient\_%');"
+## manually deletes all transients (temporary query cache data) from WordPress database ##
+## this is a more forceful approach than simply purging the Redis object cache ##
+
+## for MySQL 8.0 if server is running Ubuntu 20.04 ##
+if [[ "${UBUNTU_VERSION}" = "20.04" || -z "${UBUNTU_VERSION}" ]]; then 
+    mysql --execute="DELETE FROM ${DB_NAME}.${DB_PREFIX}options WHERE option_name LIKE ('%\_transient\_%');"
+fi
+
+## for MySQL 5.7 if server is running Ubuntu 18.04 ##
+if [[ "${UBUNTU_VERSION}" = "18.04" ]]; then
+     mysql --user=root --password=$DB_PASSWORD_ROOT --host=localhost --protocol=socket --port=3306 --force --execute="DELETE FROM ${DB_NAME}.${DB_PREFIX}options WHERE option_name LIKE ('%\_transient\_%');"
+     mysql --user=root --password=$DB_PASSWORD_ROOT --host=127.0.0.1 --protocol=tcp --port=3306 --force --execute="DELETE FROM ${DB_NAME}.${DB_PREFIX}options WHERE option_name LIKE ('%\_transient\_%');"
+fi
 
 ####################################################################################################
 #### SS-Purge: Flush Redis (Object Cache i.e. Transients) ##########################################
