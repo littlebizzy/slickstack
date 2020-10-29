@@ -248,7 +248,35 @@ server {
     location ^~ /staging/wp-content/uploads/ {
         alias /var/www/html/wp-content/uploads/;
     }
-
+    
+    location /dev/ {
+        ## first try files, then directories, otherwise query index ##
+        try_files $uri $uri/ /dev/index.php?$args;
+        ## tweak FastCGI Cache (needs to be improved with mild cache settings) ##
+        include /etc/nginx/fastcgi.conf;
+        fastcgi_split_path_info ^(.+\.php)(/.+)$;
+	fastcgi_pass 127.0.0.1:9000;
+        fastcgi_read_timeout 300;
+        fastcgi_index index.php;
+        fastcgi_cache off;
+	add_header X-Robots-Tag "noindex, nofollow, nosnippet, noarchive";
+	add_header X-Powered-By "SlickStack";
+        add_header Strict-Transport-Security "max-age=15552000" always; ## 180 days
+        add_header X-FastCGI-Cache $upstream_cache_status;
+        add_header X-Frame-Options SAMEORIGIN;
+        add_header X-Content-Type-Options nosniff;
+        add_header X-XSS-Protection "1; mode=block";
+        add_header Referrer-Policy "strict-origin-when-cross-origin";
+    }
+    
+    # location ~ ^/dev/wp-content/uploads/(.*) {
+    #    return 302             https://@DOMAIN/wp-content/uploads/$1;
+    # }
+    
+   # location ^~ /dev/wp-content/uploads/ {
+   #     alias /var/www/html/wp-content/uploads/;
+   # }
+    
 ####################################################################################################
 #### Server Block: Static Resource Settings (Expiration Headers) ###################################
 ####################################################################################################
