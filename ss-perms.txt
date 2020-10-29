@@ -239,6 +239,7 @@ mkdir /var/www/html/wp-content/upgrade
 
 ## ensure staging directories exist (will not overwrite) ##
 mkdir /var/www/html/staging
+mkdir /var/www/html/dev
 
 ## ensure files exist (production only because ss-sync will copy to staging) ##
 if [ ! -f "/var/www/html/wp-content/blacklist.txt" ]; then touch "/var/www/html/wp-content/blacklist.txt"; fi
@@ -270,6 +271,13 @@ if [[ "$STAGING_SITE" == "true" ]]; then
     chmod 0440 /var/www/html/staging/wp-content/blacklist.txt ## 0440 (read-only)
 fi
 
+## dev ##
+if [[ "$DEV_SITE" == "true" ]]; then 
+    chown www-data:wordpress /var/www/html/dev/wp-content/blacklist.txt
+    chmod 0640 /var/www/html/dev/wp-config.php ## 0440 probably better (0660 not needed as wp-config protected in SlickStack)
+    chmod 0440 /var/www/html/dev/wp-content/blacklist.txt ## 0440 (read-only)
+fi
+
 ####################################################################################################
 #### SS-Perms: Reset MU (Must-Use) Plugins Permissions #############################################
 ####################################################################################################
@@ -297,6 +305,17 @@ if [[ "$STAGING_SITE" == "true" ]]; then
     find /var/www/html/staging/wp-content/mu-plugins/ -type f -exec chmod 0644 {} \; ## 0644 is enough
     chmod 0644 /var/www/html/staging/wp-content/object-cache.php ## 0644 is enough
     chmod 0664 /var/www/html/staging/wp-content/functions.php ## 0664 to allow WP edit files
+fi
+
+## dev ##
+if [[ "$DEV_SITE" == "true" ]]; then 
+    chown -R www-data:wordpress /var/www/html/dev/wp-content/mu-plugins
+    chown www-data:wordpress /var/www/html/dev/wp-content/object-cache.php
+    chown $SFTP_USER:wordpress /var/www/html/dev/wp-content/functions.php ## devs will likely want to modify via SFTP
+    find /var/www/html/dev/wp-content/mu-plugins/ -type d -exec chmod 0755 {} \; ## 0755 is enough
+    find /var/www/html/dev/wp-content/mu-plugins/ -type f -exec chmod 0644 {} \; ## 0644 is enough
+    chmod 0644 /var/www/html/dev/wp-content/object-cache.php ## 0644 is enough
+    chmod 0664 /var/www/html/dev/wp-content/functions.php ## 0664 to allow WP edit files
 fi
 
 ####################################################################################################
