@@ -243,31 +243,52 @@ function slickstack_menu() {
 /** Toolbar Switcher (Production) */
 // Future: replace this janky thing with a defined constant
 //@STAGING_SITE_TRUE//
-add_action('admin_bar_menu', 'slickstack_switcher_production', 25);
 
-function slickstack_switcher_production($admin_bar) {
-  //   $current_user = wp_get_current_user();
-   // if(current_user_can('manage_options')) {
-    //echo "<pre>";
-    //print_r($admin_bar);
-    //echo "<pre>";
+add_action('admin_bar_menu', 'ss_environment_menu', 25);
 
-    $admin_bar->add_menu( array(
-    'id'    => 'ss_switch_production',
-    'parent' => 'top-secondary',
-    'title' => '<span style="color:#3CB54C;">PRODUCTION</span>',
-    'href'  => false
-    ) );
-        
+function ss_environment_menu($admin_bar) {
+    $current_user = wp_get_current_user();
+    if(current_user_can('manage_options')) {
+    
         // global $wp_admin_bar;
-        // $menu_id = 'slickstack_switcher_production';
-        // $prod_link = home_url( $path = '', $scheme = 'https' );
-        // $stag_suffix = '/staging/';
-       // $stag_total = $prod_link . $stag_suffix;
+                
+        $ss_production_link = home_url( $path = '', $scheme = 'https' );
+        $ss_staging_directory = '/staging/';
+        $ss_dev_directory = '/dev/';
+        $ss_staging_link = $ss_production_link . $ss_staging_directory;
+        $ss_dev_link = $ss_production_link . $ss_dev_directory;
+    
+        // Current Environment
+        $admin_bar->add_menu( array(
+            'parent' => 'top-secondary',
+            'id'    => 'ss_environment_current',
+            'title' => '<span style="color:#3CB54C;">PRODUCTION</span>',
+            'href'  => false
+            ) );
+            
+        // Staging Link
+        $admin_bar->add_menu( array(
+            'parent' => 'ss_environment_current', 
+            'id' => 'ss_environment_toggle_staging',
+            'title' => 'Switch To Staging', 
+            'href' => $ss_staging_link, 
+            'meta' => array('target' => '_blank')
+            ) );
+            
+        // Dev Link
+        $admin_bar->add_menu( array(
+            'parent' => 'ss_environment_current', 
+            'id' => 'ss_environment_toggle_dev',
+            'title' => 'Switch To Dev', 
+            'href' => $ss_dev_link, 
+            'meta' => array('target' => '_blank')
+            ) );
+
+
        // $wp_admin_bar->add_menu(array('id' => $menu_id, 'title' => '<span style="color:#3CB54C;">PRODUCTION</span>', 'href' => '/'));
        // $wp_admin_bar->add_menu(array('parent' => $menu_id, 'title' => __('Switch To Staging'), 'id' => 'staging-link', 'href' => $stag_total));
         
-   // } else { }
+    } else { }
 }
 
 
