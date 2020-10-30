@@ -207,6 +207,31 @@ mysql --execute="UPDATE dev_options SET option_value='https://$SITE_DOMAIN/dev' 
 # source /var/www/ss-install-wordpress-config
 
 ####################################################################################################
+#### SS-Purge: Delete All Transients From MySQL Database ###########################################
+####################################################################################################
+
+## manually deletes all transients (temporary query cache data) from WordPress database ##
+## this is a more forceful approach than simply purging the Redis object cache ##
+
+## for MySQL 8.0 if server is running Ubuntu 20.04 ##
+if [[ "${UBUNTU_VERSION}" = "20.04" || -z "${UBUNTU_VERSION}" ]]; then 
+    mysql --execute="DELETE FROM ${DB_NAME}.${DB_PREFIX}options WHERE option_name LIKE ('%\_transient\_%');"
+fi
+
+## for MySQL 5.7 if server is running Ubuntu 18.04 ##
+if [[ "${UBUNTU_VERSION}" = "18.04" ]]; then
+     mysql --user=root --password=$DB_PASSWORD_ROOT --host=localhost --protocol=socket --port=3306 --force --execute="DELETE FROM ${DB_NAME}.${DB_PREFIX}options WHERE option_name LIKE ('%\_transient\_%');"
+     mysql --user=root --password=$DB_PASSWORD_ROOT --host=127.0.0.1 --protocol=tcp --port=3306 --force --execute="DELETE FROM ${DB_NAME}.${DB_PREFIX}options WHERE option_name LIKE ('%\_transient\_%');"
+fi
+
+####################################################################################################
+#### SS-Muplugs: Flush Redis Object Cache ##########################################################
+####################################################################################################
+
+## flush Redis server (suppress CLI messages) ##
+redis-cli flushall &> /dev/null
+
+####################################################################################################
 #### SS-Install-WordPress: Reset Permissions, Etc ##################################################
 ####################################################################################################
 
@@ -223,6 +248,8 @@ fi
 
 ## run ss-perms ##
 source /var/www/ss-perms
+
+
 
 ####################################################################################################
 #### SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ###############
