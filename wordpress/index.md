@@ -1,4 +1,4 @@
-# WordPress (Content Management System)
+# WordPress (CMS)
 
 ----
 
@@ -9,6 +9,7 @@
 * [wordpress.zip](wordpress.zip)
 * [wp-config.txt](wp-config.txt)
 * [wp-config-staging.txt](wp-config-staging.txt)
+* [wp-config-dev.txt](wp-config-dev.txt)
 * [functions.txt](functions.txt)
 * [blacklist.txt](blacklist.txt)
 * [throwaway.zip](throwaway.zip)
