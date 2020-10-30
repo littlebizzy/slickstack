@@ -247,17 +247,86 @@ function slickstack_menu() {
 add_action('admin_bar_menu', 'ss_environment_menu', 25);
 
 function ss_environment_menu($admin_bar) {
+    
+    // global $wp_admin_bar;
+    
     $current_user = wp_get_current_user();
+    
+    $ss_production_link = home_url( $path = '', $scheme = 'https' );
+    $ss_remove_staging_directory = '/staging';	
+    $ss_remove_dev_directory = '/dev';	
+    $ss_staging_directory = '/staging/';
+    $ss_dev_directory = '/dev/';
+    $ss_staging_link = $ss_production_link . $ss_staging_directory;
+    $ss_dev_link = $ss_production_link . $ss_dev_directory;
+    $ss_production_link_trimmed = str_replace($ss_remove_staging_directory, '', $ss_production_link);
+    $ss_staging_link_trimmed = str_replace($ss_remove_dev_directory, '', $ss_production_link);
+    $ss_dev_link_trimmed = $ss_production_link_trimmed . $ss_dev_directory;
+    
     if(current_user_can('manage_options')) {
     
-        // global $wp_admin_bar;
+        if(WP_ENVIRONMENT_TYPE == 'staging') {
+        
+        // Current Environment
+        $admin_bar->add_menu( array(
+            'parent' => 'top-secondary',
+            'id'    => 'ss_environment_current',
+            'title' => '<span style="color:#FFBA00;">STAGING</span>',
+            'href'  => false
+            ) );
+            
+        // Production Link
+        $admin_bar->add_menu( array(
+            'parent' => 'ss_environment_current', 
+            'id' => 'ss_environment_toggle_production',
+            'title' => 'Switch To Production', 
+            'href' => $ss_production_link_trimmed, 
+            'meta' => array('target' => '_blank')
+            ) );
+            
+        // Dev Link
+        $admin_bar->add_menu( array(
+            'parent' => 'ss_environment_current', 
+            'id' => 'ss_environment_toggle_dev',
+            'title' => 'Switch To Dev', 
+            'href' => $ss_dev_link_trimmed, 
+            'meta' => array('target' => '_blank')
+            ) );
+            
+        } // end if staging
+        
+        elseif(WP_ENVIRONMENT_TYPE == 'development') {
                 
-        $ss_production_link = home_url( $path = '', $scheme = 'https' );
-        $ss_staging_directory = '/staging/';
-        $ss_dev_directory = '/dev/';
-        $ss_staging_link = $ss_production_link . $ss_staging_directory;
-        $ss_dev_link = $ss_production_link . $ss_dev_directory;
-    
+        // Current Environment
+        $admin_bar->add_menu( array(
+            'parent' => 'top-secondary',
+            'id'    => 'ss_environment_current',
+            'title' => '<span style="color:#FFBA00;">DEV</span>',
+            'href'  => false
+            ) );
+            
+        // Production Link
+        $admin_bar->add_menu( array(
+            'parent' => 'ss_environment_current', 
+            'id' => 'ss_environment_toggle_production',
+            'title' => 'Switch To Production', 
+            'href' => $ss_production_link_trimmed, 
+            'meta' => array('target' => '_blank')
+            ) );
+            
+        // Dev Link
+        $admin_bar->add_menu( array(
+            'parent' => 'ss_environment_current', 
+            'id' => 'ss_environment_toggle_dev',
+            'title' => 'Switch To Staging', 
+            'href' => $ss_staging_link_trimmed, 
+            'meta' => array('target' => '_blank')
+            ) );
+            
+        } // end elseif dev
+        
+        else {
+        
         // Current Environment
         $admin_bar->add_menu( array(
             'parent' => 'top-secondary',
@@ -283,15 +352,10 @@ function ss_environment_menu($admin_bar) {
             'href' => $ss_dev_link, 
             'meta' => array('target' => '_blank')
             ) );
-
-
-       // $wp_admin_bar->add_menu(array('id' => $menu_id, 'title' => '<span style="color:#3CB54C;">PRODUCTION</span>', 'href' => '/'));
-       // $wp_admin_bar->add_menu(array('parent' => $menu_id, 'title' => __('Switch To Staging'), 'id' => 'staging-link', 'href' => $stag_total));
+            
+        } // end else (production)
         
     } else { }
 }
-
-
-// Ref: https://speedysense.com/php-remove-http-https-www-and-slashes-from-url/
 
 // SS_EOF
