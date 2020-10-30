@@ -189,7 +189,8 @@ title: MU (Must-Use) Plugins (Public Mirrors)
 * https://wordpress.programmingpedia.net/en/tutorial/9189/add-menu-page--
 * https://nimblewebdeveloper.com/blog/add-tabs-to-wordpress-plugin-admin-page
 * https://softwareengineering.stackexchange.com/questions/12807/make-a-big-deal-out-of-true/12819#12819
+* https://speedysense.com/php-remove-http-https-www-and-slashes-from-url/
 
 ----
 
-*Last updated: Oct 23, 2020*
+*Last updated: Oct 31, 2020*
