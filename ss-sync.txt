@@ -263,9 +263,15 @@ if [[ "$STAGING_SITE" != "false" ]]; then
     mysql "$DB_NAME" < /tmp/staging.sql
 
     ## fix staging home and siteurl fields (no mass search/replace to avoid potential conflicts) ##
-    mysql --execute="UPDATE staging_options SET option_value='https://$SITE_DOMAIN/staging' WHERE option_name = 'home';"
-    mysql --execute="UPDATE staging_options SET option_value='https://$SITE_DOMAIN/staging' WHERE option_name = 'siteurl';"
+mysql --execute="UPDATE ${DB_NAME}.${DB_PREFIX}options SET option_value='https://$SITE_DOMAIN' WHERE option_name='home'";
+mysql --execute="UPDATE ${DB_NAME}.${DB_PREFIX}options SET option_value='https://$SITE_DOMAIN' WHERE option_name='siteurl'";
 
+mysql --execute="UPDATE ${DB_NAME}.staging_options SET option_value='https://$SITE_DOMAIN/staging' WHERE option_name='home'";
+mysql --execute="UPDATE ${DB_NAME}.staging_options SET option_value='https://$SITE_DOMAIN/staging' WHERE option_name='siteurl'";
+
+mysql --execute="UPDATE ${DB_NAME}.dev_options SET option_value='https://$SITE_DOMAIN/dev' WHERE option_name='home'";
+mysql --execute="UPDATE ${DB_NAME}.dev_options SET option_value='https://$SITE_DOMAIN/dev' WHERE option_name='siteurl'";
+    
     ## cleanup tmp files ##
     rm /var/www/meta/staging*.sql*
     rm /tmp/staging*.sql*
