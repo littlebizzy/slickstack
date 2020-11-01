@@ -232,7 +232,7 @@ fi
 redis-cli flushall &> /dev/null
 
 ####################################################################################################
-#### SS-Install-WordPress: Reset Permissions, Etc ##################################################
+#### SS-Install-WordPress: Etc ##################################################
 ####################################################################################################
 
 ## create directories if doesn't exist (will not overwrite) ##
@@ -247,9 +247,39 @@ if [ ! -f "/var/www/meta/.cherry" ]; then
 fi
 
 ## run ss-perms ##
-source /var/www/ss-perms
+# source /var/www/ss-perms
 
+####################################################################################################
+#### SS-Install-WordPress-Core: Reset Permissions (WordPress Core) #################################
+####################################################################################################
 
+## here we briefly reset permissions for WordPress Core files only to avoid errors etc ##
+## keep in mind that non-WordPress Core files are not affected by this snippet ##
+
+## production ##
+chown -R $SFTP_USER:wordpress /var/www/html
+chown -R www-data:wordpress /var/www/html/wp-content/temp
+chown -R www-data:wordpress /var/www/html/wp-content/upgrade
+chown www-data:wordpress /var/www/html/wp-content/blacklist.txt
+chmod 0775 /var/www/html ## 0775 (0755 not enough)
+chmod 0640 /var/www/html/wp-config.php  ## 0440 probably better (0660 not needed as wp-config protected in SlickStack)
+chmod 0440 /var/www/html/wp-content/blacklist.txt ## 0440 (read-only)
+find /var/www/html/ -type d -exec chmod 0775 {} \; ## 0775 (0755 not enough)
+find /var/www/html/ -type f -exec chmod 0664 {} \; ## 0664 (0644 not enough)
+
+## staging ##
+if [[ "$STAGING_SITE" != "false" ]]; then 
+    chown www-data:wordpress /var/www/html/staging/wp-content/blacklist.txt
+    chmod 0640 /var/www/html/staging/wp-config.php ## 0440 probably better (0660 not needed as wp-config protected in SlickStack)
+    chmod 0440 /var/www/html/staging/wp-content/blacklist.txt ## 0440 (read-only)
+fi
+
+## dev ##
+if [[ "$DEV_SITE" != "false" ]]; then 
+    chown www-data:wordpress /var/www/html/dev/wp-content/blacklist.txt
+    chmod 0640 /var/www/html/dev/wp-config.php ## 0440 probably better (0660 not needed as wp-config protected in SlickStack)
+    chmod 0440 /var/www/html/dev/wp-content/blacklist.txt ## 0440 (read-only)
+fi
 
 ####################################################################################################
 #### SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ###############
