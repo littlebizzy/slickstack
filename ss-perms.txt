@@ -246,8 +246,11 @@ if [ ! -f "/var/www/html/wp-content/blacklist.txt" ]; then touch "/var/www/html/
 if [ ! -f "/var/www/html/wp-content/functions.php" ]; then touch "/var/www/html/wp-content/functions.php"; fi
 
 ####################################################################################################
-#### SS-Perms: Reset Public HTML Directory Permissions #############################################
+#### SS-Perms: Reset Permissions (Public HTML + WordPress Core) ####################################
 ####################################################################################################
+
+## here we briefly reset permissions for WordPress Core files only to avoid errors etc ##
+## keep in mind that non-WordPress Core files are not affected by this snippet ##
 
 ## accessed by server for e.g. Cerbot but also by SFTP user for things like Stripe ##
 chown -R $SFTP_USER:www-data /var/www/html/.well-known
@@ -265,14 +268,14 @@ find /var/www/html/ -type d -exec chmod 0775 {} \; ## 0775 (0755 not enough)
 find /var/www/html/ -type f -exec chmod 0664 {} \; ## 0664 (0644 not enough)
 
 ## staging ##
-if [[ "$STAGING_SITE" == "true" ]]; then 
+if [[ "$STAGING_SITE" != "false" ]]; then 
     chown www-data:wordpress /var/www/html/staging/wp-content/blacklist.txt
     chmod 0640 /var/www/html/staging/wp-config.php ## 0440 probably better (0660 not needed as wp-config protected in SlickStack)
     chmod 0440 /var/www/html/staging/wp-content/blacklist.txt ## 0440 (read-only)
 fi
 
 ## dev ##
-if [[ "$DEV_SITE" == "true" ]]; then 
+if [[ "$DEV_SITE" != "false" ]]; then 
     chown www-data:wordpress /var/www/html/dev/wp-content/blacklist.txt
     chmod 0640 /var/www/html/dev/wp-config.php ## 0440 probably better (0660 not needed as wp-config protected in SlickStack)
     chmod 0440 /var/www/html/dev/wp-content/blacklist.txt ## 0440 (read-only)
