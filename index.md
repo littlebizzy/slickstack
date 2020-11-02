@@ -131,7 +131,8 @@ title: SlickStack (Public Mirrors)
 * https://unix.stackexchange.com/questions/603286/how-to-make-a-shell-script-as-portable-as-possible-posix-and-non-posix
 * https://www.infoq.com/articles/serverless-stalled/
 * https://utkusen.com/blog/security-by-obscurity-is-underrated.html
+* https://opensource.com/article/20/6/bash-source-command
 
 ----
 
-*Last updated: Oct 21, 2020*
+*Last updated: Nov 2, 2020*
