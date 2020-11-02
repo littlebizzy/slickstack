@@ -12,12 +12,15 @@ Prefix: SSCOMM
 */
 
 /** THIS LIGHTWEIGHT PHP SCRIPT HAS NO SQL QUERIES AND UPDATES DIRECTLY VIA SLICKSTACK */
+/** IT IS A REQUIRED MU (MUST-USE) PLUGIN FOR SLICKSTACK (DO NOT REMOVE IT) */
 
 /** ********************************************************************************************* */
 /** XXX Common: SlickStack Login Message (Appears On Backend Login Page) ************************ */
 /** ********************************************************************************************* */
 
-/** login message */
+/** this is a simple login page welcome message that we use to announce important things */
+/** most of the time this feature will only be activated in case of emergencies */
+
 function ss_login_message() {
 	return '<p class="message">Having trouble logging in? Please clear your browser cache and/or cookies for this site and try again. Thanks, and apologies! &mdash; <em>SlickStack</em></p>';
 }
@@ -28,8 +31,8 @@ add_filter('login_message', 'ss_login_message');
 /** XXX Common: SlickStack Dashboard (WP Admin) ************************************************* */
 /** ********************************************************************************************* */
 
-// this lightweight control panel diplays current SlickStack settings to admin users only
-// there are no SQL queries and all settings are controlled by defined constants
+/** this lightweight control panel diplays current SlickStack settings to admin users only */
+/** there are no SQL queries and settings are controlled by PHP defined constants */
 
 function ss_menu() {
     if (defined('SS_DASHBOARD') && (SS_DASHBOARD == false) ) {
@@ -282,12 +285,18 @@ function ss_environment_menu($admin_bar) {
     $ss_remove_staging_directory = '/staging';	
     $ss_remove_dev_directory = '/dev';	
     
+    $ss_staging_prefix = 'https://staging.';
     $ss_staging_directory = '/staging/';
+    $ss_dev_prefix = 'https://dev.';
     $ss_dev_directory = '/dev/';
     
-    $ss_staging_link = $ss_production_link . $ss_staging_directory;
-    // $ss_staging_link = https://staging.$ss_production_tld;
-    $ss_dev_link = $ss_production_link . $ss_dev_directory;
+    // $ss_staging_link = $ss_production_link . $ss_staging_directory;
+    
+    $ss_staging_link = str_replace('https://', 'https://staging.', $ss_production_link);
+    
+    // $ss_dev_link = $ss_production_link . $ss_dev_directory;
+    
+    $ss_dev_link = str_replace('https://', 'https://dev.', $ss_production_link);
     
     $ss_production_link_trimmed_staging = str_replace($ss_remove_staging_directory, '', $ss_production_link);
     $ss_dev_link_trimmed_staging = $ss_production_link_trimmed_staging . $ss_dev_directory;
