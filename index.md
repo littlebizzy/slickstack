@@ -34,6 +34,7 @@ title: SlickStack (Public Mirrors)
 * [ss-dos2unix](ss-dos2unix.txt)
 * [ss-dump](ss-dump.txt)
 * [ss-encrypt](ss-encrypt.txt)
+* [ss-functions](ss-functions.txt)
 * [ss-import](ss-import.txt)
 * [ss-install](ss-install.txt)
 * [ss-monitor](ss-monitor.txt)
@@ -135,4 +136,4 @@ title: SlickStack (Public Mirrors)
 
 ----
 
-*Last updated: Nov 2, 2020*
+*Last updated: Nov 3, 2020*
