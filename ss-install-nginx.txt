@@ -353,6 +353,44 @@ else
 fi
 
 ####################################################################################################
+#### SS-Install-Nginx: Install Nginx Server Block (Dev Subdomain) ##################################
+####################################################################################################
+
+## download latest server block (staging site) ##
+wget -O /tmp/server-block-dev http://mirrors.slickstack.io/nginx/server-block-dev.txt
+
+## replace site variables ##
+sed -i "s/@DOMAIN/${SITE_DOMAIN}/g" /tmp/server-block-dev
+sed -i "s/@SITE_TLD/${SITE_TLD}/g" /tmp/server-block-dev
+sed -i "s/@SITE_DOMAIN/${SITE_DOMAIN}/g" /tmp/server-block-dev
+sed -i "s/@CACHEVALID/${FCGI_CACHE_VALID}/g" /tmp/server-block-dev
+
+## Multisite domain mapping (optional) ##
+if [[ "$WP_MULTISITE_DOMAIN_MAPPING" == "true" ]]; then 
+   sed -i "s/#@WP_MULTISITE_DOMAIN_MAPPING# //g" /tmp/server-block-dev
+else
+    sed -i "s/#@WP_MULTISITE_DOMAIN_MAPPING_FALSE# //g" /tmp/server-block-dev
+fi
+
+## Multisite subdomains (optional) ##
+if [[ "$WP_MULTISITE_SUBDOMAINS" == "true" ]]; then 
+    sed -i "s/#@WP_MULTISITE_SUBDOMAINS# //g" /tmp/server-block-dev
+fi
+
+## FastCGI Cache ##
+if [[ "$FCGI_CACHE" == "false" ]]; then 
+    sed -i "s/@FCGI_CACHE/1/g" /tmp/server-block-dev
+else 
+    sed -i "s/@FCGI_CACHE/0/g" /tmp/server-block-dev
+fi
+
+## copy files to destinations ##
+cp /tmp/server-block-dev /etc/nginx/sites-available/dev.${SITE_TLD}
+
+## reset permissions ##
+chown root:root /etc/nginx/sites-available/dev.${SITE_TLD}
+
+####################################################################################################
 #### SS-Install-Nginx: Install Nginx Server Block (Staging Site) ###################################
 ####################################################################################################
 
@@ -360,11 +398,6 @@ fi
 wget -O /tmp/server-block-staging http://mirrors.slickstack.io/nginx/server-block-staging.txt
 
 ## replace site variables ##
-sed -i "s/@DOMAIN/${SITE_DOMAIN}/g" /tmp/server-block-staging
-sed -i "s/@SITE_TLD/${SITE_TLD}/g" /tmp/server-block-staging
-sed -i "s/@SITE_DOMAIN/${SITE_DOMAIN}/g" /tmp/server-block-staging
-sed -i "s/@CACHEVALID/${FCGI_CACHE_VALID}/g" /tmp/server-block-staging
-
 sed -i "s/@DOMAIN/${SITE_DOMAIN}/g" /tmp/server-block-staging
 sed -i "s/@SITE_TLD/${SITE_TLD}/g" /tmp/server-block-staging
 sed -i "s/@SITE_DOMAIN/${SITE_DOMAIN}/g" /tmp/server-block-staging
@@ -405,7 +438,6 @@ if [[ "$WP_MULTISITE" == "true" ]]; then
     # elif [[ "$WP_MULTISITE" == "true" ]] && [[ "$WP_MULTISITE_SUBDOMAINS" == "false" ]]; then 
 else 
     wget -O /tmp/default http://mirrors.slickstack.io/nginx/default-single-site.txt
-    wget -O /tmp/server-block-dev http://mirrors.slickstack.io/nginx/server-block-dev.txt
 fi
 
 ## replace site variables ##
@@ -414,42 +446,30 @@ sed -i "s/@SITE_TLD/${SITE_TLD}/g" /tmp/default
 sed -i "s/@SITE_DOMAIN/${SITE_DOMAIN}/g" /tmp/default
 sed -i "s/@CACHEVALID/${FCGI_CACHE_VALID}/g" /tmp/default
 
-sed -i "s/@DOMAIN/${SITE_DOMAIN}/g" /tmp/server-block-dev
-sed -i "s/@SITE_TLD/${SITE_TLD}/g" /tmp/server-block-dev
-sed -i "s/@SITE_DOMAIN/${SITE_DOMAIN}/g" /tmp/server-block-dev
-sed -i "s/@CACHEVALID/${FCGI_CACHE_VALID}/g" /tmp/server-block-dev
-
 ## Multisite domain mapping (optional) ##
 if [[ "$WP_MULTISITE_DOMAIN_MAPPING" == "true" ]]; then 
    sed -i "s/#@WP_MULTISITE_DOMAIN_MAPPING# //g" /tmp/default
-   sed -i "s/#@WP_MULTISITE_DOMAIN_MAPPING# //g" /tmp/server-block-dev
 else
     sed -i "s/#@WP_MULTISITE_DOMAIN_MAPPING_FALSE# //g" /tmp/default
-    sed -i "s/#@WP_MULTISITE_DOMAIN_MAPPING_FALSE# //g" /tmp/server-block-dev
 fi
 
 ## Multisite subdomains (optional) ##
 if [[ "$WP_MULTISITE_SUBDOMAINS" == "true" ]]; then 
     sed -i "s/#@WP_MULTISITE_SUBDOMAINS# //g" /tmp/default
-    sed -i "s/#@WP_MULTISITE_SUBDOMAINS# //g" /tmp/server-block-dev
 fi
 
 ## FastCGI Cache ##
 if [[ "$FCGI_CACHE" == "false" ]]; then 
     sed -i "s/@FCGI_CACHE/1/g" /tmp/default
-    sed -i "s/@FCGI_CACHE/1/g" /tmp/server-block-dev
 else 
     sed -i "s/@FCGI_CACHE/0/g" /tmp/default
-    sed -i "s/@FCGI_CACHE/0/g" /tmp/server-block-dev
 fi
 
 ## copy files to destinations ##
 cp /tmp/default /etc/nginx/sites-available/default
-# cp /tmp/server-block-dev /etc/nginx/sites-available/dev.${SITE_TLD}
 
 ## reset permissions ##
 chown root:root /etc/nginx/sites-available/default
-chown root:root /etc/nginx/sites-available/dev.${SITE_TLD}
 
 ####################################################################################################
 #### SS-Install-Nginx: Restart Nginx Service + Run SS-Encrypt ######################################
