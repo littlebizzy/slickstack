@@ -133,6 +133,15 @@ rm /etc/letsencrypt/live/*
 ## for stability reasons SlickStack deletes old Lets Encrypt certs and requests new certs ##
 ## this approach supports changing from WP single site to Multisite installs (etc) ##
 
+## STAGING SITES (SUBDOMAIN) ##
+certbot delete --cert-name staging.${SITE_TLD}
+certbot certonly --noninteractive --agree-tos --cert-name staging.${SITE_TLD} -d staging.${SITE_TLD} --register-unsafely-without-email --webroot -w /var/www/html/
+
+## DEV SITES (SUBDOMAIN) ##
+certbot delete --cert-name dev.${SITE_TLD}
+certbot certonly --noninteractive --agree-tos --cert-name dev.${SITE_TLD} -d dev.${SITE_TLD} --register-unsafely-without-email --webroot -w /var/www/html/
+
+
 ## SINGLE SITE CERTS + EMAIL ALERTS ##
 
 ## not a subdomain + contains www + email alerts ##
@@ -256,6 +265,8 @@ ln /etc/letsencrypt/live/${SITE_DOMAIN}/privkey.pem /etc/ssl/privkey.pem &> /dev
 ln /etc/letsencrypt/live/${SITE_DOMAIN}/chain.pem /etc/ssl/chain.pem &> /dev/null
 ln /etc/letsencrypt/live/${SITE_DOMAIN}/fullchain.pem /etc/ssl/fullchain.pem &> /dev/null
 ## need to add more complex rules for SITE_TLD symlinks too (depends on how the certs were generated above) ##
+
+## staging and dev sites next symlinks here
 
 ## modify live Nginx configuration if Certbot successful + preferred ##
 # if [[ "$SSL_TYPE" == "certbot" ]] && [[ -d  "/etc/letsencrypt/live" ]] && [[ -f  "/etc/ssl/cert.pem" ]]; then
