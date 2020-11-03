@@ -36,9 +36,10 @@ server {
 server {
     listen                 443 ssl http2;
     listen                 [::]:443 ssl http2 ipv6only=on;
-    server_name            @DOMAIN;
-    	if ($http_host != "@DOMAIN") {
-        	return 301            $scheme://@DOMAIN$request_uri;
+    server_name            @SITE_DOMAIN;
+    	# if ($http_host != "@DOMAIN") {
+	if ($http_host !~ "dev.@SITE_TLD|staging.@SITE_TLD|@SITE_DOMAIN") {
+        	return 301            $scheme://@SITE_DOMAIN$request_uri;
     	}
     
 ####################################################################################################
@@ -448,5 +449,9 @@ server {
 ## Ref: https://www.digitalocean.com/community/tutorials/understanding-nginx-server-and-location-block-selection-algorithms
 ## Ref: https://www.keycdn.com/support/nginx-location-directive
 ## Ref: https://community.easyengine.io/t/caching-of-feeds/868
+## Ref: https://www.nginx.com/resources/wiki/start/topics/depth/ifisevil/
+## Ref: https://serverfault.com/questions/857787/how-to-if-else-statement-with-nginx-conf
+## Ref: https://stackoverflow.com/questions/29756330/how-can-i-use-an-or-operator-in-an-nginx-if-statement
+## Ref: http://nginx.org/en/docs/http/ngx_http_rewrite_module.html
 
 ## SS_EOF
