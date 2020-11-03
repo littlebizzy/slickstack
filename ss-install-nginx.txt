@@ -70,8 +70,6 @@ fi
 #### SlickStack: Install + Configure Nginx (General Settings) ######################################
 ####################################################################################################
 
-## MODULE VERSION: Nginx 1.17.x
-
 ## here we install an optimized Nginx config designed for high traffic and CloudFlare ##
 ## FastCGI Cache and OpenSSL are included by default (noindex also supported) ##
 
@@ -355,10 +353,51 @@ else
 fi
 
 ####################################################################################################
-#### SlickStack: Install Nginx Servers Blocks (Supports Single Sites + Multisite) ##################
+#### SS-Install-Nginx: Install Nginx Server Block (Staging Site) ###################################
 ####################################################################################################
 
-## MODULE VERSION: Nginx 1.17.x
+## download latest server block (staging site) ##
+wget -O /tmp/server-block-staging http://mirrors.slickstack.io/nginx/server-block-staging.txt
+
+## replace site variables ##
+sed -i "s/@DOMAIN/${SITE_DOMAIN}/g" /tmp/server-block-staging
+sed -i "s/@SITE_TLD/${SITE_TLD}/g" /tmp/server-block-staging
+sed -i "s/@SITE_DOMAIN/${SITE_DOMAIN}/g" /tmp/server-block-staging
+sed -i "s/@CACHEVALID/${FCGI_CACHE_VALID}/g" /tmp/server-block-staging
+
+sed -i "s/@DOMAIN/${SITE_DOMAIN}/g" /tmp/server-block-staging
+sed -i "s/@SITE_TLD/${SITE_TLD}/g" /tmp/server-block-staging
+sed -i "s/@SITE_DOMAIN/${SITE_DOMAIN}/g" /tmp/server-block-staging
+sed -i "s/@CACHEVALID/${FCGI_CACHE_VALID}/g" /tmp/server-block-staging
+
+## Multisite domain mapping (optional) ##
+if [[ "$WP_MULTISITE_DOMAIN_MAPPING" == "true" ]]; then 
+   sed -i "s/#@WP_MULTISITE_DOMAIN_MAPPING# //g" /tmp/server-block-staging
+else
+    sed -i "s/#@WP_MULTISITE_DOMAIN_MAPPING_FALSE# //g" /tmp/server-block-staging
+fi
+
+## Multisite subdomains (optional) ##
+if [[ "$WP_MULTISITE_SUBDOMAINS" == "true" ]]; then 
+    sed -i "s/#@WP_MULTISITE_SUBDOMAINS# //g" /tmp/server-block-staging
+fi
+
+## FastCGI Cache ##
+if [[ "$FCGI_CACHE" == "false" ]]; then 
+    sed -i "s/@FCGI_CACHE/1/g" /tmp/server-block-staging
+else 
+    sed -i "s/@FCGI_CACHE/0/g" /tmp/server-block-staging
+fi
+
+## copy files to destinations ##
+cp /tmp/server-block-staging /etc/nginx/sites-available/staging.${SITE_TLD}
+
+## reset permissions ##
+chown root:root /etc/nginx/sites-available/staging.${SITE_TLD}
+
+####################################################################################################
+#### SlickStack: Install Nginx Servers Blocks (Supports Single Sites + Multisite) ##################
+####################################################################################################
 
 ## download latest server block boilerplate (single site / Multisite) ##
 if [[ "$WP_MULTISITE" == "true" ]]; then 
@@ -412,7 +451,11 @@ cp /tmp/default /etc/nginx/sites-available/default
 chown root:root /etc/nginx/sites-available/default
 chown root:root /etc/nginx/sites-available/dev.${SITE_TLD}
 
-## restart services ##
+####################################################################################################
+#### SS-Install-Nginx: Restart Nginx Service + Run SS-Encrypt ######################################
+####################################################################################################
+
+## restart Nginx ##
 /etc/init.d/nginx restart
 
 ## TEMP FIX TO AVOID ss-install-nginx from breaking Lets Encrypt certs ##
