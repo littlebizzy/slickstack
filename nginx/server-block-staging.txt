@@ -11,22 +11,6 @@
 ## SLICKSTACK SUPPORTS HTTPS-ONLY NGINX SERVER BLOCKS WITH HSTS ENABLED BY DEFAULT ##
 
 ####################################################################################################
-#### Server Block: Catch-All + Redirect To Canonical Domain ########################################
-####################################################################################################
-
-## here we force redirect any non-canonical requests to the canonical server block below ##
-## this vastly improves security, prevents IP snooping, SEO problems, and beyond ##
-
-server {
-    listen                 80 default_server;
-    listen                 443 ssl default_server;
-    listen                 [::]:80;
-    listen                 [::]:443 ssl;
-    server_name            _;
-    return 301             https://@DOMAIN$request_uri;
-}
-
-####################################################################################################
 #### Server Block: Canonical Domain (Single Website + Single Database Only) ########################
 ####################################################################################################
 
@@ -36,10 +20,7 @@ server {
 server {
     listen                 443 ssl http2;
     listen                 [::]:443 ssl http2 ipv6only=on;
-    server_name            @DOMAIN;
-    	if ($http_host != "@DOMAIN") {
-        	return 301            $scheme://@DOMAIN$request_uri;
-    	}
+    server_name            staging.@SITE_TLD;
     
 ####################################################################################################
 #### Server Block: Indexing + Public URI + Try Files Settings ######################################
@@ -181,103 +162,6 @@ server {
         fastcgi_cache_bypass $skip_cache;
         fastcgi_no_cache $skip_cache;
     }
-    
-####################################################################################################
-#### Server Block: Adminer (phpMyAdmin) Settings ###################################################
-####################################################################################################
-    
-    location ^~ /adminer {
-        ## limit access to one request per second per IP address
-        limit_req zone=adminer burst=1 nodelay;
-        alias /var/www/meta/adminer.php;
-        ## PHP-FPM routing must be re-included here to ensure processing ##
-        include /etc/nginx/fastcgi.conf;
-        try_files $uri =404;
-        fastcgi_split_path_info ^(.+\.php)(/.+)$;
-        fastcgi_pass 127.0.0.1:9000;
-        fastcgi_read_timeout 300;
-        fastcgi_index index.php;
-        fastcgi_cache off;
-    }
-    
-    location ^~ /phpmyadmin {
-        ## limit access to one request per 30 second per IP address
-        limit_req zone=phpmyadmin burst=1 nodelay;
-        alias /var/www/meta/adminer.php;
-        ## PHP-FPM routing must be re-included here to ensure processing ##
-        include /etc/nginx/fastcgi.conf;
-        try_files $uri =404;
-        fastcgi_split_path_info ^(.+\.php)(/.+)$;
-        fastcgi_pass 127.0.0.1:9000;
-        fastcgi_read_timeout 300;
-        fastcgi_index index.php;
-        fastcgi_cache off;
-    }
-    
-####################################################################################################
-#### Server Block: Staging URI Settings (Supports WP-Staging, Etc) #################################
-####################################################################################################
-    
-## staging sites are noindexed, FastCGI caching is disabled, and paths are hardcoded ## 
-## media files (uploads) are aliased to existing files from the production site ##
-    
-    location /staging/ {
-        ## first try files, then directories, otherwise query index ##
-        try_files $uri $uri/ /staging/index.php?$args;
-        ## tweak FastCGI Cache (needs to be improved with mild cache settings) ##
-        include /etc/nginx/fastcgi.conf;
-        fastcgi_split_path_info ^(.+\.php)(/.+)$;
-	fastcgi_pass 127.0.0.1:9000;
-        fastcgi_read_timeout 300;
-        fastcgi_index index.php;
-        fastcgi_cache off;
-	add_header X-Robots-Tag "noindex, nofollow, nosnippet, noarchive";
-	add_header X-Powered-By "SlickStack";
-        add_header Strict-Transport-Security "max-age=15552000" always; ## 180 days
-        add_header X-FastCGI-Cache $upstream_cache_status;
-        add_header X-Frame-Options SAMEORIGIN;
-        add_header X-Content-Type-Options nosniff;
-        add_header X-XSS-Protection "1; mode=block";
-        add_header Referrer-Policy "strict-origin-when-cross-origin";
-	add_header Permissions-Policy "accelerometer=(), ambient-light-sensor=(), autoplay=*, battery=(), camera=(), display-capture=*, document-domain=*, encrypted-media=*, fullscreen=*, geolocation=(self), gyroscope=(), layout-animations=*, legacy-image-formats=*, magnetometer=(), microphone=(self), midi=(), oversized-images=*, payment=*, picture-in-picture=*, publickey-credentials-get=*, sync-xhr=*, usb=(), vibrate=(), wake-lock=(), xr-spatial-tracking=()";
-    }
-    
-    # location ~ ^/staging/wp-content/uploads/(.*) {
-    #    return 302             https://@DOMAIN/wp-content/uploads/$1;
-    # }
-    
-    location ^~ /staging/wp-content/uploads/ {
-        alias /var/www/html/wp-content/uploads/;
-    }
-    
-    location /dev/ {
-        ## first try files, then directories, otherwise query index ##
-        try_files $uri $uri/ /dev/index.php?$args;
-        ## tweak FastCGI Cache (needs to be improved with mild cache settings) ##
-        include /etc/nginx/fastcgi.conf;
-        fastcgi_split_path_info ^(.+\.php)(/.+)$;
-	fastcgi_pass 127.0.0.1:9000;
-        fastcgi_read_timeout 300;
-        fastcgi_index index.php;
-        fastcgi_cache off;
-	add_header X-Robots-Tag "noindex, nofollow, nosnippet, noarchive";
-	add_header X-Powered-By "SlickStack";
-        add_header Strict-Transport-Security "max-age=15552000" always; ## 180 days
-        add_header X-FastCGI-Cache $upstream_cache_status;
-        add_header X-Frame-Options SAMEORIGIN;
-        add_header X-Content-Type-Options nosniff;
-        add_header X-XSS-Protection "1; mode=block";
-        add_header Referrer-Policy "strict-origin-when-cross-origin";
-	add_header Permissions-Policy "accelerometer=(), ambient-light-sensor=(), autoplay=*, battery=(), camera=(), display-capture=*, document-domain=*, encrypted-media=*, fullscreen=*, geolocation=(self), gyroscope=(), layout-animations=*, legacy-image-formats=*, magnetometer=(), microphone=(self), midi=(), oversized-images=*, payment=*, picture-in-picture=*, publickey-credentials-get=*, sync-xhr=*, usb=(), vibrate=(), wake-lock=(), xr-spatial-tracking=()";
-    }
-    
-    # location ~ ^/dev/wp-content/uploads/(.*) {
-    #    return 302             https://@DOMAIN/wp-content/uploads/$1;
-    # }
-    
-   # location ^~ /dev/wp-content/uploads/ {
-   #     alias /var/www/html/wp-content/uploads/;
-   # }
     
 ####################################################################################################
 #### Server Block: Static Resource Settings (Expiration Headers) ###################################
