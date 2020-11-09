@@ -14,7 +14,6 @@ title: Nginx (Public Mirrors)
 * server-block-dev
 * server-block-staging
 * server-block-production
-
 * [default-single-site](default-single-site.txt)
 * [default-multisite-subdomains](default-multisite-subdomains.txt)
 * default-multisite-subdirectories.txt
