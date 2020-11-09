@@ -63,7 +63,8 @@ title: Nginx (Public Mirrors)
 * [https://libre-software.net/lemp/](https://libre-software.net/lemp/)
 * [https://www.lowendtalk.com/discussion/7289/nginx-php-fpm-unix-socket-or-tcp-ip-for-fastcgi-pass](https://www.lowendtalk.com/discussion/7289/nginx-php-fpm-unix-socket-or-tcp-ip-for-fastcgi-pass)
 * [https://developer.mozilla.org/en-US/docs/Web/Security/Subresource_Integrity](https://developer.mozilla.org/en-US/docs/Web/Security/Subresource_Integrity)
+* https://www.nginx.com/blog/automating-installation-wordpress-with-nginx-unit-on-ubuntu/
 
 ----
 
-*Last updated: Aug 5, 2020*
+*Last updated: Nov 9, 2020*
