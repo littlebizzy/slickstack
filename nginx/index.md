@@ -11,6 +11,10 @@ title: Nginx (Public Mirrors)
 *Live configuration files and boilerplates used by current SlickStack installation that may be altered by LittleBizzy or Ubuntu for better performance.*
 
 * [nginx.conf](nginx-conf.txt)
+* server-block-dev
+* server-block-staging
+* server-block-production
+
 * [default-single-site](default-single-site.txt)
 * [default-multisite-subdomains](default-multisite-subdomains.txt)
 * default-multisite-subdirectories.txt
@@ -21,6 +25,7 @@ title: Nginx (Public Mirrors)
 
 #### nginx.conf
 
+* [nginx-conf-1.18.0.txt](nginx-conf-1.18.0.txt)
 * [nginx-conf-1.17.10.txt](nginx-conf-1.17.10.txt)
 * [nginx-conf-1.17.9.txt](nginx-conf-1.17.9.txt)
 * [nginx-conf-1.17.8.txt](nginx-conf-1.17.8.txt)
@@ -64,6 +69,9 @@ title: Nginx (Public Mirrors)
 * [https://www.lowendtalk.com/discussion/7289/nginx-php-fpm-unix-socket-or-tcp-ip-for-fastcgi-pass](https://www.lowendtalk.com/discussion/7289/nginx-php-fpm-unix-socket-or-tcp-ip-for-fastcgi-pass)
 * [https://developer.mozilla.org/en-US/docs/Web/Security/Subresource_Integrity](https://developer.mozilla.org/en-US/docs/Web/Security/Subresource_Integrity)
 * https://www.nginx.com/blog/automating-installation-wordpress-with-nginx-unit-on-ubuntu/
+* https://www.reddit.com/r/nginx/comments/4x21ut/sitesenabled_vs_sitesavailable_varwww/
+* https://serverfault.com/questions/527630/what-is-the-different-usages-for-sites-available-vs-the-conf-d-directory-for-ngi
+* https://serverfault.com/questions/83508/purpose-of-debian-sites-available-and-sites-enabled-dirs
 
 ----
 
