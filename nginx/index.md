@@ -72,6 +72,7 @@ title: Nginx (Public Mirrors)
 * https://www.reddit.com/r/nginx/comments/4x21ut/sitesenabled_vs_sitesavailable_varwww/
 * https://serverfault.com/questions/527630/what-is-the-different-usages-for-sites-available-vs-the-conf-d-directory-for-ngi
 * https://serverfault.com/questions/83508/purpose-of-debian-sites-available-and-sites-enabled-dirs
+* https://stackoverflow.com/questions/41303885/nginx-do-i-really-need-sites-available-and-sites-enabled-folders
 
 ----
 
