@@ -131,10 +131,12 @@ chmod 0644 /var/www/logs/*.log ## 6755 should also work
 chmod 0664 /var/www/meta/adminer.php &> /dev/null
 
 ####################################################################################################
-#### SS-Perms: Ensure Critical Public HTML Subdirectories + Files Exist ############################
+#### SS-Perms: Reset Permissions (Public HTML Directory) ###########################################
 ####################################################################################################
 
-## ensure critical directories exist (will not overwrite) ##
+## SNIPPET: ss-perms 
+
+## ensure critical files and directories exist (will not overwrite) ##
 mkdir /var/www/html
 mkdir /var/www/html/.well-known
 mkdir /var/www/html/.well-known/acme-challenge
@@ -153,18 +155,18 @@ mkdir /var/www/html/dev
 if [ ! -f "/var/www/html/wp-content/blacklist.txt" ]; then touch "/var/www/html/wp-content/blacklist.txt"; fi
 if [ ! -f "/var/www/html/wp-content/functions.php" ]; then touch "/var/www/html/wp-content/functions.php"; fi
 
+## accessed by server for e.g. Cerbot but also by SFTP user for things like Stripe ##
+chown -R $SFTP_USER:www-data /var/www/html/.well-known
+chmod 0755 /var/www/html/.well-known
+
 ####################################################################################################
-#### SS-Install-WordPress-Core: Reset Permissions (Public HTML + WordPress Core) ###################
+#### SS-Perms: Reset Permissions (WordPress Core) ##################################################
 ####################################################################################################
 
 ## SNIPPET: ss-perms, ss-install-wordpress-core
 
 ## here we briefly reset permissions for WordPress Core files only to avoid errors etc ##
 ## keep in mind that non-WordPress Core files are not affected by this snippet ##
-
-## accessed by server for e.g. Cerbot but also by SFTP user for things like Stripe ##
-chown -R $SFTP_USER:www-data /var/www/html/.well-known
-chmod 0755 /var/www/html/.well-known
 
 ## create directories if not exist (will not overwrite) ##
 mkdir /var/www/html/wp-content/temp
@@ -197,7 +199,7 @@ if [[ "$DEV_SITE" != "false" ]]; then
 fi
 
 ####################################################################################################
-#### SS-Install-WordPress-MU-Plugins: Reset MU (Must-Use) Plugins Permissions ######################
+#### SS-Perms: Reset Permissions (MU Plugins) ######################################################
 ####################################################################################################
 
 ## SNIPPET: ss-perms, ss-install-wordpress-mu-plugins
