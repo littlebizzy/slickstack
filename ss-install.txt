@@ -174,7 +174,7 @@ if [[ $DISK_FREE -lt 5242880 ]]; then # 10G = 10485760 / 5GB = 5242880
 fi
 
 ## ensure ss-config build matches ss-install build (if exists) ##
-if [[ -f "/var/www/ss-config" ]] && [[ "$SS_BUILD" != "NOV2020J" ]]; then 
+if [[ -f "/var/www/ss-config" ]] && [[ "$SS_BUILD" != "NOV2020K" ]]; then 
     echo -e ""
     echo -e "${YELLOW}It appears your ss-config file is outdated. Please run ss-update to get ${NOCOLOR}"
     echo -e "${YELLOW}the latest SlickStack build, and then run ss-install again.${NOCOLOR}"
@@ -264,7 +264,7 @@ if [[ ! -f "/var/www/ss-config" ]]; then
     
     ## PROMPT: choose sudo password (default = random) ##
     sudopass_random=$(openssl rand -hex 12)
-    read -t 300 -p "$(echo -e $LIGHTPURPLE"Choose sudo password (should be memorable): "$NORMAL)" -e -i ${sudopass_random} ss_var_sudo_password || ss_var_sudo_password=${sudopass_random}
+    read -t 300 -p "$(echo -e $LIGHTPURPLE"Choose sudo password (should be strong): "$NORMAL)" -e -i ${sudopass_random} ss_var_sudo_password || ss_var_sudo_password=${sudopass_random}
     # sed -i "s/@SUDO_PASSWORD/$(openssl rand -hex 12)/g" /tmp/config
     sed -i "s/@SUDO_PASSWORD/$ss_var_sudo_password/g" /tmp/config
     
@@ -300,7 +300,7 @@ if [[ ! -f "/var/www/ss-config" ]]; then
     
     ## PROMPT: choose SFTP password (default = random) ##
     sftp_pass_random=$(openssl rand -hex 12)
-    read -t 300 -p "$(echo -e $LIGHTPURPLE"Choose SFTP password (should be memorable): "$NORMAL)" -e -i ${sftp_pass_random} ss_var_sftp_password || ss_var_sftp_password=${sftp_pass_random}
+    read -t 300 -p "$(echo -e $LIGHTPURPLE"Choose SFTP password (should be strong): "$NORMAL)" -e -i ${sftp_pass_random} ss_var_sftp_password || ss_var_sftp_password=${sftp_pass_random}
     # sed -i "s/@SUDO_PASSWORD/$(openssl rand -hex 12)/g" /tmp/config
     sed -i "s/@SFTP_PASSWORD/$ss_var_sftp_password/g" /tmp/config
     
@@ -406,7 +406,7 @@ if [[ ! -f "/var/www/ss-config" ]]; then
     
     ## PROMPT: choose Cloudflare API email (otherwise user@example.com) ##
     # read -p 'Choose Cloudflare API email (e.g. user@example.com): ' ss_var_cloudflare_api_email
-    read -t 300 -p "$(echo -e $LIGHTPURPLE"Choose Cloudflare API email (account user): "$NORMAL)" -e -i 'user@example.com' ss_var_cloudflare_api_email || ss_var_cloudflare_api_email=user@example.com
+    read -t 300 -p "$(echo -e $LIGHTPURPLE"Choose Cloudflare API email (account profile): "$NORMAL)" -e -i 'user@example.com' ss_var_cloudflare_api_email || ss_var_cloudflare_api_email=user@example.com
     # read -p 'Choose Cloudflare API email (e.g. user@example.com): ' -e -i 'user@example.com' ss_var_cloudflare_api_email
     sed -i "s/@CLOUDFLARE_API_EMAIL/$ss_var_cloudflare_api_email/g" /tmp/config
     
@@ -423,7 +423,7 @@ if [[ ! -f "/var/www/ss-config" ]]; then
     printf "\n"
     
     ## PROMPT: enable staging site subdomain ##
-    read -t 300 -p "$(echo -e $LIGHTPURPLE"Enable staging site as subdomain: "$NORMAL)" -e -i 'false' ss_var_staging_site_subdomain || ss_var_staging_site_subdomain=false
+    read -t 300 -p "$(echo -e $LIGHTPURPLE"Enable staging site as subdomain: "$NORMAL)" -e -i 'true' ss_var_staging_site_subdomain || ss_var_staging_site_subdomain=true
     sed -i "s/@STAGING_SITE_SUBDOMAIN/$ss_var_staging_site_subdomain/g" /tmp/config
     
     ## new line ##
@@ -437,7 +437,7 @@ if [[ ! -f "/var/www/ss-config" ]]; then
     printf "\n"
     
     ## PROMPT: enable dev site subdomain ##
-    read -t 300 -p "$(echo -e $LIGHTPURPLE"Enable dev site as subdomain: "$NORMAL)" -e -i 'false' ss_var_dev_site_subdomain || ss_var_dev_site_subdomain=false
+    read -t 300 -p "$(echo -e $LIGHTPURPLE"Enable dev site as subdomain: "$NORMAL)" -e -i 'true' ss_var_dev_site_subdomain || ss_var_dev_site_subdomain=true
     sed -i "s/@DEV_SITE_SUBDOMAIN/$ss_var_dev_site_subdomain/g" /tmp/config
     
     ## new line ##
