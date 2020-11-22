@@ -72,7 +72,8 @@ title: Nginx (Public Mirrors)
 * https://serverfault.com/questions/527630/what-is-the-different-usages-for-sites-available-vs-the-conf-d-directory-for-ngi
 * https://serverfault.com/questions/83508/purpose-of-debian-sites-available-and-sites-enabled-dirs
 * https://stackoverflow.com/questions/41303885/nginx-do-i-really-need-sites-available-and-sites-enabled-folders
+* https://github.com/thewzrd/nginx-configs
 
 ----
 
-*Last updated: Nov 9, 2020*
+*Last updated: Nov 22, 2020*
