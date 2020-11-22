@@ -21,6 +21,9 @@ title: Adminer (Public Mirrors)
 * [adminer.php-4.7.7](adminer-4.7.7.txt)
 * [adminer.php-4.7.6](adminer-4.7.6.txt)
 * [adminer.php-4.7.5](adminer-4.7.5.txt)
+* [adminer.php-4.7.4](adminer-4.7.4.txt)
+* [adminer.php-4.7.3](adminer-4.7.3.txt)
+* [adminer.php-4.7.2](adminer-4.7.2.txt)
 
 ### Related Links
 
@@ -28,6 +31,9 @@ title: Adminer (Public Mirrors)
 
 * [https://www.adminer.org](https://www.adminer.org)
 * https://sourceforge.net/p/adminer/bugs-and-features/630/
+* https://github.com/vrana/adminer/releases/tag/v4.7.7
+* https://github.com/vrana/adminer
+* https://github.com/vrana/adminer/releases/download/v4.7.4/adminer-4.7.4.php
 
 ----
 
