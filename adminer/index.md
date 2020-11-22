@@ -39,4 +39,4 @@ title: Adminer (Public Mirrors)
 
 ----
 
-*Last updated: Aug 5, 2020*
+*Last updated: 23 Nov, 2020*
