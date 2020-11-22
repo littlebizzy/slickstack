@@ -18,13 +18,14 @@ title: Adminer (Public Mirrors)
 
 #### adminer.php
 
-* [adminer.php-4.7.7](adminer-4.7.7.txt)
-* [adminer.php-4.7.6](adminer-4.7.6.txt)
-* [adminer.php-4.7.5](adminer-4.7.5.txt)
-* [adminer.php-4.7.4](adminer-4.7.4.txt)
-* [adminer.php-4.7.3](adminer-4.7.3.txt)
-* [adminer.php-4.7.2](adminer-4.7.2.txt)
-* [adminer.php-4.7.1](adminer-4.7.1.txt)
+* [adminer-4.7.7.php](adminer-4.7.7.txt)
+* [adminer-4.7.6.php](adminer-4.7.6.txt)
+* [adminer-4.7.5.php](adminer-4.7.5.txt)
+* [adminer-4.7.4.php](adminer-4.7.4.txt)
+* [adminer-4.7.3.php](adminer-4.7.3.txt)
+* [adminer-4.7.2.php](adminer-4.7.2.txt)
+* [adminer-4.7.1.php](adminer-4.7.1.txt)
+* [adminer-4.7.0.php](adminer-4.7.0.txt)
 
 ### Related Links
 
