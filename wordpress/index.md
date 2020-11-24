@@ -8,8 +8,8 @@
 
 * [wordpress.zip](wordpress.zip)
 * [wp-config.txt](wp-config.txt)
-* [wp-config-staging.txt](wp-config-staging.txt)
 * [wp-config-dev.txt](wp-config-dev.txt)
+* [wp-config-staging.txt](wp-config-staging.txt)
 * [functions.txt](functions.txt)
 * [blacklist.txt](blacklist.txt)
 * [throwaway.zip](throwaway.zip)
@@ -166,7 +166,8 @@
 * https://wpengine.com/support/php-editor-errors-wordpress-4-9-higher/
 * https://heera.it/customize-admin-menu-bar-in-wordpress
 * https://make.wordpress.org/core/2020/07/24/new-wp_get_environment_type-function-in-wordpress-5-5/
+* https://code.tutsplus.com/tutorials/mastering-wp_comment_query--cms-23238
 
 ----
 
-*Last updated: Nov 1, 2020*
+*Last updated: Nov 24, 2020*
