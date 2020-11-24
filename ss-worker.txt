@@ -141,6 +141,13 @@ cp /tmp/blacklist.txt /var/www/html/wp-content/blacklist.txt
 chown www-data:wordpress /var/www/html/wp-content/blacklist.txt ## change to www-data:www-data when ss-perms fixed
 chmod 0440 /var/www/html/wp-content/blacklist.txt
 
+## NULL blacklist.txt if ss-config false (allows default SS MU plugin to be installed while still being able to disable plugin blacklist) ##
+if [[ "$SS_PLUGIN_BLACKLIST" == "false" ]]; then 
+cat /dev/null > /var/www/html/wp-content/blacklist.txt
+cat /dev/null > /var/www/html/dev/wp-content/blacklist.txt
+cat /dev/null > /var/www/html/staging/wp-content/blacklist.txt
+fi
+
 ####################################################################################################
 #### SS-Worker: Call WP-Cron Manually (Depends On SS-Config) #######################################
 ####################################################################################################
@@ -191,11 +198,6 @@ rm /tmp/blacklist*
 
 rm /var/www/html/dev/*
 
-
-## create directories if not exist (will not overwrite) ##
-mkdir /var/www/html/wp-content/temp
-mkdir /var/www/html/wp-content/uploads
-mkdir /var/www/html/wp-content/upgrade
 
 ## production ##
 chown -R $SFTP_USER:wordpress /var/www/html
