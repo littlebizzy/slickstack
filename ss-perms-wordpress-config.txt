@@ -1,0 +1,49 @@
+#!/bin/bash
+
+####################################################################################################
+#### author: SlickStack ############################################################################
+#### link: https://slickstack.io ###################################################################
+#### mirror: http://mirrors.slickstack.io/ss-perms-wordpress-config.txt ############################
+#### path: /var/www/ss-perms-wordpress-config ######################################################
+#### destination: n/a (not a boilerplate) ##########################################################
+#### purpose: Resets all file and user permissions for the WordPress Core files and folders ########
+#### module version: WordPress 5.5.x ###############################################################
+#### sourced by: ss-perms, ss-install-wordpress-core ###############################################
+####################################################################################################
+
+## include SlickStack configuration ##
+source /var/www/ss-config
+
+## include SlickStack functions ##
+source /var/www/ss-functions
+
+####################################################################################################
+#### SS-Perms: Reset Permissions (WordPress Core) ##################################################
+####################################################################################################
+
+## here we briefly reset permissions for WordPress Core files only to avoid errors etc ##
+## keep in mind that non-WordPress Core files are not affected by this snippet ##
+
+## production ##
+chown www-data:wordpress /var/www/html/wp-config.php
+chmod 0440 /var/www/html/wp-config.php ## 0440 probably better (0660 not needed as wp-config restricted in SlickStack and 0640 either)
+
+## staging ##
+if [[ "$STAGING_SITE" != "false" ]]; then 
+    chown www-data:wordpress /var/www/html/staging/wp-config.php
+    chmod 0440 /var/www/html/staging/wp-config.php ## 0440 probably better (0660 not needed as wp-config restricted in SlickStack and 0640 either)
+fi
+
+## dev ##
+if [[ "$DEV_SITE" != "false" ]]; then 
+    chown www-data:wordpress /var/www/html/dev/wp-config.php
+    chmod 0440 /var/www/html/dev/wp-config.php ## 0440 probably better (0660 not needed as wp-config restricted in SlickStack and 0640 either)
+fi
+
+####################################################################################################
+#### SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ###############
+####################################################################################################
+
+## Ref: 
+
+## SS_EOF
