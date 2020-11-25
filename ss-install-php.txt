@@ -7,7 +7,8 @@
 #### path: /var/www/ss-install-php #################################################################
 #### destination: n/a (not a boilerplate) ##########################################################
 #### purpose: Reinstalls the entire PHP-FPM module for SlickStack servers (idempotent) #############
-#### module version: Ubuntu 20.04 LTS + PHP-FPM 7.4.x ##############################################
+#### module version: PHP-FPM 7.4.x #################################################################
+#### sourced by: ss-install ########################################################################
 ####################################################################################################
 
 ## SS-CONFIG MUST BE PROPERLY CONFIGURED (AND CURRENT BUILD) BEFORE RUNNING SS-INSTALL ##
@@ -408,11 +409,16 @@ if [[ "${UBUNTU_VERSION}" = "18.04" ]]; then
     update-alternatives --set php /usr/bin/php7.2
 fi
 
-## reset permissions ##
-chown root:root /etc/php/7.4/fpm/php-fpm.conf
-chown root:root /etc/php/7.4/fpm/php.ini
-chown root:root /etc/php/7.4/cli/php.ini
-chown root:root /etc/php/7.4/fpm/pool.d/www.conf
+####################################################################################################
+#### SS-Perms: Reset Permissions (PHP-FPM) #########################################################
+####################################################################################################
+
+## run ss-perms-php ##
+source /var/www/ss-perms-php
+
+####################################################################################################
+#### SS-Perms: finish up #########################################################
+####################################################################################################
 
 ## restart services ##
 /etc/init.d/php*-fpm restart
