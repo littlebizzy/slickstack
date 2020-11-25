@@ -160,10 +160,6 @@ mkdir /var/www/html/wp-content/upgrade
 mkdir /var/www/html/staging
 mkdir /var/www/html/dev
 
-## ensure files exist (production only because ss-sync will copy to staging) ##
-if [ ! -f "/var/www/html/wp-content/blacklist.txt" ]; then touch "/var/www/html/wp-content/blacklist.txt"; fi
-if [ ! -f "/var/www/html/wp-content/functions.php" ]; then touch "/var/www/html/wp-content/functions.php"; fi
-
 ## accessed by server for e.g. Cerbot but also by SFTP user for things like Stripe ##
 chown -R $SFTP_USER:www-data /var/www/html/.well-known
 chmod 0755 /var/www/html/.well-known
@@ -217,6 +213,13 @@ source /var/www/ss-perms-redis
 ## run ss-perms-ufw ##
 source /var/www/ss-perms-ufw
 
+####################################################################################################
+#### SS-Perms: Reset Permissions (WP-CLI) ##########################################################
+####################################################################################################
+
+## run ss-perms-wordpress-cli ##
+source /var/www/ss-perms-wordpress-cli
+
 
 
 
@@ -225,8 +228,7 @@ mkdir /var/run/php
 
 ## always run WP-CLI as the www-data user (and allow SFTP user to run it) ##
 chown root:root /usr/local/bin/ &> /dev/null
-chown www-data:www-data /usr/local/bin/wp &> /dev/null
-chmod 0755 /usr/local/bin/wp &> /dev/null
+
 
 ####################################################################################################
 #### SS-Perms: Flush Redis (Object Cache) ##########################################################
