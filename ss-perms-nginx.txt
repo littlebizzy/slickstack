@@ -20,6 +20,9 @@ source /var/www/ss-functions
 #### SS-Perms-Nginx: Reset Permissions (Nginx) #####################################################
 ####################################################################################################
 
+## ensure cache directory exists (will not overwrite) ##
+mkdir /var/www/cache
+
 ## ensure files exist ##
 if [ ! -f "/etc/ssl/nginx.crt" ]; then touch "/etc/ssl/nginx.crt"; fi
 if [ ! -f "/etc/ssl/nginx.key" ]; then touch "/etc/ssl/nginx.key"; fi
@@ -33,6 +36,19 @@ chown root:root /etc/ssl/nginx.key &> /dev/null
 chmod -R 700 /etc/ssl/nginx.key &> /dev/null
 chown root:root /etc/ssl/nginx.pem &> /dev/null
 chmod -R 700 /etc/ssl/nginx.pem &> /dev/null
+
+## reset permissions ##
+chown www-data:www-data /var/www/cache
+chown root:root /etc/nginx/nginx.conf
+
+## reset permissions ##
+chown root:root /etc/nginx/sites-available/dev.${SITE_TLD}
+
+## reset permissions ##
+chown root:root /etc/nginx/sites-available/staging.${SITE_TLD}
+
+## reset permissions ##
+chown root:root /etc/nginx/sites-available/default
 
 ####################################################################################################
 #### SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ###############
