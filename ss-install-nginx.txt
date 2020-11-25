@@ -339,10 +339,6 @@ cp /tmp/nginx.conf /etc/nginx/nginx.conf
 ## ensure cache directory exists (will not overwrite) ##
 mkdir /var/www/cache
 
-## reset permissions ##
-chown www-data:www-data /var/www/cache
-chown root:root /etc/nginx/nginx.conf
-
 ## set TMPFS cache storage if enabled ##
 if [[ "$FCGI_CACHE_TMPFS" == "true" ]]; then
     mount -t tmpfs -o size=${FCGI_CACHE_MEMORY} tmpfs /var/www/cache
@@ -387,8 +383,7 @@ fi
 ## copy files to destinations ##
 cp /tmp/server-block-dev /etc/nginx/sites-available/dev.${SITE_TLD}
 
-## reset permissions ##
-chown root:root /etc/nginx/sites-available/dev.${SITE_TLD}
+
 
 ####################################################################################################
 #### SS-Install-Nginx: Install Nginx Server Block (Staging Site) ###################################
@@ -425,8 +420,7 @@ fi
 ## copy files to destinations ##
 cp /tmp/server-block-staging /etc/nginx/sites-available/staging.${SITE_TLD}
 
-## reset permissions ##
-chown root:root /etc/nginx/sites-available/staging.${SITE_TLD}
+
 
 ####################################################################################################
 #### SlickStack: Install Nginx Servers Blocks (Supports Single Sites + Multisite) ##################
@@ -468,8 +462,12 @@ fi
 ## copy files to destinations ##
 cp /tmp/default /etc/nginx/sites-available/default
 
-## reset permissions ##
-chown root:root /etc/nginx/sites-available/default
+####################################################################################################
+#### SS-Perms: Reset Permissions (Nginx) ###########################################################
+####################################################################################################
+
+## run ss-perms-nginx ##
+source /var/www/ss-perms-nginx
 
 ####################################################################################################
 #### SS-Install-Nginx: Restart Nginx Service + Run SS-Encrypt ######################################
