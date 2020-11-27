@@ -83,6 +83,20 @@ title: SlickStack (Public Mirrors)
 * [ss-install-wordpress-core](ss-install-wordpress-core.txt)
 * [ss-install-wordpress-mu-plugins](ss-install-wordpress-mu-plugins.txt)
 
+#### ss-perms subscripts
+
+* [ss-perms-adminer](ss-perms-adminer.txt)
+* [ss-perms-clamav](ss-perms-clamav.txt)
+* [ss-perms-mysql](ss-perms-mysql.txt)
+* [ss-perms-nginx](ss-perms-nginx.txt)
+* [ss-perms-php](ss-perms-php.txt)
+* [ss-perms-redis](ss-perms-redis.txt)
+* [ss-perms-ufw](ss-perms-ufw.txt)
+* [ss-perms-wordpress-cli](ss-perms-wordpress-cli.txt)
+* [ss-perms-wordpress-config](ss-perms-wordpress-config.txt)
+* [ss-perms-wordpress-core](ss-perms-wordpress-core.txt)
+* [ss-perms-wordpress-mu-plugins](ss-perms-wordpress-mu-plugins.txt)
+
 #### ss-config-sample (used by ss-install to create ss-config)
 
 * [ss-config-sample](ss-config-sample.txt)
@@ -137,4 +151,4 @@ title: SlickStack (Public Mirrors)
 
 ----
 
-*Last updated: Nov 22, 2020*
+*Last updated: Nov 27, 2020*
