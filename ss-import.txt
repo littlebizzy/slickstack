@@ -6,8 +6,9 @@
 #### mirror: http://mirrors.slickstack.io/ss-import.txt ############################################
 #### path: /var/www/ss-import ######################################################################
 #### destination: n/a (not a boilerplate) ##########################################################
-#### purpose: Imports and overwrites import.sql and import.zip (tar, tar.gz) on demand only ########
-#### module version: Ubuntu 20.04 LTS + MySQL 8.0.x ################################################
+#### purpose: Imports and overwrites import.sql and import.zip (tar, tar.gz) on-demand only ########
+#### module version: Ubuntu 20.04 LTS + MySQL 8.0.x + WordPress 5.5.x ##############################
+#### sourced by: n/a ###############################################################################
 ####################################################################################################
 
 ## include SlickStack configuration ##
@@ -22,7 +23,7 @@ source /var/www/ss-functions
 
 
 ####################################################################################################
-#### SS-Import: Import Database + Static Files Archives (Overwrites Data) ##########################
+#### SS-Import: Import Database (Overwrites Data) ##################################################
 ####################################################################################################
 
 ## MESSAGE ##
@@ -31,25 +32,30 @@ echo -e "${LIGHTPURPLE}Importing (and overwriting) production files and database
 ## backup database before proceeding ##
 source /var/www/ss-dump
 
-## reset permissions ##
 chown -R $SFTP_USER:www-data /var/www/meta/import.sql
 chmod 6775 /var/www/meta/import.sql
 chown -R $SFTP_USER:www-data /var/www/meta/import.sql.zip
 chmod 6775 /var/www/meta/import.sql.zip
 chown -R $SFTP_USER:www-data /var/www/meta/import.sql.gz
 chmod 6775 /var/www/meta/import.sql.gz
-chown -R $SFTP_USER:www-data /var/www/meta/import.zip
-chmod 6775 /var/www/meta/import.zip
-chown -R $SFTP_USER:www-data /var/www/meta/import.tar
-chmod 6775 /var/www/meta/import.tar
-chown -R $SFTP_USER:www-data /var/www/meta/import.tar.gz
-chmod 6775 /var/www/meta/import.tar.gz
 
 ## prepare MySQL root password (suppresses MySQL security warnings) ##
 export MYSQL_PWD=$DB_PASSWORD_ROOT
 
 ## import (overwite) production database ##
 # mysql --user=root --host="$DB_HOST" --protocol=tcp --port=3306 --flush-privileges --force "$DB_NAME" < /var/www/meta/import.sql
+
+####################################################################################################
+#### SS-Import: Import Static Files (Overwrites Data) ##############################################
+####################################################################################################
+
+## reset permissions ##
+chown -R $SFTP_USER:www-data /var/www/meta/import.zip
+chmod 6775 /var/www/meta/import.zip
+chown -R $SFTP_USER:www-data /var/www/meta/import.tar
+chmod 6775 /var/www/meta/import.tar
+chown -R $SFTP_USER:www-data /var/www/meta/import.tar.gz
+chmod 6775 /var/www/meta/import.tar.gz
 
 ## import (overwrite) static files (filename hierarchy will choose best archive format) ##
 # unzip /var/www/meta/migrate.zip
@@ -62,3 +68,6 @@ export MYSQL_PWD=$DB_PASSWORD_ROOT
 
 ## Ref: https://github.com/littlebizzy/slickstack/blob/master/ss-dump.txt
 ## Ref: https://collegetimes.co/lemp-server/
+
+## SS_EOF
+
