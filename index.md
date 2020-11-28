@@ -116,7 +116,7 @@ title: SlickStack (Public Mirrors)
 * [ss-perms-wordpress-core](ss-perms-wordpress-core.txt)
 * [ss-perms-wordpress-mu-plugins](ss-perms-wordpress-mu-plugins.txt)
 
-#### ss-config-sample (used by ss-install to create ss-config)
+#### ss-config-sample (used by ss-install setup wizard to create ss-config unless exists already)
 
 * [ss-config-sample](ss-config-sample.txt)
 
