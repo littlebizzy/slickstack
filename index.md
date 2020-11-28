@@ -83,7 +83,7 @@ title: SlickStack (Public Mirrors)
 * [ss-install-wordpress-core](ss-install-wordpress-core.txt)
 * [ss-install-wordpress-mu-plugins](ss-install-wordpress-mu-plugins.txt)
 
-#### ss-perms subscripts
+#### ss-perms subscripts (to reset module permissions)
 
 * [ss-perms-adminer](ss-perms-adminer.txt)
 * [ss-perms-clamav](ss-perms-clamav.txt)
