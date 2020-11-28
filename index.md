@@ -167,7 +167,8 @@ title: SlickStack (Public Mirrors)
 * https://www.infoq.com/articles/serverless-stalled/
 * https://utkusen.com/blog/security-by-obscurity-is-underrated.html
 * https://opensource.com/article/20/6/bash-source-command
+* https://medium.com/@gabriel_wilkes/why-tech-groups-can-get-away-with-using-slack-for-free-but-open-source-projects-and-businesses-of-96c427aaefbb
 
 ----
 
-*Last updated: Nov 28, 2020*
+*Last updated: Nov 29, 2020*
