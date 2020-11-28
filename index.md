@@ -100,9 +100,11 @@ title: SlickStack (Public Mirrors)
 * [ss-perms-opencart-config](ss-perms-opencart-config.txt)
 * [ss-perms-opencart-core](ss-perms-opencart-core.txt)
 * [ss-perms-php](ss-perms-php.txt)
+* [ss-perms-postfix](ss-perms-postfix.txt)
 * [ss-perms-prestashop-config](ss-perms-prestashop-config.txt)
 * [ss-perms-prestashop-core](ss-perms-prestashop-core.txt)
 * [ss-perms-redis](ss-perms-redis.txt)
+* [ss-perms-ubuntu-crontab](ss-perms-ubuntu-crontab.txt)
 * [ss-perms-ufw](ss-perms-ufw.txt)
 * [ss-perms-wordpress-cli](ss-perms-wordpress-cli.txt)
 * [ss-perms-wordpress-config](ss-perms-wordpress-config.txt)
@@ -163,4 +165,4 @@ title: SlickStack (Public Mirrors)
 
 ----
 
-*Last updated: Nov 27, 2020*
+*Last updated: Nov 28, 2020*
