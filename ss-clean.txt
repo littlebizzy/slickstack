@@ -8,6 +8,7 @@
 #### destination: n/a (not a boilerplate) ##########################################################
 #### purpose: Cleans up various unsafe and unnecessary files on the SlickStack server ##############
 #### module version: Ubuntu 20.04 LTS ##############################################################
+#### sourced by: (ss cron jobs) ####################################################################
 ####################################################################################################
 
 ## CERTAIN WP PLUGINS WILL BE FORCE-DELETED: https://slickstack.io/faq/blacklisted-plugins ##
@@ -37,7 +38,16 @@ cat /dev/null > /home/${SFTP_USER}/.bash_history
 
 ## only if STAGING_SITE explicity false in ss-config ##
 if [[ "$STAGING_SITE" == "false" ]]; then
-    rm /var/www/html/staging*
+    rm /var/www/html/staging/
+fi
+
+
+####################################################################################################
+#### SS-Clean: Delete MySQL Directory Backup If Not Explicity Enabled ##############################
+####################################################################################################
+
+if [[ "$SS_DUMP_MYSQL_FILES" != "true" ]]; then 
+    rm /var/www/meta/mysql.bak/
 fi
 
 ####################################################################################################
