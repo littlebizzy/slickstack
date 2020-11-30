@@ -1033,11 +1033,8 @@ rm /tmp/virtual-robotstxt*
 #### SS-Muplugs: Reset PHP OPcache (Bash Script Workaround) ########################################
 ####################################################################################################
 
-## creative way to reset OPcache using temporary PHP script ##
-RANDOM_RESET_OPCACHE=$(openssl rand -hex 12)
-echo "<?php opcache_reset(); ?>" > /var/www/html/purge-${RANDOM_RESET_OPCACHE}.php
-/usr/bin/php /var/www/html/purge-${RANDOM_RESET_OPCACHE}.php
-rm /var/www/html/purge-${RANDOM_RESET_OPCACHE}.php
+## run ss-purge-opcache ##
+source /var/www/ss-purge-opcache
 
 ####################################################################################################
 #### SS-Purge: Delete All Transients From MySQL Database ###########################################
@@ -1046,23 +1043,15 @@ rm /var/www/html/purge-${RANDOM_RESET_OPCACHE}.php
 ## manually deletes all transients (temporary query cache data) from WordPress database ##
 ## this is a more forceful approach than simply purging the Redis object cache ##
 
-## for MySQL 8.0 if server is running Ubuntu 20.04 ##
-if [[ "${UBUNTU_VERSION}" = "20.04" || -z "${UBUNTU_VERSION}" ]]; then 
-    mysql --execute="DELETE FROM ${DB_NAME}.${DB_PREFIX}options WHERE option_name LIKE ('%\_transient\_%');"
-fi
-
-## for MySQL 5.7 if server is running Ubuntu 18.04 ##
-if [[ "${UBUNTU_VERSION}" = "18.04" ]]; then
-     mysql --user=root --password=$DB_PASSWORD_ROOT --host=localhost --protocol=socket --port=3306 --force --execute="DELETE FROM ${DB_NAME}.${DB_PREFIX}options WHERE option_name LIKE ('%\_transient\_%');"
-     mysql --user=root --password=$DB_PASSWORD_ROOT --host=127.0.0.1 --protocol=tcp --port=3306 --force --execute="DELETE FROM ${DB_NAME}.${DB_PREFIX}options WHERE option_name LIKE ('%\_transient\_%');"
-fi
+## run ss-purge-transients ##
+source /var/www/ss-purge-transients
 
 ####################################################################################################
 #### SS-Muplugs: Flush Redis Object Cache ##########################################################
 ####################################################################################################
 
-## flush Redis server (suppress CLI messages) ##
-redis-cli flushall &> /dev/null
+## run ss-purge-redis ##
+source /var/www/ss-purge-redis
 
 ####################################################################################################
 #### SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ###############
