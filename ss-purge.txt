@@ -8,6 +8,7 @@
 #### destination: n/a (not a boilerplate) ##########################################################
 #### purpose: Clears all caches i.e. FastCGI (Nginx), PHP OPcache, Redis, and WP transients ########
 #### module version: Ubuntu 20.04 LTS + MySQL 8.0.x + PHP-FPM 7.4.x + Redis 5.0.x ##################
+#### sourced by: (many ss core scripts) ############################################################
 ####################################################################################################
 
 ## RUNNING SS-PURGE DURING TRAFFIC SPIKES MIGHT CAUSE SUDDEN STRESS TO SERVER RESOURCES ##
@@ -16,100 +17,8 @@
 ## include SlickStack configuration ##
 source /var/www/ss-config
 
-####################################################################################################
-#### SlickStack: Critical Bash Functions (Aliases) For This Script To Work #########################
-####################################################################################################
-
-## the below functions are hardcoded into every SlickStack script to ensure reliability ##
-## this also speeds up processing times by avoiding repeated inline commands ##
-
-## variables ##
-UBUNTU_VERSION=`lsb_release -rs`
-
-## apt alias flags ##
-function apt {
-    export DEBIAN_FRONTEND=noninteractive
-    export DEBIAN_PRIORITY=critical
-    export PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'
-    command /usr/bin/apt --yes --quiet --option Dpkg::Options::=--force-confold --option Dpkg::Options::=--force-confdef "$@"
-}
-
-## add-apt-repository alias flags ##
-function add-apt-repository {
-    export DEBIAN_FRONTEND=noninteractive
-    export DEBIAN_PRIORITY=critical
-    export PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'
-    command /usr/bin/add-apt-repository --yes "$@"
-}
-
-## wget alias flags ##
-function wget {
-    command wget --no-check-certificate --no-cache --no-cookies --tries=3 --timeout=15 "$@"
-}
-
-## mysql alias flags ##
-function mysql {
-    command mysql --user=root --host=localhost --protocol=socket --port=3306 --force "$@"
-}
-
-## cp alias flags ##
-function cp {
-    command cp -R -f -d --no-preserve=mode,ownership "$@"
-}
-
-## rsync alias flags ##
-function rsync {
-    command rsync -aI --ignore-errors "$@"
-}
-
-## unzip alias flags ##
-function unzip {
-    command unzip -o "$@"
-}
-
-## mkdir alias flags ##
-function mkdir {
-    command mkdir -p "$@"
-}
-
-## rm alias flags ##
-function rm {
-    command rm -R -f "$@"
-}
-
-## ln alias flags ##
-function ln {
-    command ln -s -f "$@"
-}
-
-####################################################################################################
-#### SlickStack: Pretty Colors Make The Shell More Pleasing ########################################
-####################################################################################################
-
-## these color variables help maintain cleaner and prettier Bash scripts in SlickStack ##
-## we substitute e.g. ${BLUE} within an echo line then use ${NOCOLOR} to revert ##
-
-## pretty Bash colors ##
-NOCOLOR='\033[0m'
-DARKRED='\033[0;31m'
-LIGHTRED='\033[1;31m'
-ORANGE='\033[0;33m'
-YELLOW='\033[1;33m'
-DARKGREEN='\033[0;32m'
-LIGHTGREEN='\033[1;32m'
-DARKCYAN='\033[0;36m'
-LIGHTCYAN='\033[1;36m'
-DARKBLUE='\033[0;34m'
-LIGHTBLUE='\033[1;34m'
-DARKPURPLE='\033[0;35m'
-LIGHTPURPLE='\033[1;35m'
-DARKGRAY='\033[1;30m'
-LIGHTGRAY='\033[0;37m'
-WHITE='\033[1;37m'
-
-## pretty Bash styles ##
-BOLD=$(tput bold)
-NORMAL=$(tput sgr0)
+## include SlickStack functions ##
+source /var/www/ss-functions
 
 ####################################################################################################
 #### SS-Purge: PROCEED MESSAGE #####################################################################
@@ -119,21 +28,11 @@ NORMAL=$(tput sgr0)
 echo -e "${LIGHTPURPLE}SS-PURGE: Purging all caches (PHP OPcache, WP transients, Redis object cache, and FastCGI (Nginx) cache...${NOCOLOR}" >&2
 
 ####################################################################################################
-#### SS-Purge: Reset PHP OPcache (Bash Script Workaround) ##########################################
+#### SS-Purge: Purge (Reset) PHP OPcache ###########################################################
 ####################################################################################################
 
-## manually delete OPcache file cache ##
-# rm /var/www/cache/opcache/*
-
-## creative way to reset OPcache using temporary PHP script ##
-RANDOM_RESET_OPCACHE=$(openssl rand -hex 12)
-echo "<?php opcache_reset(); ?>" > /var/www/html/purge-${RANDOM_RESET_OPCACHE}.php
-/usr/bin/php /var/www/html/purge-${RANDOM_RESET_OPCACHE}.php
-rm /var/www/html/purge-${RANDOM_RESET_OPCACHE}.php
-# rm /var/www/html/purge-* ## better
-
-## manually delete OPcache file cache (again) ##
-# rm /var/www/cache/opcache/*
+## run ss-purge-opcache ##
+source /var/www/ss-purge-opcache
 
 ####################################################################################################
 #### SS-Purge: Delete All Transients From MySQL Database ###########################################
@@ -142,16 +41,8 @@ rm /var/www/html/purge-${RANDOM_RESET_OPCACHE}.php
 ## manually deletes all transients (temporary query cache data) from WordPress database ##
 ## this is a more forceful approach than simply purging the Redis object cache ##
 
-## for MySQL 8.0 if server is running Ubuntu 20.04 ##
-if [[ "${UBUNTU_VERSION}" = "20.04" || -z "${UBUNTU_VERSION}" ]]; then 
-    mysql --execute="DELETE FROM ${DB_NAME}.${DB_PREFIX}options WHERE option_name LIKE ('%\_transient\_%');"
-fi
-
-## for MySQL 5.7 if server is running Ubuntu 18.04 ##
-if [[ "${UBUNTU_VERSION}" = "18.04" ]]; then
-     mysql --user=root --password=$DB_PASSWORD_ROOT --host=localhost --protocol=socket --port=3306 --force --execute="DELETE FROM ${DB_NAME}.${DB_PREFIX}options WHERE option_name LIKE ('%\_transient\_%');"
-     mysql --user=root --password=$DB_PASSWORD_ROOT --host=127.0.0.1 --protocol=tcp --port=3306 --force --execute="DELETE FROM ${DB_NAME}.${DB_PREFIX}options WHERE option_name LIKE ('%\_transient\_%');"
-fi
+## run ss-purge-transients ##
+source /var/www/ss-purge-transients
 
 ####################################################################################################
 #### SS-Purge: Flush Redis (Object Cache i.e. Transients) ##########################################
@@ -160,17 +51,15 @@ fi
 ## when a persistent object cache is installed in WordPress it retains all WP transients ##
 ## therefore flushing Redis is similar to manually deleting WP transients in MySQL ##
 
-## flush Redis object cache using redis-cli ##
-redis-cli flushall &> /dev/null
+## run ss-purge-redis ##
+source /var/www/ss-purge-redis
 
 ####################################################################################################
 ### SS-Purge: Clear Nginx FastCGI Cache (Deletes All Cache Files On Disk / TMPFS) ##################
 ####################################################################################################
 
-## here we manually delete all FastCGI cache files without touching OPcache file cache ##
-## when running TMPFS this script clears the FastCGI cache files from RAM memory ##
-
-find /var/www/cache/ -not -path "*/opcache*" -type f -delete
+## run ss-purge-nginx ##
+source /var/www/ss-purge-nginx
 
 ####################################################################################################
 #### SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ###############
