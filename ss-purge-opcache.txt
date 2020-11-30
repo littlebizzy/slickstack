@@ -1,0 +1,60 @@
+#!/bin/bash
+
+####################################################################################################
+#### author: SlickStack ############################################################################
+#### link: https://slickstack.io ###################################################################
+#### mirror: http://mirrors.slickstack.io/ss-purge-opcache.txt #####################################
+#### path: /var/www/ss-purge-opcache ###############################################################
+#### destination: n/a (not a boilerplate) ##########################################################
+#### purpose: Clears all caches i.e. FastCGI (Nginx), PHP OPcache, Redis, and WP transients ########
+#### module version: Ubuntu 20.04 LTS + MySQL 8.0.x + PHP-FPM 7.4.x + Redis 5.0.x ##################
+#### sourced by: ss-purge (and certain ss core scripts) ############################################
+####################################################################################################
+
+## RUNNING SS-PURGE DURING TRAFFIC SPIKES MIGHT CAUSE SUDDEN STRESS TO SERVER RESOURCES ##
+## KEEP IN MIND THAT FASTCGI CACHE IS DISABLED ALREADY ON STAGING SUBDIRECTORIES ##
+
+## include SlickStack configuration ##
+source /var/www/ss-config
+
+## include SlickStack functions ##
+source /var/www/ss-functions
+
+####################################################################################################
+#### SS-Purge: Reset PHP OPcache (Bash Script Workaround) ##########################################
+####################################################################################################
+
+## manually delete OPcache file cache ##
+# rm /var/www/cache/opcache/*
+
+## creative way to reset OPcache using temporary PHP script ##
+RANDOM_RESET_OPCACHE=$(openssl rand -hex 12)
+echo "<?php opcache_reset(); ?>" > /var/www/html/purge-${RANDOM_RESET_OPCACHE}.php
+/usr/bin/php /var/www/html/purge-${RANDOM_RESET_OPCACHE}.php
+rm /var/www/html/purge-${RANDOM_RESET_OPCACHE}.php
+# rm /var/www/html/purge-* ## better
+
+## manually delete OPcache file cache (again) ##
+# rm /var/www/cache/opcache/*
+
+####################################################################################################
+#### SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ###############
+####################################################################################################
+
+## Ref: https://www.php.net/manual/en/function.opcache-reset.php#121513
+## Ref: https://stackoverflow.com/questions/5506913/bash-script-to-run-php-script
+## Ref: https://coderwall.com/p/yrqrkw/delete-all-existing-wordpress-transients-in-mysql-database
+## Ref: https://stackoverflow.com/questions/10422574/can-i-remove-transients-in-the-wp-options-table-of-my-wordpress-install
+## Ref: https://wordpress.stackexchange.com/questions/73477/is-there-any-danger-in-deleting-all-transients
+## Ref: https://stackoverflow.com/questions/20033648/how-to-run-mysql-command-on-bash
+## Ref: https://serverfault.com/questions/337818/how-to-force-mysql-to-connect-by-tcp-instead-of-a-unix-socket
+## Ref: https://stackoverflow.com/questions/33067909/bash-variable-under-a-mysql-query
+## Ref: https://dev.mysql.com/doc/refman/5.7/en/examples.html
+## Ref: https://stackoverflow.com/questions/25044817/zend-opcache-opcache-enable-cli-1-or-0-what-does-it-do#comment91052089_35880017
+## Ref: https://codex.wordpress.org/Class_Reference/WP_Object_Cache
+## Ref: https://pressidium.com/blog/2017/wordpress-object-caching-redis-memcached-and-native-apis/
+## Ref: https://pressjitsu.com/blog/transient-cache-alternatives/
+## Ref: https://unix.stackexchange.com/questions/87258/delete-all-files-except-in-a-certain-subdirectory-with-find
+## Ref: https://github.com/littlebizzy/slickstack/issues/57
+
+## SS_EOF
