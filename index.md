@@ -50,10 +50,6 @@ title: SlickStack (Public Mirrors)
 * [ss-update](ss-update.txt)
 * [ss-worker](ss-worker.txt)
 
-#### ss-config-sample (used by ss-install wizard to create ss-config)
-
-* [ss-config-sample](ss-config-sample.txt)
-
 #### ss-install subscripts (to install modules)
 
 * [ss-install-adminer](ss-install-adminer.txt)
@@ -126,6 +122,10 @@ title: SlickStack (Public Mirrors)
 * [ss-purge-opcache](ss-purge-opcache.txt)
 * [ss-purge-redis](ss-purge-redis.txt)
 * [ss-purge-transients](ss-purge-transients.txt)
+
+#### ss-config-sample (used by ss-install to create ss-config)
+
+* [ss-config-sample](ss-config-sample.txt)
 
 ### Core Modules
 
