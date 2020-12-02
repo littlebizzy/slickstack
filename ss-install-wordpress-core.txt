@@ -48,70 +48,132 @@ chmod 6775 /var/www/html/dev
 ## download latest (patched) WordPress version ##
 wget -O /tmp/wordpress.zip http://mirrors.slickstack.io/wordpress/wordpress.zip
 
-## install WordPress to production (web root) directory ##
+####################################################################################################
+#### SS-Install-WordPress-Core: Cleanup Files + Install WordPress Core (Production) ################
+####################################################################################################
 
-if [[ -f "/tmp/wordpress.zip" ]]; then
-    rm /var/www/html/wp-admin
-    rm /var/www/html/wp-includes
-    # find /var/www/html/ -maxdepth 1 -type f ! -name "wp-config.php" -name "*.php" -delete 
-    # cd /var/www/html/ && find . -type f ! -name "wp-config.php" -name "*.php" -delete 
-fi
+## this installation process removes outdated WordPress Core files or potential malware ##
+## it is not foolproof but it should address the majority of common problems ##
 
+## copy zip to production ##
 cp /tmp/wordpress.zip /var/www/html
 unzip /var/www/html/wordpress.zip -d /var/www/html
 chown -R www-data:wordpress /var/www/html/wordpress
 chmod 775 /var/www/html/wordpress
-rm /var/www/html/wordpress/wp-content/plugins/akismet*
-rm /var/www/html/wordpress/wp-content/plugins/hello*
-rm /var/www/html/wordpress/wp-content/themes/twenty*
+
+## cleanup old files and potential malware unless disabled ##
+if [[ -f "/tmp/wordpress.zip" ]] && [[ "$SS_INSTALL_WORDPRESS_CORE_DELETE_WP_ADMIN" != "false" ]]; then
+    rm /var/www/html/wp-admin
+fi
+
+if [[ -f "/tmp/wordpress.zip" ]] && [[ "$SS_INSTALL_WORDPRESS_CORE_DELETE_WP_INCLUDES" != "false" ]]; then
+    rm /var/www/html/wp-includes
+fi
+
+if [[ -f "/tmp/wordpress.zip" ]] && [[ "$SS_INSTALL_WORDPRESS_CORE_DELETE_BUNDLED_PLUGINS" != "false" ]]; then
+    rm /var/www/html/wordpress/wp-content/plugins/akismet*
+    rm /var/www/html/wordpress/wp-content/plugins/hello*
+fi
+
+if [[ -f "/tmp/wordpress.zip" ]] && [[ "$SS_INSTALL_WORDPRESS_CORE_DELETE_BUNDLED_THEMES" != "false" ]]; then
+    rm /var/www/html/wordpress/wp-content/themes/twenty*
+fi
+
+if [[ -f "/tmp/wordpress.zip" ]] && [[ "$SS_INSTALL_WORDPRESS_CORE_DELETE_PHP_FILES_ROOT" != "false" ]]; then
+    # find /var/www/html/ -maxdepth 1 -type f ! -name "wp-config.php" -name "*.php" -delete 
+    cd /var/www/html/ && find . -type f ! -name "wp-config.php" -name "*.php" -delete 
+fi
+
+## install wp core files ##
 rsync /var/www/html/wordpress/* /var/www/html
 
-## install WordPress to staging subdirectory ##
+####################################################################################################
+#### SS-Install-WordPress-Core: Cleanup Files + Install WordPress Core (Staging) ###################
+####################################################################################################
 
-if [[ -f "/tmp/wordpress.zip" ]]; then
-    rm /var/www/html/staging/wp-admin
-    rm /var/www/html/staging/wp-includes
-    # find /var/www/html/staging/ -maxdepth 1 -type f ! -name "wp-config.php" -name "*.php" -delete 
-fi
+## this installation process removes outdated WordPress Core files or potential malware ##
+## it is not foolproof but it should address the majority of common problems ##
+
+## copy zip to staging ##
 cp /tmp/wordpress.zip /var/www/html/staging
 unzip /var/www/html/staging/wordpress.zip -d /var/www/html/staging
 chown -R www-data:wordpress /var/www/html/staging/wordpress
 chmod 775 /var/www/html/staging/wordpress
-rm /var/www/html/staging/wordpress/wp-content/plugins/akismet*
-rm /var/www/html/staging/wordpress/wp-content/plugins/hello*
-rm /var/www/html/staging/wordpress/wp-content/themes/twenty*
-rsync /var/www/html/staging/wordpress/* /var/www/html/staging
 
-## install WordPress to dev subdirectory ##
-
-if [[ -f "/tmp/wordpress.zip" ]]; then
-    rm /var/www/html/dev/wp-admin
-    rm /var/www/html/dev/wp-includes
-    # find /var/www/html/dev/ -maxdepth 1 -type f ! -name "wp-config.php" -name "*.php" -delete 
+## cleanup old files and potential malware unless disabled ##
+if [[ -f "/tmp/wordpress.zip" ]] && [[ "$SS_INSTALL_WORDPRESS_CORE_DELETE_WP_ADMIN" != "false" ]]; then
+    rm /var/www/html/staging/wp-admin
 fi
 
+if [[ -f "/tmp/wordpress.zip" ]] && [[ "$SS_INSTALL_WORDPRESS_CORE_DELETE_WP_INCLUDES" != "false" ]]; then
+    rm /var/www/html/staging/wp-includes
+fi
+
+if [[ -f "/tmp/wordpress.zip" ]] && [[ "$SS_INSTALL_WORDPRESS_CORE_DELETE_BUNDLED_PLUGINS" != "false" ]]; then
+    rm /var/www/html/staging/wordpress/wp-content/plugins/akismet*
+    rm /var/www/html/staging/wordpress/wp-content/plugins/hello*
+fi
+
+if [[ -f "/tmp/wordpress.zip" ]] && [[ "$SS_INSTALL_WORDPRESS_CORE_DELETE_BUNDLED_THEMES" != "false" ]]; then
+    rm /var/www/html/staging/wordpress/wp-content/themes/twenty*
+fi
+
+if [[ -f "/tmp/wordpress.zip" ]] && [[ "$SS_INSTALL_WORDPRESS_CORE_DELETE_PHP_FILES_ROOT" != "false" ]]; then
+    # find /var/www/html/staging/ -maxdepth 1 -type f ! -name "wp-config.php" -name "*.php" -delete 
+    cd /var/www/html/staging/ && find . -type f ! -name "wp-config.php" -name "*.php" -delete 
+fi
+
+## install wp core files ##
+rsync /var/www/html/staging/wordpress/* /var/www/html/staging
+
+####################################################################################################
+#### SS-Install-WordPress-Core: Cleanup Files + Install WordPress Core (Dev) #######################
+####################################################################################################
+
+## this installation process removes outdated WordPress Core files or potential malware ##
+## it is not foolproof but it should address the majority of common problems ##
+
+## copy zip to dev ##
 cp /tmp/wordpress.zip /var/www/html/dev
 unzip /var/www/html/dev/wordpress.zip -d /var/www/html/dev
 chown -R www-data:wordpress /var/www/html/dev/wordpress
 chmod 775 /var/www/html/dev/wordpress
-rm /var/www/html/dev/wordpress/wp-content/plugins/akismet*
-rm /var/www/html/dev/wordpress/wp-content/plugins/hello*
-rm /var/www/html/dev/wordpress/wp-content/themes/twenty*
+
+## cleanup old files and potential malware unless disabled ##
+if [[ -f "/tmp/wordpress.zip" ]] && [[ "$SS_INSTALL_WORDPRESS_CORE_DELETE_WP_ADMIN" != "false" ]]; then
+    rm /var/www/html/dev/wp-admin
+fi
+
+if [[ -f "/tmp/wordpress.zip" ]] && [[ "$SS_INSTALL_WORDPRESS_CORE_DELETE_WP_INCLUDES" != "false" ]]; then
+    rm /var/www/html/dev/wp-includes
+fi
+
+if [[ -f "/tmp/wordpress.zip" ]] && [[ "$SS_INSTALL_WORDPRESS_CORE_DELETE_BUNDLED_PLUGINS" != "false" ]]; then
+    rm /var/www/html/dev/wordpress/wp-content/plugins/akismet*
+    rm /var/www/html/dev/wordpress/wp-content/plugins/hello*
+fi
+
+if [[ -f "/tmp/wordpress.zip" ]] && [[ "$SS_INSTALL_WORDPRESS_CORE_DELETE_BUNDLED_THEMES" != "false" ]]; then
+    rm /var/www/html/dev/wordpress/wp-content/themes/twenty*
+fi
+
+if [[ -f "/tmp/wordpress.zip" ]] && [[ "$SS_INSTALL_WORDPRESS_CORE_DELETE_PHP_FILES_ROOT" != "false" ]]; then
+    # find /var/www/html/dev/ -maxdepth 1 -type f ! -name "wp-config.php" -name "*.php" -delete 
+    cd /var/www/html/dev/ && find . -type f ! -name "wp-config.php" -name "*.php" -delete 
+fi
+
+## install wp core files ##
 rsync /var/www/html/dev/wordpress/* /var/www/html/dev
+
+####################################################################################################
+#### SS-Install-WordPress-Core: More Cleanup ######################
+####################################################################################################
 
 ## cleanup files ##
 rm /tmp/wordpress.zip* &> /dev/null
 rm /var/www/html/wordpress* &> /dev/null
 rm /var/www/html/staging/wordpress* &> /dev/null
 rm /var/www/html/dev/wordpress* &> /dev/null
-
-rm /var/www/html/classicpress* &> /dev/null
-rm /var/www/html/staging/classicpress* &> /dev/null
-rm /var/www/html/dev/classicpress* &> /dev/null
-
-rm /var/www/html/wp-content/plugins/hello.php &> /dev/null
-rm /var/www/html/staging/wp-content/plugins/hello.php &> /dev/null
-rm /var/www/html/dev/wp-content/plugins/hello.php &> /dev/null
 
 ####################################################################################################
 #### SS-Install-WordPress-Core: Install Throwaway Theme (For Virgin Installs) ######################
@@ -164,26 +226,12 @@ mysql --execute="UPDATE ${DB_NAME}.dev_options SET option_value='https://$SITE_D
 ## this wp-config setup script is distinct so that it can be run separately if needed ##
 ## it will also be called whenever the ss-sync (staging sync) script is run ##
 
+
+## UNCOMMENT AFTER STAGING AND DEV ARE WORKING ##
 ## run ss-install-wordpress-config ##
-# source /var/www/ss-install-wordpress-config
-
-####################################################################################################
-#### SS-Purge: Delete All Transients From MySQL Database ###########################################
-####################################################################################################
-
-## manually deletes all transients (temporary query cache data) from WordPress database ##
-## this is a more forceful approach than simply purging the Redis object cache ##
-
-## for MySQL 8.0 if server is running Ubuntu 20.04 ##
-if [[ "${UBUNTU_VERSION}" = "20.04" || -z "${UBUNTU_VERSION}" ]]; then 
-    mysql --execute="DELETE FROM ${DB_NAME}.${DB_PREFIX}options WHERE option_name LIKE ('%\_transient\_%');"
-fi
-
-## for MySQL 5.7 if server is running Ubuntu 18.04 ##
-if [[ "${UBUNTU_VERSION}" = "18.04" ]]; then
-     mysql --user=root --password=$DB_PASSWORD_ROOT --host=localhost --protocol=socket --port=3306 --force --execute="DELETE FROM ${DB_NAME}.${DB_PREFIX}options WHERE option_name LIKE ('%\_transient\_%');"
-     mysql --user=root --password=$DB_PASSWORD_ROOT --host=127.0.0.1 --protocol=tcp --port=3306 --force --execute="DELETE FROM ${DB_NAME}.${DB_PREFIX}options WHERE option_name LIKE ('%\_transient\_%');"
-fi
+# if [[ ! -f "/var/www/html/wp-config.php" ]] || [[ ! -f "/var/www/html/staging/wp-config.php" ]] || [[ ! -f "/var/www/html/dev/wp-config.php" ]]; then 
+#    source /var/www/ss-install-wordpress-config
+# fi
 
 ####################################################################################################
 #### SS-Install-WordPress-Core: Reset Permissions (WordPress Core) #################################
@@ -191,6 +239,16 @@ fi
 
 ## run ss-perms-wordpress-core ##
 source /var/www/ss-perms-wordpress-core
+
+####################################################################################################
+#### SS-Install-WordPress-Core: Purge Cache (WordPress Transients) #################################
+####################################################################################################
+
+## manually deletes all transients (temporary query cache data) from WordPress database ##
+## this is a more forceful approach than simply purging the Redis object cache ##
+
+## run ss-purge-redis ##
+source /var/www/ss-purge-transients
 
 ####################################################################################################
 #### SS-Install-WordPress-Core: Purge Cache (PHP OPcache) ##########################################
