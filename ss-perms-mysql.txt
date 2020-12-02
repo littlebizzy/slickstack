@@ -27,6 +27,17 @@ chown root:root /etc/mysql/mysql.cnf
 chown root:root /etc/mysql/mysql.conf.d/mysqld.cnf
 chmod 0755 /etc/mysql/my.cnf
 
+if [ ! -f "/var/www/logs/mysql-gen.log" ]; then touch "/var/www/logs/mysql-gen.log"; fi
+if [ ! -f "/var/www/logs/mysql-error.log" ]; then touch "/var/www/logs/mysql-error.log"; fi
+if [ ! -f "/var/www/logs/mysql-slow.log" ]; then touch "/var/www/logs/mysql-slow.log"; fi
+
+chmod 0644 /var/www/logs/*.log ## 6755 should also work
+
+## not really mysql module related but not sure what script to keep this in ##
+## SQL dump file (we want SFTP users to be able to access) ##
+chown -R $SFTP_USER:www-data /var/www/meta/wp.sql ## $SFTP_USER:www-data to better support SFTP access
+chmod 0640 /var/www/meta/wp.sql ## 0640 should be enough (or 644)
+
 ####################################################################################################
 #### SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ###############
 ####################################################################################################
