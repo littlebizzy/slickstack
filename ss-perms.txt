@@ -8,7 +8,7 @@
 #### destination: n/a (not a boilerplate) ##########################################################
 #### purpose: Resets all file and user permissions across the entire SlickStack server #############
 #### module version: Ubuntu 20.04 LTS ##############################################################
-#### sourced by: ss-install, ss-update #############################################################
+#### sourced by: ss-install, ss-update, ss core cron jobs ##########################################
 ####################################################################################################
 
 ## include SlickStack configuration ##
@@ -28,20 +28,8 @@ source /var/www/ss-functions
 echo -e "${LIGHTPURPLE}SS-PERMS: Resetting all file permissions across entire SlickStack server...${NOCOLOR}"
 
 ## Ubuntu system files ##
-chown root:root /etc/sudoers ## must be root:root
-chown root:root /var/spool/cron/crontabs/root ## must be root:root
 chown root:root /etc/sysctl.conf ## must be root:root
-chmod 0440 /etc/sudoers ## 0440 Ubuntu default
-chmod 0600 /var/spool/cron/crontabs/root ## must be 0600 or crontab will fail
 chmod 0644 /etc/sysctl.conf ## 0644 Ubuntu default
-
-## ensure wordpress group exists ##
-addgroup wordpress 
-
-## add SFTP_USER and www-data to wordpress group + add SFTP_USER to www-data group ##
-adduser $SFTP_USER wordpress
-adduser www-data wordpress
-adduser $SFTP_USER www-data
 
 ####################################################################################################
 #### SS-Perms: Reset SlickStack Core Files Permissions #############################################
@@ -58,11 +46,6 @@ mkdir /var/www/cache/opcache
 mkdir /var/www/logs
 mkdir /var/www/meta
 
-## ensure misc files exist (makes things look pretty and suppresses error messages) ##
-if [[ ! -f "/var/www/meta/wp.sql" ]]; then 
-    touch "/var/www/meta/wp.sql"; 
-fi
-
 ## chroot (SFTP) user directory ##
 chown root:root /var ## must be root:root
 chown root:root /var/www ## must be root:root
@@ -73,10 +56,6 @@ chown root:root /var/www/*cron* ## must be root:root
 chown root:root /var/www/ss* ## must be root:root
 chmod 0740 /var/www/*cron* ## 0740 is enough
 chmod 0740 /var/www/ss* ## 0740 is enough
-
-## SQL dump file (we want SFTP users to be able to access) ##
-chown -R $SFTP_USER:www-data /var/www/meta/wp.sql ## $SFTP_USER:www-data to better support SFTP access
-chmod 0640 /var/www/meta/wp.sql ## 0640 should be enough (or 644)
 
 ## no worries if the SFTP user accesses this stuff (but www-data access is the priority) ##
 chown www-data:www-data /var/www/cache ## must be www-data:www-data
@@ -91,21 +70,11 @@ chmod 0755 /var/www/logs ## 755 should also work
 chmod 0755 /var/www/meta ## 755 should also work
 
 ## ensure log files exist ##
-
-if [ ! -f "/var/www/logs/cron.log" ]; then touch "/var/www/logs/cron.log"; fi
 if [ ! -f "/var/www/logs/error.log" ]; then touch "/var/www/logs/error.log"; fi
-if [ ! -f "/var/www/logs/mysql-gen.log" ]; then touch "/var/www/logs/mysql-gen.log"; fi
-if [ ! -f "/var/www/logs/mysql-error.log" ]; then touch "/var/www/logs/mysql-error.log"; fi
-if [ ! -f "/var/www/logs/mysql-slow.log" ]; then touch "/var/www/logs/mysql-slow.log"; fi
-if [ ! -f "/var/www/logs/nginx.log" ]; then touch "/var/www/logs/nginx.log"; fi
 
 
 ## individual log files ##
-
-chown root:root /var/www/logs/cron*.log*
 chown www-data:www-data /var/www/logs/error*.log*
-chown mysql:mysql /var/www/logs/mysql*.log*
-chown www-data:www-data /var/www/logs/nginx*.log*
 
 
 chmod 0644 /var/www/logs/*.log ## 6755 should also work
@@ -113,6 +82,32 @@ chmod 0644 /var/www/logs/*.log ## 6755 should also work
 ## ensure unix formatting (avoids syntax errors and otherwise) ##
 # dos2unix /var/www/*cron*
 # dos2unix /var/www/ss*
+
+## ensure critical files and directories exist (will not overwrite) ##
+mkdir /var/www/html
+mkdir /var/www/html/.well-known
+mkdir /var/www/html/.well-known/acme-challenge
+mkdir /var/www/html/wp-content
+mkdir /var/www/html/wp-content/languages
+mkdir /var/www/html/wp-content/mu-plugins
+mkdir /var/www/html/wp-content/temp
+mkdir /var/www/html/wp-content/uploads
+mkdir /var/www/html/wp-content/upgrade
+
+## ensure staging/dev directories exist (will not overwrite) ##
+mkdir /var/www/html/staging
+mkdir /var/www/html/dev
+
+## accessed by server for e.g. Cerbot but also by SFTP user for things like Stripe ##
+chown -R $SFTP_USER:www-data /var/www/html/.well-known
+chmod 0755 /var/www/html/.well-known
+
+## always run WP-CLI as the www-data user (and allow SFTP user to run it) ##
+chown root:root /usr/local/bin/ &> /dev/null
+
+
+
+
 
 ####################################################################################################
 #### SS-Perms: Reset Permissions (Adminer) #########################################################
@@ -268,54 +263,12 @@ source /var/www/ss-perms-wordpress-core
 ## run ss-perms-wordpress-mu-plugins ##
 source /var/www/ss-perms-wordpress-mu-plugins
 
-
-
-
-
-
 ####################################################################################################
-#### SS-Perms: Reset Permissions (Public HTML Directory) ###########################################
+#### SS-Perms: Purge Cache (Redis) #################################################################
 ####################################################################################################
 
-## SNIPPET: ss-perms 
-
-## ensure critical files and directories exist (will not overwrite) ##
-mkdir /var/www/html
-mkdir /var/www/html/.well-known
-mkdir /var/www/html/.well-known/acme-challenge
-mkdir /var/www/html/wp-content
-mkdir /var/www/html/wp-content/languages
-mkdir /var/www/html/wp-content/mu-plugins
-mkdir /var/www/html/wp-content/temp
-mkdir /var/www/html/wp-content/uploads
-mkdir /var/www/html/wp-content/upgrade
-
-## ensure staging/dev directories exist (will not overwrite) ##
-mkdir /var/www/html/staging
-mkdir /var/www/html/dev
-
-## accessed by server for e.g. Cerbot but also by SFTP user for things like Stripe ##
-chown -R $SFTP_USER:www-data /var/www/html/.well-known
-chmod 0755 /var/www/html/.well-known
-
-
-
-
-
-
-
-mkdir /var/run/mysqld
-mkdir /var/run/php
-
-## always run WP-CLI as the www-data user (and allow SFTP user to run it) ##
-chown root:root /usr/local/bin/ &> /dev/null
-
-
-####################################################################################################
-#### SS-Perms: Flush Redis (Object Cache) ##########################################################
-####################################################################################################
-
-redis-cli flushall &> /dev/null
+## run ss-purge-redis ##
+source /var/www/ss-purge-redis
 
 ####################################################################################################
 #### SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ###############
