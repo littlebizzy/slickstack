@@ -55,12 +55,6 @@ wget -O /tmp/wordpress.zip http://mirrors.slickstack.io/wordpress/wordpress.zip
 ## this installation process removes outdated WordPress Core files or potential malware ##
 ## it is not foolproof but it should address the majority of common problems ##
 
-## copy zip to production ##
-cp /tmp/wordpress.zip /var/www/html
-unzip /var/www/html/wordpress.zip -d /var/www/html
-chown -R www-data:wordpress /var/www/html/wordpress
-chmod 775 /var/www/html/wordpress
-
 ## cleanup old files and potential malware unless disabled ##
 if [[ -f "/tmp/wordpress.zip" ]] && [[ "$SS_INSTALL_WORDPRESS_CORE_DELETE_WP_ADMIN" != "false" ]]; then
     rm /var/www/html/wp-admin
@@ -70,6 +64,17 @@ if [[ -f "/tmp/wordpress.zip" ]] && [[ "$SS_INSTALL_WORDPRESS_CORE_DELETE_WP_INC
     rm /var/www/html/wp-includes
 fi
 
+if [[ -f "/tmp/wordpress.zip" ]] && [[ "$SS_INSTALL_WORDPRESS_CORE_DELETE_PHP_FILES_ROOT" != "false" ]]; then
+    # find /var/www/html/ -maxdepth 1 -type f ! -name "wp-config.php" -name "*.php" -delete 
+    cd /var/www/html/ && find . -type f ! -name "wp-config.php" -name "*.php" -delete 
+fi
+
+## copy zip to production ##
+cp /tmp/wordpress.zip /var/www/html
+unzip /var/www/html/wordpress.zip -d /var/www/html
+chown -R www-data:wordpress /var/www/html/wordpress
+chmod 775 /var/www/html/wordpress
+
 if [[ -f "/tmp/wordpress.zip" ]] && [[ "$SS_INSTALL_WORDPRESS_CORE_DELETE_BUNDLED_PLUGINS" != "false" ]]; then
     rm /var/www/html/wordpress/wp-content/plugins/akismet*
     rm /var/www/html/wordpress/wp-content/plugins/hello*
@@ -77,11 +82,6 @@ fi
 
 if [[ -f "/tmp/wordpress.zip" ]] && [[ "$SS_INSTALL_WORDPRESS_CORE_DELETE_BUNDLED_THEMES" != "false" ]]; then
     rm /var/www/html/wordpress/wp-content/themes/twenty*
-fi
-
-if [[ -f "/tmp/wordpress.zip" ]] && [[ "$SS_INSTALL_WORDPRESS_CORE_DELETE_PHP_FILES_ROOT" != "false" ]]; then
-    # find /var/www/html/ -maxdepth 1 -type f ! -name "wp-config.php" -name "*.php" -delete 
-    cd /var/www/html/ && find . -type f ! -name "wp-config.php" -name "*.php" -delete 
 fi
 
 ## install wp core files ##
@@ -94,12 +94,6 @@ rsync /var/www/html/wordpress/* /var/www/html
 ## this installation process removes outdated WordPress Core files or potential malware ##
 ## it is not foolproof but it should address the majority of common problems ##
 
-## copy zip to staging ##
-cp /tmp/wordpress.zip /var/www/html/staging
-unzip /var/www/html/staging/wordpress.zip -d /var/www/html/staging
-chown -R www-data:wordpress /var/www/html/staging/wordpress
-chmod 775 /var/www/html/staging/wordpress
-
 ## cleanup old files and potential malware unless disabled ##
 if [[ -f "/tmp/wordpress.zip" ]] && [[ "$SS_INSTALL_WORDPRESS_CORE_DELETE_WP_ADMIN" != "false" ]]; then
     rm /var/www/html/staging/wp-admin
@@ -109,6 +103,17 @@ if [[ -f "/tmp/wordpress.zip" ]] && [[ "$SS_INSTALL_WORDPRESS_CORE_DELETE_WP_INC
     rm /var/www/html/staging/wp-includes
 fi
 
+if [[ -f "/tmp/wordpress.zip" ]] && [[ "$SS_INSTALL_WORDPRESS_CORE_DELETE_PHP_FILES_ROOT" != "false" ]]; then
+    # find /var/www/html/staging/ -maxdepth 1 -type f ! -name "wp-config.php" -name "*.php" -delete 
+    cd /var/www/html/staging/ && find . -type f ! -name "wp-config.php" -name "*.php" -delete 
+fi
+
+## copy zip to staging ##
+cp /tmp/wordpress.zip /var/www/html/staging
+unzip /var/www/html/staging/wordpress.zip -d /var/www/html/staging
+chown -R www-data:wordpress /var/www/html/staging/wordpress
+chmod 775 /var/www/html/staging/wordpress
+
 if [[ -f "/tmp/wordpress.zip" ]] && [[ "$SS_INSTALL_WORDPRESS_CORE_DELETE_BUNDLED_PLUGINS" != "false" ]]; then
     rm /var/www/html/staging/wordpress/wp-content/plugins/akismet*
     rm /var/www/html/staging/wordpress/wp-content/plugins/hello*
@@ -116,11 +121,6 @@ fi
 
 if [[ -f "/tmp/wordpress.zip" ]] && [[ "$SS_INSTALL_WORDPRESS_CORE_DELETE_BUNDLED_THEMES" != "false" ]]; then
     rm /var/www/html/staging/wordpress/wp-content/themes/twenty*
-fi
-
-if [[ -f "/tmp/wordpress.zip" ]] && [[ "$SS_INSTALL_WORDPRESS_CORE_DELETE_PHP_FILES_ROOT" != "false" ]]; then
-    # find /var/www/html/staging/ -maxdepth 1 -type f ! -name "wp-config.php" -name "*.php" -delete 
-    cd /var/www/html/staging/ && find . -type f ! -name "wp-config.php" -name "*.php" -delete 
 fi
 
 ## install wp core files ##
@@ -133,12 +133,6 @@ rsync /var/www/html/staging/wordpress/* /var/www/html/staging
 ## this installation process removes outdated WordPress Core files or potential malware ##
 ## it is not foolproof but it should address the majority of common problems ##
 
-## copy zip to dev ##
-cp /tmp/wordpress.zip /var/www/html/dev
-unzip /var/www/html/dev/wordpress.zip -d /var/www/html/dev
-chown -R www-data:wordpress /var/www/html/dev/wordpress
-chmod 775 /var/www/html/dev/wordpress
-
 ## cleanup old files and potential malware unless disabled ##
 if [[ -f "/tmp/wordpress.zip" ]] && [[ "$SS_INSTALL_WORDPRESS_CORE_DELETE_WP_ADMIN" != "false" ]]; then
     rm /var/www/html/dev/wp-admin
@@ -148,6 +142,17 @@ if [[ -f "/tmp/wordpress.zip" ]] && [[ "$SS_INSTALL_WORDPRESS_CORE_DELETE_WP_INC
     rm /var/www/html/dev/wp-includes
 fi
 
+if [[ -f "/tmp/wordpress.zip" ]] && [[ "$SS_INSTALL_WORDPRESS_CORE_DELETE_PHP_FILES_ROOT" != "false" ]]; then
+    # find /var/www/html/dev/ -maxdepth 1 -type f ! -name "wp-config.php" -name "*.php" -delete 
+    cd /var/www/html/dev/ && find . -type f ! -name "wp-config.php" -name "*.php" -delete 
+fi
+
+## copy zip to dev ##
+cp /tmp/wordpress.zip /var/www/html/dev
+unzip /var/www/html/dev/wordpress.zip -d /var/www/html/dev
+chown -R www-data:wordpress /var/www/html/dev/wordpress
+chmod 775 /var/www/html/dev/wordpress
+
 if [[ -f "/tmp/wordpress.zip" ]] && [[ "$SS_INSTALL_WORDPRESS_CORE_DELETE_BUNDLED_PLUGINS" != "false" ]]; then
     rm /var/www/html/dev/wordpress/wp-content/plugins/akismet*
     rm /var/www/html/dev/wordpress/wp-content/plugins/hello*
@@ -155,11 +160,6 @@ fi
 
 if [[ -f "/tmp/wordpress.zip" ]] && [[ "$SS_INSTALL_WORDPRESS_CORE_DELETE_BUNDLED_THEMES" != "false" ]]; then
     rm /var/www/html/dev/wordpress/wp-content/themes/twenty*
-fi
-
-if [[ -f "/tmp/wordpress.zip" ]] && [[ "$SS_INSTALL_WORDPRESS_CORE_DELETE_PHP_FILES_ROOT" != "false" ]]; then
-    # find /var/www/html/dev/ -maxdepth 1 -type f ! -name "wp-config.php" -name "*.php" -delete 
-    cd /var/www/html/dev/ && find . -type f ! -name "wp-config.php" -name "*.php" -delete 
 fi
 
 ## install wp core files ##
