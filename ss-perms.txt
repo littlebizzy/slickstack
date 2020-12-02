@@ -27,10 +27,6 @@ source /var/www/ss-functions
 ## MESSAGE ##
 echo -e "${LIGHTPURPLE}SS-PERMS: Resetting all file permissions across entire SlickStack server...${NOCOLOR}"
 
-## Ubuntu system files ##
-chown root:root /etc/sysctl.conf ## must be root:root
-chmod 0644 /etc/sysctl.conf ## 0644 Ubuntu default
-
 ####################################################################################################
 #### SS-Perms: Reset SlickStack Core Files Permissions #############################################
 ####################################################################################################
@@ -69,43 +65,14 @@ chmod 0755 /var/www/cache/opcache ## 755 should also work
 chmod 0755 /var/www/logs ## 755 should also work
 chmod 0755 /var/www/meta ## 755 should also work
 
-## ensure log files exist ##
-if [ ! -f "/var/www/logs/error.log" ]; then touch "/var/www/logs/error.log"; fi
-
-
-## individual log files ##
-chown www-data:www-data /var/www/logs/error*.log*
-
-
-chmod 0644 /var/www/logs/*.log ## 6755 should also work
-
-## ensure unix formatting (avoids syntax errors and otherwise) ##
-# dos2unix /var/www/*cron*
-# dos2unix /var/www/ss*
-
 ## ensure critical files and directories exist (will not overwrite) ##
 mkdir /var/www/html
 mkdir /var/www/html/.well-known
 mkdir /var/www/html/.well-known/acme-challenge
-mkdir /var/www/html/wp-content
-mkdir /var/www/html/wp-content/languages
-mkdir /var/www/html/wp-content/mu-plugins
-mkdir /var/www/html/wp-content/temp
-mkdir /var/www/html/wp-content/uploads
-mkdir /var/www/html/wp-content/upgrade
-
-## ensure staging/dev directories exist (will not overwrite) ##
-mkdir /var/www/html/staging
-mkdir /var/www/html/dev
 
 ## accessed by server for e.g. Cerbot but also by SFTP user for things like Stripe ##
 chown -R $SFTP_USER:www-data /var/www/html/.well-known
 chmod 0755 /var/www/html/.well-known
-
-## always run WP-CLI as the www-data user (and allow SFTP user to run it) ##
-chown root:root /usr/local/bin/ &> /dev/null
-
-
 
 
 
