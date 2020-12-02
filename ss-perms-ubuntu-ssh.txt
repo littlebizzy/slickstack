@@ -6,9 +6,9 @@
 #### mirror: http://mirrors.slickstack.io/ss-perms-ubuntu-ssh.txt ##################################
 #### path: /var/www/ss-perms-ubuntu-ssh ############################################################
 #### destination: n/a (not a boilerplate) ##########################################################
-#### purpose: Resets all file and user permissions for the WordPress Core files and folders ########
-#### module version: WordPress 5.5.x ###############################################################
-#### sourced by: ss-perms, ss-install-wordpress-core ###############################################
+#### purpose: Resets all file and user permissions for Ubuntu SSH daemon and SSH keys ##############
+#### module version: Ubuntu 20.04 LTS ##############################################################
+#### sourced by: ss-perms, ss-install-ubuntu-ssh ###################################################
 ####################################################################################################
 
 ## include SlickStack configuration ##
@@ -18,10 +18,20 @@ source /var/www/ss-config
 source /var/www/ss-functions
 
 ####################################################################################################
-#### SS-Perms: Reset Permissions (ClamAV) ##########################################################
+#### SS-Perms: Reset Permissions (SSH) ##########################################################
 ####################################################################################################
 
-####
+#### SSHD daemon ##
+chown root:root /etc/ssh/sshd_config ## must be root:root
+chmod 0644 /etc/ssh/sshd_config ## 0644 Ubuntu default
+
+### SSH keys ##
+mkdir /var/www/meta/.ssh
+chown $SUDO_USER:$SUDO_USER /var/www/meta/.ssh
+chmod 0775 /var/www/meta/.ssh ## should be 0775 as per Ubuntu docs
+touch /var/www/meta/.ssh/authorized_keys
+chown $SUDO_USER:$SUDO_USER /var/www/meta/.ssh/authorized_keys
+chmod 0664 /var/www/meta/.ssh/authorized_keys ## should be 0664 as per Ubuntu docs
 
 ####################################################################################################
 #### SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ###############
