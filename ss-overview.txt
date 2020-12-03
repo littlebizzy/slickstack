@@ -8,6 +8,7 @@
 #### destination: n/a (not a boilerplate) ##########################################################
 #### purpose: Displays a brief overview of critical settings (domains, users, passwords, etc) ######
 #### module version: Ubuntu 20.04 LTS ##############################################################
+#### sourced by: ss-install ########################################################################
 ####################################################################################################
 
 ## include SlickStack configuration ##
@@ -29,6 +30,7 @@ echo -e "${LIGHTGREEN}##########################################################
 echo -e "${LIGHTGREEN}#### Congrats! Here are your current SlickStack settings: #################${NOCOLOR}"
 echo -e "${LIGHTGREEN}###########################################################################${NOCOLOR}"
 echo -e ""
+echo -e "${DARKGREEN}SlickStack build: ${LIGHTGREEN}${BOLD}$SS_BUILD${NORMAL}${NOCOLOR}"
 echo -e "${DARKGREEN}IPv4: ${LIGHTGREEN}${BOLD}$IPV4_ADDRESS${NORMAL}${NOCOLOR}"
 echo -e "${DARKGREEN}IPv6: ${LIGHTGREEN}${BOLD}$IPV6_ADDRESS${NORMAL}${NOCOLOR}"
 echo -e "${DARKGREEN}Site TLD: ${LIGHTGREEN}${BOLD}$SITE_TLD${NORMAL}${NOCOLOR}"
@@ -57,6 +59,32 @@ echo -e "${DARKGREEN}WP Multisite domain mapping: ${LIGHTGREEN}${BOLD}$WP_MULTIS
 echo -e "${DARKGREEN}CloudFlare API key: ${LIGHTGREEN}${BOLD}$CLOUDFLARE_API_KEY${NORMAL}${NOCOLOR}"
 echo -e "${DARKGREEN}CloudFlare API email: ${LIGHTGREEN}${BOLD}$CLOUDFLARE_API_EMAIL${NORMAL}${NOCOLOR}"
 echo -e ""
+
+####################################################################################################
+#### SS-Overview: Notify If Newer SlickStack Build Exists ##########################################
+####################################################################################################
+
+## below we briefly inspect the latest ss-config template from official SlickStack mirrors ##
+## if it appears that the local server is outdated then a message with appear here ##
+
+## delete leftover files ##
+rm /tmp/ss-config*
+
+## retrieve latest version of ss-config-sample ##
+wget -O /tmp/ss-config http://mirrors.slickstack.io/ss-config-sample.txt
+
+## ensure latest (retrieved) ss-config build matches current ss-update build ##
+SS_BUILD_LATEST=$(source /tmp/ss-config; echo $SS_BUILD)
+if [[ "$SS_BUILD_LATEST" != "$SS_BUILD" ]]; then
+    echo -e ""
+    echo -e "${YELLOW}It appears that a newer SlickStack build is available! We recommend you ${NOCOLOR}"
+    echo -e "${YELLOW}run ss-update to benefit from the latest features and patches.${NOCOLOR}"
+    echo -e ""
+    exit 1
+fi
+
+## delete leftover files ##
+rm /tmp/ss-config*
 
 ####################################################################################################
 #### SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ###############
