@@ -18,11 +18,19 @@ source /var/www/ss-config
 source /var/www/ss-functions
 
 ####################################################################################################
-#### SS-DOS2Unix: Install dos2unix Package If Not Exists (Ubuntu) ##################################
+#### SS-DOS2Unix: Install Ubuntu Package If Not Exists (dos2unix) ##################################
 ####################################################################################################
 
+## here is a brief script to install dos2unix package if does not exist already on server ##
+## this approach ensures this bash script is completely self-contained to function ##
 
-## soon
+PACKAGE_DOS2UNIX="dos2unix"
+PACKAGE_DOS2UNIX_EXISTS=$(dpkg-query -W --showformat='${Status}\n' $PACKAGE_DOS2UNIX|grep "install ok installed")
+echo Checking for $PACKAGE_DOS2UNIX: $PACKAGE_DOS2UNIX_EXISTS
+if [ "" = "$PACKAGE_DOS2UNIX_EXISTS" ]; then
+    echo "$PACKAGE_DOS2UNIX package not found. We will install the package before proceeding."
+    sudo apt install $PACKAGE_DOS2UNIX
+fi
 
 ####################################################################################################
 #### SS-DOS2Unix: Convert DOS Files To Unix Files ##################################################
@@ -36,5 +44,6 @@ find /var/www/html/ -type f -exec dos2unix -k -o -s {} \;
 ####################################################################################################
 
 ## Ref: https://askubuntu.com/questions/319307/reliably-check-if-a-package-is-installed-or-not
+## Ref: https://stackoverflow.com/questions/1298066/check-if-an-apt-get-package-is-installed-and-then-install-it-if-its-not-on-linu
 
 ## SS_EOF
