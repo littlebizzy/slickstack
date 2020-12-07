@@ -110,23 +110,25 @@ http {
     reset_timedout_connection on;
     
 ####################################################################################################
-#### Nginx: HTTP General + Security Headers Settings ###############################################
+#### Nginx: HTTP Headers (Security Headers) Settings ###############################################
 ####################################################################################################
     
 ## several HTTP security headers are well-known best practices and are thus hardcoded ##
 ## to noindex your entire website, set SITE_NOINDEX to true in your ss-config ##
     
     add_header X-Powered-By "@NGINX_HEADER_POWERED_BY";
-    add_header Strict-Transport-Security "max-age=15552000" always; ## 180 days
+    add_header Strict-Transport-Security "@NGINX_HEADER_STRICT_TRANSPORT_SECURITY" always; ## 180 days
     add_header X-FastCGI-Cache $upstream_cache_status;
     add_header X-Frame-Options SAMEORIGIN;
     add_header X-Content-Type-Options nosniff;
     add_header X-XSS-Protection "1; mode=block";
-    add_header Referrer-Policy "strict-origin-when-cross-origin";
-    add_header Permissions-Policy "accelerometer=(), ambient-light-sensor=(), autoplay=*, battery=(), camera=(), display-capture=*, document-domain=*, encrypted-media=*, fullscreen=*, geolocation=(self), gyroscope=(), layout-animations=*, legacy-image-formats=*, magnetometer=(), microphone=(self), midi=(), oversized-images=*, payment=*, picture-in-picture=*, publickey-credentials-get=*, sync-xhr=*, usb=(), vibrate=(), wake-lock=(), xr-spatial-tracking=()";
+    add_header Referrer-Policy "@NGINX_HEADER_REFERRER_POLICY";
+    add_header Permissions-Policy "@NGINX_HEADER_PERMISSIONS_POLICY";
    
+   # seems web-share and screen-wake-lock now invalid as per securityheaders.com
    # add_header Permissions-Policy "accelerometer=(), ambient-light-sensor=(), autoplay=*, battery=(), camera=(), display-capture=*, document-domain=*, encrypted-media=*, fullscreen=*, geolocation=(self), gyroscope=(), layout-animations=*, legacy-image-formats=*, magnetometer=(), microphone=(self), midi=(), oversized-images=*, payment=*, picture-in-picture=*, publickey-credentials-get=*, screen-wake-lock=(), sync-xhr=*, usb=(), vibrate=(), wake-lock=(), web-share=*, xr-spatial-tracking=()";
-   # add_header Feature-Policy "ambient-light-sensor none; animations self; autoplay none; accelerometer none; camera none; display-capture none; document-domain none; document-write none; encrypted-media none; fullscreen self; geolocation none; gyroscope none; image-compression *; legacy-image-formats *; magnetometer none; max-downscaling-image *; microphone none; midi none; notifications self; payment none; picture-in-picture self; push none; speaker self; sync-xhr none; unsized-media *; usb none; vertical-scroll self; wake-lock none; webauthn none; vibrate none; vr none; xr-spatial-tracking none;";
+   
+   # add_header Feature-Policy "@NGINX_HEADER_FEATURE_POLICY";
     
     #@NOINDEX# ## noindex the entire site ##
     #@NOINDEX# add_header X-Robots-Tag "noindex, nofollow, nosnippet, noarchive";
