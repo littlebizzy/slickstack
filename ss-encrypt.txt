@@ -7,11 +7,12 @@
 #### path: /var/www/ss-encrypt #####################################################################
 #### destination: n/a (not a boilerplate) ##########################################################
 #### purpose: Generates or renews free SSL certs via OpenSSL and Certbot (Lets Encrypt) ############
-#### module version: Ubuntu 20.04 LTS + OpenSSL 1.1.1x + Certbot 0.40.x ############################
+#### module version: OpenSSL 1.1.1x + Certbot 0.40.x ###############################################
+#### sourced by: ss-install-nginx, ss core cron jobs ###############################################
 ####################################################################################################
 
-## SS-ENCRYPT WILL PERFORM BASIC NGINX MODIFICATION IN CASE IT RUNS WITHOUT SS-INSTALL ##
-## SLICKSTACK ATTEMPTS TO REVERT BACK TO OPENSSL IF ANY PROBLEMS WITH CERTBOT ##
+## SS-ENCRYPT PERFORMS BASIC NGINX CONFIG MODIFICATION REGARDLESS OF SS-INSTALL-NGINX ##
+## IT WILL ALSO ATTEMPT TO REVERT TO OPENSSL IF LETS ENCRYPT CERTS ARE MISSING ##
 
 ## include SlickStack configuration ##
 source /var/www/ss-config
@@ -28,6 +29,10 @@ source /var/www/ss-functions
 
 ## MESSAGE ##
 echo -e "\e[36mInstalling (or renewing) free SSL certs from OpenSSL and Certbot...\e[0m"
+
+if [[ ! -f "/var/www/meta/.timestamp-certbot" ]]; then 
+    touch /var/www/meta/.timestamp-certbot
+fi
 
 ####################################################################################################
 #### SS-Encrypt: Manually Delete Previous / Conflicting OpenSSL Certificates #######################
@@ -300,8 +305,14 @@ chown root:root /etc/ssl/*.pem
 
 echo -e "\e[36mSSL certificates have been successfully generated...\e[0m"
 
+## warning in case of sub-subdomains in use ##
 if [[ $SITE_DOMAIN = *.*.*.* ]]; then
-    echo -e "\e[36mIt appears your domain is a sub-subdomain so Cloudflare free SSL will not work (you must upgrade to Cloudflare premium SSL, otherwise change to use Lets Encrypt on this server)...\e[0m"
+    echo -e ""
+    echo -e "${YELLOW}It appears your site is a sub-subdomain so CloudFlare's free SSL will not ${NOCOLOR}"
+    echo -e "${YELLOW}resolve (please either upgrade to Cloudflare's premium SSL options, or ${NOCOLOR}"
+    echo -e "${YELLOW}otherwise use Let's Encrypt SSL on this server).${NOCOLOR}"
+    echo -e ""
+    exit 1
 fi
 
 ####################################################################################################
@@ -349,3 +360,6 @@ fi
 ## Ref: https://github.com/certbot/certbot/issues/2071
 ## Ref: https://community.letsencrypt.org/t/how-to-prevent-creation-of-etc-letsencrypt-live-domain-tld-0001-when-removing-domains-from-a-domain-tld-multidomain-certificate/8135/14
 ## Ref: https://community.letsencrypt.org/t/letsencrypt-webroot-verification-follows-http-to-https-redirect-for-self-signed-cert/19917
+## Ref: https://stackoverflow.com/questions/205666/what-is-the-best-way-to-perform-timestamp-comparison-in-bash
+
+## SS_EOF
