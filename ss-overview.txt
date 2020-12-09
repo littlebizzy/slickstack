@@ -83,6 +83,16 @@ if [[ "$SS_BUILD_LATEST" != "$SS_BUILD" ]]; then
     exit 1
 fi
 
+## warning in case of sub-subdomains in use ##
+if [[ $SITE_DOMAIN = *.*.*.* ]]; then
+    echo -e ""
+    echo -e "${YELLOW}It appears your site is a sub-subdomain so CloudFlare's free SSL will not ${NOCOLOR}"
+    echo -e "${YELLOW}resolve (please either upgrade to Cloudflare's premium SSL options, or ${NOCOLOR}"
+    echo -e "${YELLOW}otherwise use Let's Encrypt SSL on this server).${NOCOLOR}"
+    echo -e ""
+    exit 1
+fi
+
 ## delete leftover files ##
 rm /tmp/ss-config*
 
