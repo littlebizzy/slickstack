@@ -227,27 +227,30 @@ function ss_menu() {
 		<pre>';
 
     function lastLines($file, $lines) {
-    	$size = filesize($file);
+        $size = filesize($file);
       $fd=fopen($file, 'r+');
       $pos = $size;
       $n=0;
       
-			while ( $n < $lines+1 && $pos > 0) {
-      	fseek($fd, $pos);
+                        while ( $n < $lines+1 && $pos > 0) {
+        fseek($fd, $pos);
         $a = fread($fd, 1);
-        	if ($a === "\n") {
-        		++$n;
-        	};
+                if ($a === "\n") {
+                        ++$n;
+                };
         $pos--;
         }
-				
+        // $array = array_reverse($array);                      
         $ret = array();
-        	for ($i=0; $i<$lines; $i++) {
-          	array_push($ret, fgets($fd));
-        	}
-        return $ret;
+                for ($i=0; $i<$lines; $i++) {
+                array_push($ret, fgets($fd));
+                }
+		
+	$retrev = array_reverse($ret);
+        
+	return $retrev;
     }
-
+    
     print_r(implode(lastLines('/var/www/logs/error.log', 500)));
 
     echo '</pre>';
