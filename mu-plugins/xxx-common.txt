@@ -184,12 +184,12 @@ function ss_menu() {
     <div class="tab-content">
 	
     <?php switch($tab) :
-	
-		case 'sftp':
+
+	case 'sftp':
 			
 		$ip_server = $_SERVER['SERVER_ADDR']; 
   
-        	echo '<!-- <ul class="subsubsub">
+    echo '<!-- <ul class="subsubsub">
 		<li><a href="/wp-admin/admin.php?page=slickstack&tab=sftp-details">SFTP Login Information</a> | </li>
 		<li><a href="/wp-admin/admin.php?page=slickstack&tab=sftp-details&section=sftp-reset-password" class="">Reset SFTP Password</a></li>
 		</ul> -->
@@ -197,19 +197,19 @@ function ss_menu() {
 		<h2>SFTP Settings</h2>
 		<p><strong>Domain:</strong> <code>' . WP_HOME . '</code></p>
 		<p><strong>Server (host):</strong> <code>' . $ip_server . '</code></p>
-                <p><strong>SFTP user:</strong> <code>' . SFTP_DETAILS_USER . '</code></p>
-                <p><strong>SFTP password:</strong> <code>' . SFTP_DETAILS_PASSWORD . '</code></p>
-                <p><strong>SFTP port:</strong> <code>' . SFTP_DETAILS_PORT . '</code></p>
-                <p><strong>Root Directory:</strong> <code>/var/www</code></p>
-                <p><strong>Public Directory:</strong> <code>/var/www/html</code></p>
+    <p><strong>SFTP user:</strong> <code>' . SFTP_DETAILS_USER . '</code></p>
+    <p><strong>SFTP password:</strong> <code>' . SFTP_DETAILS_PASSWORD . '</code></p>
+    <p><strong>SFTP port:</strong> <code>' . SFTP_DETAILS_PORT . '</code></p>
+    <p><strong>Root Directory:</strong> <code>/var/www</code></p>
+    <p><strong>Public Directory:</strong> <code>/var/www/html</code></p>
 		<br class="clear" />
 		<p><em>You must choose the SFTP protocol when connecting (not FTP or FTPS) on the port number listed above.</em></p>';
         
 		break;
 		
-		case 'adminer':
+	case 'adminer':
 		
-        	echo '<br class="clear" />
+    echo '<br class="clear" />
 		<h2>Adminer Settings</h2>
 		<p><strong>Database name:</strong> <code>' . DB_NAME . '</code></p>
 		<p><strong>Database user:</strong> <code>' . DB_USER . '</code></p>
@@ -219,37 +219,38 @@ function ss_menu() {
         
 		break;
 		
-		case 'error-log':
+	case 'error-log':
 		
-        	echo '<br class="clear" />
+    echo '<br class="clear" />
 		<h2>Error Log</h2>
-		<br class="clear" />
-		<pre><code>';
-		
+		<p>Below are the most recent lines from: <code>/var/www/logs/error.log</code></p>
+		<pre>';
 
-	function lastLines($file, $lines) {
-        $size = filesize($file);
-        $fd=fopen($file, 'r+');
-        $pos = $size;
-        $n=0;
-        while ( $n < $lines+1 && $pos > 0) {
-            fseek($fd, $pos);
-            $a = fread($fd, 1);
-            if ($a === "\n") {
-                ++$n;
-            };
-            $pos--;
+    function lastLines($file, $lines) {
+    	$size = filesize($file);
+      $fd=fopen($file, 'r+');
+      $pos = $size;
+      $n=0;
+      
+			while ( $n < $lines+1 && $pos > 0) {
+      	fseek($fd, $pos);
+        $a = fread($fd, 1);
+        	if ($a === "\n") {
+        		++$n;
+        	};
+        $pos--;
         }
+				
         $ret = array();
-        for ($i=0; $i<$lines; $i++) {
-            array_push($ret, fgets($fd));
-        }
+        	for ($i=0; $i<$lines; $i++) {
+          	array_push($ret, fgets($fd));
+        	}
         return $ret;
     }
-    print_r(lastLines('/var/www/logs/error.log', 100));
-    
-    	echo '</code></pre>';
-    	
+
+    print_r(implode(lastLines('/var/www/logs/error.log', 500)));
+
+    echo '</pre>';
 
 		break;
 		
@@ -590,6 +591,12 @@ function ss_environment_menu($admin_bar) {
     } else { }
 }
 
+
+/** ********************************************************************************************* */
+/** SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ************* */
+/** ********************************************************************************************* */
+
 // Ref: https://www.digitalocean.com/community/questions/enable-php-5-5-opcache-on-ubuntu-14-04-with-nginx-and-php-fpm
+// Ref: https://stackoverflow.com/questions/15025875/what-is-the-best-way-in-php-to-read-last-lines-from-a-file
 
 // SS_EOF
