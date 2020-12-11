@@ -20,9 +20,6 @@ source /var/www/ss-config
 ## include SlickStack functions ##
 source /var/www/ss-functions
 
-## script timestamp ##
-touch /var/www/meta/.timestamp-ss-purge-transients
-
 ####################################################################################################
 #### SS-Purge: Delete All Transients From MySQL Database ###########################################
 ####################################################################################################
@@ -40,6 +37,16 @@ if [[ "${UBUNTU_VERSION}" = "18.04" ]]; then
      mysql --user=root --password=$DB_PASSWORD_ROOT --host=localhost --protocol=socket --port=3306 --force --execute="DELETE FROM ${DB_NAME}.${DB_PREFIX}options WHERE option_name LIKE ('%\_transient\_%');"
      mysql --user=root --password=$DB_PASSWORD_ROOT --host=127.0.0.1 --protocol=tcp --port=3306 --force --execute="DELETE FROM ${DB_NAME}.${DB_PREFIX}options WHERE option_name LIKE ('%\_transient\_%');"
 fi
+
+####################################################################################################
+#### SS-Purge-Transients: Touch Timestamp File (End Of Script) #####################################
+####################################################################################################
+
+## this is a dummy timestamp file that will remember the last time this script was run ##
+## it can be useful for developer reference and it sometimes used by SlickStack ##
+
+## script timestamp ##
+touch /var/www/meta/.timestamp-ss-purge-transients
 
 ####################################################################################################
 #### SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ###############
