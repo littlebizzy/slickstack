@@ -42,9 +42,10 @@ title: SlickStack (Public Mirrors)
 * [ss-overview](ss-overview.txt)
 * [ss-perms](ss-perms.txt)
 * [ss-purge](ss-purge.txt)
+* [ss-reboot](ss-reboot.txt)
 * [ss-remote](ss-remote.txt)
 * [ss-reset-password](ss-reset-password.txt)
-* [ss-restart](ss-restart.txt)
+* [ss-restart-services](ss-restart-services.txt)
 * [ss-scan](ss-scan.txt)
 * [ss-sync](ss-sync.txt)
 * [ss-update](ss-update.txt)
@@ -178,4 +179,4 @@ title: SlickStack (Public Mirrors)
 
 ----
 
-*Last updated: Nov 30, 2020*
+*Last updated: Dec 11, 2020*
