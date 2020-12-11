@@ -4,15 +4,15 @@
 #### mirror: http://mirrors.slickstack.io/00-crontab.txt ###########################################
 #### path: /var/www/00-crontab (boilerplate remains here for reference) ############################
 #### destination: /var/spool/cron/crontabs/root (after install) ####################################
-#### purpose: SlickStack crontab boilerplate (never, ever, ever modify the root crontab) ###########
+#### purpose: SlickStack root crontab boilerplate (never, ever modify the root crontab) ############
 #### module version: Ubuntu 20.04 LTS ##############################################################
 #### sourced by: n/a (ss-install-ubuntu-crontab) ###################################################
 ####################################################################################################
 
-## NEVER MODIFY THE SLICKSTACK CRONTAB AND CRON JOBS OR YOUR STACK WILL LOSE FUCTIONALITY ##
+## NEVER MODIFY THE ROOT CRONTAB AND CORE CRON JOBS OR YOUR STACK WILL LOSE FUCTIONALITY ##
 ## INSTEAD YOU CAN MODIFY INTERVAL SETTINGS IN SS-CONFIG OR CUSTOMIZE SS-CUSTOM ##
 
-## @RANDOM_STRING (forces cron to refresh)
+## @RANDOM_STRING (forces crontab to refresh)
 
 ####################################################################################################
 #### Crontab: Use Bash Instead Of Sh + Set Default System Path #####################################
@@ -24,7 +24,7 @@
 SHELL=/bin/bash
 
 ## we include this default system path setting below to ensure wget (etc) works properly ##
-## this path setting is also reincluded at the top of SlickStack Core scripts ##
+## this path setting is also reincluded in ss-functions (sourced by ss scripts) ##
 
 PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 
@@ -32,7 +32,7 @@ PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 #### Crontab: Run Core Cron Jobs (The Sky Will Fall If You Modify This) ############################
 ####################################################################################################
 
-## this Crontab schedule is hardcoded to run SlickStack Core cron jobs and nothing else ##
+## this crontab schedule is hardcoded to run ss core cron jobs only (DO NOT EDIT BELOW) ##
 ## the purpose of this approach is to achieve top-notch stability and security ##
 
 */3 * * * * /usr/bin/flock -w 0 /tmp/01-cron-often.lock /var/www/01-cron-often >> /var/www/logs/cron.log 2>&1
@@ -55,8 +55,8 @@ PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 #### Crontab: Self-Healing Function (If Core Cron Jobs Not Found) ##################################
 ####################################################################################################
 
-## these minimal Crontab commands are emergency attempts to reinstall missing cron jobs ##
-## this approach is not foolproof (better to run ss-install once in a while) ##
+## these minimal commands will attempt to reinstall missing ss core cron jobs (wget) ##
+## this is not foolproof and running ss-update occassionally is a good idea ##
 
 13 9 * * * /bin/bash -c 'test -f /var/www/01-cron-often || wget --no-check-certificate --no-cache --no-cookies --tries=3 --timeout=15 -O /var/www/01-cron-often http://mirrors.slickstack.io/01-cron-often.txt' >> /var/www/logs/cron.log 2>&1
 13 9 * * * /bin/bash -c 'test -f /var/www/02-cron-regular || wget --no-check-certificate --no-cache --no-cookies --tries=3 --timeout=15 -O /var/www/02-cron-regular http://mirrors.slickstack.io/02-cron-regular.txt' >> /var/www/logs/cron.log 2>&1
