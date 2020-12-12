@@ -30,7 +30,7 @@ source /var/www/ss-functions
 ## MESSAGE ##
 echo -e "\e[36mInstalling (or renewing) free SSL certs from OpenSSL and Certbot...\e[0m"
 
-# if [[ ! -f "/var/www/meta/.timestamp-certbot" ]]; then 
+# if [[ ! -f "/var/www/meta/.timestamp-ss-encrypt" ]] || [[ -n $(find "/var/www/meta/.timestamp-ss-encrypt" -amin +30) ]]; then
     
 # fi
 
@@ -44,7 +44,7 @@ rm /etc/ssl/nginx.key
 rm /etc/ssl/nginx.pem
 
 ####################################################################################################
-#### SS-Encrypt: (Re)generate Self-Signed OpenSSL Certificate ######################################
+#### SS-Encrypt: Regenerate Self-Signed Certificate (OpenSSL) ######################################
 ####################################################################################################
 
 ## hide error message (bug) in OpenSSL 1.1.1 (remove this snippet later) ##
@@ -139,7 +139,7 @@ rm /etc/letsencrypt/live/*
 ## this approach also allows you to change your server to a different CMS or TLD ##
 
 ## Certbot rate limit is 5 fails per hour... if timestamp is less than 30min old and LE cert already exists then do not request another one ##
-# if [[ ! -f "/var/www/meta/.timestamp-ss-encrypt" ]] || [[ test `find "/var/www/meta/.timestamp-ss-encrypt" -amin +30` ]] || [[ ! -f "/etc/letsencrypt/live/${SITE_DOMAIN}/cert.pem" ]]; then
+if [[ ! -f "/var/www/meta/.timestamp-ss-encrypt" ]] || [[ -n $(find "/var/www/meta/.timestamp-ss-encrypt" -amin +30) ]]; then
 
 ## STAGING SITES (SUBDOMAIN) ##
 certbot delete --cert-name staging.${SITE_TLD}
@@ -264,7 +264,7 @@ else
 fi
 
 ## the last fi of the fis what a cluster ##
-# fi
+fi
 
 ####################################################################################################
 #### SS-Encrypt: Create Certbot Symlinks + Modify Nginx Configuration ##############################
