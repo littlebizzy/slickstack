@@ -8,7 +8,7 @@
 #### destination: n/a (not a boilerplate) ##########################################################
 #### purpose: Force reboots the server but is rate-limited as per associated .timestamp file #######
 #### module version: Ubuntu 20.04 LTS ##############################################################
-#### sourced by: ss core bash scripts, ss core cron jobs ###########################################
+#### sourced by: ss core cron jobs, ss core bash scripts ###########################################
 ####################################################################################################
 
 ## include SlickStack configuration ##
@@ -24,8 +24,8 @@ source /var/www/ss-functions
 ## here we check to see if ss-reboot was run in the past 60 minutes or not before running ##
 ## this protects you from consecutive (abusive) reboots e.g. if run via ss-worker ##
 
+## FUTURE: customize via ss-config options ##
 ## reboot only if ss-reboot was not run in past 60 minutes ##
-## future: customize via ss-config options ##
 if [[ ! -f "/var/www/meta/.timestamp-ss-reboot" ]] || [[ -n $(find "/var/www/meta/.timestamp-ss-reboot" -amin +60) ]]; then
     touch /var/www/meta/.timestamp-ss-reboot
     /bin/bash -c "/sbin/reboot"
@@ -36,7 +36,7 @@ fi
 ####################################################################################################
 
 ## this is a dummy timestamp file that will remember the last time this script was run ##
-## it can be useful for developer reference and it sometimes used by SlickStack ##
+## it can be useful for developer reference and is sometimes used by SlickStack ##
 
 ## script timestamp ##
 # touch /var/www/meta/.timestamp-ss-reboot ## EXCEPTIONAL CASE
