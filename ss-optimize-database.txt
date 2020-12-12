@@ -21,17 +21,21 @@ source /var/www/ss-config
 source /var/www/ss-functions
 
 ####################################################################################################
-#### SS-Optimize: Backup MySQL Database Before Proceeding (Via SS-Dump) ############################
+#### SS-Optimize-Database: MESSAGE (Begin) #########################################################
 ####################################################################################################
 
 ## MESSAGE ##
 echo -e "\e[36mRunning a quick database backup...\e[0m"
 
+####################################################################################################
+#### SS-Optimize-Database: Backup MySQL Database Before Proceeding (Via SS-Dump) ###################
+####################################################################################################
+
 ## run ss-dump ##
 source /var/www/ss-dump
 
 ####################################################################################################
-#### SS-Optimize: Delete Various (Blacklisted) Tables From MySQL Database ##########################
+#### SS-Optimize-Database: Delete Junk Tables From MySQL Database ##################################
 ####################################################################################################
 
 ## delete junk WordPress core tables ##
@@ -42,7 +46,7 @@ mysql --execute="DROP TABLE IF EXISTS ${DB_PREFIX}links;" ## wp_links virtually 
 # coming soon (depends on ss-config settings to avoid data loss)
 
 ####################################################################################################
-#### SS-Optimize: Drop Unused (Junk) Staging Site Tables From MySQL Database #######################
+#### SS-Optimize-Database: Drop Unused Staging Site Tables From MySQL Database #####################
 ####################################################################################################
 
 ## cleans up various erroneous and junk tables from staging due to past testing (etc) ##
@@ -100,7 +104,7 @@ mysql $DB_NAME < /var/www/meta/drop_tables.sql
 ## sed -i '$s/,$/[;]/' /var/www/meta/drop_tables.txt
 
 ####################################################################################################
-#### SS-Optimize: Convert Any MyISAM Tables To InnoDB Engine (Better Performance) ##################
+#### SS-Optimize-Database: Convert Any MyISAM Tables To InnoDB Engine ##############################
 ####################################################################################################
 
 ## the InnoDB engine is infinitely more robust for scaling and stability of LEMP stacks ##
@@ -127,21 +131,21 @@ cp /var/www/meta/myisam_tables.txt /var/www/meta/myisam_tables.sql
 mysql $DB_NAME < /var/www/meta/myisam_tables.sql
 
 ####################################################################################################
-#### SS-Optimize: Purge Cache (Redis) ##############################################################
+#### SS-Optimize-Database: Purge Cache (Redis) #####################################################
 ####################################################################################################
 
 ## run ss-purge-redis ##
 source /var/www/ss-purge-redis
 
 ####################################################################################################
-#### SS-Optimize: Touch Timestamp File (End Of Script) #############################################
+#### SS-Optimize-Database: Touch Timestamp File (End Of Script) ####################################
 ####################################################################################################
 
 ## this is a dummy timestamp file that will remember the last time this script was run ##
 ## it can be useful for developer reference and it sometimes used by SlickStack ##
 
 ## script timestamp ##
-touch /var/www/meta/.timestamp-ss-optimize
+touch /var/www/meta/.timestamp-ss-optimize-database
 
 ####################################################################################################
 #### SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ###############
