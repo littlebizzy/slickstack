@@ -44,9 +44,9 @@ title: SlickStack (Public Mirrors)
 * [ss-purge](ss-purge.txt)
 * [ss-reboot](ss-reboot.txt)
 * [ss-remote](ss-remote.txt)
-* [ss-reset-password](ss-reset-password.txt)
+* [ss-reset-password-sftp](ss-reset-password-sftp.txt)
 * [ss-restart-services](ss-restart-services.txt)
-* [ss-scan](ss-scan.txt)
+* [ss-scan-malware](ss-scan-malware.txt)
 * [ss-sync](ss-sync.txt)
 * [ss-update](ss-update.txt)
 * [ss-worker](ss-worker.txt)
@@ -138,8 +138,8 @@ title: SlickStack (Public Mirrors)
 * [craft-cms](/craft-cms/)
 * [git](/git/)
 * [letsencrypt](/letsencrypt/)
-* magento
-* mediawiki
+* [magento](/magento/)
+* [mediawiki](/mediawiki/)
 * [moodle](/moodle/)
 * [mysql](/mysql/)
 * [nginx](/nginx/)
@@ -179,4 +179,4 @@ title: SlickStack (Public Mirrors)
 
 ----
 
-*Last updated: Dec 11, 2020*
+*Last updated: Dec 12, 2020*
