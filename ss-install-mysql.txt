@@ -119,20 +119,26 @@ sudo mysql -e "DROP DATABASE IF EXISTS test;"
 ## we use root@localhost (auth_socket) and user@127.0.0.1 (TCP) for WordPress database ##
 ## the superuser admin@127.0.0.1 is also created to be used with phpMyAdmin, etc ##
 
-## create WordPress database ##
-sudo mysql -e "CREATE DATABASE IF NOT EXISTS ${DB_NAME};"
 
+## WORDPRESS (DEFAULT) ##
 
-
-## only if DEV_SITE not disabled in ss-config ##
-if [[ "$DEV_SITE" != "false" ]]; then
-    sudo mysql -e "CREATE DATABASE IF NOT EXISTS ${DB_NAME}_dev;"   
+## create production database ##
+if [[ "$SS_APP" == "wordpress" || -z "$SS_APP"  ]]; then
+sudo mysql -e "CREATE DATABASE IF NOT EXISTS wordpress;"
 fi
 
-## only if STAGING_SITE not disabled in ss-config ##
-if [[ "$STAGING_SITE" != "false" ]]; then
-    sudo mysql -e "CREATE DATABASE IF NOT EXISTS ${DB_NAME}_staging;"   
+## create dev database unless it is explicity disabled ##
+if [[ "$DEV_SITE" != "false" ]] && [[ "$SS_APP" == "wordpress" || -z "$SS_APP"  ]]; then
+    sudo mysql -e "CREATE DATABASE IF NOT EXISTS wordpress_dev;"   
 fi
+
+## create staging database unless it is explictly disabled ##
+if [[ "$STAGING_SITE" != "false" ]] && [[ "$SS_APP" == "wordpress" || -z "$SS_APP"  ]]; then
+    sudo mysql -e "CREATE DATABASE IF NOT EXISTS wordpress_staging;"   
+fi
+
+
+## OTHER APPS (COMING SOON) ##
 
 
 
@@ -493,5 +499,6 @@ touch /var/www/meta/.timestamp-ss-install-mysql
 ## Ref: https://askubuntu.com/questions/429512/dpkg-or-something-related-is-corrupted
 ## Ref: https://www.digitalocean.com/community/tutorials/how-to-configure-ssl-tls-for-mysql-on-ubuntu-18-04
 ## Ref: https://dev.mysql.com/doc/refman/8.0/en/encrypted-connections.html
+## Ref: https://unix.stackexchange.com/questions/47584/in-a-bash-script-using-the-conditional-or-in-an-if-statement
 
 ## SS_EOF
