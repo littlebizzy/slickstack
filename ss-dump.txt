@@ -6,9 +6,9 @@
 #### mirror: http://mirrors.slickstack.io/ss-dump.txt ##############################################
 #### path: /var/www/ss-dump ########################################################################
 #### destination: n/a (not a boilerplate) ##########################################################
-#### purpose: Dumps the live MySQL database to /var/www/wp.sql (the SFTP user can access) ##########
-#### module version: Ubuntu 20.04 LTS + MySQL 8.0.x ################################################
-#### sourced by: (various ss core bash scripts and cron jobs) ######################################
+#### purpose: Dumps live MySQL database to /var/www/meta/DB_NAME.sql (SFTP user can access) ########
+#### module version: MySQL 8.0.x ###################################################################
+#### sourced by: ss core cron jobs, ss core bash scripts ###########################################
 ####################################################################################################
 
 ## KEEP IN MIND THAT SS-DUMP MIGHT ONLY FUNCTION PROPERLY ON LOCALHOST DATABASES ##
@@ -32,7 +32,11 @@ echo -e "${LIGHTPURPLE}SS-DUMP: Dumping the live MySQL database to /var/www/meta
 
 ## dump production MySQL database (overwrites existing) ##
 if [[ "$SS_DUMP_MYSQL_DB" != "false" ]]; then 
-mysqldump --databases $DB_NAME > /var/www/meta/wp.sql
+# mysqldump --databases $DB_NAME > /var/www/meta/db.sql
+fi
+
+if [[ "$SS_DUMP_MYSQL_DB" != "false" ]] && [[ "$SS_APP" == "wordpress" || -z "$SS_APP"  ]]; then
+    mysqldump --databases wordpress > /var/www/meta/wp.sql ## change name to wordpress later
 fi
 
 ## DO NOT ENABLE THIS IN SS-CONFIG UNLESS YOUR SERVER HAS A TON OF EXTRA DISK SPACE ##
