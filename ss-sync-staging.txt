@@ -7,7 +7,8 @@
 #### path: /var/www/ss-sync-staging ################################################################
 #### destination: n/a (not a boilerplate) ##########################################################
 #### purpose: Syncs relevant files and database from production site to the staging site ###########
-#### module version: Ubuntu 20.04 LTS + MySQL 8.0.x + WordPress 5.5.x ##############################
+#### module version: WordPress 5.5.x + MySQL 8.0.x + ###############################################
+#### sourced by: ss core cron jobs #################################################################
 ####################################################################################################
 
 ## SS-SYNC DUPLICATES ALL RELEVANT FILES FROM PRODUCTION TO STAGING (BUT NOT UPLOADS) ##
@@ -20,7 +21,7 @@ source /var/www/ss-config
 source /var/www/ss-functions
 
 ####################################################################################################
-#### SS-Sync: Copy All Relevant Files From Production To Staging ###################################
+#### SS-Sync-Staging: Copy All Relevant Files From Production To Staging ###########################
 ####################################################################################################
 
 ## here we copy over everything from production to staging besides uploads (media files) ##
@@ -47,7 +48,7 @@ fi
 rm /var/www/html/staging/staging*
 
 ####################################################################################################
-#### SS-Sync: Copy Database From Production To Staging (Modify Table Prefix) #######################
+#### SS-Sync-Staging: Copy Database From Production To Staging (Modify Table Prefix) ###############
 ####################################################################################################
 
 ## schedule ss-dump beforehand to dump the MySQL database optimally before ss-sync runs ##
@@ -131,7 +132,7 @@ if [[ "$STAGING_SITE" != "false" ]]; then
     sed -i "s#staging_staging_#staging_#g" /tmp/staging.sql
 
 ####################################################################################################
-#### SS-Sync: Fix Any Hardcoded Links In Theme Files ###############################################
+#### SS-Sync-Staging: Fix Any Hardcoded Links In Theme Files #######################################
 ####################################################################################################
 
 ## many themes (or custom-coded themes) often contain hardcoded HTML assets and links ##
@@ -214,7 +215,7 @@ mysql --execute="UPDATE ${DB_NAME}.dev_options SET option_value='https://$SITE_D
     rm /tmp/staging*.sql*
 
 ####################################################################################################
-#### SS-Sync: Configure Staging Site WP-Config File (Same As SS-Install) ###########################
+#### SS-Sync-Staging: Configure Staging Site WP-Config File (Same As SS-Install) ###################
 ####################################################################################################
 
 ## MODULE VERSION: WP-Config Build #
@@ -367,7 +368,7 @@ mysql --execute="UPDATE ${DB_NAME}.dev_options SET option_value='https://$SITE_D
 fi
 
 ####################################################################################################
-#### SS-Sync: Ensure Critical Directories Exist + Run Final Scripts ################################
+#### SS-Sync-Staging: Ensure Critical Directories Exist + Run Final Scripts ########################
 ####################################################################################################
 
 ## ensure directories exist ##
@@ -375,21 +376,30 @@ mkdir /var/www/html/staging/wp-content/temp
 mkdir /var/www/html/staging/wp-content/uploads
 mkdir /var/www/html/staging/wp-content/upgrade
 
+
+
 ## run ss-muplugs ##
 source /var/www/ss-muplugs
 
-## run ss-perms ##
-source /var/www/ss-perms
+####################################################################################################
+#### SS-Sync-Staging: Reset Permissions (WordPress Core + WordPress Config) ########################
+####################################################################################################
+
+## run ss-perms-wordpress-core ##
+source /var/www/ss-perms-wordpress-core
+
+## run ss-perms-wordpress-config ##
+source /var/www/ss-perms-wordpress-config
 
 ####################################################################################################
-#### SS-Sync: Touch Timestamp File (End Of Script) #################################################
+#### SS-Sync-Staging: Touch Timestamp File (End Of Script) #########################################
 ####################################################################################################
 
 ## this is a dummy timestamp file that will remember the last time this script was run ##
-## it can be useful for developer reference and it sometimes used by SlickStack ##
+## it can be useful for developer reference and is sometimes used by SlickStack ##
 
 ## script timestamp ##
-touch /var/www/meta/.timestamp-ss-sync
+touch /var/www/meta/.timestamp-ss-sync-staging
 
 ####################################################################################################
 #### SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ###############
