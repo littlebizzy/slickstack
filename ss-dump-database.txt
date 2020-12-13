@@ -3,10 +3,10 @@
 ####################################################################################################
 #### author: SlickStack ############################################################################
 #### link: https://slickstack.io ###################################################################
-#### mirror: http://mirrors.slickstack.io/ss-dump.txt ##############################################
-#### path: /var/www/ss-dump ########################################################################
+#### mirror: http://mirrors.slickstack.io/ss-dump-database.txt #####################################
+#### path: /var/www/ss-dump-database ###############################################################
 #### destination: n/a (not a boilerplate) ##########################################################
-#### purpose: Dumps live MySQL database to /var/www/meta/DB_NAME.sql (SFTP user can access) ########
+#### purpose: Dumps the live MySQL database to /var/www/meta/ (SFTP user can access it) ############
 #### module version: MySQL 8.0.x ###################################################################
 #### sourced by: ss core cron jobs, ss core bash scripts ###########################################
 ####################################################################################################
@@ -21,7 +21,7 @@ source /var/www/ss-config
 source /var/www/ss-functions
 
 ####################################################################################################
-#### SS-Dump: Export The Live MySQL Database (mysqldump) ###########################################
+#### SS-Dump-Database: Export The Live MySQL Database (mysqldump) ##################################
 ####################################################################################################
 
 ## here we use mysqldump to dump a copy of the live production database to /var/www/meta ##
@@ -48,7 +48,7 @@ if [[ "$SS_DUMP_MYSQL_FILES" == "true" ]]; then
 fi
 
 ####################################################################################################
-#### SS-Dump: Reset Permissions (Allows SFTP User To Access The SQL Dump File) #####################
+#### SS-Dump-Database: Reset Permissions (Allows SFTP User To Access The SQL Dump File) ############
 ####################################################################################################
 
 ## here we do a quick permissions reset to ensure SFTP users can access the dump file ##
@@ -59,14 +59,14 @@ chown -R $SFTP_USER:www-data /var/www/meta/wp.sql
 chmod 0775 /var/www/meta/wp.sql
 
 ####################################################################################################
-#### SS-Dump: SUCCESS (OR FAIL) MESSAGE ############################################################
+#### SS-Dump-Database: SUCCESS (OR FAIL) MESSAGE ###################################################
 ####################################################################################################
 
 ## FUTURE: if = file exists + recent touch time + file contents not zero ##
 echo -e "${YELLOW}The MySQL database was successfully dumped to: /var/www/meta/wp.sql${NORMAL}" >&2
 
 ####################################################################################################
-#### SS-Dump: Touch Timestamp File (End Of Script) #################################################
+#### SS-Dump-Database: Touch Timestamp File (End Of Script) ########################################
 ####################################################################################################
 
 ## this is a dummy timestamp file that will remember the last time this script was run ##
