@@ -122,8 +122,19 @@ sudo mysql -e "DROP DATABASE IF EXISTS test;"
 ## create WordPress database ##
 sudo mysql -e "CREATE DATABASE IF NOT EXISTS ${DB_NAME};"
 
-sudo mysql -e "CREATE DATABASE IF NOT EXISTS ${DB_NAME}_dev;"
-sudo mysql -e "CREATE DATABASE IF NOT EXISTS ${DB_NAME}_staging;"
+
+
+## only if DEV_SITE not disabled in ss-config ##
+if [[ "$DEV_SITE" != "false" ]]; then
+    sudo mysql -e "CREATE DATABASE IF NOT EXISTS ${DB_NAME}_dev;"   
+fi
+
+## only if STAGING_SITE not disabled in ss-config ##
+if [[ "$STAGING_SITE" != "false" ]]; then
+    sudo mysql -e "CREATE DATABASE IF NOT EXISTS ${DB_NAME}_staging;"   
+fi
+
+
 
 ## create admin superuser (can be used with Adminer/phpMyAdmin) ##
 sudo mysql -e "ALTER USER IF EXISTS 'admin'@'localhost' IDENTIFIED WITH caching_sha2_password BY '${DB_PASSWORD_ROOT}';"
