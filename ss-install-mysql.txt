@@ -7,7 +7,8 @@
 #### path: /var/www/ss-install-mysql ###############################################################
 #### destination: n/a (not a boilerplate) ##########################################################
 #### purpose: Reinstalls the entire MySQL module for SlickStack servers (idempotent) ###############
-#### module version: Ubuntu 20.04 LTS + MySQL 8.0.x ################################################
+#### module version: MySQL 8.0.x ###################################################################
+#### sourced by: ss-install ########################################################################
 ####################################################################################################
 
 ## MYSQL IS PHASING OUT NATIVE PASSWORDS IN FAVOR OF UNIX SOCKETS AND/OR SHA2 HASHING ##
@@ -120,6 +121,9 @@ sudo mysql -e "DROP DATABASE IF EXISTS test;"
 
 ## create WordPress database ##
 sudo mysql -e "CREATE DATABASE IF NOT EXISTS ${DB_NAME};"
+
+sudo mysql -e "CREATE DATABASE IF NOT EXISTS ${DB_NAME}_dev;"
+sudo mysql -e "CREATE DATABASE IF NOT EXISTS ${DB_NAME}_staging;"
 
 ## create admin superuser (can be used with Adminer/phpMyAdmin) ##
 sudo mysql -e "ALTER USER IF EXISTS 'admin'@'localhost' IDENTIFIED WITH caching_sha2_password BY '${DB_PASSWORD_ROOT}';"
@@ -381,7 +385,7 @@ rm /var/run/mysqld.bak*
 ####################################################################################################
 
 ## this is a dummy timestamp file that will remember the last time this script was run ##
-## it can be useful for developer reference and it sometimes used by SlickStack ##
+## it can be useful for developer reference and is sometimes used by SlickStack ##
 
 ## script timestamp ##
 touch /var/www/meta/.timestamp-ss-install-mysql
