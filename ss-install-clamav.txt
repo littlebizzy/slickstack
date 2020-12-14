@@ -24,18 +24,25 @@ source /var/www/ss-functions
 ## this will install ClamAV for occassional malware logging: /var/www/logs/clamav.log ##
 ## keep in mind that infected files are not automatically cleaned or deleted ##
 
-## install clamav package ##
-apt install clamav
+## for Ubuntu 16.04 LTS only ##
+if [[ "${UBUNTU_VERSION}" = "16.04" ]]; then
+    apt install clamav clamav-daemon
+    # incomplete... research
+fi
 
 ## for Ubuntu 18.04 LTS only ##
 if [[ "${UBUNTU_VERSION}" = "18.04" ]]; then
+    apt install clamav
     freshclam ## updates malware cache after clamav package installed
 fi
 
 ## for Ubuntu 20.04 LTS only ##
 if [[ "${UBUNTU_VERSION}" = "20.04" ]]; then
+    apt install clamav
     # freshclam ## (no longer needed as this runs automatically)
 fi
+
+## NEED TO EXPAND AND IMPROVE ##
 
 # sed -i '/UpdateLogFile/c\UpdateLogFile /var/www/logs/clamav.log' /etc/clamav/freshclam.conf
 sed -i '/LogRotate/c\LogRotate true' /etc/clamav/freshclam.conf
@@ -56,6 +63,7 @@ touch /var/www/meta/.timestamp-ss-install-clamav
 #### SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ###############
 ####################################################################################################
 
-## Ref:
+## Ref: https://askubuntu.com/questions/1214151/ubuntu-clamav-freshclam-cant-download-main-cvd
+## Ref: https://medium.com/@kainikhil/installing-clamav-and-clam-f4d26d8150c4
 
 ## SS_EOF
