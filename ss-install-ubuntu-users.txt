@@ -53,6 +53,15 @@ adduser --disabled-password --gecos "" $SFTP_USER
 # echo "$SFTP_USER:$SFTP_PASSWORD" | sudo /usr/sbin/chpasswd
 sudo echo "$SFTP_USER:$SFTP_PASSWORD" | sudo /usr/sbin/chpasswd
 
+
+## ensure wordpress group exists ##
+addgroup wordpress 
+
+## add SFTP_USER and www-data to wordpress group + add SFTP_USER to www-data group ##
+adduser $SFTP_USER wordpress
+adduser www-data wordpress
+adduser $SFTP_USER www-data
+
 ####################################################################################################
 #### SS-Install-Ubuntu-Users: Configure Sudo Permissions (Sudoers File) ############################
 ####################################################################################################
@@ -69,9 +78,7 @@ sed -i "s/@SUDO_USER/${SUDO_USER}/g" /tmp/sudoers
 ## copy files to their destinations ##
 cp /tmp/sudoers /etc/sudoers
 
-## reset permissions ##
-chown root:root /etc/sudoers
-chmod 0440 /etc/sudoers
+
 
 ####################################################################################################
 #### SS-Install-Ubuntu-Users: Reset Permissions (Ubuntu Users) #####################################
