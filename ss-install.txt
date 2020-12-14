@@ -370,6 +370,17 @@ chmod 6770 /var/www/ss-check
 ## run scripts ##
 source /var/www/ss-check
 
+
+####################################################################################################
+#### SS-Install: Set Confold As Ubuntu Dpkg Default ################################################
+####################################################################################################
+
+## the first time you run ss-install we want to ensure that confold is dpkg default ##
+## this helps to avoid overwriting module config files that SlickStack uses ##
+
+## set confold as dpkg default (fail-safe in case apt upgrade called directly) ##
+DEBIAN_FRONTEND=noninteractive dpkg --configure -a --force-confold
+
 ####################################################################################################
 #### SS-Install: Configure Ubuntu Root + Users + Sudo Permissions + SSH/SFTP #######################
 ####################################################################################################
@@ -383,15 +394,14 @@ source /var/www/ss-install-ubuntu-users
 ## run ss-install-ubuntu-ssh ##
 source /var/www/ss-install-ubuntu-ssh
 
-####################################################################################################
-#### SS-Install: Install SlickStack (Ubuntu) Root Crontab File #####################################
-####################################################################################################
-
 ## cron should be installed by default on Ubuntu but this script will install otherwise ##
 ## it will also install root crontab and core cron jobs from SlickStack mirrors ##
 
-## run ss-install-cron ##
+## run ss-install-ubuntu-crontab ##
 source /var/www/ss-install-ubuntu-crontab
+
+## run ss-install-ubuntu-utils ##
+source /var/www/ss-install-ubuntu-utils
 
 ####################################################################################################
 #### SS-Install: Update Apt Cache And Upgrade Packages #############################################
@@ -402,13 +412,6 @@ source /var/www/ss-install-ubuntu-crontab
 
 ## run ss-update ##
 source /var/www/ss-update
-
-####################################################################################################
-#### SlickStack: Install Various Utilities Via Default Ubuntu Packages #############################
-####################################################################################################
-
-## run ss-install-ubuntu-utils ##
-source /var/www/ss-install-ubuntu-utils
 
 ####################################################################################################
 #### SS-Install: Install PHP-FPM 7.4.x + Required PHP Extensions ###################################
@@ -445,36 +448,14 @@ source /var/www/ss-install-nginx
 ## run ss-encrypt (now included in ss-install-nginx) ##
 # source /var/www/ss-encrypt
 
-####################################################################################################
-#### SS-Install: Install OpenSSL + Certbot (Let's Encrypt) Free SSL Certificates ###################
-####################################################################################################
-
 ## since ss-encrypt runs every few weeks (or months) we avoid aggressive reinstall there ##
 ## for a cleaner SSL reinstall run ss-install or ss-update instead of ss-encrypt ##
 
-## required to install Certbot on Ubuntu 18.04 ##
-if [[ "${UBUNTU_VERSION}" = "18.04" ]]; then
-    apt install software-properties-common
-    add-apt-repository universe
-    add-apt-repository ppa:certbot/certbot ## Ubuntu 20.04 includes Certbot
-    apt update
-fi
-
-## clean reinstall for Ubuntu 20.04 ##
-if [[ "${UBUNTU_VERSION}" = "20.04" ]]; then
-    apt remove certbot 
-    apt remove python3-certbot-nginx
-    add-apt-repository --remove ppa:certbot/certbot ## just in case (shouldn't exist)
-fi
-
-## install Certbot ##
-apt install certbot python3-certbot-nginx
-
 ## run ss-encrypt ##
-source /var/www/ss-encrypt
+# source /var/www/ss-encrypt
 
 ####################################################################################################
-#### SS-Install: Install MySQL (Single Database Only) + Users ######################################
+#### SS-Install: Install MySQL (Database) ##########################################################
 ####################################################################################################
 
 ## here we install MySQL server (no client) and users based on the ss-config settings ##
@@ -484,7 +465,7 @@ source /var/www/ss-encrypt
 source /var/www/ss-install-mysql
 
 ####################################################################################################
-#### SS-Install: Install Redis Server + PHP-Redis (For PHP-FPM) Extension ##########################
+#### SS-Install: Install Redis (Object Cache) ######################################################
 ####################################################################################################
 
 ## Redis is only installed to enable our default (optional) Object Cache (MU plugin) ##
@@ -504,6 +485,9 @@ if [[ "$SS_APP" == "wordpress" || -z "$SS_APP"  ]]; then
 
     ## run ss-install-wordpress-core ##
     source /var/www/ss-install-wordpress-core
+
+    ## here we retrieve latest wp-config.php boilerplate and customize per ss-config settings ##
+    ## you should never make changes directly to wp-config.php in SlickStack servers ##
 
     ## run ss-install-wordpress-config ##
     source /var/www/ss-install-wordpress-config
