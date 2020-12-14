@@ -8,10 +8,26 @@
 #### destination: n/a (not a boilerplate) ##########################################################
 #### purpose: Reinstalls the entire SlickStack LEMP server and all modules, etc (idempotent) #######
 #### module version: Ubuntu 20.04 LTS ##############################################################
+#### sourced by: n/a ###############################################################################
 ####################################################################################################
 
 ## SS-CONFIG MUST BE PROPERLY CONFIGURED (AND CURRENT BUILD) BEFORE RUNNING SS-INSTALL ##
 ## ENSURE SS-CONFIG OPTIONS REMAIN CURRENT BY RUNNING SS-UPDATE OCCASIONALLY ##
+
+####################################################################################################
+#### SS-Install: Create Directory Tree + Install SS-Functions File #################################
+####################################################################################################
+
+mkdir /var/www
+mkdir /var/www/cache
+mkdir /var/www/cache/opcache
+mkdir /var/www/logs
+mkdir /var/www/meta
+mkdir /var/www/meta/.ssh
+
+rm /tmp/ss-functions
+wget -qO /tmp/ss-functions http://mirrors.slickstack.io/ss-functions.txt
+cp /tmp/ss-functions /var/www/ss-functions
 
 ####################################################################################################
 #### SlickStack: Critical Variables For This Script To Work ########################################
@@ -20,135 +36,14 @@
 ## something like environment variables but not exactly that are placed in core scripts ##
 ## we keep these variables together for easy reference and better organization ##
 
-## include SlickStack configuration (if exists) ##
 # SS_CONFIG=/var/www/ss-config
 # test -f $SS_CONFIG && source $SS_CONFIG
-source /var/www/ss-config
 
-## hardcoded variables ##
-UBUNTU_VERSION=`lsb_release -rs`
-DISK_FREE=`df -k --output=avail "$PWD" | tail -n1`
-NETWORK_INTERFACE=`ip route get 1.1.1.1 | head -n1 | awk '{print $5}'`
-IPV4_ADDRESS=`ip addr show $NETWORK_INTERFACE | grep "inet " | awk '{ print $2;exit }' | cut -d/ -f1`
-IPV6_ADDRESS=`ip addr show $NETWORK_INTERFACE | grep "inet6 " | awk '{ print $2;exit }' | cut -d/ -f1`
+## include SlickStack configuration ##
+# source /var/www/ss-config ## EXCEPTIONAL CASE
 
-####################################################################################################
-#### SlickStack: Critical Bash Functions (Aliases) For This Script To Work #########################
-####################################################################################################
-
-## the below functions are hardcoded into every SlickStack script to ensure reliability ##
-## this also speeds up processing times by avoiding repeated inline commands ##
-
-## add-apt-repository alias flags ##
-function add-apt-repository {
-    export DEBIAN_FRONTEND=noninteractive
-    export DEBIAN_PRIORITY=critical
-    export PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'
-    command /usr/bin/add-apt-repository --yes "$@"
-}
-
-## apt alias flags ##
-function apt {
-    export DEBIAN_FRONTEND=noninteractive
-    export DEBIAN_PRIORITY=critical
-    export PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'
-    command /usr/bin/apt --yes --quiet --option Dpkg::Options::=--force-confold --option Dpkg::Options::=--force-confdef "$@"
-}
-
-## cp alias flags ##
-function cp {
-    command cp -R -f -d --no-preserve=mode,ownership "$@"
-}
-
-## ln alias flags ##
-function ln {
-    command ln -s -f "$@"
-}
-
-## mkdir alias flags ##
-function mkdir {
-    command mkdir -p "$@"
-}
-
-## mysql alias flags ##
-function mysql {
-    command mysql --user=root --host=localhost --protocol=socket --port=3306 --force "$@"
-}
-
-## mysqldump alias flags ##
-# function mysqldump {
-    # /usr/bin/mysqldump
-#     command mysqldump --user=$DB_USER --password=$DB_PASSWORD --host=$DB_HOST --protocol=tcp --port=3306 --no-tablespaces --single-transaction --skip-lock-tables --dump-date --force "$@"
-# }
-
-## rm alias flags ##
-function rm {
-    command rm -R -f "$@"
-}
-
-## rsync alias flags ##
-function rsync {
-    command rsync -aI --ignore-errors "$@"
-}
-
-## unzip alias flags ##
-function unzip {
-    command unzip -o "$@"
-}
-
-## wget alias flags ##
-function wget {
-    command wget --no-check-certificate --no-cache --no-cookies --tries=3 --timeout=15 "$@"
-}
-
-####################################################################################################
-#### SlickStack: Pretty Colors + Styles For The Shell ##############################################
-####################################################################################################
-
-## these color variables help maintain cleaner and prettier Bash scripts in SlickStack ##
-## we substitute e.g. ${PINK} within any echo line then use ${RESET} to revert ##
-
-## pretty colors ##
-NOCOLOR='\033[0m'
-DARKRED='\033[0;31m'
-LIGHTRED='\033[1;31m'
-ORANGE='\033[0;33m'
-YELLOW='\033[1;33m'
-DARKGREEN='\033[0;32m'
-LIGHTGREEN='\033[1;32m'
-DARKCYAN='\033[0;36m'
-LIGHTCYAN='\033[1;36m'
-DARKBLUE='\033[0;34m'
-LIGHTBLUE='\033[1;34m'
-DARKPURPLE='\033[0;35m'
-LIGHTPURPLE='\033[1;35m'
-
-PINK='\033[1;35m'
-
-DARKGRAY='\033[1;30m'
-LIGHTGRAY='\033[0;37m'
-WHITE='\033[1;37m'
-
-BGBLACK=$(tput setab 0) # black
-BGRED=$(tput setab 1) # red
-BGGREEN=$(tput setab 2) # green
-BGYELLOW=$(tput setab 3) # yellow
-BGBLUE=$(tput setab 4) # blue
-BGPINK=$(tput setab 5) # magenta (pink)
-BGCYAN=$(tput setab 6) # cyan
-BGWHITE=$(tput setab 7) # white
-
-## pretty styles ##
-BOLD=$(tput bold) # bold (strong)
-DIM=$(tput dim) # dim (half-bright)
-NORMAL=$(tput sgr0) # reset all styles (normal)
-RESET=$(tput sgr0) # reset all styles (normal)
-BLINK=$(tput blink) # blink
-UNDERLINE=$(tput smul) # underline
-ENDUNDER=$(tput rmul) # end underline
-REVERSE=$(tput rev) # reverse
-STANDOUT=$(tput smso) # standout (highlight)
-ENDSTAND=$(tput rmso) # end standout
+## include SlickStack functions ##
+source /var/www/ss-functions
 
 ####################################################################################################
 #### SS-Install: Check OS Compability + Disk Space + Verify SS-Config Build ########################
