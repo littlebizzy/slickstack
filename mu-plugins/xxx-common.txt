@@ -263,8 +263,37 @@ function ss_menu() {
 		
 		echo '<br class="clear" />
 		<h2>Malware Log</h2>
-		<p></p>
-		<br class="clear" />';
+				<p>Below are the most recent lines from the ClamAV (Antivirus) scan results log: <code>/var/www/logs/clamav.log</code></p>
+		<pre>';
+
+    function lastLines($file, $lines) {
+        $size = filesize($file);
+      $fd=fopen($file, 'r+');
+      $pos = $size;
+      $n=0;
+      
+                        while ( $n < $lines+1 && $pos > 0) {
+        fseek($fd, $pos);
+        $a = fread($fd, 1);
+                if ($a === "\n") {
+                        ++$n;
+                };
+        $pos--;
+        }
+        // $array = array_reverse($array);                      
+        $ret = array();
+                for ($i=0; $i<$lines; $i++) {
+                array_push($ret, fgets($fd));
+                }
+		
+	$retrev = array_reverse($ret);
+        
+	return $retrev;
+    }
+    
+    print_r(implode(lastLines('/var/www/logs/clamav.log', 999)));
+
+    echo '</pre>';
         
 		break;
 		
