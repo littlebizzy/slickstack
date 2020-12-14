@@ -33,21 +33,8 @@ rm /tmp/default*
 #### SS-Install: Check OS Compability + Verify SS-Config Freshness + Backup Database ###############
 ####################################################################################################
 
-## backup database before proceeding ##
+## run ss-dump ##
 source /var/www/ss-dump
-
-####################################################################################################
-#### SlickStack: Set Dpkg Basic Settings + Update Apt (Package) Cache ##############################
-####################################################################################################
-
-## MESSAGE ##
-echo -e "\e[36mSet dpkg to noneractive and force confold and update apt cache...\e[0m"
-
-## set confold as dpkg default (fail-safe in case apt upgrade called directly) ##
-DEBIAN_FRONTEND=noninteractive dpkg --configure -a --force-confold
-
-## update repo cache ##
-apt update
 
 ####################################################################################################
 #### SlickStack: Install Nginx Packages (Includes FastCGI Cache + OpenSSL) #########################
@@ -60,9 +47,19 @@ apt update
 ## update Ubuntu package cache ##
 apt update
 
-## Nginx mainline (dev) branch ppa no longer required (Ubuntu 20.04+) ##
+## required to install Certbot on Ubuntu 18.04 ##
+if [[ "${UBUNTU_VERSION}" = "18.04" ]]; then
+    apt install software-properties-common
+    add-apt-repository universe
+    add-apt-repository ppa:certbot/certbot ## Ubuntu 20.04 includes Certbot
+fi
+
+## clean reinstall for Ubuntu 20.04 ##
 if [[ "${UBUNTU_VERSION}" = "20.04" || -z "${UBUNTU_VERSION}" ]]; then 
-    add-apt-repository --remove ppa:nginx/development
+    apt remove certbot 
+    apt remove python3-certbot-nginx
+    add-apt-repository --remove ppa:certbot/certbot ## just in case (shouldn't exist)
+    apt install certbot python3-certbot-nginx
 fi
 
 ## update package cache (again... not needed in Ubuntu 18.04+ but just for fun) ##
@@ -70,11 +67,6 @@ apt update
 
 ## install Nginx Extras ##
 apt install nginx-extras
-
-## install Certbot stuff too (helps avoids error messages) ##
-if [[ "${UBUNTU_VERSION}" = "20.04" || -z "${UBUNTU_VERSION}" ]]; then 
-    apt install certbot python3-certbot-nginx
-fi
 
 ####################################################################################################
 #### SlickStack: Install + Configure Nginx (General Settings) ######################################
