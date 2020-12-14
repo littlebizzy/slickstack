@@ -21,6 +21,15 @@ source /var/www/ss-config
 source /var/www/ss-functions
 
 ####################################################################################################
+#### SS-Install-PHP: Cleanup Temporary Files #######################################################
+####################################################################################################
+
+## delete tmp files ##
+rm /tmp/php-fpm*
+rm /tmp/php-ini*
+rm /tmp/www*
+
+####################################################################################################
 #### SS-Install-PHP: Backup Database Before Proceeding #############################################
 ####################################################################################################
 
@@ -66,11 +75,6 @@ apt install php-redis
 
 ## next we optimize the PHP-FPM configuration files based on settings from ss-config ##
 ## several common PHP settings are hardcoded to improve LEMP server stability ##
-
-## delete tmp files ##
-rm /tmp/php-fpm*
-rm /tmp/php-ini*
-rm /tmp/www*
 
 ## download latest versions ##
 wget -O /tmp/php-fpm.conf http://mirrors.slickstack.io/php-fpm/php-fpm-conf.txt
@@ -424,11 +428,22 @@ source /var/www/ss-perms-php
 source /var/www/ss-purge-opcache
 
 ####################################################################################################
-#### SS-Perms: finish up #########################################################
+#### SS-Install-PHP: Restart Services (PHP) ########################################################
 ####################################################################################################
 
 ## restart services ##
 /etc/init.d/php*-fpm restart
+
+####################################################################################################
+#### SS-Install-PHP: Reset Permissions (PHP) #######################################################
+####################################################################################################
+
+## run ss-perms-php ##
+source /var/www/ss-perms-php
+
+####################################################################################################
+#### SS-Install-PHP: Cleanup Temporary Files #######################################################
+####################################################################################################
 
 ## delete tmp files ##
 rm /tmp/php-fpm*
@@ -440,7 +455,7 @@ rm /tmp/www*
 ####################################################################################################
 
 ## this is a dummy timestamp file that will remember the last time this script was run ##
-## it can be useful for developer reference and it sometimes used by SlickStack ##
+## it can be useful for developer reference and is sometimes used by SlickStack ##
 
 ## script timestamp ##
 touch /var/www/meta/.timestamp-ss-install-php
