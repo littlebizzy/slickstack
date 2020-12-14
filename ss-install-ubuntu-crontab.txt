@@ -20,14 +20,18 @@ source /var/www/ss-config
 source /var/www/ss-functions
 
 ####################################################################################################
+#### SS-Install-Ubuntu-Crontab: Cleanup Temporary Files ############################################
+####################################################################################################
+
+## delete tmp files ##
+rm /tmp/*crontab*
+
+####################################################################################################
 #### SS-Install-Ubuntu-Crontab: Ensure Cron Installed + Install SlickStack (Root) Crontab ##########
 ####################################################################################################
 
 ## ensure cron package installed (default on Ubuntu) ##
 apt install cron
-
-## delete tmp files ##
-rm /tmp/*crontab*
 
 # install crontab (unique to SlickStack) ##
 cp /var/www/00-crontab /tmp/00-crontab
@@ -42,11 +46,25 @@ chmod 0600 /var/spool/cron/crontabs/root ## must be exactly 0600 or crontab will
 /etc/init.d/cron reload ## reload better than restart
 
 ####################################################################################################
+#### SS-Install-Ubuntu-Crontab: Reset Permissions (Ubuntu Crontab) #################################
+####################################################################################################
+
+## run ss-perms-ubuntu-crontab ##
+source /var/www/ss-perms-ubuntu-crontab
+
+####################################################################################################
+#### SS-Install-Ubuntu-Crontab: Cleanup Temporary Files ############################################
+####################################################################################################
+
+## delete tmp files ##
+rm /tmp/*crontab*
+
+####################################################################################################
 #### SS-Install-Ubuntu-Crontab: Touch Timestamp File (End Of Script) ###############################
 ####################################################################################################
 
 ## this is a dummy timestamp file that will remember the last time this script was run ##
-## it can be useful for developer reference and it sometimes used by SlickStack ##
+## it can be useful for developer reference and is sometimes used by SlickStack ##
 
 ## script timestamp ##
 touch /var/www/meta/.timestamp-ss-install-ubuntu-crontab
