@@ -21,6 +21,15 @@ source /var/www/ss-config
 source /var/www/ss-functions
 
 ####################################################################################################
+#### SS-Install-Nginx: Cleanup Temporary Files #####################################################
+####################################################################################################
+
+## delete tmp files ##
+rm /tmp/nginx*
+rm /tmp/server-block*
+rm /tmp/default*
+
+####################################################################################################
 #### SS-Install: Check OS Compability + Verify SS-Config Freshness + Backup Database ###############
 ####################################################################################################
 
@@ -513,13 +522,6 @@ sudo ln -s /etc/nginx/sites-available/dev.${SITE_TLD} /etc/nginx/sites-enabled/
 sudo ln -s /etc/nginx/sites-available/staging.${SITE_TLD} /etc/nginx/sites-enabled/
 
 ####################################################################################################
-#### SS-Install-Nginx: Reset Permissions (Nginx) ###################################################
-####################################################################################################
-
-## run ss-perms-nginx ##
-source /var/www/ss-perms-nginx
-
-####################################################################################################
 #### SS-Install-Nginx: Purge Cache (Nginx) #########################################################
 ####################################################################################################
 
@@ -527,26 +529,53 @@ source /var/www/ss-perms-nginx
 source /var/www/ss-purge-nginx
 
 ####################################################################################################
-#### SS-Install-Nginx: Restart Nginx Service + Run SS-Encrypt ######################################
+#### SS-Install-Nginx: Reset Permissions (Nginx) ###################################################
 ####################################################################################################
 
-## restart Nginx ##
+## run ss-perms-nginx ##
+source /var/www/ss-perms-nginx
+
+####################################################################################################
+#### SS-Install-Nginx: Restart Services (Nginx) ####################################################
+####################################################################################################
+
+## restart nginx ##
 /etc/init.d/nginx restart
+
+####################################################################################################
+#### SS-Install-Nginx: Configure SSL (Via SS-Encrypt) ##############################################
+####################################################################################################
 
 ## TEMP FIX TO AVOID ss-install-nginx from breaking Lets Encrypt certs ##
 ## run ss-encrypt ##
 source /var/www/ss-encrypt
 
+####################################################################################################
+#### SS-Install-Nginx: Configure WordPress (Via SS-Install-WordPress-Config) #######################
+####################################################################################################
+
 ## ensures that concatenate is disabled in wp-config to support latest nginx server block ##
-## run ss-install-wordpress-config ##
-source /var/www/ss-install-wordpress-config
+
+if [[ "$SS_APP" == "wordpress" || -z "$SS_APP"  ]]; then
+
+    ## run ss-install-wordpress-config ##
+    source /var/www/ss-install-wordpress-config
+    
+fi
+
+####################################################################################################
+#### SS-Install-Nginx: Cleanup Temporary Files #####################################################
+####################################################################################################
+
+## delete tmp files ##
+# n/a
 
 ####################################################################################################
 #### SS-Install-Nginx: Touch Timestamp File (End Of Script) ########################################
 ####################################################################################################
 
 ## this is a dummy timestamp file that will remember the last time this script was run ##
-## it can be useful for developer reference and it sometimes used by SlickStack ##
+## it can be useful for developer reference and is sometimes used by SlickStack ##
 
 ## script timestamp ##
 touch /var/www/meta/.timestamp-ss-install-nginx
