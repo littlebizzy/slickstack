@@ -414,7 +414,7 @@ source /var/www/ss-install-ubuntu-utils
 source /var/www/ss-update
 
 ####################################################################################################
-#### SS-Install: Install PHP-FPM 7.4.x + Required PHP Extensions ###################################
+#### SS-Install: Install PHP-FPM ###################################################################
 ####################################################################################################
 
 ## here we install the PHP-FPM module which includes OPcache for better performance ##
@@ -436,7 +436,7 @@ source /var/www/ss-install-ubuntu-aliases
 ## FUTURE: install other CLIs here (e.g. Magento, PrestaShop, etc)
 
 ####################################################################################################
-#### SS-Install: Install Nginx + FastCGI Cache + OpenSSL + Let's Encrypt ###########################
+#### SS-Install: Install Nginx (Server) + OpenSSL + Lets Encrypt ###################################
 ####################################################################################################
 
 ## the Nginx installer includes OpenSSL and Let's Encrypt configuration to avoid errors ##
@@ -445,13 +445,10 @@ source /var/www/ss-install-ubuntu-aliases
 ## run ss-install-nginx ##
 source /var/www/ss-install-nginx
 
-## run ss-encrypt (now included in ss-install-nginx) ##
-# source /var/www/ss-encrypt
-
 ## since ss-encrypt runs every few weeks (or months) we avoid aggressive reinstall there ##
-## for a cleaner SSL reinstall run ss-install or ss-update instead of ss-encrypt ##
+## for a cleaner SSL reinstall run ss-install-nginx instead of running ss-encrypt ##
 
-## run ss-encrypt ##
+## run ss-encrypt (now included in ss-install-nginx) ##
 # source /var/www/ss-encrypt
 
 ####################################################################################################
@@ -475,8 +472,11 @@ source /var/www/ss-install-mysql
 source /var/www/ss-install-redis
  
 ####################################################################################################
-#### SS-Install: Install WordPress #################################################################
+#### SS-Install: Install CMS (WordPress, Magento, MediaWiki, Etc) ##################################
 ####################################################################################################
+
+## below the script will check to see what PHP-based CMS you have chosen in ss-config ##
+## if no CMS is explicity chosen than WordPress will be installed by default ##
 
 if [[ "$SS_APP" == "wordpress" || -z "$SS_APP"  ]]; then
 
@@ -501,7 +501,7 @@ if [[ "$SS_APP" == "wordpress" || -z "$SS_APP"  ]]; then
 fi
 
 ####################################################################################################
-#### SS-Install: Install Adminer (phpMyAdmin) ######################################################
+#### SS-Install: Install Adminer (i.e. phpMyAdmin) #################################################
 ####################################################################################################
 
 ## should be installed after PHP-FPM and Nginx modules to ensure proper installation ##
@@ -521,7 +521,7 @@ source /var/www/ss-install-adminer
 source /var/www/ss-install-clamav
 
 ####################################################################################################
-#### SS-Install: Optimize The Linux (Ubuntu) System Kernel #########################################
+#### SS-Install: Install (Optimize) Ubuntu Linux Kernel ############################################
 ####################################################################################################
 
 ## we save this for near last just in case the kernel gets messed up and requires fixing ##
@@ -531,7 +531,7 @@ source /var/www/ss-install-clamav
 source /var/www/ss-install-ubuntu-kernel
 
 ####################################################################################################
-#### SS-Install: Install UFW Firewall + Configure Firewall Rules ###################################
+#### SS-Install: Install UFW (Firewall) ############################################################
 ####################################################################################################
 
 ## here we install and configure the very simple UFW Firewall that Ubuntu maintains ##
@@ -547,10 +547,6 @@ source /var/www/ss-install-ufw
 ## not a virgin install anymore ##
 mkdir /var/www/meta/ && touch /var/www/meta/.cherry
 
-## run scripts ##
-source /var/www/ss-purge
-source /var/www/ss-perms
-
 ## reset all logs to NULL ##
 cat /dev/null > /var/www/logs/clamav.log
 cat /dev/null > /var/www/logs/error.log
@@ -562,11 +558,25 @@ cat /dev/null > /var/www/logs/redis.log
 #### SS-Install: Restart Services ##################################################################
 ####################################################################################################
 
+## run ss-perms ##
+source /var/www/ss-perms
+
+####################################################################################################
+#### SS-Install: Purge All Caches ##################################################################
+####################################################################################################
+
+## run ss-purge ##
+source /var/www/ss-purge
+
+####################################################################################################
+#### SS-Install: Restart Services ##################################################################
+####################################################################################################
+
 ## run ss-restart-services ##
 source /var/www/ss-restart-services
 
 ####################################################################################################
-#### SS-Install: Display Overview Summary Of Entire SlickStack Configuration #######################
+#### SS-Install: Display SlickStack Configuration Overview #########################################
 ####################################################################################################
 
 ## run ss-overview ##
@@ -593,7 +603,7 @@ echo -e ""
 ####################################################################################################
 
 ## this is a dummy timestamp file that will remember the last time this script was run ##
-## it can be useful for developer reference and it sometimes used by SlickStack ##
+## it can be useful for developer reference and is sometimes used by SlickStack ##
 
 ## script timestamp ##
 touch /var/www/meta/.timestamp-ss-install
