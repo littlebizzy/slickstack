@@ -21,6 +21,26 @@ source /var/www/ss-functions
 #### SS-Perms-MySQL: Reset Permissions (MySQL) #####################################################
 ####################################################################################################
 
+## reset permissions ##
+# chown root:root /etc/mysql/my.cnf
+# chmod 0777 /etc/mysql/my.cnf ## symlink to /etc/alternatives/my.cnf
+
+## reset permissions ##
+# mkdir /var/run/mysqld
+# chown mysql:mysql /var/run/mysqld
+# chmod -R 0775 /var/run/mysqld
+# chown mysql:mysql /var/www/logs/mysql*.log
+
+# chown mysql:mysql /var/lib/mysql ## drwx------
+# chown mysql:mysql /var/lib/mysql-files ## drwx------
+# chown mysql:mysql /var/lib/mysql-keyring ## drwx------
+# chown root:root /var/lib/mysql-upgrade ## must be root:root ## drwxr-xr-x
+
+## create MySQL log files if they do not exist ##
+if [ ! -f "/var/www/logs/mysql-gen.log" ]; then touch "/var/www/logs/mysql-gen.log"; fi
+if [ ! -f "/var/www/logs/mysql-error.log" ]; then touch "/var/www/logs/mysql-error.log"; fi
+if [ ! -f "/var/www/logs/mysql-slow.log" ]; then touch "/var/www/logs/mysql-slow.log"; fi
+
 mkdir /var/run/mysqld
 
 ## reset MySQL permissions ##
@@ -47,6 +67,12 @@ fi
 ## SQL dump file (we want SFTP users to be able to access) ##
 chown -R $SFTP_USER:www-data /var/www/meta/wp.sql ## $SFTP_USER:www-data to better support SFTP access
 chmod 0640 /var/www/meta/wp.sql ## 0640 should be enough (or 644)
+
+## SAFE MODE reset permissions ##
+# mkdir /var/run/mysqld
+# chown mysql:mysql /var/run/mysqld
+# chmod -R 775 /var/run/mysqld
+# chown mysql:mysql /var/www/logs/mysql*.log
 
 ####################################################################################################
 #### SS-Perms-MySQL: Touch Timestamp File (End Of Script) ##########################################
