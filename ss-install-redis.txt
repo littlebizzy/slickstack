@@ -7,7 +7,7 @@
 #### path: /var/www/ss-install-redis ###############################################################
 #### destination: n/a (not a boilerplate) ##########################################################
 #### purpose: Reinstalls the entire Redis server module for object caching (idempotent) ############
-#### module version: Ubuntu 20.04 LTS + Redis 5.0.x ################################################
+#### module version: Redis 5.0.x ###################################################################
 #### sourced by: ss-install ########################################################################
 ####################################################################################################
 
@@ -20,11 +20,8 @@ source /var/www/ss-config
 ## include SlickStack functions ##
 source /var/www/ss-functions
 
-## script timestamp ##
-touch /var/www/meta/.timestamp-ss-install-redis
-
 ####################################################################################################
-#### SS-Install-Redis: Install Redis Server + PHP-Redis Extension ##################################
+#### SS-Install-Redis: Install Redis (Object Cache) ################################################
 ####################################################################################################
 
 ## here we install redis-server (no client) for use in WordPress object caching (only) ##
@@ -34,9 +31,13 @@ touch /var/www/meta/.timestamp-ss-install-redis
 apt purge redis-server
 apt purge php-redis
 
-## install redis-server + php-redis ##
-apt install redis-server
-apt install php-redis
+## for Ubuntu 20.04 LTS only ##
+if [[ "${UBUNTU_VERSION}" = "20.04" ]]; then
+    apt install redis-server
+    apt install php-redis
+fi
+
+## NEEDS TO BE IMPROVED AND EXPANDED ##
 
 ## configure redis-server for object caching (only) ##
 sed -i '/maxmemory.*bytes.*/c\maxmemory 256mb' /etc/redis/redis.conf
@@ -44,10 +45,6 @@ sed -i '/maxmemory-policy noeviction/c\maxmemory-policy allkeys-lru' /etc/redis/
 sed -i '/always-show-logo yes/c\always-show-logo no' /etc/redis/redis.conf
 # sed -i '/logfile/c\logfile /var/www/logs/redis.log' /etc/redis/redis.conf
 # sed -i '/dir /c\dir /tmp' /etc/redis/redis.conf
-
-## create log files if do not exist ##
-# if [ ! -f "/var/www/logs/redis.log" ]; then touch "/var/www/logs/redis.log"; fi
-# mkdir /var/run/redis
 
 ####################################################################################################
 #### SS-Install-Redis: Reset Permissions (Redis) ###################################################
@@ -68,7 +65,7 @@ source /var/www/ss-purge-redis
 ####################################################################################################
 
 ## this is a dummy timestamp file that will remember the last time this script was run ##
-## it can be useful for developer reference and it sometimes used by SlickStack ##
+## it can be useful for developer reference and is sometimes used by SlickStack ##
 
 ## script timestamp ##
 touch /var/www/meta/.timestamp-ss-install-redis
