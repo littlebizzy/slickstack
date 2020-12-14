@@ -6,8 +6,9 @@
 #### mirror: http://mirrors.slickstack.io/ss-install-ufw.txt #######################################
 #### path: /var/www/ss-install-ufw #################################################################
 #### destination: n/a (not a boilerplate) ##########################################################
-#### purpose: Reinstalls the entire UFW Firewall module and rules (idempotent) #####################
-#### module version: Ubuntu 20.04 LTS + UFW 0.36.x #################################################
+#### purpose: Reinstalls the entire UFW firewall module and associated rules (idempotent) ##########
+#### module version: UFW 0.36.x ####################################################################
+#### sourced by: ss-install ########################################################################
 ####################################################################################################
 
 ## SS-CONFIG MUST BE PROPERLY CONFIGURED (AND CURRENT BUILD) BEFORE RUNNING SS-INSTALL ##
@@ -20,12 +21,16 @@ source /var/www/ss-config
 source /var/www/ss-functions
 
 ####################################################################################################
-#### SS-Install-UFW: Install UFW Firewall ##########################################################
+#### SS-Install-UFW: Cleanup Temporary Files #######################################################
 ####################################################################################################
 
 ## delete tmp files ##
 rm /tmp/ufw*
 rm /tmp/user*
+
+####################################################################################################
+#### SS-Install-UFW: Install UFW (Firewall) ########################################################
+####################################################################################################
 
 ## disable UFW before proceeding with new install ##
 sudo ufw --force disable
@@ -44,8 +49,10 @@ apt install --fix-broken
 apt autoremove
 apt autoclean
 
-## install ufw ##
-apt install ufw
+## for Ubuntu 20.04 LTS only ##
+if [[ "${UBUNTU_VERSION}" = "20.04" ]]; then
+    apt install ufw
+fi
 
 ## disable UFW temporarily while we configure various settings ##
 sudo ufw --force disable
@@ -83,18 +90,22 @@ cp /tmp/user.rules /etc/ufw/user.rules
 cp /tmp/user6.rules /etc/ufw/user6.rules
 
 ####################################################################################################
-#### SS-Perms: Reset Permissions (UFW) #############################################################
+#### SS-Install-UFW: Reset Permissions (UFW) #######################################################
 ####################################################################################################
 
 ## run ss-perms-ufw ##
 source /var/www/ss-perms-ufw
 
 ####################################################################################################
-#### finish up #############################################################
+#### SS-Install-UFW: Enable UFW ####################################################################
 ####################################################################################################
 
-## enable UFW because we are done configuring settings (ss-install-ufw run last) ##
+## enable UFW because we are done configuring settings ##
 sudo ufw --force enable
+
+####################################################################################################
+#### SS-Install-UFW: Cleanup Temporary Files #######################################################
+####################################################################################################
 
 ## delete tmp files ##
 rm /tmp/ufw*
@@ -105,7 +116,7 @@ rm /tmp/user*
 ####################################################################################################
 
 ## this is a dummy timestamp file that will remember the last time this script was run ##
-## it can be useful for developer reference and it sometimes used by SlickStack ##
+## it can be useful for developer reference and is sometimes used by SlickStack ##
 
 ## script timestamp ##
 touch /var/www/meta/.timestamp-ss-install-ufw
