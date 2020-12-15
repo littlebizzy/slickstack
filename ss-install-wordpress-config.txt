@@ -27,16 +27,14 @@ source /var/www/ss-functions
 rm /tmp/wp-config*
 
 ####################################################################################################
-#### SS-Install-WordPress-Config: Configure WP-Config File (Production) ############################
+#### SS-Install-WordPress-Config: Install WP-Config (Production) ###################################
 ####################################################################################################
-
-## SS_BUILD = OCT2020A
 
 ## here we retrieve latest wp-config.php boilerplate and customize per ss-config settings ##
 ## you should never make changes directly to wp-config.php in SlickStack servers ##
 
-## retrieve latest wp-config boilerplate ##
-wget -O /tmp/wp-config.txt http://mirrors.slickstack.io/wordpress/wp-config.txt
+## retrieve latest boilerplate (production) ##
+wget -O /tmp/wp-config-production.txt http://mirrors.slickstack.io/wordpress/wp-config.txt
 
 
 ###### general SlickStack settings ########
@@ -214,28 +212,20 @@ if [ ! -f "/var/www/meta/.cherry" ]; then
 fi
 
 ## rename files ##
-mv /tmp/wp-config.txt /tmp/wp-config.php
+mv /tmp/wp-config-production.txt /tmp/wp-config-production.php
 
 ## copy files to destinations ##
-cp /tmp/wp-config.php /var/www/html/wp-config.php
-
-## delete tmp files ##
-rm /tmp/wp-config*
+cp /tmp/wp-config-production.php /var/www/html/wp-config.php
 
 ####################################################################################################
-#### SS-Install-WPConfig: Configure WP-Config File (Staging) #######################################
+#### SS-Install-WordPress-Config: Install WP-Config (Staging) ######################################
 ####################################################################################################
 
 ## here we retrieve latest wp-config.php boilerplate and customize per ss-config settings ##
 ## you should never make changes directly to wp-config.php in SlickStack servers ##
 
-## delete tmp files ##
-rm /tmp/wp-config*
-
-## retrieve latest wp-config boilerplate ##
+## retrieve latest boilerplate (staging) ##
 wget -O /tmp/wp-config-staging.txt http://mirrors.slickstack.io/wordpress/wp-config-staging.txt
-
-
 
 ###### general SlickStack settings ########
 
@@ -386,26 +376,15 @@ mv /tmp/wp-config-staging.txt /tmp/wp-config-staging.php
 ## copy files to destinations ##
 cp /tmp/wp-config-staging.php /var/www/html/staging/wp-config.php
 
-## delete tmp files ##
-rm /tmp/wp-config*
-
-
-
-
 ####################################################################################################
-#### SS-Install-WordPress-Config: Configure WP-Config File (Dev) ###################################
+#### SS-Install-WordPress-Config: Install WP-Config (Dev) ##########################################
 ####################################################################################################
 
 ## here we retrieve latest wp-config.php boilerplate and customize per ss-config settings ##
 ## you should never make changes directly to wp-config.php in SlickStack servers ##
 
-## delete tmp files ##
-rm /tmp/wp-config*
-
-## retrieve latest wp-config boilerplate ##
+## retrieve latest boilerplate (dev) ##
 wget -O /tmp/wp-config-dev.txt http://mirrors.slickstack.io/wordpress/wp-config-dev.txt
-
-
 
 ###### general SlickStack settings ########
 
@@ -555,18 +534,12 @@ mv /tmp/wp-config-dev.txt /tmp/wp-config-dev.php
 ## copy files to destinations ##
 cp /tmp/wp-config-dev.php /var/www/html/dev/wp-config.php
 
-## delete tmp files ##
-rm /tmp/wp-config*
-
-
-
-
 ####################################################################################################
-#### SS-Install-WordPress-Config: Fix Database Site Domains ########################################
+#### SS-Install-WordPress-Config: Fix Site Domains (Options) In Database ###########################
 ####################################################################################################
 
 ## here we manually fix certain fields in the MySQL database to ensure proper functions ##
-## this fix required on WP Multisite (wp-config will override on single sites) ##
+## this fix required for WP Multisite (wp-config will override on single sites) ##
 
 ## ensure home + siteurl options are correct (production) ##
 mysql --execute="UPDATE ${DB_NAME}.${DB_PREFIX}options SET option_value='https://$SITE_DOMAIN' WHERE option_name='home'";
@@ -581,24 +554,24 @@ mysql --execute="UPDATE ${DB_NAME}.dev_options SET option_value='https://$SITE_D
 mysql --execute="UPDATE ${DB_NAME}.dev_options SET option_value='https://$SITE_DOMAIN/dev' WHERE option_name='siteurl'";
 
 ####################################################################################################
-####################################################################################################
-
-## remove and keep only in ss-sync ##
-## create directories if doesn't exist (will not overwrite) ##
-mkdir /var/www/html/staging/wp-content/temp
-mkdir /var/www/html/staging/wp-content/uploads
-mkdir /var/www/html/staging/wp-content/upgrade
-
-mkdir /var/www/html/dev/wp-content/temp
-mkdir /var/www/html/dev/wp-content/uploads
-mkdir /var/www/html/dev/wp-content/upgrade
-
-####################################################################################################
 #### SS-Install-WordPress-Config: Reset Permissions (WordPress Core) ###############################
 ####################################################################################################
 
+## here we briefly reset permissions for WordPress Core files only to avoid errors etc ##
+## keep in mind that non-WordPress Core files are not affected by this snippet ##
+
 ## run ss-perms-wordpress-core ##
 source /var/www/ss-perms-wordpress-core
+
+####################################################################################################
+#### SS-Install-WordPress-Config: Reset Permissions (WordPress Config) #############################
+####################################################################################################
+
+## here we briefly reset permissions for the wp-config.php file and related dirs only ##
+## keep in mind that general WordPress Core and other files are not affected ##
+
+## run ss-perms-wordpress-config ##
+source /var/www/ss-perms-wordpress-config
 
 ####################################################################################################
 #### SS-Install-WordPress-Config: Purge Cache (PHP OPcache) ########################################
@@ -613,13 +586,6 @@ source /var/www/ss-purge-opcache
 
 ## run ss-purge-redis ##
 source /var/www/ss-purge-redis
-
-####################################################################################################
-#### SS-Install-WordPress-Config: Reset Permissions (WordPress Config) #############################
-####################################################################################################
-
-## run ss-perms-wordpress-config ##
-source /var/www/ss-perms-wordpress-config
 
 ####################################################################################################
 #### SS-Install-WordPress-Config: Cleanup Temporary Files ##########################################
