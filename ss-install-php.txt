@@ -33,19 +33,17 @@ rm /tmp/www*
 #### SS-Install-PHP: Backup Database Before Proceeding #############################################
 ####################################################################################################
 
-## run ss-dump ##
-source /var/www/ss-dump
+## run ss-dump-database ##
+source /var/www/ss-dump-database
 
 ####################################################################################################
-#### SS-Install-PHP: Install PHP-FPM 7.4.x + PHP Extensions + PHP-Redis ############################
+#### SS-Install-PHP: Purge + Cleanup Any Existing PHP Packages #####################################
 ####################################################################################################
 
-## here we first purge any existing PHP packages and then reinstall PHP-FPM with OPcache ##
+## here we first purge any existing PHP packages and then reinstall PHP-FPM from scratch ##
+## this approach is safe and helps avoid any conflicts between package versions ##
 
-## MESSAGE ##
-echo -e "\e[36mSet dpkg to noneractive and force confold and update apt cache...\e[0m"
-
-## purge any installed PHP packages ##
+## purge packages ##
 apt purge ^php
 
 ## delete any leftover PHP files (disable for now because apt will not create these files if it notices the php directory exists already) ##
@@ -58,16 +56,28 @@ apt autoclean
 ## update repo cache ##
 apt update
 
-## install PHP-FPM 7.4 and extensions (php7.4 not needed when php7.4-fpm is installed) ##
-apt install php7.4-fpm php7.4-bcmath php7.4-curl  php7.4-gd php7.4-imagick php7.4-json php7.4-mbstring php7.4-mysql php7.4-soap php7.4-xml php7.4-zip
+####################################################################################################
+#### SS-Install-PHP: Install PHP-FPM + PHP Extensions ##############################################
+####################################################################################################
 
-## install PHP-FPM 7.2 if server is running Ubuntu 18.04 ##
-if [[ "${UBUNTU_VERSION}" = "18.04" ]]; then
+## here PHP-FPM will be installed along with any custom PHP extensions in your ss-config ##
+## remember to check version compatibility of PHP extensions if you modify them ##
+
+## install php-fpm (php7.x not needed when php7.x-fpm installed) ##
+if [[ "${UBUNTU_VERSION}" = "20.04" ]] && [[ -n "$PHP_EXTENSIONS" ]]; then
+    apt install "${PHP_EXTENSIONS}"
+elif [[ "${UBUNTU_VERSION}" = "18.04" ]]; then
     apt install php7.2-fpm php7.2-bcmath php7.2-curl php7.2-gd php7.2-imagick php7.2-json php7.2-mbstring php7.2-mysql php7.2-soap php7.2-xml php7.2-zip
+else
+    apt install php7.4-fpm php7.4-bcmath php7.4-curl php7.4-gd php7.4-imagick php7.4-json php7.4-mbstring php7.4-mysql php7.4-soap php7.4-xml php7.4-zip
 fi
 
-## install php-redis (for Redis object cache) ##
-apt install php-redis
+## install php-redis (required) ##
+if [[ "${UBUNTU_VERSION}" = "20.04" ]]; then
+    apt install php-redis
+else
+    apt install php-redis
+fi
 
 ####################################################################################################
 #### SS-Install-PHP: Optimize PHP-FPM Configuration Files ##########################################
