@@ -2,7 +2,7 @@
 title: Ubuntu (Public Mirrors)
 ---
 
-# Ubuntu LTS (Linux Operating System)
+# Ubuntu LTS (Linux OS)
 
 ----
 
@@ -10,6 +10,7 @@ title: Ubuntu (Public Mirrors)
 
 *Live configuration files and boilerplates used by current SlickStack installation that may be modified by LittleBizzy or Ubuntu for better performance.*
 
+* [custom-shell-prompt](custom-shell-prompt.txt)
 * [sshd-config.txt](sshd-config.txt)
 * [sudoers.txt](sudoers.txt)
 * [sysctl.txt](sysctl.txt)
@@ -74,4 +75,4 @@ title: Ubuntu (Public Mirrors)
 
 ----
 
-*Last updated: Aug 23, 2020*
+*Last updated: Dec 18, 2020*
