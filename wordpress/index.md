@@ -1,3 +1,7 @@
+---
+title: WordPress (Public Mirrors)
+---
+
 # WordPress (CMS)
 
 ----
