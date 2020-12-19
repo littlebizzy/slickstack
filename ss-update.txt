@@ -77,6 +77,12 @@ if [[ "$SS_BUILD_LATEST" != "$SS_UPDATE_BUILD" ]]; then
     exit 1
 fi
 
+SS_CONFIG_OPTION_PLACEHOLDER="$(grep -c '"@' /var/www/ss-config)"
+if [[ "$SS_CONFIG_OPTION_PLACEHOLDER" -gt 0 ]]; then
+    echo -e "\e[93mYour ss-config file contains "@..." placeholders. Please choose values for all option fields and then run ss-update again.\e[0m" >&2
+    exit 1
+fi
+
 ## replicate existing variables to the new config file ##
 ## find a better way to auto detect variables? ##
 
@@ -1990,5 +1996,7 @@ touch /var/www/meta/.timestamp-ss-update
 ## Ref: https://github.com/littlebizzy/slickstack/issues/36
 ## Ref: http://manpages.ubuntu.com/manpages/bionic/man1/date.1.html
 ## Ref: https://crunchify.com/shell-script-append-timestamp-to-file-name/
+## Ref: https://stackoverflow.com/questions/6946677/grep-with-quotation-mark
+## Ref: https://unix.stackexchange.com/questions/48535/can-grep-return-true-false-or-are-there-alternative-methods
 
 ## SS_EOF
