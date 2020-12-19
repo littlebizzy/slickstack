@@ -69,7 +69,7 @@ if [[ $DISK_FREE -lt 5242880 ]]; then # 10G = 10485760 / 5GB = 5242880
 fi
 
 ## ensure ss-config build matches ss-install build (if exists) ##
-if [[ -f "/var/www/ss-config" ]] && [[ "$SS_BUILD" != "DEC2020N" ]]; then 
+if [[ -f "/var/www/ss-config" ]] && [[ "$SS_BUILD" != "DEC2020P" ]]; then 
     echo -e ""
     echo -e "${YELLOW}It appears your ss-config file is outdated. Please run ss-update to get ${NOCOLOR}"
     echo -e "${YELLOW}the latest SlickStack build, and then run ss-install again.${NOCOLOR}"
@@ -198,6 +198,13 @@ if [[ ! -f "/var/www/ss-config" ]]; then
     read -t 300 -p "$(echo -e $LIGHTPURPLE"Choose SFTP password (should be strong): "$NORMAL)" -e -i ${sftp_pass_random} ss_var_sftp_password || ss_var_sftp_password=${sftp_pass_random}
     # sed -i "s/@SUDO_PASSWORD/$(openssl rand -hex 12)/g" /tmp/config
     sed -i "s/@SFTP_PASSWORD/$ss_var_sftp_password/g" /tmp/config
+    
+    ## new line ##
+    printf "\n"
+    
+    ## PROMPT: choose app (default = wordpress) ##
+    read -t 300 -p "$(echo -e $LIGHTPURPLE"Choose app (only wordpress supported currently): "$NORMAL)" -e -i 'wordpress' ss_var_app_name || ss_var_app_name=wordpress
+    sed -i "s/@SS_APP/$ss_var_app_name/g" /tmp/config
     
     ## new line ##
     printf "\n"
