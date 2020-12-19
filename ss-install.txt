@@ -207,7 +207,7 @@ if [[ $DISK_FREE -lt 5242880 ]]; then # 10G = 10485760 / 5GB = 5242880
 fi
 
 ## ensure ss-config build matches ss-install build (if exists) ##
-if [[ -f "/var/www/ss-config" ]] && [[ "$SS_BUILD" != "DEC2020R" ]]; then 
+if [[ -f "/var/www/ss-config" ]] && [[ "$SS_BUILD" != "DEC2020S" ]]; then 
     echo -e ""
     echo -e "${YELLOW}It appears your ss-config file is outdated. Please run ss-update to get ${NOCOLOR}"
     echo -e "${YELLOW}the latest SlickStack build, and then run ss-install again.${NOCOLOR}"
@@ -458,11 +458,11 @@ if [[ ! -f "/var/www/ss-config" ]]; then
     printf "\n"
     
     ## PROMPT: enable staging site subdomain ##
-    read -t 300 -p "$(echo -e $LIGHTPURPLE"Enable staging site as subdomain: "$NORMAL)" -e -i 'true' ss_var_staging_site_subdomain || ss_var_staging_site_subdomain=true
-    sed -i "s/@STAGING_SITE_SUBDOMAIN/$ss_var_staging_site_subdomain/g" /tmp/config
+    # read -t 300 -p "$(echo -e $LIGHTPURPLE"Enable staging site as subdomain: "$NORMAL)" -e -i 'true' ss_var_staging_site_subdomain || ss_var_staging_site_subdomain=true
+    # sed -i "s/@STAGING_SITE_SUBDOMAIN/$ss_var_staging_site_subdomain/g" /tmp/config
     
     ## new line ##
-    printf "\n"
+    # printf "\n"
     
     ## PROMPT: enable native dev site features ##
     read -t 300 -p "$(echo -e $LIGHTPURPLE"Enable native dev site: "$NORMAL)" -e -i 'true' ss_var_dev_site || ss_var_dev_site=true
@@ -472,11 +472,11 @@ if [[ ! -f "/var/www/ss-config" ]]; then
     printf "\n"
     
     ## PROMPT: enable dev site subdomain ##
-    read -t 300 -p "$(echo -e $LIGHTPURPLE"Enable dev site as subdomain: "$NORMAL)" -e -i 'true' ss_var_dev_site_subdomain || ss_var_dev_site_subdomain=true
-    sed -i "s/@DEV_SITE_SUBDOMAIN/$ss_var_dev_site_subdomain/g" /tmp/config
+    # read -t 300 -p "$(echo -e $LIGHTPURPLE"Enable dev site as subdomain: "$NORMAL)" -e -i 'true' ss_var_dev_site_subdomain || ss_var_dev_site_subdomain=true
+    # sed -i "s/@DEV_SITE_SUBDOMAIN/$ss_var_dev_site_subdomain/g" /tmp/config
     
     ## new line ##
-    printf "\n"
+    # printf "\n"
     
     ## copy files to their destinations ##
     # cp /tmp/ss-config /var/www/ss-config
@@ -536,8 +536,16 @@ DEBIAN_FRONTEND=noninteractive dpkg --configure -a --force-confold
 ## first we need to setup all users and passwords for Ubuntu and set sudo permissions ##
 ## this process will also set the default SSH port and disable root SSH logins ##
 
-## run ss-install-ubuntu-users ##
+## run ss-install-ubuntu-users (includes ss-install-ubuntu-aliases) ##
 source /var/www/ss-install-ubuntu-users
+
+## SlickStack aims to emphasize traditional bash scripts but we still support aliases ##
+## in most cases using aliases are not necessary but this will evolve over time ##
+
+## run ss-install-ubuntu-aliases ##
+source /var/www/ss-install-ubuntu-aliases
+
+
 
 ## run ss-install-ubuntu-ssh ##
 source /var/www/ss-install-ubuntu-ssh
@@ -548,14 +556,11 @@ source /var/www/ss-install-ubuntu-ssh
 ## run ss-install-ubuntu-crontab ##
 source /var/www/ss-install-ubuntu-crontab
 
+
+
 ## run ss-install-ubuntu-utils ##
 source /var/www/ss-install-ubuntu-utils
 
-## SlickStack aims to emphasize traditional bash scripts but we still support aliases ##
-## in most cases using aliases are not necessary but this will evolve over time ##
-
-## run ss-install-ubuntu-aliases ##
-source /var/www/ss-install-ubuntu-aliases
 
 ## FUTURE: install other CLIs here (e.g. Magento, PrestaShop, etc)
 
