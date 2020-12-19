@@ -78,9 +78,14 @@ wget -qO /tmp/ss-config http://mirrors.slickstack.io/ss-config-sample.txt
 ## warn if placeholders exist ##
 SS_CONFIG_OPTION_PLACEHOLDER="$(grep -c '"@' /var/www/ss-config)"
 if [[ "$SS_CONFIG_OPTION_PLACEHOLDER" -gt 0 ]]; then
-    echo -e "\e[93mYour ss-config file contains "@..." placeholders. Please choose values for all option fields and then run ss-update again.\e[0m" >&2
-    exit 1
+    echo -e ""
+    echo -e "${RED}Your ss-config file contains \"@...\" placeholders. Please input values for ${NOCOLOR}"
+    echo -e "${RED}all incomplete option fields, and then run ss-update again.${NOCOLOR}"
+    echo -e ""
 fi
+
+Your ss-config file contains \"@...\" placeholders. Please input values for 
+all incomplete option fields, and then run ss-update again.
 
 ## ensure latest (retrieved) ss-config build matches current ss-update build ##
 SS_BUILD_LATEST=$(source /tmp/ss-config; echo $SS_BUILD)
@@ -89,7 +94,6 @@ if [[ "$SS_BUILD_LATEST" != "$SS_BUILD" ]]; then
     echo -e "${YELLOW}It appears that a newer SlickStack build is available! We recommend you ${NOCOLOR}"
     echo -e "${YELLOW}run ss-update to benefit from the latest features and patches.${NOCOLOR}"
     echo -e ""
-    exit 1
 fi
 
 ## warning in case of sub-subdomains in use ##
@@ -99,7 +103,6 @@ if [[ $SITE_DOMAIN = *.*.*.* ]]; then
     echo -e "${YELLOW}resolve (please either upgrade to Cloudflare's premium SSL options, or ${NOCOLOR}"
     echo -e "${YELLOW}otherwise use Let's Encrypt SSL on this server).${NOCOLOR}"
     echo -e ""
-    exit 1
 fi
 
 ## delete leftover files ##
