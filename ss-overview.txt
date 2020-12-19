@@ -75,6 +75,13 @@ rm /tmp/ss-config*
 ## retrieve latest version of ss-config-sample ##
 wget -qO /tmp/ss-config http://mirrors.slickstack.io/ss-config-sample.txt
 
+## warn if placeholders exist ##
+SS_CONFIG_OPTION_PLACEHOLDER="$(grep -c '"@' /var/www/ss-config)"
+if [[ "$SS_CONFIG_OPTION_PLACEHOLDER" -gt 0 ]]; then
+    echo -e "\e[93mYour ss-config file contains "@..." placeholders. Please choose values for all option fields and then run ss-update again.\e[0m" >&2
+    exit 1
+fi
+
 ## ensure latest (retrieved) ss-config build matches current ss-update build ##
 SS_BUILD_LATEST=$(source /tmp/ss-config; echo $SS_BUILD)
 if [[ "$SS_BUILD_LATEST" != "$SS_BUILD" ]]; then
@@ -115,5 +122,7 @@ touch /var/www/meta/.timestamp-ss-overview
 ## Ref: https://askubuntu.com/questions/560412/displaying-ip-address-on-eth0-interface
 ## Ref: https://serverfault.com/questions/46645/shell-command-for-getting-ip-address
 ## Ref: https://stackoverflow.com/questions/15331259/use-awk-to-find-first-occurrence-only-of-string-after-a-delimiter
+## Ref: https://stackoverflow.com/questions/6946677/grep-with-quotation-mark
+## Ref: https://unix.stackexchange.com/questions/48535/can-grep-return-true-false-or-are-there-alternative-methods
 
 ## SS_EOF
