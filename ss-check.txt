@@ -6,8 +6,9 @@
 #### mirror: http://mirrors.slickstack.io/ss-check.txt #############################################
 #### path: /var/www/ss-check #######################################################################
 #### destination: n/a (not a boilerplate) ##########################################################
-#### purpose: Downloads latest SlickStack Core files (except itself = done by ss-worker) ###########
+#### purpose: Retrieves latest ss core cron jobs and ss core bash scripts (except ss-check) ########
 #### module version: Ubuntu 20.04 LTS ##############################################################
+#### sourced by: ss-install, ss-update, ss core cron jobs ##########################################
 ####################################################################################################
 
 ## include SlickStack configuration ##
@@ -17,10 +18,10 @@ source /var/www/ss-config
 source /var/www/ss-functions
 
 ####################################################################################################
-#### SS-Check: Delete Any Previous / Leftover (Conflicting) Temporary Files ########################
+#### SS-Check: Cleanup Temporary Files #############################################################
 ####################################################################################################
 
-## delete temp files ##
+## delete tmp files ##
 rm /tmp/ss*
 rm /tmp/*cron*
 
@@ -247,23 +248,7 @@ cp /tmp/ss-worker /var/www/ss-worker
 #### SS-Check: Reset SlickStack Core Files Permissions (Skips Web Root) ############################
 ####################################################################################################
 
-## ensure core directories exist (except html) ##
-mkdir /var/www
-mkdir /var/www/cache
-mkdir /var/www/cache/opcache
-mkdir /var/www/logs
-mkdir /var/www/meta
-mkdir /var/www/meta/.ssh
 
-## ensure misc files exist (makes things look pretty and suppresses error messages) ##
-if [[ ! -f "/var/www/meta/wp.sql" ]]; then 
-    touch "/var/www/meta/wp.sql"; 
-fi
-
-## chroot (SFTP) user directory ##
-chown root:root /var ## must be root:root
-chown root:root /var/www ## must be root:root
-chmod 0755 /var/www ## must be 0755
 
 ## SlickStack core scripts ##
 chown root:root /var/www/*cron* ## must be root:root
@@ -271,25 +256,11 @@ chown root:root /var/www/ss* ## must be root:root
 chmod 0740 /var/www/*cron* ## 0740 is enough
 chmod 0740 /var/www/ss* ## 0740 is enough
 
-## SQL dump file (we want SFTP users to be able to access) ##
-chown -R $SFTP_USER:www-data /var/www/meta/wp.sql
-chmod 6775 /var/www/meta/wp.sql
-
-## no worries if the SFTP user accesses this stuff (but www-data access is the priority) ##
-chown www-data:www-data /var/www/cache ## must be www-data:www-data
-chown www-data:www-data /var/www/cache/opcache ## must be www-data:www-data
-chown www-data:www-data /var/www/logs ## must be www-data:www-data
-chown www-data:www-data /var/www/meta ## must be www-data:www-data
-chmod 6775 /var/www/cache ## 6755 should also work
-chmod 6775 /var/www/cache/opcache ## 6755 should also work
-chmod 6775 /var/www/logs ## 6755 should also work
-chmod 6775 /var/www/meta ## 6755 should also work
-
 ####################################################################################################
-#### SS-Check: Delete Any Previous / Leftover (Conflicting) Temporary Files ########################
+#### SS-Check: Cleanup Temporary Files #############################################################
 ####################################################################################################
 
-## delete temp files ##
+## delete tmp files ##
 rm /tmp/ss*
 rm /tmp/*cron*
 
@@ -298,7 +269,7 @@ rm /tmp/*cron*
 ####################################################################################################
 
 ## this is a dummy timestamp file that will remember the last time this script was run ##
-## it can be useful for developer reference and it sometimes used by SlickStack ##
+## it can be useful for developer reference and is sometimes used by SlickStack ##
 
 ## script timestamp ##
 touch /var/www/meta/.timestamp-ss-check
