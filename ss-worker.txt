@@ -73,24 +73,10 @@ mkdir /var/www/cache/opcache
 mkdir /var/www/logs
 mkdir /var/www/meta
 
-## ensure misc files exist (makes things look pretty and suppresses error messages) ##
-if [[ ! -f "/var/www/meta/wp.sql" ]]; then 
-    touch "/var/www/meta/wp.sql"; 
-fi
-
 ## chroot (SFTP) user directory ##
 chown root:root /var ## must be root:root
 chown root:root /var/www ## must be root:root
 chmod 0755 /var/www ## must be 0755
-
-## SlickStack core scripts ##
-chown root:root /var/www/*cron* ## must be root:root
-chown root:root /var/www/ss* ## must be root:root
-chmod 0740 /var/www/*cron* ## 0740 is enough
-chmod 0740 /var/www/ss* ## 0740 is enough
-
-chown www-data:www-data /var/www/wp.sql ## root:root should also work
-chmod 0770 /var/www/meta/wp.sql
 
 ## its okay if the SFTP user accesses this stuff (but www-data access is the priority) ##
 chown www-data:www-data /var/www/cache ## must be www-data:www-data
@@ -100,25 +86,18 @@ chmod 0775 /var/www/cache ## 6755 should also work
 chmod 0775 /var/www/logs ## 6755 should also work
 chmod 0775 /var/www/meta ## 6755 should also work
 
-## ensure log files exist ##
-if [ ! -f "/var/www/logs/clamav.log" ]; then touch "/var/www/logs/clamav.log"; fi
-if [ ! -f "/var/www/logs/error.log" ]; then touch "/var/www/logs/error.log"; fi
-if [ ! -f "/var/www/logs/mysql.log" ]; then touch "/var/www/logs/mysql.log"; fi
-if [ ! -f "/var/www/logs/nginx.log" ]; then touch "/var/www/logs/nginx.log"; fi
-if [ ! -f "/var/www/logs/redis.log" ]; then touch "/var/www/logs/redis.log"; fi
+####################################################################################################
+#### SS-Worker: Reset Permissions (SS Core Cron Jobs) ##############################################
+####################################################################################################
 
-## individual log files ##
-chown clamav:clamav /var/www/logs/clamav*.log*
-chown www-data:www-data /var/www/logs/error*.log*
-chown mysql:mysql /var/www/logs/mysql*.log*
-chown www-data:www-data /var/www/logs/nginx*.log*
-chown redis:redis /var/www/logs/redis*.log*
+## SNIPPET: ss-check, ss-worker
 
-chmod 0644 /var/www/logs/*.log
+## we hardcode this permissions reset snippet into ss core bash scripts for redundancy ##
+## chmod 700 means only the root/sudo users can execute ss core cron jobs ##
 
-## ensure unix formatting (avoids syntax errors and otherwise) ##
-# dos2unix /var/www/*cron*
-# dos2unix /var/www/ss*
+## reset permissions ##
+chown root:root /var/www/*cron* ## must be root:root
+chmod 0740 /var/www/*cron* ## 0700 means root can execute
 
 ####################################################################################################
 ## SS-Worker: Download Latest Blacklist.txt File For Plugin Blacklist (MU Plugin) ##################
