@@ -11,8 +11,8 @@
 #### sourced by: ss-install, ss-install-php ########################################################
 ####################################################################################################
 
-## SS-CONFIG MUST BE PROPERLY CONFIGURED (AND CURRENT BUILD) BEFORE RUNNING SS-INSTALL ##
-## ENSURE SS-CONFIG OPTIONS REMAIN CURRENT BY RUNNING SS-UPDATE OCCASIONALLY ##
+## SS-CONFIG MUST BE PROPERLY CONFIGURED AND ON CURRENT BUILD BEFORE RUNNING SS-INSTALL ##
+## ENSURE YOUR SS-CONFIG BUILD REMAINS CURRENT BY RUNNING SS-UPDATE OCCASIONALLY ##
 
 ## include SlickStack configuration ##
 source /var/www/ss-config
@@ -21,14 +21,7 @@ source /var/www/ss-config
 source /var/www/ss-functions
 
 ####################################################################################################
-#### SS-Install-PHP: Cleanup Temporary Files #######################################################
-####################################################################################################
-
-## delete tmp files ##
-# n/a
-
-####################################################################################################
-#### SS-Install-PHP: Purge + Cleanup Any Existing PHP Packages #####################################
+#### SS-Install-PHP: Purge Any Existing PHP Packages (Ubuntu) ######################################
 ####################################################################################################
 
 ## here we first purge any existing PHP packages and then reinstall PHP-FPM from scratch ##
@@ -48,7 +41,7 @@ apt autoclean
 apt update
 
 ####################################################################################################
-#### SS-Install-PHP: Install PHP-FPM + PHP Extensions ##############################################
+#### SS-Install-PHP: Install PHP-FPM + PHP Extensions (Ubuntu Packages) ############################
 ####################################################################################################
 
 ## here PHP-FPM will be installed along with any custom PHP extensions in your ss-config ##
@@ -75,53 +68,42 @@ if [[ "${UBUNTU_VERSION}" = "18.04" ]]; then
 fi
 
 ####################################################################################################
-#### SS-Install-PHP: Install (Optimize) PHP-FPM Configuration Files ################################
+#### SS-Install-PHP-Core: Set Default PHP Version In Ubuntu ########################################
 ####################################################################################################
 
-## run ss-install-php-config ##
-source /var/www/ss-install-php-config
+## here we set the default PHP version depending on the version of Ubuntu LTS detected ##
+## in most cases this step is not necessary but we do it anyway for consistency ##
 
-####################################################################################################
-#### SS-Install-PHP:  #######################
-####################################################################################################
-
-## make PHP 7.4 the default version ##
+## php 7.4 default (Ubuntu 20.04 LTS) ##
 if [[ "${UBUNTU_VERSION}" = "20.04" ]]; then
     update-alternatives --set php /usr/bin/php7.4
 fi
 
-## make PHP 7.2 the default version if server is running Ubuntu 18.04 ##
+## php 7.2 default (Ubuntu 18.04 LTS) ##
 if [[ "${UBUNTU_VERSION}" = "18.04" ]]; then
     update-alternatives --set php /usr/bin/php7.2
 fi
 
 ####################################################################################################
-#### SS-Install-PHP: Reset Permissions (PHP-FPM) ###################################################
+#### SS-Install-PHP-Core: Reset Permissions (PHP-FPM) ##############################################
 ####################################################################################################
 
 ## run ss-perms-php ##
 source /var/www/ss-perms-php
 
 ####################################################################################################
-#### SS-Install-PHP: Purge Cache (PHP OPcache) #####################################################
+#### SS-Install-PHP-Core: Purge Cache (PHP OPcache) ################################################
 ####################################################################################################
 
 ## run ss-purge-opcache ##
 source /var/www/ss-purge-opcache
 
 ####################################################################################################
-#### SS-Install-PHP: Restart Services (PHP) ########################################################
+#### SS-Install-PHP-Core: Restart Services (PHP-FPM) ###############################################
 ####################################################################################################
 
 ## restart services ##
 /etc/init.d/php*-fpm restart
-
-####################################################################################################
-#### SS-Install-PHP: Cleanup Temporary Files #######################################################
-####################################################################################################
-
-## delete tmp files ##
-# n/a
 
 ####################################################################################################
 #### SS-Install-PHP: Touch Timestamp File (End Of Script) ##########################################
