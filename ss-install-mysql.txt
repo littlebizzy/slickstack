@@ -11,8 +11,8 @@
 #### sourced by: ss-install ########################################################################
 ####################################################################################################
 
-## MYSQL IS PHASING OUT NATIVE PASSWORDS IN FAVOR OF UNIX SOCKETS AND/OR SHA2 HASHING ##
-## WE USE SOCKETS FOR CORE SCRIPTS AND AIM TO USE TCP/SSL/SHA2 FOR WORDPRESS ##
+## SS-CONFIG MUST BE PROPERLY CONFIGURED AND ON CURRENT BUILD BEFORE RUNNING SS-INSTALL ##
+## ENSURE YOUR SS-CONFIG BUILD REMAINS CURRENT BY RUNNING SS-UPDATE OCCASIONALLY ##
 
 ## include SlickStack configuration ##
 source /var/www/ss-config
@@ -333,9 +333,8 @@ rm /var/run/mysqld.bak*
 # sudo mysql -e "GRANT ALL ON *.* TO 'root'@'127.0.0.1' WITH GRANT OPTION;"
 # sudo mysql -e "GRANT ALL ON *.* TO 'root'@'::1' WITH GRANT OPTION;"
 
-
-
-
+## MYSQL IS PHASING OUT NATIVE PASSWORDS IN FAVOR OF UNIX SOCKETS AND/OR SHA2 HASHING ##
+## WE USE SOCKETS FOR CORE SCRIPTS AND AIM TO USE TCP/SSL/SHA2 FOR WORDPRESS ##
 
 ## copy the default socket for keeps (might disappear during stop MySQL) ##
 # cp /var/run/mysqld /var/run/mysqld.bak
@@ -354,8 +353,6 @@ rm /var/run/mysqld.bak*
 
 # mysqld --init-file=/tmp/init-mysql.txt &
 
-
-
 # rm /tmp/init-mysql.txt*
 # wget -O /tmp/init-mysql.txt http://mirrors.slickstack.io/mysql/init-mysql.txt
 # sed -i "s/@DB_PASSWORD_ROOT/${DB_PASSWORD_ROOT}/g" /tmp/init-mysql.txt
@@ -370,13 +367,10 @@ rm /var/run/mysqld.bak*
 # mysql --skip-password
 ## grep "A temporary password" /var/log/mysqld.log
 
-
-
 ## ensure root@localhost uses mysql_native_password ##
 #####sudo mysql -e "ALTER USER IF EXISTS 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD_ROOT}';"
 #####sudo mysql -e "GRANT ALL ON *.* TO 'root'@'localhost' WITH GRANT OPTION;"
 #####sudo mysql -e "FLUSH PRIVILEGES;"
-
 
 ## reset admin (root alternative) password and make mysql_native_password the default ##
 #  -u root --skip-password --host="localhost" --protocol=socket --port=3306 
@@ -389,8 +383,6 @@ rm /var/run/mysqld.bak*
 # SELECT plugin from mysql.user where User='root';
 # SELECT User,plugin from mysql.user where User='root';
 # SELECT user,authentication_string,plugin,host FROM mysql.user;
-
-
 
 ####################################################################################################
 #### SS-Install-MySQL: Reset Permissions (MySQL) ###################################################
