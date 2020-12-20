@@ -20,6 +20,16 @@ source /var/www/ss-config
 ## include SlickStack functions ##
 source /var/www/ss-functions
 
+## proceed only if script has not run in past 60 mins ##
+if [[ ! -f "/var/www/meta/.timestamp-ss-install-wordpress-config" ]] || \
+   [[ -n $(find "/var/www/meta/.timestamp-ss-install-wordpress-config" -amin +60) ]]
+then
+    echo -e ""
+    echo -e "${YELLOW}More than 60 mins since last wp-config reinstall, we will proceed... ${NOCOLOR}"
+    echo -e ""
+
+# if [[ -n $(find /var/www/meta/ -amin +60 | grep ".timestamp-ss-install-wordpress-config") ]]; then
+
 ####################################################################################################
 #### SS-Install-WordPress-Config: Cleanup Temporary Files ##########################################
 ####################################################################################################
@@ -34,66 +44,65 @@ rm /tmp/wp-config*
 ## here we retrieve latest wp-config.php boilerplate and customize per ss-config settings ##
 ## you should never make changes directly to wp-config.php in SlickStack servers ##
 
-## retrieve latest boilerplate (production) ##
-wget -O /tmp/wp-config-production.txt http://mirrors.slickstack.io/wordpress/wp-config.txt
+    ## retrieve latest boilerplate (production) ##
+    wget -O /tmp/wp-config-production.txt http://mirrors.slickstack.io/wordpress/wp-config.txt
 
 
-###### general SlickStack settings ########
+    ###### general SlickStack settings ########
 
-## set SlickStack dashboard ##
-if [[ -z "$SS_DASHBOARD" ]]; then 
-    sed -i "s/@SS_DASHBOARD/true/g" /tmp/wp-config-production.txt
-else 
-    sed -i "s/@SS_DASHBOARD/${SS_DASHBOARD}/g" /tmp/wp-config-production.txt
-fi
+    ## set SlickStack dashboard ##
+    if [[ -z "$SS_DASHBOARD" ]]; then 
+        sed -i "s/@SS_DASHBOARD/true/g" /tmp/wp-config-production.txt
+    else 
+        sed -i "s/@SS_DASHBOARD/${SS_DASHBOARD}/g" /tmp/wp-config-production.txt
+    fi
 
+    ## OS pretty name ##
+    sed -i "s|@SS_LINUX_KERNEL|${SS_LINUX_KERNEL}|g" /tmp/wp-config-production.txt  
 
-## OS pretty name ##
-sed -i "s|@SS_LINUX_KERNEL|${SS_LINUX_KERNEL}|g" /tmp/wp-config-production.txt  
+    ## CPU cores ##
+    sed -i "s|@SS_CPU_CORES|${SS_CPU_CORES}|g" /tmp/wp-config-production.txt
 
-## CPU cores ##
-sed -i "s|@SS_CPU_CORES|${SS_CPU_CORES}|g" /tmp/wp-config-production.txt
-
-## OS pretty name ## 
-sed -i "s|@SS_OS_PRETTY_NAME|${SS_OS_VERSION}|g" /tmp/wp-config-production.txt  
-
-
-sed -i "s|@SS_MYSQL_VERSION|${SS_MYSQL_VERSION}|g" /tmp/wp-config-production.txt  
-
-sed -i "s|@SS_MYSQL_SIZE|${SS_MYSQL_SIZE}|g" /tmp/wp-config-production.txt  
-
-sed -i "s|@SS_DISK_FREE|${SS_DISK_FREE}|g" /tmp/wp-config-production.txt  
-
-sed -i "s|@SS_IPV4_ADDRESS|${SS_IPV4_ADDRESS}|g" /tmp/wp-config-production.txt  
-
-sed -i "s|@SS_IPV6_ADDRESS|${SS_IPV6_ADDRESS}|g" /tmp/wp-config-production.txt  
-
-sed -i "s|@SS_HOSTNAME|${SS_HOSTNAME}|g" /tmp/wp-config-production.txt 
-
-sed -i "s|@SS_PHP_VERSION|${SS_PHP_VERSION}|g" /tmp/wp-config-production.txt 
-
-sed -i "s|@SS_PHP_EXTENSIONS|${SS_PHP_EXTENSIONS}|g" /tmp/wp-config-production.txt 
+    ## OS pretty name ## 
+    sed -i "s|@SS_OS_PRETTY_NAME|${SS_OS_VERSION}|g" /tmp/wp-config-production.txt  
 
 
+    sed -i "s|@SS_MYSQL_VERSION|${SS_MYSQL_VERSION}|g" /tmp/wp-config-production.txt  
 
-###### WP Multisite settings ########
+    sed -i "s|@SS_MYSQL_SIZE|${SS_MYSQL_SIZE}|g" /tmp/wp-config-production.txt  
+
+    sed -i "s|@SS_DISK_FREE|${SS_DISK_FREE}|g" /tmp/wp-config-production.txt  
+
+    sed -i "s|@SS_IPV4_ADDRESS|${SS_IPV4_ADDRESS}|g" /tmp/wp-config-production.txt  
+
+    sed -i "s|@SS_IPV6_ADDRESS|${SS_IPV6_ADDRESS}|g" /tmp/wp-config-production.txt  
+
+    sed -i "s|@SS_HOSTNAME|${SS_HOSTNAME}|g" /tmp/wp-config-production.txt 
+
+    sed -i "s|@SS_PHP_VERSION|${SS_PHP_VERSION}|g" /tmp/wp-config-production.txt 
+
+    sed -i "s|@SS_PHP_EXTENSIONS|${SS_PHP_EXTENSIONS}|g" /tmp/wp-config-production.txt 
 
 
-## set multisite subdomains ##
-## THIS MUST COME BEFORE WP_MULTISITE REPLACEMENTS OTHERWISE IT WILL BE OVERWRITTEN ##
-## in the future fix this to have a more unique set of placeholders ##
-if [[ -z "$WP_MULTISITE_SUBDOMAINS" ]]; then 
-    sed -i "s/@WP_MULTISITE_SUBDOMAINS/true/g" /tmp/wp-config-production.txt
-else 
-    sed -i "s/@WP_MULTISITE_SUBDOMAINS/${WP_MULTISITE_SUBDOMAINS}/g" /tmp/wp-config-production.txt
-fi
 
-## set multisite ##
-if [[ -z "$WP_MULTISITE" ]]; then 
-    sed -i "s/@WP_MULTISITE/false/g" /tmp/wp-config-production.txt
-else 
-    sed -i "s/@WP_MULTISITE/${WP_MULTISITE}/g" /tmp/wp-config-production.txt
-fi
+    ###### WP Multisite settings ########
+
+
+    ## set multisite subdomains ##
+    ## THIS MUST COME BEFORE WP_MULTISITE REPLACEMENTS OTHERWISE IT WILL BE OVERWRITTEN ##
+    ## in the future fix this to have a more unique set of placeholders ##
+    if [[ -z "$WP_MULTISITE_SUBDOMAINS" ]]; then 
+        sed -i "s/@WP_MULTISITE_SUBDOMAINS/true/g" /tmp/wp-config-production.txt
+    else 
+        sed -i "s/@WP_MULTISITE_SUBDOMAINS/${WP_MULTISITE_SUBDOMAINS}/g" /tmp/wp-config-production.txt
+    fi
+
+    ## set multisite ##
+    if [[ -z "$WP_MULTISITE" ]]; then 
+        sed -i "s/@WP_MULTISITE/false/g" /tmp/wp-config-production.txt
+    else 
+        sed -i "s/@WP_MULTISITE/${WP_MULTISITE}/g" /tmp/wp-config-production.txt
+    fi
 
 ## set multisite ##
 if [[ -z "$WP_MULTISITE" ]]; then 
@@ -623,6 +632,18 @@ source /var/www/ss-purge-redis
 rm /tmp/wp-config*
 
 ####################################################################################################
+#### SS-Install-WordPress-Config: Exit If Script Has Already Run Recently ##########################
+####################################################################################################
+
+## otherwise exit if script has already run in past 60 mins ##
+else 
+    echo -e ""
+    echo -e "${YELLOW}It appears you have reinstalled wp-config within the last 60 minutes, ${NOCOLOR}"
+    echo -e "${YELLOW}therefore ss-install-wordpress-config has exited without running. ${NOCOLOR}"
+    echo -e ""
+fi
+
+####################################################################################################
 #### SS-Install-WordPress-Config: Touch Timestamp File (End Of Script) #############################
 ####################################################################################################
 
@@ -638,5 +659,7 @@ touch /var/www/meta/.timestamp-ss-install-wordpress-config
 
 ## Ref: https://wordpress.stackexchange.com/questions/281814/why-is-wordpress-multisite-redirecting-to-wp-signup-php-and-how-to-fix-it
 ## Ref: https://stackoverflow.com/questions/9366816/sed-fails-with-unknown-option-to-s-error
+## Ref: https://superuser.com/questions/393812/supresss-the-no-such-file-or-directory-message-from-find
+## Ref: https://stackoverflow.com/questions/45575021/find-suppress-no-such-file-or-directory-errors
 
 ## SS_EOF
