@@ -212,6 +212,14 @@ if [[ $DISK_FREE -lt 5242880 ]]; then # 10G = 10485760 / 5GB = 5242880
     exit 1
 fi
 
+## ensure not running in docker/lxc/container ##
+if [[ -f /.dockerenv ]] || grep -Eq '(lxc|docker)' /proc/1/cgroup; then 
+    echo -e ""
+    echo -e "${YELLOW}It appears your server is running Docker or another container... but SlickStack requires normal Ubuntu LTS without containers.${NOCOLOR}"
+    echo -e ""
+    exit 1
+fi
+
 ## ensure ss-config build matches ss-install build (if exists) ##
 if [[ -f "/var/www/ss-config" ]] && [[ "$SS_BUILD" != "DEC2020U" ]]; then 
     echo -e ""
