@@ -14,7 +14,10 @@
 ## SS-CONFIG MUST BE PROPERLY CONFIGURED AND ON CURRENT BUILD BEFORE RUNNING SS-INSTALL ##
 ## ENSURE YOUR SS-CONFIG BUILD REMAINS CURRENT BY RUNNING SS-UPDATE OCCASIONALLY ##
 
-## include SlickStack configuration ##
+## include SlickStack configuration (if exists) ##
+# SS_CONFIG=/var/www/ss-config
+# test -f $SS_CONFIG && source $SS_CONFIG
+
 source /var/www/ss-config
 
 ####################################################################################################
@@ -38,8 +41,8 @@ SS_NETWORK_INTERFACE=`ip route get 1.1.1.1 | head -n1 | awk '{print $5}'`
 SS_IPV4_ADDRESS=`ip addr show $SS_NETWORK_INTERFACE | grep "inet " | awk '{ print $2;exit }' | cut -d/ -f1`
 SS_IPV6_ADDRESS=`ip addr show $SS_NETWORK_INTERFACE | grep "inet6 " | awk '{ print $2;exit }' | cut -d/ -f1`
 SS_HOSTNAME=`hostname -f`
-SS_PHP_VERSION=`php -v | grep ^PHP | cut -d' ' -f2`
-SS_PHP_EXTENSIONS=`php -r "print_r(implode(', ', get_loaded_extensions()));"`
+# SS_PHP_VERSION=`php -v | grep ^PHP | cut -d' ' -f2`
+# SS_PHP_EXTENSIONS=`php -r "print_r(implode(', ', get_loaded_extensions()));"`
 
 ## old ##
 UBUNTU_VERSION=`lsb_release -rs`
@@ -827,5 +830,6 @@ touch /var/www/meta/.timestamp-ss-install
 ## Ref: https://stackoverflow.com/questions/55822739/does-echo-userpass-usr-sbin-chpasswd-override-the-root-password
 ## Ref: https://stackoverflow.com/questions/8110530/check-free-disk-space-for-current-partition-in-bash
 ## Ref: https://unix.stackexchange.com/questions/14961/how-to-find-out-which-interface-am-i-using-for-connecting-to-the-internet
+## Ref: https://unix.stackexchange.com/questions/297139/sourcing-a-file-multiple-times-in-a-bash-script
 
 ## SS_EOF
