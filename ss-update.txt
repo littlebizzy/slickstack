@@ -51,6 +51,20 @@ source /var/www/ss-worker
 source /var/www/ss-check
 
 ####################################################################################################
+#### SS-Update: Perform Various Compatibility Checks ###############################################
+####################################################################################################
+
+## warn if placeholders exist ##
+SS_CONFIG_OPTION_PLACEHOLDER="$(grep -c '"@' /var/www/ss-config)"
+if [[ "$SS_CONFIG_OPTION_PLACEHOLDER" -gt 0 ]]; then
+    echo -e ""
+    echo -e "${LIGHTRED}Your ss-config file contains \"@...\" placeholders. Please input values for ${NOCOLOR}"
+    echo -e "${LIGHTRED}all incomplete option fields, and then run ss-update again.${NOCOLOR}"
+    echo -e ""
+    exit 1
+fi
+
+####################################################################################################
 #### SS-Update: Install Latest SS-Config File (Safely Replicates Existing Variables) ###############
 ####################################################################################################
 
@@ -77,15 +91,13 @@ if [[ "$SS_BUILD_LATEST" != "$SS_UPDATE_BUILD" ]]; then
     exit 1
 fi
 
-## warn if placeholders exist ##
-SS_CONFIG_OPTION_PLACEHOLDER="$(grep -c '"@' /var/www/ss-config)"
-if [[ "$SS_CONFIG_OPTION_PLACEHOLDER" -gt 0 ]]; then
-    echo -e ""
-    echo -e "${LIGHTRED}Your ss-config file contains \"@...\" placeholders. Please input values for ${NOCOLOR}"
-    echo -e "${LIGHTRED}all incomplete option fields, and then run ss-update again.${NOCOLOR}"
-    echo -e ""
-    exit 1
-fi
+
+
+
+
+####################################################################################################
+#### SS-Update: Install Latest SS-Config File (Safely Replicates Existing Variables) ###############
+####################################################################################################
 
 ## replicate existing variables to the new config file ##
 ## find a better way to auto detect variables? ##
