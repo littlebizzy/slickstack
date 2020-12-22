@@ -15,10 +15,10 @@
 ## ENSURE YOUR SS-CONFIG BUILD REMAINS CURRENT BY RUNNING SS-UPDATE OCCASIONALLY ##
 
 ## include SlickStack configuration (if exists) ##
-# SS_CONFIG=/var/www/ss-config
-# test -f $SS_CONFIG && source $SS_CONFIG
+SS_CONFIG=/var/www/ss-config
+test -f $SS_CONFIG && source $SS_CONFIG
 
-source /var/www/ss-config
+# source /var/www/ss-config
 
 ####################################################################################################
 #### SS-Functions: Critical Bash Variables #########################################################
@@ -100,12 +100,6 @@ function mkdir {
 function mysql {
     command mysql --user=root --host=localhost --protocol=socket --port=3306 --force "$@"
 }
-
-## mysqldump alias flags ##
-# function mysqldump {
-    # /usr/bin/mysqldump
-#     command mysqldump --user=$DB_USER --password=$DB_PASSWORD --host=$DB_HOST --protocol=tcp --port=3306 --no-tablespaces --single-transaction --skip-lock-tables --dump-date --force "$@"
-# }
 
 ## mysqldump alias flags ##
 function mysqldump {
@@ -259,6 +253,8 @@ RAINBOW="${DARKRED}darkred ${LIGHTRED}lightred ${ORANGE}orange ${YELLOW}yellow $
 if [[ ! -f "/var/www/ss-config" ]]; then
     ## tell the user we will attempt the wizard (give users 10 seconds to exit if they prefer manual setup) ##
     
+    echo -e "${NOCOLOR}Hostname (FQDN): ${LIGHTGREEN}$SS_HOSTNAME${NOCOLOR}"
+    echo -e ""
     echo -e "${YELLOW}Welcome to SlickStack! It appears that your ss-config file has not been ${NOCOLOR}"
     echo -e "${YELLOW}setup yet. Please use the wizard to configure required options, or hit ${NOCOLOR}"
   
@@ -271,8 +267,6 @@ if [[ ! -f "/var/www/ss-config" ]]; then
         sleep 1
         ((temp_cnt--))
     done
-    echo -e ""
-    
     echo -e ""
     echo -e ""
     echo -e "${LIGHTPURPLE}###########################################################################${NOCOLOR}"
