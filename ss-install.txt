@@ -230,6 +230,17 @@ fi
 ## this basic wizard will allow you to interactively setup your ss-config file options ##
 ## advanced users can setup ss-config before running ss-install to avoid this ##
 
+    ## ensure SlickStack root directory exists (in case running ss-install from other directories) ##
+    mkdir /var/www
+    ## get latest ss-config boilerplate ##
+    rm /tmp/ss-config
+    rm /tmp/config
+    # wget -O /tmp/ss-config http://mirrors.slickstack.io/ss-config-sample.txt
+    wget -qO /tmp/config http://mirrors.slickstack.io/ss-config-sample.txt
+    
+    
+SS_BUILD_NOW=$(grep -w "$SS_BUILD" /tmp/config)
+
 ## rainbow colors test ##
 WELCOME_RAINBOW="${DARKRED}Welcome ${LIGHTRED}to ${ORANGE}the ${YELLOW}magical ${DARKGREEN}world ${LIGHTGREEN}of ${DARKCYAN}ss ${LIGHTCYAN}where ${DARKBLUE}all ${LIGHTBLUE}your ${DARKPURPLE}bash ${LIGHTPURPLE}dreams ${DARKGRAY}come ${LIGHTGRAY}true${NOCOLOR}"
 echo -e ""
@@ -251,7 +262,7 @@ echo -e ""
 if [[ ! -f "/var/www/ss-config" ]]; then
     ## tell the user we will attempt the wizard (give users 10 seconds to exit if they prefer manual setup) ##
     
-    echo -e "${LIGHTGRAY}Build version: ${LIGHTGREEN}$SS_BUILD${NOCOLOR}"
+    echo -e "${LIGHTGRAY}Build version: ${LIGHTGREEN}$SS_BUILD_NOW${NOCOLOR}"
     echo -e "${LIGHTGRAY}Hostname (FQDN): ${LIGHTGREEN}$SS_HOSTNAME${NOCOLOR}"
     echo -e "${LIGHTGRAY}IP Address (IPv4): ${LIGHTGREEN}$SS_IPV4_ADDRESS${NOCOLOR}"
     echo -e "${LIGHTGRAY}IP Address (IPv6): ${LIGHTGREEN}$SS_IPV6_ADDRESS${NOCOLOR}"
@@ -275,13 +286,7 @@ if [[ ! -f "/var/www/ss-config" ]]; then
     echo -e "${LIGHTPURPLE}###########################################################################${NOCOLOR}"
     echo -e ""
 
-    ## ensure SlickStack root directory exists (in case running ss-install from other directories) ##
-    mkdir /var/www
-    ## get latest ss-config boilerplate ##
-    rm /tmp/ss-config
-    rm /tmp/config
-    # wget -O /tmp/ss-config http://mirrors.slickstack.io/ss-config-sample.txt
-    wget -qO /tmp/config http://mirrors.slickstack.io/ss-config-sample.txt
+
     
     ## replace all password fields with random strings ##
     sed -i "s/@ROOT_PASSWORD/$(openssl rand -hex 12)/g" /tmp/config
