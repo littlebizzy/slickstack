@@ -142,13 +142,16 @@ rm /etc/letsencrypt/live/*
 if [[ ! -f "/var/www/meta/.timestamp-ss-encrypt" ]] || [[ -n $(find "/var/www/meta/.timestamp-ss-encrypt" -amin +30) ]]; then
 
 ## STAGING SITES (SUBDOMAIN) ##
+if [[ "$STAGING_SITE" != "false" ]] && [[ "$STAGING_SITE_SUBDOMAIN" != "false" ]]; then 
 certbot delete --cert-name staging.${SITE_TLD}
 certbot certonly --noninteractive --agree-tos --cert-name staging.${SITE_TLD} -d staging.${SITE_TLD} --register-unsafely-without-email --webroot -w /var/www/html/
+fi
 
 ## DEV SITES (SUBDOMAIN) ##
+if [[ "$DEV_SITE" != "false" ]] && [[ "$DEV_SITE_SUBDOMAIN" != "false" ]]; then 
 certbot delete --cert-name dev.${SITE_TLD}
 certbot certonly --noninteractive --agree-tos --cert-name dev.${SITE_TLD} -d dev.${SITE_TLD} --register-unsafely-without-email --webroot -w /var/www/html/
-
+fi
 
 ## SINGLE SITE CERTS + EMAIL ALERTS ##
 
