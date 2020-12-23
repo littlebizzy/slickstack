@@ -1,0 +1,558 @@
+#!/bin/bash
+
+####################################################################################################
+#### author: SlickStack ############################################################################
+#### link: https://slickstack.io ###################################################################
+#### mirror: http://mirrors.slickstack.io/ss-install-nginx-config.txt ##############################
+#### path: /var/www/ss-install-nginx-config ########################################################
+#### destination: n/a (not a boilerplate) ##########################################################
+#### purpose: Reinstalls the Nginx configuration files (idempotent) ###############
+#### module version: Nginx 1.18.x ##################################################################
+#### sourced by: ss-install ########################################################################
+####################################################################################################
+
+## SS-CONFIG MUST BE PROPERLY CONFIGURED AND ON CURRENT BUILD BEFORE RUNNING SS-INSTALL ##
+## ENSURE YOUR SS-CONFIG BUILD REMAINS CURRENT BY RUNNING SS-UPDATE OCCASIONALLY ##
+
+## include SlickStack configuration ##
+source /var/www/ss-config
+
+## include SlickStack functions ##
+source /var/www/ss-functions
+
+####################################################################################################
+#### SS-Install-Nginx: Cleanup Temporary Files #####################################################
+####################################################################################################
+
+## delete tmp files ##
+rm /tmp/nginx*
+rm /tmp/server-block*
+rm /tmp/default*
+
+####################################################################################################
+#### SS-Install: Check OS Compability + Verify SS-Config Freshness + Backup Database ###############
+####################################################################################################
+
+## run ss-dump ##
+source /var/www/ss-dump
+
+####################################################################################################
+#### SlickStack: Install + Configure Nginx (General Settings) ######################################
+####################################################################################################
+
+## here we install an optimized Nginx config designed for high traffic and CloudFlare ##
+## FastCGI Cache and OpenSSL are included by default (noindex also supported) ##
+
+## download latest Nginx config boilerplate ##
+wget -O /tmp/nginx.conf http://mirrors.slickstack.io/nginx/nginx-conf.txt
+
+## noindex entire site using HTTP headers (if enabled) ##
+if [[ "$SITE_NOINDEX" == "true" ]]; then 
+    sed -i "s/#@NOINDEX# //g" /tmp/nginx.conf
+else 
+    sed -i "/#@NOINDEX# /d" /tmp/nginx.conf
+fi
+
+## FastCGI (FCGI) Cache Settings
+
+## FCGI Cache memory ##
+if [[ -z "$FCGI_CACHE_MEMORY" ]]; then 
+    sed -i "s/@FCGI_CACHE_MEMORY/256m/g" /tmp/nginx.conf
+else 
+    sed -i "s/@FCGI_CACHE_MEMORY/${FCGI_CACHE_MEMORY}/g" /tmp/nginx.conf
+fi
+
+## FCGI Cache inactive ##
+if [[ -z "$FCGI_CACHE_INACTIVE" ]]; then 
+    sed -i "s/@FCGI_CACHE_INACTIVE/1440m/g" /tmp/nginx.conf
+else 
+    sed -i "s/@FCGI_CACHE_INACTIVE/${FCGI_CACHE_INACTIVE}/g" /tmp/nginx.conf
+fi
+
+## FCGI Cache max size ##
+if [[ -z "$FCGI_CACHE_MAX_SIZE" ]]; then 
+    sed -i "s/@FCGI_CACHE_MAX_SIZE/4096m/g" /tmp/nginx.conf
+else 
+    sed -i "s/@FCGI_CACHE_MAX_SIZE/${FCGI_CACHE_MAX_SIZE}/g" /tmp/nginx.conf
+fi
+
+## FCGI Cache connect timeout ##
+if [[ -z "$FCGI_CONNECT_TIMEOUT" ]]; then 
+    sed -i "s/@FCGI_CONNECT_TIMEOUT/60s/g" /tmp/nginx.conf
+else 
+    sed -i "s/@FCGI_CONNECT_TIMEOUT/${FCGI_CONNECT_TIMEOUT}/g" /tmp/nginx.conf
+fi
+
+## FCGI Cache read timeout ##
+if [[ -z "$FCGI_READ_TIMEOUT" ]]; then 
+    sed -i "s/@FCGI_READ_TIMEOUT/60s/g" /tmp/nginx.conf
+else 
+    sed -i "s/@FCGI_READ_TIMEOUT/${FCGI_READ_TIMEOUT}/g" /tmp/nginx.conf
+fi
+
+## FCGI Cache send timeout ##
+if [[ -z "$FCGI_SEND_TIMEOUT" ]]; then 
+    sed -i "s/@FCGI_SEND_TIMEOUT/60s/g" /tmp/nginx.conf
+else 
+    sed -i "s/@FCGI_SEND_TIMEOUT/${FCGI_SEND_TIMEOUT}/g" /tmp/nginx.conf
+fi
+
+## FCGI Cache buffers ##
+if [[ -z "$FCGI_BUFFERS" ]]; then 
+    sed -i "s/@FCGI_BUFFERS/32 32k/g" /tmp/nginx.conf
+else 
+    sed -i "s/@FCGI_BUFFERS/${FCGI_BUFFERS}/g" /tmp/nginx.conf
+fi
+
+## FCGI Cache buffer size ##
+if [[ -z "$FCGI_BUFFER_SIZE" ]]; then 
+    sed -i "s/@FCGI_BUFFER_SIZE/32k/g" /tmp/nginx.conf
+else 
+    sed -i "s/@FCGI_BUFFER_SIZE/${FCGI_BUFFER_SIZE}/g" /tmp/nginx.conf
+fi
+
+## FCGI Cache busy buffers size ##
+if [[ -z "$FCGI_BUSY_BUFFERS_SIZE" ]]; then 
+    sed -i "s/@FCGI_BUSY_BUFFERS_SIZE/256k/g" /tmp/nginx.conf
+else 
+    sed -i "s/@FCGI_BUSY_BUFFERS_SIZE/${FCGI_BUSY_BUFFERS_SIZE}/g" /tmp/nginx.conf
+fi
+
+## FCGI Cache temp file write size ##
+if [[ -z "$FCGI_TEMP_FILE_WRITE_SIZE" ]]; then 
+    sed -i "s/@FCGI_TEMP_FILE_WRITE_SIZE/256k/g" /tmp/nginx.conf
+else 
+    sed -i "s/@FCGI_TEMP_FILE_WRITE_SIZE/${FCGI_TEMP_FILE_WRITE_SIZE}/g" /tmp/nginx.conf
+fi
+
+## SSL (TLS) Settings
+
+## SSL protocols ##
+if [[ -z "$SSL_PROTOCOLS" ]]; then 
+    sed -i "s/@SSL_PROTOCOLS/TLSv1.2 TLSv1.3/g" /tmp/nginx.conf
+else 
+    sed -i "s/@SSL_PROTOCOLS/${SSL_PROTOCOLS}/g" /tmp/nginx.conf
+fi
+
+## SSL ciphers ##
+if [[ -z "$SSL_CIPHERS" ]]; then 
+    sed -i "s/@SSL_CIPHERS/ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384/g" /tmp/nginx.conf
+else 
+    sed -i "s/@SSL_CIPHERS/${SSL_CIPHERS}/g" /tmp/nginx.conf
+fi
+
+## SSL session timeout ##
+if [[ -z "$SSL_SESSION_TIMEOUT" ]]; then 
+    sed -i "s/@SSL_SESSION_TIMEOUT/1d/g" /tmp/nginx.conf
+else 
+    sed -i "s/@SSL_SESSION_TIMEOUT/${SSL_SESSION_TIMEOUT}/g" /tmp/nginx.conf
+fi
+
+## SSL session cache ##
+if [[ -z "$SSL_SESSION_CACHE" ]]; then 
+    sed -i "s/@SSL_SESSION_CACHE/shared:SSL:64m/g" /tmp/nginx.conf
+else 
+    sed -i "s/@SSL_SESSION_CACHE/${SSL_SESSION_CACHE}/g" /tmp/nginx.conf
+fi
+
+## SSL buffer size ##
+if [[ -z "$SSL_BUFFER_SIZE" ]]; then 
+    sed -i "s/@SSL_BUFFER_SIZE/16k/g" /tmp/nginx.conf
+else 
+    sed -i "s/@SSL_BUFFER_SIZE/${SSL_BUFFER_SIZE}/g" /tmp/nginx.conf
+fi
+
+## Various Nginx Settings
+
+## Nginx worker rlimit nofile ##
+if [[ -z "$NGINX_WORKER_RLIMIT_NOFILE" ]]; then 
+    sed -i "s/@NGINX_WORKER_RLIMIT_NOFILE/65535/g" /tmp/nginx.conf
+else 
+    sed -i "s/@NGINX_WORKER_RLIMIT_NOFILE/${NGINX_WORKER_RLIMIT_NOFILE}/g" /tmp/nginx.conf
+fi
+
+## Nginx worker connections ##
+if [[ -z "$NGINX_WORKER_CONNECTIONS" ]]; then 
+    sed -i "s/@NGINX_WORKER_CONNECTIONS/8192/g" /tmp/nginx.conf
+else 
+    sed -i "s/@NGINX_WORKER_CONNECTIONS/${NGINX_WORKER_CONNECTIONS}/g" /tmp/nginx.conf
+fi
+
+## Nginx server names hash bucket size ##
+if [[ -z "$NGINX_SERVER_NAMES_HASH_BUCKET_SIZE" ]]; then 
+    sed -i "s/@NGINX_SERVER_NAMES_HASH_BUCKET_SIZE/64/g" /tmp/nginx.conf
+else 
+    sed -i "s/@NGINX_SERVER_NAMES_HASH_BUCKET_SIZE/${NGINX_SERVER_NAMES_HASH_BUCKET_SIZE}/g" /tmp/nginx.conf
+fi
+
+## Nginx server names max hash size ##
+if [[ -z "$NGINX_SERVER_NAMES_MAX_HASH_SIZE" ]]; then 
+    sed -i "s/@NGINX_SERVER_NAMES_MAX_HASH_SIZE/64/g" /tmp/nginx.conf
+else 
+    sed -i "s/@NGINX_SERVER_NAMES_MAX_HASH_SIZE/${NGINX_SERVER_NAMES_MAX_HASH_SIZE}/g" /tmp/nginx.conf
+fi
+
+## Nginx types max hash size ##
+if [[ -z "$NGINX_TYPES_MAX_HASH_SIZE" ]]; then 
+    sed -i "s/@NGINX_TYPES_MAX_HASH_SIZE/2048/g" /tmp/nginx.conf
+else 
+    sed -i "s/@NGINX_TYPES_MAX_HASH_SIZE/${NGINX_TYPES_MAX_HASH_SIZE}/g" /tmp/nginx.conf
+fi
+
+## Nginx client max body size ##
+if [[ -z "$NGINX_CLIENT_MAX_BODY_SIZE" ]]; then 
+    sed -i "s/@NGINX_CLIENT_MAX_BODY_SIZE/512M/g" /tmp/nginx.conf
+else 
+    sed -i "s/@NGINX_CLIENT_MAX_BODY_SIZE/${NGINX_CLIENT_MAX_BODY_SIZE}/g" /tmp/nginx.conf
+fi
+
+## Nginx client body buffer size ##
+if [[ -z "$NGINX_CLIENT_BODY_BUFFER_SIZE" ]]; then 
+    sed -i "s/@NGINX_CLIENT_BODY_BUFFER_SIZE/16k/g" /tmp/nginx.conf
+else 
+    sed -i "s/@NGINX_CLIENT_BODY_BUFFER_SIZE/${NGINX_CLIENT_BODY_BUFFER_SIZE}/g" /tmp/nginx.conf
+fi
+
+## Nginx client header buffer size ##
+if [[ -z "$NGINX_CLIENT_HEADER_BUFFER_SIZE" ]]; then 
+    sed -i "s/@NGINX_CLIENT_HEADER_BUFFER_SIZE/4k/g" /tmp/nginx.conf
+else 
+    sed -i "s/@NGINX_CLIENT_HEADER_BUFFER_SIZE/${NGINX_CLIENT_HEADER_BUFFER_SIZE}/g" /tmp/nginx.conf
+fi
+
+## Nginx large client header buffers ##
+if [[ -z "$NGINX_LARGE_CLIENT_HEADER_BUFFERS" ]]; then 
+    sed -i "s/@NGINX_LARGE_CLIENT_HEADER_BUFFERS/4 64k/g" /tmp/nginx.conf
+else 
+    sed -i "s/@NGINX_LARGE_CLIENT_HEADER_BUFFERS/${NGINX_LARGE_CLIENT_HEADER_BUFFERS}/g" /tmp/nginx.conf
+fi
+
+## Nginx client body timeout ##
+if [[ -z "$NGINX_CLIENT_BODY_TIMEOUT" ]]; then 
+    sed -i "s/@NGINX_CLIENT_BODY_TIMEOUT/15s/g" /tmp/nginx.conf
+else 
+    sed -i "s/@NGINX_CLIENT_BODY_TIMEOUT/${NGINX_CLIENT_BODY_TIMEOUT}/g" /tmp/nginx.conf
+fi
+
+## Nginx client header timeout ##
+if [[ -z "$NGINX_CLIENT_HEADER_TIMEOUT" ]]; then 
+    sed -i "s/@NGINX_CLIENT_HEADER_TIMEOUT/15s/g" /tmp/nginx.conf
+else 
+    sed -i "s/@NGINX_CLIENT_HEADER_TIMEOUT/${NGINX_CLIENT_HEADER_TIMEOUT}/g" /tmp/nginx.conf
+fi
+
+## Nginx keepalive timeout ##
+if [[ -z "$NGINX_KEEPALIVE_TIMEOUT" ]]; then 
+    sed -i "s/@NGINX_KEEPALIVE_TIMEOUT/15s/g" /tmp/nginx.conf
+else 
+    sed -i "s/@NGINX_KEEPALIVE_TIMEOUT/${NGINX_KEEPALIVE_TIMEOUT}/g" /tmp/nginx.conf
+fi
+
+## Nginx keepalive requests ##
+if [[ -z "$NGINX_KEEPALIVE_REQUESTS" ]]; then 
+    sed -i "s/@NGINX_KEEPALIVE_REQUESTS/65535/g" /tmp/nginx.conf
+else 
+    sed -i "s/@NGINX_KEEPALIVE_REQUESTS/${NGINX_KEEPALIVE_REQUESTS}/g" /tmp/nginx.conf
+fi
+
+## Nginx send timeout ##
+if [[ -z "$NGINX_SEND_TIMEOUT" ]]; then 
+    sed -i "s/@NGINX_SEND_TIMEOUT/15s/g" /tmp/nginx.conf
+else 
+    sed -i "s/@NGINX_SEND_TIMEOUT/${NGINX_SEND_TIMEOUT}/g" /tmp/nginx.conf
+fi
+
+## Open File Cache Settings
+
+## Open File Cache max files ##
+if [[ -z "$OPEN_FILE_CACHE_MAX" ]]; then 
+    sed -i "s/@OPEN_FILE_CACHE_MAX/200000/g" /tmp/nginx.conf
+else 
+    sed -i "s/@OPEN_FILE_CACHE_MAX/${OPEN_FILE_CACHE_MAX}/g" /tmp/nginx.conf
+fi
+
+## Open File Cache inactive ##
+if [[ -z "$OPEN_FILE_CACHE_INACTIVE" ]]; then 
+    sed -i "s/@OPEN_FILE_CACHE_INACTIVE/20s/g" /tmp/nginx.conf
+else 
+    sed -i "s/@OPEN_FILE_CACHE_INACTIVE/${OPEN_FILE_CACHE_INACTIVE}/g" /tmp/nginx.conf
+fi
+
+## Open File Cache valid ##
+if [[ -z "$OPEN_FILE_CACHE_VALID" ]]; then 
+    sed -i "s/@OPEN_FILE_CACHE_VALID/30s/g" /tmp/nginx.conf
+else 
+    sed -i "s/@OPEN_FILE_CACHE_VALID/${OPEN_FILE_CACHE_VALID}/g" /tmp/nginx.conf
+fi
+
+## Open File Cache min uses ##
+if [[ -z "$OPEN_FILE_CACHE_MIN_USES" ]]; then 
+    sed -i "s/@OPEN_FILE_CACHE_MIN_USES/2/g" /tmp/nginx.conf
+else 
+    sed -i "s/@OPEN_FILE_CACHE_MIN_USES/${OPEN_FILE_CACHE_MIN_USES}/g" /tmp/nginx.conf
+fi
+
+## Open File Cache errors ##
+if [[ -z "$OPEN_FILE_CACHE_ERRORS" ]]; then 
+    sed -i "s/@OPEN_FILE_CACHE_ERRORS/on/g" /tmp/nginx.conf
+else 
+    sed -i "s/@OPEN_FILE_CACHE_ERRORS/${OPEN_FILE_CACHE_ERRORS}/g" /tmp/nginx.conf
+fi
+
+
+## headers ##
+if [[ -z "$NGINX_HEADER_POWERED_BY" ]]; then 
+    sed -i "s/@NGINX_HEADER_POWERED_BY/SlickStack/g" /tmp/nginx.conf
+else 
+    sed -i "s/@NGINX_HEADER_POWERED_BY/${NGINX_HEADER_POWERED_BY}/g" /tmp/nginx.conf
+fi
+
+if [[ -z "$NGINX_HEADER_STRICT_TRANSPORT_SECURITY" ]]; then 
+    sed -i "s/@NGINX_HEADER_STRICT_TRANSPORT_SECURITY/max-age=15552000/g" /tmp/nginx.conf
+else 
+    sed -i "s/@NGINX_HEADER_STRICT_TRANSPORT_SECURITY/${NGINX_HEADER_STRICT_TRANSPORT_SECURITY}/g" /tmp/nginx.conf
+fi
+
+if [[ -z "$NGINX_HEADER_REFERRER_POLICY" ]]; then 
+    sed -i "s/@NGINX_HEADER_REFERRER_POLICY/strict-origin-when-cross-origin/g" /tmp/nginx.conf
+else 
+    sed -i "s/@NGINX_HEADER_REFERRER_POLICY/${NGINX_HEADER_REFERRER_POLICY}/g" /tmp/nginx.conf
+fi
+
+if [[ -z "$NGINX_HEADER_PERMISSIONS_POLICY" ]]; then 
+    sed -i "s/@NGINX_HEADER_PERMISSIONS_POLICY/accelerometer=(), ambient-light-sensor=(), autoplay=*, battery=(), camera=(), display-capture=*, document-domain=*, encrypted-media=*, fullscreen=*, geolocation=(self), gyroscope=(), layout-animations=*, legacy-image-formats=*, magnetometer=(), microphone=(self), midi=(), oversized-images=*, payment=*, picture-in-picture=*, publickey-credentials-get=*, sync-xhr=*, usb=(), vibrate=(), wake-lock=(), xr-spatial-tracking=()/g" /tmp/nginx.conf
+else 
+    sed -i "s/@NGINX_HEADER_PERMISSIONS_POLICY/${NGINX_HEADER_PERMISSIONS_POLICY}/g" /tmp/nginx.conf
+fi
+
+if [[ -z "$NGINX_HEADER_FEATURE_POLICY" ]]; then 
+    sed -i "s/@NGINX_HEADER_FEATURE_POLICY/ambient-light-sensor none; animations self; autoplay none; accelerometer none; camera none; display-capture none; document-domain none; document-write none; encrypted-media none; fullscreen self; geolocation none; gyroscope none; image-compression *; legacy-image-formats *; magnetometer none; max-downscaling-image *; microphone none; midi none; notifications self; payment none; picture-in-picture self; push none; speaker self; sync-xhr none; unsized-media *; usb none; vertical-scroll self; wake-lock none; webauthn none; vibrate none; vr none; xr-spatial-tracking none;/g" /tmp/nginx.conf
+else 
+    sed -i "s/@NGINX_HEADER_FEATURE_POLICY/${NGINX_HEADER_FEATURE_POLICY}/g" /tmp/nginx.conf
+fi
+
+
+sed -i "s/@SITE_TLD/${SITE_TLD}/g" /tmp/nginx.conf
+
+ 
+
+
+
+####################################################################################################
+#### SS-Install-Nginx: Reset Permissions (Nginx.conf) + TMPFS Mount (Optional) #####################
+####################################################################################################
+
+## copy files to their destinations ##
+cp /tmp/nginx.conf /etc/nginx/nginx.conf
+
+## ensure cache directory exists (will not overwrite) ##
+mkdir /var/www/cache
+
+## set TMPFS cache storage if enabled ##
+if [[ "$FCGI_CACHE_TMPFS" == "true" ]]; then
+    mount -t tmpfs -o size=${FCGI_CACHE_MEMORY} tmpfs /var/www/cache
+    sed -i '/tmpfs/d' /etc/fstab
+    echo "tmpfs /var/www/cache tmpfs defaults,size=${FCGI_CACHE_MEMORY} 0 0" >> /etc/fstab
+else
+    sed -i '/tmpfs/d' /etc/fstab
+fi
+
+####################################################################################################
+#### SS-Install-Nginx: Install Nginx Server Block (Dev Subdomain) ##################################
+####################################################################################################
+
+
+## delete old server blocks (can cause conflicts if domain name changed etc) ##
+rm /etc/nginx/sites-available/*
+rm /etc/nginx/sites-enabled/*
+
+# rm /etc/nginx/sites-available/default*
+# rm /etc/nginx/sites-enabled/default*
+
+## download latest server block (staging site) ##
+wget -O /tmp/server-block-dev http://mirrors.slickstack.io/nginx/server-block-dev.txt
+
+## replace site variables ##
+sed -i "s/@DOMAIN/${SITE_DOMAIN}/g" /tmp/server-block-dev
+sed -i "s/@SITE_TLD/${SITE_TLD}/g" /tmp/server-block-dev
+sed -i "s/@SITE_DOMAIN/${SITE_DOMAIN}/g" /tmp/server-block-dev
+sed -i "s/@CACHEVALID/${FCGI_CACHE_VALID}/g" /tmp/server-block-dev
+
+## Multisite domain mapping (optional) ##
+if [[ "$WP_MULTISITE_DOMAIN_MAPPING" == "true" ]]; then 
+   sed -i "s/#@WP_MULTISITE_DOMAIN_MAPPING# //g" /tmp/server-block-dev
+else
+    sed -i "s/#@WP_MULTISITE_DOMAIN_MAPPING_FALSE# //g" /tmp/server-block-dev
+fi
+
+## Multisite subdomains (optional) ##
+if [[ "$WP_MULTISITE_SUBDOMAINS" == "true" ]]; then 
+    sed -i "s/#@WP_MULTISITE_SUBDOMAINS# //g" /tmp/server-block-dev
+fi
+
+## FastCGI Cache ##
+if [[ "$FCGI_CACHE" == "false" ]]; then 
+    sed -i "s/@FCGI_CACHE/1/g" /tmp/server-block-dev
+else 
+    sed -i "s/@FCGI_CACHE/0/g" /tmp/server-block-dev
+fi
+
+## copy files to destinations ##
+cp /tmp/server-block-dev /etc/nginx/sites-available/dev.${SITE_TLD}
+
+
+
+####################################################################################################
+#### SS-Install-Nginx: Install Nginx Server Block (Staging Site) ###################################
+####################################################################################################
+
+## download latest server block (staging site) ##
+wget -O /tmp/server-block-staging http://mirrors.slickstack.io/nginx/server-block-staging.txt
+
+## replace site variables ##
+sed -i "s/@DOMAIN/${SITE_DOMAIN}/g" /tmp/server-block-staging
+sed -i "s/@SITE_TLD/${SITE_TLD}/g" /tmp/server-block-staging
+sed -i "s/@SITE_DOMAIN/${SITE_DOMAIN}/g" /tmp/server-block-staging
+sed -i "s/@CACHEVALID/${FCGI_CACHE_VALID}/g" /tmp/server-block-staging
+
+## Multisite domain mapping (optional) ##
+if [[ "$WP_MULTISITE_DOMAIN_MAPPING" == "true" ]]; then 
+   sed -i "s/#@WP_MULTISITE_DOMAIN_MAPPING# //g" /tmp/server-block-staging
+else
+    sed -i "s/#@WP_MULTISITE_DOMAIN_MAPPING_FALSE# //g" /tmp/server-block-staging
+fi
+
+## Multisite subdomains (optional) ##
+if [[ "$WP_MULTISITE_SUBDOMAINS" == "true" ]]; then 
+    sed -i "s/#@WP_MULTISITE_SUBDOMAINS# //g" /tmp/server-block-staging
+fi
+
+## FastCGI Cache ##
+if [[ "$FCGI_CACHE" == "false" ]]; then 
+    sed -i "s/@FCGI_CACHE/1/g" /tmp/server-block-staging
+else 
+    sed -i "s/@FCGI_CACHE/0/g" /tmp/server-block-staging
+fi
+
+## copy files to destinations ##
+cp /tmp/server-block-staging /etc/nginx/sites-available/staging.${SITE_TLD}
+
+####################################################################################################
+#### SlickStack: Install Nginx Servers Blocks (Supports Single Sites + Multisite) ##################
+####################################################################################################
+
+## download latest server block boilerplate (single site / Multisite) ##
+if [[ "$WP_MULTISITE" == "true" ]]; then 
+    wget -O /tmp/default http://mirrors.slickstack.io/nginx/default-multisite-subdomains.txt
+    # elif [[ "$WP_MULTISITE" == "true" ]] && [[ "$WP_MULTISITE_SUBDOMAINS" == "false" ]]; then 
+else 
+    wget -O /tmp/default http://mirrors.slickstack.io/nginx/server-block-production.txt
+fi
+
+## replace site variables ##
+sed -i "s/@DOMAIN/${SITE_DOMAIN}/g" /tmp/default
+sed -i "s/@SITE_TLD/${SITE_TLD}/g" /tmp/default
+sed -i "s/@SITE_DOMAIN/${SITE_DOMAIN}/g" /tmp/default
+sed -i "s/@CACHEVALID/${FCGI_CACHE_VALID}/g" /tmp/default
+
+## Multisite domain mapping (optional) ##
+if [[ "$WP_MULTISITE_DOMAIN_MAPPING" == "true" ]]; then 
+   sed -i "s/#@WP_MULTISITE_DOMAIN_MAPPING# //g" /tmp/default
+else
+    sed -i "s/#@WP_MULTISITE_DOMAIN_MAPPING_FALSE# //g" /tmp/default
+fi
+
+## Multisite subdomains (optional) ##
+if [[ "$WP_MULTISITE_SUBDOMAINS" == "true" ]]; then 
+    sed -i "s/#@WP_MULTISITE_SUBDOMAINS# //g" /tmp/default
+fi
+
+## FastCGI Cache ##
+if [[ "$FCGI_CACHE" == "false" ]]; then 
+    sed -i "s/@FCGI_CACHE/1/g" /tmp/default
+else 
+    sed -i "s/@FCGI_CACHE/0/g" /tmp/default
+fi
+
+## copy files to destinations ##
+# cp /tmp/default /etc/nginx/sites-available/default
+cp /tmp/default /etc/nginx/sites-available/${SITE_DOMAIN}
+
+####################################################################################################
+#### SS-Install-Nginx: Create Symlinks For Enabled Sites ###########################################
+####################################################################################################
+
+## symlinks ##
+sudo ln -s /etc/nginx/sites-available/${SITE_DOMAIN} /etc/nginx/sites-enabled/
+sudo ln -s /etc/nginx/sites-available/dev.${SITE_TLD} /etc/nginx/sites-enabled/
+sudo ln -s /etc/nginx/sites-available/staging.${SITE_TLD} /etc/nginx/sites-enabled/
+
+####################################################################################################
+#### SS-Install-Nginx: Purge Cache (Nginx) #########################################################
+####################################################################################################
+
+## run ss-purge-nginx ##
+source /var/www/ss-purge-nginx
+
+####################################################################################################
+#### SS-Install-Nginx: Reset Permissions (Nginx) ###################################################
+####################################################################################################
+
+## run ss-perms-nginx ##
+source /var/www/ss-perms-nginx
+
+####################################################################################################
+#### SS-Install-Nginx: Restart Services (Nginx) ####################################################
+####################################################################################################
+
+## restart nginx ##
+/etc/init.d/nginx restart
+
+####################################################################################################
+#### SS-Install-Nginx: Configure SSL (Via SS-Encrypt) ##############################################
+####################################################################################################
+
+## TEMP FIX TO AVOID ss-install-nginx from breaking Lets Encrypt certs ##
+## run ss-encrypt ##
+source /var/www/ss-encrypt
+
+####################################################################################################
+#### SS-Install-Nginx: Configure WordPress (Via SS-Install-WordPress-Config) #######################
+####################################################################################################
+
+## ensures that concatenate is disabled in wp-config to support latest nginx server block ##
+
+if [[ "$SS_APP" == "wordpress" || -z "$SS_APP"  ]]; then
+
+    ## run ss-install-wordpress-config ##
+    source /var/www/ss-install-wordpress-config
+    
+fi
+
+####################################################################################################
+#### SS-Install-Nginx: Cleanup Temporary Files #####################################################
+####################################################################################################
+
+## delete tmp files ##
+# n/a
+
+####################################################################################################
+#### SS-Install-Nginx: Touch Timestamp File (End Script) ###########################################
+####################################################################################################
+
+## this is a dummy timestamp file that will remember the last time this script was run ##
+## it can be useful for developer reference and is sometimes used by SlickStack ##
+
+## script timestamp ##
+touch /var/www/meta/.timestamp-ss-install-nginx
+
+####################################################################################################
+#### SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ###############
+####################################################################################################
+
+## Ref: https://serverfault.com/questions/527630/difference-in-sites-available-vs-sites-enabled-vs-conf-d-directories-nginx
+## Ref: https://www.digitalocean.com/community/tutorials/how-to-set-up-nginx-server-blocks-virtual-hosts-on-ubuntu-16-04
+## Ref: https://ar.al/2018/07/05/nginx-remember-to-remove-the-default-site/
+## Ref: https://discourse.roots.io/t/http-does-not-redirect-to-https-only-at-the-first-access/8669
+
+## SS_EOF
