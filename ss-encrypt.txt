@@ -276,7 +276,7 @@ fi
 
 ## create symlinks for simpler Nginx config ##
 ln /etc/letsencrypt/live/${SITE_DOMAIN}/cert.pem /var/www/certs/cert.pem &> /dev/null
-ln /etc/letsencrypt/live/${SITE_DOMAIN}/privkey.pem /var/www/certs/privkey.pem &> /dev/null
+ln /etc/letsencrypt/live/${SITE_DOMAIN}/privkey.pem /var/www/certs/keys/privkey.pem &> /dev/null
 ln /etc/letsencrypt/live/${SITE_DOMAIN}/chain.pem /var/www/certs/chain.pem &> /dev/null
 ln /etc/letsencrypt/live/${SITE_DOMAIN}/fullchain.pem /var/www/certs/fullchain.pem &> /dev/null
 ## need to add more complex rules for SITE_TLD symlinks too (depends on how the certs were generated above) ##
@@ -287,7 +287,7 @@ ln /etc/letsencrypt/live/${SITE_DOMAIN}/fullchain.pem /var/www/certs/fullchain.p
 # if [[ "$SSL_TYPE" == "certbot" ]] && [[ -d  "/etc/letsencrypt/live" ]] && [[ -f  "/etc/ssl/cert.pem" ]]; then
 if [[ "$SSL_TYPE" == "certbot" ]] && [[ -d  "/etc/letsencrypt/live" ]]; then
     sed -i "s#/var/www/certs/${SITE_TLD}.crt#/var/www/certs/fullchain.pem#g" /etc/nginx/nginx.conf
-    sed -i "s#/var/www/certs/${SITE_TLD}.key#/var/www/certs/privkey.pem#g" /etc/nginx/nginx.conf
+    sed -i "s#/var/www/certs/keys/${SITE_TLD}.key#/var/www/certs/keys/privkey.pem#g" /etc/nginx/nginx.conf
     sed -i "s/#@CERTBOT# //g" /etc/nginx/nginx.conf
 else
     echo -e "\e[36mCertbot installation was not successful, reverting to OpenSSL...\e[0m"
