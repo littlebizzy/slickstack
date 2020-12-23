@@ -27,7 +27,7 @@ source /var/www/ss-functions
 ## here we copy over everything from production to staging besides uploads (media files) ##
 ## schedule ss-clean beforehand in order to remove various (large) junk files ##
 
-## only if STAGING_SITE not disabled in ss-config ##
+## only if staging site not disabled in ss-config ##
 if [[ "$STAGING_SITE" != "false" ]] && [[ "$SS_APP" == "wordpress" || -z "$SS_APP"  ]]; then
 
     ## create staging database ##
@@ -44,11 +44,8 @@ if [[ "$STAGING_SITE" != "false" ]] && [[ "$SS_APP" == "wordpress" || -z "$SS_AP
     ## copy wp-content files over (skips media uploads) ##
     rsync --max-size=5mb --exclude="mu-plugins*" --exclude="uploads*" /var/www/html/wp-content/ /var/www/html/staging/wp-content
     
-## end parent if ##
-fi
-
-## remove potential run-on subdirectories ##
-rm /var/www/html/staging/staging*
+    ## remove potential run-on subdirectories ##
+    rm /var/www/html/staging/staging*
 
 ####################################################################################################
 #### SS-Sync-Staging: Copy Database From Production To Staging (Modify Table Prefix) ###############
@@ -57,12 +54,9 @@ rm /var/www/html/staging/staging*
 ## schedule ss-dump beforehand to dump the MySQL database optimally before ss-sync runs ##
 ## table prefix changed to staging_ (hardcoded) and minor search/replace occurs ##
 
-## cleanup tmp files ##
-rm /var/www/meta/staging*.sql*
-rm /tmp/staging*.sql*
-
-## only if STAGING_SITE not disabled in ss-config ##
-if [[ "$STAGING_SITE" != "false" ]]; then
+    ## cleanup tmp files ##
+    rm /var/www/meta/staging*.sql*
+    rm /tmp/staging*.sql*
 
     ## duplicate production SQL dump to temporary staging SQL dump ##
     cp /var/www/meta/wp.sql /tmp/staging.sql
@@ -204,14 +198,14 @@ if [[ "$STAGING_SITE" != "false" ]]; then
     mysql "$DB_NAME" < /tmp/staging.sql
 
     ## fix staging home and siteurl fields (no mass search/replace to avoid potential conflicts) ##
-mysql --execute="UPDATE ${DB_NAME}.${DB_PREFIX}options SET option_value='https://$SITE_DOMAIN' WHERE option_name='home'";
-mysql --execute="UPDATE ${DB_NAME}.${DB_PREFIX}options SET option_value='https://$SITE_DOMAIN' WHERE option_name='siteurl'";
+    mysql --execute="UPDATE ${DB_NAME}.${DB_PREFIX}options SET option_value='https://$SITE_DOMAIN' WHERE option_name='home'";
+    mysql --execute="UPDATE ${DB_NAME}.${DB_PREFIX}options SET option_value='https://$SITE_DOMAIN' WHERE option_name='siteurl'";
 
-mysql --execute="UPDATE ${DB_NAME}.staging_options SET option_value='https://$SITE_DOMAIN/staging' WHERE option_name='home'";
-mysql --execute="UPDATE ${DB_NAME}.staging_options SET option_value='https://$SITE_DOMAIN/staging' WHERE option_name='siteurl'";
+    mysql --execute="UPDATE ${DB_NAME}.staging_options SET option_value='https://$SITE_DOMAIN/staging' WHERE option_name='home'";
+    mysql --execute="UPDATE ${DB_NAME}.staging_options SET option_value='https://$SITE_DOMAIN/staging' WHERE option_name='siteurl'";
 
-mysql --execute="UPDATE ${DB_NAME}.dev_options SET option_value='https://$SITE_DOMAIN/dev' WHERE option_name='home'";
-mysql --execute="UPDATE ${DB_NAME}.dev_options SET option_value='https://$SITE_DOMAIN/dev' WHERE option_name='siteurl'";
+    mysql --execute="UPDATE ${DB_NAME}.dev_options SET option_value='https://$SITE_DOMAIN/dev' WHERE option_name='home'";
+    mysql --execute="UPDATE ${DB_NAME}.dev_options SET option_value='https://$SITE_DOMAIN/dev' WHERE option_name='siteurl'";
     
     ## cleanup tmp files ##
     rm /var/www/meta/staging*.sql*
@@ -221,7 +215,7 @@ mysql --execute="UPDATE ${DB_NAME}.dev_options SET option_value='https://$SITE_D
 #### SS-Sync-Staging: Configure Staging Site WP-Config File (Same As SS-Install) ###################
 ####################################################################################################
 
-## MODULE VERSION: WP-Config Build #
+    ## MODULE VERSION: WP-Config Build #
 
     ## retrieve latest wp-config boilerplate ##
     wget -O /var/www/html/staging/wp-config.php http://mirrors.slickstack.io/wordpress/wp-config-staging.txt
@@ -367,32 +361,25 @@ mysql --execute="UPDATE ${DB_NAME}.dev_options SET option_value='https://$SITE_D
         sed -i "s/@WP_ALLOW_UNFILTERED_UPLOADS/${WP_ALLOW_UNFILTERED_UPLOADS}/g" /var/www/html/staging/wp-config.php
     fi
 
-## end parent if ##
-fi
-
 ####################################################################################################
-#### SS-Sync-Staging: Ensure Critical Directories Exist + Run Final Scripts ########################
+#### SS-Sync-Staging: Install WordPress MU Plugins #################################################
 ####################################################################################################
 
-## ensure directories exist ##
-mkdir /var/www/html/staging/wp-content/temp
-mkdir /var/www/html/staging/wp-content/uploads
-mkdir /var/www/html/staging/wp-content/upgrade
-
-
-
-## run ss-muplugs ##
-source /var/www/ss-muplugs
+    ## run ss-muplugs ##
+    source /var/www/ss-muplugs
 
 ####################################################################################################
 #### SS-Sync-Staging: Reset Permissions (WordPress Core + WordPress Config) ########################
 ####################################################################################################
 
-## run ss-perms-wordpress-core ##
-source /var/www/ss-perms-wordpress-core
+    ## run ss-perms-wordpress-core ##
+    source /var/www/ss-perms-wordpress-core
 
-## run ss-perms-wordpress-config ##
-source /var/www/ss-perms-wordpress-config
+    ## run ss-perms-wordpress-config ##
+    source /var/www/ss-perms-wordpress-config
+
+## end parent if ##
+fi
 
 ####################################################################################################
 #### SS-Sync-Staging: Touch Timestamp File (End Of Script) #########################################
