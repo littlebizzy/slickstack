@@ -505,9 +505,17 @@ source /var/www/ss-perms-nginx
 #### SS-Install-Nginx: Configure SSL (Via SS-Encrypt) ##############################################
 ####################################################################################################
 
-## TEMP FIX TO AVOID ss-install-nginx from breaking Lets Encrypt certs ##
+## TEMP FIX TO AVOID ss-install-nginx-config from breaking Lets Encrypt certs ##
 ## run ss-encrypt ##
-source /var/www/ss-encrypt
+# source /var/www/ss-encrypt
+
+if [[ "$SSL_TYPE" == "certbot" ]] && [[ -d  "/etc/letsencrypt/live" ]]; then
+    sed -i "s#/var/www/certs/${SITE_TLD}.crt#/var/www/certs/fullchain.pem#g" /etc/nginx/nginx.conf
+    sed -i "s#/var/www/certs/keys/${SITE_TLD}.key#/var/www/certs/keys/privkey.pem#g" /etc/nginx/nginx.conf
+    sed -i "s/#@CERTBOT# //g" /etc/nginx/nginx.conf
+else
+    echo -e "\e[36mCertbot installation was not successful, reverting to OpenSSL...\e[0m"
+fi
 
 ####################################################################################################
 #### SS-Install-Nginx: Configure WordPress (Via SS-Install-WordPress-Config) #######################
