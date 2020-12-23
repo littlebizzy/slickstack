@@ -42,9 +42,12 @@ mkdir /var/www/certs
 mkdir /var/www/certs/keys
 
 ## delete existing OpenSSL certificates (and keys) ##
-rm /etc/ssl/*.crt
-rm /etc/ssl/*.key
-rm /etc/ssl/*.pem
+# rm /var/www/certs/*.crt
+# rm /var/www/certs/*.key
+# rm /var/www/certs/*.pem
+# rm /etc/ssl/*.crt
+# rm /etc/ssl/*.key
+# rm /etc/ssl/*.pem
 
 ####################################################################################################
 #### SS-Encrypt: Regenerate Self-Signed Certificate (OpenSSL) ######################################
@@ -56,16 +59,20 @@ touch /home/${SFTP_USER}/.rnd
 
 ## generate self-signed OpenSSL certificate ##
 if [[ -n "$CSR_COUNTRY" ]] && [[ -n "$CSR_STATE" ]] && [[ -n "$CSR_CITY" ]] && [[ -n "$CSR_COMPANY" ]] && [[ -n "$CSR_DEPT" ]]; then 
+    rm /var/www/certs/keys/${SITE_TLD}.key
+    rm /var/www/certs/${SITE_TLD}.crt
     # openssl req -new -x509 -nodes -days 3650 -newkey rsa:2048 -keyout /etc/ssl/nginx.key -out /etc/ssl/nginx.crt -subj "/C=${CSR_COUNTRY}/ST=${CSR_STATE}/L=${CSR_CITY}/O=${CSR_COMPANY}/OU=${CSR_DEPT}/CN=${SITE_DOMAIN}"
     # openssl req -new -x509 -nodes -days 3650 -newkey rsa:2048 -keyout /etc/ssl/${SITE_DOMAIN}.key -out /etc/ssl/${SITE_DOMAIN}.crt -subj "/C=${CSR_COUNTRY}/ST=${CSR_STATE}/L=${CSR_CITY}/O=${CSR_COMPANY}/OU=${CSR_DEPT}/CN=${SITE_DOMAIN}"
-    openssl req -new -x509 -nodes -days 3650 -newkey rsa:2048 -keyout /etc/ssl/${SITE_TLD}.key -out /etc/ssl/${SITE_TLD}.crt -subj "/C=${CSR_COUNTRY}/ST=${CSR_STATE}/L=${CSR_CITY}/O=${CSR_COMPANY}/OU=${CSR_DEPT}/CN=${SITE_DOMAIN}"
+    openssl req -new -x509 -nodes -days 3650 -newkey rsa:2048 -keyout /var/www/certs/keys/${SITE_TLD}.key -out /var/www/certs/${SITE_TLD}.crt -subj "/C=${CSR_COUNTRY}/ST=${CSR_STATE}/L=${CSR_CITY}/O=${CSR_COMPANY}/OU=${CSR_DEPT}/CN=${SITE_DOMAIN}"
     
     # openssl req -new -x509 -nodes -days 3650 -newkey rsa:2048 -keyout /etc/ssl/staging.${SITE_TLD}.key -out /etc/ssl/staging.${SITE_TLD}.crt -subj "/C=${CSR_COUNTRY}/ST=${CSR_STATE}/L=${CSR_CITY}/O=${CSR_COMPANY}/OU=${CSR_DEPT}/CN=staging.${SITE_TLD}"
     # openssl req -new -x509 -nodes -days 3650 -newkey rsa:2048 -keyout /etc/ssl/dev.${SITE_TLD}.key -out /etc/ssl/dev.${SITE_TLD}.crt -subj "/C=${CSR_COUNTRY}/ST=${CSR_STATE}/L=${CSR_CITY}/O=${CSR_COMPANY}/OU=${CSR_DEPT}/CN=dev.${SITE_TLD}"
 else 
+    rm /var/www/certs/keys/${SITE_TLD}.key
+    rm /var/www/certs/${SITE_TLD}.crt
     # openssl req -new -x509 -nodes -days 3650 -newkey rsa:2048 -keyout /etc/ssl/nginx.key -out /etc/ssl/nginx.crt -subj "/C=US/ST=Nevada/L=Las Vegas/O=Example, LLC/OU=DevOps/CN=${SITE_DOMAIN}"
     # openssl req -new -x509 -nodes -days 3650 -newkey rsa:2048 -keyout /etc/ssl/${SITE_DOMAIN}.key -out /etc/ssl/${SITE_DOMAIN}.crt -subj "/C=US/ST=Nevada/L=Las Vegas/O=Example, LLC/OU=DevOps/CN=${SITE_DOMAIN}"
-    openssl req -new -x509 -nodes -days 3650 -newkey rsa:2048 -keyout /etc/ssl/${SITE_TLD}.key -out /etc/ssl/${SITE_TLD}.crt -subj "/C=US/ST=Nevada/L=Las Vegas/O=Example, LLC/OU=DevOps/CN=${SITE_DOMAIN}"
+    openssl req -new -x509 -nodes -days 3650 -newkey rsa:2048 -keyout /var/www/certs/keys/${SITE_TLD}.key -out /var/www/certs/${SITE_TLD}.crt -subj "/C=US/ST=Nevada/L=Las Vegas/O=Example, LLC/OU=DevOps/CN=${SITE_DOMAIN}"
     
     # openssl req -new -x509 -nodes -days 3650 -newkey rsa:2048 -keyout /etc/ssl/staging.${SITE_TLD}.key -out /etc/ssl/staging.${SITE_TLD}.crt -subj "/C=US/ST=Nevada/L=Las Vegas/O=Example, LLC/OU=DevOps/CN=staging.${SITE_TLD}"
     # openssl req -new -x509 -nodes -days 3650 -newkey rsa:2048 -keyout /etc/ssl/dev.${SITE_TLD}.key -out /etc/ssl/dev.${SITE_TLD}.crt -subj "/C=US/ST=Nevada/L=Las Vegas/O=Example, LLC/OU=DevOps/CN=dev.${SITE_TLD}"
@@ -106,8 +113,8 @@ fi
 ## delete existing DH Params certificate ##
 # rm /etc/ssl/dhparam.pem ## reuse existing DH Params (takes a long time to regenerate)
 
-if [[ "$SSL_TYPE" == "certbot" ]] && [[ ! -f "/etc/ssl/dhparam.pem" ]]; then 
-    openssl dhparam -out /etc/ssl/dhparam.pem 2048
+if [[ "$SSL_TYPE" == "certbot" ]] && [[ ! -f "/var/www/certs/dhparam.pem" ]]; then 
+    openssl dhparam -out /var/www/certs/dhparam.pem 2048
 fi
 
 ####################################################################################################
@@ -127,16 +134,16 @@ chmod 6775 /var/www/html/.well-known
 ####################################################################################################
 
 ## delete existing Lets Encrypt certificates (and keys) ##
-rm /etc/ssl/cert.pem ## symlink
-rm /etc/ssl/chain.pem ## symlink
-rm /etc/ssl/fullchain.pem ## symlink
-rm /etc/ssl/privkey.pem ## symlink
-rm /etc/letsencrypt/live/${SITE_DOMAIN}/cert.pem
-rm /etc/letsencrypt/live/${SITE_DOMAIN}/chain.pem
-rm /etc/letsencrypt/live/${SITE_DOMAIN}/fullchain.pem
-rm /etc/letsencrypt/live/${SITE_DOMAIN}/privkey.pem
+# rm /etc/ssl/cert.pem ## symlink
+# rm /etc/ssl/chain.pem ## symlink
+# rm /etc/ssl/fullchain.pem ## symlink
+# rm /etc/ssl/privkey.pem ## symlink
+# rm /etc/letsencrypt/live/${SITE_DOMAIN}/cert.pem
+# rm /etc/letsencrypt/live/${SITE_DOMAIN}/chain.pem
+# rm /etc/letsencrypt/live/${SITE_DOMAIN}/fullchain.pem
+# rm /etc/letsencrypt/live/${SITE_DOMAIN}/privkey.pem
 
-rm /etc/letsencrypt/live/*
+# rm /etc/letsencrypt/live/*
 
 ####################################################################################################
 #### SS-Encrypt: Request SSL Certificates From Lets Encrypt Servers (Rate-Limited) #################
@@ -146,7 +153,7 @@ rm /etc/letsencrypt/live/*
 ## this approach also allows you to change your server to a different CMS or TLD ##
 
 ## Certbot rate limit is 5 fails per hour... if timestamp is less than 30min old and LE cert already exists then do not request another one ##
-if [[ ! -f "/var/www/meta/.timestamp-ss-encrypt" ]] || [[ -n $(find "/var/www/meta/.timestamp-ss-encrypt" -amin +30) ]]; then
+if [[ ! -f "/var/www/meta/.timestamp-ss-encrypt" ]] || [[ -n $(find "/var/www/meta/.timestamp-ss-encrypt" -amin +15) ]]; then
 
 ## STAGING SITES (SUBDOMAIN) ##
 if [[ "$STAGING_SITE" != "false" ]] && [[ "$STAGING_SITE_SUBDOMAIN" != "false" ]]; then 
@@ -281,10 +288,10 @@ fi
 ####################################################################################################
 
 ## create symlinks for simpler Nginx config ##
-ln /etc/letsencrypt/live/${SITE_DOMAIN}/cert.pem /etc/ssl/cert.pem &> /dev/null
-ln /etc/letsencrypt/live/${SITE_DOMAIN}/privkey.pem /etc/ssl/privkey.pem &> /dev/null
-ln /etc/letsencrypt/live/${SITE_DOMAIN}/chain.pem /etc/ssl/chain.pem &> /dev/null
-ln /etc/letsencrypt/live/${SITE_DOMAIN}/fullchain.pem /etc/ssl/fullchain.pem &> /dev/null
+ln /etc/letsencrypt/live/${SITE_DOMAIN}/cert.pem /var/www/certs/cert.pem &> /dev/null
+ln /etc/letsencrypt/live/${SITE_DOMAIN}/privkey.pem /var/www/certs/privkey.pem &> /dev/null
+ln /etc/letsencrypt/live/${SITE_DOMAIN}/chain.pem /var/www/certs/chain.pem &> /dev/null
+ln /etc/letsencrypt/live/${SITE_DOMAIN}/fullchain.pem /var/www/certs/fullchain.pem &> /dev/null
 ## need to add more complex rules for SITE_TLD symlinks too (depends on how the certs were generated above) ##
 
 ## staging and dev sites next symlinks here
@@ -292,8 +299,8 @@ ln /etc/letsencrypt/live/${SITE_DOMAIN}/fullchain.pem /etc/ssl/fullchain.pem &> 
 ## modify live Nginx configuration if Certbot successful + preferred ##
 # if [[ "$SSL_TYPE" == "certbot" ]] && [[ -d  "/etc/letsencrypt/live" ]] && [[ -f  "/etc/ssl/cert.pem" ]]; then
 if [[ "$SSL_TYPE" == "certbot" ]] && [[ -d  "/etc/letsencrypt/live" ]]; then
-    sed -i "s#/etc/ssl/${SITE_TLD}.crt#/etc/ssl/fullchain.pem#g" /etc/nginx/nginx.conf
-    sed -i "s#/etc/ssl/${SITE_TLD}.key#/etc/ssl/privkey.pem#g" /etc/nginx/nginx.conf
+    sed -i "s#/var/www/certs/${SITE_TLD}.crt#/var/www/certs/fullchain.pem#g" /etc/nginx/nginx.conf
+    sed -i "s#/var/www/certs/${SITE_TLD}.key#/var/www/certs/privkey.pem#g" /etc/nginx/nginx.conf
     sed -i "s/#@CERTBOT# //g" /etc/nginx/nginx.conf
 else
     echo -e "\e[36mCertbot installation was not successful, reverting to OpenSSL...\e[0m"
@@ -311,6 +318,11 @@ chown root:root /etc/ssl/*.pem ## must be root:root
 chmod 0644 /etc/ssl/*.crt ## must be 0644
 chmod 0600 /etc/ssl/*.key ## must be 0600
 chmod 0640 /etc/ssl/*.pem
+
+
+cp /etc/ssl/*.crt /var/www/certs/
+cp /etc/ssl/*.key /var/www/certs/
+cp /etc/ssl/*.pem /var/www/certs/
 
 ####################################################################################################
 #### SS-Encrypt: Restart Nginx (After Certbot SSL Installation Complete) ###########################
