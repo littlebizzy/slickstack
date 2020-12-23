@@ -6,8 +6,9 @@
 #### mirror: http://mirrors.slickstack.io/ss-worker.txt ############################################
 #### path: /var/www/ss-worker ######################################################################
 #### destination: n/a (not a boilerplate) ##########################################################
-#### purpose: Performs various SlickStack maintenance tasks and downloads latest ss-check ##########
+#### purpose: Performs various SlickStack maintenance tasks and retrieves latest ss-check ##########
 #### module version: Ubuntu 20.04 LTS ##############################################################
+#### sourced by: ss core cron jobs, ss-update ######################################################
 ####################################################################################################
 
 ## include SlickStack configuration ##
@@ -49,13 +50,20 @@ cp /tmp/01-cron-often /var/www/01-cron-often
 cp /tmp/02-cron-regular /var/www/02-cron-regular
 cp /tmp/ss-check /var/www/ss-check
 
-if [[ ! -f "/var/www/html/wp-content/mu-plugins/autoloader.php" ]]; then
+####################################################################################################
+#### SS-Worker: Install Required WordPress MU Plugins If Do Not Exist ##############################
+####################################################################################################
+
+## in certain situations we have noticed single-file required MU plugins gone missing ##
+## therefore this will briefly check if they are missing and install if needed ##
+
+if [[ ! -f "/var/www/html/wp-content/mu-plugins/autoloader.php" ]] && [[ "$SS_APP" == "wordpress" || -z "$SS_APP"  ]]; then
 wget -O /tmp/autoloader.php http://mirrors.slickstack.io/mu-plugins/autoloader.txt
 cp /tmp/autoloader.php /var/www/html/wp-content/mu-plugins/autoloader.php
 chmod 0440 /var/www/html/wp-content/mu-plugins/autoloader.php ## 0440 (read-only)
 fi
 
-if [[ ! -f "/var/www/html/wp-content/mu-plugins/xxx-common.php" ]]; then
+if [[ ! -f "/var/www/html/wp-content/mu-plugins/xxx-common.php" ]] && [[ "$SS_APP" == "wordpress" || -z "$SS_APP"  ]]; then
 wget -O /tmp/xxx-common.php http://mirrors.slickstack.io/mu-plugins/xxx-common.txt
 cp /tmp/xxx-common.php /var/www/html/wp-content/mu-plugins/xxx-common.php
 chmod 0440 /var/www/html/wp-content/mu-plugins/xxx-common.php ## 0440 (read-only)
@@ -70,8 +78,20 @@ mkdir /var/www
 mkdir /var/www/cache
 mkdir /var/www/cache/fastcgi
 mkdir /var/www/cache/opcache
+mkdir /var/www/certs
+mkdir /var/www/certs/keys
 mkdir /var/www/logs
 mkdir /var/www/meta
+
+## ssl certs slickstack ##
+chown root:root /var/www/certs
+chown root:root /var/www/certs/keys
+chmod 0755 /var/www/certs ## must be 0755
+chmod 0700 /var/www/certs/keys ## must be 0700
+chmod 0644 /var/www/certs/*.crt ## must be 0644
+chmod 0644 /var/www/certs/*.pem ## must be 0644
+chmod 0600 /var/www/certs/keys/*.key ## must be 0600
+chmod 0600 /var/www/certs/keys/*.pem ## must be 0600
 
 ## chroot (SFTP) user directory ##
 chown root:root /var ## must be root:root
@@ -189,5 +209,6 @@ touch /var/www/meta/.timestamp-ss-worker
 ## Ref: https://linuxize.com/post/bash-functions/
 ## Ref: https://www.cyberciti.biz/faq/unix-linux-appleosx-bsd-shell-appending-date-to-filename/
 ## Ref: https://wordpress.stackexchange.com/questions/199725/triggering-cron-by-calling-wp-cron-php-on-the-command-line-rather-than-with-wget
+## Ref: https://serverfault.com/questions/259302/best-location-to-keep-ssl-certificates-and-private-keys-on-ubuntu-servers
 
 ## SS_EOF
