@@ -30,52 +30,39 @@ source /var/www/ss-functions
 ## MESSAGE ##
 echo -e "\e[36mInstalling (or renewing) free SSL certs from OpenSSL and Certbot...\e[0m"
 
-# if [[ ! -f "/var/www/meta/.timestamp-ss-encrypt" ]] || [[ -n $(find "/var/www/meta/.timestamp-ss-encrypt" -amin +30) ]]; then
-    
-# fi
-
 ####################################################################################################
-#### SS-Encrypt: Delete Previous Certificates (OpenSSL) #######################
+#### SS-Encrypt: Ensure Custom Directories Exist ###################################################
 ####################################################################################################
 
+## make dirs ##
 mkdir /var/www/certs
 mkdir /var/www/certs/keys
 
+## hide error message (bug) in OpenSSL 1.1.1 (remove this snippet later) ##
+touch /home/${SUDO_USER}/.rnd
+touch /home/${SFTP_USER}/.rnd
+
+####################################################################################################
+#### SS-Encrypt: Delete Previous Certificates #######################
+####################################################################################################
+
 ## delete existing OpenSSL certificates (and keys) ##
-# rm /var/www/certs/*.crt
-# rm /var/www/certs/*.key
+rm /var/www/certs/${SITE_TLD}.crt
+rm /var/www/certs/keys/${SITE_TLD}.key
 # rm /var/www/certs/*.pem
 # rm /etc/ssl/*.crt
 # rm /etc/ssl/*.key
 # rm /etc/ssl/*.pem
 
 ####################################################################################################
-#### SS-Encrypt: Regenerate Self-Signed Certificate (OpenSSL) ######################################
+#### SS-Encrypt: Regenerate Self-Signed OpenSSL Certificate ########################################
 ####################################################################################################
-
-## hide error message (bug) in OpenSSL 1.1.1 (remove this snippet later) ##
-touch /home/${SUDO_USER}/.rnd
-touch /home/${SFTP_USER}/.rnd
 
 ## generate self-signed OpenSSL certificate ##
 if [[ -n "$CSR_COUNTRY" ]] && [[ -n "$CSR_STATE" ]] && [[ -n "$CSR_CITY" ]] && [[ -n "$CSR_COMPANY" ]] && [[ -n "$CSR_DEPT" ]]; then 
-    rm /var/www/certs/keys/${SITE_TLD}.key
-    rm /var/www/certs/${SITE_TLD}.crt
-    # openssl req -new -x509 -nodes -days 3650 -newkey rsa:2048 -keyout /etc/ssl/nginx.key -out /etc/ssl/nginx.crt -subj "/C=${CSR_COUNTRY}/ST=${CSR_STATE}/L=${CSR_CITY}/O=${CSR_COMPANY}/OU=${CSR_DEPT}/CN=${SITE_DOMAIN}"
-    # openssl req -new -x509 -nodes -days 3650 -newkey rsa:2048 -keyout /etc/ssl/${SITE_DOMAIN}.key -out /etc/ssl/${SITE_DOMAIN}.crt -subj "/C=${CSR_COUNTRY}/ST=${CSR_STATE}/L=${CSR_CITY}/O=${CSR_COMPANY}/OU=${CSR_DEPT}/CN=${SITE_DOMAIN}"
     openssl req -new -x509 -nodes -days 3650 -newkey rsa:2048 -keyout /var/www/certs/keys/${SITE_TLD}.key -out /var/www/certs/${SITE_TLD}.crt -subj "/C=${CSR_COUNTRY}/ST=${CSR_STATE}/L=${CSR_CITY}/O=${CSR_COMPANY}/OU=${CSR_DEPT}/CN=${SITE_DOMAIN}"
-    
-    # openssl req -new -x509 -nodes -days 3650 -newkey rsa:2048 -keyout /etc/ssl/staging.${SITE_TLD}.key -out /etc/ssl/staging.${SITE_TLD}.crt -subj "/C=${CSR_COUNTRY}/ST=${CSR_STATE}/L=${CSR_CITY}/O=${CSR_COMPANY}/OU=${CSR_DEPT}/CN=staging.${SITE_TLD}"
-    # openssl req -new -x509 -nodes -days 3650 -newkey rsa:2048 -keyout /etc/ssl/dev.${SITE_TLD}.key -out /etc/ssl/dev.${SITE_TLD}.crt -subj "/C=${CSR_COUNTRY}/ST=${CSR_STATE}/L=${CSR_CITY}/O=${CSR_COMPANY}/OU=${CSR_DEPT}/CN=dev.${SITE_TLD}"
 else 
-    rm /var/www/certs/keys/${SITE_TLD}.key
-    rm /var/www/certs/${SITE_TLD}.crt
-    # openssl req -new -x509 -nodes -days 3650 -newkey rsa:2048 -keyout /etc/ssl/nginx.key -out /etc/ssl/nginx.crt -subj "/C=US/ST=Nevada/L=Las Vegas/O=Example, LLC/OU=DevOps/CN=${SITE_DOMAIN}"
-    # openssl req -new -x509 -nodes -days 3650 -newkey rsa:2048 -keyout /etc/ssl/${SITE_DOMAIN}.key -out /etc/ssl/${SITE_DOMAIN}.crt -subj "/C=US/ST=Nevada/L=Las Vegas/O=Example, LLC/OU=DevOps/CN=${SITE_DOMAIN}"
     openssl req -new -x509 -nodes -days 3650 -newkey rsa:2048 -keyout /var/www/certs/keys/${SITE_TLD}.key -out /var/www/certs/${SITE_TLD}.crt -subj "/C=US/ST=Nevada/L=Las Vegas/O=Example, LLC/OU=DevOps/CN=${SITE_DOMAIN}"
-    
-    # openssl req -new -x509 -nodes -days 3650 -newkey rsa:2048 -keyout /etc/ssl/staging.${SITE_TLD}.key -out /etc/ssl/staging.${SITE_TLD}.crt -subj "/C=US/ST=Nevada/L=Las Vegas/O=Example, LLC/OU=DevOps/CN=staging.${SITE_TLD}"
-    # openssl req -new -x509 -nodes -days 3650 -newkey rsa:2048 -keyout /etc/ssl/dev.${SITE_TLD}.key -out /etc/ssl/dev.${SITE_TLD}.crt -subj "/C=US/ST=Nevada/L=Las Vegas/O=Example, LLC/OU=DevOps/CN=dev.${SITE_TLD}"
 fi
 
 ####################################################################################################
@@ -410,5 +397,6 @@ touch /var/www/meta/.timestamp-ss-encrypt
 ## Ref: https://superuser.com/questions/556493/permissions-for-ssl-key
 ## Ref: https://fbcs.co.uk/self-signed-multiple-domain-ssl-certificates/
 ## Ref: https://serverfault.com/questions/259302/best-location-for-ssl-certificate-and-private-keys-on-ubuntu
+## Ref: https://community.letsencrypt.org/t/error-creating-new-cert-too-many-certificates-already-issued-for-exact-set-of-domains/41542
 
 ## SS_EOF
