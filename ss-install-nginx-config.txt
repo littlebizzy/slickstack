@@ -6,9 +6,9 @@
 #### mirror: http://mirrors.slickstack.io/ss-install-nginx-config.txt ##############################
 #### path: /var/www/ss-install-nginx-config ########################################################
 #### destination: n/a (not a boilerplate) ##########################################################
-#### purpose: Reinstalls the Nginx configuration files (idempotent) ###############
+#### purpose: Reinstalls the Nginx module config files based on ss-config (idempotent) #############
 #### module version: Nginx 1.18.x ##################################################################
-#### sourced by: ss-install ########################################################################
+#### sourced by: ss-install, ss-install-nginx, ss-encrypt ##########################################
 ####################################################################################################
 
 ## SS-CONFIG MUST BE PROPERLY CONFIGURED AND ON CURRENT BUILD BEFORE RUNNING SS-INSTALL ##
@@ -21,7 +21,7 @@ source /var/www/ss-config
 source /var/www/ss-functions
 
 ####################################################################################################
-#### SS-Install-Nginx: Cleanup Temporary Files #####################################################
+#### SS-Install-Nginx-Config: Cleanup Temporary Files ##############################################
 ####################################################################################################
 
 ## delete tmp files ##
@@ -30,18 +30,11 @@ rm /tmp/server-block*
 rm /tmp/default*
 
 ####################################################################################################
-#### SS-Install: Check OS Compability + Verify SS-Config Freshness + Backup Database ###############
-####################################################################################################
-
-## run ss-dump ##
-source /var/www/ss-dump
-
-####################################################################################################
-#### SlickStack: Install + Configure Nginx (General Settings) ######################################
+#### SS-Install-Nginx-Config: Install (Optimize) Nginx Config Files ################################
 ####################################################################################################
 
 ## here we install an optimized Nginx config designed for high traffic and CloudFlare ##
-## FastCGI Cache and OpenSSL are included by default (noindex also supported) ##
+## this step is critical to setting up caching, SSL certs, and HTTP headers ##
 
 ## download latest Nginx config boilerplate ##
 wget -O /tmp/nginx.conf http://mirrors.slickstack.io/nginx/nginx-conf.txt
@@ -358,7 +351,7 @@ else
 fi
 
 ####################################################################################################
-#### SS-Install-Nginx: Install Nginx Server Block (Dev Subdomain) ##################################
+#### SS-Install-Nginx-Config: Install Nginx Server Block (Dev Subdomain) ###########################
 ####################################################################################################
 
 
@@ -366,8 +359,8 @@ fi
 rm /etc/nginx/sites-available/*
 rm /etc/nginx/sites-enabled/*
 
-# rm /etc/nginx/sites-available/default*
-# rm /etc/nginx/sites-enabled/default*
+
+
 
 ## download latest server block (staging site) ##
 wget -O /tmp/server-block-dev http://mirrors.slickstack.io/nginx/server-block-dev.txt
@@ -530,11 +523,13 @@ if [[ "$SS_APP" == "wordpress" || -z "$SS_APP"  ]]; then
 fi
 
 ####################################################################################################
-#### SS-Install-Nginx: Cleanup Temporary Files #####################################################
+#### SS-Install-Nginx-Config: Cleanup Temporary Files ##############################################
 ####################################################################################################
 
 ## delete tmp files ##
-# n/a
+rm /tmp/nginx*
+rm /tmp/server-block*
+rm /tmp/default*
 
 ####################################################################################################
 #### SS-Install-Nginx-Config: Touch Timestamp File (End Script) ####################################
