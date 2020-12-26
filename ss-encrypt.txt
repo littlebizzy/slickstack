@@ -9,6 +9,7 @@
 #### purpose: Generates or renews free SSL certs via OpenSSL and Certbot (Lets Encrypt) ############
 #### module version: OpenSSL 1.1.1x + Certbot 0.40.x ###############################################
 #### sourced by: ss core cron jobs, ss-install-nginx ###############################################
+#### bash aliases: ss encrypt ######################################################################
 ####################################################################################################
 
 ## SS-ENCRYPT PERFORMS BASIC NGINX CONFIG MODIFICATION REGARDLESS OF SS-INSTALL-NGINX ##
@@ -57,8 +58,8 @@ touch /home/${SFTP_USER}/.rnd
 rm /var/www/certs/${SITE_TLD}.crt
 rm /var/www/certs/keys/${SITE_TLD}.key
 # rm /var/www/certs/*.pem
-rm /etc/ssl/*.crt
-rm /etc/ssl/*.key
+# rm /etc/ssl/*.crt
+# rm /etc/ssl/*.key
 # rm /etc/ssl/*.pem
 
 ####################################################################################################
@@ -88,6 +89,7 @@ fi
 #### Cerbot: Reminder To Activate CloudFlare (15 Minute Pause For Virgin Installs) #################
 ####################################################################################################
 
+## DELETE ##
 ## pause if no Certbot certs exist yet ##
 # if [[ "$SSL_TYPE" == "certbot" ]] && [[ ! -f "/etc/ssl/cert.pem" ]]; then
  #   echo -e "\e[36m♬♬♬ **ELEVATOR MUSIC** ♬♬♬ ... This looks to be a virgin Cerbot installation, so we will now attempt to generate your very first Lets Encrypt SSL certificate for this domain using their Certbot API. However, for Certbot to verify correctly, your domain needs to fully resolve to this server's IP address over HTTPS, and must have CloudFlare activated before proceeding (in order to CA-sign the OpenSSL certificate)... so if you haven't done this yet, hurry up and activate CloudFlare on this domain right now (be sure to choose 'Full SSL' under the Crypto tab) and then come back here and push any key to proceed...\e[0m"
@@ -282,10 +284,10 @@ fi
 ####################################################################################################
 
 ## create symlinks for simpler Nginx config ##
-ln /etc/letsencrypt/live/${SITE_DOMAIN}/cert.pem /var/www/certs/cert.pem &> /dev/null
-ln /etc/letsencrypt/live/${SITE_DOMAIN}/privkey.pem /var/www/certs/keys/privkey.pem &> /dev/null
-ln /etc/letsencrypt/live/${SITE_DOMAIN}/chain.pem /var/www/certs/chain.pem &> /dev/null
-ln /etc/letsencrypt/live/${SITE_DOMAIN}/fullchain.pem /var/www/certs/fullchain.pem &> /dev/null
+ln /etc/letsencrypt/live/${SITE_DOMAIN}/cert.pem /var/www/certs/cert.pem
+ln /etc/letsencrypt/live/${SITE_DOMAIN}/privkey.pem /var/www/certs/keys/privkey.pem
+ln /etc/letsencrypt/live/${SITE_DOMAIN}/chain.pem /var/www/certs/chain.pem
+ln /etc/letsencrypt/live/${SITE_DOMAIN}/fullchain.pem /var/www/certs/fullchain.pem
 ## need to add more complex rules for SITE_TLD symlinks too (depends on how the certs were generated above) ##
 
 ## staging and dev sites next symlinks here
