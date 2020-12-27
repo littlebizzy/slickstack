@@ -30,26 +30,32 @@ source /var/www/ss-functions
 ## the root crontab in SlickStack likewise ensures that ss core cron jobs exist ##
 
 ## ensure ss-check exists and intact ##
-FILE_SS_CHECK="/var/www/ss-check"
+FILE_SS_CHECK="/var/www/bash/ss-check"
 STRING_SS_CHECK="SS_EOF"
 if [[ ! -f "$FILE_SS_CHECK" ]] || [[ -z $(grep -q "$STRING_SS_CHECK" "$FILE_SS_CHECK") ]]; then
     rm /tmp/ss-check*
     wget -O /tmp/ss-check http://mirrors.slickstack.io/ss-check.txt
     cp /tmp/ss-check /var/www/ss-check
+    cp /tmp/ss-check /var/www/bash/ss-check
     chown root:root /var/www/ss-check ## must be root:root
-    chmod 0740 /var/www/ss-check ## 0700 is enough
+    chown root:root /var/www/bash/ss-check ## must be root:root
+    chmod 0700 /var/www/ss-check ## 0700 means root can execute
+    chmod 0700 /var/www/bash/ss-check ## 0700 means root can execute
     rm /tmp/ss-check*
 fi
 
 ## ensure ss-worker exists and intact ##
-FILE_SS_WORKER="/var/www/ss-worker"
+FILE_SS_WORKER="/var/www/bash/ss-worker"
 STRING_SS_WORKER="SS_EOF"
 if [[ ! -f "$FILE_SS_WORKER" ]] || [[ -z $(grep -q "$STRING_SS_WORKER" "$FILE_SS_WORKER") ]]; then
     rm /tmp/ss-worker*
     wget -O /tmp/ss-worker http://mirrors.slickstack.io/ss-worker.txt
     cp /tmp/ss-worker /var/www/ss-worker
+    cp /tmp/ss-worker /var/www/bash/ss-worker
     chown root:root /var/www/ss-worker ## must be root:root
-    chmod 0740 /var/www/ss-worker ## 0700 is enough
+    chown root:root /var/www/bash/ss-worker ## must be root:root
+    chmod 0700 /var/www/ss-worker ## 0700 means root can execute
+    chmod 0700 /var/www/bash/ss-worker ## 0700 means root can execute
     rm /tmp/ss-worker*
 fi
 
@@ -67,102 +73,102 @@ fi
 
 ## run ss-clean-files if set to weekly ##
 if [[ "$SS_INTERVAL_CLEAN_FILES" == "weekly" ]]; then 
-    source /var/www/ss-clean-files
+    source /var/www/bash/ss-clean-files
 fi
 
 ## run ss-install-wordpress-core if set to weekly ##
 if [[ "$SS_INTERVAL_INSTALL_WORDPRESS_CORE" == "weekly" || -z "$SS_INTERVAL_INSTALL_WORDPRESS_CORE" ]]; then 
-    source /var/www/ss-install-wordpress-core
+    source /var/www/bash/ss-install-wordpress-core
 fi
 
 ## run ss-install-wordpress-config if set to weekly or if not defined (default) ##
 if [[ "$SS_INTERVAL_INSTALL_WORDPRESS_CONFIG" == "weekly" || -z "$SS_INTERVAL_INSTALL_WORDPRESS_CONFIG" ]]; then 
-    source /var/www/ss-install-wordpress-config
+    source /var/www/bash/ss-install-wordpress-config
 fi
 
 ## run ss-dos2unix if set to weekly ##
 if [[ "$SS_INTERVAL_DOS2UNIX" == "weekly" ]]; then 
-    source /var/www/ss-dos2unix
+    source /var/www/bash/ss-dos2unix
 fi
 
 ## run ss-scan-malware if set to weekly or if not defined (default) ##
 if [[ "$SS_INTERVAL_SCAN_MALWARE" == "weekly" || -z "$SS_INTERVAL_SCAN_MALWARE" ]]; then 
-    source /var/www/ss-scan-malware
+    source /var/www/bash/ss-scan-malware
 fi
 
 ## run ss-optimize-database if set to weekly or if not defined (default) ##
 if [[ "$SS_INTERVAL_OPTIMIZE_DATABASE" == "weekly" || -z "$SS_INTERVAL_OPTIMIZE_DATABASE" ]]; then 
-    source /var/www/ss-optimize-database
+    source /var/www/bash/ss-optimize-database
 fi
 
 ## run ss-install-php if set to weekly ##
 if [[ "$SS_INTERVAL_INSTALL_PHP" == "weekly" ]]; then 
-    source /var/www/ss-install-php
+    source /var/www/bash/ss-install-php
 fi
 
 ## run ss-install-redis if set to weekly ##
 if [[ "$SS_INTERVAL_INSTALL_REDIS" == "weekly" ]]; then 
-    source /var/www/ss-install-redis
+    source /var/www/bash/ss-install-redis
 fi
 
 ## run ss-install-mysql if set to weekly ##
 if [[ "$SS_INTERVAL_INSTALL_MYSQL" == "weekly" ]]; then 
-    source /var/www/ss-install-mysql
+    source /var/www/bash/ss-install-mysql
 fi
 
 ## run ss-install-nginx if set to weekly ##
 if [[ "$SS_INTERVAL_INSTALL_NGINX" == "weekly" ]]; then 
-    source /var/www/ss-install-nginx
+    source /var/www/bash/ss-install-nginx
 fi
 
 ## run ss-encrypt if not defined ##
 if [[ "$SS_INTERVAL_ENCRYPT" == "weekly" ]]; then 
-    source /var/www/ss-encrypt
+    source /var/www/bash/ss-encrypt
 fi
 
 ## run ss-install-adminer if set to weekly ##
 if [[ "$SS_INTERVAL_INSTALL_ADMINER" == "weekly" ]]; then 
-    source /var/www/ss-install-adminer
+    source /var/www/bash/ss-install-adminer
 fi
 
 ## run ss-purge if set to weekly ##
 if [[ "$SS_INTERVAL_PURGE" == "weekly" ]]; then 
-    source /var/www/ss-purge
+    source /var/www/bash/ss-purge
 fi
 
 ## run ss-install-clamav if set to weekly ##
 if [[ "$SS_INTERVAL_INSTALL_CLAMAV" == "weekly" ]]; then 
-    source /var/www/ss-install-clamav
+    source /var/www/bash/ss-install-clamav
 fi
 
 ## run ss-install-ubuntu-bash if set to weekly ##
 if [[ "$SS_INTERVAL_INSTALL_UBUNTU_BASH" == "weekly" ]]; then 
-    source /var/www/ss-install-ubuntu-bash
+    source /var/www/bash/ss-install-ubuntu-bash
 fi
 
 ## run ss-install-ubuntu-users if set to weekly ##
 if [[ "$SS_INTERVAL_INSTALL_UBUNTU_USERS" == "weekly" ]]; then 
-    source /var/www/ss-install-ubuntu-users
+    source /var/www/bash/ss-install-ubuntu-users
 fi
 
 ## run ss-install-ubuntu-ssh if set to weekly ##
 if [[ "$SS_INTERVAL_INSTALL_UBUNTU_SSH" == "weekly" ]]; then 
-    source /var/www/ss-install-ubuntu-ssh
+    source /var/www/bash/ss-install-ubuntu-ssh
 fi
 
 ## run ss-install-ubuntu-kernel if set to weekly ##
 if [[ "$SS_INTERVAL_INSTALL_UBUNTU_KERNEL" == "weekly" ]]; then 
-    source /var/www/ss-install-ubuntu-kernel
+    source /var/www/bash/ss-install-ubuntu-kernel
 fi
 
 ## run ss-install-ubuntu-crontab if set to weekly ##
 if [[ "$SS_INTERVAL_INSTALL_UBUNTU_CRONTAB" == "weekly" ]]; then 
-    source /var/www/ss-install-ubuntu-crontab
+    source /var/www/bash/ss-install-ubuntu-crontab
 fi
 
 ## run ss-reboot if set to weekly ##
 if [[ "$SS_INTERVAL_REBOOT" == "weekly" ]]; then 
-    source /var/www/ss-reboot
+    source /var/www/bash/ss-reboot
 fi
 
 ####################################################################################################
