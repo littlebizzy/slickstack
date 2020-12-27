@@ -30,26 +30,32 @@ source /var/www/ss-functions
 ## the root crontab in SlickStack likewise ensures that ss core cron jobs exist ##
 
 ## ensure ss-check exists and intact ##
-FILE_SS_CHECK="/var/www/ss-check"
+FILE_SS_CHECK="/var/www/bash/ss-check"
 STRING_SS_CHECK="SS_EOF"
 if [[ ! -f "$FILE_SS_CHECK" ]] || [[ -z $(grep -q "$STRING_SS_CHECK" "$FILE_SS_CHECK") ]]; then
     rm /tmp/ss-check*
     wget -O /tmp/ss-check http://mirrors.slickstack.io/ss-check.txt
     cp /tmp/ss-check /var/www/ss-check
+    cp /tmp/ss-check /var/www/bash/ss-check
     chown root:root /var/www/ss-check ## must be root:root
-    chmod 0740 /var/www/ss-check ## 0700 is enough
+    chown root:root /var/www/bash/ss-check ## must be root:root
+    chmod 0700 /var/www/ss-check ## 0700 means root can execute
+    chmod 0700 /var/www/bash/ss-check ## 0700 means root can execute
     rm /tmp/ss-check*
 fi
 
 ## ensure ss-worker exists and intact ##
-FILE_SS_WORKER="/var/www/ss-worker"
+FILE_SS_WORKER="/var/www/bash/ss-worker"
 STRING_SS_WORKER="SS_EOF"
 if [[ ! -f "$FILE_SS_WORKER" ]] || [[ -z $(grep -q "$STRING_SS_WORKER" "$FILE_SS_WORKER") ]]; then
     rm /tmp/ss-worker*
     wget -O /tmp/ss-worker http://mirrors.slickstack.io/ss-worker.txt
     cp /tmp/ss-worker /var/www/ss-worker
+    cp /tmp/ss-worker /var/www/bash/ss-worker
     chown root:root /var/www/ss-worker ## must be root:root
-    chmod 0740 /var/www/ss-worker ## 0700 is enough
+    chown root:root /var/www/bash/ss-worker ## must be root:root
+    chmod 0700 /var/www/ss-worker ## 0700 means root can execute
+    chmod 0700 /var/www/bash/ss-worker ## 0700 means root can execute
     rm /tmp/ss-worker*
 fi
 
@@ -67,32 +73,32 @@ fi
 
 ## run ss-check if set to hourly ##
 if [[ "$SS_INTERVAL_CHECK" == "hourly" ]]; then 
-    source /var/www/ss-check
+    source /var/www/bash/ss-check
 fi
 
 ## run ss-worker if set to hourly ##
 if [[ "$SS_INTERVAL_WORKER" == "hourly" ]]; then 
-    source /var/www/ss-worker
+    source /var/www/bash/ss-worker
 fi
 
 ## run ss-dump-database if set to hourly or if not defined (default) ##
 if [[ "$SS_INTERVAL_DUMP_DATABASE" == "hourly" || -z "$SS_INTERVAL_DUMP_DATABASE" ]]; then 
-    source /var/www/ss-dump-database
+    source /var/www/bash/ss-dump-database
 fi
 
 ## run ss-clean-files if set to hourly ##
 if [[ "$SS_INTERVAL_CLEAN_FILES" == "hourly" ]]; then 
-    source /var/www/ss-clean-files
+    source /var/www/bash/ss-clean-files
 fi
 
 ## run ss-sync-staging if set to hourly ##
 if [[ "$SS_INTERVAL_SYNC_STAGING" == "hourly" ]]; then 
-    source /var/www/ss-sync-staging
+    source /var/www/bash/ss-sync-staging
 fi
 
 ## run ss-perms if set to hourly ##
 if [[ "$SS_INTERVAL_PERMS" == "hourly" ]]; then 
-    source /var/www/ss-perms
+    source /var/www/bash/ss-perms
 fi
 
 ####################################################################################################
