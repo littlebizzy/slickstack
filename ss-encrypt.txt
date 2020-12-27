@@ -25,6 +25,8 @@ source /var/www/ss-functions
 #### SS-Encrypt: Install Nginx Config Files ########################################################
 ####################################################################################################
 
+## IF STATEMENT ONLY RUN IF CERTAIN STRINGS NOT FOUND 
+
 ## run ss-install-nginx-config
 source /var/www/ss-install-nginx-config
 
@@ -58,9 +60,6 @@ touch /home/${SFTP_USER}/.rnd
 rm /var/www/certs/${SITE_TLD}.crt
 rm /var/www/certs/keys/${SITE_TLD}.key
 # rm /var/www/certs/*.pem
-# rm /etc/ssl/*.crt
-# rm /etc/ssl/*.key
-# rm /etc/ssl/*.pem
 
 ####################################################################################################
 #### SS-Encrypt: Regenerate Self-Signed OpenSSL Certificate ########################################
@@ -84,23 +83,6 @@ fi
 
 ## restart Nginx ##
 /etc/init.d/nginx restart
-
-####################################################################################################
-#### Cerbot: Reminder To Activate CloudFlare (15 Minute Pause For Virgin Installs) #################
-####################################################################################################
-
-## DELETE ##
-## pause if no Certbot certs exist yet ##
-# if [[ "$SSL_TYPE" == "certbot" ]] && [[ ! -f "/etc/ssl/cert.pem" ]]; then
- #   echo -e "\e[36m♬♬♬ **ELEVATOR MUSIC** ♬♬♬ ... This looks to be a virgin Cerbot installation, so we will now attempt to generate your very first Lets Encrypt SSL certificate for this domain using their Certbot API. However, for Certbot to verify correctly, your domain needs to fully resolve to this server's IP address over HTTPS, and must have CloudFlare activated before proceeding (in order to CA-sign the OpenSSL certificate)... so if you haven't done this yet, hurry up and activate CloudFlare on this domain right now (be sure to choose 'Full SSL' under the Crypto tab) and then come back here and push any key to proceed...\e[0m"
- #   for (( i=900; i>0; i--)); do
- #       read -s -n 1 -t 1 key
-  #      if [ $? -eq 0 ]; then
-   #         break
-    #    fi
-     #   echo -ne "\r$i\033[0K"
-  #  done
-# fi
 
 ####################################################################################################
 #### SS-Encrypt: Generate DH Parameters (Used By Certbot Only) #####################################
