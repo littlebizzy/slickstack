@@ -22,6 +22,16 @@ source /var/www/ss-config
 source /var/www/ss-functions
 
 ####################################################################################################
+#### SS-Encrypt: MESSAGE (Begin) ###################################################################
+####################################################################################################
+
+## since ss-encrypt runs every few weeks (or months) we avoid aggressive reinstall here ##
+## for a cleaner SSL reinstall run ss-install or ss-update instead of ss-encrypt ##
+
+## MESSAGE ##
+echo -e "\e[36mInstalling (or renewing) free SSL certs from OpenSSL and Certbot...\e[0m"
+
+####################################################################################################
 #### SS-Encrypt: Install Nginx Config Files (Conditional) ##########################################
 ####################################################################################################
 
@@ -36,35 +46,29 @@ if [[ $found -eq 0 ]]; then
 fi
 
 ####################################################################################################
-#### SS-Encrypt: MESSAGE (Begin) ###################################################################
-####################################################################################################
-
-## since ss-encrypt runs every few weeks (or months) we avoid aggressive reinstall here ##
-## for a cleaner SSL reinstall run ss-install or ss-update instead of ss-encrypt ##
-
-## MESSAGE ##
-echo -e "\e[36mInstalling (or renewing) free SSL certs from OpenSSL and Certbot...\e[0m"
-
-####################################################################################################
-#### SS-Encrypt: Ensure Custom Directories Exist ###################################################
+#### SS-Encrypt: Ensure Critical Directories Exist #################################################
 ####################################################################################################
 
 ## make dirs ##
 mkdir /var/www/certs
 mkdir /var/www/certs/keys
 
-## hide error message (bug) in OpenSSL 1.1.1 (remove this snippet later) ##
+####################################################################################################
+#### SS-Encrypt: Hide Irrelevant Errors (Bug) In OpenSSL 1.1.1x ####################################
+####################################################################################################
+
+## hide error message (bug) in OpenSSL 1.1.1x (remove this snippet later) ##
 touch /home/${SUDO_USER}/.rnd
 touch /home/${SFTP_USER}/.rnd
 
 ####################################################################################################
-#### SS-Encrypt: Delete Previous Certificates #######################
+#### SS-Encrypt: Delete Previous Certificates (OpenSSL) ############################################
 ####################################################################################################
 
 ## delete existing OpenSSL certificates (and keys) ##
 rm /var/www/certs/${SITE_TLD}.crt
 rm /var/www/certs/keys/${SITE_TLD}.key
-# rm /var/www/certs/*.pem
+# rm /var/www/certs/${SITE_TLD}.pem
 
 ####################################################################################################
 #### SS-Encrypt: Regenerate Self-Signed OpenSSL Certificate ########################################
@@ -90,11 +94,11 @@ fi
 /etc/init.d/nginx restart
 
 ####################################################################################################
-#### SS-Encrypt: Generate DH Parameters (Used By Certbot Only) #####################################
+#### SS-Encrypt: Generate DH Parameters (If Lets Encrypt Enabled) ##################################
 ####################################################################################################
 
-## delete existing DH Params certificate ##
-# rm /etc/ssl/dhparam.pem ## reuse existing DH Params (takes a long time to regenerate)
+## this will generate DH parameters using OpenSSL for use by Lets Encrypt certificates ##
+## by maintaining this file we are able to strengthen the security of the SSL ##
 
 if [[ "$SSL_TYPE" == "certbot" ]] && [[ ! -f "/var/www/certs/dhparam.pem" ]]; then 
     openssl dhparam -out /var/www/certs/dhparam.pem 2048
