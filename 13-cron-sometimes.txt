@@ -30,26 +30,32 @@ source /var/www/ss-functions
 ## the root crontab in SlickStack likewise ensures that ss core cron jobs exist ##
 
 ## ensure ss-check exists and intact ##
-FILE_SS_CHECK="/var/www/ss-check"
+FILE_SS_CHECK="/var/www/bash/ss-check"
 STRING_SS_CHECK="SS_EOF"
 if [[ ! -f "$FILE_SS_CHECK" ]] || [[ -z $(grep -q "$STRING_SS_CHECK" "$FILE_SS_CHECK") ]]; then
     rm /tmp/ss-check*
     wget -O /tmp/ss-check http://mirrors.slickstack.io/ss-check.txt
     cp /tmp/ss-check /var/www/ss-check
+    cp /tmp/ss-check /var/www/bash/ss-check
     chown root:root /var/www/ss-check ## must be root:root
-    chmod 0740 /var/www/ss-check ## 0700 is enough
+    chown root:root /var/www/bash/ss-check ## must be root:root
+    chmod 0700 /var/www/ss-check ## 0700 means root can execute
+    chmod 0700 /var/www/bash/ss-check ## 0700 means root can execute
     rm /tmp/ss-check*
 fi
 
 ## ensure ss-worker exists and intact ##
-FILE_SS_WORKER="/var/www/ss-worker"
+FILE_SS_WORKER="/var/www/bash/ss-worker"
 STRING_SS_WORKER="SS_EOF"
 if [[ ! -f "$FILE_SS_WORKER" ]] || [[ -z $(grep -q "$STRING_SS_WORKER" "$FILE_SS_WORKER") ]]; then
     rm /tmp/ss-worker*
     wget -O /tmp/ss-worker http://mirrors.slickstack.io/ss-worker.txt
     cp /tmp/ss-worker /var/www/ss-worker
+    cp /tmp/ss-worker /var/www/bash/ss-worker
     chown root:root /var/www/ss-worker ## must be root:root
-    chmod 0740 /var/www/ss-worker ## 0700 is enough
+    chown root:root /var/www/bash/ss-worker ## must be root:root
+    chmod 0700 /var/www/ss-worker ## 0700 means root can execute
+    chmod 0700 /var/www/bash/ss-worker ## 0700 means root can execute
     rm /tmp/ss-worker*
 fi
 
@@ -67,57 +73,57 @@ fi
 
 ## run ss-install-wordpress-core if set to sometimes or if not defined (default) ##
 if [[ "$SS_INTERVAL_INSTALL_WORDPRESS_CORE" == "sometimes" || -z "$SS_INTERVAL_INSTALL_WORDPRESS_CORE" ]]; then 
-    source /var/www/ss-install-wordpress-core
+    source /var/www/bash/ss-install-wordpress-core
 fi
 
 ## run ss-install-php if set to sometimes ##
 if [[ "$SS_INTERVAL_INSTALL_PHP" == "sometimes" ]]; then 
-    source /var/www/ss-install-php
+    source /var/www/bash/ss-install-php
 fi
 
 ## run ss-install-redis if set to sometimes ##
 if [[ "$SS_INTERVAL_INSTALL_REDIS" == "sometimes" ]]; then 
-    source /var/www/ss-install-redis
+    source /var/www/bash/ss-install-redis
 fi
 
 ## run ss-install-mysql if set to sometimes ##
 if [[ "$SS_INTERVAL_INSTALL_MYSQL" == "sometimes" ]]; then 
-    source /var/www/ss-install-mysql
+    source /var/www/bash/ss-install-mysql
 fi
 
 ## run ss-install-nginx if set to sometimes ##
 if [[ "$SS_INTERVAL_INSTALL_NGINX" == "sometimes" ]]; then 
-    source /var/www/ss-install-nginx
+    source /var/www/bash/ss-install-nginx
 fi
 
 ## run ss-encrypt if set to sometimes or if not defined (default) ##
 if [[ "$SS_INTERVAL_ENCRYPT" == "sometimes" || -z "$SS_INTERVAL_ENCRYPT" ]]; then 
-    source /var/www/ss-encrypt
+    source /var/www/bash/ss-encrypt
 fi
 
 ## run ss-install-adminer if set to sometimes ##
 if [[ "$SS_INTERVAL_INSTALL_ADMINER" == "sometimes" ]]; then 
-    source /var/www/ss-install-adminer
+    source /var/www/bash/ss-install-adminer
 fi
 
 ## run ss-purge if set to sometimes ##
 if [[ "$SS_INTERVAL_PURGE" == "sometimes" ]]; then 
-    source /var/www/ss-purge
+    source /var/www/bash/ss-purge
 fi
 
 ## run ss-install-clamav if set to sometimes ##
 if [[ "$SS_INTERVAL_INSTALL_CLAMAV" == "sometimes" ]]; then 
-    source /var/www/ss-install-clamav
+    source /var/www/bash/ss-install-clamav
 fi
 
 ## run ss-update if set to sometimes or if not defined (default) ##
 if [[ "$SS_INTERVAL_UPDATE" == "sometimes" || -z "$SS_INTERVAL_UPDATE" ]]; then 
-    source /var/www/ss-update
+    source /var/www/bash/ss-update
 fi
 
 ## run ss-reboot if set to sometimes ##
 if [[ "$SS_INTERVAL_REBOOT" == "sometimes" ]]; then 
-    source /var/www/ss-reboot
+    source /var/www/bash/ss-reboot
 fi
 
 ####################################################################################################
