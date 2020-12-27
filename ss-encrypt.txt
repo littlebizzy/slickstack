@@ -22,13 +22,18 @@ source /var/www/ss-config
 source /var/www/ss-functions
 
 ####################################################################################################
-#### SS-Encrypt: Install Nginx Config Files ########################################################
+#### SS-Encrypt: Install Nginx Config Files (Conditional) ##########################################
 ####################################################################################################
 
-## IF STATEMENT ONLY RUN IF CERTAIN STRINGS NOT FOUND 
+## here we reinstall the configuration files for Nginx in case critical lines are missing ##
+## this ensures that compatible (current) Nginx boilerplates are already installed ##
+
+found=$(cat /etc/nginx/nginx.conf | grep -c "/var/www/certs/")
 
 ## run ss-install-nginx-config
-source /var/www/ss-install-nginx-config
+if [[ $found -eq 0 ]]; then
+    source /var/www/ss-install-nginx-config
+fi
 
 ####################################################################################################
 #### SS-Encrypt: MESSAGE (Begin) ###################################################################
