@@ -46,6 +46,12 @@ if [[ $found_new -eq 0 ]] || [[ $found_lets -gt 0 && ! -f  "/var/www/certs/fullc
     source /var/www/ss-install-nginx-config
 fi
 
+found_ss=$(cat /etc/nginx/nginx.conf | grep -c "slickstack.crt")
+
+if [[ $found_ss -eq 0 ]]; then
+    source /var/www/ss-install-nginx-config
+fi
+
 ####################################################################################################
 #### SS-Encrypt: Ensure Critical Directories Exist #################################################
 ####################################################################################################
@@ -76,21 +82,10 @@ touch /home/${SFTP_USER}/.rnd
 ## there are no rate-limits and it pairs perfectly with CloudFlare SSL proxy ##
 
 ## generate self-signed certificate ##
-if [[ "$SITE_DOMAIN" != www.* ]] && [[ "$SITE_TLD" != "$SITE_DOMAIN" ]]; then
-    rm /var/www/certs/${SITE_DOMAIN}.crt
-    rm /var/www/certs/${SITE_TLD}.crt
-    rm /var/www/certs/keys/${SITE_DOMAIN}.key
-    rm /var/www/certs/keys/${SITE_TLD}.key
-    ## for non-www subdomains e.g. blog.example.com ##
-    openssl req -new -x509 -nodes -days 3650 -newkey rsa:2048 -keyout /var/www/certs/keys/${SITE_DOMAIN}.key -out /var/www/certs/${SITE_DOMAIN}.crt -subj "/C=${CSR_COUNTRY}/ST=${CSR_STATE}/L=${CSR_CITY}/O=${CSR_COMPANY}/OU=${CSR_DEPT}/CN=${SITE_DOMAIN}"
-else
-    rm /var/www/certs/${SITE_DOMAIN}.crt
-    rm /var/www/certs/${SITE_TLD}.crt
-    rm /var/www/certs/keys/${SITE_DOMAIN}.key
-    rm /var/www/certs/keys/${SITE_TLD}.key
+    rm /var/www/certs/*.crt
+    rm /var/www/certs/keys/*.key
     ## for all other domains e.g. example.com or www.example.com ##
-    openssl req -new -x509 -nodes -days 3650 -newkey rsa:2048 -keyout /var/www/certs/keys/${SITE_TLD}.key -out /var/www/certs/${SITE_TLD}.crt -subj "/C=${CSR_COUNTRY}/ST=${CSR_STATE}/L=${CSR_CITY}/O=${CSR_COMPANY}/OU=${CSR_DEPT}/CN=${SITE_DOMAIN}"
-fi
+    openssl req -new -x509 -nodes -days 3650 -newkey rsa:2048 -keyout /var/www/certs/keys/slickstack.key -out /var/www/certs/slickstack.crt -subj "/C=${CSR_COUNTRY}/ST=${CSR_STATE}/L=${CSR_CITY}/O=${CSR_COMPANY}/OU=${CSR_DEPT}/CN=${SITE_DOMAIN}"
 
 ####################################################################################################
 #### SS-Encrypt: (Re)configure Nginx (Prepare For Certbot Verification) ############################
@@ -273,8 +268,8 @@ fi
 
 ## modify live Nginx configuration ##
 if [[ "$SSL_TYPE" == "certbot" ]] && [[ -d  "/etc/letsencrypt/live" ]] && [[ -f  "/var/www/certs/fullchain.pem" ]] && [[ -f  "/var/www/certs/keys/privkey.pem" ]]; then
-    sed -i "s#/var/www/certs/${SITE_TLD}.crt#/var/www/certs/fullchain.pem#g" /etc/nginx/nginx.conf
-    sed -i "s#/var/www/certs/keys/${SITE_TLD}.key#/var/www/certs/keys/privkey.pem#g" /etc/nginx/nginx.conf
+    sed -i "s#/var/www/certs/slickstack.crt#/var/www/certs/fullchain.pem#g" /etc/nginx/nginx.conf
+    sed -i "s#/var/www/certs/keys/slickstack.key#/var/www/certs/keys/privkey.pem#g" /etc/nginx/nginx.conf
     sed -i "s/#@CERTBOT# //g" /etc/nginx/nginx.conf
     echo -e "\e[36mLets Encrypt SSL was succesfully installed...\e[0m"
 else
