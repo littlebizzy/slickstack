@@ -327,8 +327,12 @@ fi
 
 sed -i "s/@SITE_TLD/${SITE_TLD}/g" /tmp/nginx.conf
 
- 
-
+## if site domain is non-www subdomain e.g. blog.example.com then name SSL certs after the FQDN subdomain otherwise name after site domain TLD ##
+if [[ "$SITE_DOMAIN" != www.* ]] && [[ "$SITE_TLD" != "$SITE_DOMAIN" ]]; then
+    sed -i "s/@SSL_DOMAIN/${SITE_DOMAIN}/g" /tmp/nginx.conf
+else
+    sed -i "s/@SSL_DOMAIN/${SITE_TLD}/g" /tmp/nginx.conf
+fi
 
 
 ####################################################################################################
