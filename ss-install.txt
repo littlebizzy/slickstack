@@ -221,6 +221,17 @@ if [[ -f "/var/www/ss-config" ]] && [[ "$SS_BUILD" != "DEC2020V" ]]; then
     exit 1
 fi
 
+CALC_DOMAIN=${SITE_DOMAIN//$SITE_TLD/}
+CALC_DOMAIN_SUB=$(echo "$CALC_DOMAIN" | grep -o "\." | wc -l)
+
+if [[ $CALC_DOMAIN_SUB -gt 1 ]]; then 
+    echo -e ""
+    echo -e "${YELLOW}It appears your SITE_DOMAIN value is a sub-subdomain or is otherwise not ${NOCOLOR}"
+    echo -e "${YELLOW}compatible with SlickStack. Please edit ss-config and try again.${NOCOLOR}"
+    echo -e ""
+    exit 1
+fi
+
 ####################################################################################################
 #### SS-Install: Interactive Bash Setup Wizard (SS-Config): ########################################
 ####################################################################################################
@@ -857,5 +868,8 @@ touch /var/www/meta/.timestamp-ss-install
 ## Ref: https://stackoverflow.com/questions/20010199/how-to-determine-if-a-process-runs-inside-lxc-docker
 ## Ref: https://unix.stackexchange.com/questions/343942/shell-check-if-docker-container-is-existing
 ## Ref: https://stackoverflow.com/questions/20406134/read-a-bash-variable-assignment-from-other-file
+## Ref: https://unix.stackexchange.com/questions/311758/remove-specific-word-in-variable
+## Ref: https://stackoverflow.com/questions/13210880/replace-one-substring-for-another-string-in-shell-script
+## Ref: https://stackoverflow.com/questions/11953185/counting-the-number-of-dots-in-a-string
 
 ## SS_EOF
