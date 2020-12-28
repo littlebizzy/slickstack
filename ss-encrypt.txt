@@ -170,7 +170,7 @@ elif [[ "$SITE_DOMAIN" != www.* ]] && [[ "$SITE_TLD" != "$SITE_DOMAIN" ]] && [[ 
 ## SINGLE SITE CERTS + STAGING ENABLED / DEV DISABLED ##
 
 ## if site domain contains www (and is therefore a subdomain) e.g. www.example.com or www.example.co.uk ##
-if [[ "$SITE_DOMAIN" == www.* ]] && [[ "$STAGING_SITE" != "false" ]] && [[ "$STAGING_SITE_SUBDOMAIN" != "false" ]] && [[ "$DEV_SITE" == "false" || "$DEV_SITE_SUBDOMAIN" == "false" ]]; then
+elif [[ "$SITE_DOMAIN" == www.* ]] && [[ "$STAGING_SITE" != "false" ]] && [[ "$STAGING_SITE_SUBDOMAIN" != "false" ]] && [[ "$DEV_SITE" == "false" || "$DEV_SITE_SUBDOMAIN" == "false" ]]; then
     certbot delete --cert-name ${SITE_TLD}
     certbot delete --cert-name ${SITE_DOMAIN}
     certbot certonly --noninteractive --agree-tos --cert-name ${SITE_TLD} -d ${SITE_TLD} -d www.${SITE_TLD} -d staging.${SITE_TLD} --register-unsafely-without-email --webroot -w /var/www/html/
@@ -191,7 +191,7 @@ elif [[ "$SITE_DOMAIN" != www.* ]] && [[ "$SITE_TLD" != "$SITE_DOMAIN" ]] && [[ 
 ## SINGLE SITE CERTS + STAGING DISABLED / DEV ENABLED ##
 
 ## if site domain contains www (and is therefore a subdomain) e.g. www.example.com or www.example.co.uk ##
-if [[ "$SITE_DOMAIN" == www.* ]] && [[ "$STAGING_SITE" == "false" || "$STAGING_SITE_SUBDOMAIN" == "false" ]] && [[ "$DEV_SITE" != "false" ]] && [[ "$DEV_SITE_SUBDOMAIN" != "false" ]]; then
+elif [[ "$SITE_DOMAIN" == www.* ]] && [[ "$STAGING_SITE" == "false" || "$STAGING_SITE_SUBDOMAIN" == "false" ]] && [[ "$DEV_SITE" != "false" ]] && [[ "$DEV_SITE_SUBDOMAIN" != "false" ]]; then
     certbot delete --cert-name ${SITE_TLD}
     certbot delete --cert-name ${SITE_DOMAIN}
     certbot certonly --noninteractive --agree-tos --cert-name ${SITE_TLD} -d ${SITE_TLD} -d www.${SITE_TLD} -d dev.${SITE_TLD} --register-unsafely-without-email --webroot -w /var/www/html/
@@ -212,7 +212,7 @@ elif [[ "$SITE_DOMAIN" != www.* ]] && [[ "$SITE_TLD" != "$SITE_DOMAIN" ]] && [[ 
 ## SINGLE SITE CERTS + STAGING/DEV BOTH DISABLED ##
 
 ## if site domain contains www (and is therefore a subdomain) e.g. www.example.com or www.example.co.uk ##
-if [[ "$SITE_DOMAIN" == www.* ]] && [[ "$STAGING_SITE" == "false" || "$STAGING_SITE_SUBDOMAIN" == "false" ]] && [[ "$DEV_SITE" == "false" || "$DEV_SITE_SUBDOMAIN" == "false" ]]; then
+elif [[ "$SITE_DOMAIN" == www.* ]] && [[ "$STAGING_SITE" == "false" || "$STAGING_SITE_SUBDOMAIN" == "false" ]] && [[ "$DEV_SITE" == "false" || "$DEV_SITE_SUBDOMAIN" == "false" ]]; then
     certbot delete --cert-name ${SITE_TLD}
     certbot delete --cert-name ${SITE_DOMAIN}
     certbot certonly --noninteractive --agree-tos --cert-name ${SITE_TLD} -d ${SITE_TLD} -d www.${SITE_TLD} --register-unsafely-without-email --webroot -w /var/www/html/
@@ -233,7 +233,8 @@ elif [[ "$SITE_DOMAIN" != www.* ]] && [[ "$SITE_TLD" != "$SITE_DOMAIN" ]] && [[ 
 
 ## otherwise just do this ##
 else
-    certbot certonly --noninteractive --agree-tos --cert-name ${SITE_TLD} --expand -d ${SITE_DOMAIN} --register-unsafely-without-email --webroot -w /var/www/html/
+#    certbot certonly --noninteractive --agree-tos --cert-name ${SITE_TLD} --expand -d ${SITE_DOMAIN} --register-unsafely-without-email --webroot -w /var/www/html/
+    echo -e "\e[36mIt seems required options are missing from ss-config so we dont know what Lets Encrypt cert to request for you...\e[0m"
 fi
 
 ####################################################################################################
@@ -304,20 +305,6 @@ chmod 0775 /var/www/html/.well-known
 
 ## restart nginx ##
 /etc/init.d/nginx restart
-
-####################################################################################################
-#### SS-Encrypt: SUCCESS MESSAGE ###################################################################
-####################################################################################################
-
-## warning in case of sub-subdomains in use ##
-if [[ $SITE_DOMAIN = *.*.*.* ]]; then
-    echo -e ""
-    echo -e "${YELLOW}It appears your site is a sub-subdomain so CloudFlare's free SSL will not ${NOCOLOR}"
-    echo -e "${YELLOW}resolve (please either upgrade to Cloudflare's premium SSL options, or ${NOCOLOR}"
-    echo -e "${YELLOW}otherwise use Let's Encrypt SSL on this server).${NOCOLOR}"
-    echo -e ""
-    exit 1
-fi
 
 ####################################################################################################
 #### SS-Encrypt: Touch Timestamp File (End Script) #################################################
