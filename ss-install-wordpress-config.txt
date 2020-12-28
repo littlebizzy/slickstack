@@ -8,7 +8,8 @@
 #### destination: n/a (not a boilerplate) ##########################################################
 #### purpose: Reinstalls the WordPress module config files based on ss-config (idempotent) #########
 #### module version: WordPress 5.5.x ###############################################################
-#### sourced by: ss-install, ss-install-wordpress, ss-install-nginx ################################
+#### sourced by: ss-install, ss-install-wordpress, ss-install-nginx-config #########################
+#### bash aliases: ss install wordpress config, ss install wp config ###############################
 ####################################################################################################
 
 ## SS-CONFIG MUST BE PROPERLY CONFIGURED AND ON CURRENT BUILD BEFORE RUNNING SS-INSTALL ##
@@ -115,6 +116,17 @@ fi
 
 
 ####### other WP Config settings ##########
+
+
+
+## set wp cron (always disabled in wp-config for staging and dev sites in slickstack servers) ##
+if [[ "$WP_CRON_METHOD" == "server" ]]; then 
+    sed -i "s/@DISABLE_WP_CRON/true/g" /tmp/wp-config-production.txt
+else 
+   sed -i "s/@DISABLE_WP_CRON/false/g" /tmp/wp-config-production.txt
+fi
+
+
 
 ## replace database placeholders ##
 sed -i "s/@DB_NAME/${DB_NAME}/g" /tmp/wp-config-production.txt
