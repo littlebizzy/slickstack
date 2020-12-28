@@ -52,6 +52,12 @@ fi
 ## make dirs ##
 mkdir /var/www/certs
 mkdir /var/www/certs/keys
+mkdir /var/www/html/.well-known
+mkdir /var/www/html/.well-known/acme-challenge
+
+## reset permissions (ensure that SFTP user can access if needed for e.g. Stripe, etc) ##
+chown -R $SFTP_USER:www-data /var/www/html/.well-known
+chmod 0775 /var/www/html/.well-known
 
 ####################################################################################################
 #### SS-Encrypt: Hide Irrelevant Errors (Bug) In OpenSSL 1.1.1x ####################################
@@ -105,18 +111,6 @@ if [[ "$SSL_TYPE" == "certbot" ]] && [[ ! -f "/var/www/certs/dhparam.pem" ]]; th
 fi
 
 ####################################################################################################
-#### SS-Encrypt: Prepare Public Challenge Directory + Reset Permissions ############################
-####################################################################################################
-
-## ensure public challenge directory exists ##
-mkdir /var/www/html/.well-known
-mkdir /var/www/html/.well-known/acme-challenge
-
-## reset permissions (ensure that SFTP user can access if needed for e.g. Stripe, etc) ##
-chown -R $SFTP_USER:www-data /var/www/html/.well-known
-chmod 6775 /var/www/html/.well-known
-
-####################################################################################################
 #### SS-Encrypt: Delete Previous / Conflicting Lets Encrypt SSL Certificates #######################
 ####################################################################################################
 
@@ -130,11 +124,11 @@ chmod 6775 /var/www/html/.well-known
 # rm /etc/letsencrypt/live/${SITE_DOMAIN}/fullchain.pem
 # rm /etc/letsencrypt/live/${SITE_DOMAIN}/privkey.pem
 
-# rm /etc/letsencrypt/live/*
+####################################################################################################
+#### SS-Encrypt: Request Certificates From Lets Encrypt Servers (Rate-Limited) #####################
+####################################################################################################
 
-####################################################################################################
-#### SS-Encrypt: Request SSL Certificates From Lets Encrypt Servers (Rate-Limited) #################
-####################################################################################################
+## NOTICE: SLICKSTACK DOES NOT SUPPORT SUB-SUBDOMAINS LIKE WWW.BLOG.EXAMPLE.COM ##
 
 ## SlickStack deletes old Lets Encrypt certs and requests new ones to avoid dir-stacking ##
 ## this approach also allows you to change your server to a different CMS or TLD ##
@@ -142,150 +136,60 @@ chmod 6775 /var/www/html/.well-known
 ## Certbot rate limit is 5 fails per hour... if timestamp is less than 30min old and LE cert already exists then do not request another one ##
 if [[ ! -f "/var/www/meta/.timestamp-ss-encrypt" ]] || [[ -n $(find "/var/www/meta/.timestamp-ss-encrypt" -amin +15) ]]; then
 
-## STAGING SITES (SUBDOMAIN) ##
-if [[ "$STAGING_SITE" != "false" ]] && [[ "$STAGING_SITE_SUBDOMAIN" != "false" ]]; then 
-certbot delete --cert-name staging.${SITE_TLD}
-certbot certonly --noninteractive --agree-tos --cert-name staging.${SITE_TLD} -d staging.${SITE_TLD} --register-unsafely-without-email --webroot -w /var/www/html/
-fi
 
-## DEV SITES (SUBDOMAIN) ##
-if [[ "$DEV_SITE" != "false" ]] && [[ "$DEV_SITE_SUBDOMAIN" != "false" ]]; then 
-certbot delete --cert-name dev.${SITE_TLD}
-certbot certonly --noninteractive --agree-tos --cert-name dev.${SITE_TLD} -d dev.${SITE_TLD} --register-unsafely-without-email --webroot -w /var/www/html/
-fi
+## SINGLE SITE CERTS + STAGING/DEV ENABLED ##
 
-## SINGLE SITE CERTS + EMAIL ALERTS ##
-
-## not a subdomain + contains www + email alerts ##
-if [[ "$SSL_EMAIL_ALERTS" == "true" ]] && [[ $SITE_DOMAIN != *.*.* ]] && [[ $SITE_DOMAIN == *www.* ]]; then
-    SITE_DOMAIN_ONE="${SITE_DOMAIN//$www./}"
-    SITE_DOMAIN_TWO="${SITE_DOMAIN}"
-    certbot delete --cert-name ${SITE_TLD}
-    certbot certonly --noninteractive --agree-tos --cert-name ${SITE_TLD} -d ${SITE_DOMAIN_ONE} -d ${SITE_DOMAIN_TWO} -m ${SSL_EMAIL} --webroot -w /var/www/html/
-
-## not a subdomain + does not contain www + email alerts ##
-elif [[ "$SSL_EMAIL_ALERTS" == "true" ]] && [[ $SITE_DOMAIN != *.*.* ]] && [[ $SITE_DOMAIN != *www.* ]]; then
-    SITE_DOMAIN_ONE="${SITE_DOMAIN}"
-    SITE_DOMAIN_TWO="www.${SITE_DOMAIN}"
-    certbot delete --cert-name ${SITE_TLD}
-    certbot certonly --noninteractive --agree-tos --cert-name ${SITE_TLD} -d ${SITE_DOMAIN_ONE} -d ${SITE_DOMAIN_TWO} -m ${SSL_EMAIL} --webroot -w /var/www/html/
-
-## subdomain (www is irrelevant) + email alerts ##
-elif [[ "$SSL_EMAIL_ALERTS" == "true" ]] && [[ $SITE_DOMAIN == *.*.* ]]; then
+## if site domain contains www (and is therefore a subdomain) e.g. www.example.com or www.example.co.uk ##
+elif [[ "$SITE_DOMAIN" == www.* ]] && [[ "$STAGING_SITE" != "false" ]] && [[ "$STAGING_SITE_SUBDOMAIN" != "false" ]] && [[ "$DEV_SITE" != "false" ]] && [[ "$DEV_SITE_SUBDOMAIN" != "false" ]]; then
     certbot delete --cert-name ${SITE_TLD}
     certbot delete --cert-name ${SITE_DOMAIN}
-    certbot certonly --noninteractive --agree-tos --cert-name ${SITE_DOMAIN} -d ${SITE_DOMAIN} -m ${SSL_EMAIL} --webroot -w /var/www/html/
+    certbot certonly --noninteractive --agree-tos --cert-name ${SITE_TLD} -d ${SITE_TLD} -d www.${SITE_TLD} -d dev.${SITE_TLD} -d staging.${SITE_TLD} --register-unsafely-without-email --webroot -w /var/www/html/
 
-## SINGLE SITE CERTS + NO EMAIL ALERTS ##
-
-## not a subdomain + contains www + no email alerts (or missing) ##
-elif [[ "$SSL_EMAIL_ALERTS" != "true" ]] && [[ $SITE_DOMAIN != *.*.* ]] && [[ $SITE_DOMAIN == *www.* ]]; then
-    SITE_DOMAIN_ONE="${SITE_DOMAIN//$www./}"
-    SITE_DOMAIN_TWO="${SITE_DOMAIN}"
-    certbot delete --cert-name ${SITE_TLD}
-    certbot certonly --noninteractive --agree-tos --cert-name ${SITE_TLD} -d ${SITE_DOMAIN_ONE} -d ${SITE_DOMAIN_TWO} --register-unsafely-without-email --webroot -w /var/www/html/
-
-## not a subdomain + does not contain www + no email alerts (or missing) ##
-elif [[ "$SSL_EMAIL_ALERTS" != "true" ]] && [[ $SITE_DOMAIN != *.*.* ]] && [[ $SITE_DOMAIN != *www.* ]]; then
-    SITE_DOMAIN_ONE="${SITE_DOMAIN}"
-    SITE_DOMAIN_TWO="www.${SITE_DOMAIN}"
-    certbot delete --cert-name ${SITE_TLD}
-    certbot certonly --noninteractive --agree-tos --cert-name ${SITE_TLD} -d ${SITE_DOMAIN_ONE} -d ${SITE_DOMAIN_TWO} --register-unsafely-without-email --webroot -w /var/www/html/
-
-## subdomain (www is irrelevant) + no email alerts (or missing)  ##
-elif [[ "$SSL_EMAIL_ALERTS" != "true" ]] && [[ $SITE_DOMAIN == *.*.* ]]; then
+## if site domain does not contain www (and is not any other type of subdomain) e.g. example.com or example.co.uk ##
+elif [[ "$SITE_DOMAIN" != www.* ]] && [[ "$SITE_TLD" == "$SITE_DOMAIN" ]] && [[ "$STAGING_SITE" != "false" ]] && [[ "$STAGING_SITE_SUBDOMAIN" != "false" ]] && [[ "$DEV_SITE" != "false" ]] && [[ "$DEV_SITE_SUBDOMAIN" != "false" ]]; then
     certbot delete --cert-name ${SITE_TLD}
     certbot delete --cert-name ${SITE_DOMAIN}
-    certbot certonly --noninteractive --agree-tos --cert-name ${SITE_DOMAIN} -d ${SITE_DOMAIN} --register-unsafely-without-email --webroot -w /var/www/html/
+    certbot certonly --noninteractive --agree-tos --cert-name ${SITE_TLD} -d ${SITE_TLD} -d www.${SITE_TLD} -d dev.${SITE_TLD} -d staging.${SITE_TLD} --register-unsafely-without-email --webroot -w /var/www/html/
 
-## MULTISITE NETWORK (SUBDOMAINS) CERTS + EMAIL ALERTS ##
-
-## multisite (subdomains) + main site not a subdomain + main site contains www + email alerts ##
-elif [[ "$WP_MULTISITE" == "true" ]] && [[ $SITE_DOMAIN != *.*.* ]] && [[ $SITE_DOMAIN == *www.* ]] && [[ "$SSL_EMAIL_ALERTS" == "true" ]]; then
-    SITE_DOMAIN_ONE="*.${SITE_DOMAIN//$www./}"
-    SITE_DOMAIN_TWO="${SITE_DOMAIN//$www./}"
-    ## request certs for *.example.com (supports www + subsites) and example.com ##
-    ## wildcard domain should be contained within quotes ##
+## if site domain is a non-www type of subdomain e.g. blog.example.com or blog.example.co.uk ##
+elif [[ "$SITE_DOMAIN" != www.* ]] && [[ "$SITE_TLD" != "$SITE_DOMAIN" ]] && [[ "$STAGING_SITE" != "false" ]] && [[ "$STAGING_SITE_SUBDOMAIN" != "false" ]] && [[ "$DEV_SITE" != "false" ]] && [[ "$DEV_SITE_SUBDOMAIN" != "false" ]]; then
     certbot delete --cert-name ${SITE_TLD}
-    certbot certonly --noninteractive --agree-tos --cert-name ${SITE_TLD} -d "${SITE_DOMAIN_ONE}" -d ${SITE_DOMAIN_TWO} -m ${SSL_EMAIL} --webroot -w /var/www/html/
-
-## multisite (subdomains) + main site not a subdomain + main site does not contain www + email alerts ##
-elif [[ "$WP_MULTISITE" == "true" ]] && [[ $SITE_DOMAIN != *.*.* ]] && [[ $SITE_DOMAIN != *www.* ]] && [[ "$SSL_EMAIL_ALERTS" == "true" ]]; then
-    SITE_DOMAIN_ONE="*.${SITE_DOMAIN//$www./}"
-    SITE_DOMAIN_TWO="${SITE_DOMAIN//$www./}"
-    ## request certs for *.example.com and example.com (same result as above) ##
-    ## wildcard domain should be contained within quotes ##
-    certbot delete --cert-name ${SITE_TLD}
-    certbot certonly --noninteractive --agree-tos --cert-name ${SITE_TLD} -d "${SITE_DOMAIN_ONE}" -d ${SITE_DOMAIN_TWO} -m ${SSL_EMAIL} --webroot -w /var/www/html/
-
-## multisite (subdomains) + main site is a subdomain (www is irrelevant) + email alerts ##
-elif [[ "$WP_MULTISITE" == "true" ]] && [[ $SITE_DOMAIN == *.*.* ]] && [[ "$SSL_EMAIL_ALERTS" == "true" ]]; then
-    SITE_DOMAIN_ONE="*.${SITE_DOMAIN}"
-    SITE_DOMAIN_TWO="${SITE_DOMAIN}"
-    ## request certs for *.sub.example.com and sub.example.com ##
-    ## wildcard domain should be contained within quotes ##
-    certbot delete --cert-name ${SITE_TLD}
-    certbot certonly --noninteractive --agree-tos --cert-name ${SITE_TLD} -d "${SITE_DOMAIN_ONE}" -d ${SITE_DOMAIN_TWO} -m ${SSL_EMAIL} --webroot -w /var/www/html/
-
-## MULTISITE NETWORK (SUBDOMAINS) CERTS + NO EMAIL ALERTS ##
-
-## multisite (subdomains) + main site not a subdomain + main site contains www + no email alerts ##
-elif [[ "$WP_MULTISITE" == "true" ]] && [[ $SITE_DOMAIN != *.*.* ]] && [[ $SITE_DOMAIN == *www.* ]] && [[ "$SSL_EMAIL_ALERTS" != "true" ]]; then
-    SITE_DOMAIN_ONE="*.${SITE_DOMAIN//$www./}"
-    SITE_DOMAIN_TWO="${SITE_DOMAIN//$www./}"
-    ## request certs for *.example.com (supports www + subsites) and example.com ##
-    ## wildcard domain should be contained within quotes ##
-    certbot delete --cert-name ${SITE_TLD}
-    certbot certonly --noninteractive --agree-tos --cert-name ${SITE_TLD} -d "${SITE_DOMAIN_ONE}" -d ${SITE_DOMAIN_TWO} --register-unsafely-without-email --webroot -w /var/www/html/
-
-## multisite (subdomains) + main site not a subdomain + main site does not contain www + no email alerts ##
-elif [[ "$WP_MULTISITE" == "true" ]] && [[ $SITE_DOMAIN != *.*.* ]] && [[ $SITE_DOMAIN != *www.* ]] && [[ "$SSL_EMAIL_ALERTS" != "true" ]]; then
-    SITE_DOMAIN_ONE="*.${SITE_DOMAIN//$www./}"
-    SITE_DOMAIN_TWO="${SITE_DOMAIN//$www./}"
-    ## request certs for *.example.com and example.com (same result as above) ##
-    ## wildcard domain should be contained within quotes ##
-    certbot delete --cert-name ${SITE_TLD}
-    certbot certonly --noninteractive --agree-tos --cert-name ${SITE_TLD} -d "${SITE_DOMAIN_ONE}" -d ${SITE_DOMAIN_TWO} --register-unsafely-without-email --webroot -w /var/www/html/
-
-## multisite (subdomains) + main site is a subdomain (www is irrelevant) + email alerts ##
-elif [[ "$WP_MULTISITE" == "true" ]] && [[ $SITE_DOMAIN == *.*.* ]] && [[ "$SSL_EMAIL_ALERTS" != "true" ]]; then
-    SITE_DOMAIN_ONE="*.${SITE_DOMAIN}"
-    SITE_DOMAIN_TWO="${SITE_DOMAIN}"
-    ## request certs for *.sub.example.com and sub.example.com ##
-    ## wildcard domain should be contained within quotes ##
-    certbot delete --cert-name ${SITE_TLD}
-    certbot certonly --noninteractive --agree-tos --cert-name ${SITE_TLD} -d "${SITE_DOMAIN_ONE}" -d ${SITE_DOMAIN_TWO} --register-unsafely-without-email --webroot -w /var/www/html/
+    certbot delete --cert-name ${SITE_DOMAIN}
+    certbot certonly --noninteractive --agree-tos --cert-name ${SITE_TLD} -d ${SITE_DOMAIN} -d dev.${SITE_TLD} -d staging.${SITE_TLD} --register-unsafely-without-email --webroot -w /var/www/html/
 
 
-## MULTISITE NETWORK (SUBDIRECTORIES) CERTS + EMAIL ALERTS ##
-
-## MULTISITE NETWORK (SUBDIRECTORIES) CERTS + NO EMAIL ALERTS ##
 
 
 ## otherwise just do this ##
 else
-    certbot certonly --noninteractive --agree-tos --expand --register-unsafely-without-email -d ${SITE_DOMAIN} --webroot -w /var/www/html/
+    certbot certonly --noninteractive --agree-tos --cert-name ${SITE_TLD} --expand -d ${SITE_DOMAIN} --register-unsafely-without-email --webroot -w /var/www/html/
 fi
 
-## the last fi of the fis what a cluster ##
+## the last fi (ensuring above snippet runs only every 15 mins or longer) ##
 fi
 
 ####################################################################################################
-#### SS-Encrypt: Create Certbot Symlinks + Modify Nginx Configuration ##############################
+#### SS-Encrypt: Create Lets Encrypt Symlinks In SlickStack Directories ############################
 ####################################################################################################
 
-## create symlinks for simpler Nginx config ##
-ln /etc/letsencrypt/live/${SITE_DOMAIN}/cert.pem /var/www/certs/cert.pem
-ln /etc/letsencrypt/live/${SITE_DOMAIN}/privkey.pem /var/www/certs/keys/privkey.pem
-ln /etc/letsencrypt/live/${SITE_DOMAIN}/chain.pem /var/www/certs/chain.pem
-ln /etc/letsencrypt/live/${SITE_DOMAIN}/fullchain.pem /var/www/certs/fullchain.pem
-## need to add more complex rules for SITE_TLD symlinks too (depends on how the certs were generated above) ##
+## here we create symlinks in the SlickStack directory that point to Lets Encrypt ##
+## this approach simplifies our Nginx settings and makes it more stable ##
 
-## staging and dev sites next symlinks here
+## create Lets Encrypt symlinks ##
+ln /etc/letsencrypt/live/${SITE_TLD}/cert.pem /var/www/certs/cert.pem
+ln /etc/letsencrypt/live/${SITE_TLD}/privkey.pem /var/www/certs/keys/privkey.pem
+ln /etc/letsencrypt/live/${SITE_TLD}/chain.pem /var/www/certs/chain.pem
+ln /etc/letsencrypt/live/${SITE_TLD}/fullchain.pem /var/www/certs/fullchain.pem
 
-## modify live Nginx configuration if Certbot successful + preferred ##
-# if [[ "$SSL_TYPE" == "certbot" ]] && [[ -d  "/etc/letsencrypt/live" ]] && [[ -f  "/etc/ssl/cert.pem" ]]; then
-if [[ "$SSL_TYPE" == "certbot" ]] && [[ -d  "/etc/letsencrypt/live" ]]; then
+####################################################################################################
+#### SS-Encrypt: Modify Nginx Configuration For Lets Encrypt #######################################
+####################################################################################################
+
+## here we modify the live Nginx configuration files to activate Lets Encrypt certificates ##
+## this will only be completed if the Certbot process appears to be successful ##
+
+## modify live Nginx configuration ##
+if [[ "$SSL_TYPE" == "certbot" ]] && [[ -d  "/etc/letsencrypt/live/${SITE_TLD}" ]] && [[ -f  "/var/www/certs/fullchain.pem" ]] && [[ -f  "/var/www/certs/keys/privkey.pem" ]]; then
     sed -i "s#/var/www/certs/${SITE_TLD}.crt#/var/www/certs/fullchain.pem#g" /etc/nginx/nginx.conf
     sed -i "s#/var/www/certs/keys/${SITE_TLD}.key#/var/www/certs/keys/privkey.pem#g" /etc/nginx/nginx.conf
     sed -i "s/#@CERTBOT# //g" /etc/nginx/nginx.conf
@@ -298,16 +202,21 @@ fi
 ####################################################################################################
 
 ## reset permissions ##
-# mkdir /var/www/certs
-# mkdir /var/www/certs/keys
-chown root:root /var/www/certs
-chown root:root /var/www/certs/keys
+mkdir /var/www/certs
+mkdir /var/www/certs/keys
+mkdir /var/www/html/.well-known
+mkdir /var/www/html/.well-known/acme-challenge
+
+chown root:root /var/www/certs ## must be root:root
+chown root:root /var/www/certs/keys ## must be root:root
+chown -R $SFTP_USER:www-data /var/www/html/.well-known ## must be $SFTP_USER:www-data
 chmod 0755 /var/www/certs ## must be 0755
 chmod 0700 /var/www/certs/keys ## must be 0700
 chmod 0644 /var/www/certs/*.crt ## must be 0644
 chmod 0644 /var/www/certs/*.pem ## must be 0644
 chmod 0600 /var/www/certs/keys/*.key ## must be 0600
 chmod 0600 /var/www/certs/keys/*.pem ## must be 0600
+chmod 0775 /var/www/html/.well-known
 
 ####################################################################################################
 #### SS-Encrypt: Restart Nginx (After Certbot SSL Installation Complete) ###########################
