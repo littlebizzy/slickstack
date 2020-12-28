@@ -155,7 +155,7 @@ elif [[ "$SITE_DOMAIN" != www.* ]] && [[ "$SITE_TLD" == "$SITE_DOMAIN" ]] && [[ 
 elif [[ "$SITE_DOMAIN" != www.* ]] && [[ "$SITE_TLD" != "$SITE_DOMAIN" ]] && [[ "$STAGING_SITE" != "false" ]] && [[ "$STAGING_SITE_SUBDOMAIN" != "false" ]] && [[ "$DEV_SITE" != "false" ]] && [[ "$DEV_SITE_SUBDOMAIN" != "false" ]]; then
     certbot delete --cert-name ${SITE_TLD}
     certbot delete --cert-name ${SITE_DOMAIN}
-    certbot certonly --noninteractive --agree-tos --cert-name ${SITE_TLD} -d ${SITE_DOMAIN} -d dev.${SITE_TLD} -d staging.${SITE_TLD} --register-unsafely-without-email --webroot -w /var/www/html/
+    certbot certonly --noninteractive --agree-tos --cert-name ${SITE_DOMAIN} -d ${SITE_DOMAIN} -d dev.${SITE_TLD} -d staging.${SITE_TLD} --register-unsafely-without-email --webroot -w /var/www/html/
 
 
 
@@ -175,11 +175,18 @@ fi
 ## here we create symlinks in the SlickStack directory that point to Lets Encrypt ##
 ## this approach simplifies our Nginx settings and makes it more stable ##
 
-## create Lets Encrypt symlinks ##
-ln /etc/letsencrypt/live/${SITE_TLD}/cert.pem /var/www/certs/cert.pem
-ln /etc/letsencrypt/live/${SITE_TLD}/privkey.pem /var/www/certs/keys/privkey.pem
-ln /etc/letsencrypt/live/${SITE_TLD}/chain.pem /var/www/certs/chain.pem
-ln /etc/letsencrypt/live/${SITE_TLD}/fullchain.pem /var/www/certs/fullchain.pem
+## create symlinks based on domain conditions ##
+if [[ "$SITE_DOMAIN" != www.* ]] && [[ "$SITE_TLD" != "$SITE_DOMAIN" ]] && [[ -d  "/etc/letsencrypt/live/${SITE_DOMAIN}" ]]; then
+    ln /etc/letsencrypt/live/${SITE_DOMAIN}/cert.pem /var/www/certs/cert.pem
+    ln /etc/letsencrypt/live/${SITE_DOMAIN}/privkey.pem /var/www/certs/keys/privkey.pem
+    ln /etc/letsencrypt/live/${SITE_DOMAIN}/chain.pem /var/www/certs/chain.pem
+    ln /etc/letsencrypt/live/${SITE_DOMAIN}/fullchain.pem /var/www/certs/fullchain.pem
+else
+    ln /etc/letsencrypt/live/${SITE_TLD}/cert.pem /var/www/certs/cert.pem
+    ln /etc/letsencrypt/live/${SITE_TLD}/privkey.pem /var/www/certs/keys/privkey.pem
+    ln /etc/letsencrypt/live/${SITE_TLD}/chain.pem /var/www/certs/chain.pem
+    ln /etc/letsencrypt/live/${SITE_TLD}/fullchain.pem /var/www/certs/fullchain.pem
+fi
 
 ####################################################################################################
 #### SS-Encrypt: Modify Nginx Configuration For Lets Encrypt #######################################
@@ -193,6 +200,7 @@ if [[ "$SSL_TYPE" == "certbot" ]] && [[ -d  "/etc/letsencrypt/live/${SITE_TLD}" 
     sed -i "s#/var/www/certs/${SITE_TLD}.crt#/var/www/certs/fullchain.pem#g" /etc/nginx/nginx.conf
     sed -i "s#/var/www/certs/keys/${SITE_TLD}.key#/var/www/certs/keys/privkey.pem#g" /etc/nginx/nginx.conf
     sed -i "s/#@CERTBOT# //g" /etc/nginx/nginx.conf
+    echo -e "\e[36mLets Encrypt SSL was succesfully installed...\e[0m"
 else
     echo -e "\e[36mCertbot installation was not successful, reverting to OpenSSL...\e[0m"
 fi
@@ -228,8 +236,6 @@ chmod 0775 /var/www/html/.well-known
 ####################################################################################################
 #### SS-Encrypt: SUCCESS MESSAGE ###################################################################
 ####################################################################################################
-
-echo -e "\e[36mSSL certificates have been successfully generated...\e[0m"
 
 ## warning in case of sub-subdomains in use ##
 if [[ $SITE_DOMAIN = *.*.*.* ]]; then
