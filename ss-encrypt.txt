@@ -38,10 +38,11 @@ echo -e "\e[36mInstalling (or renewing) free SSL certs from OpenSSL and Certbot.
 ## here we reinstall the configuration files for Nginx in case critical lines are missing ##
 ## this ensures that compatible (current) Nginx boilerplates are already installed ##
 
-found=$(cat /etc/nginx/nginx.conf | grep -c "/var/www/certs/")
+found_new=$(cat /etc/nginx/nginx.conf | grep -c "/var/www/certs/")
+found_lets=$(cat /etc/nginx/nginx.conf | grep -c "/var/www/certs/fullchain.pem")
 
-## run ss-install-nginx-config
-if [[ $found -eq 0 ]]; then
+## run ss-install-nginx-config (if outdated or Lets Encrypt is broken) ##
+if [[ $found_new -eq 0 ]] || [[ $found_lets -gt 0 && ! -f  "/var/www/certs/fullchain.pem" ]]; then
     source /var/www/ss-install-nginx-config
 fi
 
