@@ -67,8 +67,14 @@ fi
 ## certain tasks are automatically called if the relevant interval is missing ##
 
 ## run custom cron jobs ##
+SS_CUSTOM_CRON_OFTEN_NOW=$(source /var/www/ss-config; echo $SS_CUSTOM_CRON_OFTEN)
 if [[ -n "$SS_CUSTOM_CRON_OFTEN" ]]; then 
-    echo "$SS_CUSTOM_CRON_OFTEN"
+    $SS_CUSTOM_CRON_OFTEN_NOW
+fi
+
+## run wp-cron if set to often ##
+if [[ "$WP_CRON_METHOD" == "server" ]] && [[ "$WP_CRON_INTERVAL" == "often" ]]; then 
+    /usr/bin/php /var/www/html/wp-cron.php
 fi
 
 ## run ss-check if set to often ##
@@ -128,5 +134,6 @@ touch /var/www/meta/.timestamp-01-cron-often
 ## Ref: https://stackoverflow.com/questions/4749330/how-to-test-if-string-exists-in-file-with-bash-
 ## Ref: https://stackoverflow.com/questions/42377739/while-file-doesnt-contain-string-bash
 ## Ref: https://stackoverflow.com/questions/29378566/i-just-assigned-a-variable-but-echo-variable-shows-something-else
+## Ref: https://fluentcrm.com/docs/replace-wordpress-cron-with-a-real-cron-job/
 
 ## SS_EOF
