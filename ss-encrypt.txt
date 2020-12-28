@@ -111,18 +111,31 @@ if [[ "$SSL_TYPE" == "certbot" ]] && [[ ! -f "/var/www/certs/dhparam.pem" ]]; th
 fi
 
 ####################################################################################################
+#### SS-Encrypt: Only Perform Certbot Tasks If SS-Encrypt Not Run In The Last 15 Mins ##############
+####################################################################################################
+
+## Certbot rate limit is 5 fails per hour... if timestamp is less than 30min old and LE cert already exists then do not request another one ##
+if [[ ! -f "/var/www/meta/.timestamp-ss-encrypt" ]] || [[ -n $(find "/var/www/meta/.timestamp-ss-encrypt" -amin +15) ]]; then
+
+####################################################################################################
 #### SS-Encrypt: Delete Previous / Conflicting Lets Encrypt SSL Certificates #######################
 ####################################################################################################
 
-## delete existing Lets Encrypt certificates (and keys) ##
+## to cleanup the potential mess of Lets Encrypt files we selectively delete some here ##
+## this process should delete any old or irrelevant (non-active) SSL files ##
+
+## selectively delete Lets Encrypt files ##
+if [[ "$SITE_DOMAIN" != www.* ]] && [[ "$SITE_TLD" != "$SITE_DOMAIN" ]]; then
+    find /etc/letsencrypt/ ! -name "*$SITE_DOMAIN*" -exec rm -r {} \;
+ else
+    find /etc/letsencrypt/ ! -name "*$SITE_TLD*" -exec rm -r {} \;
+ fi
+ 
+ ## add these to ss-clean ##
 # rm /etc/ssl/cert.pem ## symlink
 # rm /etc/ssl/chain.pem ## symlink
 # rm /etc/ssl/fullchain.pem ## symlink
 # rm /etc/ssl/privkey.pem ## symlink
-# rm /etc/letsencrypt/live/${SITE_DOMAIN}/cert.pem
-# rm /etc/letsencrypt/live/${SITE_DOMAIN}/chain.pem
-# rm /etc/letsencrypt/live/${SITE_DOMAIN}/fullchain.pem
-# rm /etc/letsencrypt/live/${SITE_DOMAIN}/privkey.pem
 
 ####################################################################################################
 #### SS-Encrypt: Request Certificates From Lets Encrypt Servers (Rate-Limited) #####################
@@ -133,11 +146,7 @@ fi
 ## SlickStack deletes old Lets Encrypt certs and requests new ones to avoid dir-stacking ##
 ## this approach also allows you to change your server to a different CMS or TLD ##
 
-## Certbot rate limit is 5 fails per hour... if timestamp is less than 30min old and LE cert already exists then do not request another one ##
-if [[ ! -f "/var/www/meta/.timestamp-ss-encrypt" ]] || [[ -n $(find "/var/www/meta/.timestamp-ss-encrypt" -amin +15) ]]; then
-
-
-## SINGLE SITE CERTS + STAGING/DEV ENABLED ##
+## SINGLE SITE CERTS + STAGING/DEV BOTH ENABLED ##
 
 ## if site domain contains www (and is therefore a subdomain) e.g. www.example.com or www.example.co.uk ##
 if [[ "$SITE_DOMAIN" == www.* ]] && [[ "$STAGING_SITE" != "false" ]] && [[ "$STAGING_SITE_SUBDOMAIN" != "false" ]] && [[ "$DEV_SITE" != "false" ]] && [[ "$DEV_SITE_SUBDOMAIN" != "false" ]]; then
@@ -158,14 +167,73 @@ elif [[ "$SITE_DOMAIN" != www.* ]] && [[ "$SITE_TLD" != "$SITE_DOMAIN" ]] && [[ 
     certbot certonly --noninteractive --agree-tos --cert-name ${SITE_DOMAIN} -d ${SITE_DOMAIN} -d dev.${SITE_TLD} -d staging.${SITE_TLD} --register-unsafely-without-email --webroot -w /var/www/html/
 
 
+## SINGLE SITE CERTS + STAGING ENABLED / DEV DISABLED ##
+
+## if site domain contains www (and is therefore a subdomain) e.g. www.example.com or www.example.co.uk ##
+if [[ "$SITE_DOMAIN" == www.* ]] && [[ "$STAGING_SITE" != "false" ]] && [[ "$STAGING_SITE_SUBDOMAIN" != "false" ]] && [[ "$DEV_SITE" == "false" || "$DEV_SITE_SUBDOMAIN" == "false" ]]; then
+    certbot delete --cert-name ${SITE_TLD}
+    certbot delete --cert-name ${SITE_DOMAIN}
+    certbot certonly --noninteractive --agree-tos --cert-name ${SITE_TLD} -d ${SITE_TLD} -d www.${SITE_TLD} -d staging.${SITE_TLD} --register-unsafely-without-email --webroot -w /var/www/html/
+
+## if site domain does not contain www (and is not any other type of subdomain) e.g. example.com or example.co.uk ##
+elif [[ "$SITE_DOMAIN" != www.* ]] && [[ "$SITE_TLD" == "$SITE_DOMAIN" ]] && [[ "$STAGING_SITE" != "false" ]] && [[ "$STAGING_SITE_SUBDOMAIN" != "false" ]] && [[ "$DEV_SITE" == "false" || "$DEV_SITE_SUBDOMAIN" == "false" ]]; then
+    certbot delete --cert-name ${SITE_TLD}
+    certbot delete --cert-name ${SITE_DOMAIN}
+    certbot certonly --noninteractive --agree-tos --cert-name ${SITE_TLD} -d ${SITE_TLD} -d www.${SITE_TLD} -d staging.${SITE_TLD} --register-unsafely-without-email --webroot -w /var/www/html/
+
+## if site domain is a non-www type of subdomain e.g. blog.example.com or blog.example.co.uk ##
+elif [[ "$SITE_DOMAIN" != www.* ]] && [[ "$SITE_TLD" != "$SITE_DOMAIN" ]] && [[ "$STAGING_SITE" != "false" ]] && [[ "$STAGING_SITE_SUBDOMAIN" != "false" ]] && [[ "$DEV_SITE" == "false" || "$DEV_SITE_SUBDOMAIN" == "false" ]]; then
+    certbot delete --cert-name ${SITE_TLD}
+    certbot delete --cert-name ${SITE_DOMAIN}
+    certbot certonly --noninteractive --agree-tos --cert-name ${SITE_DOMAIN} -d ${SITE_DOMAIN} -d staging.${SITE_TLD} --register-unsafely-without-email --webroot -w /var/www/html/
+
+
+## SINGLE SITE CERTS + STAGING DISABLED / DEV ENABLED ##
+
+## if site domain contains www (and is therefore a subdomain) e.g. www.example.com or www.example.co.uk ##
+if [[ "$SITE_DOMAIN" == www.* ]] && [[ "$STAGING_SITE" == "false" || "$STAGING_SITE_SUBDOMAIN" == "false" ]] && [[ "$DEV_SITE" != "false" ]] && [[ "$DEV_SITE_SUBDOMAIN" != "false" ]]; then
+    certbot delete --cert-name ${SITE_TLD}
+    certbot delete --cert-name ${SITE_DOMAIN}
+    certbot certonly --noninteractive --agree-tos --cert-name ${SITE_TLD} -d ${SITE_TLD} -d www.${SITE_TLD} -d dev.${SITE_TLD} --register-unsafely-without-email --webroot -w /var/www/html/
+
+## if site domain does not contain www (and is not any other type of subdomain) e.g. example.com or example.co.uk ##
+elif [[ "$SITE_DOMAIN" != www.* ]] && [[ "$SITE_TLD" == "$SITE_DOMAIN" ]] && [[ "$STAGING_SITE" == "false" || "$STAGING_SITE_SUBDOMAIN" == "false" ]] && [[ "$DEV_SITE" != "false" ]] && [[ "$DEV_SITE_SUBDOMAIN" != "false" ]]; then
+    certbot delete --cert-name ${SITE_TLD}
+    certbot delete --cert-name ${SITE_DOMAIN}
+    certbot certonly --noninteractive --agree-tos --cert-name ${SITE_TLD} -d ${SITE_TLD} -d www.${SITE_TLD} -d dev.${SITE_TLD} --register-unsafely-without-email --webroot -w /var/www/html/
+
+## if site domain is a non-www type of subdomain e.g. blog.example.com or blog.example.co.uk ##
+elif [[ "$SITE_DOMAIN" != www.* ]] && [[ "$SITE_TLD" != "$SITE_DOMAIN" ]] && [[ "$STAGING_SITE" == "false" || "$STAGING_SITE_SUBDOMAIN" == "false" ]] && [[ "$DEV_SITE" != "false" ]] && [[ "$DEV_SITE_SUBDOMAIN" != "false" ]]; then
+    certbot delete --cert-name ${SITE_TLD}
+    certbot delete --cert-name ${SITE_DOMAIN}
+    certbot certonly --noninteractive --agree-tos --cert-name ${SITE_DOMAIN} -d ${SITE_DOMAIN} -d dev.${SITE_TLD} --register-unsafely-without-email --webroot -w /var/www/html/
+
+
+## SINGLE SITE CERTS + STAGING/DEV BOTH DISABLED ##
+
+## if site domain contains www (and is therefore a subdomain) e.g. www.example.com or www.example.co.uk ##
+if [[ "$SITE_DOMAIN" == www.* ]] && [[ "$STAGING_SITE" == "false" || "$STAGING_SITE_SUBDOMAIN" == "false" ]] && [[ "$DEV_SITE" == "false" || "$DEV_SITE_SUBDOMAIN" == "false" ]]; then
+    certbot delete --cert-name ${SITE_TLD}
+    certbot delete --cert-name ${SITE_DOMAIN}
+    certbot certonly --noninteractive --agree-tos --cert-name ${SITE_TLD} -d ${SITE_TLD} -d www.${SITE_TLD} --register-unsafely-without-email --webroot -w /var/www/html/
+
+## if site domain does not contain www (and is not any other type of subdomain) e.g. example.com or example.co.uk ##
+elif [[ "$SITE_DOMAIN" != www.* ]] && [[ "$SITE_TLD" == "$SITE_DOMAIN" ]] && [[ "$STAGING_SITE" != "false" ]] && [[ "$STAGING_SITE_SUBDOMAIN" != "false" ]] && [[ "$DEV_SITE" != "false" ]] && [[ "$DEV_SITE_SUBDOMAIN" != "false" ]]; then
+    certbot delete --cert-name ${SITE_TLD}
+    certbot delete --cert-name ${SITE_DOMAIN}
+    certbot certonly --noninteractive --agree-tos --cert-name ${SITE_TLD} -d ${SITE_TLD} -d www.${SITE_TLD} --register-unsafely-without-email --webroot -w /var/www/html/
+
+## if site domain is a non-www type of subdomain e.g. blog.example.com or blog.example.co.uk ##
+elif [[ "$SITE_DOMAIN" != www.* ]] && [[ "$SITE_TLD" != "$SITE_DOMAIN" ]] && [[ "$STAGING_SITE" != "false" ]] && [[ "$STAGING_SITE_SUBDOMAIN" != "false" ]] && [[ "$DEV_SITE" != "false" ]] && [[ "$DEV_SITE_SUBDOMAIN" != "false" ]]; then
+    certbot delete --cert-name ${SITE_TLD}
+    certbot delete --cert-name ${SITE_DOMAIN}
+    certbot certonly --noninteractive --agree-tos --cert-name ${SITE_DOMAIN} -d ${SITE_DOMAIN} --register-unsafely-without-email --webroot -w /var/www/html/
+
 
 
 ## otherwise just do this ##
 else
     certbot certonly --noninteractive --agree-tos --cert-name ${SITE_TLD} --expand -d ${SITE_DOMAIN} --register-unsafely-without-email --webroot -w /var/www/html/
-fi
-
-## the last fi (ensuring above snippet runs only every 15 mins or longer) ##
 fi
 
 ####################################################################################################
@@ -203,6 +271,10 @@ if [[ "$SSL_TYPE" == "certbot" ]] && [[ -d  "/etc/letsencrypt/live/${SITE_TLD}" 
     echo -e "\e[36mLets Encrypt SSL was succesfully installed...\e[0m"
 else
     echo -e "\e[36mCertbot installation was not successful, reverting to OpenSSL...\e[0m"
+fi
+
+
+## the last fi (ensuring above snippet runs only every 15 mins or longer) ##
 fi
 
 ####################################################################################################
@@ -311,5 +383,8 @@ touch /var/www/meta/.timestamp-ss-encrypt
 ## Ref: https://fbcs.co.uk/self-signed-multiple-domain-ssl-certificates/
 ## Ref: https://serverfault.com/questions/259302/best-location-for-ssl-certificate-and-private-keys-on-ubuntu
 ## Ref: https://community.letsencrypt.org/t/error-creating-new-cert-too-many-certificates-already-issued-for-exact-set-of-domains/41542
+## Ref: https://community.letsencrypt.org/t/correct-way-to-completely-remove-issued-certificate-s-for-a-domain/7409
+## Ref: https://unix.stackexchange.com/questions/78376/in-linux-how-to-delete-all-files-except-the-pattern-txt
+## Ref: https://unix.stackexchange.com/questions/417737/how-to-use-find-command-with-variables
 
 ## SS_EOF
