@@ -498,12 +498,10 @@ sudo ln -s /etc/nginx/sites-available/staging.${SITE_TLD} /etc/nginx/sites-enabl
 ## run ss-encrypt ##
 # source /var/www/ss-encrypt
 
-if [[ "$SSL_TYPE" == "certbot" ]] && [[ -d  "/etc/letsencrypt/live" ]]; then
-    sed -i "s#/var/www/certs/${SITE_TLD}.crt#/var/www/certs/fullchain.pem#g" /etc/nginx/nginx.conf
-    sed -i "s#/var/www/certs/keys/${SITE_TLD}.key#/var/www/certs/keys/privkey.pem#g" /etc/nginx/nginx.conf
+if [[ "$SSL_TYPE" == "certbot" ]] && [[ -d  "/etc/letsencrypt/live" ]] && [[ -f  "/var/www/certs/fullchain.pem" ]] && [[ -f  "/var/www/certs/keys/privkey.pem" ]]; then
+    sed -i "s#/var/www/certs/slickstack.crt#/var/www/certs/fullchain.pem#g" /etc/nginx/nginx.conf
+    sed -i "s#/var/www/certs/keys/slickstack.key#/var/www/certs/keys/privkey.pem#g" /etc/nginx/nginx.conf
     sed -i "s/#@CERTBOT# //g" /etc/nginx/nginx.conf
-else
-    echo -e "\e[36mCertbot installation was not successful, reverting to OpenSSL...\e[0m"
 fi
 
 ####################################################################################################
