@@ -221,17 +221,6 @@ if [[ -f "/var/www/ss-config" ]] && [[ "$SS_BUILD" != "DEC2020V" ]]; then
     exit 1
 fi
 
-CALC_DOMAIN=${SITE_DOMAIN//$SITE_TLD/}
-CALC_DOMAIN_SUB=$(echo "$CALC_DOMAIN" | grep -o "\." | wc -l)
-
-if [[ $CALC_DOMAIN_SUB -gt 1 ]]; then 
-    echo -e ""
-    echo -e "${YELLOW}It appears your SITE_DOMAIN value is a sub-subdomain or is otherwise not ${NOCOLOR}"
-    echo -e "${YELLOW}compatible with SlickStack. Please edit ss-config and try again.${NOCOLOR}"
-    echo -e ""
-    exit 1
-fi
-
 ####################################################################################################
 #### SS-Install: Interactive Bash Setup Wizard (SS-Config): ########################################
 ####################################################################################################
@@ -521,12 +510,27 @@ else
 fi
 
 
-
+####################################################################################################
+#### SS-Install: Source SS-Config (After Setup Wizard Complete) ####################################
+####################################################################################################
 
 ## include SlickStack configuration ##
 source /var/www/ss-config
 
+####################################################################################################
+#### SS-Install: Ensure Chosen Site Domain Is Not A Sub-Subdomain (Unsupported) ####################
+####################################################################################################
 
+CALC_DOMAIN=${SITE_DOMAIN//$SITE_TLD/}
+CALC_DOMAIN_SUB=$(echo "$CALC_DOMAIN" | grep -o "\." | wc -l)
+
+if [[ $CALC_DOMAIN_SUB -gt 1 ]]; then 
+    echo -e ""
+    echo -e "${YELLOW}It appears your SITE_DOMAIN value is a sub-subdomain or is otherwise not ${NOCOLOR}"
+    echo -e "${YELLOW}compatible with SlickStack. Please edit ss-config and try again.${NOCOLOR}"
+    echo -e ""
+    exit 1
+fi
 
 ####################################################################################################
 #### SS-Install: Download Latest SlickStack Core Scripts + Cron Jobs (Via SS-Check) ################
