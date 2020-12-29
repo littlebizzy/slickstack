@@ -149,27 +149,7 @@ wget -O /tmp/ss-worker http://mirrors.slickstack.io/ss-worker.txt
 ## here we copy all the downloaded core files to the proper folders where they remain ##
 ## the root crontab runs the core cron jobs which in turn run the bash scripts ##
 
-found=$(cat /var/spool/cron/crontabs/root | grep -c "/var/www/crons/")
-
-if [[ $found -eq 0 ]]; then
-## cron jobs old ##
-cp /tmp/00-crontab /var/www/00-crontab
-cp /tmp/01-cron-often /var/www/01-cron-often
-cp /tmp/02-cron-regular /var/www/02-cron-regular
-cp /tmp/03-cron-quarter-hourly /var/www/03-cron-quarter-hourly
-cp /tmp/04-cron-half-hourly /var/www/04-cron-half-hourly 
-cp /tmp/05-cron-hourly /var/www/05-cron-hourly
-cp /tmp/06-cron-quarter-daily /var/www/06-cron-quarter-daily
-cp /tmp/07-cron-half-daily /var/www/07-cron-half-daily
-cp /tmp/08-cron-daily /var/www/08-cron-daily
-cp /tmp/09-cron-half-weekly /var/www/09-cron-half-weekly
-cp /tmp/10-cron-weekly /var/www/10-cron-weekly
-cp /tmp/11-cron-half-monthly /var/www/11-cron-half-monthly
-cp /tmp/12-cron-monthly /var/www/12-cron-monthly
-cp /tmp/13-cron-sometimes /var/www/13-cron-sometimes
-fi
-
-## cron jobs new ##
+## move (install) ss core cron jobs ##
 cp /tmp/00-crontab /var/www/crons/00-crontab
 cp /tmp/01-cron-often /var/www/crons/01-cron-often
 cp /tmp/02-cron-regular /var/www/crons/02-cron-regular
@@ -185,7 +165,8 @@ cp /tmp/11-cron-half-monthly /var/www/crons/11-cron-half-monthly
 cp /tmp/12-cron-monthly /var/www/crons/12-cron-monthly
 cp /tmp/13-cron-sometimes /var/www/crons/13-cron-sometimes
 
-## bash scripts old ##
+## OLD (DELETE LATER) ##
+## move (install) ss core bash scripts ##
 cp /tmp/ss-clean-files /var/www/ss-clean-files
 cp /tmp/ss-config-sample /var/www/ss-config-sample
 cp /tmp/ss-delete-database /var/www/ss-delete-database
@@ -278,7 +259,8 @@ cp /tmp/ss-sync-staging /var/www/ss-sync-staging
 cp /tmp/ss-update /var/www/ss-update
 cp /tmp/ss-worker /var/www/ss-worker
 
-## bash scripts new ##
+## NEW ##
+## move (install) ss core bash scripts ##
 cp /tmp/ss-clean-files /var/www/bash/ss-clean-files
 cp /tmp/ss-config-sample /var/www/bash/ss-config-sample
 cp /tmp/ss-delete-database /var/www/bash/ss-delete-database
@@ -371,8 +353,6 @@ cp /tmp/ss-sync-staging /var/www/bash/ss-sync-staging
 cp /tmp/ss-update /var/www/bash/ss-update
 cp /tmp/ss-worker /var/www/bash/ss-worker
 
-
-
 ####################################################################################################
 #### SS-Check: Reset Permissions (SS Core Cron Jobs) ###############################################
 ####################################################################################################
@@ -383,9 +363,6 @@ cp /tmp/ss-worker /var/www/bash/ss-worker
 ## chmod 700 means only the root/sudo users can execute ss core cron jobs ##
 
 ## reset permissions ##
-chown root:root /var/www/*-cron* ## must be root:root
-chmod 0700 /var/www/*-cron* ## 0700 means root can execute
-
 chown root:root /var/www/crons/*cron* ## must be root:root
 chmod 0700 /var/www/crons/*cron* ## 0700 means root can execute
 
