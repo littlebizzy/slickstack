@@ -27,10 +27,13 @@ rm /tmp/ss*
 rm /tmp/*cron*
 
 ####################################################################################################
-#### SS-Check: Download Latest SlickStack Core Files (Does Not Download Any Modules) ###############
+#### SS-Check: Retrieve Latest SlickStack Core Files (Except SS-Check) #############################
 ####################################################################################################
 
-## download latest core cron jobs ##
+## here we retrieve all the latest ss core cron jobs and bash scripts to keep them updated ##
+## this process does not affect ss-config or LEMP modules, nor the ss-check file ##
+
+## retrieve latest ss core cron jobs ##
 wget -O /tmp/00-crontab http://mirrors.slickstack.io/00-crontab.txt
 wget -O /tmp/01-cron-often http://mirrors.slickstack.io/01-cron-often.txt
 wget -O /tmp/02-cron-regular http://mirrors.slickstack.io/02-cron-regular.txt
@@ -46,8 +49,7 @@ wget -O /tmp/11-cron-half-monthly http://mirrors.slickstack.io/11-cron-half-mont
 wget -O /tmp/12-cron-monthly http://mirrors.slickstack.io/12-cron-monthly.txt
 wget -O /tmp/13-cron-sometimes http://mirrors.slickstack.io/13-cron-sometimes.txt
 
-## download latest core Bash scripts (except ss-check) ##
-# wget -O /tmp/ss-backup http://mirrors.slickstack.io/ss-backup.txt
+## retrieve latest ss core bash scripts (except ss-check) ##
 wget -O /tmp/ss-clean-files http://mirrors.slickstack.io/ss-clean-files.txt
 wget -O /tmp/ss-config-sample http://mirrors.slickstack.io/ss-config-sample.txt
 wget -O /tmp/ss-delete-database http://mirrors.slickstack.io/ss-delete-database.txt
@@ -141,8 +143,11 @@ wget -O /tmp/ss-update http://mirrors.slickstack.io/ss-update.txt
 wget -O /tmp/ss-worker http://mirrors.slickstack.io/ss-worker.txt
 
 ####################################################################################################
-#### SS-Check: Copy Latest SlickStack Core Files To Jailed Root (/var/www) #########################
+#### SS-Check: Copy Latest SlickStack Core Files To /var/www/crons/ and /var/www/bash/ #############
 ####################################################################################################
+
+## here we copy all the downloaded core files to the proper folders where they remain ##
+## the root crontab runs the core cron jobs which in turn run the bash scripts ##
 
 found=$(cat /var/spool/cron/crontabs/root | grep -c "/var/www/crons/")
 
@@ -164,9 +169,6 @@ cp /tmp/12-cron-monthly /var/www/12-cron-monthly
 cp /tmp/13-cron-sometimes /var/www/13-cron-sometimes
 fi
 
-## temp ##
-mkdir /var/www/crons
-
 ## cron jobs new ##
 cp /tmp/00-crontab /var/www/crons/00-crontab
 cp /tmp/01-cron-often /var/www/crons/01-cron-often
@@ -182,8 +184,6 @@ cp /tmp/10-cron-weekly /var/www/crons/10-cron-weekly
 cp /tmp/11-cron-half-monthly /var/www/crons/11-cron-half-monthly
 cp /tmp/12-cron-monthly /var/www/crons/12-cron-monthly
 cp /tmp/13-cron-sometimes /var/www/crons/13-cron-sometimes
-
-
 
 ## bash scripts old ##
 cp /tmp/ss-clean-files /var/www/ss-clean-files
@@ -277,11 +277,6 @@ cp /tmp/ss-scan-malware /var/www/ss-scan-malware
 cp /tmp/ss-sync-staging /var/www/ss-sync-staging
 cp /tmp/ss-update /var/www/ss-update
 cp /tmp/ss-worker /var/www/ss-worker
-
-
-## temp ##
-mkdir /var/www/bash
-
 
 ## bash scripts new ##
 cp /tmp/ss-clean-files /var/www/bash/ss-clean-files
