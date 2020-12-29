@@ -1,0 +1,366 @@
+#!/bin/bash
+
+####################################################################################################
+#### author: SlickStack ############################################################################
+#### link: https://slickstack.io ###################################################################
+#### mirror: http://mirrors.slickstack.io/ss-encrypt-certbot.txt ###################################
+#### path: /var/www/bash/ss-encrypt-certbot.txt ####################################################
+#### destination: n/a (not a boilerplate) ##########################################################
+#### purpose: Regenerates free Lets Encrypt certs and adjusts Nginx config (idempotent) ############
+#### module version: Certbot 0.40.x ################################################################
+#### sourced by: ss core cron jobs, ss-encrypt #####################################################
+#### bash aliases: ss encrypt certbot, ss certbot, ss install letsencrypt ##########################
+####################################################################################################
+
+## SS-ENCRYPT PERFORMS BASIC NGINX CONFIG MODIFICATION REGARDLESS OF SS-INSTALL-NGINX ##
+## IT WILL ALSO ATTEMPT TO REVERT TO OPENSSL IF LETS ENCRYPT CERTS ARE MISSING ##
+
+## include SlickStack configuration ##
+source /var/www/ss-config
+
+## include SlickStack functions ##
+source /var/www/ss-functions
+
+####################################################################################################
+#### SS-Encrypt: Install Nginx Config Files (Conditional) ##########################################
+####################################################################################################
+
+## here we reinstall the configuration files for Nginx in case critical lines are missing ##
+## this ensures that compatible (current) Nginx boilerplates are already installed ##
+
+# found_new=$(cat /etc/nginx/nginx.conf | grep -c "/var/www/certs/")
+# found_lets=$(cat /etc/nginx/nginx.conf | grep -c "/var/www/certs/fullchain.pem")
+
+## run ss-install-nginx-config (if outdated or Lets Encrypt is broken) ##
+# if [[ $found_new -eq 0 ]] || [[ $found_lets -gt 0 && ! -f  "/var/www/certs/fullchain.pem" ]]; then
+#     source /var/www/ss-install-nginx-config
+# fi
+
+found_ss=$(cat /etc/nginx/nginx.conf | grep -c "slickstack.crt")
+
+if [[ $found_ss -eq 0 ]]; then
+    source /var/www/ss-install-nginx-config
+fi
+
+####################################################################################################
+#### SS-Encrypt: Ensure Critical Directories Exist #################################################
+####################################################################################################
+
+## make dirs ##
+mkdir /var/www/certs
+mkdir /var/www/certs/keys
+mkdir /var/www/html/.well-known
+mkdir /var/www/html/.well-known/acme-challenge
+
+## reset permissions (ensure that SFTP user can access if needed for e.g. Stripe, etc) ##
+chown -R $SFTP_USER:www-data /var/www/html/.well-known
+chmod 0775 /var/www/html/.well-known
+
+####################################################################################################
+#### SS-Encrypt: Hide Irrelevant Errors (Bug) In OpenSSL 1.1.1x ####################################
+####################################################################################################
+
+## hide error message (bug) in OpenSSL 1.1.1x (remove this snippet later) ##
+touch /home/${SUDO_USER}/.rnd
+touch /home/${SFTP_USER}/.rnd
+
+####################################################################################################
+#### SS-Encrypt: Regenerate Self-Signed OpenSSL Certificate ########################################
+####################################################################################################
+
+## this will generate a new self-signed OpenSSL certificate every single time it runs ##
+## there are no rate-limits and it pairs perfectly with CloudFlare SSL proxy ##
+
+## generate self-signed certificate ##
+    rm /var/www/certs/*.crt
+    rm /var/www/certs/keys/*.key
+    ## for all other domains e.g. example.com or www.example.com ##
+    openssl req -new -x509 -nodes -days 3650 -newkey rsa:2048 -keyout /var/www/certs/keys/slickstack.key -out /var/www/certs/slickstack.crt -subj "/C=${CSR_COUNTRY}/ST=${CSR_STATE}/L=${CSR_CITY}/O=${CSR_COMPANY}/OU=${CSR_DEPT}/CN=${SITE_DOMAIN}"
+
+####################################################################################################
+#### SS-Encrypt: (Re)configure Nginx (Prepare For Certbot Verification) ############################
+####################################################################################################
+
+## here we need to check if:
+# Lets Encrypt certs do not exist (or wrong based on current ss-config multisite/domain) then
+# revert Nginx config to OpenSSL now to allow for Certbot verify domain again
+# or if Lets Encrypt 
+
+## restart Nginx ##
+/etc/init.d/nginx restart
+
+####################################################################################################
+#### SS-Encrypt: Generate DH Parameters (If Lets Encrypt Enabled) ##################################
+####################################################################################################
+
+## this will generate DH parameters using OpenSSL for use by Lets Encrypt certificates ##
+## by maintaining this file we are able to strengthen the security of the SSL ##
+
+if [[ "$SSL_TYPE" == "certbot" ]] && [[ ! -f "/var/www/certs/dhparam.pem" ]]; then 
+    openssl dhparam -out /var/www/certs/dhparam.pem 2048
+fi
+
+####################################################################################################
+#### SS-Encrypt: Only Perform Certbot Tasks If SS-Encrypt Not Run In The Last 15 Mins ##############
+####################################################################################################
+
+## Certbot rate limit is 5 fails per hour... if timestamp is less than 30min old and LE cert already exists then do not request another one ##
+# if [[ ! -f "/var/www/meta/.timestamp-ss-encrypt" ]] || [[ -n $(find "/var/www/meta/.timestamp-ss-encrypt" -amin +15) ]]; then
+
+# fi
+
+####################################################################################################
+#### SS-Encrypt: Delete Previous / Conflicting Lets Encrypt SSL Certificates #######################
+####################################################################################################
+
+## to cleanup the potential mess of Lets Encrypt files we selectively delete some here ##
+## this process should delete any old or irrelevant (non-active) SSL files ##
+
+## selectively delete Lets Encrypt files ##
+# if [[ "$SITE_DOMAIN" != www.* ]] && [[ "$SITE_TLD" != "$SITE_DOMAIN" ]]; then
+#    find /etc/letsencrypt/ ! -name "*$SITE_DOMAIN*" -exec rm -r {} \;
+# else
+ #   find /etc/letsencrypt/ ! -name "*$SITE_TLD*" -exec rm -r {} \;
+#  fi
+ 
+ ## add these to ss-clean ##
+# rm /etc/ssl/cert.pem ## symlink
+# rm /etc/ssl/chain.pem ## symlink
+# rm /etc/ssl/fullchain.pem ## symlink
+# rm /etc/ssl/privkey.pem ## symlink
+
+####################################################################################################
+#### SS-Encrypt: Request Certificates From Lets Encrypt Servers (Rate-Limited) #####################
+####################################################################################################
+
+## NOTICE: SLICKSTACK DOES NOT SUPPORT SUB-SUBDOMAINS LIKE WWW.BLOG.EXAMPLE.COM ##
+
+## SlickStack deletes old Lets Encrypt certs and requests new ones to avoid dir-stacking ##
+## this approach also allows you to change your server to a different CMS or TLD ##
+
+## SINGLE SITE CERTS + STAGING/DEV BOTH ENABLED ##
+
+## if site domain contains www (and is therefore a subdomain) e.g. www.example.com or www.example.co.uk ##
+if [[ "$SITE_DOMAIN" == www.* ]] && [[ "$STAGING_SITE" != "false" ]] && [[ "$STAGING_SITE_SUBDOMAIN" != "false" ]] && [[ "$DEV_SITE" != "false" ]] && [[ "$DEV_SITE_SUBDOMAIN" != "false" ]]; then
+    certbot delete --cert-name ${SITE_TLD}
+    certbot delete --cert-name ${SITE_DOMAIN}
+    certbot certonly --noninteractive --agree-tos --cert-name ${SITE_TLD} -d ${SITE_TLD} -d www.${SITE_TLD} -d dev.${SITE_TLD} -d staging.${SITE_TLD} --register-unsafely-without-email --webroot -w /var/www/html/
+
+## if site domain does not contain www (and is not any other type of subdomain) e.g. example.com or example.co.uk ##
+elif [[ "$SITE_DOMAIN" != www.* ]] && [[ "$SITE_TLD" == "$SITE_DOMAIN" ]] && [[ "$STAGING_SITE" != "false" ]] && [[ "$STAGING_SITE_SUBDOMAIN" != "false" ]] && [[ "$DEV_SITE" != "false" ]] && [[ "$DEV_SITE_SUBDOMAIN" != "false" ]]; then
+    certbot delete --cert-name ${SITE_TLD}
+    certbot delete --cert-name ${SITE_DOMAIN}
+    certbot certonly --noninteractive --agree-tos --cert-name ${SITE_TLD} -d ${SITE_TLD} -d www.${SITE_TLD} -d dev.${SITE_TLD} -d staging.${SITE_TLD} --register-unsafely-without-email --webroot -w /var/www/html/
+
+## if site domain is a non-www type of subdomain e.g. blog.example.com or blog.example.co.uk ##
+elif [[ "$SITE_DOMAIN" != www.* ]] && [[ "$SITE_TLD" != "$SITE_DOMAIN" ]] && [[ "$STAGING_SITE" != "false" ]] && [[ "$STAGING_SITE_SUBDOMAIN" != "false" ]] && [[ "$DEV_SITE" != "false" ]] && [[ "$DEV_SITE_SUBDOMAIN" != "false" ]]; then
+    certbot delete --cert-name ${SITE_TLD}
+    certbot delete --cert-name ${SITE_DOMAIN}
+    certbot certonly --noninteractive --agree-tos --cert-name ${SITE_DOMAIN} -d ${SITE_DOMAIN} -d dev.${SITE_TLD} -d staging.${SITE_TLD} --register-unsafely-without-email --webroot -w /var/www/html/
+
+
+## SINGLE SITE CERTS + STAGING ENABLED / DEV DISABLED ##
+
+## if site domain contains www (and is therefore a subdomain) e.g. www.example.com or www.example.co.uk ##
+elif [[ "$SITE_DOMAIN" == www.* ]] && [[ "$STAGING_SITE" != "false" ]] && [[ "$STAGING_SITE_SUBDOMAIN" != "false" ]] && [[ "$DEV_SITE" == "false" || "$DEV_SITE_SUBDOMAIN" == "false" ]]; then
+    certbot delete --cert-name ${SITE_TLD}
+    certbot delete --cert-name ${SITE_DOMAIN}
+    certbot certonly --noninteractive --agree-tos --cert-name ${SITE_TLD} -d ${SITE_TLD} -d www.${SITE_TLD} -d staging.${SITE_TLD} --register-unsafely-without-email --webroot -w /var/www/html/
+
+## if site domain does not contain www (and is not any other type of subdomain) e.g. example.com or example.co.uk ##
+elif [[ "$SITE_DOMAIN" != www.* ]] && [[ "$SITE_TLD" == "$SITE_DOMAIN" ]] && [[ "$STAGING_SITE" != "false" ]] && [[ "$STAGING_SITE_SUBDOMAIN" != "false" ]] && [[ "$DEV_SITE" == "false" || "$DEV_SITE_SUBDOMAIN" == "false" ]]; then
+    certbot delete --cert-name ${SITE_TLD}
+    certbot delete --cert-name ${SITE_DOMAIN}
+    certbot certonly --noninteractive --agree-tos --cert-name ${SITE_TLD} -d ${SITE_TLD} -d www.${SITE_TLD} -d staging.${SITE_TLD} --register-unsafely-without-email --webroot -w /var/www/html/
+
+## if site domain is a non-www type of subdomain e.g. blog.example.com or blog.example.co.uk ##
+elif [[ "$SITE_DOMAIN" != www.* ]] && [[ "$SITE_TLD" != "$SITE_DOMAIN" ]] && [[ "$STAGING_SITE" != "false" ]] && [[ "$STAGING_SITE_SUBDOMAIN" != "false" ]] && [[ "$DEV_SITE" == "false" || "$DEV_SITE_SUBDOMAIN" == "false" ]]; then
+    certbot delete --cert-name ${SITE_TLD}
+    certbot delete --cert-name ${SITE_DOMAIN}
+    certbot certonly --noninteractive --agree-tos --cert-name ${SITE_DOMAIN} -d ${SITE_DOMAIN} -d staging.${SITE_TLD} --register-unsafely-without-email --webroot -w /var/www/html/
+
+
+## SINGLE SITE CERTS + STAGING DISABLED / DEV ENABLED ##
+
+## if site domain contains www (and is therefore a subdomain) e.g. www.example.com or www.example.co.uk ##
+elif [[ "$SITE_DOMAIN" == www.* ]] && [[ "$STAGING_SITE" == "false" || "$STAGING_SITE_SUBDOMAIN" == "false" ]] && [[ "$DEV_SITE" != "false" ]] && [[ "$DEV_SITE_SUBDOMAIN" != "false" ]]; then
+    certbot delete --cert-name ${SITE_TLD}
+    certbot delete --cert-name ${SITE_DOMAIN}
+    certbot certonly --noninteractive --agree-tos --cert-name ${SITE_TLD} -d ${SITE_TLD} -d www.${SITE_TLD} -d dev.${SITE_TLD} --register-unsafely-without-email --webroot -w /var/www/html/
+
+## if site domain does not contain www (and is not any other type of subdomain) e.g. example.com or example.co.uk ##
+elif [[ "$SITE_DOMAIN" != www.* ]] && [[ "$SITE_TLD" == "$SITE_DOMAIN" ]] && [[ "$STAGING_SITE" == "false" || "$STAGING_SITE_SUBDOMAIN" == "false" ]] && [[ "$DEV_SITE" != "false" ]] && [[ "$DEV_SITE_SUBDOMAIN" != "false" ]]; then
+    certbot delete --cert-name ${SITE_TLD}
+    certbot delete --cert-name ${SITE_DOMAIN}
+    certbot certonly --noninteractive --agree-tos --cert-name ${SITE_TLD} -d ${SITE_TLD} -d www.${SITE_TLD} -d dev.${SITE_TLD} --register-unsafely-without-email --webroot -w /var/www/html/
+
+## if site domain is a non-www type of subdomain e.g. blog.example.com or blog.example.co.uk ##
+elif [[ "$SITE_DOMAIN" != www.* ]] && [[ "$SITE_TLD" != "$SITE_DOMAIN" ]] && [[ "$STAGING_SITE" == "false" || "$STAGING_SITE_SUBDOMAIN" == "false" ]] && [[ "$DEV_SITE" != "false" ]] && [[ "$DEV_SITE_SUBDOMAIN" != "false" ]]; then
+    certbot delete --cert-name ${SITE_TLD}
+    certbot delete --cert-name ${SITE_DOMAIN}
+    certbot certonly --noninteractive --agree-tos --cert-name ${SITE_DOMAIN} -d ${SITE_DOMAIN} -d dev.${SITE_TLD} --register-unsafely-without-email --webroot -w /var/www/html/
+
+
+## SINGLE SITE CERTS + STAGING/DEV BOTH DISABLED ##
+
+## if site domain contains www (and is therefore a subdomain) e.g. www.example.com or www.example.co.uk ##
+elif [[ "$SITE_DOMAIN" == www.* ]] && [[ "$STAGING_SITE" == "false" || "$STAGING_SITE_SUBDOMAIN" == "false" ]] && [[ "$DEV_SITE" == "false" || "$DEV_SITE_SUBDOMAIN" == "false" ]]; then
+    certbot delete --cert-name ${SITE_TLD}
+    certbot delete --cert-name ${SITE_DOMAIN}
+    certbot certonly --noninteractive --agree-tos --cert-name ${SITE_TLD} -d ${SITE_TLD} -d www.${SITE_TLD} --register-unsafely-without-email --webroot -w /var/www/html/
+
+## if site domain does not contain www (and is not any other type of subdomain) e.g. example.com or example.co.uk ##
+elif [[ "$SITE_DOMAIN" != www.* ]] && [[ "$SITE_TLD" == "$SITE_DOMAIN" ]] && [[ "$STAGING_SITE" != "false" ]] && [[ "$STAGING_SITE_SUBDOMAIN" != "false" ]] && [[ "$DEV_SITE" != "false" ]] && [[ "$DEV_SITE_SUBDOMAIN" != "false" ]]; then
+    certbot delete --cert-name ${SITE_TLD}
+    certbot delete --cert-name ${SITE_DOMAIN}
+    certbot certonly --noninteractive --agree-tos --cert-name ${SITE_TLD} -d ${SITE_TLD} -d www.${SITE_TLD} --register-unsafely-without-email --webroot -w /var/www/html/
+
+## if site domain is a non-www type of subdomain e.g. blog.example.com or blog.example.co.uk ##
+elif [[ "$SITE_DOMAIN" != www.* ]] && [[ "$SITE_TLD" != "$SITE_DOMAIN" ]] && [[ "$STAGING_SITE" != "false" ]] && [[ "$STAGING_SITE_SUBDOMAIN" != "false" ]] && [[ "$DEV_SITE" != "false" ]] && [[ "$DEV_SITE_SUBDOMAIN" != "false" ]]; then
+    certbot delete --cert-name ${SITE_TLD}
+    certbot delete --cert-name ${SITE_DOMAIN}
+    certbot certonly --noninteractive --agree-tos --cert-name ${SITE_DOMAIN} -d ${SITE_DOMAIN} --register-unsafely-without-email --webroot -w /var/www/html/
+
+
+
+## otherwise just do this ##
+else
+#    certbot certonly --noninteractive --agree-tos --cert-name ${SITE_TLD} --expand -d ${SITE_DOMAIN} --register-unsafely-without-email --webroot -w /var/www/html/
+    echo -e "\e[36mIt seems required options are missing from ss-config so we dont know what Lets Encrypt cert to request for you...\e[0m"
+fi
+
+####################################################################################################
+#### SS-Encrypt: Create Lets Encrypt Symlinks In SlickStack Directories ############################
+####################################################################################################
+
+## here we create symlinks in the SlickStack directory that point to Lets Encrypt ##
+## this approach simplifies our Nginx settings and makes it more stable ##
+
+## create symlinks based on domain conditions ##
+if [[ "$SITE_DOMAIN" != www.* ]] && [[ "$SITE_TLD" != "$SITE_DOMAIN" ]] && [[ -d  "/etc/letsencrypt/live/${SITE_DOMAIN}" ]]; then
+    ln /etc/letsencrypt/live/${SITE_DOMAIN}/cert.pem /var/www/certs/cert.pem
+    ln /etc/letsencrypt/live/${SITE_DOMAIN}/privkey.pem /var/www/certs/keys/privkey.pem
+    ln /etc/letsencrypt/live/${SITE_DOMAIN}/chain.pem /var/www/certs/chain.pem
+    ln /etc/letsencrypt/live/${SITE_DOMAIN}/fullchain.pem /var/www/certs/fullchain.pem
+else
+    ln /etc/letsencrypt/live/${SITE_TLD}/cert.pem /var/www/certs/cert.pem
+    ln /etc/letsencrypt/live/${SITE_TLD}/privkey.pem /var/www/certs/keys/privkey.pem
+    ln /etc/letsencrypt/live/${SITE_TLD}/chain.pem /var/www/certs/chain.pem
+    ln /etc/letsencrypt/live/${SITE_TLD}/fullchain.pem /var/www/certs/fullchain.pem
+fi
+
+####################################################################################################
+#### SS-Encrypt: Modify Nginx Configuration For Lets Encrypt #######################################
+####################################################################################################
+
+## here we modify the live Nginx configuration files to activate Lets Encrypt certificates ##
+## this will only be completed if the Certbot process appears to be successful ##
+
+## modify live Nginx configuration ##
+if [[ "$SSL_TYPE" == "certbot" ]] && [[ -d  "/etc/letsencrypt/live" ]] && [[ -f  "/var/www/certs/fullchain.pem" ]] && [[ -f  "/var/www/certs/keys/privkey.pem" ]]; then
+    sed -i "s#/var/www/certs/slickstack.crt#/var/www/certs/fullchain.pem#g" /etc/nginx/nginx.conf
+    sed -i "s#/var/www/certs/keys/slickstack.key#/var/www/certs/keys/privkey.pem#g" /etc/nginx/nginx.conf
+    sed -i "s/#@CERTBOT# //g" /etc/nginx/nginx.conf
+    echo -e "\e[36mLets Encrypt SSL was succesfully installed...\e[0m"
+else
+    echo -e "\e[36mCertbot installation was not successful, reverting to OpenSSL...\e[0m"
+fi
+
+####################################################################################################
+#### SS-Encrypt: Reset Permissions (OpenSSL + Certbot) #############################################
+####################################################################################################
+
+## reset permissions ##
+mkdir /var/www/certs
+mkdir /var/www/certs/keys
+mkdir /var/www/html/.well-known
+mkdir /var/www/html/.well-known/acme-challenge
+
+chown root:root /var/www/certs ## must be root:root
+chown root:root /var/www/certs/keys ## must be root:root
+chown -R $SFTP_USER:www-data /var/www/html/.well-known ## must be $SFTP_USER:www-data
+chmod 0755 /var/www/certs ## must be 0755
+chmod 0700 /var/www/certs/keys ## must be 0700
+chmod 0644 /var/www/certs/*.crt ## public certs/dhparam should be 0644
+chmod 0644 /var/www/certs/*.pem ## public certs/dhparam should be 0644
+chmod 0600 /var/www/certs/keys/*.key ## must be 0600
+chmod 0600 /var/www/certs/keys/*.pem ## must be 0600
+chmod 0775 /var/www/html/.well-known
+
+####################################################################################################
+#### SS-Encrypt: Restart Nginx (After Certbot SSL Installation Complete) ###########################
+####################################################################################################
+
+## restart nginx ##
+/etc/init.d/nginx restart
+
+####################################################################################################
+#### SS-Encrypt-Certbot: Touch Timestamp File (End Script) #########################################
+####################################################################################################
+
+## this is a dummy timestamp file that will remember the last time this script was run ##
+## it can be useful for developer reference and is sometimes used by SlickStack ##
+
+## script timestamp ##
+touch /var/www/meta/.timestamp-ss-encrypt-certbot
+
+####################################################################################################
+#### SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ###############
+####################################################################################################
+
+## Ref: https://linuxize.com/post/secure-apache-with-let-s-encrypt-on-ubuntu-18-04/
+## Ref: https://stackoverflow.com/questions/49172841/install-certbot-letsencrypt-without-interaction/57019299#57019299
+## Ref: https://matthewlehner.net/lets-encrypt-with-nginx
+## Ref: https://community.letsencrypt.org/t/how-often-should-i-run-the-cerbot-cron-job-to-update-the-certificates/18851
+## Ref: https://community.letsencrypt.org/t/how-to-get-crt-and-key-files-from-i-just-have-pem-files/7348/2
+## Ref: https://community.letsencrypt.org/t/certificate-path/24227
+## Ref: https://www.cyberciti.biz/tips/linux-unix-pause-command.html
+## Ref: https://stackoverflow.com/questions/9483633/how-to-use-bash-read-with-a-timeout/9483693#9483693
+## Ref: https://stackoverflow.com/questions/229551/how-to-check-if-a-string-contains-a-substring-in-bash
+## Ref: https://unix.stackexchange.com/questions/311758/remove-specific-word-in-variable
+## Ref: https://stackoverflow.com/questions/13210880/replace-one-substring-for-another-string-in-shell-script
+## Ref: https://github.com/certbot/certbot/issues/3039
+## Ref: https://superuser.com/questions/1056183/using-a-wildcard-in-a-condition-to-match-the-beginning-of-a-string
+## Ref: https://stackoverflow.com/questions/18730509/bash-substring-regex-matching-wildcard
+## Ref: https://linuxize.com/post/how-to-create-symbolic-links-in-linux-using-the-ln-command/
+## Ref: https://superuser.com/questions/81164/why-create-a-link-like-this-ln-nsf/81168
+## Ref: https://support.cloudflare.com/hc/en-us/articles/214820528-Validating-a-Let-s-Encrypt-Certificate-on-a-Site-Already-Active-on-Cloudflare
+## Ref: https://serverfault.com/questions/788220/lets-encrypt-certbot-validation-over-https
+## Ref: https://certbot-dns-cloudflare.readthedocs.io/en/stable/
+## Ref: https://dev.to/michaeldscherr/lets-encrypt-ssl-certificate-via-dns-challenge-8dd
+## Ref: https://letsencrypt.org/docs/challenge-types/
+## Ref: https://serverfault.com/questions/750902/how-to-use-lets-encrypt-dns-challenge-validation
+## Ref: https://community.letsencrypt.org/t/do-i-need-copy-dhparam-pem-file-when-i-move-certificates-to-a-new-server/47346
+## Ref: https://weakdh.org/sysadmin.html
+## Ref: https://security.stackexchange.com/questions/38206/can-someone-explain-what-exactly-is-accomplished-by-generation-of-dh-parameters
+## Ref: https://security.stackexchange.com/questions/94390/whats-the-purpose-of-dh-parameters
+## Ref: https://wiki.mozilla.org/Security/Server_Side_TLS
+## Ref: https://stackoverflow.com/questions/21251714/bash-script-countdown-timer-needs-to-detect-any-key-to-continue
+## Ref: https://stackoverflow.com/questions/33614865/bash-countdown-to-execution-if-no-key-pressed
+## Ref: https://unix.stackexchange.com/questions/293940/bash-how-can-i-make-press-any-key-to-continue
+## Ref: https://serverfault.com/questions/532559/bash-script-count-down-5-minutes-display-on-single-line
+## Ref: https://community.letsencrypt.org/t/confusing-on-root-domain-with-wildcard-cert/56113/2
+## Ref: https://gist.github.com/joepie91/7e5cad8c0726fd6a5e90360a754fc568
+## Ref: https://ma.ttias.be/how-to-read-ssl-certificate-info-from-the-cli/
+## Ref: http://nginx.org/en/docs/http/configuring_https_servers.html#certificate_with_several_names
+## Ref: https://dev.to/nabbisen/let-s-encrypt-wildcard-certificate-with-certbot-plo
+## Ref: https://community.letsencrypt.org/t/wildcard-certificate-does-not-work/79041
+## Ref: https://letsencrypt.org/docs/rate-limits/
+## Ref: https://github.com/certbot/certbot/issues/2071
+## Ref: https://community.letsencrypt.org/t/how-to-prevent-creation-of-etc-letsencrypt-live-domain-tld-0001-when-removing-domains-from-a-domain-tld-multidomain-certificate/8135/14
+## Ref: https://community.letsencrypt.org/t/letsencrypt-webroot-verification-follows-http-to-https-redirect-for-self-signed-cert/19917
+## Ref: https://stackoverflow.com/questions/205666/what-is-the-best-way-to-perform-timestamp-comparison-in-bash
+## Ref: https://stackoverflow.com/questions/552724/how-do-i-check-in-bash-whether-a-file-was-created-more-than-x-time-ago
+## Ref: https://unix.stackexchange.com/questions/145313/find-a-file-which-is-30-minutes-old
+## Ref: https://easyengine.io/wordpress-nginx/tutorials/ssl/multidomain-ssl-subject-alternative-names/
+## Ref: https://www.getpagespeed.com/server-setup/ssl-directory
+## Ref: https://superuser.com/questions/556493/permissions-for-ssl-key
+## Ref: https://fbcs.co.uk/self-signed-multiple-domain-ssl-certificates/
+## Ref: https://serverfault.com/questions/259302/best-location-for-ssl-certificate-and-private-keys-on-ubuntu
+## Ref: https://community.letsencrypt.org/t/error-creating-new-cert-too-many-certificates-already-issued-for-exact-set-of-domains/41542
+## Ref: https://community.letsencrypt.org/t/correct-way-to-completely-remove-issued-certificate-s-for-a-domain/7409
+## Ref: https://unix.stackexchange.com/questions/78376/in-linux-how-to-delete-all-files-except-the-pattern-txt
+## Ref: https://unix.stackexchange.com/questions/417737/how-to-use-find-command-with-variables
+## Ref: https://serverfault.com/questions/751057/which-permissions-should-i-set-to-dhparam-pem
+
+## SS_EOF
