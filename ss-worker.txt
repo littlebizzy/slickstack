@@ -4,11 +4,11 @@
 #### author: SlickStack ############################################################################
 #### link: https://slickstack.io ###################################################################
 #### mirror: http://mirrors.slickstack.io/ss-worker.txt ############################################
-#### path: /var/www/ss-worker ######################################################################
+#### path: /var/www/bash/ss-worker #################################################################
 #### destination: n/a (not a boilerplate) ##########################################################
-#### purpose: Performs various SlickStack maintenance tasks and retrieves latest ss-check ##########
+#### purpose: Performs SlickStack maintenance tasks and retrieves the latest ss-check file #########
 #### module version: Ubuntu 20.04 LTS ##############################################################
-#### sourced by: ss core cron jobs, ss-update ######################################################
+#### sourced by: ss core cron jobs, ss-install, ss-update ##########################################
 #### bash aliases: ss worker #######################################################################
 ####################################################################################################
 
@@ -42,45 +42,47 @@ rm /tmp/*cron*
 rm /tmp/blacklist*
 
 ####################################################################################################
-#### SS-Worker: Download Latest SS-Check Core Script (Improves SlickStack Redundancy) ##############
+#### SS-Worker: Retrieve Latest SS-Check File (SS Core Bash Script) ################################
 ####################################################################################################
 
-## download ss-check and redundant 1-cron-often script ##
-wget -O /tmp/00-crontab http://mirrors.slickstack.io/00-crontab.txt
-wget -O /tmp/01-cron-often http://mirrors.slickstack.io/01-cron-often.txt
-wget -O /tmp/02-cron-regular http://mirrors.slickstack.io/02-cron-regular.txt
+## here we retrieve the latest ss-check core bash script to improve overall redundancy ##
+## thus ss-check avoids installing itself and no single point of failure (SPOF) ##
+
+## retrieve latest ss-check (ss core bash script) ##
 wget -O /tmp/ss-check http://mirrors.slickstack.io/ss-check.txt
 
-## copy files to /var/www/ ##
-cp /tmp/00-crontab /var/www/00-crontab
-cp /tmp/01-cron-often /var/www/01-cron-often
-cp /tmp/02-cron-regular /var/www/02-cron-regular
-cp /tmp/ss-check /var/www/ss-check
+## move (install) ss-check ##
+cp /tmp/ss-check /var/www/bash/ss-check
 
 ####################################################################################################
-#### SS-Worker: Install Required WordPress MU Plugins If Do Not Exist ##############################
+#### SS-Worker: Install Required Single-File WordPress MU Plugins If Not Exist #####################
 ####################################################################################################
 
 ## in certain situations we have noticed single-file required MU plugins gone missing ##
 ## therefore this will briefly check if they are missing and install if needed ##
 
+## install required single-file MU plugins (Autoloader) ##
 if [[ ! -f "/var/www/html/wp-content/mu-plugins/autoloader.php" ]] && [[ "$SS_APP" == "wordpress" || -z "$SS_APP"  ]]; then
-wget -O /tmp/autoloader.php http://mirrors.slickstack.io/mu-plugins/autoloader.txt
-cp /tmp/autoloader.php /var/www/html/wp-content/mu-plugins/autoloader.php
-chmod 0440 /var/www/html/wp-content/mu-plugins/autoloader.php ## 0440 (read-only)
+    wget -O /tmp/autoloader.php http://mirrors.slickstack.io/mu-plugins/autoloader.txt
+    cp /tmp/autoloader.php /var/www/html/wp-content/mu-plugins/autoloader.php
+    chmod 0440 /var/www/html/wp-content/mu-plugins/autoloader.php ## 0440 (read-only)
 fi
 
+## install required single-file MU plugins (XXX Common) ##
 if [[ ! -f "/var/www/html/wp-content/mu-plugins/xxx-common.php" ]] && [[ "$SS_APP" == "wordpress" || -z "$SS_APP"  ]]; then
-wget -O /tmp/xxx-common.php http://mirrors.slickstack.io/mu-plugins/xxx-common.txt
-cp /tmp/xxx-common.php /var/www/html/wp-content/mu-plugins/xxx-common.php
-chmod 0440 /var/www/html/wp-content/mu-plugins/xxx-common.php ## 0440 (read-only)
+    wget -O /tmp/xxx-common.php http://mirrors.slickstack.io/mu-plugins/xxx-common.txt
+    cp /tmp/xxx-common.php /var/www/html/wp-content/mu-plugins/xxx-common.php
+    chmod 0440 /var/www/html/wp-content/mu-plugins/xxx-common.php ## 0440 (read-only)
 fi
 
 ####################################################################################################
-#### SS-Worker: Reset SlickStack Core Files Permissions (Skips Web Root) ###########################
+#### SS-Worker: Reset Permissions (SlickStack Core + SlickStack Config) ############################
 ####################################################################################################
 
-## ensure core directories exist (except html) ##
+## because SlickStack is not a module and core permissions are critical we reset here ##
+## these permissions should be run by ss-worker and/or by ss core cron jobs ##
+
+## ensure core directories exist ##
 mkdir /var/www
 mkdir /var/www/bash
 mkdir /var/www/cache
@@ -89,6 +91,7 @@ mkdir /var/www/cache/opcache
 mkdir /var/www/certs
 mkdir /var/www/certs/keys
 mkdir /var/www/crons
+mkdir /var/www/html
 mkdir /var/www/logs
 mkdir /var/www/meta
 mkdir /var/www/sites
@@ -134,9 +137,6 @@ chmod 0775 /var/www/meta ## 6755 should also work
 ## chmod 700 means only the root/sudo users can execute ss core cron jobs ##
 
 ## reset permissions ##
-chown root:root /var/www/*-cron* ## must be root:root
-chmod 0700 /var/www/*-cron* ## 0700 means root can execute
-
 chown root:root /var/www/crons/*cron* ## must be root:root
 chmod 0700 /var/www/crons/*cron* ## 0700 means root can execute
 
@@ -204,10 +204,7 @@ rm /var/www/html/dev/*
 # rm /var/www/cron/
 
 
-# if [[ -f "/var/www/crons/01-cron-often" ]]; then
-
-# fi
-
+## delete old cron job files ##
 found=$(cat /var/spool/cron/crontabs/root | grep -c "/var/www/crons/")
 
 if [[ $found -ne 0 ]] && [[ -f "/var/www/crons/01-cron-often" ]]; then
