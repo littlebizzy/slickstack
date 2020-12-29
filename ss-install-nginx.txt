@@ -4,11 +4,12 @@
 #### author: SlickStack ############################################################################
 #### link: https://slickstack.io ###################################################################
 #### mirror: http://mirrors.slickstack.io/ss-install-nginx.txt #####################################
-#### path: /var/www/ss-install-nginx ###############################################################
+#### path: /var/www/bash/ss-install-nginx ##########################################################
 #### destination: n/a (not a boilerplate) ##########################################################
 #### purpose: Reinstalls the entire Nginx module for SlickStack servers (idempotent) ###############
 #### module version: Nginx 1.18.x ##################################################################
 #### sourced by: ss-install ########################################################################
+#### bash aliases: ss install nginx ################################################################
 ####################################################################################################
 
 ## SS-CONFIG MUST BE PROPERLY CONFIGURED AND ON CURRENT BUILD BEFORE RUNNING SS-INSTALL ##
@@ -21,80 +22,25 @@ source /var/www/ss-config
 source /var/www/ss-functions
 
 ####################################################################################################
-#### SS-Install-Nginx: Cleanup Temporary Files #####################################################
+#### SS-Install-Nginx: Backup Database Before Proceeding ###########################################
 ####################################################################################################
 
-## delete tmp files ##
-rm /tmp/nginx*
-rm /tmp/server-block*
-rm /tmp/default*
+## run ss-dump-database ##
+source /var/www/ss-dump-database
 
 ####################################################################################################
-#### SS-Install: Check OS Compability + Verify SS-Config Freshness + Backup Database ###############
+#### SS-Install-Nginx: Install Nginx Packages (Ubuntu) #############################################
 ####################################################################################################
 
-## run ss-dump ##
-source /var/www/ss-dump
-
-####################################################################################################
-#### SlickStack: Install Nginx Packages (Includes FastCGI Cache + OpenSSL) #########################
-####################################################################################################
-
-## purge installed nginx packages ##
-# apt purge nginx-extras
-# apt purge ^nginx
-
-## update Ubuntu package cache ##
-apt update
-
-## required to install Certbot on Ubuntu 18.04 ##
-if [[ "${UBUNTU_VERSION}" = "18.04" ]]; then
-    apt install software-properties-common
-    add-apt-repository universe
-    add-apt-repository ppa:certbot/certbot ## Ubuntu 20.04 includes Certbot
-fi
-
-## clean reinstall for Ubuntu 20.04 ##
-if [[ "${UBUNTU_VERSION}" = "20.04" || -z "${UBUNTU_VERSION}" ]]; then 
-    apt remove certbot 
-    apt remove python3-certbot-nginx
-    add-apt-repository --remove ppa:certbot/certbot ## just in case (shouldn't exist)
-    apt install certbot python3-certbot-nginx
-fi
-
-## update package cache (again... not needed in Ubuntu 18.04+ but just for fun) ##
-apt update
-
-## install Nginx Extras ##
-apt install nginx-extras
+## run ss-install-nginx-core ##
+source /var/www/ss-install-nginx-core
 
 ####################################################################################################
 #### SS-Install-Nginx: Install Nginx Config Files ##################################################
 ####################################################################################################
 
-## run ss-install-nginx-config
+## run ss-install-nginx-config ##
 source /var/www/ss-install-nginx-config
-
-####################################################################################################
-#### SS-Install-Nginx: Reset Permissions (Nginx) ###################################################
-####################################################################################################
-
-## run ss-perms-nginx ##
-# source /var/www/ss-perms-nginx
-
-####################################################################################################
-#### SS-Install-Nginx: Restart Services (Nginx) ####################################################
-####################################################################################################
-
-## restart nginx ##
-# /etc/init.d/nginx restart
-
-####################################################################################################
-#### SS-Install-Nginx: Cleanup Temporary Files #####################################################
-####################################################################################################
-
-## delete tmp files ##
-# n/a
 
 ####################################################################################################
 #### SS-Install-Nginx: Touch Timestamp File (End Script) ###########################################
