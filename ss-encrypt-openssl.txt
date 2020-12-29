@@ -22,7 +22,7 @@ source /var/www/ss-config
 source /var/www/ss-functions
 
 ####################################################################################################
-#### SS-Encrypt: Ensure Critical Directories Exist #################################################
+#### SS-Encrypt-OpenSSL: Ensure Required Directories Exist #########################################
 ####################################################################################################
 
 ## make dirs ##
@@ -30,10 +30,10 @@ mkdir /var/www/certs
 mkdir /var/www/certs/keys
 
 ####################################################################################################
-#### SS-Encrypt: Hide Irrelevant Errors (Bug) In OpenSSL 1.1.1x ####################################
+#### SS-Encrypt-OpenSSL: Hide Irrelevant Errors (Bug) In OpenSSL 1.1.1x ############################
 ####################################################################################################
 
-## hide error message (bug) in OpenSSL 1.1.1x (remove this snippet later) ##
+## hide error message (workaround) ##
 touch /home/${SUDO_USER}/.rnd
 touch /home/${SFTP_USER}/.rnd
 
@@ -52,14 +52,14 @@ rm /var/www/certs/keys/*.key
 openssl req -new -x509 -nodes -days 3650 -newkey rsa:2048 -keyout /var/www/certs/keys/slickstack.key -out /var/www/certs/slickstack.crt -subj "/C=${CSR_COUNTRY}/ST=${CSR_STATE}/L=${CSR_CITY}/O=${CSR_COMPANY}/OU=${CSR_DEPT}/CN=${SITE_DOMAIN}"
 
 ####################################################################################################	
-#### SS-Encrypt: (Re)configure Nginx (Prepare For Certbot Verification) ############################	
+#### SS-Encrypt-OpenSSL: Restart Services (Nginx) ##################################################	
 ####################################################################################################	
 
 ## restart nginx ##	
 /etc/init.d/nginx restart
 
 ####################################################################################################
-#### SS-Encrypt: Reset Permissions (OpenSSL + Certbot) #############################################
+#### SS-Encrypt-OpenSSL: Reset Permissions (OpenSSL Certificates) ##################################
 ####################################################################################################
 
 ## reset permissions ##
@@ -71,10 +71,8 @@ chown root:root /var/www/certs/keys ## must be root:root
 
 chmod 0755 /var/www/certs ## must be 0755
 chmod 0700 /var/www/certs/keys ## must be 0700
-chmod 0644 /var/www/certs/*.crt ## public certs/dhparam should be 0644
-chmod 0644 /var/www/certs/*.pem ## public certs/dhparam should be 0644
-chmod 0600 /var/www/certs/keys/*.key ## must be 0600
-chmod 0600 /var/www/certs/keys/*.pem ## must be 0600
+chmod 0644 /var/www/certs/slickstack.crt ## public certs should be 0644
+chmod 0600 /var/www/certs/keys/slickstack.key ## must be 0600
 
 ####################################################################################################
 #### SS-Encrypt-OpenSSL: Touch Timestamp File (End Script) #########################################
