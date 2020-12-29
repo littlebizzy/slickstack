@@ -67,37 +67,14 @@ chown -R $SFTP_USER:www-data /var/www/html/.well-known
 chmod 0775 /var/www/html/.well-known
 
 ####################################################################################################
-#### SS-Encrypt: Hide Irrelevant Errors (Bug) In OpenSSL 1.1.1x ####################################
+#### SS-Encrypt: Install OpenSSL (Via SS-Encrypt-OpenSSL) ##########################################
 ####################################################################################################
 
-## hide error message (bug) in OpenSSL 1.1.1x (remove this snippet later) ##
-touch /home/${SUDO_USER}/.rnd
-touch /home/${SFTP_USER}/.rnd
+## here we generate slickstack.crt and slickstack.key as the default SSL for Nginx ##
+## this approach is extremely stable and works fantastic with CloudFlare ##
 
-####################################################################################################
-#### SS-Encrypt: Regenerate Self-Signed OpenSSL Certificate ########################################
-####################################################################################################
-
-## this will generate a new self-signed OpenSSL certificate every single time it runs ##
-## there are no rate-limits and it pairs perfectly with CloudFlare SSL proxy ##
-
-## generate self-signed certificate ##
-    rm /var/www/certs/*.crt
-    rm /var/www/certs/keys/*.key
-    ## for all other domains e.g. example.com or www.example.com ##
-    openssl req -new -x509 -nodes -days 3650 -newkey rsa:2048 -keyout /var/www/certs/keys/slickstack.key -out /var/www/certs/slickstack.crt -subj "/C=${CSR_COUNTRY}/ST=${CSR_STATE}/L=${CSR_CITY}/O=${CSR_COMPANY}/OU=${CSR_DEPT}/CN=${SITE_DOMAIN}"
-
-####################################################################################################
-#### SS-Encrypt: (Re)configure Nginx (Prepare For Certbot Verification) ############################
-####################################################################################################
-
-## here we need to check if:
-# Lets Encrypt certs do not exist (or wrong based on current ss-config multisite/domain) then
-# revert Nginx config to OpenSSL now to allow for Certbot verify domain again
-# or if Lets Encrypt 
-
-## restart Nginx ##
-/etc/init.d/nginx restart
+## run ss-encrypt-openssl ##
+source /var/www/bash/ss-encrypt-openssl
 
 ####################################################################################################
 #### SS-Encrypt: Generate DH Parameters (If Lets Encrypt Enabled) ##################################
