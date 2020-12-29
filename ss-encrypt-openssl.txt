@@ -22,49 +22,12 @@ source /var/www/ss-config
 source /var/www/ss-functions
 
 ####################################################################################################
-#### SS-Encrypt: MESSAGE (Begin) ###################################################################
-####################################################################################################
-
-## since ss-encrypt runs every few weeks (or months) we avoid aggressive reinstall here ##
-## for a cleaner SSL reinstall run ss-install or ss-update instead of ss-encrypt ##
-
-## MESSAGE ##
-echo -e "\e[36mInstalling (or renewing) free SSL certs from OpenSSL and Certbot...\e[0m"
-
-####################################################################################################
-#### SS-Encrypt: Install Nginx Config Files (Conditional) ##########################################
-####################################################################################################
-
-## here we reinstall the configuration files for Nginx in case critical lines are missing ##
-## this ensures that compatible (current) Nginx boilerplates are already installed ##
-
-# found_new=$(cat /etc/nginx/nginx.conf | grep -c "/var/www/certs/")
-# found_lets=$(cat /etc/nginx/nginx.conf | grep -c "/var/www/certs/fullchain.pem")
-
-## run ss-install-nginx-config (if outdated or Lets Encrypt is broken) ##
-# if [[ $found_new -eq 0 ]] || [[ $found_lets -gt 0 && ! -f  "/var/www/certs/fullchain.pem" ]]; then
-#     source /var/www/ss-install-nginx-config
-# fi
-
-found_ss=$(cat /etc/nginx/nginx.conf | grep -c "slickstack.crt")
-
-if [[ $found_ss -eq 0 ]]; then
-    source /var/www/ss-install-nginx-config
-fi
-
-####################################################################################################
 #### SS-Encrypt: Ensure Critical Directories Exist #################################################
 ####################################################################################################
 
 ## make dirs ##
 mkdir /var/www/certs
 mkdir /var/www/certs/keys
-mkdir /var/www/html/.well-known
-mkdir /var/www/html/.well-known/acme-challenge
-
-## reset permissions (ensure that SFTP user can access if needed for e.g. Stripe, etc) ##
-chown -R $SFTP_USER:www-data /var/www/html/.well-known
-chmod 0775 /var/www/html/.well-known
 
 ####################################################################################################
 #### SS-Encrypt: Hide Irrelevant Errors (Bug) In OpenSSL 1.1.1x ####################################
@@ -106,19 +69,16 @@ touch /home/${SFTP_USER}/.rnd
 ## reset permissions ##
 mkdir /var/www/certs
 mkdir /var/www/certs/keys
-mkdir /var/www/html/.well-known
-mkdir /var/www/html/.well-known/acme-challenge
 
 chown root:root /var/www/certs ## must be root:root
 chown root:root /var/www/certs/keys ## must be root:root
-chown -R $SFTP_USER:www-data /var/www/html/.well-known ## must be $SFTP_USER:www-data
+
 chmod 0755 /var/www/certs ## must be 0755
 chmod 0700 /var/www/certs/keys ## must be 0700
 chmod 0644 /var/www/certs/*.crt ## public certs/dhparam should be 0644
 chmod 0644 /var/www/certs/*.pem ## public certs/dhparam should be 0644
 chmod 0600 /var/www/certs/keys/*.key ## must be 0600
 chmod 0600 /var/www/certs/keys/*.pem ## must be 0600
-chmod 0775 /var/www/html/.well-known
 
 ####################################################################################################
 #### SS-Encrypt-OpenSSL: Touch Timestamp File (End Script) #########################################
