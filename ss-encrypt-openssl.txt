@@ -38,17 +38,18 @@ touch /home/${SUDO_USER}/.rnd
 touch /home/${SFTP_USER}/.rnd
 
 ####################################################################################################
-#### SS-Encrypt: Regenerate Self-Signed OpenSSL Certificate ########################################
+#### SS-Encrypt-OpenSSL: Regenerate OpenSSL Certificate ############################################
 ####################################################################################################
 
 ## this will generate a new self-signed OpenSSL certificate every single time it runs ##
 ## there are no rate-limits and it pairs perfectly with CloudFlare SSL proxy ##
 
-## generate self-signed certificate ##	
-    rm /var/www/certs/*.crt	
-    rm /var/www/certs/keys/*.key	
-    ## for all other domains e.g. example.com or www.example.com ##	
-    openssl req -new -x509 -nodes -days 3650 -newkey rsa:2048 -keyout /var/www/certs/keys/slickstack.key -out /var/www/certs/slickstack.crt -subj "/C=${CSR_COUNTRY}/ST=${CSR_STATE}/L=${CSR_CITY}/O=${CSR_COMPANY}/OU=${CSR_DEPT}/CN=${SITE_DOMAIN}"	
+## delete previous files ##
+rm /var/www/certs/*.crt	
+rm /var/www/certs/keys/*.key	
+
+## generate self-signed certificate (expires after 10 years) ##
+openssl req -new -x509 -nodes -days 3650 -newkey rsa:2048 -keyout /var/www/certs/keys/slickstack.key -out /var/www/certs/slickstack.crt -subj "/C=${CSR_COUNTRY}/ST=${CSR_STATE}/L=${CSR_CITY}/O=${CSR_COMPANY}/OU=${CSR_DEPT}/CN=${SITE_DOMAIN}"
 
 ####################################################################################################	
 #### SS-Encrypt: (Re)configure Nginx (Prepare For Certbot Verification) ############################	
