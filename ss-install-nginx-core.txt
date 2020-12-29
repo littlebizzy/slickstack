@@ -1,0 +1,96 @@
+#!/bin/bash
+
+####################################################################################################
+#### author: SlickStack ############################################################################
+#### link: https://slickstack.io ###################################################################
+#### mirror: http://mirrors.slickstack.io/ss-install-nginx-core.txt ################################
+#### path: /var/www/bash/ss-install-nginx-core #####################################################
+#### destination: n/a (not a boilerplate) ##########################################################
+#### purpose: Reinstalls the Nginx module Ubuntu packages and extensions (idempotent) ##############
+#### module version: Nginx 1.18.x ##################################################################
+#### sourced by: ss-install-nginx ##################################################################
+#### bash aliases: ss install nginx core ###########################################################
+####################################################################################################
+
+## SS-CONFIG MUST BE PROPERLY CONFIGURED AND ON CURRENT BUILD BEFORE RUNNING SS-INSTALL ##
+## ENSURE YOUR SS-CONFIG BUILD REMAINS CURRENT BY RUNNING SS-UPDATE OCCASIONALLY ##
+
+## include SlickStack configuration ##
+source /var/www/ss-config
+
+## include SlickStack functions ##
+source /var/www/ss-functions
+
+####################################################################################################
+#### SlickStack: Install Nginx Packages (Includes FastCGI Cache + OpenSSL) #########################
+####################################################################################################
+
+## purge installed nginx packages ##
+# apt purge nginx-extras
+# apt purge ^nginx
+
+## update Ubuntu package cache ##
+apt update
+
+## required to install Certbot on Ubuntu 18.04 ##
+if [[ "${UBUNTU_VERSION}" = "18.04" ]]; then
+    apt install software-properties-common
+    add-apt-repository universe
+    add-apt-repository ppa:certbot/certbot ## Ubuntu 20.04 includes Certbot
+fi
+
+## clean reinstall for Ubuntu 20.04 ##
+if [[ "${UBUNTU_VERSION}" = "20.04" || -z "${UBUNTU_VERSION}" ]]; then 
+    apt remove certbot 
+    apt remove python3-certbot-nginx
+    add-apt-repository --remove ppa:certbot/certbot ## just in case (shouldn't exist)
+    apt install certbot python3-certbot-nginx
+fi
+
+## update package cache (again... not needed in Ubuntu 18.04+ but just for fun) ##
+apt update
+
+## install Nginx Extras ##
+apt install nginx-extras
+
+####################################################################################################
+#### SS-Install-Nginx: Install Nginx Config Files ##################################################
+####################################################################################################
+
+## run ss-install-nginx-config
+source /var/www/ss-install-nginx-config
+
+####################################################################################################
+#### SS-Install-Nginx: Reset Permissions (Nginx) ###################################################
+####################################################################################################
+
+## run ss-perms-nginx ##
+# source /var/www/ss-perms-nginx
+
+####################################################################################################
+#### SS-Install-Nginx: Restart Services (Nginx) ####################################################
+####################################################################################################
+
+## restart nginx ##
+# /etc/init.d/nginx restart
+
+####################################################################################################
+#### SS-Install-Nginx-Core: Touch Timestamp File (End Script) ######################################
+####################################################################################################
+
+## this is a dummy timestamp file that will remember the last time this script was run ##
+## it can be useful for developer reference and is sometimes used by SlickStack ##
+
+## script timestamp ##
+touch /var/www/meta/.timestamp-ss-install-nginx-core
+
+####################################################################################################
+#### SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ###############
+####################################################################################################
+
+## Ref: https://serverfault.com/questions/527630/difference-in-sites-available-vs-sites-enabled-vs-conf-d-directories-nginx
+## Ref: https://www.digitalocean.com/community/tutorials/how-to-set-up-nginx-server-blocks-virtual-hosts-on-ubuntu-16-04
+## Ref: https://ar.al/2018/07/05/nginx-remember-to-remove-the-default-site/
+## Ref: https://discourse.roots.io/t/http-does-not-redirect-to-https-only-at-the-first-access/8669
+
+## SS_EOF
