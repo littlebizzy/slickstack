@@ -1,0 +1,192 @@
+#!/bin/bash
+
+####################################################################################################
+#### author: SlickStack ############################################################################
+#### link: https://slickstack.io ###################################################################
+#### mirror: http://mirrors.slickstack.io/ss-encrypt-openssl.txt ###################################
+#### path: /var/www/bash/ss-encrypt-openssl ########################################################
+#### destination: n/a (not a boilerplate) ##########################################################
+#### purpose: Regenerates free self-signed OpenSSL certs and adjusts Nginx config (idempotent) #####
+#### module version: OpenSSL 1.1.1x ################################################################
+#### sourced by: ss core cron jobs, ss-encrypt, ss-install-nginx-config ############################
+#### bash aliases: ss encrypt openssl, ss install openssl ##########################################
+####################################################################################################
+
+## SS-ENCRYPT PERFORMS BASIC NGINX CONFIG MODIFICATION REGARDLESS OF SS-INSTALL-NGINX ##
+## IT WILL ALSO ATTEMPT TO REVERT TO OPENSSL IF LETS ENCRYPT CERTS ARE MISSING ##
+
+## include SlickStack configuration ##
+source /var/www/ss-config
+
+## include SlickStack functions ##
+source /var/www/ss-functions
+
+####################################################################################################
+#### SS-Encrypt: MESSAGE (Begin) ###################################################################
+####################################################################################################
+
+## since ss-encrypt runs every few weeks (or months) we avoid aggressive reinstall here ##
+## for a cleaner SSL reinstall run ss-install or ss-update instead of ss-encrypt ##
+
+## MESSAGE ##
+echo -e "\e[36mInstalling (or renewing) free SSL certs from OpenSSL and Certbot...\e[0m"
+
+####################################################################################################
+#### SS-Encrypt: Install Nginx Config Files (Conditional) ##########################################
+####################################################################################################
+
+## here we reinstall the configuration files for Nginx in case critical lines are missing ##
+## this ensures that compatible (current) Nginx boilerplates are already installed ##
+
+# found_new=$(cat /etc/nginx/nginx.conf | grep -c "/var/www/certs/")
+# found_lets=$(cat /etc/nginx/nginx.conf | grep -c "/var/www/certs/fullchain.pem")
+
+## run ss-install-nginx-config (if outdated or Lets Encrypt is broken) ##
+# if [[ $found_new -eq 0 ]] || [[ $found_lets -gt 0 && ! -f  "/var/www/certs/fullchain.pem" ]]; then
+#     source /var/www/ss-install-nginx-config
+# fi
+
+found_ss=$(cat /etc/nginx/nginx.conf | grep -c "slickstack.crt")
+
+if [[ $found_ss -eq 0 ]]; then
+    source /var/www/ss-install-nginx-config
+fi
+
+####################################################################################################
+#### SS-Encrypt: Ensure Critical Directories Exist #################################################
+####################################################################################################
+
+## make dirs ##
+mkdir /var/www/certs
+mkdir /var/www/certs/keys
+mkdir /var/www/html/.well-known
+mkdir /var/www/html/.well-known/acme-challenge
+
+## reset permissions (ensure that SFTP user can access if needed for e.g. Stripe, etc) ##
+chown -R $SFTP_USER:www-data /var/www/html/.well-known
+chmod 0775 /var/www/html/.well-known
+
+####################################################################################################
+#### SS-Encrypt: Hide Irrelevant Errors (Bug) In OpenSSL 1.1.1x ####################################
+####################################################################################################
+
+## hide error message (bug) in OpenSSL 1.1.1x (remove this snippet later) ##
+touch /home/${SUDO_USER}/.rnd
+touch /home/${SFTP_USER}/.rnd
+
+####################################################################################################
+#### SS-Encrypt: Regenerate Self-Signed OpenSSL Certificate ########################################
+####################################################################################################
+
+## this will generate a new self-signed OpenSSL certificate every single time it runs ##
+## there are no rate-limits and it pairs perfectly with CloudFlare SSL proxy ##
+
+## generate self-signed certificate ##
+    rm /var/www/certs/*.crt
+    rm /var/www/certs/keys/*.key
+    ## for all other domains e.g. example.com or www.example.com ##
+    openssl req -new -x509 -nodes -days 3650 -newkey rsa:2048 -keyout /var/www/certs/keys/slickstack.key -out /var/www/certs/slickstack.crt -subj "/C=${CSR_COUNTRY}/ST=${CSR_STATE}/L=${CSR_CITY}/O=${CSR_COMPANY}/OU=${CSR_DEPT}/CN=${SITE_DOMAIN}"
+
+####################################################################################################
+#### SS-Encrypt: (Re)configure Nginx (Prepare For Certbot Verification) ############################
+####################################################################################################
+
+## here we need to check if:
+# Lets Encrypt certs do not exist (or wrong based on current ss-config multisite/domain) then
+# revert Nginx config to OpenSSL now to allow for Certbot verify domain again
+# or if Lets Encrypt 
+
+## restart Nginx ##
+/etc/init.d/nginx restart
+
+####################################################################################################
+#### SS-Encrypt: Reset Permissions (OpenSSL + Certbot) #############################################
+####################################################################################################
+
+## reset permissions ##
+mkdir /var/www/certs
+mkdir /var/www/certs/keys
+mkdir /var/www/html/.well-known
+mkdir /var/www/html/.well-known/acme-challenge
+
+chown root:root /var/www/certs ## must be root:root
+chown root:root /var/www/certs/keys ## must be root:root
+chown -R $SFTP_USER:www-data /var/www/html/.well-known ## must be $SFTP_USER:www-data
+chmod 0755 /var/www/certs ## must be 0755
+chmod 0700 /var/www/certs/keys ## must be 0700
+chmod 0644 /var/www/certs/*.crt ## public certs/dhparam should be 0644
+chmod 0644 /var/www/certs/*.pem ## public certs/dhparam should be 0644
+chmod 0600 /var/www/certs/keys/*.key ## must be 0600
+chmod 0600 /var/www/certs/keys/*.pem ## must be 0600
+chmod 0775 /var/www/html/.well-known
+
+####################################################################################################
+#### SS-Encrypt-OpenSSL: Touch Timestamp File (End Script) #########################################
+####################################################################################################
+
+## this is a dummy timestamp file that will remember the last time this script was run ##
+## it can be useful for developer reference and is sometimes used by SlickStack ##
+
+## script timestamp ##
+touch /var/www/meta/.timestamp-ss-encrypt-openssl
+
+####################################################################################################
+#### SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ###############
+####################################################################################################
+
+## Ref: https://linuxize.com/post/secure-apache-with-let-s-encrypt-on-ubuntu-18-04/
+## Ref: https://stackoverflow.com/questions/49172841/install-certbot-letsencrypt-without-interaction/57019299#57019299
+## Ref: https://matthewlehner.net/lets-encrypt-with-nginx
+## Ref: https://community.letsencrypt.org/t/how-often-should-i-run-the-cerbot-cron-job-to-update-the-certificates/18851
+## Ref: https://community.letsencrypt.org/t/how-to-get-crt-and-key-files-from-i-just-have-pem-files/7348/2
+## Ref: https://community.letsencrypt.org/t/certificate-path/24227
+## Ref: https://www.cyberciti.biz/tips/linux-unix-pause-command.html
+## Ref: https://stackoverflow.com/questions/9483633/how-to-use-bash-read-with-a-timeout/9483693#9483693
+## Ref: https://stackoverflow.com/questions/229551/how-to-check-if-a-string-contains-a-substring-in-bash
+## Ref: https://unix.stackexchange.com/questions/311758/remove-specific-word-in-variable
+## Ref: https://stackoverflow.com/questions/13210880/replace-one-substring-for-another-string-in-shell-script
+## Ref: https://github.com/certbot/certbot/issues/3039
+## Ref: https://superuser.com/questions/1056183/using-a-wildcard-in-a-condition-to-match-the-beginning-of-a-string
+## Ref: https://stackoverflow.com/questions/18730509/bash-substring-regex-matching-wildcard
+## Ref: https://linuxize.com/post/how-to-create-symbolic-links-in-linux-using-the-ln-command/
+## Ref: https://superuser.com/questions/81164/why-create-a-link-like-this-ln-nsf/81168
+## Ref: https://support.cloudflare.com/hc/en-us/articles/214820528-Validating-a-Let-s-Encrypt-Certificate-on-a-Site-Already-Active-on-Cloudflare
+## Ref: https://serverfault.com/questions/788220/lets-encrypt-certbot-validation-over-https
+## Ref: https://certbot-dns-cloudflare.readthedocs.io/en/stable/
+## Ref: https://dev.to/michaeldscherr/lets-encrypt-ssl-certificate-via-dns-challenge-8dd
+## Ref: https://letsencrypt.org/docs/challenge-types/
+## Ref: https://serverfault.com/questions/750902/how-to-use-lets-encrypt-dns-challenge-validation
+## Ref: https://community.letsencrypt.org/t/do-i-need-copy-dhparam-pem-file-when-i-move-certificates-to-a-new-server/47346
+## Ref: https://weakdh.org/sysadmin.html
+## Ref: https://security.stackexchange.com/questions/38206/can-someone-explain-what-exactly-is-accomplished-by-generation-of-dh-parameters
+## Ref: https://security.stackexchange.com/questions/94390/whats-the-purpose-of-dh-parameters
+## Ref: https://wiki.mozilla.org/Security/Server_Side_TLS
+## Ref: https://stackoverflow.com/questions/21251714/bash-script-countdown-timer-needs-to-detect-any-key-to-continue
+## Ref: https://stackoverflow.com/questions/33614865/bash-countdown-to-execution-if-no-key-pressed
+## Ref: https://unix.stackexchange.com/questions/293940/bash-how-can-i-make-press-any-key-to-continue
+## Ref: https://serverfault.com/questions/532559/bash-script-count-down-5-minutes-display-on-single-line
+## Ref: https://community.letsencrypt.org/t/confusing-on-root-domain-with-wildcard-cert/56113/2
+## Ref: https://gist.github.com/joepie91/7e5cad8c0726fd6a5e90360a754fc568
+## Ref: https://ma.ttias.be/how-to-read-ssl-certificate-info-from-the-cli/
+## Ref: http://nginx.org/en/docs/http/configuring_https_servers.html#certificate_with_several_names
+## Ref: https://dev.to/nabbisen/let-s-encrypt-wildcard-certificate-with-certbot-plo
+## Ref: https://community.letsencrypt.org/t/wildcard-certificate-does-not-work/79041
+## Ref: https://letsencrypt.org/docs/rate-limits/
+## Ref: https://github.com/certbot/certbot/issues/2071
+## Ref: https://community.letsencrypt.org/t/how-to-prevent-creation-of-etc-letsencrypt-live-domain-tld-0001-when-removing-domains-from-a-domain-tld-multidomain-certificate/8135/14
+## Ref: https://community.letsencrypt.org/t/letsencrypt-webroot-verification-follows-http-to-https-redirect-for-self-signed-cert/19917
+## Ref: https://stackoverflow.com/questions/205666/what-is-the-best-way-to-perform-timestamp-comparison-in-bash
+## Ref: https://stackoverflow.com/questions/552724/how-do-i-check-in-bash-whether-a-file-was-created-more-than-x-time-ago
+## Ref: https://unix.stackexchange.com/questions/145313/find-a-file-which-is-30-minutes-old
+## Ref: https://easyengine.io/wordpress-nginx/tutorials/ssl/multidomain-ssl-subject-alternative-names/
+## Ref: https://www.getpagespeed.com/server-setup/ssl-directory
+## Ref: https://superuser.com/questions/556493/permissions-for-ssl-key
+## Ref: https://fbcs.co.uk/self-signed-multiple-domain-ssl-certificates/
+## Ref: https://serverfault.com/questions/259302/best-location-for-ssl-certificate-and-private-keys-on-ubuntu
+## Ref: https://community.letsencrypt.org/t/error-creating-new-cert-too-many-certificates-already-issued-for-exact-set-of-domains/41542
+## Ref: https://community.letsencrypt.org/t/correct-way-to-completely-remove-issued-certificate-s-for-a-domain/7409
+## Ref: https://unix.stackexchange.com/questions/78376/in-linux-how-to-delete-all-files-except-the-pattern-txt
+## Ref: https://unix.stackexchange.com/questions/417737/how-to-use-find-command-with-variables
+## Ref: https://serverfault.com/questions/751057/which-permissions-should-i-set-to-dhparam-pem
+
+## SS_EOF
