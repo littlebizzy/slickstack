@@ -9,6 +9,7 @@
 #### purpose: Updates and cleans up SlickStack config file and modules (Ubuntu packages + CMS) #####
 #### module version: Ubuntu 20.04 LTS ##############################################################
 #### sourced by: ss core cron jobs #################################################################
+#### bash aliases: ss update, ss upgrade ###########################################################
 ####################################################################################################
 
 ## YOU CAN SAFELY RUN SS-UPDATE WITH NO CHANGES TO YOUR LEMP MODULE CONFIGURATION FILES ##
@@ -21,10 +22,13 @@ source /var/www/ss-config
 source /var/www/ss-functions
 
 ####################################################################################################
-#### SS-Update: MESSAGE (Begin) ####################################################################
+#### SS-Update: Message (Begin Script) #############################################################
 ####################################################################################################
 
-## MESSAGE ##
+## this is a simple message that announces to the shell the purpose of this bash script ##
+## it will only be noticed by sudo users who manually call ss core bash scripts ##
+
+## echo message ##
 echo -e "${PURPLE}Running ss-update: Updates and cleans up SlickStack config file and modules (Ubuntu packages + CMS)...${NOCOLOR}"
 sleep 5s
 
@@ -52,44 +56,47 @@ current_time=$(date "+%Y.%b.%d-%H:%M:%S")
 cp /var/www/ss-config /var/www/meta/ss-config.bak.$current_time
 
 ####################################################################################################
-#### SS-Update: Retrieve Latest SS-Check + SS-Worker Scripts #######################################
+#### SS-Update: Retrieve Latest SS-Check + SS-Worker (Core Bash Scripts) ###########################
 ####################################################################################################
 
-## MESSAGE ##
-echo -e "\e[36mMaking sure SS core crons + core scripts are latest versions...\e[0m"
+## here we run ss-check and ss-worker in case ss core cron jobs have not been running ##
+## this ensures that all ss core bash scripts are updated before proceeding ##
 
-
-## uninstall expect (no longer used for ss-install-mysql) ##
-apt purge expect
-
-## run ss-check and ss-worker (in case SlickStack crons have not been running) ##
+## run ss-check and ss-worker ##
 source /var/www/ss-check
 source /var/www/ss-worker
 source /var/www/ss-check
 
 ####################################################################################################
-#### SS-Update: Perform Various Compatibility Checks ###############################################
+#### SS-Update: Delete Irrelevant Ubuntu Packages ##################################################
 ####################################################################################################
+
+## uninstall expect (no longer used for ss-install-mysql) ##
+apt purge expect
+
+####################################################################################################
+#### SS-Update: Ensure Undefined Options Do Not Exist Before Proceeding ############################
+####################################################################################################
+
+## below snippet will warn you and exit if undefined ss-config options are found to exist ##
+## this way our team can be aware of bugs and avoid implementing unwanted options ##
 
 ## warn if placeholders exist ##
 SS_CONFIG_OPTION_PLACEHOLDER="$(grep -c '"@' /var/www/ss-config)"
 if [[ "$SS_CONFIG_OPTION_PLACEHOLDER" -gt 0 ]]; then
     echo -e ""
     echo -e "${LIGHTRED}Your ss-config file contains \"@...\" placeholders. Please input values for ${NOCOLOR}"
-    echo -e "${LIGHTRED}all incomplete option fields, and then run ss-update again.${NOCOLOR}"
+    echo -e "${LIGHTRED}all incomplete option fields, and then run ss-update again. ${NOCOLOR}"
     echo -e ""
     exit 1
 fi
 
 ####################################################################################################
-#### SS-Update: Install Latest SS-Config File (Safely Replicates Existing Variables) ###############
+#### SS-Update: Install Latest SS-Config Boilerplate (Replicates Existing Variables) ###############
 ####################################################################################################
 
 ## variables will only be copied over from the previous ss-config file if they are defined ##
-## otherwise default (recommended) variable values will be implemented automatically ##
-
-## MESSAGE ##
-echo -e "\e[36mUpdating ss-config file to the latest boilerplate (all settings will be copied over)...\e[0m"
+## otherwise default (recommended) options will be used from the new boilerplate ##
 
 ## compability for updating ss-config ##
 SS_UPDATE_BUILD="DEC2020X"
@@ -1906,18 +1913,8 @@ source /var/www/ss-muplugs
 ## for smoother execution and to avoid conflicts we set dpkg to noninteractive/confold ##
 ## it is much better to run ss-update instead of calling apt get upgrade manually ##
 
-## echo -e "${PINK}###########################################################################${RESET}"
-
-## MESSAGE ##
-echo -e ""
-echo -e "${PINK}SS-INSTALL: Set dpkg to noninteractive and force-confold by default...${RESET}"
-echo -e ""
-
 ## set confold as dpkg default (fail-safe in case apt upgrade called directly) ##
 DEBIAN_FRONTEND=noninteractive dpkg --configure -a --force-confold
-
-## set confold as dpkg default (applies to ss-update only) ##
-## DEBIAN_FRONTEND=noninteractive dpkg --configure -a --force-confold
 
 ####################################################################################################
 #### SS-Update: Upgrade + Autoremove + Autoclean SlickStack Modules (Ubuntu Packages) ##############
@@ -1925,9 +1922,6 @@ DEBIAN_FRONTEND=noninteractive dpkg --configure -a --force-confold
 
 ## the main purpose of ss-update is to upgrade all currently installed Ubuntu packages ##
 ## because we use apt (not apt-get) this will also upgrade the Linux kernel ##
-
-## MESSAGE ##
-echo -e "\e[36mUpdating all LEMP stack modules (Ubuntu packages) and retaining existing config files...\e[0m"
 
 ## temporarily disable UFW Firewall ##
 ufw --force disable
@@ -1948,9 +1942,6 @@ apt autoclean
 #### SS-Update: Purge All Caches (Via SS-Purge) ####################################################
 ####################################################################################################
 
-## MESSAGE ##
-echo -e "\e[36mPurging all server caches...\e[0m"
-
 ## run ss-purge ##
 source /var/www/ss-purge
 
@@ -1960,9 +1951,6 @@ source /var/www/ss-purge
 
 ## at least one case reported where ss-update resulted in UFW config being overwritten ##
 ## therefore we include this reinstallation of UFW to ensure no port lockouts ##
-
-## MESSAGE ##
-echo -e "\e[36mResetting the UFW firewall to avoid potential conflicts...\e[0m"
 
 ## delete tmp files ##
 rm /tmp/ufw*
@@ -2022,31 +2010,18 @@ rm /tmp/user*
 source /var/www/ss-install-ubuntu-crontab
 
 ####################################################################################################
-#### SS-Update: Reset Permissions + Restart All Services ###########################################
+#### SS-Update: Reset Permissions (All Permissions) ################################################
 ####################################################################################################
-
-## MESSAGE ##
-echo -e "\e[36mResetting all file/user permissions on the server and restarting all services (modules)...\e[0m"
 
 ## run ss-perms ##
 source /var/www/ss-perms
 
+####################################################################################################
+#### SS-Update: Restart Services (All Services) ####################################################
+####################################################################################################
+
 ## run ss-restart-services ##
 source /var/www/ss-restart-services
-
-####################################################################################################
-#### SS-Update: Reboot Server Automatically (Optional In SS-Config) ################################
-####################################################################################################
-
-## IT IS ALWAYS BETTER TO RUN SS-UPDATE MANUALLY AND REBOOT YOUR SERVER MANUALLY ##
-
-## reboot server ##
-if [[ "$SS_REBOOT" == "true" ]]; then 
-    echo -e "\e[93mSlickStack updates complete! Automatic server reboot in progress... see you on the other side!\e[0m" >&2
-    /bin/bash -c "/sbin/reboot"
-else 
-    echo -e "\e[36mSlickStack updates complete! Please reboot server using sudo reboot.\e[0m"
-fi
 
 ####################################################################################################
 #### SS-Update: Touch Timestamp File (End Script) ##################################################
