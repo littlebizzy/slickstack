@@ -7,13 +7,14 @@
 #### purpose: Nginx main configuration file (server block configuration file is separate) ##########
 #### module version: Nginx 1.18.x ##################################################################
 #### sourced by: n/a ###############################################################################
+#### bash aliases: n/a #############################################################################
 ####################################################################################################
 
 ## NGINX OPTIMIZED FOR CLOUDFLARE AND TRAFFIC SCALING (NON-CLUSTERED HIGH TRAFFIC) ##
 ## FASTCGI CACHE AND SSL SETTINGS ARE ALSO INCLUDED IN THIS BOILERPLATE ##
 
 ####################################################################################################
-#### Nginx: General Settings #######################################################################
+#### Nginx.conf: General Settings ##################################################################
 ####################################################################################################
 
 ## for stability and simplicity Nginx always runs as www-data with auto worker processes ##
@@ -28,7 +29,7 @@ pid /run/nginx.pid;
 include /etc/nginx/modules-enabled/*.conf;
 
 ####################################################################################################
-#### Nginx: Event Handling Settings ################################################################
+#### Nginx.conf: Event Handling Settings ###########################################################
 ####################################################################################################
 
 ## virtually no Linux server should not use epoll or multi_accept thus they are hardcoded ##
@@ -41,7 +42,7 @@ events {
 }
 
 ####################################################################################################
-#### Nginx: Miscellaneous Settings #################################################################
+#### Nginx.conf: Miscellaneous Settings ############################################################
 ####################################################################################################
 
 http {
@@ -54,7 +55,7 @@ http {
     types_hash_max_size @NGINX_TYPES_MAX_HASH_SIZE;
 
 ####################################################################################################
-#### Nginx: FastCGI Cache (Page Cache) Settings ####################################################
+#### Nginx.conf: FastCGI Cache (Page Cache) Settings ###############################################
 ####################################################################################################
     
 ## FastCGI Cache is arguably the most powerful Nginx feature for scaling high-traffic sites ##
@@ -76,10 +77,10 @@ http {
     # fastcgi_temp_file_write_size @FCGI_TEMP_FILE_WRITE_SIZE;
     
 ####################################################################################################
-#### Nginx: Open File Cache Settings ###############################################################
+#### Nginx.conf: Open File Cache Settings ##########################################################
 ####################################################################################################
     
-## Open File Cache is one of the most important (and underrated) features in Nginx scaling ##
+## Open File Cache is one of the most effective (and underrated) features to scale Nginx ##
 ## tuning this well in conjunction with FastCGI Cache will provide robust results ##
     
     open_file_cache max=@OPEN_FILE_CACHE_MAX inactive=@OPEN_FILE_CACHE_INACTIVE;
@@ -88,7 +89,7 @@ http {
     open_file_cache_errors @OPEN_FILE_CACHE_ERRORS;
 	
 ####################################################################################################
-#### Nginx: Various Buffer Settings ################################################################
+#### Nginx.conf: Various Buffer Settings ###########################################################
 ####################################################################################################
     
     client_max_body_size @NGINX_CLIENT_MAX_BODY_SIZE;
@@ -97,7 +98,7 @@ http {
     large_client_header_buffers @NGINX_LARGE_CLIENT_HEADER_BUFFERS;
 
 ####################################################################################################
-#### Nginx: Various Timeout + Keepalive Settings ###################################################
+#### Nginx.conf: Various Timeout + Keepalive Settings ##############################################
 ####################################################################################################
     
 ## when scaling high traffic websites it is important to keep timeouts relatively short ##
@@ -111,7 +112,7 @@ http {
     reset_timedout_connection on;
     
 ####################################################################################################
-#### Nginx: HTTP Headers (Security Headers) Settings ###############################################
+#### Nginx.conf: HTTP Headers (Security Headers) Settings ##########################################
 ####################################################################################################
     
 ## several HTTP security headers are well-known best practices and are thus hardcoded ##
@@ -125,11 +126,7 @@ http {
     add_header X-XSS-Protection "1; mode=block";
     add_header Referrer-Policy "@NGINX_HEADER_REFERRER_POLICY";
     add_header Permissions-Policy "@NGINX_HEADER_PERMISSIONS_POLICY";
-   
-   # seems web-share and screen-wake-lock now invalid as per securityheaders.com
-   # add_header Permissions-Policy "accelerometer=(), ambient-light-sensor=(), autoplay=*, battery=(), camera=(), display-capture=*, document-domain=*, encrypted-media=*, fullscreen=*, geolocation=(self), gyroscope=(), layout-animations=*, legacy-image-formats=*, magnetometer=(), microphone=(self), midi=(), oversized-images=*, payment=*, picture-in-picture=*, publickey-credentials-get=*, screen-wake-lock=(), sync-xhr=*, usb=(), vibrate=(), wake-lock=(), web-share=*, xr-spatial-tracking=()";
-   
-   # add_header Feature-Policy "@NGINX_HEADER_FEATURE_POLICY";
+	# add_header Feature-Policy "@NGINX_HEADER_FEATURE_POLICY";
     
     #@NOINDEX# ## noindex the entire site ##
     #@NOINDEX# add_header X-Robots-Tag "noindex, nofollow, nosnippet, noarchive";
@@ -141,35 +138,35 @@ http {
     charset utf-8;
 
 ####################################################################################################
-#### Nginx: HTTP Caching Headers Settings (Browser Cache) ##########################################
+#### Nginx.conf: HTTP Caching Headers Settings (Browser Cache) #####################################
 ####################################################################################################
 
 ## Pragma and Expires are outdated cache headers that conflict with Cache-Control header ##
-## CloudFlare sets CC headers on static files, not needed for HTML (FastCGI Cache) ##
+## moreover CDNs set CC headers on static files and it is not relevant for HTML ##
     
     more_clear_headers "Pragma";
     more_clear_headers "Expires";
     more_clear_headers "Cache-Control";
     
 ####################################################################################################
-#### Nginx: SSL Settings (Self-Signed OpenSSL + CA-Signed Lets Encrypt) ############################
+#### Nginx.conf: SSL Settings (Self-Signed OpenSSL + CA-Signed Lets Encrypt) #######################
 ####################################################################################################
 
 ## default OpenSSL certs below will be replaced if Certbot is enabled in your ss-config ##
 ## SSL session tickets (and IDs) are deprecated in TLS 1.3, keep timeouts > 1 day ##
-    
-	## /etc/nginx/conf.d/openssl.conf included if OpenSSL enabled
-    ## /etc/nginx/conf.d/letsencrypt.conf included if Lets Encrypt enabled
+
+    ## /etc/nginx/conf.d/openssl.conf included if OpenSSL enabled
+	## /etc/nginx/conf.d/letsencrypt.conf included if Lets Encrypt enabled
     
 ####################################################################################################
-#### Nginx: Include MIME File Types Settings #######################################################
+#### Nginx.conf: Include MIME File Types Settings ##################################################
 ####################################################################################################
     
     include /etc/nginx/mime.types;
     default_type application/octet-stream;
 
 ####################################################################################################
-#### Nginx: Logging Settings #######################################################################
+#### Nginx.conf: Logging Settings ##################################################################
 ####################################################################################################
     
 ## to improve scalability access_log is hardcode disabled to reduce CPU and disk usage ##
@@ -180,7 +177,7 @@ http {
     log_not_found off;
 
 ####################################################################################################
-#### Nginx: Gzip Compression Settings ##############################################################
+#### Nginx.conf: Gzip Compression Settings #########################################################
 ####################################################################################################
 
 ## Gzip is powerful but is known to have diminishing returns when setup too aggressively ##
@@ -213,7 +210,7 @@ http {
         text/javascript;
     
 ####################################################################################################
-#### Nginx: Rate Limiting Settings #################################################################
+#### Nginx.conf: Rate-Limiting Settings ############################################################
 ####################################################################################################
     
 ## basic rate limiting helps protect the server from small DDOS or brute force attacks ##
@@ -225,7 +222,7 @@ http {
     limit_req_status 444;
     
 ####################################################################################################
-#### Nginx: Indexing + Public Directory Settings ###################################################
+#### Nginx.conf: Indexing + Public Directory Settings ##############################################
 ####################################################################################################
 
 ## for security and stability reasons we disable autoindexing and default to PHP indexes ##
@@ -236,7 +233,7 @@ http {
     root /var/www/html;
 
 ####################################################################################################
-#### Nginx: Include Server Blocks, Etc #############################################################
+#### Nginx.conf: Include Nginx Sub-Config Files + Server Blocks ####################################
 ####################################################################################################
     
     include /etc/nginx/conf.d/*.conf;
