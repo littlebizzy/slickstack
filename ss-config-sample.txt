@@ -15,16 +15,16 @@
 ## AFTER CHANGING ANY SS-CONFIG SETTINGS BELOW YOU MUST RUN SS-INSTALL AGAIN ##
 
 ####################################################################################################
-#### SlickStack: SS-Config Build Version (Checked By SS-Install To Verify Freshness) ###############
+#### SlickStack: SS-Config Build Version (Checked By SS-Install) ###################################
 ####################################################################################################
 
-## rebuild ss-config if outdated errors: http://mirrors.slickstack.io/ss-config-sample.txt ##
-## copy and paste entire ss-config boilerplate before modifying variables ##
+## run ss-update if ss-config outdated: https://mirrors.slickstack.io/ss-config-sample.txt ##
+## or copy and paste entire ss-config boilerplate before modifying any options ##
 
 SS_BUILD="DEC2020X"
 
 ####################################################################################################
-#### SS-Config: Ubuntu Root + Sudo User Settings (Console + SSH Access) ############################
+#### SS-Config: Root + Sudo User Settings ##########################################################
 ####################################################################################################
 
 ## write down your sudo password or you will be locked out of your server forever ##
@@ -48,7 +48,7 @@ SSH_PORT="@SSH_PORT"
 SSH_KEYS="@SSH_KEYS"
 
 ####################################################################################################
-#### SS-Config: Ubuntu Jailed User Settings (SFTP Access Only = For Your Client, Etc) ##############
+#### SS-Config: SFTP User Settings (Jailed To SlickStack Root) #####################################
 ####################################################################################################
 
 ## SFTP user is jailed to the /var/www/ directory e.g. for your client to safely access ##
@@ -61,10 +61,8 @@ SFTP_USER="@SFTP_USER"
 SFTP_PASSWORD="@SFTP_PASSWORD"
 
 ####################################################################################################
-#### SS-Config: WordPress Database Settings (Single Database Only) #################################
+#### SS-Config: Database Settings (Production Site) ################################################
 ####################################################################################################
-
-## MODULE VERSION: MySQL 8.0.x + WordPress 5.5.x
 
 ## using a remote MySQL database has not been extensively tested (use at your own risk) ##
 ## for security reasons choose a different password for the MySQL root user ##
@@ -88,10 +86,8 @@ DB_CHARSET="utf8mb4"
 DB_COLLATE=""
 
 ####################################################################################################
-#### SS-Config: WordPress + Nginx Domain Settings (Subdirectories Not Allowed) #####################
+#### SS-Config: Site Domain Settings (Subdirectories Not Allowed) ##################################
 ####################################################################################################
-
-## MODULE VERSION: Nginx 1.18.x + WordPress 5.5.x
 
 ## below domain values are used in order to hardcode Nginx and WordPress configuration ##
 ## database domain settings will have no effect after the ss-install completes ##
@@ -105,27 +101,8 @@ SITE_DOMAIN="@SITE_DOMAIN"
 SITE_NOINDEX="@SITE_NOINDEX"
 
 ####################################################################################################
-#### SS-Config: WordPress Multisite Settings (Subdomains Recommended) ##############################
-####################################################################################################
-
-## MODULE VERSION: WordPress 5.5.x
-
-## Multisite setups should not be used for high-traffic or business-critical websites ##
-## domain mapping on Multisite installations requires the subdomains approach ##
-
-## WP_MULTISITE = [false|true] enables WP Multisite using the same directory structure ##
-## WP_MULTISITE_SUBDOMAINS = [true|false] subdomains approach highly recommended ##
-## WP_MULTISITE_DOMAIN_MAPPING = [false|true] hosting multiple TLD domains not recommended ##
-
-WP_MULTISITE="false"
-WP_MULTISITE_SUBDOMAINS="true"
-WP_MULTISITE_DOMAIN_MAPPING="false"
-
-####################################################################################################
 #### SS-Config: CloudFlare API + Related Settings (MU Plugin) ######################################
 ####################################################################################################
-
-## MODULE VERSION: CloudFlare API v4
 
 ## these settings are to control CloudFlare from the WP Admin for easier management ##
 ## for better security and optimal performance use the recommended settings ##
@@ -146,8 +123,6 @@ CLOUDFLARE_WIDGET_DNS="true"
 #### SS-Config: Native Staging Site + Dev Site Settings (Both Optional) ############################
 ####################################################################################################
 
-## MODULE VERSION: WordPress 5.5.x
-
 ## STAGING_SITE = [true|false] enables staging site and WP Admin toolbar switcher ##
 ## STAGING_SITE_SUBDOMAIN = [false|true] if you want staging site to load as subdomain ##
 ## STAGING_REPLACE_LINKS_DB = [high|low|false] how aggressive to fix MySQL links ##
@@ -167,8 +142,6 @@ DEV_SITE_SUBDOMAIN="true"
 ####################################################################################################
 #### SS-Config: Remote Backup (Via SFTP/API) Settings ##############################################
 ####################################################################################################
-
-## MODULE VERSION: n/a
 
 ## not to be confused with the ss-dump script which creates a temporary local archive ##
 ## remote backups (ss-backup) push your SlickStack files to a remote server ##
@@ -195,13 +168,25 @@ DEV_SITE_SUBDOMAIN="true"
 #### SS-Config: Select WordPress + WP-Config Settings ##############################################
 ####################################################################################################
 
-## MODULE VERSION: WordPress 5.5.x
+## by default wp-cron will be managed entirely by WordPress unless you modify it here ##
+## if set to server then ss core cron jobs will take over wp-cron management ##
 
 ## WP_CRON_METHOD = [wordpress|server] change to server for ss core cron jobs to manage it ##
 ## WP_CRON_INTERVAL = [often|regular|quarter-hourly|half-hourly|hourly|quarter-daily|half-daily|daily] ##
 
 WP_CRON_METHOD="wordpress"
 WP_CRON_INTERVAL="quarter-hourly"
+
+## Multisite setups should not be used for high-traffic or business-critical websites ##
+## domain mapping on Multisite installations requires the subdomains approach ##
+
+## WP_MULTISITE = [false|true] enables WP Multisite using the same directory structure ##
+## WP_MULTISITE_SUBDOMAINS = [true|false] subdomains approach highly recommended ##
+## WP_MULTISITE_DOMAIN_MAPPING = [false|true] hosting multiple TLD domains not recommended ##
+
+WP_MULTISITE="false"
+WP_MULTISITE_SUBDOMAINS="true"
+WP_MULTISITE_DOMAIN_MAPPING="false"
 
 ## for stability reasons several WP defined constants are hard-coded in the wp-config ##
 ## define additional constants using the included Custom Functions MU plugin ##
