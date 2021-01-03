@@ -9,6 +9,7 @@
 #### purpose: Reinstalls the Ubuntu (OS) bash commands for SlickStack servers (idempotent) #########
 #### module version: Ubuntu 20.04 LTS ##############################################################
 #### sourced by: ss-install ########################################################################
+#### bash aliases: ss install ubuntu bash, ss install bash #########################################
 ####################################################################################################
 
 ## SS-CONFIG MUST BE PROPERLY CONFIGURED AND ON CURRENT BUILD BEFORE RUNNING SS-INSTALL ##
@@ -33,17 +34,16 @@ sleep 5s
 ####################################################################################################
 
 ## delete tmp files ##
-# n/a
+rm /tmp/bash-aliases*
+rm /tmp/wp-cli*
+rm /tmp/wp-completion*
 
 ####################################################################################################
-### SS-Install-Bash: Prepare WP-CLI Configuration [wp] #############################################
+### SS-Install-Bash: Prepare WP-CLI Configuration ##################################################
 ####################################################################################################
 
 ## to keep things simple we include the WP-CLI aliases within our own Bash aliases file ##
 ## here we retrieve latest WP-CLI files and move aliases to /var/www/meta/ ##
-
-## MESSAGE: explain repos ##
-echo -e "\e[36mInstalling the WP-CLI module directly from SlickStack mirrors...\e[0m"
 
 ## uninstall current wp-cli versions ##
 rm /usr/local/bin/wp
@@ -57,8 +57,8 @@ sed -i '/WP-CLI/d' /home/${SUDO_USER}/.bashrc
 sed -i '/wp-completion/d' /home/${SUDO_USER}/.bashrc
 
 ## symlinks for wp-cli.yml ##
-ln /home/${SUDO_USER}/.wp-cli/config.yml /var/www/meta/wp-cli.yml &> /dev/null
-ln /root/.wp-cli/config.yml /var/www/meta/wp-cli.yml &> /dev/null
+ln /home/${SUDO_USER}/.wp-cli/config.yml /var/www/meta/wp-cli.yml
+ln /root/.wp-cli/config.yml /var/www/meta/wp-cli.yml
 
 ## download latest versions ##
 wget -O /tmp/wp-cli.phar http://mirrors.slickstack.io/wp-cli/wp-cli.phar
@@ -73,48 +73,39 @@ cp /tmp/wp-cli.phar /usr/local/bin/wp
 cp /tmp/wp-cli.yml /var/www/meta/wp-cli.yml
 cp /tmp/wp-completion.txt /var/www/meta/.wp-completion
 
-## reset permissions ##
-## Ref: https://www.alexgeorgiou.gr/wp-cli-www-data-user-permissions-linux/
-chown root:root /usr/local/bin/
-chown www-data:www-data /usr/local/bin/wp
-chown www-data:www-data /var/www/meta/wp-cli.yml
-chown www-data:www-data /var/www/meta/.wp-completion
-chown root:root /home/${SUDO_USER}/.wp-cli/config.yml
-chown root:root /root/.wp-cli/config.yml
-chmod 6775 /usr/local/bin/wp
-chmod 6775 /var/www/meta/wp-cli.yml
-chmod 6775 /var/www/meta/.wp-completion
-
 ####################################################################################################
-### SS-Install-Ubuntu-Bash: #####################################################################
+### SS-Install-Ubuntu-Bash: Install Bash Aliases (SlickStack) ######################################
 ####################################################################################################
 
-## MESSAGE: explain repos ##
-echo -e "\e[36mInstalling Bash aliases for basic SlickStack commands...\e[0m"
-
-## uninstall old ##
-rm /home/${SUDO_USER}/.bash-aliases
+## delete ##
 rm /var/www/meta/.bash-aliases
+
+## add to ss-clean ##
+rm /home/${SUDO_USER}/.bash-aliases
+
+## uninstall (root user) ##
+sed -i '/include Bash aliases/d' /root/.bashrc
+sed -i '\:var/www/meta:d' /root/.bashrc
+
+## uninstall (sudo user) ##
 sed -i '/include Bash aliases/d' /home/${SUDO_USER}/.bashrc
 sed -i '\:var/www/meta:d' /home/${SUDO_USER}/.bashrc
 
-## download ##
+## retrieve latest files ##
 wget -O /tmp/bash-aliases.txt http://mirrors.slickstack.io/ubuntu/bash-aliases.txt
 
 ## copy files ##
 cp /tmp/bash-aliases.txt /var/www/meta/.bash-aliases
 
-## reset permissions ##
-chown root:root /var/www/meta/.bash-aliases
-chmod 6775 /var/www/meta/.bash-aliases
+## modify .bashrc file (root user) ##
+echo '
+## include Bash aliases ##
+source /var/www/meta/.bash-aliases' >> /root/.bashrc
 
-## modify .bashrc file ##
+## modify .bashrc file (sudo user) ##
 echo '
 ## include Bash aliases ##
 source /var/www/meta/.bash-aliases' >> /home/${SUDO_USER}/.bashrc
-
-## reload .bashrc ##
-source /home/${SUDO_USER}/.bashrc
 
 ####################################################################################################
 #### SS-Install-Ubuntu-Bash: Reset Permissions (Ubuntu Bash) #######################################
@@ -124,11 +115,20 @@ source /home/${SUDO_USER}/.bashrc
 source /var/www/ss-perms-ubuntu-bash
 
 ####################################################################################################
+#### SS-Install-Ubuntu-Bash: Reload Settings (Ubuntu Bash) #########################################
+####################################################################################################
+
+## reload .bashrc ##
+source /home/${SUDO_USER}/.bashrc
+
+####################################################################################################
 #### SS-Install-Ubuntu-Bash: Cleanup Temporary Files ###############################################
 ####################################################################################################
 
 ## delete tmp files ##
-# n/a
+rm /tmp/bash-aliases*
+rm /tmp/wp-cli*
+rm /tmp/wp-completion*
 
 ####################################################################################################
 #### SS-Install-Ubuntu-Bash: Touch Timestamp File (End Script) #####################################
