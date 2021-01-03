@@ -30,6 +30,23 @@ echo -e "${PURPLE}Running ss-encrypt-certbot: Regenerates free Lets Encrypt cert
 sleep 5s
 
 ####################################################################################################
+#### SS-Encrypt-Certbot: Install Nginx Config Files (Conditional) ##################################
+####################################################################################################
+
+## SNIPPET: ss-encrypt-certbot, ss-encrypt-openssl (derivative versions)
+
+## here we reinstall the Nginx config files in case SSL settings have changed in ss-config ##
+## this ensures that compatible (current) Nginx boilerplates are already installed ##
+
+# found_ss=$(cat /etc/nginx/nginx.conf | grep -c "slickstack.crt")
+
+# if [[ $found_ss -eq 0 ]]; then
+#     source /var/www/ss-install-nginx-config
+# fi
+
+## CAN PROB DELETE THIS AT SOME POINT
+
+####################################################################################################
 #### SS-Encrypt-Certbot: Ensure Required Directories Exist (Certbot) ###############################
 ####################################################################################################
 
@@ -187,6 +204,7 @@ if [[ "$SSL_TYPE" == "certbot" ]] && [[ -d  "/etc/letsencrypt/live" ]] && [[ -f 
     echo -e "\e[36mLets Encrypt SSL was succesfully installed...\e[0m"
 else
     echo -e "\e[36mCertbot installation was not successful, reverting to OpenSSL...\e[0m"
+    rm /etc/nginx/conf.d/letsencrypt*.conf*
 fi
 
 ####################################################################################################
