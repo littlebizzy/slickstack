@@ -33,21 +33,11 @@ echo -e "${PURPLE}Running ss-encrypt-certbot: Regenerates free Lets Encrypt cert
 sleep 5s
 
 ####################################################################################################
-#### SS-Encrypt-Certbot: Ensure Required Directories Exist (Certbot) ###############################
+#### SS-Install-Nginx-SSL: Reset Permissions (Nginx SSL) ###########################################
 ####################################################################################################
 
-## this redundant snippet ensures that folders exist required by Certbot to function ##
-## this code also runs during initial ss-install and inside ss-perms as well ##
-
-## make dirs ##
-mkdir /var/www/certs
-mkdir /var/www/certs/keys
-mkdir /var/www/html/.well-known
-mkdir /var/www/html/.well-known/acme-challenge
-
-## reset permissions ##
-chown -R $SFTP_USER:www-data /var/www/html/.well-known ## must be $SFTP_USER:www-data
-chmod 0775 /var/www/html/.well-known ## must be 0775
+## run ss-perms-nginx-ssl ##
+source /var/www/ss-perms-nginx-ssl
 
 ####################################################################################################
 #### SS-Encrypt: Generate DH Parameters (If Lets Encrypt Enabled) ##################################
@@ -176,25 +166,11 @@ ln /etc/letsencrypt/live/slickstack/fullchain.pem /var/www/certs/fullchain.pem
 ln /etc/letsencrypt/live/slickstack/privkey.pem /var/www/certs/keys/privkey.pem
 
 ####################################################################################################
-#### SS-Encrypt: Reset Permissions (OpenSSL + Certbot) #############################################
+#### SS-Install-Nginx-SSL: Reset Permissions (Nginx SSL) ###########################################
 ####################################################################################################
 
-## reset permissions ##
-mkdir /var/www/certs
-mkdir /var/www/certs/keys
-mkdir /var/www/html/.well-known
-mkdir /var/www/html/.well-known/acme-challenge
-
-chown root:root /var/www/certs ## must be root:root
-chown root:root /var/www/certs/keys ## must be root:root
-chown -R $SFTP_USER:www-data /var/www/html/.well-known ## must be $SFTP_USER:www-data
-chmod 0755 /var/www/certs ## must be 0755
-chmod 0700 /var/www/certs/keys ## must be 0700
-chmod 0644 /var/www/certs/*.crt ## public certs/dhparam should be 0644
-chmod 0644 /var/www/certs/*.pem ## public certs/dhparam should be 0644
-chmod 0600 /var/www/certs/keys/*.key ## must be 0600
-chmod 0600 /var/www/certs/keys/*.pem ## must be 0600
-chmod 0775 /var/www/html/.well-known
+## run ss-perms-nginx-ssl ##
+source /var/www/ss-perms-nginx-ssl
 
 ####################################################################################################
 #### SS-Encrypt-Certbot: Restart Modules (Nginx) ###################################################
