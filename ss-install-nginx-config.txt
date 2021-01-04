@@ -22,10 +22,13 @@ source /var/www/ss-config
 source /var/www/ss-functions
 
 ####################################################################################################
-#### SS-Install-Nginx-Config: MESSAGE (Begin) ######################################################
+#### SS-Install-Nginx-Config: Message (Begin Script) ###############################################
 ####################################################################################################
 
-## MESSAGE ##
+## this is a simple message that announces to the shell the purpose of this bash script ##
+## it will only be noticed by sudo users who manually call ss core bash scripts ##
+
+## echo message ##
 echo -e "${PURPLE}Running ss-install-nginx-config: Reinstalls the Nginx module config files based on ss-config (idempotent)...${NOCOLOR}"
 sleep 5s
 
@@ -473,14 +476,17 @@ sudo ln -s /etc/nginx/sites-available/dev.${SITE_TLD} /etc/nginx/sites-enabled/
 sudo ln -s /etc/nginx/sites-available/staging.${SITE_TLD} /etc/nginx/sites-enabled/
 
 ## SOON ##
-## will not have available/enabled but simply /var/www/sites/
-
-# if [[ "$SSL_TYPE" == "certbot" ]] && [[ -d  "/etc/letsencrypt/live" ]] && [[ -f  "/var/www/certs/fullchain.pem" ]] && [[ -f  "/var/www/certs/keys/privkey.pem" ]]; then
-
-
+## change to: /var/www/sites/
 
 ####################################################################################################
-#### SS-Encrypt: Install Lets Encrypt Certificate (Via SS-Encrypt-Certbot) #########################
+#### SS-Install-Nginx-Config: Restart Modules (Nginx) ##############################################
+####################################################################################################
+
+## restart Nginx ##
+source /var/www/bash/ss-restart-services-nginx
+
+####################################################################################################
+#### SS-Install-Nginx-Config: Generate Lets Encrypt Certificate (Via SS-Encrypt-Certbot) ###########
 ####################################################################################################
 
 ## here we generate slickstack.crt and slickstack.key as the default SSL for Nginx ##
@@ -488,7 +494,6 @@ sudo ln -s /etc/nginx/sites-available/staging.${SITE_TLD} /etc/nginx/sites-enabl
 
 ## run ss-encrypt-certbot ##
 source /var/www/bash/ss-encrypt-certbot
-
 
 ####################################################################################################
 #### SS-Install-Nginx-Config: Install Preferred SSL Certificate (Per SS-Config) ####################
