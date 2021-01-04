@@ -30,23 +30,6 @@ echo -e "${PURPLE}Running ss-encrypt-certbot: Regenerates free Lets Encrypt cert
 sleep 5s
 
 ####################################################################################################
-#### SS-Encrypt-Certbot: Install Nginx Config Files (Conditional) ##################################
-####################################################################################################
-
-## SNIPPET: ss-encrypt-certbot, ss-encrypt-openssl (derivative versions)
-
-## here we reinstall the Nginx config files in case SSL settings have changed in ss-config ##
-## this ensures that compatible (current) Nginx boilerplates are already installed ##
-
-# found_ss=$(cat /etc/nginx/nginx.conf | grep -c "slickstack.crt")
-
-# if [[ $found_ss -eq 0 ]]; then
-#     source /var/www/ss-install-nginx-config
-# fi
-
-## CAN PROB DELETE THIS AT SOME POINT
-
-####################################################################################################
 #### SS-Encrypt-Certbot: Ensure Required Directories Exist (Certbot) ###############################
 ####################################################################################################
 
@@ -190,103 +173,6 @@ ln /etc/letsencrypt/live/slickstack/fullchain.pem /var/www/certs/fullchain.pem
 ln /etc/letsencrypt/live/slickstack/privkey.pem /var/www/certs/keys/privkey.pem
 
 ####################################################################################################
-#### SS-Encrypt-Certbot: Modify Nginx Configuration (If Lets Encrypt Successful) ###################
-####################################################################################################
-
-## here we modify the live Nginx configuration files to activate Lets Encrypt certificates ##
-## this snippet will only be executed if Lets Encrypt certs appear to be successful ##
-
-## modify Nginx config ##
-# if [[ "$SSL_TYPE" == "certbot" ]] && [[ -d  "/etc/letsencrypt/live" ]] && [[ -f  "/var/www/certs/fullchain.pem" ]] && [[ -f  "/var/www/certs/keys/privkey.pem" ]]; then
-#    sed -i "s#/var/www/certs/slickstack.crt#/var/www/certs/fullchain.pem#g" /etc/nginx/nginx.conf
- #   sed -i "s#/var/www/certs/keys/slickstack.key#/var/www/certs/keys/privkey.pem#g" /etc/nginx/nginx.conf
- #   sed -i "s/#@CERTBOT# //g" /etc/nginx/nginx.conf
- #   echo -e "\e[36mLets Encrypt SSL was succesfully installed...\e[0m"
-# else
-#    echo -e "\e[36mCertbot installation was not successful, reverting to OpenSSL...\e[0m"
-# fi
-
-####################################################################################################
-#### SS-Install-Nginx-Config: Install Nginx SSL Sub-Config Files (Conditional) #####################
-####################################################################################################
-
-## SNIPPET: ss-install-nginx-config, ss-encrypt-certbot, ss-encrypt-openssl
-
-## here we modify the live Nginx configuration files to activate Lets Encrypt certificates ##
-## this snippet will only be executed if Lets Encrypt certs appear to be successful ##
-
-# if [[ "$SSL_TYPE" == "certbot" ]]; then
-#    wget -O /tmp/letsencrypt.conf http://mirrors.slickstack.io/nginx/letsencrypt-conf.txt
-#    cp /tmp/letsencrypt.conf /etc/nginx/conf.d/letsencrypt.conf
-#    rm /etc/nginx/conf.d/openssl.conf*
-# else
-#    wget -O /tmp/openssl.conf http://mirrors.slickstack.io/nginx/openssl-conf.txt
-#    cp /tmp/openssl.conf /etc/nginx/conf.d/openssl.conf
-#    rm /etc/nginx/conf.d/letsencrypt.conf*
-# fi 
-
-## retrieve Lets Encrypt or OpenSSL sub-config file ##
-if [[ "$SSL_TYPE" == "certbot" ]]; then
-    wget -O /tmp/nginx-ssl.conf http://mirrors.slickstack.io/nginx/letsencrypt-conf.txt
-else
-    wget -O /tmp/nginx-ssl.conf http://mirrors.slickstack.io/nginx/openssl-conf.txt
-fi
-
-
-## SEARCH AND REPLACE SSL SETTINGS ## 
-
-## SSL protocols ##
-if [[ -z "$SSL_PROTOCOLS" ]]; then 
-    sed -i "s/@SSL_PROTOCOLS/TLSv1.2 TLSv1.3/g" /tmp/nginx-ssl.conf
-else 
-    sed -i "s/@SSL_PROTOCOLS/${SSL_PROTOCOLS}/g" /tmp/nginx-ssl.conf
-fi
-
-## SSL ciphers ##
-if [[ -z "$SSL_CIPHERS" ]]; then 
-    sed -i "s/@SSL_CIPHERS/ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384/g" /tmp/nginx-ssl.conf
-else 
-    sed -i "s/@SSL_CIPHERS/${SSL_CIPHERS}/g" /tmp/nginx-ssl.conf
-fi
-
-## SSL session timeout ##
-if [[ -z "$SSL_SESSION_TIMEOUT" ]]; then 
-    sed -i "s/@SSL_SESSION_TIMEOUT/1d/g" /tmp/nginx-ssl.conf
-else 
-    sed -i "s/@SSL_SESSION_TIMEOUT/${SSL_SESSION_TIMEOUT}/g" /tmp/nginx-ssl.conf
-fi
-
-## SSL session cache ##
-if [[ -z "$SSL_SESSION_CACHE" ]]; then 
-    sed -i "s/@SSL_SESSION_CACHE/shared:SSL:64m/g" /tmp/nginx-ssl.conf
-else 
-    sed -i "s/@SSL_SESSION_CACHE/${SSL_SESSION_CACHE}/g" /tmp/nginx-ssl.conf
-fi
-
-## SSL buffer size ##
-if [[ -z "$SSL_BUFFER_SIZE" ]]; then 
-    sed -i "s/@SSL_BUFFER_SIZE/16k/g" /tmp/nginx-ssl.conf
-else 
-    sed -i "s/@SSL_BUFFER_SIZE/${SSL_BUFFER_SIZE}/g" /tmp/nginx-ssl.conf
-fi
-
-
-### DELETE SOON  ###
-sed -i "s/@SITE_TLD/${SITE_TLD}/g" /tmp/nginx-ssl.conf
-
-
-
-
-## copy SSL sub-config file to /etc/nginx/conf.d/ and delete conflicting files ##
-if [[ "$SSL_TYPE" == "certbot" ]]; then
-    cp /tmp/nginx-ssl.conf /etc/nginx/conf.d/letsencrypt.conf
-    rm /etc/nginx/conf.d/openssl.conf*
-else
-    cp /tmp/nginx-ssl.conf /etc/nginx/conf.d/openssl.conf
-    rm /etc/nginx/conf.d/letsencrypt.conf*
-fi
-
-####################################################################################################
 #### SS-Encrypt: Reset Permissions (OpenSSL + Certbot) #############################################
 ####################################################################################################
 
@@ -308,11 +194,11 @@ chmod 0600 /var/www/certs/keys/*.pem ## must be 0600
 chmod 0775 /var/www/html/.well-known
 
 ####################################################################################################
-#### SS-Encrypt: Restart Nginx (After Certbot SSL Installation Complete) ###########################
+#### SS-Encrypt-Certbot: Restart Modules (Nginx) ###################################################
 ####################################################################################################
 
-## restart nginx ##
-/etc/init.d/nginx restart
+## restart Nginx module ##
+source /var/www/bash/ss-restart-services-nginx
 
 ####################################################################################################
 #### SS-Encrypt-Certbot: Touch Timestamp File (End Script) #########################################
