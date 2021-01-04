@@ -41,11 +41,22 @@ rm /tmp/letsencrypt.conf*
 rm /tmp/openssl.conf*
 
 ####################################################################################################
-#### SS-Install-Nginx-Config: Ensure Required Directories Exist ################################
+#### SS-Install-Nginx-Config: Ensure Required Directories Exist ####################################
 ####################################################################################################
 
+## make dirs ##
 mkdir /var/www/cache
 mkdir /var/www/cache/fastcgi
+
+####################################################################################################
+#### SS-Install-Nginx-Config: Install OpenSSL Certificate (Via SS-Encrypt-OpenSSL) #################
+####################################################################################################
+
+## here we generate slickstack.crt and slickstack.key as the default SSL for Nginx ##
+## this approach is extremely stable and works fantastic with CloudFlare ##
+
+## run ss-encrypt-openssl ##
+source /var/www/bash/ss-encrypt-openssl
 
 ####################################################################################################
 #### SS-Install-Nginx-Config: Install (Optimize) Nginx Config Files ################################
@@ -309,31 +320,11 @@ fi
 
 
 
-### DELETE SOON BOTH BELOW ###
+### DELETE SOON ###
 sed -i "s/@SITE_TLD/${SITE_TLD}/g" /tmp/nginx.conf
-
-## if site domain is non-www subdomain e.g. blog.example.com then name SSL certs after the FQDN subdomain otherwise name after site domain TLD ##
-if [[ "$SITE_DOMAIN" != www.* ]] && [[ "$SITE_TLD" != "$SITE_DOMAIN" ]]; then
-    sed -i "s/@SSL_DOMAIN/${SITE_DOMAIN}/g" /tmp/nginx.conf
-else
-    sed -i "s/@SSL_DOMAIN/${SITE_TLD}/g" /tmp/nginx.conf
-fi
-
-####################################################################################################
-#### SS-Install-Nginx: Reset Permissions (Nginx.conf) + TMPFS Mount (Optional) #####################
-####################################################################################################
 
 ## copy files to their destinations ##
 cp /tmp/nginx.conf /etc/nginx/nginx.conf
-
-## set TMPFS cache storage if enabled ##
-if [[ "$FCGI_CACHE_TMPFS" == "true" ]]; then
-    mount -t tmpfs -o size=${FCGI_CACHE_MEMORY} tmpfs /var/www/cache
-    sed -i '/tmpfs/d' /etc/fstab
-    echo "tmpfs /var/www/cache tmpfs defaults,size=${FCGI_CACHE_MEMORY} 0 0" >> /etc/fstab
-else
-    sed -i '/tmpfs/d' /etc/fstab
-fi
 
 ####################################################################################################
 #### SS-Install-Nginx-Config: Delete Old Server Blocks #############################################
@@ -345,6 +336,7 @@ fi
 ## delete server blocks ##
 rm /etc/nginx/sites-available/*
 rm /etc/nginx/sites-enabled/*
+# rm /var/www/sites/*
 
 ####################################################################################################
 #### SS-Install-Nginx-Config: Install Nginx Server Block (Dev Subdomain) ###########################
@@ -384,8 +376,6 @@ fi
 ## copy files to destinations ##
 cp /tmp/server-block-dev /etc/nginx/sites-available/dev.${SITE_TLD}
 cp /tmp/server-block-dev /var/www/sites/dev.${SITE_TLD}
-
-
 
 ####################################################################################################
 #### SS-Install-Nginx-Config: Install Nginx Server Block (Staging Site) ############################
@@ -471,6 +461,35 @@ fi
 cp /tmp/default /etc/nginx/sites-available/${SITE_DOMAIN}
 cp /tmp/default /var/www/sites/${SITE_DOMAIN}
 
+
+
+####################################################################################################
+#### SS-Install-Nginx: Create Symlinks For Enabled Sites ###########################################
+####################################################################################################
+
+## symlinks ##
+sudo ln -s /etc/nginx/sites-available/${SITE_DOMAIN} /etc/nginx/sites-enabled/
+sudo ln -s /etc/nginx/sites-available/dev.${SITE_TLD} /etc/nginx/sites-enabled/
+sudo ln -s /etc/nginx/sites-available/staging.${SITE_TLD} /etc/nginx/sites-enabled/
+
+## SOON ##
+## will not have available/enabled but simply /var/www/sites/
+
+# if [[ "$SSL_TYPE" == "certbot" ]] && [[ -d  "/etc/letsencrypt/live" ]] && [[ -f  "/var/www/certs/fullchain.pem" ]] && [[ -f  "/var/www/certs/keys/privkey.pem" ]]; then
+
+
+
+####################################################################################################
+#### SS-Encrypt: Install Lets Encrypt Certificate (Via SS-Encrypt-Certbot) #########################
+####################################################################################################
+
+## here we generate slickstack.crt and slickstack.key as the default SSL for Nginx ##
+## this approach is extremely stable and works fantastic with CloudFlare ##
+
+## run ss-encrypt-certbot ##
+source /var/www/bash/ss-encrypt-certbot
+
+
 ####################################################################################################
 #### SS-Install-Nginx-Config: Install Nginx SSL Sub-Config Files (Conditional) #####################
 ####################################################################################################
@@ -551,22 +570,19 @@ else
     rm /etc/nginx/conf.d/letsencrypt.conf*
 fi
 
+
 ####################################################################################################
-#### SS-Install-Nginx: Create Symlinks For Enabled Sites ###########################################
+#### SS-Install-Nginx-Config: Enable TMPFS Mount (Optional) ########################################
 ####################################################################################################
 
-## symlinks ##
-sudo ln -s /etc/nginx/sites-available/${SITE_DOMAIN} /etc/nginx/sites-enabled/
-sudo ln -s /etc/nginx/sites-available/dev.${SITE_TLD} /etc/nginx/sites-enabled/
-sudo ln -s /etc/nginx/sites-available/staging.${SITE_TLD} /etc/nginx/sites-enabled/
-
-## SOON ##
-## will not have available/enabled but simply /var/www/sites/
-
-
-
-# if [[ "$SSL_TYPE" == "certbot" ]] && [[ -d  "/etc/letsencrypt/live" ]] && [[ -f  "/var/www/certs/fullchain.pem" ]] && [[ -f  "/var/www/certs/keys/privkey.pem" ]]; then
-
+## set TMPFS cache storage if enabled ##
+if [[ "$FCGI_CACHE_TMPFS" == "true" ]]; then
+    mount -t tmpfs -o size=${FCGI_CACHE_MEMORY} tmpfs /var/www/cache
+    sed -i '/tmpfs/d' /etc/fstab
+    echo "tmpfs /var/www/cache tmpfs defaults,size=${FCGI_CACHE_MEMORY} 0 0" >> /etc/fstab
+else
+    sed -i '/tmpfs/d' /etc/fstab
+fi
 
 ####################################################################################################
 #### SS-Install-Nginx-Config: Reset Permissions (Nginx Config) #####################################
