@@ -1,0 +1,128 @@
+#!/bin/bash
+
+####################################################################################################
+#### author: SlickStack ############################################################################
+#### link: https://slickstack.io ###################################################################
+#### mirror: http://mirrors.slickstack.io/ss-install-nginx-ssl.txt #################################
+#### path: /var/www/bash/ss-install-nginx-ssl ######################################################
+#### destination: n/a (not a boilerplate) ##########################################################
+#### purpose: Reinstalls desired SSL cert (OpenSSL vs Lets Encrypt) to Nginx (idempotent) ##########
+#### module version: Nginx 1.18.x ##################################################################
+#### sourced by: ss-install-nginx ##################################################################
+#### bash aliases: ss install nginx ssl ############################################################
+####################################################################################################
+
+## SS-CONFIG MUST BE PROPERLY CONFIGURED AND ON CURRENT BUILD BEFORE RUNNING SS-INSTALL ##
+## ENSURE YOUR SS-CONFIG BUILD REMAINS CURRENT BY RUNNING SS-UPDATE OCCASIONALLY ##
+
+## include SlickStack configuration ##
+source /var/www/ss-config
+
+## include SlickStack functions ##
+source /var/www/ss-functions
+
+####################################################################################################
+#### SS-Install-Nginx-SSL: MESSAGE (Begin) #########################################################
+####################################################################################################
+
+## MESSAGE ##
+echo -e "${PURPLE}Running ss-install-nginx-ssl: Reinstalls desired SSL cert (OpenSSL vs Lets Encrypt) to Nginx (idempotent)...${NOCOLOR}"
+sleep 5s
+
+####################################################################################################
+#### SS-Install-Nginx-Config: Install Nginx SSL Sub-Config Files (Conditional) #####################
+####################################################################################################
+
+## SNIPPET: ss-install-nginx-config, ss-encrypt-certbot, ss-encrypt-openssl
+
+## here we modify the live Nginx configuration files to activate Lets Encrypt certificates ##
+## this snippet will only be executed if Lets Encrypt certs appear to be successful ##
+
+# if [[ "$SSL_TYPE" == "certbot" ]]; then
+#    wget -O /tmp/letsencrypt.conf http://mirrors.slickstack.io/nginx/letsencrypt-conf.txt
+#    cp /tmp/letsencrypt.conf /etc/nginx/conf.d/letsencrypt.conf
+#    rm /etc/nginx/conf.d/openssl.conf*
+# else
+#    wget -O /tmp/openssl.conf http://mirrors.slickstack.io/nginx/openssl-conf.txt
+#    cp /tmp/openssl.conf /etc/nginx/conf.d/openssl.conf
+#    rm /etc/nginx/conf.d/letsencrypt.conf*
+# fi 
+
+## retrieve Lets Encrypt or OpenSSL sub-config file ##
+if [[ "$SSL_TYPE" == "certbot" ]]; then
+    wget -O /tmp/nginx-ssl.conf http://mirrors.slickstack.io/nginx/letsencrypt-conf.txt
+else
+    wget -O /tmp/nginx-ssl.conf http://mirrors.slickstack.io/nginx/openssl-conf.txt
+fi
+
+
+## SEARCH AND REPLACE SSL SETTINGS ## 
+
+## SSL protocols ##
+if [[ -z "$SSL_PROTOCOLS" ]]; then 
+    sed -i "s/@SSL_PROTOCOLS/TLSv1.2 TLSv1.3/g" /tmp/nginx-ssl.conf
+else 
+    sed -i "s/@SSL_PROTOCOLS/${SSL_PROTOCOLS}/g" /tmp/nginx-ssl.conf
+fi
+
+## SSL ciphers ##
+if [[ -z "$SSL_CIPHERS" ]]; then 
+    sed -i "s/@SSL_CIPHERS/ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384/g" /tmp/nginx-ssl.conf
+else 
+    sed -i "s/@SSL_CIPHERS/${SSL_CIPHERS}/g" /tmp/nginx-ssl.conf
+fi
+
+## SSL session timeout ##
+if [[ -z "$SSL_SESSION_TIMEOUT" ]]; then 
+    sed -i "s/@SSL_SESSION_TIMEOUT/1d/g" /tmp/nginx-ssl.conf
+else 
+    sed -i "s/@SSL_SESSION_TIMEOUT/${SSL_SESSION_TIMEOUT}/g" /tmp/nginx-ssl.conf
+fi
+
+## SSL session cache ##
+if [[ -z "$SSL_SESSION_CACHE" ]]; then 
+    sed -i "s/@SSL_SESSION_CACHE/shared:SSL:64m/g" /tmp/nginx-ssl.conf
+else 
+    sed -i "s/@SSL_SESSION_CACHE/${SSL_SESSION_CACHE}/g" /tmp/nginx-ssl.conf
+fi
+
+## SSL buffer size ##
+if [[ -z "$SSL_BUFFER_SIZE" ]]; then 
+    sed -i "s/@SSL_BUFFER_SIZE/16k/g" /tmp/nginx-ssl.conf
+else 
+    sed -i "s/@SSL_BUFFER_SIZE/${SSL_BUFFER_SIZE}/g" /tmp/nginx-ssl.conf
+fi
+
+
+### DELETE SOON  ###
+sed -i "s/@SITE_TLD/${SITE_TLD}/g" /tmp/nginx-ssl.conf
+
+
+
+
+## copy SSL sub-config file to /etc/nginx/conf.d/ and delete conflicting files ##
+if [[ "$SSL_TYPE" == "certbot" ]]; then
+    cp /tmp/nginx-ssl.conf /etc/nginx/conf.d/letsencrypt.conf
+    rm /etc/nginx/conf.d/openssl.conf*
+else
+    cp /tmp/nginx-ssl.conf /etc/nginx/conf.d/openssl.conf
+    rm /etc/nginx/conf.d/letsencrypt.conf*
+fi
+
+####################################################################################################
+#### SS-Install-Nginx-SSL: Touch Timestamp File (End Script) #######################################
+####################################################################################################
+
+## this is a dummy timestamp file that will remember the last time this script was run ##
+## it can be useful for developer reference and is sometimes used by SlickStack ##
+
+## script timestamp ##
+touch /var/www/meta/.timestamp-ss-install-nginx-ssl
+
+####################################################################################################
+#### SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ###############
+####################################################################################################
+
+## Ref:
+
+## SS_EOF
