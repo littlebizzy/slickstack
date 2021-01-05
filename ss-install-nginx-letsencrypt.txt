@@ -6,7 +6,7 @@
 #### mirror: http://mirrors.slickstack.io/ss-install-nginx-letsencrypt.txt #################################
 #### path: /var/www/bash/ss-install-nginx-letsencrypt ######################################################
 #### destination: n/a (not a boilerplate) ##########################################################
-#### purpose: Reinstalls desired SSL cert (OpenSSL vs Lets Encrypt) to Nginx (idempotent) ##########
+#### purpose: Reinstalls Lets Encrypt SSL to Nginx (idempotent) ##########
 #### module version: Nginx 1.18.x ##################################################################
 #### sourced by: ss-install-nginx ##################################################################
 #### bash aliases: ss install nginx letsencrypt ############################################################
@@ -29,7 +29,7 @@ source /var/www/ss-functions
 ## it will only be noticed by sudo users who manually call ss core bash scripts ##
 
 ## echo message ##
-echo -e "${PURPLE}Running ss-install-nginx-ssl: Reinstalls desired SSL cert (OpenSSL vs Lets Encrypt) to Nginx (idempotent)...${NOCOLOR}"
+echo -e "${PURPLE}Running ss-install-nginx-letsencrypt: Reinstalls Lets Encrypt SSL to Nginx (idempotent)...${NOCOLOR}"
 sleep 5s
 
 ####################################################################################################
@@ -41,73 +41,52 @@ sleep 5s
 
 ## retrieve Lets Encrypt and OpenSSL sub-config file ##
 wget -O /tmp/letsencrypt.conf http://mirrors.slickstack.io/nginx/letsencrypt-conf.txt
-wget -O /tmp/openssl.conf http://mirrors.slickstack.io/nginx/openssl-conf.txt
 
 ## SEARCH AND REPLACE SSL SETTINGS ## 
 
 ## SSL protocols ##
 if [[ -z "$SSL_PROTOCOLS" ]]; then 
     sed -i "s/@SSL_PROTOCOLS/TLSv1.2 TLSv1.3/g" /tmp/letsencrypt.conf
-    sed -i "s/@SSL_PROTOCOLS/TLSv1.2 TLSv1.3/g" /tmp/openssl.conf
 else 
     sed -i "s/@SSL_PROTOCOLS/${SSL_PROTOCOLS}/g" /tmp/letsencrypt.conf
-    sed -i "s/@SSL_PROTOCOLS/${SSL_PROTOCOLS}/g" /tmp/openssl.conf
 fi
 
 ## SSL ciphers ##
 if [[ -z "$SSL_CIPHERS" ]]; then 
     sed -i "s/@SSL_CIPHERS/ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384/g" /tmp/letsencrypt.conf
-    sed -i "s/@SSL_CIPHERS/ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384/g" /tmp/openssl.conf
 else 
     sed -i "s/@SSL_CIPHERS/${SSL_CIPHERS}/g" /tmp/letsencrypt.conf
-    sed -i "s/@SSL_CIPHERS/${SSL_CIPHERS}/g" /tmp/openssl.conf
 fi
 
 ## SSL session timeout ##
 if [[ -z "$SSL_SESSION_TIMEOUT" ]]; then 
     sed -i "s/@SSL_SESSION_TIMEOUT/1d/g" /tmp/letsencrypt.conf
-    sed -i "s/@SSL_SESSION_TIMEOUT/1d/g" /tmp/openssl.conf
 else 
     sed -i "s/@SSL_SESSION_TIMEOUT/${SSL_SESSION_TIMEOUT}/g" /tmp/letsencrypt.conf
-    sed -i "s/@SSL_SESSION_TIMEOUT/${SSL_SESSION_TIMEOUT}/g" /tmp/openssl.conf
 fi
 
 ## SSL session cache ##
 if [[ -z "$SSL_SESSION_CACHE" ]]; then 
     sed -i "s/@SSL_SESSION_CACHE/shared:SSL:64m/g" /tmp/letsencrypt.conf
-    sed -i "s/@SSL_SESSION_CACHE/shared:SSL:64m/g" /tmp/openssl.conf
 else 
     sed -i "s/@SSL_SESSION_CACHE/${SSL_SESSION_CACHE}/g" /tmp/letsencrypt.conf
-    sed -i "s/@SSL_SESSION_CACHE/${SSL_SESSION_CACHE}/g" /tmp/openssl.conf
 fi
 
 ## SSL buffer size ##
 if [[ -z "$SSL_BUFFER_SIZE" ]]; then 
     sed -i "s/@SSL_BUFFER_SIZE/16k/g" /tmp/letsencrypt.conf
-    sed -i "s/@SSL_BUFFER_SIZE/16k/g" /tmp/openssl.conf
 else 
     sed -i "s/@SSL_BUFFER_SIZE/${SSL_BUFFER_SIZE}/g" /tmp/letsencrypt.conf
-    sed -i "s/@SSL_BUFFER_SIZE/${SSL_BUFFER_SIZE}/g" /tmp/openssl.conf
 fi
 
 ## here we modify the live Nginx configuration files to activate Lets Encrypt certificates ##
 ## this snippet will only be executed if Lets Encrypt certs appear to be successful ##
 
 ## copy SSL sub-config file to /etc/nginx/conf.d/ and delete conflicting files ##
-if [[ "$SSL_TYPE" == "certbot" ]] && [[ -f "/var/www/certs/fullchain.pem" ]] && [[ -f "/var/www/certs/keys/privkey.pem" ]]; then
     cp /tmp/letsencrypt.conf /etc/nginx/conf.d/letsencrypt.conf
     rm /etc/nginx/conf.d/openssl.conf*
     echo -e "${GREEN}Lets Encrypt installation appears to have been successful. ${NOCOLOR}"
-elif [[ "$SSL_TYPE" == "certbot" ]] && [[ ! -f "/etc/letsencrypt/live/slickstack/fullchain.pem" || ! -f "/etc/letsencrypt/live/slickstack/privkey.pem" ]]; then
-    cp /tmp/openssl.conf /etc/nginx/conf.d/openssl.conf
-    rm /etc/nginx/conf.d/letsencrypt.conf*
-    # sed -i "s#SSL_TYPE="certbot"#SSL_TYPE="openssl"#g" /var/www/ss-config
-    echo -e "${GREEN}Lets Encrypt installation was not successful, reverting to OpenSSL instead. ${NOCOLOR}"
-else
-    cp /tmp/openssl.conf /etc/nginx/conf.d/openssl.conf
-    rm /etc/nginx/conf.d/letsencrypt.conf*
-    echo -e "${YELLOW}OpenSSL installation appears to have been successful. ${NOCOLOR}"
-fi
+
 
 ####################################################################################################
 #### SS-Install-Nginx-SSL: Reset Permissions (Nginx SSL) ###########################################
