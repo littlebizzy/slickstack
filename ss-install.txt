@@ -40,6 +40,7 @@ SS_NETWORK_INTERFACE=`ip route get 1.1.1.1 | head -n1 | awk '{print $5}'`
 SS_IPV4_ADDRESS=`ip addr show $SS_NETWORK_INTERFACE | grep "inet " | awk '{ print $2;exit }' | cut -d/ -f1`
 SS_IPV6_ADDRESS=`ip addr show $SS_NETWORK_INTERFACE | grep "inet6 " | awk '{ print $2;exit }' | cut -d/ -f1`
 SS_HOSTNAME=`hostname -f`
+SS_TLD=`hostname -d`
 # SS_PHP_VERSION=`php -v | grep ^PHP | cut -d' ' -f2`
 # SS_PHP_EXTENSIONS=`php -r "print_r(implode(', ', get_loaded_extensions()));"`
 
@@ -427,18 +428,14 @@ if [[ ! -f "/var/www/ss-config" ]]; then
     # read -p 'Choose database collate (*empty*): ' ss_var_db_collate
     
     ## PROMPT: choose site TLD (otherwise example.com) ##
-    # read -p 'Choose site TLD domain (e.g. example.com without prefix or subdomain): ' ss_var_site_tld
-    read -t 300 -p "$(echo -e $LIGHTPURPLE"Choose site TLD (subdomains not allowed): "$NORMAL)" -e -i 'example.com' ss_var_site_tld || ss_var_site_tld=example.com
-    # read -p 'Choose site TLD domain (e.g. example.com without prefix or subdomain): ' -e -i 'example.com' ss_var_site_tld
+    read -t 300 -p "$(echo -e $LIGHTPURPLE"Choose site TLD (subdomains not allowed): "$NORMAL)" -e -i '$SS_TLD' ss_var_site_tld || ss_var_site_tld=$SS_TLD
     sed -i "s/@SITE_TLD/$ss_var_site_tld/g" /tmp/config
     
     ## new line ##
     printf "\n"
     
     ## PROMPT: choose site domain (otherwise www.example.com) ##
-    # read -p 'Choose site live domain (e.g. www.example.com with desired prefix or subdomain, no subdirectories allowed): ' ss_var_site_domain
-    read -t 300 -p "$(echo -e $LIGHTPURPLE"Choose site domain (subdirectories not allowed): "$NORMAL)" -e -i 'www.example.com' ss_var_site_domain || ss_var_site_domain=www.example.com
-    # read -p 'Choose site live domain (e.g. www.example.com with desired prefix or subdomain, no subdirectories allowed): ' -e -i 'www.example.com' ss_var_site_domain
+    read -t 300 -p "$(echo -e $LIGHTPURPLE"Choose site domain (subdirectories not allowed): "$NORMAL)" -e -i '$SS_HOSTNAME' ss_var_site_domain || ss_var_site_domain=$SS_HOSTNAME
     sed -i "s/@SITE_DOMAIN/$ss_var_site_domain/g" /tmp/config
     
     ## new line ##
