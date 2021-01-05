@@ -321,11 +321,6 @@ else
     sed -i "s/@NGINX_HEADER_FEATURE_POLICY/${NGINX_HEADER_FEATURE_POLICY}/g" /tmp/nginx.conf
 fi
 
-
-
-### DELETE SOON ###
-sed -i "s/@SITE_TLD/${SITE_TLD}/g" /tmp/nginx.conf
-
 ## copy files to their destinations ##
 cp /tmp/nginx.conf /etc/nginx/nginx.conf
 
@@ -339,7 +334,7 @@ cp /tmp/nginx.conf /etc/nginx/nginx.conf
 ## delete server blocks ##
 rm /etc/nginx/sites-available/*
 rm /etc/nginx/sites-enabled/*
-# rm /var/www/sites/*
+rm /var/www/sites/*
 
 ####################################################################################################
 #### SS-Install-Nginx-Config: Install Nginx Server Block (Dev Subdomain) ###########################
@@ -464,8 +459,6 @@ fi
 cp /tmp/default /etc/nginx/sites-available/${SITE_DOMAIN}
 cp /tmp/default /var/www/sites/${SITE_DOMAIN}
 
-
-
 ####################################################################################################
 #### SS-Install-Nginx: Create Symlinks For Enabled Sites ###########################################
 ####################################################################################################
@@ -476,7 +469,17 @@ sudo ln -s /etc/nginx/sites-available/dev.${SITE_TLD} /etc/nginx/sites-enabled/
 sudo ln -s /etc/nginx/sites-available/staging.${SITE_TLD} /etc/nginx/sites-enabled/
 
 ## SOON ##
-## change to: /var/www/sites/
+## change to: /var/www/sites/  and no need for symlinks anymore
+
+####################################################################################################
+#### SS-Install-Nginx-Config: Temporarily Activate OpenSSL ####################
+####################################################################################################
+
+## here we must temporarily activate OpenSSL in order to avoid fatal errors in Nginx ##
+## the next step will be running Certbot which requires OpenSSL to be activated ##
+
+## run ss-install-nginx-openssl ##
+source /var/www/bash/ss-install-nginx-openssl
 
 ####################################################################################################
 #### SS-Install-Nginx-Config: Restart Modules (Nginx) ##############################################
