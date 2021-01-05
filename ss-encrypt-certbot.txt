@@ -29,7 +29,7 @@ source /var/www/ss-functions
 ## it will only be noticed by sudo users who manually call ss core bash scripts ##
 
 ## echo message ##
-echo -e "${PURPLE}Running ss-encrypt-certbot: Regenerates free Lets Encrypt certs and adjusts Nginx config (idempotent)...${NOCOLOR}"
+echo -e "${PURPLE}Running ss-encrypt-certbot: Regenerates free Lets Encrypt certs and adjusts Nginx config (idempotent)... ${NOCOLOR}"
 sleep 5s
 
 ####################################################################################################
@@ -88,7 +88,7 @@ fi
 ## SlickStack deletes old Lets Encrypt certs and requests new ones to avoid dir-stacking ##
 ## this approach also allows you to change your server to a different CMS or TLD ##
 
-## SINGLE SITE CERTS + STAGING/DEV BOTH ENABLED ##
+## SINGLE SITE CERTS + STAGING ENABLED / DEV ENABLED ##
 
 ## if site domain contains www (and is therefore a subdomain) e.g. www.example.com or www.example.co.uk ##
 if [[ "$SITE_DOMAIN" == www.* ]] && [[ "$STAGING_SITE" != "false" ]] && [[ "$STAGING_SITE_SUBDOMAIN" != "false" ]] && [[ "$DEV_SITE" != "false" ]] && [[ "$DEV_SITE_SUBDOMAIN" != "false" ]]; then
@@ -133,23 +133,23 @@ elif [[ "$SITE_DOMAIN" != www.* ]] && [[ "$SITE_TLD" != "$SITE_DOMAIN" ]] && [[ 
     certbot certonly --noninteractive --agree-tos --cert-name slickstack -d ${SITE_DOMAIN} -d dev.${SITE_TLD} --register-unsafely-without-email --webroot -w /var/www/html/
 
 
-## SINGLE SITE CERTS + STAGING/DEV BOTH DISABLED ##
+## SINGLE SITE CERTS + STAGING DISABLED / DEV DISABLED ##
 
 ## if site domain contains www (and is therefore a subdomain) e.g. www.example.com or www.example.co.uk ##
 elif [[ "$SITE_DOMAIN" == www.* ]] && [[ "$STAGING_SITE" == "false" || "$STAGING_SITE_SUBDOMAIN" == "false" ]] && [[ "$DEV_SITE" == "false" || "$DEV_SITE_SUBDOMAIN" == "false" ]]; then
     certbot certonly --noninteractive --agree-tos --cert-name slickstack -d ${SITE_TLD} -d www.${SITE_TLD} --register-unsafely-without-email --webroot -w /var/www/html/
 
 ## if site domain does not contain www (and is not any other type of subdomain) e.g. example.com or example.co.uk ##
-elif [[ "$SITE_DOMAIN" != www.* ]] && [[ "$SITE_TLD" == "$SITE_DOMAIN" ]] && [[ "$STAGING_SITE" != "false" ]] && [[ "$STAGING_SITE_SUBDOMAIN" != "false" ]] && [[ "$DEV_SITE" != "false" ]] && [[ "$DEV_SITE_SUBDOMAIN" != "false" ]]; then
+elif [[ "$SITE_DOMAIN" != www.* ]] && [[ "$SITE_TLD" == "$SITE_DOMAIN" ]] && [[ "$STAGING_SITE" == "false" || "$STAGING_SITE_SUBDOMAIN" == "false" ]] && [[ "$DEV_SITE" == "false" || "$DEV_SITE_SUBDOMAIN" == "false" ]]; then
     certbot certonly --noninteractive --agree-tos --cert-name slickstack -d ${SITE_TLD} -d www.${SITE_TLD} --register-unsafely-without-email --webroot -w /var/www/html/
 
 ## if site domain is a non-www type of subdomain e.g. blog.example.com or blog.example.co.uk ##
-elif [[ "$SITE_DOMAIN" != www.* ]] && [[ "$SITE_TLD" != "$SITE_DOMAIN" ]] && [[ "$STAGING_SITE" != "false" ]] && [[ "$STAGING_SITE_SUBDOMAIN" != "false" ]] && [[ "$DEV_SITE" != "false" ]] && [[ "$DEV_SITE_SUBDOMAIN" != "false" ]]; then
+elif [[ "$SITE_DOMAIN" != www.* ]] && [[ "$SITE_TLD" != "$SITE_DOMAIN" ]] && [[ "$STAGING_SITE" == "false" || "$STAGING_SITE_SUBDOMAIN" == "false" ]] && [[ "$DEV_SITE" == "false" || "$DEV_SITE_SUBDOMAIN" == "false" ]]; then
     certbot certonly --noninteractive --agree-tos --cert-name slickstack -d ${SITE_DOMAIN} --register-unsafely-without-email --webroot -w /var/www/html/
 
 ## otherwise just do this ##
 else
-    echo -e "\e[36mIt seems required options are missing from ss-config so we dont know what Lets Encrypt cert to request for you...\e[0m"
+    echo -e "${RED}It seems required options are missing from ss-config so we dont know what Lets Encrypt cert to request for you... ${NOCOLOR}"
 fi
 
 ####################################################################################################
