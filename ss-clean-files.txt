@@ -125,6 +125,30 @@ rm /var/www/html/staging/xmlrpc*.php*
 cat /dev/null > /var/www/logs/cron.log
 
 ####################################################################################################
+#### SS-Encrypt: Delete Previous / Conflicting Lets Encrypt SSL Certificates #######################
+####################################################################################################
+
+## this could end up causing cert-less servers, best to not enable it
+## Ref: https://community.letsencrypt.org/t/correct-way-to-completely-remove-issued-certificate-s-for-a-domain/7409
+## Ref: https://community.letsencrypt.org/t/brief-overview-of-steps-that-certbot-api-goes-through/141892
+
+## to cleanup the potential mess of Lets Encrypt files we selectively delete some here ##
+## this process should delete any old or irrelevant (non-active) SSL files ##
+
+## selectively delete Lets Encrypt files ##
+# if [[ "$SITE_DOMAIN" != www.* ]] && [[ "$SITE_TLD" != "$SITE_DOMAIN" ]]; then
+#    find /etc/letsencrypt/ ! -name "*$SITE_DOMAIN*" -exec rm -r {} \;
+# else
+ #   find /etc/letsencrypt/ ! -name "*$SITE_TLD*" -exec rm -r {} \;
+#  fi
+ 
+ ## add these to ss-clean ##
+# rm /etc/ssl/cert.pem ## symlink
+# rm /etc/ssl/chain.pem ## symlink
+# rm /etc/ssl/fullchain.pem ## symlink
+# rm /etc/ssl/privkey.pem ## symlink
+
+####################################################################################################
 #### SS-Clean: Delete Any PHP Error Handling Hacks In WordPress Plugins + Themes ###################
 ####################################################################################################
 
