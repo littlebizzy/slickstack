@@ -214,7 +214,7 @@ if [[ -f /.dockerenv ]] || grep -Eq '(lxc|docker)' /proc/1/cgroup; then
 fi
 
 ## ensure ss-config build matches ss-install build (if exists) ##
-if [[ -f "/var/www/ss-config" ]] && [[ "$SS_BUILD" != "DEC2020X" ]]; then 
+if [[ -f "/var/www/ss-config" ]] && [[ "$SS_BUILD" != "JAN2020A" ]]; then 
     echo -e ""
     echo -e "${YELLOW}It appears your ss-config file is outdated. Please run ss-update to get ${NOCOLOR}"
     echo -e "${YELLOW}the latest SlickStack build, and then run ss-install again.${NOCOLOR}"
@@ -431,6 +431,13 @@ if [[ ! -f "/var/www/ss-config" ]]; then
     read -t 300 -p "$(echo -e $LIGHTPURPLE"Enable site noindexing (block robots): "$NORMAL)" -e -i 'false' ss_var_site_noindex || ss_var_site_noindex=false
     # read -p 'Enable site noindexing (false): ' -e -i 'false' ss_var_site_noindex
     sed -i "s/@SITE_NOINDEX/$ss_var_site_noindex/g" /tmp/config
+    
+    ## new line ##
+    printf "\n"
+    
+    ## PROMPT: which SSL do you want ##
+    read -t 300 -p "$(echo -e $PINK"Which SSL cert do you want to use: "$NORMAL)" -e -i 'openssl' ss_var_ssl_type || ss_var_ssl_type=openssl
+    sed -i "s/@SSL_TYPE/$ss_var_ssl_type/g" /tmp/config
     
     ## new line ##
     printf "\n"
