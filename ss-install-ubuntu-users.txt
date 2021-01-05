@@ -9,6 +9,7 @@
 #### purpose: Reinstalls the Ubuntu (OS) users (sudo/sftp) based on ss-config (idempotent) #########
 #### module version: Ubuntu 20.04 LTS ##############################################################
 #### sourced by: ss-install ########################################################################
+#### bash aliases: ss install ubuntu users #########################################################
 ####################################################################################################
 
 ## SS-CONFIG MUST BE PROPERLY CONFIGURED AND ON CURRENT BUILD BEFORE RUNNING SS-INSTALL ##
@@ -21,10 +22,13 @@ source /var/www/ss-config
 source /var/www/ss-functions
 
 ####################################################################################################
-#### SS-Install-Ubuntu-Users: MESSAGE (Begin) ######################################################
+#### SS-Install-Ubuntu-Users: Message (Begin Script) ###############################################
 ####################################################################################################
 
-## MESSAGE ##
+## this is a simple message that announces to the shell the purpose of this bash script ##
+## it will only be noticed by sudo users who manually call ss core bash scripts ##
+
+## echo message ##
 echo -e "${PURPLE}Running ss-install-ubuntu-users: Reinstalls the Ubuntu (OS) users (sudo/sftp) based on ss-config (idempotent)...${NOCOLOR}"
 sleep 5s
 
@@ -38,10 +42,6 @@ sleep 5s
 ####################################################################################################
 #### SS-Install-Ubuntu-Users: Configure Root Password + Setup Ubuntu Users #########################
 ####################################################################################################
-
-## MESSAGE ##
-echo -e ""
-echo -e "${LIGHTPURPLE}SS-INSTALL-UBUNTU-USERS: Configuring users, permissions and Ubuntu defaults...${NOCOLOR}"
 
 ## set root password ##
 echo "root:$ROOT_PASSWORD" | sudo /usr/sbin/chpasswd
@@ -75,9 +75,6 @@ adduser $SFTP_USER www-data
 #### SS-Install-Ubuntu-Users: Configure Sudo Permissions (Sudoers File) ############################
 ####################################################################################################
 
-## MESSAGE ##
-echo -e "${LIGHTPURPLE}SS-INSTALL-UBUNTU-USERS: Configuring the Sudoers file (root and sudo users)...${NOCOLOR}"
-
 ## download latest versions ##
 wget -O /tmp/sudoers http://mirrors.slickstack.io/ubuntu/sudoers.txt
 
@@ -86,8 +83,6 @@ sed -i "s/@SUDO_USER/${SUDO_USER}/g" /tmp/sudoers
 
 ## copy files to their destinations ##
 cp /tmp/sudoers /etc/sudoers
-
-
 
 ####################################################################################################
 #### SS-Install-Ubuntu-Users: Reset Permissions (Ubuntu Users) #####################################
