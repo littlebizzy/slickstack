@@ -1,0 +1,152 @@
+#!/bin/bash
+
+####################################################################################################
+#### author: SlickStack ############################################################################
+#### link: https://slickstack.io ###################################################################
+#### mirror: http://mirrors.slickstack.io/ss-install-ufw-core.txt ##################################
+#### path: /var/www/ss-install-ufw-core ############################################################
+#### destination: n/a (not a boilerplate) ##########################################################
+#### purpose: Reinstalls the entire UFW firewall module for SlickStack servers (idempotent) ########
+#### module version: UFW 0.36.x ####################################################################
+#### sourced by: ss-install ########################################################################
+#### bash aliases: ss install ufw, ss install ufw firewall #########################################
+####################################################################################################
+
+## SS-CONFIG MUST BE PROPERLY CONFIGURED AND ON CURRENT BUILD BEFORE RUNNING SS-INSTALL ##
+## ENSURE YOUR SS-CONFIG BUILD REMAINS CURRENT BY RUNNING SS-UPDATE OCCASIONALLY ##
+
+## include SlickStack configuration ##
+source /var/www/ss-config
+
+## include SlickStack functions ##
+source /var/www/ss-functions
+
+####################################################################################################
+#### SS-Install-UFW-Core: Message (Begin Script) ###################################################
+####################################################################################################
+
+## this is a simple message that announces to the shell the purpose of this bash script ##
+## it will only be noticed by sudo users who manually call ss core bash scripts ##
+
+## echo message ##
+echo -e "${PURPLE}Running ss-install-ufw: Reinstalls the entire UFW firewall module for SlickStack servers (idempotent)...${NOCOLOR}"
+sleep 5s
+
+####################################################################################################
+#### SS-Install-UFW: Cleanup Temporary Files #######################################################
+####################################################################################################
+
+## delete tmp files ##
+rm /tmp/ufw*
+rm /tmp/user*
+
+####################################################################################################
+#### SS-Install-UFW: Install UFW (Firewall) ########################################################
+####################################################################################################
+
+## disable UFW before proceeding with new install ##
+sudo ufw --force disable
+
+## purge all UFW packages and remove any previous UFW configuration files ##
+apt purge ^ufw
+# rm /etc/ufw/*
+
+## update repo cache ##
+apt update
+
+## attempt fixing any broken package depencies ##
+apt install --fix-broken
+
+## cleanup potential conflicting files ##
+apt autoremove
+apt autoclean
+
+## for Ubuntu 20.04 LTS only ##
+if [[ "${UBUNTU_VERSION}" = "20.04" ]]; then
+    apt install ufw
+fi
+
+## disable UFW temporarily while we configure various settings ##
+sudo ufw --force disable
+
+####################################################################################################
+#### SS-Install-UFW: Configure UFW General Settings ################################################
+####################################################################################################
+
+# retrieve latest versions ##
+wget -O /tmp/ufw http://mirrors.slickstack.io/ufw-firewall/ufw.txt
+wget -O /tmp/ufw.conf http://mirrors.slickstack.io/ufw-firewall/ufw-conf.txt
+
+## copy files to their destinations ##
+cp /tmp/ufw /etc/default/ufw
+cp /tmp/ufw.conf /etc/ufw/ufw.conf
+
+####################################################################################################
+#### SS-Install-UFW: Configure User Rules (Default Rules For SlickStack) ###########################
+####################################################################################################
+
+# retrieve latest versions ##
+wget -O /tmp/user.rules http://mirrors.slickstack.io/ufw-firewall/user-rules.txt
+wget -O /tmp/user6.rules http://mirrors.slickstack.io/ufw-firewall/user6-rules.txt
+
+if [[ -z "$SSH_PORT" ]]; then 
+    sed -i "s/@SSH_PORT/6969/g" /tmp/user.rules
+    sed -i "s/@SSH_PORT/6969/g" /tmp/user6.rules
+else 
+    sed -i "s/@SSH_PORT/${SSH_PORT}/g" /tmp/user.rules
+    sed -i "s/@SSH_PORT/${SSH_PORT}/g" /tmp/user6.rules
+fi
+
+## copy files to their destinations ##
+cp /tmp/user.rules /etc/ufw/user.rules
+cp /tmp/user6.rules /etc/ufw/user6.rules
+
+####################################################################################################
+#### SS-Install-UFW: Reset Permissions (UFW) #######################################################
+####################################################################################################
+
+## run ss-perms-ufw ##
+source /var/www/ss-perms-ufw
+
+####################################################################################################
+#### SS-Install-UFW: Enable UFW ####################################################################
+####################################################################################################
+
+## CONSIDER not enabling ufw in this script and letting ss-worker do it or something cuz 
+## many times during re-installation of ss-install the shell session gets kicked off right after this step ##
+
+## enable UFW because we are done configuring settings ##
+sudo ufw --force enable
+
+####################################################################################################
+#### SS-Install-UFW: Cleanup Temporary Files #######################################################
+####################################################################################################
+
+## delete tmp files ##
+rm /tmp/ufw*
+rm /tmp/user*
+
+####################################################################################################
+#### SS-Install-UFW: Touch Timestamp File (End Script) #############################################
+####################################################################################################
+
+## this is a dummy timestamp file that will remember the last time this script was run ##
+## it can be useful for developer reference and is sometimes used by SlickStack ##
+
+## script timestamp ##
+touch /var/www/meta/.timestamp-ss-install-ufw-core
+
+####################################################################################################
+#### SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ###############
+####################################################################################################
+
+## Ref: https://linux.die.net/man/8/apt-get
+## Ref: https://wiki.ubuntu.com/UncomplicatedFirewall
+## Ref: https://askubuntu.com/questions/1006834/ufw-rules-disappear-after-manually-adding-them-to-user-rules-ubuntu-16-04
+## Ref: https://serverfault.com/questions/198398/ubuntu-how-to-add-an-iptables-rule-that-ufw-cant-create
+## Ref: https://askubuntu.com/questions/104899/make-apt-get-or-aptitude-run-with-y-but-not-prompt-for-replacement-of-configu
+## Ref: https://linuxhint.com/apt_get_fix_missing_broken_packages/
+## Ref: https://bugs.launchpad.net/ubuntu/+source/apt/+bug/1341611
+## Ref: http://manpages.ubuntu.com/manpages/focal/man1/add-apt-repository.1.html
+
+## SS_EOF
