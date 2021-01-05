@@ -184,16 +184,25 @@ STANDOUT=$(tput smso) # standout (highlight)
 ENDSTAND=$(tput rmso) # end standout
 
 ####################################################################################################
-#### SS-Install: Check OS Compability + Disk Space + Verify SS-Config Build ########################
+#### SS-Install: Verify Environment Compatibility Before Proceeding ################################
 ####################################################################################################
 
 ## never run ss-install unless the build version below matches current ss-config version ##
 ## in case of emergencies the SlickStack team might purposefully mismatch builds ##
 
+## ensure ss-config (if exists) build matches ss-install ##
+if [[ -f "/var/www/ss-config" ]] && [[ "$SS_BUILD" != "JAN2021A" ]]; then 
+    echo -e ""
+    echo -e "${YELLOW}It appears your ss-config file is outdated. Please run ss-update to get ${NOCOLOR}"
+    echo -e "${YELLOW}the latest SlickStack build, and then run ss-install again. ${NOCOLOR}"
+    echo -e ""
+    exit 1
+fi
+
 ## verify optimal Ubuntu version ##
 if [[ "${UBUNTU_VERSION}" != "20.04" ]]; then
     echo -e ""
-    echo -e "${YELLOW}SS-INSTALL: SlickStack is designed for ${BOLD}Ubuntu 20.04${NORMAL}, but this server is running ${BOLD}Ubuntu ${UBUNTU_VERSION}${NORMAL}.${NOCOLOR}" >&2
+    echo -e "${YELLOW}SS-INSTALL: SlickStack is designed for ${BOLD}Ubuntu 20.04${NORMAL}, but this server is running ${BOLD}Ubuntu ${UBUNTU_VERSION}${NORMAL}. ${NOCOLOR}"
     echo -e ""
     exit 1
 fi
@@ -201,7 +210,7 @@ fi
 ## ensure at least 5GB free disk space remains ##
 if [[ $DISK_FREE -lt 5242880 ]]; then # 10G = 10485760 / 5GB = 5242880
     echo -e ""
-    echo -e "${YELLOW}SS-INSTALL: It looks like your server has less than 5GB free space available, please upgrade your server and then run ${BOLD}ss-install${NORMAL} again.${NOCOLOR}" >&2
+    echo -e "${YELLOW}SS-INSTALL: It looks like your server has less than 5GB free space available, please upgrade your server and then run ${BOLD}ss-install${NORMAL} again. ${NOCOLOR}"
     echo -e ""
     exit 1
 fi
@@ -209,16 +218,7 @@ fi
 ## ensure not running in docker/lxc/container ##
 if [[ -f /.dockerenv ]] || grep -Eq '(lxc|docker)' /proc/1/cgroup; then 
     echo -e ""
-    echo -e "${YELLOW}It appears your server is running Docker or another container... but SlickStack requires normal Ubuntu LTS without containers.${NOCOLOR}"
-    echo -e ""
-    exit 1
-fi
-
-## ensure ss-config build matches ss-install build (if exists) ##
-if [[ -f "/var/www/ss-config" ]] && [[ "$SS_BUILD" != "JAN2021A" ]]; then 
-    echo -e ""
-    echo -e "${YELLOW}It appears your ss-config file is outdated. Please run ss-update to get ${NOCOLOR}"
-    echo -e "${YELLOW}the latest SlickStack build, and then run ss-install again.${NOCOLOR}"
+    echo -e "${YELLOW}It appears your server is running Docker or another container... but SlickStack requires normal Ubuntu LTS without containers. ${NOCOLOR}"
     echo -e ""
     exit 1
 fi
@@ -243,20 +243,22 @@ if [[ "$SS_CONFIG_OPTION_PLACEHOLDER" -gt 0 ]]; then
 fi
 
 ####################################################################################################
-#### SS-Install: Interactive Bash Setup Wizard (SS-Config): ########################################
+#### SS-Install: Cleanup Temporary Files ###########################################################
 ####################################################################################################
 
-## VNC Consoles = 80 characters wide? 75 better
+## delete tmp files ##
+rm /tmp/ss-config*
+rm /tmp/config*
+
+####################################################################################################
+#### SS-Install: Interactive Bash Setup Wizard (Generate SS-Config) ################################
+####################################################################################################
 
 ## this basic wizard will allow you to interactively setup your ss-config file options ##
 ## advanced users can setup ss-config before running ss-install to avoid this ##
 
-    ## ensure SlickStack root directory exists (in case running ss-install from other directories) ##
-    mkdir /var/www
-    ## get latest ss-config boilerplate ##
-    rm /tmp/ss-config*
-    rm /tmp/config*
-    wget -qO /tmp/config http://mirrors.slickstack.io/ss-config-sample.txt
+## retrieve latest ss-config boilerplate (quietly) ##
+wget -qO /tmp/config http://mirrors.slickstack.io/ss-config-sample.txt
     
 ## check build ver ##
 SS_BUILD_NOW=$(source /tmp/config; echo $SS_BUILD)
@@ -280,8 +282,6 @@ echo -e ""
 echo -e ""
 
 if [[ ! -f "/var/www/ss-config" ]]; then
-    ## tell the user we will attempt the wizard (give users 10 seconds to exit if they prefer manual setup) ##
-    
     echo -e "${LIGHTGRAY}SlickStack version: ${LIGHTGREEN}$SS_BUILD_NOW${NOCOLOR}"
     echo -e "${LIGHTGRAY}Hostname (FQDN): ${LIGHTGREEN}$SS_HOSTNAME${NOCOLOR}"
     echo -e "${LIGHTGRAY}IP Address (IPv4): ${LIGHTGREEN}$SS_IPV4_ADDRESS${NOCOLOR}"
@@ -294,7 +294,6 @@ if [[ ! -f "/var/www/ss-config" ]]; then
     temp_cnt=${wait_time}
     while [[ ${temp_cnt} -gt 0 ]];
     do
-        # echo -e "${YELLOW}to configure required options (or hit Ctrl+C to cancel wizard and configure manually): ${NOCOLOR}" ${temp_cnt}
         printf "${YELLOW}\rCtrl+C to cancel wizard and configure ss-config manually: ${LIGHTGREEN}%2d ${NOCOLOR}" ${temp_cnt}
         sleep 1
         ((temp_cnt--))
@@ -305,20 +304,13 @@ if [[ ! -f "/var/www/ss-config" ]]; then
     echo -e "${LIGHTPURPLE}#### SlickStack Interactive Setup Wizard (SS-Config) ######################${NOCOLOR}"
     echo -e "${LIGHTPURPLE}###########################################################################${NOCOLOR}"
     echo -e ""
-
-
     
     ## replace all password fields with random strings ##
     sed -i "s/@ROOT_PASSWORD/$(openssl rand -hex 12)/g" /tmp/config
-    # sed -i "s/@SUDO_PASSWORD/$(openssl rand -hex 12)/g" /tmp/config
-    # sed -i "s/@SFTP_PASSWORD/$(openssl rand -hex 12)/g" /tmp/config
-    # sed -i "s/@DB_PASSWORD_USER/$(openssl rand -hex 12)/g" /tmp/config
     sed -i "s/@DB_PASSWORD_ROOT/$(openssl rand -hex 12)/g" /tmp/config
     
     ## PROMPT: choose sudo username (default = batman) ##
-    # read -p 'Choose sudo username (e.g. batman): ' ss_var_sudo_user
     read -t 300 -p "$(echo -e $LIGHTPURPLE"Choose sudo username (for SSH): "$NORMAL)" -e -i 'batman' ss_var_sudo_user || ss_var_sudo_user=batman
-    # read -p 'Choose sudo username (e.g. batman): ' -e -i 'batman' ss_var_sudo_user
     sed -i "s/@SUDO_USER/$ss_var_sudo_user/g" /tmp/config
     
     ## new line ##
@@ -327,34 +319,27 @@ if [[ ! -f "/var/www/ss-config" ]]; then
     ## PROMPT: choose sudo password (default = random) ##
     sudopass_random=$(openssl rand -hex 12)
     read -t 300 -p "$(echo -e $LIGHTPURPLE"Choose sudo password (should be strong): "$NORMAL)" -e -i ${sudopass_random} ss_var_sudo_password || ss_var_sudo_password=${sudopass_random}
-    # sed -i "s/@SUDO_PASSWORD/$(openssl rand -hex 12)/g" /tmp/config
     sed -i "s/@SUDO_PASSWORD/$ss_var_sudo_password/g" /tmp/config
     
     ## new line ##
     printf "\n"
     
     ## PROMPT: choose SSH port number (default = 6969) ##
-    # read -p 'Choose SSH port (6969): ' ss_var_ssh_port
     read -t 300 -p "$(echo -e $LIGHTPURPLE"Choose SSH port (avoid 22 if possible): "$NORMAL)" -e -i '6969' ss_var_ssh_port || ss_var_ssh_port=6969
-    # read -p 'Choose SSH port (6969): ' -e -i '6969' ss_var_ssh_port
     sed -i "s/@SSH_PORT/$ss_var_ssh_port/g" /tmp/config
     
     ## new line ##
     printf "\n"
     
     ## PROMPT: enable SSH keys (default = false) ##
-    # read -p 'Enable SSH keys (false/true): ' ss_var_ssh_keys
     read -t 300 -p "$(echo -e $LIGHTPURPLE"Enable SSH keys (advanced users only): "$NORMAL)" -e -i 'false' ss_var_ssh_keys || ss_var_ssh_keys=false
-    # read -p 'Enable SSH keys (false): ' -e -i 'false' ss_var_ssh_keys
     sed -i "s/@SSH_KEYS/$ss_var_ssh_keys/g" /tmp/config
     
     ## new line ##
     printf "\n"
     
     ## PROMPT: choose SFTP username (default = robin) ##
-    # read -p 'Choose SFTP username (e.g. robin): ' ss_var_sftp_user
     read -t 300 -p "$(echo -e $LIGHTPURPLE"Choose SFTP username (limited access): "$NORMAL)" -e -i 'robin' ss_var_sftp_user || ss_var_sftp_user=robin
-    # read -p 'Choose SFTP username (e.g. robin): ' -e -i 'robin' ss_var_sftp_user
     sed -i "s/@SFTP_USER/$ss_var_sftp_user/g" /tmp/config
     
     ## new line ##
@@ -363,7 +348,6 @@ if [[ ! -f "/var/www/ss-config" ]]; then
     ## PROMPT: choose SFTP password (default = random) ##
     sftp_pass_random=$(openssl rand -hex 12)
     read -t 300 -p "$(echo -e $LIGHTPURPLE"Choose SFTP password (should be strong): "$NORMAL)" -e -i ${sftp_pass_random} ss_var_sftp_password || ss_var_sftp_password=${sftp_pass_random}
-    # sed -i "s/@SUDO_PASSWORD/$(openssl rand -hex 12)/g" /tmp/config
     sed -i "s/@SFTP_PASSWORD/$ss_var_sftp_password/g" /tmp/config
     
     ## new line ##
@@ -377,18 +361,14 @@ if [[ ! -f "/var/www/ss-config" ]]; then
     printf "\n"
     
     ## PROMPT: choose database name (default = wordpress) ##
-    # read -p 'Choose database name (wordpress): ' ss_var_db_name
     read -t 300 -p "$(echo -e $LIGHTPURPLE"Choose database name (single database): "$NORMAL)" -e -i 'wordpress' ss_var_db_name || ss_var_db_name=wordpress
-    # read -p 'Choose database name (wordpress): ' -e -i 'wordpress' ss_var_db_name
     sed -i "s/@DB_NAME/$ss_var_db_name/g" /tmp/config
     
     ## new line ##
     printf "\n"
     
     ## PROMPT: choose database user (default = robin) ##
-    # read -p 'Choose database user (e.g. robin): ' ss_var_db_user
     read -t 300 -p "$(echo -e $LIGHTPURPLE"Choose database user (non-root user): "$NORMAL)" -e -i 'robin' ss_var_db_user || ss_var_db_user=robin
-    # read -p 'Choose database user (e.g. robin): ' -e -i 'robin' ss_var_db_user
     sed -i "s/@DB_USER/$ss_var_db_user/g" /tmp/config
     
     ## new line ##
@@ -397,35 +377,24 @@ if [[ ! -f "/var/www/ss-config" ]]; then
     ## PROMPT: choose database user password (default = random) ##
     db_pass_random=$(openssl rand -hex 12)
     read -t 300 -p "$(echo -e $LIGHTPURPLE"Choose database user password: "$NORMAL)" -e -i ${db_pass_random} ss_var_db_password || ss_var_db_password=${db_pass_random}
-    # sed -i "s/@SUDO_PASSWORD/$(openssl rand -hex 12)/g" /tmp/config
     sed -i "s/@DB_PASSWORD_USER/$ss_var_db_password/g" /tmp/config
     
     ## new line ##
     printf "\n"
     
-    ## PROMPT: choose database host (default = 127.0.0.1) ##
-    # read -p 'Choose database host (127.0.0.1): ' ss_var_db_host
+    ## PROMPT: choose database host ##
     read -t 300 -p "$(echo -e $LIGHTPURPLE"Choose database host (IP address): "$NORMAL)" -e -i '127.0.0.1' ss_var_db_host || ss_var_db_host=127.0.0.1
-    # read -p 'Choose database host (127.0.0.1): ' -e -i '127.0.0.1' ss_var_db_host
     sed -i "s/@DB_HOST/$ss_var_db_host/g" /tmp/config
     
     ## new line ##
     printf "\n"
     
-    ## PROMPT: choose database prefix (default = wp_) ##
-    # read -p 'Choose database prefix (wp_): ' ss_var_db_prefix
+    ## PROMPT: choose database prefix ##
     read -t 300 -p "$(echo -e $LIGHTPURPLE"Choose database table prefix: "$NORMAL)" -e -i 'wp_' ss_var_db_prefix || ss_var_db_prefix=wp_
-    # read -p 'Choose database prefix (wp_): ' -e -i 'wp_' ss_var_db_prefix
     sed -i "s/@DB_PREFIX/$ss_var_db_prefix/g" /tmp/config
     
     ## new line ##
     printf "\n"
-    
-    ## PROMPT: choose database charset (otherwise utf8mb4) ##
-    # read -p 'Choose database charset (utf8mb4): ' ss_var_db_charset
-    
-    ## PROMPT: choose database collate (otherwise blank) ##
-    # read -p 'Choose database collate (*empty*): ' ss_var_db_collate
     
     ## PROMPT: choose site TLD (otherwise example.com) ##
     read -t 300 -p "$(echo -e $LIGHTPURPLE"Choose site TLD (subdomains not allowed): "$NORMAL)" -e -i "$SS_TLD" ss_var_site_tld || ss_var_site_tld="$SS_TLD"
@@ -442,9 +411,7 @@ if [[ ! -f "/var/www/ss-config" ]]; then
     printf "\n"
     
     ## PROMPT: enable noindex server (default = false) ##
-    # read -p 'Enable site noindexing (false): ' ss_var_site_noindex
     read -t 300 -p "$(echo -e $LIGHTPURPLE"Enable site noindexing (block robots): "$NORMAL)" -e -i 'false' ss_var_site_noindex || ss_var_site_noindex=false
-    # read -p 'Enable site noindexing (false): ' -e -i 'false' ss_var_site_noindex
     sed -i "s/@SITE_NOINDEX/$ss_var_site_noindex/g" /tmp/config
     
     ## new line ##
@@ -468,38 +435,25 @@ if [[ ! -f "/var/www/ss-config" ]]; then
     # read -p 'Enable WP multisite domain mapping (no): ' ss_var_wp_multisite_domain_mapping
     
     ## PROMPT: choose Cloudflare API key (otherwise 123456789) ##
-    # read -p 'Choose Cloudflare API key (e.g. 123456789): ' ss_var_cloudflare_api_key
     read -t 300 -p "$(echo -e $LIGHTPURPLE"Choose Cloudflare API key (global key): "$NORMAL)" -e -i '123456789' ss_var_cloudflare_api_key || ss_var_cloudflare_api_key=123456789
-    # read -p 'Choose Cloudflare API key (e.g. 123456789): ' -e -i '123456789' ss_var_cloudflare_api_key
     sed -i "s/@CLOUDFLARE_API_KEY/$ss_var_cloudflare_api_key/g" /tmp/config
     
     ## new line ##
     printf "\n"
     
     ## PROMPT: choose Cloudflare API email (otherwise user@example.com) ##
-    # read -p 'Choose Cloudflare API email (e.g. user@example.com): ' ss_var_cloudflare_api_email
     read -t 300 -p "$(echo -e $LIGHTPURPLE"Choose Cloudflare API email (account profile): "$NORMAL)" -e -i 'user@example.com' ss_var_cloudflare_api_email || ss_var_cloudflare_api_email=user@example.com
-    # read -p 'Choose Cloudflare API email (e.g. user@example.com): ' -e -i 'user@example.com' ss_var_cloudflare_api_email
     sed -i "s/@CLOUDFLARE_API_EMAIL/$ss_var_cloudflare_api_email/g" /tmp/config
     
     ## new line ##
     printf "\n"
     
     ## PROMPT: enable native staging site features ##
-    # read -p 'Enable native staging site? (true/false): ' ss_var_staging_site
     read -t 300 -p "$(echo -e $LIGHTPURPLE"Enable native staging site: "$NORMAL)" -e -i 'true' ss_var_staging_site || ss_var_staging_site=true
-    # read -p 'Enable native staging site? (true): ' -e -i 'true' ss_var_staging_site
     sed -i "s/@STAGING_SITE_STATUS/$ss_var_staging_site/g" /tmp/config
     
     ## new line ##
     printf "\n"
-    
-    ## PROMPT: enable staging site subdomain ##
-    # read -t 300 -p "$(echo -e $LIGHTPURPLE"Enable staging site as subdomain: "$NORMAL)" -e -i 'true' ss_var_staging_site_subdomain || ss_var_staging_site_subdomain=true
-    # sed -i "s/@STAGING_SITE_SUBDOMAIN/$ss_var_staging_site_subdomain/g" /tmp/config
-    
-    ## new line ##
-    # printf "\n"
     
     ## PROMPT: enable native dev site features ##
     read -t 300 -p "$(echo -e $LIGHTPURPLE"Enable native dev site: "$NORMAL)" -e -i 'true' ss_var_dev_site || ss_var_dev_site=true
@@ -508,18 +462,10 @@ if [[ ! -f "/var/www/ss-config" ]]; then
     ## new line ##
     printf "\n"
     
-    ## PROMPT: enable dev site subdomain ##
-    # read -t 300 -p "$(echo -e $LIGHTPURPLE"Enable dev site as subdomain: "$NORMAL)" -e -i 'true' ss_var_dev_site_subdomain || ss_var_dev_site_subdomain=true
-    # sed -i "s/@DEV_SITE_SUBDOMAIN/$ss_var_dev_site_subdomain/g" /tmp/config
-    
-    ## new line ##
-    # printf "\n"
-    
     ## copy files to their destinations ##
+    mkdir /var/www
     cp /tmp/config /var/www/ss-config
     
-    # echo -e "\e[36mThis wizard is under construction... your ss-config is not fully setup yet, please finalize ss-config and then run ss-install again...\e[0m"
-    # exit 1
 else
     echo -e "${LIGHTGRAY}SlickStack version: ${LIGHTGREEN}$SS_BUILD_NOW${NOCOLOR}"
     echo -e "${LIGHTGRAY}Hostname (FQDN): ${LIGHTGREEN}$SS_HOSTNAME${NOCOLOR}"
@@ -535,20 +481,28 @@ fi
 #### SS-Install: Source SS-Config (After Setup Wizard Complete) ####################################
 ####################################################################################################
 
+## here we must source ss-config again after the setup wizard has completed generation ##
+## this is different than the conditional sourcing at the top of this script ##
+
 ## include SlickStack configuration ##
 source /var/www/ss-config
 
 ####################################################################################################
-#### SS-Install: Ensure Chosen Site Domain Is Not A Sub-Subdomain (Unsupported) ####################
+#### SS-Install: Ensure Chosen Site Domain Is Not Sub-Subdomain (Unsupported) ######################
 ####################################################################################################
 
+## for compatibility and stability reasons SlickStack does not support sub-subdomains ##
+## this ensures that your SSL and Cloudflare especially will function properly ##
+
+## calculate how many dots in chosen site domain ##
 CALC_DOMAIN=${SITE_DOMAIN//$SITE_TLD/}
 CALC_DOMAIN_SUB=$(echo "$CALC_DOMAIN" | grep -o "\." | wc -l)
 
+## exit if the local domain (besides TLD) contains more than one dot ##
 if [[ $CALC_DOMAIN_SUB -gt 1 ]]; then 
     echo -e ""
     echo -e "${YELLOW}It appears your SITE_DOMAIN value is a sub-subdomain or is otherwise not ${NOCOLOR}"
-    echo -e "${YELLOW}compatible with SlickStack. Please edit ss-config and try again.${NOCOLOR}"
+    echo -e "${YELLOW}compatible with SlickStack. Please edit ss-config and try again. ${NOCOLOR}"
     echo -e ""
     exit 1
 fi
@@ -587,7 +541,7 @@ apt update
 apt upgrade
 
 ####################################################################################################
-#### SS-Install: Configure Ubuntu Root + Users + Sudo Permissions + SSH/SFTP #######################
+#### SS-Install: Install (Configure) Ubuntu (OS) ###################################################
 ####################################################################################################
 
 ## first we need to setup all users and passwords for Ubuntu and set sudo permissions ##
@@ -613,6 +567,12 @@ source /var/www/ss-install-ubuntu-crontab
 
 ## run ss-install-ubuntu-utils ##
 source /var/www/ss-install-ubuntu-utils
+
+## we save this for near last just in case the kernel gets messed up and requires fixing ##
+## in SlickStack the kernel is modified to pretty much uncap all limitations ##
+
+## run ss-install-ubuntu-kernel ##
+source /var/www/ss-install-ubuntu-kernel
 
 ####################################################################################################
 #### SS-Install: Install PHP-FPM ###################################################################
@@ -653,6 +613,16 @@ source /var/www/ss-install-mysql
 
 ## run ss-install-redis ##
 source /var/www/ss-install-redis
+
+####################################################################################################
+#### SS-Install: Install Adminer (i.e. phpMyAdmin) #################################################
+####################################################################################################
+
+## should be installed after PHP-FPM and Nginx modules to ensure seamless installation ##
+## Adminer (similar to phpMyAdmin) can be publicly accessed at the /adminer URI ##
+
+## run ss-install-adminer ##
+source /var/www/ss-install-adminer
  
 ####################################################################################################
 #### SS-Install: Install CMS (WordPress, PrestaShop, MediaWiki, Etc) ###############################
@@ -713,16 +683,6 @@ if [[ "$SS_APP" == "mediawiki" ]]; then
 fi
 
 ####################################################################################################
-#### SS-Install: Install Adminer (i.e. phpMyAdmin) #################################################
-####################################################################################################
-
-## should be installed after PHP-FPM and Nginx modules to ensure seamless installation ##
-## Adminer (similar to phpMyAdmin) can be publicly accessed at the /adminer URI ##
-
-## run ss-install-adminer ##
-source /var/www/ss-install-adminer
-
-####################################################################################################
 #### SS-Install: Install ClamAV (Antivirus) ########################################################
 ####################################################################################################
 
@@ -731,16 +691,6 @@ source /var/www/ss-install-adminer
 
 ## run ss-install-clamav ##
 source /var/www/ss-install-clamav
-
-####################################################################################################
-#### SS-Install: Install (Optimize) Ubuntu Linux Kernel ############################################
-####################################################################################################
-
-## we save this for near last just in case the kernel gets messed up and requires fixing ##
-## in SlickStack the kernel is modified to pretty much uncap all limitations ##
-
-## run ss-install-ubuntu-kernel ##
-source /var/www/ss-install-ubuntu-kernel
 
 ####################################################################################################
 #### SS-Install: Install UFW (Firewall) ############################################################
@@ -753,7 +703,7 @@ source /var/www/ss-install-ubuntu-kernel
 source /var/www/ss-install-ufw
 
 ####################################################################################################
-#### SS-Install: Reset All Logs To Null ############################################################
+#### SS-Install: Reset All SlickStack Logs To Null #################################################
 ####################################################################################################
 
 ## run ss-reset-logs ##
@@ -762,6 +712,9 @@ source /var/www/ss-reset-logs
 ####################################################################################################
 #### SS-Install: Reset All Permissions #############################################################
 ####################################################################################################
+
+## this will methodically reset file and user permissions across the SlickStack server ##
+## depending on the CMS installed it will also reset those permissions as well ##
 
 ## run ss-perms ##
 source /var/www/ss-perms
