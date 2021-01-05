@@ -35,6 +35,60 @@ rm /tmp/ss*
 rm /tmp/*cron*
 
 ####################################################################################################
+#### SS-Worker: Reset Permissions (SlickStack Core + SlickStack Config) ############################
+####################################################################################################
+
+## SNIPPET: ss-check, ss-worker, ss-update
+
+## because SlickStack core permissions are critical this is hardcoded in multiple scripts ##
+## this ensures that permissions are reset regularly and do not rely on sourcing ##
+
+## ensure core directories exist ##
+mkdir /var/www
+mkdir /var/www/bash
+mkdir /var/www/cache
+mkdir /var/www/cache/fastcgi
+mkdir /var/www/cache/opcache
+mkdir /var/www/certs
+mkdir /var/www/certs/keys
+mkdir /var/www/crons
+mkdir /var/www/html
+mkdir /var/www/logs
+mkdir /var/www/meta
+mkdir /var/www/sites
+
+## ssl certs slickstack ##
+chown root:root /var/www/certs
+chown root:root /var/www/certs/keys
+chmod 0755 /var/www/certs ## must be 0755
+chmod 0700 /var/www/certs/keys ## must be 0700
+chmod 0644 /var/www/certs/*.crt ## must be 0644
+chmod 0644 /var/www/certs/*.pem ## must be 0644
+chmod 0600 /var/www/certs/keys/*.key ## must be 0600
+chmod 0600 /var/www/certs/keys/*.pem ## must be 0600
+
+## bash dir ##
+chown root:root /var/www/bash ## must be root:root
+chmod 0755 /var/www/bash ## must be 0755
+
+## crons dir ##
+chown root:root /var/www/crons ## must be root:root
+chmod 0755 /var/www/crons ## must be 0755
+
+## chroot (SFTP) user directory ##
+chown root:root /var ## must be root:root
+chown root:root /var/www ## must be root:root
+chmod 0755 /var/www ## must be 0755
+
+## its okay if the SFTP user accesses this stuff (but www-data access is the priority) ##
+chown www-data:www-data /var/www/cache ## must be www-data:www-data
+chown www-data:www-data /var/www/logs ## must be www-data:www-data
+chown www-data:www-data /var/www/meta ## must be www-data:www-data
+chmod 0775 /var/www/cache ## 6755 should also work
+chmod 0775 /var/www/logs ## 6755 should also work
+chmod 0775 /var/www/meta ## 6755 should also work
+
+####################################################################################################
 #### SS-Check: Retrieve Latest SlickStack Core Files (Except SS-Check) #############################
 ####################################################################################################
 
