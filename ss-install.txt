@@ -223,6 +223,25 @@ if [[ -f "/var/www/ss-config" ]] && [[ "$SS_BUILD" != "JAN2020A" ]]; then
 fi
 
 ####################################################################################################
+#### SS-Update: Ensure Undefined Options Do Not Exist Before Proceeding ############################
+####################################################################################################
+
+## SNIPPET: ss-install, ss-update
+
+## below snippet will warn you and exit if undefined ss-config options are found to exist ##
+## this way our team can be aware of bugs and avoid implementing unwanted options ##
+
+## warn if placeholders exist ##
+SS_CONFIG_OPTION_PLACEHOLDER="$(grep -c '"@' /var/www/ss-config)"
+if [[ "$SS_CONFIG_OPTION_PLACEHOLDER" -gt 0 ]]; then
+    echo -e ""
+    echo -e "${LIGHTRED}Your ss-config file contains \"@...\" placeholders. Please input values for ${NOCOLOR}"
+    echo -e "${LIGHTRED}all incomplete option fields, and then run ss-update again. ${NOCOLOR}"
+    echo -e ""
+    exit 1
+fi
+
+####################################################################################################
 #### SS-Install: Interactive Bash Setup Wizard (SS-Config): ########################################
 ####################################################################################################
 
@@ -571,6 +590,12 @@ source /var/www/ss-check
 ## set confold as dpkg default (fail-safe in case apt upgrade called directly) ##
 DEBIAN_FRONTEND=noninteractive dpkg --configure -a --force-confold
 
+## update Ubuntu repo cache ##
+apt update
+
+## upgrade installed Ubuntu packages (LEMP modules) + but now Linux kernel (full-upgrade) ##
+apt upgrade
+
 ####################################################################################################
 #### SS-Install: Configure Ubuntu Root + Users + Sudo Permissions + SSH/SFTP #######################
 ####################################################################################################
@@ -604,16 +629,6 @@ source /var/www/ss-install-ubuntu-crontab
 source /var/www/ss-install-ubuntu-utils
 
 ####################################################################################################
-#### SS-Install: Update Apt Cache And Upgrade Packages #############################################
-####################################################################################################
-
-## here we run updates to ensure that the Ubuntu apt cache and all packages are current ##
-## ss-update will ensure that confold is set to default to avoid overwriting ##
-
-## run ss-update ##
-source /var/www/ss-update
-
-####################################################################################################
 #### SS-Install: Install PHP-FPM ###################################################################
 ####################################################################################################
 
@@ -637,7 +652,7 @@ source /var/www/ss-install-nginx
 ## for a cleaner SSL reinstall run ss-install-nginx instead of running ss-encrypt ##
 
 ## run ss-encrypt (now included in ss-install-nginx) ##
-source /var/www/ss-encrypt
+# source /var/www/ss-encrypt
 
 ####################################################################################################
 #### SS-Install: Install MySQL (Database) ##########################################################
