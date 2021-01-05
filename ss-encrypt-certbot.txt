@@ -50,6 +50,28 @@ if [[ "$SSL_TYPE" == "certbot" ]] && [[ ! -f "/var/www/certs/dhparam.pem" ]]; th
     openssl dhparam -out /var/www/certs/dhparam.pem 2048
 fi
 
+
+
+
+####################################################################################################
+#### SS-Install-Nginx-Config: Temporarily Activate OpenSSL ####################
+####################################################################################################
+
+## here we must temporarily activate OpenSSL in order to avoid fatal errors in Nginx ##
+## the next step will be running Certbot which requires OpenSSL to be activated ##
+
+## run ss-install-nginx-openssl ##
+
+
+## if LE cert not exists then something is broken or it is the first time running on this server ##
+## in either case we should temp activate OpenSSL cert instead so that Certbot can verify domain ##
+
+if [[ ! -f "/etc/letsencrypt/live/slickstack/fullchain.pem" ]]; then 
+source /var/www/bash/ss-install-nginx-openssl
+source /var/www/bash/ss-restart-services-nginx
+fi
+
+
 ####################################################################################################
 #### SS-Encrypt: Only Perform Certbot Tasks If SS-Encrypt Not Run In The Last 15 Mins ##############
 ####################################################################################################
