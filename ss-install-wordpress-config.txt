@@ -607,13 +607,23 @@ cp /tmp/wp-config-dev.php /var/www/html/dev/wp-config.php
 mysql --execute="UPDATE ${DB_NAME}.${DB_PREFIX}options SET option_value='https://$SITE_DOMAIN' WHERE option_name='home'";
 mysql --execute="UPDATE ${DB_NAME}.${DB_PREFIX}options SET option_value='https://$SITE_DOMAIN' WHERE option_name='siteurl'";
 
+if [[ "$STAGING_SITE" != "false" ]]; then 
 ## ensure home + siteurl options are correct (staging) ##
 mysql --execute="UPDATE ${DB_NAME}.staging_options SET option_value='https://$SITE_DOMAIN/staging' WHERE option_name='home'";
 mysql --execute="UPDATE ${DB_NAME}.staging_options SET option_value='https://$SITE_DOMAIN/staging' WHERE option_name='siteurl'";
 
+mysql --execute="UPDATE ${DB_NAME}_staging.${DB_PREFIX}options SET option_value='https://staging.$SITE_TLD' WHERE option_name='home'";
+mysql --execute="UPDATE ${DB_NAME}_staging.${DB_PREFIX}options SET option_value='https://staging.$SITE_TLD' WHERE option_name='siteurl'";
+fi
+
+if [[ "$DEV_SITE" != "false" ]]; then 
 ## ensure home + siteurl options are correct (dev) ##
 mysql --execute="UPDATE ${DB_NAME}.dev_options SET option_value='https://$SITE_DOMAIN/dev' WHERE option_name='home'";
 mysql --execute="UPDATE ${DB_NAME}.dev_options SET option_value='https://$SITE_DOMAIN/dev' WHERE option_name='siteurl'";
+
+mysql --execute="UPDATE ${DB_NAME}_dev.${DB_PREFIX}options SET option_value='https://dev.$SITE_TLD' WHERE option_name='home'";
+mysql --execute="UPDATE ${DB_NAME}_dev.${DB_PREFIX}options SET option_value='https://dev.$SITE_TLD' WHERE option_name='siteurl'";
+fi
 
 ####################################################################################################
 #### SS-Install-WordPress-Config: Reset Permissions (WordPress Core) ###############################
