@@ -24,7 +24,8 @@
 * [https://medium.com/@vanrijn/what-is-new-with-tls-1-3-e991df2caaac](https://medium.com/@vanrijn/what-is-new-with-tls-1-3-e991df2caaac)
 * [https://tls.mbed.org/discussions/generic/what-is-the-correct-way-to-use-session-tickets](https://tls.mbed.org/discussions/generic/what-is-the-correct-way-to-use-session-tickets)
 * [https://community.letsencrypt.org/t/errors-from-browsers-with-ssl-session-tickets-off-nginx/18124/3](https://community.letsencrypt.org/t/errors-from-browsers-with-ssl-session-tickets-off-nginx/18124/3)
+* https://github.com/acmesh-official/acme.sh
 
 ----
 
-*Last updated: Dec 6, 2019*
+*Last updated: Jan 9, 2021*
