@@ -25,6 +25,8 @@
 * [https://tls.mbed.org/discussions/generic/what-is-the-correct-way-to-use-session-tickets](https://tls.mbed.org/discussions/generic/what-is-the-correct-way-to-use-session-tickets)
 * [https://community.letsencrypt.org/t/errors-from-browsers-with-ssl-session-tickets-off-nginx/18124/3](https://community.letsencrypt.org/t/errors-from-browsers-with-ssl-session-tickets-off-nginx/18124/3)
 * https://github.com/acmesh-official/acme.sh
+* https://letsencrypt.org/docs/client-options/
+* https://letsencrypt.org/docs/rate-limits/
 
 ----
 
