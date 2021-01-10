@@ -32,6 +32,27 @@ source /var/www/ss-functions
 echo -e "${PURPLE}Running ss-install-wordpress-core: Reinstalls the WordPress module (CMS) package and non-config files (idempotent)...${NOCOLOR}"
 sleep 5s
 
+####################################################################################################
+#### SS-Maintenance-Enable: Enable Maintenance Mode (Nginx) ########################################
+####################################################################################################
+
+## retrieve latest maintenance.html file (if not exists) ##
+if [[ ! -f "/var/www/meta/maintenance.html" ]]; then 
+  wget -O /tmp/maintenance.html http://mirrors.slickstack.io/nginx/maintenance.txt
+  cp /tmp/maintenance.html /var/www/meta/maintenance.html
+  chown www-data:www-data /var/www/meta/maintenance.html
+  chmod 0644 /var/www/meta/maintenance.html ## 0644
+fi
+
+## cleanup old ones ##
+/var/www/html/maintenance.html*
+
+## copy (install) maintenance file to web root ##
+cp /var/www/meta/maintenance.html /var/www/html/maintenance.html
+
+## reset perms ##
+chown www-data:www-data /var/www/html/maintenance.html
+chmod 0644 /var/www/html/maintenance.html ## 0644
 
 ####################################################################################################
 #### SS-Maintenance-Enable: Touch Timestamp File (End Script) ######################################
