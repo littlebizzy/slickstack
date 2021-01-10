@@ -3,9 +3,11 @@
 #### link: https://slickstack.io ###################################################################
 #### mirror: http://mirrors.slickstack.io/nginx/server-block-production.txt ########################
 #### path: n/a (boilerplate) #######################################################################
-#### destination: /etc/nginx/sites-available/example.com (after install) ###########################
+#### destination: /var/www/sites/example.com (after install) #######################################
 #### purpose: Nginx server block boilerplate (for WordPress single site installations only) ########
 #### module version: Nginx 1.18.x ##################################################################
+#### sourced by: n/a ###############################################################################
+#### bash aliases: n/a #############################################################################
 ####################################################################################################
 
 ## SLICKSTACK SUPPORTS HTTPS-ONLY NGINX SERVER BLOCKS WITH HSTS ENABLED BY DEFAULT ##
@@ -43,7 +45,7 @@ server {
     	}
     
 ####################################################################################################
-#### Server Block: Indexing + Public URI + Try Files Settings ######################################
+#### Server Block (Production): Indexing + Public URI + Try Files Settings ######################################
 ####################################################################################################
 
     ## redirect index.php requests ##
@@ -56,6 +58,12 @@ server {
     
     ## try files order ##
     location / {
+    
+    ## 503 error if maintenance file found in web root ##
+      if (-f /var/www/html/maintenance.html) {
+    return 503;
+  }
+  
         ## first try files, then directories, otherwise query index
         try_files $uri $uri/ /index.php?$args;
 	## force trailing slashes on urls (do not enable for bbPress/BuddyPress sites)
@@ -432,6 +440,23 @@ server {
     ## more coming soon... ##
     
     
+####################################################################################################
+#### Server Block: Custom Settings For Popular Third-Party WordPress Plugins #######################
+####################################################################################################
+
+  ## set 503 page template ##
+  error_page 503 /var/www/html/maintenance.html;
+  
+  ## location rules for 503 page ##
+  location /var/www/html/maintenance.html {
+  
+  }
+
+
+####################################################################################################
+#### Server Block (Production): #######################
+####################################################################################################
+    
 ## DO NOT REMOVE THIS CURLY BRACKET ᕦ⊙෴⊙ᕤ ##
 }
 
@@ -478,5 +503,10 @@ server {
 ## Ref: https://codinginthetrenches.com/2013/12/14/nginx-ipv6only-setting-gotcha/
 ## Ref: https://stefan.lengfeld.xyz/blog/2015_01_21/Using%20ipv6only%20in%20Nginx.xhtml
 ## Ref: https://serverfault.com/questions/638367/do-you-need-separate-ipv4-and-ipv6-listen-directives-in-nginx
+## Ref: https://blog.devcloud.hosting/configuring-nginx-for-quickly-switching-to-maintenance-mode-e4136cf497f3
+## Ref: https://blog.danivovich.com/2016/09/08/flexible-maintenance-mode-via-nginx-proxy/
+## Ref: https://2buntu.com/articles/1500/creating-a-custom-maintenance-page-for-nginx/
+## Ref: https://medium.com/shanes-tech-tips/easy-maintenance-mode-with-nginx-2d4d510a0980
+## Ref: https://lincolnloop.com/blog/pro-tip-redirecting-custom-nginx-maintenance-page/
 
 ## SS_EOF
