@@ -78,7 +78,7 @@ NOTE: The self-healing function will respect any custom Cron Job schedules found
 
 ## Core Modules [[read more](https://slickstack.io/modules)]
 
-*Last updated: Nov 1, 2020*
+*Last updated: Jan 13, 2021*
 
 *Default Ports: 80 (HTTP), 443 (HTTPS), 6969 (SSH)*
 
@@ -96,7 +96,7 @@ NOTE: The self-healing function will respect any custom Cron Job schedules found
 | **WordPress** | [mirrors](http://mirrors.slickstack.io/wordpress/) | 5.5.3 | some WP Core junk files are removed by `ss-clean` |
 | **MU Plugins** | [mirrors](http://mirrors.slickstack.io/mu-plugins/) | (n/a) | optional `mu-plugins` by LittleBizzy |
 | **WP-CLI** | [mirrors](http://mirrors.slickstack.io/wp-cli/) | 2.4.0 | default config |
-| **Adminer** | [mirrors](http://mirrors.slickstack.io/adminer/) | 4.7.7 | default config |
+| **Adminer** | [mirrors](http://mirrors.slickstack.io/adminer/) | 4.7.8 | default config |
 | **Git** | [mirrors](http://mirrors.slickstack.io/git/) | 2.25.x | default config |
 | **UFW Firewall** | [mirrors](http://mirrors.slickstack.io/ufw-firewall/) | 0.36 | `ufw` + `ufw.conf` + `user-rules` |
 | **ClamAV** | [mirrors](http://mirrors.slickstack.io/clamav/) | 0.102.x | `freshclam.conf` |
@@ -192,176 +192,6 @@ After completing the installation steps above, your `/var/www/` directory should
     /var/www/html/wp-content/uploads/
     /var/www/html/wp-includes/...
     /var/www/html/wp-...
-    
-## MU (Must-Use) Plugins [[read more](https://slickstack.io/modules/mu-plugins)]
-    
-If you choose to deploy a SlickStack [ss] server using our free WPLite boilerplate, the installation process will include several [Must Use plugins](https://wordpress.org/support/article/must-use-plugins/) inside your WordPress structure (`/var/www/html/wp-content/mu-plugins/`) that are maintained by LittleBizzy. If you do not wish for these Must Use plugins to be installed, and want a default "vanilla" WordPress installation, choose "wordpress" instead of "wplite" when setting up your `ss-config` options:
-
-* [**Autoloader**](https://github.com/littlebizzy/autoloader): Enables standard WordPress plugins contained in a folder to be placed in the mu-plugins directory and loaded prior to others (forked from Bedrock).
-* [**Clear Caches**](https://github.com/littlebizzy/clear-caches): The easiest way to clear caches including WordPress cache, PHP Opcache, Nginx cache, Transient cache, Varnish cache, and object cache (e.g. Redis).
-* [**CloudFlare**](https://github.com/littlebizzy/cloudflare): Easily connect your WordPress website to free optimization features from CloudFlare, including one-click options to purge cache and enable dev mode.
-* [**Custom Functions**](https://github.com/littlebizzy/custom-functions): Enables the ability to input custom WordPress functions such as filters in a centralized place to avoid the dependence on a theme functions.php file.
-* [**Dashboard Cleanup**](https://github.com/littlebizzy/dashboard-cleanup): Cleans up the WP Admin backend by disabling various bloat features including nag notices, Automattic spam, and other outdated and pointless items.
-* [**Delete Expired Transients**](https://github.com/littlebizzy/delete-expired-transients): Deletes all expired transients upon activation and on a daily basis thereafter via WP-Cron to maintain a cleaner database and improve performance.
-* [**Disable Attachment Pages**](https://github.com/littlebizzy/disable-attachment-pages): Completely disables media attachment pages which then become 404 errors to avoid thin content SEO issues and better guard against snoopers and bots.
-* [**Disable Embeds**](https://github.com/littlebizzy/disable-embeds): Disables both external and internal embedding functions to avoid slow page render, instability and SEO issues, and to improve overall loading speed.
-* [**Disable Emojis**](https://github.com/littlebizzy/disable-emojis): Completely disables both the old and new versions of WordPress emojis, removes the corresponding javascript calls, and improves page loading times.
-* [**Disable Empty Trash**](https://github.com/littlebizzy/disable-empty-trash): Completely disables the automatic trash empty for WordPress posts, custom posts, pages, and comments to avoid data loss and encourage manual emptying.
-* [**Disable Gutenberg**](https://github.com/littlebizzy/disable-gutenberg): Completely disables the Gutenberg block editor and enables the classic WordPress post editor (TinyMCE aka WYSIWYG) for lighter coding and simplicity.
-* [**Disable Image Compression**](https://github.com/littlebizzy/disable-image-compression): Completely disables all JPEG compression in WordPress including image uploads, thumbnails, and image editing tools, thus retaining original quality.
-* [**Disable Post Via Email**](https://github.com/littlebizzy/disable-post-via-email): Completely disables and hides the Post Via Email feature included in WordPress core for stronger security and to simplify the backend settings page.
-* [**Disable XML-RPC**](https://github.com/littlebizzy/disable-xml-rpc): Completely disables all XML-RPC related functions in WordPress including pingbacks and trackbacks, and helps prevent attacks on the xmlrpc.php file.
-* [**Error Log Monitor**]():
-* [**Force Strong Hashing**](https://github.com/littlebizzy/force-strong-hashing): Forces all user passwords generated by WordPress to be hashed using Bcrypt, the most secure and popular PHP hashing algorithm currently available.
-* [**Header Cleanup**](https://github.com/littlebizzy/header-cleanup): Cleans up most of the unnecessary junk meta included by default in the WordPress header including generator, RSD, shortlink, previous and next, etc.
-* [**Limit Heartbeat**](https://github.com/littlebizzy/limit-heartbeat): Limits the Heartbeat API in WordPress to certain areas of the site (and a longer pulse interval) to reduce AJAX queries and improve resource usage.
-* [**Minify HTML**](https://github.com/littlebizzy/minify-html): Tactfully minifies HTML output and markup to remove line breaks, whitespace, comments, and other code bloat to cleanup source code and improve speed.
-* [**Plugin Blacklist**](https://github.com/littlebizzy/plugin-blacklist): Allows web hosts, agencies, or other WordPress site managers to disallow a custom list of plugins from being activated for security or other reasons.
-* [**Server Status**](https://github.com/littlebizzy/server-status): Useful statistics about the server OS, CPU, RAM, load average, memory usage, IP address, hostname, timezone, disk space, PHP, MySQL, caches, etc.
-* [**SFTP Details**](https://github.com/littlebizzy/sftp-details): Displays a small Dashboard widget to remind logged-in Admin users of their server SFTP login information for easy reference (uses defined constants).
-* [**Virtual Robotstxt**](https://github.com/littlebizzy/virtual-robotstxt): Replaces the default virtual robots.txt generated by WordPress with an editable one, and deletes any physical robots.txt file that may already exist.
-* [**XXX Notices**](https://github.com/littlebizzy/slickstack/blob/master/mu-plugins/xxx-notices.txt): Occasional notices designed to appear in the WP Admin Dashboard that mention important changes regarding the SlickStack environment (white-labeled).
-    
-## Defined Constants
-
-The included Must Use plugins that SlickStack [ss] bundles as part of the `wplite` boilerplate support the following defined constants. Some of them are hard-coded in the `wp-config.php` file in order to optimize performance, however they can otherwise be customized using the Custom Functions file at `/wp-content/functions.php` ... please note that some of these are "planned" and not yet functional, we are hurrying to update the documentation accordingly.
-
-    /** Plugin Meta (Limited Support) */
-    define('AUTOMATIC_UPDATE_PLUGINS', false); // default = false
-    define('DISABLE_NAG_NOTICES', false); // default = false
-
-    /** Clear Caches Functions (v1.2.1) */
-    define('CLEAR_CACHES', true); // default = true
-    define('CLEAR_CACHES_NGINX', true); // default = true
-    define('CLEAR_CACHES_NGINX_PATH', '/var/www/cache'); // default = /var/www/cache
-    define('CLEAR_CACHES_OBJECT', true); // default = true
-    define('CLEAR_CACHES_OPCACHE', true); // default = true
-    
-    /** CloudFlare Functions (v1.5.0) */
-    define('CLOUDFLARE', true); // default = true
-    define('CLOUDFLARE_API_KEY', '@CLOUDFLAREAPIKEY'); // *must be unique*
-    define('CLOUDFLARE_API_EMAIL', '@CLOUDFLAREAPIEMAIL'); // *must be unique*
-    // define('CLOUDFLARE_WIDGET_DNS', true); // default = true
-    // define('CLOUDFLARE_WIDGET_ANALYTICS', true); // default = true
-
-    /** Custom Functions Functions (v1.0.0) */
-    // define('CUSTOM_FUNCTIONS', true); // default = true
-    // define('CUSTOM_FUNCTIONS_PATH', '/var/www/html/wp-content/functions.php'); // default = /var/www/html/wp-content/functions.php
-    
-    /** Dashboard Cleanup Functions (v1.1.2) */
-    define('DASHBOARD_CLEANUP', true); // default = true
-    define('DASHBOARD_CLEANUP_ADD_PLUGIN_TABS', true); // default = true
-    define('DASHBOARD_CLEANUP_ADD_THEME_TABS', true); // default = true
-    define('DASHBOARD_CLEANUP_CSS_ADMIN_NOTICE', true); // default = true
-    define('DASHBOARD_CLEANUP_DISABLE_SEARCH', true); // default = true
-    define('DASHBOARD_CLEANUP_EVENTS_AND_NEWS', true); // default = true
-    define('DASHBOARD_CLEANUP_IMPORT_EXPORT_MENU', true); // default = true
-    define('DASHBOARD_CLEANUP_LINK_MANAGER_MENU', true); // default = true
-    define('DASHBOARD_CLEANUP_QUICK_DRAFT', true); // default = true
-    define('DASHBOARD_CLEANUP_THANKS_FOOTER', true); // default = true
-    define('DASHBOARD_CLEANUP_WELCOME_TO_WORDPRESS', true); // default = true
-    define('DASHBOARD_CLEANUP_WOOCOMMERCE_CONNECT_STORE', true); // default = true
-    define('DASHBOARD_CLEANUP_WOOCOMMERCE_FOOTER_TEXT', true); // default = true
-    define('DASHBOARD_CLEANUP_WOOCOMMERCE_MARKETPLACE_SUGGESTIONS', true); // default = true
-    define('DASHBOARD_CLEANUP_WOOCOMMERCE_PRODUCTS_BLOCK', true); // default = true
-    define('DASHBOARD_CLEANUP_WOOCOMMERCE_TRACKER', true); // default = true
-    define('DASHBOARD_CLEANUP_WP_ORG_SHORTCUT_LINKS', true);  // default = true
-    
-    /** Delete Expired Transients Functions */
-    define('DELETE_EXPIRED_TRANSIENTS', true); // default = true
-    define('DELETE_EXPIRED_TRANSIENTS_HOURS', '6'); // default = 6
-    define('DELETE_EXPIRED_TRANSIENTS_MAX_EXECUTION_TIME', '10'); // default = 10
-    define('DELETE_EXPIRED_TRANSIENTS_MAX_BATCH_RECORDS', '50'); // default = 50
-    
-    /** Disable Attachment Pages Functions */
-    // define('DISABLE_ATTACHMENT_PAGES', true); // default = true
-    
-    /** Disable Embeds Functions (v1.3.0) */
-    define('DISABLE_EMBEDS', true); // default = true
-    define('DISABLE_EMBEDS_ALLOWED_SOURCES', 'twitter,facebook,youtube,soundcloud,etc'); // default = none
-    
-    /** Disable Emojis Functions */
-    // define('DISABLE_EMOJIS', true); // default = true
-    
-    /** Disable Empty Trash Functions */
-    // define('DISABLE_EMPTY_TRASH', true); // default = true
-    
-    /** Disable Gutenberg Functions (v1.1.0) */
-    define('DISABLE_GUTENBERG', true); // default = true
-    
-    /* Disable Image Compression Functions */
-    // define('DISABLE_IMAGE_COMPRESSION', true); // default = true
-    
-    /** Disable jQuery Migrate Functions */
-    // define('DISABLE_JQUERY_MIGRATE', true); // default = true
-    
-    /** Disable Post Via Email Functions */
-    // define('DISABLE_POST_VIA_EMAIL', true); // default = true
-    
-    /** Disable XML-RPC Functions */
-    // define('DISABLE_XML_RPC', true); // default = true
-    
-    /** Force HTTPS Functions (v1.4.0) */
-    define('FORCE_HTTPS', true); // default = true
-    define('FORCE_HTTPS_EXTERNAL_LINKS', false); // default = false
-    define('FORCE_HTTPS_EXTERNAL_RESOURCES', true); // default = true
-    define('FORCE_HTTPS_INTERNAL_LINKS', true); // default = true
-    define('FORCE_HTTPS_INTERNAL_RESOURCES', true); // default = true
-    
-    /** Force Strong Hashing Functions */
-    // define('FORCE_STRONG_HASHING', true); // default = true
-    
-    /** Header Cleanup Functions */
-    // define('HEADER_CLEANUP', true); // default = true
-    
-    /** Index Autoload Functions (v1.1.1) */
-    // define('INDEX_AUTOLOAD', true); // default = true
-    define('INDEX_AUTOLOAD_REGENERATE', false); // default = false
-    
-    /** Limit Heartbeat Functions (v1.1.0) */
-    define('LIMIT_HEARTBEAT', true); // default = true
-    define('LIMIT_HEARTBEAT_DISABLE_DASHBOARD', false); // default = false
-    define('LIMIT_HEARTBEAT_DISABLE_EDITOR', false); // default = false
-    define('LIMIT_HEARTBEAT_DISABLE_FRONTEND', true); // default = true
-    define('LIMIT_HEARTBEAT_INTERVAL_DASHBOARD', 600); // default = 600
-    define('LIMIT_HEARTBEAT_INTERVAL_EDITOR', 30); // default = 30
-    define('LIMIT_HEARTBEAT_INTERVAL_FRONTEND', 300); // default = 300
-    
-    /** Minify HTML Functions (v1.0.1) */
-    define('MINIFY_HTML', true); // default = true
-    define('MINIFY_HTML_INLINE_STYLES', true); // default = true
-    define('MINIFY_HTML_INLINE_STYLES_COMMENTS', true); // default = true
-    define('MINIFY_HTML_REMOVE_COMMENTS', true); // default = true
-    define('MINIFY_HTML_REMOVE_CONDITIONALS', true); // default = true
-    define('MINIFY_HTML_REMOVE_EXTRA_SPACING', true); // default = true
-    define('MINIFY_HTML_REMOVE_HTML5_SELF_CLOSING', false); // default = false
-    define('MINIFY_HTML_REMOVE_LINE_BREAKS', true); // default = true
-    define('MINIFY_HTML_INLINE_SCRIPTS', false); // default = false
-    define('MINIFY_HTML_INLINE_SCRIPTS_COMMENTS', false); // default = false
-    define('MINIFY_HTML_UTF8_SUPPORT', true); // default = true
-    
-    /* Plugin Blacklist Functions */
-    define('PLUGIN_BLACKLIST', true); // default = true
-    
-    /* Remove Query Strings Functions */
-    define('REMOVE_QUERY_STRINGS', true); // default = true
-    define('REMOVE_QUERY_STRINGS_ARGS', 'v,ver,version'); // default = v,ver,version
-    
-    /* Server Status Functions */
-    define('SERVER_STATUS', true); // default = true
-    define('SERVER_STATUS_DISPLAY', 'widefat'); // default = none
-    
-    /* SFTP Details Functions */
-    define('SFTP_DETAILS', true); // default = true
-    define('SFTP_DETAILS_SERVER', '123.123.123.123'); // *must be unique*
-    define('SFTP_DETAILS_USER', 'username'); // *must be unique*
-    define('SFTP_DETAILS_PASSWORD', 'password'); // *must be unique*
-    define('SFTP_DETAILS_PORT', '6969'); // default = 6969
-    define('SFTP_DETAILS_ROOT_DIR', '/var/www'); // default = /var/www
-    define('SFTP_DETAILS_PUBLIC_DIR', '/var/www/html'); // default = /var/www/html
-    
-    /* Virtual Robots.txt Functions */
-    define('VIRTUAL_ROBOTSTXT', true); // default = true
 
 ## Philosophy
 
