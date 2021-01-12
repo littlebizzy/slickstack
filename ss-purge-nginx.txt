@@ -6,9 +6,10 @@
 #### mirror: http://mirrors.slickstack.io/ss-purge-fcgi.txt ########################################
 #### path: /var/www/ss-purge-fcgi ##################################################################
 #### destination: n/a (not a boilerplate) ##########################################################
-#### purpose: Clears all caches i.e. FastCGI (Nginx), PHP OPcache, Redis, and WP transients ########
+#### purpose: Clears the Nginx FastCGI cache by deleting files under /var/www/cache/nginx/ #########
 #### module version: Ubuntu 20.04 LTS + MySQL 8.0.x + PHP-FPM 7.4.x + Redis 5.0.x ##################
 #### sourced by: ss-purge (and many ss core bash scripts) ##########################################
+#### bash aliases: ss purge [clear] nginx, ss purge [clear] caches nginx ###########################
 ####################################################################################################
 
 ## RUNNING SS-PURGE DURING TRAFFIC SPIKES MIGHT CAUSE SUDDEN STRESS TO SERVER RESOURCES ##
@@ -19,6 +20,17 @@ source /var/www/ss-config
 
 ## include SlickStack functions ##
 source /var/www/ss-functions
+
+####################################################################################################
+#### SS-Purge-Nginx: Message (Begin Script) ########################################################
+####################################################################################################
+
+## this is a simple message that announces to the shell the purpose of this bash script ##
+## it will only be noticed by sudo users who manually call ss core bash scripts ##
+
+## echo message ##
+echo -e "${PURPLE}Running ss-purge-nginx: Clears the Nginx FastCGI cache by deleting files under /var/www/cache/nginx/... ${NOCOLOR}"
+sleep "$SLEEP_MESSAGE_BEGIN"
 
 ####################################################################################################
 ### SS-Purge: Clear Nginx FastCGI Cache (Deletes All Cache Files On Disk / TMPFS) ##################
