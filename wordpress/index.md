@@ -24,6 +24,8 @@ title: WordPress (Public Mirrors)
 
 #### wordpress.zip
 
+* [wordpress-5.6.1.zip]
+* [wordpress-5.6.0.zip]
 * [wordpress-5.5.3.zip](wordpress-5.5.3.zip)
 * [wordpress-5.5.2.zip](wordpress-5.5.2.zip)
 * [wordpress-5.5.1.zip](wordpress-5.5.1.zip)
