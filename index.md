@@ -176,7 +176,9 @@ title: SlickStack (Public Mirrors)
 * https://utkusen.com/blog/security-by-obscurity-is-underrated.html
 * https://opensource.com/article/20/6/bash-source-command
 * https://medium.com/@gabriel_wilkes/why-tech-groups-can-get-away-with-using-slack-for-free-but-open-source-projects-and-businesses-of-96c427aaefbb
+* https://alexgaynor.net/2020/nov/30/why-software-ends-up-complex/
+* https://www.brandonsmith.ninja/blog/write-code-not-too-much-mostly-functions
 
 ----
 
-*Last updated: Dec 12, 2020*
+*Last updated: Jan 13, 2020*
