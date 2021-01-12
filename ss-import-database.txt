@@ -6,7 +6,7 @@
 #### mirror: http://mirrors.slickstack.io/ss-import-database.txt ###################################
 #### path: /var/www/ss-import-database #############################################################
 #### destination: n/a (not a boilerplate) ##########################################################
-#### purpose: Force imports /var/www/meta/import.sql (or import.sql.zip/gzip) to database ##########
+#### purpose: Force imports /var/www/meta/import.sql (or import.sql.zip|gz) to database ############
 #### module version: MySQL 8.0.x ###################################################################
 #### sourced by: n/a ###############################################################################
 #### bash aliases: ss import database, ss import db ################################################
@@ -19,11 +19,25 @@ source /var/www/ss-config
 source /var/www/ss-functions
 
 ####################################################################################################
+#### SS-Import-Database: Message (Begin Script) ####################################################
+####################################################################################################
+
+## this is a simple message that announces to the shell the purpose of this bash script ##
+## it will only be noticed by sudo users who manually call ss core bash scripts ##
+
+## echo message ##
+echo -e "${PURPLE}Running ss-import-database: Force imports /var/www/meta/import.sql (or import.sql.zip|gz) to database... ${NOCOLOR}"
+sleep "$SLEEP_MESSAGE_BEGIN"
+
+####################################################################################################
 #### SS-Import: Delete Any Previous / Leftover (Conflicting) Temporary Files #######################
 ####################################################################################################
 
 
 
+####################################################################################################
+#### SS-Import-Database: Backup Database Before Proceeding (Via SS-Dump-Database) ##################
+####################################################################################################
 
 ## run ss-dump-database ##
 source /var/www/ss-dump-database
@@ -32,9 +46,17 @@ source /var/www/ss-dump-database
 #### SS-Import: Import Database (Overwrites Data) ##################################################
 ####################################################################################################
 
-## import (overwite) production database ##
-# mysql --user=root --host="$DB_HOST" --protocol=tcp --port=3306 --flush-privileges --force "$DB_NAME" < /var/www/meta/import.sql
-
+## import production database ##
+if [[ -f "/var/www/meta/import.sql" ]]; then
+    mysql "$DB_NAME" < /var/www/meta/import.sql
+elif [[ ! -f "/var/www/meta/import.sql" ]] && [[ -f "/var/www/meta/import.zip" ]]; then
+    mysql "$DB_NAME" < /var/www/meta/import.zip
+elif [[ ! -f "/var/www/meta/import.sql" ]] && [[ ! -f "/var/www/meta/import.zip" ]] && [[ -f "/var/www/meta/import.gz" ]]; then
+    mysql "$DB_NAME" < /var/www/meta/import.gz
+else 
+    echo -e "No import.sql|zip|gz file found, cannot import database."
+fi
+    
 ####################################################################################################
 #### SS-Import: Touch Timestamp File (End Script) ###################################################
 ####################################################################################################
