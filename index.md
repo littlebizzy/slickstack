@@ -63,6 +63,7 @@ title: SlickStack (Public Mirrors)
 #### ss-import subscripts
 
 * [ss-import-database](/bash/ss-import-database.txt)
+* [ss-import-files](/bash/ss-import-files.txt)
 
 #### ss-install subscripts
 
