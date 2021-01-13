@@ -35,12 +35,12 @@ title: SlickStack (Public Mirrors)
 * [ss-dos2unix](/bash/ss-dos2unix.txt)
 * [ss-dump-database](/bash/ss-dump-database.txt)
 * [ss-encrypt](/bash/ss-encrypt.txt)
-* [ss-encrypt-certbot](/bash/ss-encrypt-certbot.txt)
-* [ss-encrypt-openssl](/bash/ss-encrypt-openssl.txt)
 * [ss-functions](/bash/ss-functions.txt)
 * [ss-import](/bash/ss-import.txt)
 * [ss-import-database](/bash/ss-import-database.txt)
 * [ss-install](/bash/ss-install.txt)
+* [ss-maintenance-disable](/bash/ss-maintenance-disable.txt)
+* [ss-maintenance-enable](/bash/ss-maintenance-enable.txt)
 * [ss-monitor](/bash/ss-monitor.txt)
 * [ss-optimize-database](/bash/ss-optimize-database.txt)
 * [ss-overview](/bash/ss-overview.txt)
@@ -48,12 +48,23 @@ title: SlickStack (Public Mirrors)
 * [ss-purge](/bash/ss-purge.txt)
 * [ss-reboot](/bash/ss-reboot.txt)
 * [ss-remote](/bash/ss-remote.txt)
+* [ss-reset-logs](/bash/ss-reset-logs.txt)
 * [ss-reset-password-sftp](/bash/ss-reset-password-sftp.txt)
 * [ss-restart-services](/bash/ss-restart-services.txt)
 * [ss-scan-malware](/bash/ss-scan-malware.txt)
-* [ss-sync](/bash/ss-sync.txt)
+* [ss-sync-staging](/bash/ss-sync-staging.txt)
 * [ss-update](/bash/ss-update.txt)
 * [ss-worker](/bash/ss-worker.txt)
+
+#### ss-encrypt subscripts (to renew SSL certs)
+
+* [ss-encrypt-certbot](/bash/ss-encrypt-certbot.txt)
+* [ss-encrypt-openssl](/bash/ss-encrypt-openssl.txt)
+
+#### ss-restart subscripts (to restart services)
+
+* [ss-restart-services-nginx](/bash/ss-restart-services-nginx.txt)
+* [ss-restart-services-php](/bash/ss-restart-services-php.txt)
 
 #### ss-install subscripts (to install modules)
 
@@ -130,7 +141,7 @@ title: SlickStack (Public Mirrors)
 
 #### ss-config-sample (used by ss-install to create ss-config)
 
-* [ss-config-sample](ss-config-sample.txt)
+* [ss-config-sample](/bash/ss-config-sample.txt)
 
 ### Core Modules
 
