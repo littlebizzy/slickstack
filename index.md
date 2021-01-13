@@ -61,11 +61,6 @@ title: SlickStack (Public Mirrors)
 * [ss-encrypt-certbot](/bash/ss-encrypt-certbot.txt)
 * [ss-encrypt-openssl](/bash/ss-encrypt-openssl.txt)
 
-#### ss-restart subscripts (to restart services)
-
-* [ss-restart-services-nginx](/bash/ss-restart-services-nginx.txt)
-* [ss-restart-services-php](/bash/ss-restart-services-php.txt)
-
 #### ss-install subscripts (to install modules)
 
 * [ss-install-adminer](ss-install-adminer.txt)
@@ -139,7 +134,12 @@ title: SlickStack (Public Mirrors)
 * [ss-purge-redis](ss-purge-redis.txt)
 * [ss-purge-transients](ss-purge-transients.txt)
 
-#### ss-config-sample (used by ss-install to create ss-config)
+#### ss-restart subscripts (to restart services)
+
+* [ss-restart-services-nginx](/bash/ss-restart-services-nginx.txt)
+* [ss-restart-services-php](/bash/ss-restart-services-php.txt)
+
+#### ss-config-sample (used by ss-install)
 
 * [ss-config-sample](/bash/ss-config-sample.txt)
 
