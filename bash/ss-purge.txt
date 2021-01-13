@@ -7,8 +7,9 @@
 #### path: /var/www/ss-purge #######################################################################
 #### destination: n/a (not a boilerplate) ##########################################################
 #### purpose: Clears all caches i.e. Nginx (FastCGI), PHP OPcache, Redis (object cache), etc #######
-#### module version: Ubuntu 20.04 LTS + MySQL 8.0.x + PHP-FPM 7.4.x + Redis 5.0.x ##################
-#### sourced by: (many ss core scripts) ############################################################
+#### module version: Nginx 1.18.x + PHP-FPM 7.4.x + Redis 5.0.x + MySQL 8.0.x ######################
+#### sourced by: ss core bash scripts ##############################################################
+#### bash aliases: ss purge, ss purge caches, ss clear caches ######################################
 ####################################################################################################
 
 ## RUNNING SS-PURGE DURING TRAFFIC SPIKES MIGHT CAUSE SUDDEN STRESS TO SERVER RESOURCES ##
@@ -21,12 +22,15 @@ source /var/www/ss-config
 source /var/www/ss-functions
 
 ####################################################################################################
-#### SS-Purge: MESSAGE (Begin) #####################################################################
+#### SS-Purge: Message (Begin Script) ##############################################################
 ####################################################################################################
 
-## MESSAGE ##
-echo -e "${PURPLE}Running ss-purge: Clears all caches i.e. Nginx (FastCGI), PHP OPcache, Redis (object cache), etc...${NOCOLOR}"
-sleep 5s
+## this is a simple message that announces to the shell the purpose of this bash script ##
+## it will only be noticed by sudo users who manually call ss core bash scripts ##
+
+## echo message ##
+echo -e "${PURPLE}Running ss-purge: Clears all caches i.e. Nginx (FastCGI), PHP OPcache, Redis (object cache), etc... ${NOCOLOR}"
+sleep "$SLEEP_MESSAGE_BEGIN"
 
 ####################################################################################################
 #### SS-Purge: Purge (Reset) PHP OPcache ###########################################################
@@ -36,14 +40,18 @@ sleep 5s
 source /var/www/ss-purge-opcache
 
 ####################################################################################################
-#### SS-Purge: Delete All Transients From MySQL Database ###########################################
+#### SS-Purge: Delete WordPress Transients From MySQL Database #####################################
 ####################################################################################################
 
 ## manually deletes all transients (temporary query cache data) from WordPress database ##
 ## this is a more forceful approach than simply purging the Redis object cache ##
 
+if [[ "$SS_APP" == "wordpress" || -z "$SS_APP"  ]]; then
+
 ## run ss-purge-transients ##
 source /var/www/ss-purge-transients
+
+fi
 
 ####################################################################################################
 #### SS-Purge: Flush Redis (Object Cache i.e. Transients) ##########################################
