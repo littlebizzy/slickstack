@@ -137,62 +137,6 @@ From this point forward, you can manage your SlickStack [ss] server by simply us
 
 You can safely re-install SlickStack [ss] anytime via `sudo bash /var/www/ss-install` without causing any conflicts or data loss since the installation process is completely [idempotent](https://en.wikipedia.org/wiki/Idempotence).
 
-## Directory Structure
-
-After completing the installation steps above, your `/var/www/` directory should look exactly as below. Keep in mind that you should never directly modify the crontab on any SlickStack [ss] server, nor should you modify any of the files appearing below with the exception of `ss-config` (this does not apply to "WordPress" files found under `/var/www/html/`)...
-
-    /var/www/0-crontab
-    /var/www/1-cron-often
-    /var/www/2-cron-regular
-    /var/www/3-cron-quarter-hourly
-    /var/www/4-cron-half-hourly
-    /var/www/5-cron-hourly
-    /var/www/6-cron-quarter-daily
-    /var/www/7-cron-half-daily
-    /var/www/8-cron-daily
-    /var/www/9-cron-half-weekly
-    /var/www/10-cron-weekly
-    /var/www/11-cron-half-monthly
-    /var/www/12-cron-monthly
-    /var/www/13-cron-sometimes
-    /var/www/cache/
-    /var/www/html/
-    /var/www/logs/
-    /var/www/meta/
-    /var/www/ss-check
-    /var/www/ss-clean
-    /var/www/ss-config
-    /var/www/ss-config-sample
-    /var/www/ss-dump
-    /var/www/ss-encrypt
-    /var/www/ss-import
-    /var/www/ss-install
-    /var/www/ss-muplugs
-    /var/www/ss-perms
-    /var/www/ss-purge
-    /var/www/ss-restart
-    /var/www/ss-scan
-    /var/www/ss-update
-    /var/www/ss-worker
-    
-...likewise, your `/var/www/html/` (WordPress) directory should look like this:    
-    
-    /var/www/html/wp-admin/...
-    /var/www/html/wp-content/
-    /var/www/html/wp-content/blacklist.txt
-    /var/www/html/wp-content/functions.php
-    /var/www/html/wp-content/index.php
-    /var/www/html/wp-content/languages/
-    /var/www/html/wp-content/mu-plugins/
-    /var/www/html/wp-content/object-cache.php
-    /var/www/html/wp-content/plugins/
-    /var/www/html/wp-content/temp/
-    /var/www/html/wp-content/themes/
-    /var/www/html/wp-content/upgrade/
-    /var/www/html/wp-content/uploads/
-    /var/www/html/wp-includes/...
-    /var/www/html/wp-...
-
 ## Philosophy
 
 Outside of the so-called [Application Layer](https://en.wikipedia.org/wiki/Application_layer), so much of the way computers and servers now work has been moved away from in-house teams and specialists and onto "the cloud" that terms like [DevOps](https://www.reddit.com/r/devops/comments/3rpzem/devops_vs_sysadmin/cwqmlnd/) have become standard among recruiters, companies, and developers alike. Modern web development trends have begun to revolve entirely around concepts such as automation, APIs, [cloud services](https://www.bcsg.com/wp-content/uploads/2015/03/The-small-business-revolution-trends-in-SMB-cloud-adoption.pdf), and beyond — a phenomenon we might refer to as *Web 3.0*.
@@ -202,21 +146,6 @@ While this shift is exciting, there is now a massive and growing disconnect betw
 While Silicon Valley "gurus" and corporations pump out new SaaS services (or incredibly complex Configuration Management tools like Ansible) on a daily basis, the typical small business website is still trying to figure out how to make their contact forms work correctly. The "legacy" shared web hosting monopolies — think EIG or GoDaddy — also have little motivation to education their audience, as perpetuating confusion seems to be a core pillar of their business model.
 
 Thus, before the likes of Google and Amazon and Shopify and Wix take over the entire web and turn it into Wall Street-backed website builders that feed into their private ecosystems, SlickStack hopes to bridge the knowledge gap between emerging technology and old-school web development to empower SMBs to achieve top notch website performance and security by offering a "controlled" LEMP-stack environment with limited options that is perfectly suited to the world's most popular open-source CMS: WordPress.
-
-## Comparison
-
-| ...               | SlickStack | EasyEngine | ServerPilot | Runcloud | Ansible | Puppet |   Salt  |   Chef  | Trellis | AnsiPress |   VVV  |  VCCW  | Centminmod | VPSSIM |
-|-------------------|:----------:|:----------:|:-----------:|:--------:|:-------:|:------:|:-------:|:-------:|:-------:|:---------:|:------:|:------:|:----------:|:------:|
-| 100% Free         |     Yes    |     Yes    |      No     |    No    |    --   |   --   |    --   |    --   |    --   |     --    |   --   |   --   |     --     |   --   |
-| Dependencies      |    None    |   Python   |     Ruby    |  Python  |  Python | Python | Ansible | Ansible | Vagrant |  Vagrant  | (Unix) | (Unix) |      -     |   --   |
-| Direct Management |     Yes    |     Yes    |      No     |    No    |    --   |   --   |    --   |    --   |    --   |     --    |   --   |   --   |     --     |   --   |
-| Shell Commands    |     Yes    |     No     |      No     |    No    |    No   |   No   |    No   |    No   |    No   |     No    |   Yes  |   Yes  |     --     |   --   |
-| WordPress Focus   |     Yes    |     No     |      No     |    No    |    No   |   Yes  |   Yes   |    No   |   Yes   |    Yes    |   No   |   Yes  |     --     |   --   |
-| Single Site Focus |     Yes    |     N/A    |      No     |    No    |   N/A   |   N/A  |    No   |    --   |    --   |     --    |   --   |   --   |     --     |   --   |
-| Email APIs        |     Yes    |     N/A    |     N/A     |    N/A   |    No   |   No   |    No   |    No   |    No   |     No    |   --   |   --   |     --     |   --   |
-| Monitoring        |    Monit   |     N/A    |     None    |   None   |   None  |  None  |   None  |    --   |    --   |     --    |   --   |   --   |     --     |   --   |
-
-Others: Moss.sh, Webinoly, VestaCP, OneInStack, OpenResty, ServerPilot, RunCloud
 
 ## FAQ
 
