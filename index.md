@@ -8,7 +8,7 @@ title: SlickStack (Public Mirrors)
 
 ### Core Cron Jobs
 
-*These cron jobs are the most critical part of SlickStack's setup, as they allow your LEMP stack to receive updates to modules and scripts via GitHub.*
+*These cron jobs are the most critical part of SlickStack's setup, as they allow your LEMP stack to receive updates to scripts and modules via GitHub.*
 
 * [00-crontab](/crons/00-crontab.txt)
 * [01-cron-often](/crons/01-cron-often.txt)
