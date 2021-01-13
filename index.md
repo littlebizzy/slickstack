@@ -56,12 +56,12 @@ title: SlickStack (Public Mirrors)
 * [ss-update](/bash/ss-update.txt)
 * [ss-worker](/bash/ss-worker.txt)
 
-#### ss-encrypt subscripts (to renew SSL certs)
+#### ss-encrypt subscripts
 
 * [ss-encrypt-certbot](/bash/ss-encrypt-certbot.txt)
 * [ss-encrypt-openssl](/bash/ss-encrypt-openssl.txt)
 
-#### ss-install subscripts (to install modules)
+#### ss-install subscripts
 
 * [ss-install-adminer](/bash/ss-install-adminer.txt)
 * [ss-install-clamav](/bash/ss-install-clamav.txt)
@@ -94,7 +94,7 @@ title: SlickStack (Public Mirrors)
 * [ss-install-wordpress-core](/bash/ss-install-wordpress-core.txt)
 * [ss-install-wordpress-mu-plugins](/bash/ss-install-wordpress-mu-plugins.txt)
 
-#### ss-perms subscripts (to reset module permissions)
+#### ss-perms subscripts
 
 * [ss-perms-adminer](ss-perms-adminer.txt)
 * [ss-perms-clamav](ss-perms-clamav.txt)
@@ -127,17 +127,19 @@ title: SlickStack (Public Mirrors)
 * [ss-perms-wordpress-core](ss-perms-wordpress-core.txt)
 * [ss-perms-wordpress-mu-plugins](ss-perms-wordpress-mu-plugins.txt)
 
-#### ss-purge subscripts (to clear module caches)
+#### ss-purge subscripts
 
 * [ss-purge-nginx](ss-purge-nginx.txt)
 * [ss-purge-opcache](ss-purge-opcache.txt)
 * [ss-purge-redis](ss-purge-redis.txt)
 * [ss-purge-transients](ss-purge-transients.txt)
 
-#### ss-restart subscripts (to restart services)
+#### ss-restart subscripts
 
+* [ss-restart-services-mysql](/bash/ss-restart-services-mysql.txt)
 * [ss-restart-services-nginx](/bash/ss-restart-services-nginx.txt)
 * [ss-restart-services-php](/bash/ss-restart-services-php.txt)
+* [ss-restart-services-redis](/bash/ss-restart-services-redis.txt)
 
 #### ss-config-sample (used by ss-install)
 
