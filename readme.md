@@ -2,11 +2,11 @@
 
 SlickStack is a free LEMP stack automation script written in Bash designed to enhance and simplify WordPress provisioning, performance, and security.
 
-⮕ ⮕ ⮕ [ **Gab group**](https://gab.com/groups/7116)
+⮕ ⮕ ⮕ [**Gab group**](https://gab.com/groups/7116)
 
-⮕ ⮕ ⮕ [ **Discord server**](https://discord.gg/nGskJdg)
+⮕ ⮕ ⮕ [**Discord server**](https://discord.gg/nGskJdg)
 
-| Google PageSpeed | GTMetrix | Pingdom | Security Headers | Qualys SSL Labs | WebPageTest |
+| PageSpeed | GTMetrix | Pingdom | Security Headers | Qualys SSL Labs | WebPageTest |
 | :--------------: | :------: | :-----: | :--------------: | :-------------: | :-------------: |
 | [**A**](https://developers.google.com/speed/pagespeed/insights/?url=https%3A%2F%2Fslickstack.io%2F) | [**A**](https://gtmetrix.com/reports/slickstack.io/zpLMZ1eb) | [**A**](https://tools.pingdom.com/#5aeba9dea8000000) | [**A**](https://securityheaders.com/?q=https%3A%2F%2Fslickstack.io%2F&followRedirects=on) | [**A**](https://www.ssllabs.com/ssltest/analyze.html?d=slickstack.io&latest) | [**A**](https://www.webpagetest.org/result/190920_68_a4a541db9847ce601ef264b41df9d0f3/) |
 
@@ -36,8 +36,6 @@ SlickStack is a free LEMP stack automation script written in Bash designed to en
 
 * **NEW!** (Experimental) SSH keys are now supported (save public key into `/var/www/meta/.ssh/authorized_keys`)
 
-* **NEW!** SlickStack now bundles `Adminer` (phpmyadmin) by default, access at: example.com/adminer
-
 * **NEW!** We briefly disabled `SQL_MODE` in the `my.cnf` boilerplate due to a conflict with `ss-config` default settings for the recommended MySQL mode. After realizing that MySQL 8.0 no longer supports NO_AUTO_CREATE_USER, we removed that submode from the default SQL_MODE in the `ss-config` boilerplate default settings, and re-enabled SQL_MODE in the `my.cnf` boilerplate.
 
 * **NEW!** SlickStack is now considered Beta (no longer Alpha) and has been moved to supporting Ubuntu 20.04 LTS only, along with PHP 7.4 and MySQL 8.0 which are the new Ubuntu defaults. We have ensured no critical conflicts exist, but some of the documentation and configuration are still being fully optimized for these updated module versions.
@@ -50,8 +48,6 @@ SlickStack is a free LEMP stack automation script written in Bash designed to en
 
 * **NEW!** SlickStack now has self-healing functions in the root Crontab and `1-cron-often` and `2-cron-regular` to ensure that Core Cron Jobs will be reinstalled fresh in case they are missing or damaged. This self-healing function also ensures that the critical Core Bash Scripts `ss-check` and `ss-worker` also exist and are intact every single day! 
 
-NOTE: The self-healing function will respect any custom Cron Job schedules found in your `ss-config` file...
-
 * **NEW!** Running `ss-update` will now automagically update your `ss-config` to latest template... any variables that are missing or undefined will simply be setup using the default (recommended) values for those variables...
 
 * **NEW!** Long-awaited Let's Encrypt (Certbot) support is now live using `SSL_TYPE` option in `ss-config`... those who do not wish to use CloudFlare can now use this approach instead... OpenSSL + CloudFlare is still always our recommended approach however... also, keep in mind that during initial setup (the first time that you request an SSL cert via Certbot) you will still need to have CloudFlare active for `.well-known` domain verification to work properly over HTTPS (otherwise Certbot will complain re: the self-signed OpenSSL cert)...
@@ -61,16 +57,6 @@ NOTE: The self-healing function will respect any custom Cron Job schedules found
 * **NEW!** All MySQL functionality is now via TCP-only (127.0.0.1) including during setup and when purging transient cache via `ss-purge` for better database performance and smoother traffic scaling...
 
 * **NEW!** Our new default object cache (forked from PressJitsu) supports a `OBJECT_CACHE` defined constant set to either `true` (default) or `false` to easily deactivate object caching without needing to delete the `object-cache.php` file...
-
-* **NEW!** `ss-purge` will now delete all Transients (along with clearing all LEMP stack caches)...
-
-* **NEW!** `ss-restart` now provides a quick and easy way to restart all LEMP services for testing, etc...
-
-* **NEW!** SlickStack now supports [throwaway themes](https://github.com/littlebizzy/throwaway-theme) to customize `wp_options` during install...
-
-* **NEW!** The `ss-purge` core script clears FastCGI Cache, OPcache, and Redis object cache in one go...
-
-* **NEW!** SlickStack can now convert DOS files to Unix format via `SS_DOS2UNIX` variable in `ss-config` that will run automatically whenever the `ss-perms` script is called (end of the script)...
 
 * **NEW!** SlickStack now supports custom plugin blacklists using `PLUGIN_BLACKLIST_SOURCE` variable...
 
@@ -85,10 +71,10 @@ NOTE: The self-healing function will respect any custom Cron Job schedules found
 | LEMP Module | Mirrors | Version | What does SlickStack [ss] customize? |
 | :------------- | :----------: | :----------: | :----------: |
 | **Ubuntu** | [mirrors](http://mirrors.slickstack.io/ubuntu/) | 20.04 (LTS) | `crontab` + `gai.conf` + `sshd_config` + `sudoers` + `sysctl.conf` |
-| **Nginx (Extras)** | [mirrors](http://mirrors.slickstack.io/nginx/) | 1.18.x | `nginx.conf` + `default` (server block) |
-| **FastCGI Cache** | [mirrors](http://mirrors.slickstack.io/fastcgi-cache/) | 1.18.x | `fastcgi-cache.conf` (moved to `nginx.conf`) |
+| **Nginx** | [mirrors](http://mirrors.slickstack.io/nginx/) | 1.18.x | `nginx.conf` + `default` (server block) |
+| **FCGI Cache** | [mirrors](http://mirrors.slickstack.io/fastcgi-cache/) | 1.18.x | `fastcgi-cache.conf` (moved to `nginx.conf`) |
 | **OpenSSL** | [mirrors](http://mirrors.slickstack.io/openssl/) | 1.1.1x | `nginx.crt` + `nginx.key` |
-| **Let's Encrypt** | [mirrors](http://mirrors.slickstack.io/letsencrypt/) | 0.40.x | `cert.perm` + `privkey.pem` + `chain.pem` + `fullchain.pem` |
+| **Lets Encrypt** | [mirrors](http://mirrors.slickstack.io/letsencrypt/) | 0.40.x | `cert.perm` + `privkey.pem` + `chain.pem` + `fullchain.pem` |
 | **MySQL** | [mirrors](http://mirrors.slickstack.io/mysql/) | 8.0.x | `my.cnf` |
 | **PHP-FPM** | [mirrors](http://mirrors.slickstack.io/php-fpm/) | 7.4.x | `php.ini` + `php-fpm.conf` + `www.conf` |
 | **Zend / OPcache** | [mirrors](http://mirrors.slickstack.io/opcache/) | 3.4.x / 7.4.x | (same as PHP-FPM) |
@@ -309,20 +295,3 @@ For stability reasons, we don't use any tpmfs (memory-based storage) for caching
 **Can I run apt update && apt upgrade without issues?**
 
 Yes, you can. The entire point of SlickStack is to be a lightweight group of Bash scripts that save you time without adding bloat to your stack (and reducing most learning curves). Your LEMP stack will be just like any other LEMP stack tutorial you might setup using a tutorial online, just using our optimized templates for Nginx blocks, etc (and optional Must Use plugins for WordPress). But after setup is complete, you can just use the Ubuntu package manager to run updates if you like or just run ss-update and it will do the same thing instead (it always defaults to using the existing/old conf files to retain all configuration).
-
-## Thanks
-
-* [rtCamp](https://rtcamp.com) -- various inspiration
-* [Roots](https://roots.io) -- various inspiration and original author of Autoloader script
-* [Centminmod](https://centminmod.com) -- various inspiration
-* [Alex Georgiou](https://www.alexgeorgiou.gr) -- feedback on WP-CLI configuration
-* [Janis Elsts](https://w-shadow.com) -- author of Error Log Monitor plugin
-* [PressJitsu](http://pressjitsu.com) -- various inspuration and original author of Object Cache script
-
-## Ref
-
-* https://www.alexgeorgiou.gr/wp-cli-www-data-user-permissions-linux/
-
-## Keywords
-
-slickstack, slick stack, nginx auto installer, optimize lemp stack, best wordpress stack, lemp install script, trellis wordpress, easy engine, lemp auto installer, nginx install script, stackscript
