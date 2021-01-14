@@ -233,21 +233,35 @@ cp /tmp/throwaway /var/www/html/wp-content/themes/
 fi
 
 ####################################################################################################
-#### SS-Install-WordPress-Core: Modify Database Options For WordPress ##############################
+#### SS-Install-WordPress-Core: Fix Site Domains (Modify Database Options) #########################
 ####################################################################################################
 
-## here we manually fix certain fields in the MySQL database to ensure proper settings ##
+## SNIPPET: ss-install-wordpress-core, ss-install-wordpress-config
 
+## here we manually fix certain fields in the MySQL database to ensure proper functions ##
+## this fix required for WP Multisite (wp-config will override on single sites) ##
 
-## ensure home + siteurl options are correct in the wp_options table ##
+## fix site domains (production) ##
 mysql --execute="UPDATE ${DB_NAME}.${DB_PREFIX}options SET option_value='https://$SITE_DOMAIN' WHERE option_name='home'";
 mysql --execute="UPDATE ${DB_NAME}.${DB_PREFIX}options SET option_value='https://$SITE_DOMAIN' WHERE option_name='siteurl'";
 
+## fix site domains (staging) ##
+if [[ "$STAGING_SITE" != "false" ]]; then 
 mysql --execute="UPDATE ${DB_NAME}.staging_options SET option_value='https://$SITE_DOMAIN/staging' WHERE option_name='home'";
 mysql --execute="UPDATE ${DB_NAME}.staging_options SET option_value='https://$SITE_DOMAIN/staging' WHERE option_name='siteurl'";
 
+mysql --execute="UPDATE ${DB_NAME}_staging.${DB_PREFIX}options SET option_value='https://staging.$SITE_TLD' WHERE option_name='home'";
+mysql --execute="UPDATE ${DB_NAME}_staging.${DB_PREFIX}options SET option_value='https://staging.$SITE_TLD' WHERE option_name='siteurl'";
+fi
+
+## fix site domains (dev) ##
+if [[ "$DEV_SITE" != "false" ]]; then 
 mysql --execute="UPDATE ${DB_NAME}.dev_options SET option_value='https://$SITE_DOMAIN/dev' WHERE option_name='home'";
 mysql --execute="UPDATE ${DB_NAME}.dev_options SET option_value='https://$SITE_DOMAIN/dev' WHERE option_name='siteurl'";
+
+mysql --execute="UPDATE ${DB_NAME}_dev.${DB_PREFIX}options SET option_value='https://dev.$SITE_TLD' WHERE option_name='home'";
+mysql --execute="UPDATE ${DB_NAME}_dev.${DB_PREFIX}options SET option_value='https://dev.$SITE_TLD' WHERE option_name='siteurl'";
+fi
 
 ####################################################################################################
 #### SS-Install-WordPress-Core: Configure WP-Config File (Production + Staging) ####################
