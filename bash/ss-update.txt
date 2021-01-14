@@ -6,7 +6,7 @@
 #### mirror: http://mirrors.slickstack.io/bash/ss-update.txt #######################################
 #### path: /var/www/ss-update ######################################################################
 #### destination: n/a (not a boilerplate) ##########################################################
-#### purpose: Updates and cleans up SlickStack config file and modules (packages + CMS) ############
+#### purpose: Updates and cleans up SlickStack config file, Ubuntu packages, and CMS ###############
 #### module version: Ubuntu 20.04 LTS ##############################################################
 #### sourced by: ss core cron jobs #################################################################
 #### bash aliases: ss update, ss upgrade ###########################################################
@@ -29,7 +29,7 @@ source /var/www/ss-functions
 ## it will only be noticed by sudo users who manually call ss core bash scripts ##
 
 ## echo message ##
-echo -e "${PURPLE}Running ss-update: Updates and cleans up SlickStack config file and modules (packages + CMS)... ${NOCOLOR}"
+echo -e "${PURPLE}Running ss-update: Updates and cleans up SlickStack config file, Ubuntu packages, and CMS... ${NOCOLOR}"
 sleep "$SLEEP_MESSAGE_BEGIN"
 
 ####################################################################################################
@@ -1847,60 +1847,33 @@ mysql -uroot -p${DB_PASSWORD_ROOT} -e "GRANT ALL PRIVILEGES ON ${DB_NAME}.* TO '
 mysql --user=root --execute="FLUSH PRIVILEGES;"
 
 ####################################################################################################
-#### SS-Update: Update WordPress Core + WP-Config To Latest Boilerplate ############################
+#### SS-Update: Update CMS (WordPress, PrestaShop, MediaWiki, Etc) #################################
 ####################################################################################################
 
-## MESSAGE ##
-echo -e "\e[36mUpating WordPress to latest stable (patched) version...\e[0m"
+## this snippet fetches the latest stable version of WordPress from SlickStack mirrors ##
+## major CMS releases (unpatched) are never considered stable for our purposes ##
+    
+if [[ "$SS_APP" == "wordpress" || -z "$SS_APP"  ]]; then
 
-## cleanup files ##
-rm /tmp/wordpress.zip*
-rm /var/www/html/wordpress*
-rm /var/www/html/staging/wordpress*
+    ## run ss-install-wordpress-core ##
+    source /var/www/ss-install-wordpress-core
 
-## ensure directories exist ##
-mkdir /var/www/html
-mkdir /var/www/html/staging
+    ## here we retrieve latest wp-config.php boilerplate and customize per ss-config settings ##
+    ## you should never make changes directly to wp-config.php in SlickStack servers ##
 
-## brief permissions reset ##
-chown -R $SFTP_USER:wordpress /var/www/html
-chown -R $SFTP_USER:wordpress /var/www/html/staging
-chmod 6775 /var/www/html
-chmod 6775 /var/www/html/staging
+    ## run ss-install-wordpress-config ##
+    source /var/www/ss-install-wordpress-config
 
-## download latest (patched) WordPress version ##
-wget -O /tmp/wordpress.zip http://mirrors.slickstack.io/wordpress/wordpress.zip
+    ## this will install the designated MU plugins and also Custom Functions and Object Cache ##
+    ## with a few exceptions these can all be customized using ss-config settings ##
 
-## install WordPress to web directory ##
-cp /tmp/wordpress.zip /var/www/html
-unzip /var/www/html/wordpress.zip -d /var/www/html
-chown -R www-data:wordpress /var/www/html/wordpress
-chmod 775 /var/www/html/wordpress
-rsync /var/www/html/wordpress/* /var/www/html
+    ## run ss-install-wordpress-mu-plugins ##
+    source /var/www/ss-install-wordpress-mu-plugins
+    
+    ## run ss-install-wordpress-cli ##
+    source /var/www/ss-install-wordpress-cli
 
-## install WordPress to staging subdirectory ##
-cp /tmp/wordpress.zip /var/www/html/staging
-unzip /var/www/html/staging/wordpress.zip -d /var/www/html/staging
-chown -R www-data:wordpress /var/www/html/staging/wordpress
-chmod 775 /var/www/html/staging/wordpress
-rsync /var/www/html/staging/wordpress/* /var/www/html/staging
-
-## cleanup files ##
-rm /tmp/wordpress.zip* &> /dev/null
-rm /var/www/html/wordpress* &> /dev/null
-rm /var/www/html/staging/wordpress* &> /dev/null
-rm /var/www/html/wp-content/plugins/hello.php &> /dev/null
-rm /var/www/html/staging/wp-content/plugins/hello.php &> /dev/null
-
-####################################################################################################
-#### SS-Update: Update MU (Must-Use) Plugins (Via SS-Muplugs) ######################################
-####################################################################################################
-
-## MESSAGE ##
-echo -e "\e[36mEnsuring MU plugins are the latest version...\e[0m"
-
-## run ss-muplugs ##
-source /var/www/ss-muplugs
+fi
 
 ####################################################################################################
 #### SS-Update: Set Dpkg Basic Settings + Update Apt (Package) Cache ##############################
