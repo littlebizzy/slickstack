@@ -1,0 +1,65 @@
+#!/bin/bash
+
+####################################################################################################
+#### author: SlickStack ############################################################################
+#### link: https://slickstack.io ###################################################################
+#### mirror: http://mirrors.slickstack.io/bash/ss-delete-database.txt ##############################
+#### path: /var/www/ss-delete-database #############################################################
+#### destination: n/a (not a boilerplate) ##########################################################
+#### purpose: Forcefully deletes the entire MySQL database chosen (production, staging, dev) #######
+#### module version: n/a ###########################################################################
+#### sourced by: n/a ###############################################################################
+#### bash aliases: ss delete database, ss delete db ################################################
+####################################################################################################
+
+
+## include SlickStack configuration ##
+source /var/www/ss-config
+
+## include SlickStack functions ##
+source /var/www/ss-functions
+
+####################################################################################################
+#### SS-Delete-Files: Message (Begin Script) #######################################################
+####################################################################################################
+
+## this is a simple message that announces to the shell the purpose of this bash script ##
+## it will only be noticed by sudo users who manually call ss core bash scripts ##
+
+## echo message ##
+echo -e "${PURPLE}Running ss-delete-database: Forcefully deletes the entire MySQL database chosen (production, staging, dev)... ${NOCOLOR}"
+sleep "$SLEEP_MESSAGE_BEGIN"
+
+####################################################################################################
+#### SS-Delete-Files: Delete All Files Under Public HTML Directory #################################
+####################################################################################################
+
+## below will delete all files under the public HTML directory without any exceptions ##
+## this can be useful if you are trying to reset your server or otherwise ##
+
+read -r -p "ALL FILES will be deleted under /var/www/html/ ...are you sure? [y/N]" response
+if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]]
+then
+    rm /var/www/html/*
+else
+    exit 1
+fi
+
+####################################################################################################
+#### SS-Delete-Database: Touch Timestamp File (End Script) #########################################
+####################################################################################################
+
+## this is a dummy timestamp file that will remember the last time this script was run ##
+## it can be useful for developer reference and is sometimes used by SlickStack ##
+
+## script timestamp ##
+touch /var/www/meta/.timestamp-ss-delete-database
+
+####################################################################################################
+#### SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ###############
+####################################################################################################
+
+## Ref: https://stackoverflow.com/questions/3231804/in-bash-how-to-add-are-you-sure-y-n-to-any-command-or-alias
+## Ref: https://askubuntu.com/questions/892604/meaning-of-exit-0-exit-1-and-exit-2-in-a-bash-script
+
+## SS_EOF
