@@ -21,7 +21,7 @@
 ## run ss-update if ss-config outdated: https://mirrors.slickstack.io/ss-config-sample.txt ##
 ## or copy and paste entire ss-config boilerplate before modifying any options ##
 
-SS_BUILD="JAN2021A"
+SS_BUILD="JAN2021B"
 
 ####################################################################################################
 #### SS-Config: Root + Sudo User Settings ##########################################################
@@ -246,10 +246,10 @@ CSR_DEPT="DevOps"
 #### SS-Config: Select Nginx + Open File Cache Settings ############################################
 ####################################################################################################
 
-## MODULE VERSION: Nginx 1.18.x
-
 ## default Nginx settings assume that CloudFlare is in front of your origin VPS server ##
 ## this means that most settings are very liberal to allow for traffic scaling ##
+
+## NGINX_MODULES =
 
 ## NGINX_WORKER_RLIMIT_NOFILE =
 ## NGINX_WORKER_CONNECTIONS =
@@ -281,7 +281,11 @@ NGINX_KEEPALIVE_TIMEOUT="90s"
 NGINX_KEEPALIVE_REQUESTS="65535"
 NGINX_SEND_TIMEOUT="120s"
 
-## nginx headers ##
+## NGINX_HEADER_POWERED_BY =
+## NGINX_HEADER_STRICT_TRANSPORT_SECURITY =
+## NGINX_HEADER_REFERRER_POLICY =
+## NGINX_HEADER_PERMISSIONS_POLICY =
+## NGINX_HEADER_FEATURE_POLICY =
 
 NGINX_HEADER_POWERED_BY="SlickStack"
 NGINX_HEADER_STRICT_TRANSPORT_SECURITY="max-age=15552000" ## 180 days (always)
@@ -305,8 +309,6 @@ OPEN_FILE_CACHE_ERRORS="on"
 #### SS-Config: FastCGI Cache (Nginx) + TMPFS (RAM Disk) Settings ##################################
 ####################################################################################################
 
-## MODULE VERSION: Nginx 1.18.x + Ubuntu 20.04 LTS
-
 ## nearly every WordPress site should be using FastCGI Cache at least for micro-caching ##
 ## Nginx pre-configured to skip cache on /cart* /checkout* /account* pages (etc) ##
 
@@ -315,6 +317,9 @@ OPEN_FILE_CACHE_ERRORS="on"
 ## FCGI_CACHE_INACTIVE = [60m|1440m|etc] longer is better (but dynamic sites need less) ##
 ## FCGI_CACHE_MEMORY = [64m|128m|256m|512m|etc] for 512M|1GB|2GB|4GB RAM VPS ##
 ## FCGI_CACHE_MAX_SIZE = [2048m|4096m|8192m|16384m|etc] allocate space on disk ##
+## FCGI_CACHE_QUERIES =
+## FCGI_CACHE_QUERIES_SEARCH = 
+## FCGI_CACHE_TMPFS = [false|true] mount as TMPFS (not recommended) ##
 ## FCGI_CONNECT_TIMEOUT =
 ## FCGI_READ_TIMEOUT =
 ## FCGI_SEND_TIMEOUT =
@@ -322,13 +327,13 @@ OPEN_FILE_CACHE_ERRORS="on"
 ## FCGI_BUFFER_SIZE =
 ## FCGI_BUSY_BUFFERS_SIZE =
 ## FCGI_TEMP_FILE_WRITE_SIZE =
-## FCGI_CACHE_TMPFS = [false|true] mount as TMPFS (not recommended) ##
 
 FCGI_CACHE="true"
 FCGI_CACHE_VALID="1440m"
 FCGI_CACHE_INACTIVE="1440m"
 FCGI_CACHE_MEMORY="256m"
 FCGI_CACHE_MAX_SIZE="4096m"
+FCGI_CACHE_TMPFS="false"
 FCGI_CONNECT_TIMEOUT="60s"
 FCGI_READ_TIMEOUT="60s"
 FCGI_SEND_TIMEOUT="60s"
@@ -336,15 +341,12 @@ FCGI_BUFFERS="32 32k"
 FCGI_BUFFER_SIZE="32k"
 FCGI_BUSY_BUFFERS_SIZE="256k"
 FCGI_TEMP_FILE_WRITE_SIZE="256k"
-FCGI_CACHE_TMPFS="false"
 # FCGI_CACHE_QUERIES="true"
 # FCGI_CACHE_QUERIES_SEARCH="true"
 
 ####################################################################################################
 #### SS-Config: MySQL + InnoDB Settings (Applies To Localhost Database Only) #######################
 ####################################################################################################
-
-## MODULE VERSION: MySQL 8.0.x
 
 ## there are very few settings that need to be optimized in MySQL after version 5.7+ ##
 ## probably the SQL_MODE is the only setting that you might consider changing ##
@@ -378,10 +380,15 @@ INNODB_FLUSH_LOG_AT_TRX_COMMIT="true"
 INNODB_FLUSH_METHOD="O_DIRECT_NO_FSYNC"
 
 ####################################################################################################
-#### PHP-FPM: General PHP Settings (php.ini) #######################################################
+#### SS-Config: General PHP Settings ###############################################################
 ####################################################################################################
 
-## MODULE VERSION: PHP-FPM 7.4.x
+## here you can customize the PHP extensions that are installed as part of PHP-FPM ##
+## some PHP extensions like fpm, mysql are required for your CMS to function ##
+
+## PHP_EXTENSIONS = [*extensions separated by spaces*] ##
+
+PHP_EXTENSIONS="php7.4-fpm php7.4-bcmath php7.4-curl php7.4-gd php7.4-imagick php7.4-json php7.4-mbstring php7.4-mysql php7.4-soap php7.4-xml php7.4-zip"
 
 ## many well-known PHP settings are hardcoded to ensure server stability and security ##
 ## below settings can be modified before ss-install to customize PHP as needed ##
@@ -420,18 +427,9 @@ PHP_MAX_FILE_UPLOADS="100"
 PHP_ALLOW_URL_FOPEN="true"
 PHP_DEFAULT_SOCKET_TIMEOUT="60"
 
-## here you can customize the PHP extensions that are installed as part of PHP-FPM ##
-## some PHP extensions like fpm, mysql are required for your CMS to function ##
-
-## PHP_EXTENSIONS = [php7.4-fpm php7.4-bcmath php7.4-curl php7.4-gd php7.4-imagick php7.4-json php7.4-mbstring php7.4-mysql php7.4-soap php7.4-xml php7.4-zip] ##
-
-PHP_EXTENSIONS="php7.4-fpm php7.4-bcmath php7.4-curl php7.4-gd php7.4-imagick php7.4-json php7.4-mbstring php7.4-mysql php7.4-soap php7.4-xml php7.4-zip"
-
 ####################################################################################################
-#### PHP-FPM: FastCGI Process Manager Settings (php-fpm.conf) ######################################
+#### SS-Config: FastCGI Process Manager Settings (PHP-FPM) #########################################
 ####################################################################################################
-
-## MODULE VERSION: PHP-FPM 7.4.x
 
 ## the vast majority of SlickStack servers should not need to adjust any FPM settings ##
 ## in most cases the php.ini settings and www.conf settings are more relevant ##
