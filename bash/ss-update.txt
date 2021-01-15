@@ -69,6 +69,7 @@ source /var/www/ss-check
 ####################################################################################################
 
 ## THIS IS REQUIRED BECAUSE NEW SS-CONFIG TEMPLATE SWITCHED TO 127.0.0.1 DATABASE HOST ##
+## delete/move/improve this snippet
 
 ## prepare MySQL root password (suppresses MySQL security warnings) ##
 export MYSQL_PWD=$DB_PASSWORD_ROOT
@@ -125,13 +126,31 @@ if [[ "$SS_APP" == "wordpress" || -z "$SS_APP"  ]]; then
 
 fi
 
-## this snippet fetches the latest stable version of MediaWiki from SlickStack mirrors ##
-## major CMS releases (unpatched) are never considered stable for our purposes ##
-
-
 ## this snippet fetches the latest stable version of PrestaShop from SlickStack mirrors ##
 ## major CMS releases (unpatched) are never considered stable for our purposes ##
 
+if [[ "$SS_APP" == "prestashop"]]; then
+
+    ## run ss-install-prestashop-core ##
+    source /var/www/ss-install-prestashop-core
+    
+    ## run ss-install-prestashop-config ##
+    source /var/www/ss-install-prestashop-config
+    
+fi
+
+## this snippet fetches the latest stable version of MediaWiki from SlickStack mirrors ##
+## major CMS releases (unpatched) are never considered stable for our purposes ##
+
+if [[ "$SS_APP" == "mediawiki"]]; then
+
+    ## run ss-install-prestashop-core ##
+    source /var/www/ss-install-mediawiki-core
+    
+    ## run ss-install-prestashop-config ##
+    source /var/www/ss-install-mediawiki-config
+    
+fi
 
 ####################################################################################################
 #### SS-Update: Install SlickStack (Root) Crontab ##################################################
@@ -156,6 +175,8 @@ source /var/www/ss-update-packages
 ####################################################################################################
 #### SS-Update: Configure UFW Firewall + Set UFW Rules (In Case Apt Overwrites UFW Files) ##########
 ####################################################################################################
+
+## delete/move/improve this snippet
 
 ## at least one case reported where ss-update resulted in UFW config being overwritten ##
 ## therefore we include this reinstallation of UFW to ensure no port lockouts ##
@@ -220,6 +241,9 @@ source /var/www/ss-perms
 ####################################################################################################
 #### SS-Update: Restart Modules (All Modules) ######################################################
 ####################################################################################################
+
+## this script is using init.d instead of systemd shortcuts to allow for absolute paths ##
+## we are looking into including other snippets here such as unmasking (etc) ##
 
 ## run ss-restart-services ##
 source /var/www/ss-restart-services
