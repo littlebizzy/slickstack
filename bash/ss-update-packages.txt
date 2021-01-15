@@ -1,0 +1,189 @@
+#!/bin/bash
+
+####################################################################################################
+#### author: SlickStack ############################################################################
+#### link: https://slickstack.io ###################################################################
+#### mirror: http://mirrors.slickstack.io/bash/ss-update-packages.txt ##############################
+#### path: /var/www/ss-update-packages #############################################################
+#### destination: n/a (not a boilerplate) ##########################################################
+#### purpose: Updates and cleans up required Ubuntu packages including the Linux kernel ############
+#### module version: Ubuntu 20.04 LTS ##############################################################
+#### sourced by: ss-update #########################################################################
+#### bash aliases: ss update packages, ss upgrade packages #########################################
+####################################################################################################
+
+## YOU CAN SAFELY RUN SS-UPDATE WITH NO CHANGES TO YOUR LEMP MODULE CONFIGURATION FILES ##
+## IN CASE YOU ACCIDENTALLY OVERWRITE CONFIG FILES, SIMPLY RUN SS-INSTALL AGAIN ##
+
+## include SlickStack configuration ##
+source /var/www/ss-config
+
+## include SlickStack functions ##
+source /var/www/ss-functions
+
+####################################################################################################
+#### SS-Update-Packages: Message (Begin Script) ####################################################
+####################################################################################################
+
+## this is a simple message that announces to the shell the purpose of this bash script ##
+## it will only be noticed by sudo users who manually call ss core bash scripts ##
+
+## echo message ##
+echo -e "${PURPLE}Running ss-update-packages: Updates and cleans up required Ubuntu packages including the Linux kernel... ${NOCOLOR}"
+sleep "$SLEEP_MESSAGE_BEGIN"
+
+####################################################################################################
+#### SS-Update-Packages: Purge Irrelevant Ubuntu Packages ##########################################
+####################################################################################################
+
+## uninstall expect (no longer used for ss-install-mysql) ##
+apt purge expect
+
+####################################################################################################
+#### SS-Update: Set Dpkg Basic Settings + Update Apt (Package) Cache ###############################
+####################################################################################################
+
+## for smoother execution and to avoid conflicts we set dpkg to noninteractive/confold ##
+## it is much better to run ss-update instead of calling apt get upgrade manually ##
+
+## set confold as dpkg default (fail-safe in case apt upgrade called directly) ##
+DEBIAN_FRONTEND=noninteractive dpkg --configure -a --force-confold
+
+####################################################################################################
+#### SS-Update-Packages: Upgrade Ubuntu Packages + Linux Kernel ####################################
+####################################################################################################
+
+## the main purpose of ss-update is to upgrade all currently installed Ubuntu packages ##
+## we use apt full-upgrade (not apt-get) in order to upgrade the Linux kernel ##
+
+## temporarily disable UFW Firewall ##
+ufw --force disable
+
+## update Ubuntu repo cache ##
+apt update
+
+## upgrade installed Ubuntu packages (LEMP modules) + Linux kernel (apt feature) ##
+apt full-upgrade
+
+## autoremove unused Ubuntu packages ##
+apt autoremove
+
+## autoclean Ubuntu packages ##
+apt autoclean
+
+####################################################################################################
+#### SS-Update: Configure UFW Firewall + Set UFW Rules (In Case Apt Overwrites UFW Files) ##########
+####################################################################################################
+
+## at least one case reported where ss-update resulted in UFW config being overwritten ##
+## therefore we include this reinstallation of UFW to ensure no port lockouts ##
+
+## delete tmp files ##
+rm /tmp/ufw*
+rm /tmp/user*
+
+## install UFW firewall ##
+apt install ufw
+
+## set UFW rules ##
+ufw default deny incoming
+ufw default allow outgoing
+ufw allow $SSH_PORT
+ufw allow 80
+ufw allow 443
+ufw allow 6379
+
+## re-enable UFW Firewall (prevously disabled above) ##
+ufw --force enable
+echo "y" | ufw enable
+
+# retrieve latest versions ##
+wget -O /tmp/ufw http://mirrors.slickstack.io/ufw-firewall/ufw.txt
+wget -O /tmp/ufw.conf http://mirrors.slickstack.io/ufw-firewall/ufw-conf.txt
+wget -O /tmp/user.rules http://mirrors.slickstack.io/ufw-firewall/user-rules.txt
+
+if [[ -z "$SSH_PORT" ]]; then 
+    sed -i "s/@SSH_PORT/6969/g" /tmp/user.rules
+else 
+    sed -i "s/@SSH_PORT/${SSH_PORT}/g" /tmp/user.rules
+fi
+
+## copy files to their destinations ##
+cp /tmp/ufw /etc/default/ufw
+cp /tmp/ufw.conf /etc/ufw/ufw.conf
+cp /tmp/user.rules /etc/ufw/user.rules
+
+## reset permissions ##
+chown root:root /etc/default/ufw
+chown root:root /etc/ufw/ufw.conf
+chown root:root /etc/ufw/user.rules
+chmod 0664 /etc/default/ufw
+chmod 0664 /etc/ufw/ufw.conf
+chmod 0664 /etc/ufw/user.rules
+
+## delete tmp files ##
+rm /tmp/ufw*
+rm /tmp/user*
+
+####################################################################################################
+#### SS-Update-Packages: Restart Modules (All Modules) #############################################
+####################################################################################################
+
+## run ss-restart-services ##
+source /var/www/ss-restart-services
+
+####################################################################################################
+#### SS-Update-Packages: Touch Timestamp File (End Script) #########################################
+####################################################################################################
+
+## this is a dummy timestamp file that will remember the last time this script was run ##
+## it can be useful for developer reference and is sometimes used by SlickStack ##
+
+## script timestamp ##
+touch /var/www/meta/.timestamp-ss-update-packages
+
+####################################################################################################
+#### SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ###############
+####################################################################################################
+
+## Ref: https://linux.die.net/man/8/apt-get
+## Ref: https://askubuntu.com/questions/1112555/is-apt-dist-upgrade-not-necessary-anymore
+## Ref: https://unix.stackexchange.com/questions/467552/reboot-over-ssh/467996#467996
+## Ref: https://askubuntu.com/questions/254129/how-to-display-all-apt-get-dpkgoptions-and-their-current-values
+## Ref: https://serverfault.com/questions/48724/100-non-interactive-debian-dist-upgrade
+## Ref: https://askubuntu.com/questions/938359/apt-get-install-remove-update-upgrade-via-cron-job
+## Ref: http://manpages.ubuntu.com/manpages/trusty/man8/apt.8.html
+## Ref: https://www.debian.org/doc/manuals/apt-guide/index.en.html
+## Ref: https://serverfault.com/questions/478461/how-to-install-packages-with-apt-without-user-interaction
+## Ref: https://serverfault.com/questions/644180/what-does-qq-argument-for-apt-get-mean
+## Ref: https://superuser.com/questions/1438031/ubuntu-18-command-apt-get-dist-upgrade-qq-force-yes-deprecated
+## Ref: https://superuser.com/questions/1412054/non-interactive-apt-upgrade
+## Ref: https://serverfault.com/questions/227190/how-do-i-ask-apt-get-to-skip-any-interactive-post-install-configuration-steps
+## Ref: https://bugzilla.redhat.com/show_bug.cgi?id=1253351
+## Ref: https://kb.cloudberrylab.com/backup-mac-linux/silent-install-macos-and-linux-builds
+## Ref: https://unix.stackexchange.com/questions/32533/debian-how-to-delay-configuration-when-installing-upgrading
+## Ref: https://raymii.org/s/tutorials/Silent-automatic-apt-get-upgrade.html
+## Ref: https://unix.stackexchange.com/questions/138504/setting-path-vs-exporting-path-in-bash-profile
+## Ref: https://askubuntu.com/questions/578568/path-error-in-ubuntu
+## Ref: https://stackoverflow.com/questions/38977713/what-is-snap-bin-directory-in-path-can-i-remove-it-from-path
+## Ref: https://askubuntu.com/questions/1121495/add-snap-bin-to-path-used-by-systemd
+## Ref: https://askubuntu.com/questions/163200/e-dpkg-was-interrupted-run-sudo-dpkg-configure-a
+## Ref: https://stackoverflow.com/questions/1305237/how-to-list-variables-declared-in-script-in-bash
+## Ref: https://stackoverflow.com/questions/32739572/bash-search-and-replace-value-of-a-variable-inside-a-file
+## Ref: https://askubuntu.com/questions/76808/how-do-i-use-variables-in-a-sed-command
+## Ref: https://unix.stackexchange.com/questions/69112/how-can-i-use-variables-in-the-lhs-and-rhs-of-a-sed-substitution
+## Ref: https://stackoverflow.com/questions/19151954/how-to-use-variables-in-a-command-in-sed
+## Ref: https://unix.stackexchange.com/questions/47584/in-a-bash-script-using-the-conditional-or-in-an-if-statement
+## Ref: https://stackoverflow.com/questions/11287861/how-to-check-if-a-file-contains-a-specific-string-using-bash
+## Ref: https://stackoverflow.com/questions/25564051/how-to-compare-grep-result-with-a-variable
+## Ref: https://stackoverflow.com/questions/26458121/grep-a-specific-string-from-bash-script-and-compare
+## Ref: https://unix.stackexchange.com/questions/372733/get-output-and-return-value-of-grep-in-single-operation-in-bash
+## Ref: https://stackoverflow.com/questions/18789907/read-values-from-configuration-file-and-use-in-shell-script
+## Ref: https://stackoverflow.com/questions/38385963/sed-replacing-string-with-quotation-marks
+## Ref: https://github.com/littlebizzy/slickstack/issues/36
+## Ref: http://manpages.ubuntu.com/manpages/bionic/man1/date.1.html
+## Ref: https://crunchify.com/shell-script-append-timestamp-to-file-name/
+## Ref: https://stackoverflow.com/questions/6946677/grep-with-quotation-mark
+## Ref: https://unix.stackexchange.com/questions/48535/can-grep-return-true-false-or-are-there-alternative-methods
+
+## SS_EOF
