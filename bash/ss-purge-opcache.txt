@@ -7,13 +7,13 @@
 #### path: /var/www/ss-purge-opcache ###############################################################
 #### destination: n/a (not a boilerplate) ##########################################################
 #### purpose: Clears the PHP-FPM OPcache by deleting files under /var/www/cache/opcache/ ###########
-#### module version: Ubuntu 20.04 LTS + MySQL 8.0.x + PHP-FPM 7.4.x + Redis 5.0.x ##################
-#### sourced by: ss-purge (and certain ss core scripts) ############################################
+#### module version: PHP-FPM 7.4.x #################################################################
+#### sourced by: ss-purge, ss core bash scripts ####################################################
 #### bash aliases: ss purge [clear] opcache, ss purge [clear] caches opcache #######################
 ####################################################################################################
 
 ## RUNNING SS-PURGE DURING TRAFFIC SPIKES MIGHT CAUSE SUDDEN STRESS TO SERVER RESOURCES ##
-## KEEP IN MIND THAT FASTCGI CACHE IS DISABLED ALREADY ON STAGING SUBDIRECTORIES ##
+## KEEP IN MIND THAT PAGE CACHING IS DISABLED ALREADY ON DEV/STAGING WEBSITES ##
 
 ## include SlickStack configuration ##
 source /var/www/ss-config
@@ -33,18 +33,20 @@ echo -e "${PURPLE}Running ss-purge-opcache: Clears the PHP-FPM OPcache by deleti
 sleep "$SLEEP_MESSAGE_BEGIN"
 
 ####################################################################################################
-#### SS-Purge: Reset PHP OPcache (Bash Script Workaround) ##########################################
+#### SS-Purge-OPcache: Clear Cache (PHP-FPM OPcache) ###############################################
 ####################################################################################################
 
-## manually delete OPcache file cache ##
+## by default OPcache only caches PHP files for a few seconds but we clear it to be sure ##
+## this snippet will also clear physical OPcache files if the feature is enabled ##
+
+## manually delete OPcache file cache (after opcache file cache works better) ##
 # rm /var/www/cache/opcache/*
 
 ## creative way to reset OPcache using temporary PHP script ##
 RANDOM_RESET_OPCACHE=$(openssl rand -hex 12)
 echo "<?php opcache_reset(); ?>" > /var/www/html/purge-${RANDOM_RESET_OPCACHE}.php
 /usr/bin/php /var/www/html/purge-${RANDOM_RESET_OPCACHE}.php
-rm /var/www/html/purge-${RANDOM_RESET_OPCACHE}.php
-# rm /var/www/html/purge-* ## better
+rm /var/www/html/purge-*.php
 
 ## manually delete OPcache file cache (again) ##
 # rm /var/www/cache/opcache/*
