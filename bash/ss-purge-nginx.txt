@@ -4,16 +4,16 @@
 #### author: SlickStack ############################################################################
 #### link: https://slickstack.io ###################################################################
 #### mirror: http://mirrors.slickstack.io/bash/ss-purge-nginx.txt ##################################
-#### path: /var/www/ss-purge-fcgi ##################################################################
+#### path: /var/www/ss-purge-nginx #################################################################
 #### destination: n/a (not a boilerplate) ##########################################################
 #### purpose: Clears the Nginx FastCGI cache by deleting files under /var/www/cache/nginx/ #########
-#### module version: Ubuntu 20.04 LTS + MySQL 8.0.x + PHP-FPM 7.4.x + Redis 5.0.x ##################
-#### sourced by: ss-purge (and many ss core bash scripts) ##########################################
+#### module version: Nginx 1.8.x ###################################################################
+#### sourced by: ss-purge, ss core bash scripts ####################################################
 #### bash aliases: ss purge [clear] nginx, ss purge [clear] caches nginx ###########################
 ####################################################################################################
 
 ## RUNNING SS-PURGE DURING TRAFFIC SPIKES MIGHT CAUSE SUDDEN STRESS TO SERVER RESOURCES ##
-## KEEP IN MIND THAT FASTCGI CACHE IS DISABLED ALREADY ON STAGING SUBDIRECTORIES ##
+## KEEP IN MIND THAT PAGE CACHING IS DISABLED ALREADY ON DEV/STAGING WEBSITES ##
 
 ## include SlickStack configuration ##
 source /var/www/ss-config
@@ -33,13 +33,14 @@ echo -e "${PURPLE}Running ss-purge-nginx: Clears the Nginx FastCGI cache by dele
 sleep "$SLEEP_MESSAGE_BEGIN"
 
 ####################################################################################################
-### SS-Purge: Clear Nginx FastCGI Cache (Deletes All Cache Files On Disk / TMPFS) ##################
+### SS-Purge-Nginx: Clear Cache (Nginx FastCGI Cache) ##############################################
 ####################################################################################################
 
 ## here we manually delete all FastCGI cache files without touching OPcache file cache ##
 ## when running TMPFS this script clears the FastCGI cache files from RAM memory ##
 
-find /var/www/cache/ -not -path "*/opcache*" -type f -delete
+find /var/www/cache/ -not -path "*/opcache*" -type f -type d -delete
+# rm /var/www/cache/nginx/*
 
 ####################################################################################################
 #### SS-Purge-Nginx: Touch Timestamp File (End Script) #############################################
