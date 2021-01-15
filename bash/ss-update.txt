@@ -6,7 +6,7 @@
 #### mirror: http://mirrors.slickstack.io/bash/ss-update.txt #######################################
 #### path: /var/www/ss-update ######################################################################
 #### destination: n/a (not a boilerplate) ##########################################################
-#### purpose: Updates and cleans up SlickStack config file, Ubuntu packages, and CMS ###############
+#### purpose: Updates ss-config file, root crontab, Ubuntu packages, Linuxl kernel, and CMS ########
 #### module version: Ubuntu 20.04 LTS ##############################################################
 #### sourced by: ss core cron jobs #################################################################
 #### bash aliases: ss update, ss upgrade ###########################################################
@@ -29,11 +29,11 @@ source /var/www/ss-functions
 ## it will only be noticed by sudo users who manually call ss core bash scripts ##
 
 ## echo message ##
-echo -e "${PURPLE}Running ss-update: Updates and cleans up SlickStack config file, Ubuntu packages, and CMS... ${NOCOLOR}"
+echo -e "${PURPLE}Running ss-update: Updates ss-config file, root crontab, Ubuntu packages, Linuxl kernel, and CMS... ${NOCOLOR}"
 sleep "$SLEEP_MESSAGE_BEGIN"
 
 ####################################################################################################
-#### SS-Update: Backup MySQL Database Before Proceeding (Via SS-Dump) ##############################
+#### SS-Update: Backup MySQL Database Before Proceeding ############################################
 ####################################################################################################
 
 ## here we first dump the live production database to /var/www/meta/ before proceeding ##
@@ -63,13 +63,6 @@ source /var/www/ss-update-config
 source /var/www/ss-check
 source /var/www/ss-worker
 source /var/www/ss-check
-
-####################################################################################################
-#### SS-Update: Delete Irrelevant Ubuntu Packages ##################################################
-####################################################################################################
-
-## uninstall expect (no longer used for ss-install-mysql) ##
-apt purge expect
 
 ####################################################################################################
 #### SS-Install: Configure MySQL Users + Connections (Supports IPv4 + IPv6) ########################
@@ -132,44 +125,33 @@ if [[ "$SS_APP" == "wordpress" || -z "$SS_APP"  ]]; then
 
 fi
 
-####################################################################################################
-#### SS-Update: Set Dpkg Basic Settings + Update Apt (Package) Cache ##############################
-####################################################################################################
+## this snippet fetches the latest stable version of MediaWiki from SlickStack mirrors ##
+## major CMS releases (unpatched) are never considered stable for our purposes ##
 
-## for smoother execution and to avoid conflicts we set dpkg to noninteractive/confold ##
-## it is much better to run ss-update instead of calling apt get upgrade manually ##
 
-## set confold as dpkg default (fail-safe in case apt upgrade called directly) ##
-DEBIAN_FRONTEND=noninteractive dpkg --configure -a --force-confold
+## this snippet fetches the latest stable version of PrestaShop from SlickStack mirrors ##
+## major CMS releases (unpatched) are never considered stable for our purposes ##
+
 
 ####################################################################################################
-#### SS-Update: Upgrade + Autoremove + Autoclean SlickStack Modules (Ubuntu Packages) ##############
+#### SS-Update: Install SlickStack (Root) Crontab ##################################################
+####################################################################################################
+
+## because the crontab is so critical we reinstall it anytime that ss-update is executed ##
+## ss-install is the only other time that the crontab is automatically installed ##
+
+## run ss-install-ubuntu-crontab ##
+source /var/www/ss-install-ubuntu-crontab
+
+####################################################################################################
+#### SS-Update-Packages: Upgrade Ubuntu Packages + Linux Kernel ####################################
 ####################################################################################################
 
 ## the main purpose of ss-update is to upgrade all currently installed Ubuntu packages ##
-## because we use apt (not apt-get) this will also upgrade the Linux kernel ##
+## we use apt full-upgrade (not apt-get) in order to upgrade the Linux kernel ##
 
-## temporarily disable UFW Firewall ##
-ufw --force disable
-
-## update Ubuntu repo cache ##
-apt update
-
-## upgrade installed Ubuntu packages (LEMP modules) + Linux kernel (apt feature) ##
-apt full-upgrade
-
-## autoremove unused Ubuntu packages ##
-apt autoremove
-
-## autoclean Ubuntu packages ##
-apt autoclean
-
-####################################################################################################
-#### SS-Update: Purge All Caches (Via SS-Purge) ####################################################
-####################################################################################################
-
-## run ss-purge ##
-source /var/www/ss-purge
+## run ss-update-packages ##
+source /var/www/ss-update-packages
 
 ####################################################################################################
 #### SS-Update: Configure UFW Firewall + Set UFW Rules (In Case Apt Overwrites UFW Files) ##########
@@ -226,16 +208,6 @@ rm /tmp/ufw*
 rm /tmp/user*
 
 ####################################################################################################
-#### SS-Update: Install Latest SlickStack (Root) Crontab File ######################################
-####################################################################################################
-
-## because the crontab is so critical we reinstall it anytime that ss-update is executed ##
-## ss-install is the only other time that the crontab is automatically installed ##
-
-## run ss-install-ubuntu-crontab ##
-source /var/www/ss-install-ubuntu-crontab
-
-####################################################################################################
 #### SS-Update: Reset Permissions (All Permissions) ################################################
 ####################################################################################################
 
@@ -243,7 +215,7 @@ source /var/www/ss-install-ubuntu-crontab
 source /var/www/ss-perms
 
 ####################################################################################################
-#### SS-Update: Restart Services (All Services) ####################################################
+#### SS-Update: Restart Modules (All Modules) ######################################################
 ####################################################################################################
 
 ## run ss-restart-services ##
