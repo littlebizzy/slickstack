@@ -6,7 +6,7 @@
 #### mirror: http://mirrors.slickstack.io/bash/ss-update.txt #######################################
 #### path: /var/www/ss-update ######################################################################
 #### destination: n/a (not a boilerplate) ##########################################################
-#### purpose: Updates ss-config file, root crontab, Ubuntu packages, Linuxl kernel, and CMS ########
+#### purpose: Updates ss-config file, root crontab, Ubuntu packages, Linux kernel, and CMS #########
 #### module version: Ubuntu 20.04 LTS ##############################################################
 #### sourced by: ss core cron jobs #################################################################
 #### bash aliases: ss update, ss upgrade ###########################################################
@@ -29,7 +29,7 @@ source /var/www/ss-functions
 ## it will only be noticed by sudo users who manually call ss core bash scripts ##
 
 ## echo message ##
-echo -e "${PURPLE}Running ss-update: Updates ss-config file, root crontab, Ubuntu packages, Linuxl kernel, and CMS... ${NOCOLOR}"
+echo -e "${PURPLE}Running ss-update: Updates ss-config file, root crontab, Ubuntu packages, Linux kernel, and CMS... ${NOCOLOR}"
 sleep "$SLEEP_MESSAGE_BEGIN"
 
 ####################################################################################################
@@ -171,62 +171,6 @@ source /var/www/ss-install-ubuntu-crontab
 
 ## run ss-update-packages ##
 source /var/www/ss-update-packages
-
-####################################################################################################
-#### SS-Update: Configure UFW Firewall + Set UFW Rules (In Case Apt Overwrites UFW Files) ##########
-####################################################################################################
-
-## delete/move/improve this snippet
-
-## at least one case reported where ss-update resulted in UFW config being overwritten ##
-## therefore we include this reinstallation of UFW to ensure no port lockouts ##
-
-## delete tmp files ##
-rm /tmp/ufw*
-rm /tmp/user*
-
-## install UFW firewall ##
-apt install ufw
-
-## set UFW rules ##
-ufw default deny incoming
-ufw default allow outgoing
-ufw allow $SSH_PORT
-ufw allow 80
-ufw allow 443
-ufw allow 6379
-
-## re-enable UFW Firewall (prevously disabled above) ##
-ufw --force enable
-echo "y" | ufw enable
-
-# retrieve latest versions ##
-wget -O /tmp/ufw http://mirrors.slickstack.io/ufw-firewall/ufw.txt
-wget -O /tmp/ufw.conf http://mirrors.slickstack.io/ufw-firewall/ufw-conf.txt
-wget -O /tmp/user.rules http://mirrors.slickstack.io/ufw-firewall/user-rules.txt
-
-if [[ -z "$SSH_PORT" ]]; then 
-    sed -i "s/@SSH_PORT/6969/g" /tmp/user.rules
-else 
-    sed -i "s/@SSH_PORT/${SSH_PORT}/g" /tmp/user.rules
-fi
-
-## copy files to their destinations ##
-cp /tmp/ufw /etc/default/ufw
-cp /tmp/ufw.conf /etc/ufw/ufw.conf
-cp /tmp/user.rules /etc/ufw/user.rules
-
-## reset permissions ##
-chown root:root /etc/default/ufw
-chown root:root /etc/ufw/ufw.conf
-chown root:root /etc/ufw/user.rules
-chmod 0664 /etc/default/ufw
-chmod 0664 /etc/ufw/ufw.conf
-chmod 0664 /etc/ufw/user.rules
-
-## delete tmp files ##
-rm /tmp/ufw*
-rm /tmp/user*
 
 ####################################################################################################
 #### SS-Update: Reset Permissions (All Permissions) ################################################
