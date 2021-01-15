@@ -7,13 +7,13 @@
 #### path: /var/www/ss-purge-transients ############################################################
 #### destination: n/a (not a boilerplate) ##########################################################
 #### purpose: Manually deletes all transients data from the WordPress wp_options table #############
-#### module version: WordPress 5.5.x ###############################################################
-#### sourced by: ss-purge ##########################################################################
+#### module version: MySQL 8.0.x + WordPress 5.5.x #################################################
+#### sourced by: ss-purge, ss core bash scripts ####################################################
 #### bash aliases: ss purge [clear] transients, ss purge [clear] wordpress [wp] transients #########
 ####################################################################################################
 
 ## RUNNING SS-PURGE DURING TRAFFIC SPIKES MIGHT CAUSE SUDDEN STRESS TO SERVER RESOURCES ##
-## KEEP IN MIND THAT FASTCGI CACHE IS DISABLED ALREADY ON STAGING SUBDIRECTORIES ##
+## KEEP IN MIND THAT PAGE CACHING IS DISABLED ALREADY ON DEV/STAGING WEBSITES ##
 
 ## include SlickStack configuration ##
 source /var/www/ss-config
@@ -39,15 +39,14 @@ sleep "$SLEEP_MESSAGE_BEGIN"
 ## manually deletes all transients (temporary query cache data) from WordPress database ##
 ## this is a more forceful approach than simply purging the Redis object cache ##
 
-## for MySQL 8.0 if server is running Ubuntu 20.04 ##
+## for MySQL 8.0 (Ubuntu 20.04) ##
 if [[ "${UBUNTU_VERSION}" = "20.04" || -z "${UBUNTU_VERSION}" ]]; then 
     mysql --execute="DELETE FROM ${DB_NAME}.${DB_PREFIX}options WHERE option_name LIKE ('%\_transient\_%');"
 fi
 
-## for MySQL 5.7 if server is running Ubuntu 18.04 ##
+## for MySQL 5.7 (Ubuntu 18.04) ##
 if [[ "${UBUNTU_VERSION}" = "18.04" ]]; then
-     mysql --user=root --password=$DB_PASSWORD_ROOT --host=localhost --protocol=socket --port=3306 --force --execute="DELETE FROM ${DB_NAME}.${DB_PREFIX}options WHERE option_name LIKE ('%\_transient\_%');"
-     mysql --user=root --password=$DB_PASSWORD_ROOT --host=127.0.0.1 --protocol=tcp --port=3306 --force --execute="DELETE FROM ${DB_NAME}.${DB_PREFIX}options WHERE option_name LIKE ('%\_transient\_%');"
+     mysql_5.7 --execute="DELETE FROM ${DB_NAME}.${DB_PREFIX}options WHERE option_name LIKE ('%\_transient\_%');"
 fi
 
 ####################################################################################################
