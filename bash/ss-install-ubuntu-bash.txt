@@ -9,7 +9,7 @@
 #### purpose: Reinstalls the Ubuntu (OS) bash commands for SlickStack servers (idempotent) #########
 #### module version: Ubuntu 20.04 LTS ##############################################################
 #### sourced by: ss-install ########################################################################
-#### bash aliases: ss install ubuntu bash, ss install aliases, ss install bash #####################
+#### bash aliases: ss install ubuntu bash, ss install [bash] aliases, ss install bash ##############
 ####################################################################################################
 
 ## SS-CONFIG MUST BE PROPERLY CONFIGURED AND ON CURRENT BUILD BEFORE RUNNING SS-INSTALL ##
@@ -38,43 +38,6 @@ sleep "$SLEEP_MESSAGE_BEGIN"
 
 ## delete tmp files ##
 rm /tmp/bash-aliases*
-rm /tmp/wp-cli*
-rm /tmp/wp-completion*
-
-####################################################################################################
-### SS-Install-Bash: Prepare WP-CLI Configuration ##################################################
-####################################################################################################
-
-## to keep things simple we include the WP-CLI aliases within our own Bash aliases file ##
-## here we retrieve latest WP-CLI files and move aliases to /var/www/meta/ ##
-
-## uninstall current wp-cli versions ##
-rm /usr/local/bin/wp
-rm /home/wp-completion.bash
-rm /home/${SUDO_USER}/wp-cli.yml
-rm /var/www/meta/.wp-completion*
-rm /var/www/meta/wp-cli.yml
-rm /var/www/html/.wp-cli
-rm /var/www/html/wp-cli
-sed -i '/WP-CLI/d' /home/${SUDO_USER}/.bashrc
-sed -i '/wp-completion/d' /home/${SUDO_USER}/.bashrc
-
-## symlinks for wp-cli.yml ##
-ln /home/${SUDO_USER}/.wp-cli/config.yml /var/www/meta/wp-cli.yml
-ln /root/.wp-cli/config.yml /var/www/meta/wp-cli.yml
-
-## download latest versions ##
-wget -O /tmp/wp-cli.phar http://mirrors.slickstack.io/wp-cli/wp-cli.phar
-wget -O /tmp/wp-cli.yml http://mirrors.slickstack.io/wp-cli/wp-cli-yml.txt
-wget -O /tmp/wp-completion.txt http://mirrors.slickstack.io/wp-cli/wp-completion.txt
-
-## make files executable ##
-chmod +x /tmp/wp-cli.phar
-
-## copy files to destinations ##
-cp /tmp/wp-cli.phar /usr/local/bin/wp
-cp /tmp/wp-cli.yml /var/www/meta/wp-cli.yml
-cp /tmp/wp-completion.txt /var/www/meta/.wp-completion
 
 ####################################################################################################
 ### SS-Install-Ubuntu-Bash: Install Bash Aliases (SlickStack) ######################################
@@ -125,14 +88,14 @@ source /var/www/ss-perms-ubuntu-bash
 source /root/.bashrc
 source /home/${SUDO_USER}/.bashrc
 
+# source /var/www/ss-restart-services-ubuntu-bash
+
 ####################################################################################################
 #### SS-Install-Ubuntu-Bash: Cleanup Temporary Files ###############################################
 ####################################################################################################
 
 ## delete tmp files ##
 rm /tmp/bash-aliases*
-rm /tmp/wp-cli*
-rm /tmp/wp-completion*
 
 ####################################################################################################
 #### SS-Install-Ubuntu-Bash: Touch Timestamp File (End Script) #####################################
