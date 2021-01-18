@@ -661,15 +661,12 @@ source /var/www/ss-install-adminer
 #### SS-Install: Install CMS (WordPress, PrestaShop, MediaWiki, Etc) ###############################
 ####################################################################################################
 
-## below the script will check to see what PHP-based CMS you have chosen in ss-config ##
-## if no CMS is explicity chosen than WordPress will be installed by default ##
+## SNIPPET: ss-install, ss-update
 
-## WORDPRESS (DEFAULT) ##
-
+## this snippet fetches the latest stable version of WordPress from SlickStack mirrors ##
+## major CMS releases (unpatched) are never considered stable for our purposes ##
+    
 if [[ "$SS_APP" == "wordpress" || -z "$SS_APP"  ]]; then
-
-    ## this script fetches the latest stable version of WordPress from SlickStack mirrors ##
-    ## major releases (unpatched) are never considered stable for our purposes ##
 
     ## run ss-install-wordpress-core ##
     source /var/www/ss-install-wordpress-core
@@ -691,7 +688,8 @@ if [[ "$SS_APP" == "wordpress" || -z "$SS_APP"  ]]; then
 
 fi
 
-## PRESTASHOP ##
+## this snippet fetches the latest stable version of PrestaShop from SlickStack mirrors ##
+## major CMS releases (unpatched) are never considered stable for our purposes ##
 
 if [[ "$SS_APP" == "prestashop" ]]; then
 
@@ -703,14 +701,15 @@ if [[ "$SS_APP" == "prestashop" ]]; then
     
 fi
 
-## MEDIAWIKI ##
+## this snippet fetches the latest stable version of MediaWiki from SlickStack mirrors ##
+## major CMS releases (unpatched) are never considered stable for our purposes ##
 
 if [[ "$SS_APP" == "mediawiki" ]]; then
 
-    ## run ss-install-mediawiki-core ##
+    ## run ss-install-prestashop-core ##
     source /var/www/ss-install-mediawiki-core
     
-    ## run ss-install-mediawiki-config ##
+    ## run ss-install-prestashop-config ##
     source /var/www/ss-install-mediawiki-config
     
 fi
@@ -753,15 +752,11 @@ source /var/www/ss-reset-logs
 source /var/www/ss-perms
 
 ####################################################################################################
-#### SS-Install: Disable Maintenance Mode ##########################################################
-####################################################################################################
-
-## run ss-maintenance-disable ##
-source /var/www/ss-maintenance-disable
-
-####################################################################################################
 #### SS-Install: Clear Caches (All Caches) #########################################################
 ####################################################################################################
+
+## this will clear all caches i.e. Nginx, OPcache, Redis object cache, and transients ##
+## we run this after ss-perms and before ss-restart-modules to avoid conflicts ##
 
 ## run ss-purge ##
 source /var/www/ss-purge
