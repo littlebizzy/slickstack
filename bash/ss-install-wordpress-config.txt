@@ -440,155 +440,152 @@ cp "$TMP_WORDPRESS_CONFIG_STAGING" /var/www/html/staging/wp-config.php
 ## you should never make changes directly to wp-config.php in SlickStack servers ##
 
 ## retrieve latest boilerplate (dev) ##
-wget -O /tmp/wp-config-dev.txt http://mirrors.slickstack.io/wordpress/wp-config-dev.txt
+wget -O "$TMP_WORDPRESS_CONFIG_DEV" http://mirrors.slickstack.io/wordpress/wp-config-dev.txt
 
 ###### general SlickStack settings ########
 
 ## set SlickStack dashboard ##
 if [[ -z "$SS_DASHBOARD" ]]; then 
-    sed -i "s/@SS_DASHBOARD/true/g" /tmp/wp-config-dev.txt
+    sed -i "s/@SS_DASHBOARD/true/g" "$TMP_WORDPRESS_CONFIG_DEV"
 else 
-    sed -i "s/@SS_DASHBOARD/${SS_DASHBOARD}/g" /tmp/wp-config-dev.txt
+    sed -i "s/@SS_DASHBOARD/${SS_DASHBOARD}/g" "$TMP_WORDPRESS_CONFIG_DEV"
 fi
 
 ###### WP Multisite settings ########
 
 ## set multisite subdomains ##
 if [[ -z "$WP_MULTISITE_SUBDOMAINS" ]]; then 
-    sed -i "s/@WP_MULTISITE_SUBDOMAINS/true/g" /tmp/wp-config-dev.txt
+    sed -i "s/@WP_MULTISITE_SUBDOMAINS/true/g" "$TMP_WORDPRESS_CONFIG_DEV"
 else 
-    sed -i "s/@WP_MULTISITE_SUBDOMAINS/${WP_MULTISITE_SUBDOMAINS}/g" /tmp/wp-config-dev.txt
+    sed -i "s/@WP_MULTISITE_SUBDOMAINS/${WP_MULTISITE_SUBDOMAINS}/g" "$TMP_WORDPRESS_CONFIG_DEV"
 fi
 
 ## set multisite ##
 if [[ -z "$WP_MULTISITE" ]]; then 
-    sed -i "s/@WP_MULTISITE/false/g" /tmp/wp-config-dev.txt
+    sed -i "s/@WP_MULTISITE/false/g" "$TMP_WORDPRESS_CONFIG_DEV"
 else 
-    sed -i "s/@WP_MULTISITE/${WP_MULTISITE}/g" /tmp/wp-config-dev.txt
+    sed -i "s/@WP_MULTISITE/${WP_MULTISITE}/g" "$TMP_WORDPRESS_CONFIG_DEV"
 fi
 
 ## multisite ##
 if [[ "$WP_MULTISITE" == "true" ]]; then 
-    sed -i "s/@WP_MULTISITE/true/g" /tmp/wp-config-dev.txt
+    sed -i "s/@WP_MULTISITE/true/g" "$TMP_WORDPRESS_CONFIG_DEV"
 else 
-    sed -i "s/@WP_MULTISITE/false/g" /tmp/wp-config-dev.txt
+    sed -i "s/@WP_MULTISITE/false/g" "$TMP_WORDPRESS_CONFIG_DEV"
 fi
 
 
 ####### other WP Config settings ##########
 
 ## replace database placeholders ##
-sed -i "s/@DB_NAME/${DB_NAME}/g" /tmp/wp-config-dev.txt
-sed -i "s/@DB_USER/${DB_USER}/g" /tmp/wp-config-dev.txt
-sed -i "s/@DB_PASSWORD/${DB_PASSWORD}/g" /tmp/wp-config-dev.txt
-sed -i "s/@DB_HOST/${DB_HOST}/g" /tmp/wp-config-dev.txt
-sed -i "s/@DB_CHARSET/${DB_CHARSET}/g" /tmp/wp-config-dev.txt
-sed -i "s/@DB_COLLATE/${DB_COLLATE}/g" /tmp/wp-config-dev.txt
-sed -i "s/@DB_PREFIX/dev_/g" /tmp/wp-config-dev.txt
+sed -i "s/@DB_NAME/${DB_NAME}/g" "$TMP_WORDPRESS_CONFIG_DEV"
+sed -i "s/@DB_USER/${DB_USER}/g" "$TMP_WORDPRESS_CONFIG_DEV"
+sed -i "s/@DB_PASSWORD/${DB_PASSWORD}/g" "$TMP_WORDPRESS_CONFIG_DEV"
+sed -i "s/@DB_HOST/${DB_HOST}/g" "$TMP_WORDPRESS_CONFIG_DEV"
+sed -i "s/@DB_CHARSET/${DB_CHARSET}/g" "$TMP_WORDPRESS_CONFIG_DEV"
+sed -i "s/@DB_COLLATE/${DB_COLLATE}/g" "$TMP_WORDPRESS_CONFIG_DEV"
+sed -i "s/@DB_PREFIX/dev_/g" "$TMP_WORDPRESS_CONFIG_DEV"
 
 ## disable object cache (staging) ##
-sed -i "s/@OBJECT_CACHE/false/g" /tmp/wp-config-dev.txt
+sed -i "s/@OBJECT_CACHE/false/g" "$TMP_WORDPRESS_CONFIG_DEV"
 
 ## set language ##
 if [[ -z "$WP_LANG" ]]; then 
-    sed -i "s/@WP_LANG/en-US/g" /tmp/wp-config-dev.txt
+    sed -i "s/@WP_LANG/en-US/g" "$TMP_WORDPRESS_CONFIG_DEV"
 else 
-    sed -i "s/@WP_LANG/${WP_LANG}/g" /tmp/wp-config-dev.txt
+    sed -i "s/@WP_LANG/${WP_LANG}/g" "$TMP_WORDPRESS_CONFIG_DEV"
 fi
 
 ## replace domain placeholders ##
-sed -i "s#@SITE_DOMAIN#${SITE_DOMAIN}#g" /tmp/wp-config-dev.txt
-sed -i "s/@SITE_TLD/${SITE_TLD}/g" /tmp/wp-config-dev.txt
+sed -i "s#@SITE_DOMAIN#${SITE_DOMAIN}#g" "$TMP_WORDPRESS_CONFIG_DEV"
+sed -i "s/@SITE_TLD/${SITE_TLD}/g" "$TMP_WORDPRESS_CONFIG_DEV"
 
 ## replace SFTP Details placeholders ##
-sed -i "s/@SFTP_USER/${SFTP_USER}/g" /tmp/wp-config-dev.txt
-sed -i "s/@SFTP_PASSWORD/${SFTP_PASSWORD}/g" /tmp/wp-config-dev.txt
+sed -i "s/@SFTP_USER/${SFTP_USER}/g" "$TMP_WORDPRESS_CONFIG_DEV"
+sed -i "s/@SFTP_PASSWORD/${SFTP_PASSWORD}/g" "$TMP_WORDPRESS_CONFIG_DEV"
 if [[ -z "$SSH_PORT" ]]; then 
-    sed -i "s/@SSH_PORT/6969/g" /tmp/wp-config-dev.txt
+    sed -i "s/@SSH_PORT/6969/g" "$TMP_WORDPRESS_CONFIG_DEV"
 else 
-    sed -i "s/@SSH_PORT/${SSH_PORT}/g" /tmp/wp-config-dev.txt
+    sed -i "s/@SSH_PORT/${SSH_PORT}/g" "$TMP_WORDPRESS_CONFIG_DEV"
 fi
 
 ## replace CloudFlare placeholders ##
-sed -i "s/@CLOUDFLARE_API_KEY/${CLOUDFLARE_API_KEY}/g" /tmp/wp-config-dev.txt
-sed -i "s/@CLOUDFLARE_API_EMAIL/${CLOUDFLARE_API_EMAIL}/g" /tmp/wp-config-dev.txt
+sed -i "s/@CLOUDFLARE_API_KEY/${CLOUDFLARE_API_KEY}/g" "$TMP_WORDPRESS_CONFIG_DEV"
+sed -i "s/@CLOUDFLARE_API_EMAIL/${CLOUDFLARE_API_EMAIL}/g" "$TMP_WORDPRESS_CONFIG_DEV"
 
 ## CloudFlare DNS widget ##
 if [[ -z "$CLOUDFLARE_WIDGET_DNS" ]]; then 
-    sed -i "s/@CLOUDFLARE_WIDGET_DNS/true/g" /tmp/wp-config-dev.txt
+    sed -i "s/@CLOUDFLARE_WIDGET_DNS/true/g" "$TMP_WORDPRESS_CONFIG_DEV"
 else 
-    sed -i "s/@CLOUDFLARE_WIDGET_DNS/${CLOUDFLARE_WIDGET_DNS}/g" /tmp/wp-config-dev.txt
+    sed -i "s/@CLOUDFLARE_WIDGET_DNS/${CLOUDFLARE_WIDGET_DNS}/g" "$TMP_WORDPRESS_CONFIG_DEV"
 fi
 
 ## replace salt keys ##
-sed -i "s/@AUTHKEY/$(openssl rand -hex 48)/g" /tmp/wp-config-dev.txt
-sed -i "s/@SECUREAUTHKEY/$(openssl rand -hex 48)/g" /tmp/wp-config-dev.txt
-sed -i "s/@LOGGEDINKEY/$(openssl rand -hex 48)/g" /tmp/wp-config-dev.txt
-sed -i "s/@NONCEKEY/$(openssl rand -hex 48)/g" /tmp/wp-config-dev.txt
-sed -i "s/@AUTHSALT/$(openssl rand -hex 48)/g" /tmp/wp-config-dev.txt
-sed -i "s/@SECUREAUTHSALT/$(openssl rand -hex 48)/g" /tmp/wp-config-dev.txt
-sed -i "s/@LOGGEDINSALT/$(openssl rand -hex 48)/g" /tmp/wp-config-dev.txt
-sed -i "s/@NONCESALT/$(openssl rand -hex 48)/g" /tmp/wp-config-dev.txt
+sed -i "s/@AUTHKEY/$(openssl rand -hex 48)/g" "$TMP_WORDPRESS_CONFIG_DEV"
+sed -i "s/@SECUREAUTHKEY/$(openssl rand -hex 48)/g" "$TMP_WORDPRESS_CONFIG_DEV"
+sed -i "s/@LOGGEDINKEY/$(openssl rand -hex 48)/g" "$TMP_WORDPRESS_CONFIG_DEV"
+sed -i "s/@NONCEKEY/$(openssl rand -hex 48)/g" "$TMP_WORDPRESS_CONFIG_DEV"
+sed -i "s/@AUTHSALT/$(openssl rand -hex 48)/g" "$TMP_WORDPRESS_CONFIG_DEV"
+sed -i "s/@SECUREAUTHSALT/$(openssl rand -hex 48)/g" "$TMP_WORDPRESS_CONFIG_DEV"
+sed -i "s/@LOGGEDINSALT/$(openssl rand -hex 48)/g" "$TMP_WORDPRESS_CONFIG_DEV"
+sed -i "s/@NONCESALT/$(openssl rand -hex 48)/g" "$TMP_WORDPRESS_CONFIG_DEV"
 
 ## Replace Placeholders: Debug and Dev/staging server ##
-sed -i "s/@WP_DEBUG/true/g" /tmp/wp-config-dev.txt
-sed -i "s/@WP_LOCAL_DEV/false/g" /tmp/wp-config-dev.txt
+sed -i "s/@WP_DEBUG/true/g" "$TMP_WORDPRESS_CONFIG_DEV"
+sed -i "s/@WP_LOCAL_DEV/false/g" "$TMP_WORDPRESS_CONFIG_DEV"
 
 
 
 ## core auto updates ##
 if [[ -z "$WP_AUTO_UPDATE_CORE" ]]; then 
-    sed -i "s/@WP_AUTO_UPDATE_CORE/minor/g" /tmp/wp-config-dev.txt
+    sed -i "s/@WP_AUTO_UPDATE_CORE/minor/g" "$TMP_WORDPRESS_CONFIG_DEV"
 else 
-    sed -i "s/@WP_AUTO_UPDATE_CORE/${WP_AUTO_UPDATE_CORE}/g" /tmp/wp-config-dev.txt
+    sed -i "s/@WP_AUTO_UPDATE_CORE/${WP_AUTO_UPDATE_CORE}/g" "$TMP_WORDPRESS_CONFIG_DEV"
 fi
 
 ## autosave (drafts) ##
 if [[ -z "$WP_AUTOSAVE_INTERVAL" ]]; then 
-    sed -i "s/@WP_AUTOSAVE_INTERVAL/60/g" /tmp/wp-config-dev.txt
+    sed -i "s/@WP_AUTOSAVE_INTERVAL/60/g" "$TMP_WORDPRESS_CONFIG_DEV"
 else 
-    sed -i "s/@WP_AUTOSAVE_INTERVAL/${WP_AUTOSAVE_INTERVAL}/g" /tmp/wp-config-dev.txt
+    sed -i "s/@WP_AUTOSAVE_INTERVAL/${WP_AUTOSAVE_INTERVAL}/g" "$TMP_WORDPRESS_CONFIG_DEV"
 fi
 
 ## revisions ##
 if [[ -z "$WP_POST_REVISIONS" ]]; then 
-    sed -i "s/@WP_POST_REVISIONS/5/g" /tmp/wp-config-dev.txt
+    sed -i "s/@WP_POST_REVISIONS/5/g" "$TMP_WORDPRESS_CONFIG_DEV"
 else 
-    sed -i "s/@WP_POST_REVISIONS/${WP_POST_REVISIONS}/g" /tmp/wp-config-dev.txt
+    sed -i "s/@WP_POST_REVISIONS/${WP_POST_REVISIONS}/g" "$TMP_WORDPRESS_CONFIG_DEV"
 fi
 
 ## block external requests ##
 if [[ -z "$WP_HTTP_BLOCK_EXTERNAL" ]]; then 
-    sed -i "s/@WP_HTTP_BLOCK_EXTERNAL/false/g" /tmp/wp-config-dev.txt
+    sed -i "s/@WP_HTTP_BLOCK_EXTERNAL/false/g" "$TMP_WORDPRESS_CONFIG_DEV"
 else 
-    sed -i "s/@WP_HTTP_BLOCK_EXTERNAL/${WP_HTTP_BLOCK_EXTERNAL}/g" /tmp/wp-config-dev.txt
+    sed -i "s/@WP_HTTP_BLOCK_EXTERNAL/${WP_HTTP_BLOCK_EXTERNAL}/g" "$TMP_WORDPRESS_CONFIG_DEV"
 fi
 
 ## allowed hosts ##
 if [[ -z "$WP_ACCESSIBLE_HOSTS" ]]; then 
-    sed -i "s/@WP_ACCESSIBLE_HOSTS/api.wordpress.org/g" /tmp/wp-config-dev.txt
+    sed -i "s/@WP_ACCESSIBLE_HOSTS/api.wordpress.org/g" "$TMP_WORDPRESS_CONFIG_DEV"
 else 
-    sed -i "s/@WP_ACCESSIBLE_HOSTS/${WP_ACCESSIBLE_HOSTS}/g" /tmp/wp-config-dev.txt
+    sed -i "s/@WP_ACCESSIBLE_HOSTS/${WP_ACCESSIBLE_HOSTS}/g" "$TMP_WORDPRESS_CONFIG_DEV"
 fi
 
 ## file edits ##
-sed -i "s/@WP_DISALLOW_FILE_EDIT/false/g" /tmp/wp-config-dev.txt
+sed -i "s/@WP_DISALLOW_FILE_EDIT/false/g" "$TMP_WORDPRESS_CONFIG_DEV"
 
 ## file mods ##
-sed -i "s/@WP_DISALLOW_FILE_MODS/false/g" /tmp/wp-config-dev.txt
+sed -i "s/@WP_DISALLOW_FILE_MODS/false/g" "$TMP_WORDPRESS_CONFIG_DEV"
 
 ## file uploads ##
 if [[ -z "$WP_ALLOW_UNFILTERED_UPLOADS" ]]; then 
-    sed -i "s/@WP_ALLOW_UNFILTERED_UPLOADS/true/g" /tmp/wp-config-dev.txt
+    sed -i "s/@WP_ALLOW_UNFILTERED_UPLOADS/true/g" "$TMP_WORDPRESS_CONFIG_DEV"
 else 
-    sed -i "s/@WP_ALLOW_UNFILTERED_UPLOADS/${WP_ALLOW_UNFILTERED_UPLOADS}/g" /tmp/wp-config-dev.txt
+    sed -i "s/@WP_ALLOW_UNFILTERED_UPLOADS/${WP_ALLOW_UNFILTERED_UPLOADS}/g" "$TMP_WORDPRESS_CONFIG_DEV"
 fi
 
-## rename files ##
-mv /tmp/wp-config-dev.txt /tmp/wp-config-dev.php
-
 ## copy files to destinations ##
-cp /tmp/wp-config-dev.php /var/www/html/dev/wp-config.php
+cp "$TMP_WORDPRESS_CONFIG_DEV" /var/www/html/dev/wp-config.php
 
 ####################################################################################################
 #### SS-Install-WordPress-Config: Fix Site Domains (Modify Database Options) #######################
