@@ -33,42 +33,35 @@ echo -e "${PURPLE}Running ss-install-ubuntu-swap: Reinstalls the Ubuntu (OS) swa
 sleep "$SLEEP_MESSAGE_BEGIN"
 
 ####################################################################################################
-#### SS-Install-Ubuntu-Kernel: Cleanup Temporary Files #############################################
+#### SS-Install-Ubuntu-Swap: Cleanup Temporary Files ###############################################
 ####################################################################################################
 
 ## delete tmp files ##
-rm /tmp/sysctl*
+#
 
 ####################################################################################################
-#### SS-Install-Ubuntu-Kernel: Install (Optimize) The Ubuntu Linux Kernel ##########################
+#### SS-Install-Ubuntu-Swap: Install System Swap File ##########################
 ####################################################################################################
 
-## backup current Ubunt kernel file ##
-cp /etc/sysctl.conf /etc/sysctl.conf.bak
-
-## download latest versions ##
-wget -O /tmp/sysctl.conf http://mirrors.slickstack.io/ubuntu/sysctl.txt
-
-## copy files to their destinations ##
-cp /tmp/sysctl.conf /etc/sysctl.conf
-
-## reset permissions ##
-chown root:root /etc/sysctl.conf
-chmod 0664 /etc/sysctl.conf
+mkdir /var/www/cache/system
+chown root:root /var/www/cache/system ## must be root:root
+chown root:root /var/www/cache/system/swapfile ## must be root:root
+chmod 0600 /var/www/cache/system ## must be 0600
+chmod 0600 /var/www/cache/system/swapfile ## must be 0600
 
 ####################################################################################################
-#### SS-Install-Ubuntu-Kernel: Reset Permissions (Ubuntu Kernel) ###################################
+#### SS-Install-Ubuntu-Swap: Reset Permissions (Ubuntu Swap) #######################################
 ####################################################################################################
 
-## run ss-perms-ubuntu-kernel ##
-source /var/www/ss-perms-ubuntu-kernel
+## run ss-perms-ubuntu-swap ##
+source /var/www/ss-perms-ubuntu-swap
 
 ####################################################################################################
-#### SS-Install-Ubuntu-Kernel: Cleanup Temporary Files #############################################
+#### SS-Install-Ubuntu-Swap: Cleanup Temporary Files ###############################################
 ####################################################################################################
 
 ## delete tmp files ##
-rm /tmp/sysctl*
+#
 
 ####################################################################################################
 #### SS-Install-Ubuntu-Swap: Touch Timestamp File (End Script) #####################################
@@ -84,10 +77,17 @@ touch /var/www/meta/.timestamp-ss-install-ubuntu-swap
 #### SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ###############
 ####################################################################################################
 
+## manually disable swap ##
+# sudo swapoff -v /swapfile
+# Remove entry /swapfile none swap sw 0 0 from /etc/fstab
+# Remove swapfile with command sudo rm /swapfile
+
 ## Ref: https://devanswers.co/creating-swap-space-ubuntu-18-04/
 ## Ref: https://www.howtoforge.com/ubuntu-swap-file
 ## Ref: https://linuxize.com/post/how-to-add-swap-space-on-ubuntu-20-04/
 ## Ref: https://itsfoss.com/create-swap-file-linux/
 ## Ref: https://www.cyberciti.biz/faq/ubuntu-linux-create-add-swap-file/
+## Ref: https://serverfault.com/questions/279248/linux-where-to-put-the-swap-file
+## Ref: https://www.digitalocean.com/community/tutorials/how-to-add-swap-space-on-ubuntu-20-04
 
 ## SS_EOF
