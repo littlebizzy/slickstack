@@ -258,10 +258,10 @@ rm /tmp/config*
 ## advanced users can setup ss-config before running ss-install to avoid this ##
 
 ## retrieve latest ss-config boilerplate (quietly) ##
-wget -qO /tmp/config http://mirrors.slickstack.io/bash/ss-config-sample.txt
+wget -qO /tmp/ss-config http://mirrors.slickstack.io/bash/ss-config-sample.txt
     
 ## check build ver ##
-SS_BUILD_NOW=$(source /tmp/config; echo $SS_BUILD)
+SS_BUILD_NOW=$(source /tmp/ss-config; echo $SS_BUILD)
 
 ## rainbow colors test ##
 WELCOME_RAINBOW="${DARKRED}welcome ${LIGHTRED}to ${ORANGE}the ${YELLOW}magical ${DARKGREEN}world ${LIGHTGREEN}of ${DARKCYAN}ss ${LIGHTCYAN}where ${DARKBLUE}all ${LIGHTBLUE}your ${DARKPURPLE}bash ${LIGHTPURPLE}dreams ${DARKGRAY}come ${LIGHTGRAY}true${NOCOLOR}"
@@ -306,12 +306,12 @@ if [[ ! -f "/var/www/ss-config" ]]; then
     echo -e ""
     
     ## replace all password fields with random strings ##
-    sed -i "s/@ROOT_PASSWORD/$(openssl rand -hex 12)/g" /tmp/config
-    sed -i "s/@DB_PASSWORD_ROOT/$(openssl rand -hex 12)/g" /tmp/config
+    sed -i "s/@ROOT_PASSWORD/$(openssl rand -hex 12)/g" /tmp/ss-config
+    sed -i "s/@DB_PASSWORD_ROOT/$(openssl rand -hex 12)/g" /tmp/ss-config
     
     ## PROMPT: choose sudo username (default = batman) ##
     read -t 300 -p "$(echo -e $LIGHTPURPLE"Choose sudo username (for SSH): "$NORMAL)" -e -i 'batman' ss_var_sudo_user || ss_var_sudo_user=batman
-    sed -i "s/@SUDO_USER/$ss_var_sudo_user/g" /tmp/config
+    sed -i "s/@SUDO_USER/$ss_var_sudo_user/g" /tmp/ss-config
     
     ## new line ##
     printf "\n"
@@ -319,28 +319,28 @@ if [[ ! -f "/var/www/ss-config" ]]; then
     ## PROMPT: choose sudo password (default = random) ##
     sudopass_random=$(openssl rand -hex 12)
     read -t 300 -p "$(echo -e $LIGHTPURPLE"Choose sudo password (should be strong): "$NORMAL)" -e -i ${sudopass_random} ss_var_sudo_password || ss_var_sudo_password=${sudopass_random}
-    sed -i "s/@SUDO_PASSWORD/$ss_var_sudo_password/g" /tmp/config
+    sed -i "s/@SUDO_PASSWORD/$ss_var_sudo_password/g" /tmp/ss-config
     
     ## new line ##
     printf "\n"
     
     ## PROMPT: choose SSH port number (default = 6969) ##
     read -t 300 -p "$(echo -e $LIGHTPURPLE"Choose SSH port (avoid 22 if possible): "$NORMAL)" -e -i '6969' ss_var_ssh_port || ss_var_ssh_port=6969
-    sed -i "s/@SSH_PORT/$ss_var_ssh_port/g" /tmp/config
+    sed -i "s/@SSH_PORT/$ss_var_ssh_port/g" /tmp/ss-config
     
     ## new line ##
     printf "\n"
     
     ## PROMPT: enable SSH keys (default = false) ##
     read -t 300 -p "$(echo -e $LIGHTPURPLE"Enable SSH keys (advanced users only): "$NORMAL)" -e -i 'false' ss_var_ssh_keys || ss_var_ssh_keys=false
-    sed -i "s/@SSH_KEYS/$ss_var_ssh_keys/g" /tmp/config
+    sed -i "s/@SSH_KEYS/$ss_var_ssh_keys/g" /tmp/ss-config
     
     ## new line ##
     printf "\n"
     
     ## PROMPT: choose SFTP username (default = robin) ##
     read -t 300 -p "$(echo -e $LIGHTPURPLE"Choose SFTP username (limited access): "$NORMAL)" -e -i 'robin' ss_var_sftp_user || ss_var_sftp_user=robin
-    sed -i "s/@SFTP_USER/$ss_var_sftp_user/g" /tmp/config
+    sed -i "s/@SFTP_USER/$ss_var_sftp_user/g" /tmp/ss-config
     
     ## new line ##
     printf "\n"
@@ -348,28 +348,28 @@ if [[ ! -f "/var/www/ss-config" ]]; then
     ## PROMPT: choose SFTP password (default = random) ##
     sftp_pass_random=$(openssl rand -hex 12)
     read -t 300 -p "$(echo -e $LIGHTPURPLE"Choose SFTP password (should be strong): "$NORMAL)" -e -i ${sftp_pass_random} ss_var_sftp_password || ss_var_sftp_password=${sftp_pass_random}
-    sed -i "s/@SFTP_PASSWORD/$ss_var_sftp_password/g" /tmp/config
+    sed -i "s/@SFTP_PASSWORD/$ss_var_sftp_password/g" /tmp/ss-config
     
     ## new line ##
     printf "\n"
     
     ## PROMPT: choose app (default = wordpress) ##
     read -t 300 -p "$(echo -e $LIGHTPURPLE"Choose app (only wordpress supported currently): "$NORMAL)" -e -i 'wordpress' ss_var_app_name || ss_var_app_name=wordpress
-    sed -i "s/@SS_APP/$ss_var_app_name/g" /tmp/config
+    sed -i "s/@SS_APP/$ss_var_app_name/g" /tmp/ss-config
     
     ## new line ##
     printf "\n"
     
     ## PROMPT: choose database name (default = wordpress) ##
     read -t 300 -p "$(echo -e $LIGHTPURPLE"Choose database name (single database): "$NORMAL)" -e -i 'wordpress' ss_var_db_name || ss_var_db_name=wordpress
-    sed -i "s/@DB_NAME/$ss_var_db_name/g" /tmp/config
+    sed -i "s/@DB_NAME/$ss_var_db_name/g" /tmp/ss-config
     
     ## new line ##
     printf "\n"
     
     ## PROMPT: choose database user (default = robin) ##
     read -t 300 -p "$(echo -e $LIGHTPURPLE"Choose database user (non-root user): "$NORMAL)" -e -i 'robin' ss_var_db_user || ss_var_db_user=robin
-    sed -i "s/@DB_USER/$ss_var_db_user/g" /tmp/config
+    sed -i "s/@DB_USER/$ss_var_db_user/g" /tmp/ss-config
     
     ## new line ##
     printf "\n"
@@ -377,49 +377,49 @@ if [[ ! -f "/var/www/ss-config" ]]; then
     ## PROMPT: choose database user password (default = random) ##
     db_pass_random=$(openssl rand -hex 12)
     read -t 300 -p "$(echo -e $LIGHTPURPLE"Choose database user password: "$NORMAL)" -e -i ${db_pass_random} ss_var_db_password || ss_var_db_password=${db_pass_random}
-    sed -i "s/@DB_PASSWORD_USER/$ss_var_db_password/g" /tmp/config
+    sed -i "s/@DB_PASSWORD_USER/$ss_var_db_password/g" /tmp/ss-config
     
     ## new line ##
     printf "\n"
     
     ## PROMPT: choose database host ##
     read -t 300 -p "$(echo -e $LIGHTPURPLE"Choose database host (IP address): "$NORMAL)" -e -i '127.0.0.1' ss_var_db_host || ss_var_db_host=127.0.0.1
-    sed -i "s/@DB_HOST/$ss_var_db_host/g" /tmp/config
+    sed -i "s/@DB_HOST/$ss_var_db_host/g" /tmp/ss-config
     
     ## new line ##
     printf "\n"
     
     ## PROMPT: choose database prefix ##
     read -t 300 -p "$(echo -e $LIGHTPURPLE"Choose database table prefix: "$NORMAL)" -e -i 'wp_' ss_var_db_prefix || ss_var_db_prefix=wp_
-    sed -i "s/@DB_PREFIX/$ss_var_db_prefix/g" /tmp/config
+    sed -i "s/@DB_PREFIX/$ss_var_db_prefix/g" /tmp/ss-config
     
     ## new line ##
     printf "\n"
     
     ## PROMPT: choose site TLD (otherwise example.com) ##
     read -t 300 -p "$(echo -e $LIGHTPURPLE"Choose site TLD (subdomains not allowed): "$NORMAL)" -e -i "$SS_TLD" ss_var_site_tld || ss_var_site_tld="$SS_TLD"
-    sed -i "s/@SITE_TLD/$ss_var_site_tld/g" /tmp/config
+    sed -i "s/@SITE_TLD/$ss_var_site_tld/g" /tmp/ss-config
     
     ## new line ##
     printf "\n"
     
     ## PROMPT: choose site domain (otherwise www.example.com) ##
     read -t 300 -p "$(echo -e $LIGHTPURPLE"Choose site domain (subdirectories not allowed): "$NORMAL)" -e -i "$SS_HOSTNAME" ss_var_site_domain || ss_var_site_domain="$SS_HOSTNAME"
-    sed -i "s/@SITE_DOMAIN/$ss_var_site_domain/g" /tmp/config
+    sed -i "s/@SITE_DOMAIN/$ss_var_site_domain/g" /tmp/ss-config
     
     ## new line ##
     printf "\n"
     
     ## PROMPT: enable noindex server (default = false) ##
     read -t 300 -p "$(echo -e $LIGHTPURPLE"Enable site noindexing (block robots): "$NORMAL)" -e -i 'false' ss_var_site_noindex || ss_var_site_noindex=false
-    sed -i "s/@SITE_NOINDEX/$ss_var_site_noindex/g" /tmp/config
+    sed -i "s/@SITE_NOINDEX/$ss_var_site_noindex/g" /tmp/ss-config
     
     ## new line ##
     printf "\n"
     
     ## PROMPT: which SSL do you want ##
     read -t 300 -p "$(echo -e $PINK"Which SSL cert do you want to use: "$NORMAL)" -e -i 'openssl' ss_var_ssl_type || ss_var_ssl_type=openssl
-    sed -i "s/@SSL_TYPE/$ss_var_ssl_type/g" /tmp/config
+    sed -i "s/@SSL_TYPE/$ss_var_ssl_type/g" /tmp/ss-config
     
     ## new line ##
     printf "\n"
@@ -436,36 +436,35 @@ if [[ ! -f "/var/www/ss-config" ]]; then
     
     ## PROMPT: choose Cloudflare API key (otherwise 123456789) ##
     read -t 300 -p "$(echo -e $LIGHTPURPLE"Choose Cloudflare API key (global key): "$NORMAL)" -e -i '123456789' ss_var_cloudflare_api_key || ss_var_cloudflare_api_key=123456789
-    sed -i "s/@CLOUDFLARE_API_KEY/$ss_var_cloudflare_api_key/g" /tmp/config
+    sed -i "s/@CLOUDFLARE_API_KEY/$ss_var_cloudflare_api_key/g" /tmp/ss-config
     
     ## new line ##
     printf "\n"
     
     ## PROMPT: choose Cloudflare API email (otherwise user@example.com) ##
     read -t 300 -p "$(echo -e $LIGHTPURPLE"Choose Cloudflare API email (account profile): "$NORMAL)" -e -i 'user@example.com' ss_var_cloudflare_api_email || ss_var_cloudflare_api_email=user@example.com
-    sed -i "s/@CLOUDFLARE_API_EMAIL/$ss_var_cloudflare_api_email/g" /tmp/config
+    sed -i "s/@CLOUDFLARE_API_EMAIL/$ss_var_cloudflare_api_email/g" /tmp/ss-config
     
     ## new line ##
     printf "\n"
     
     ## PROMPT: enable native staging site features ##
     read -t 300 -p "$(echo -e $LIGHTPURPLE"Enable native staging site: "$NORMAL)" -e -i 'true' ss_var_staging_site || ss_var_staging_site=true
-    sed -i "s/@STAGING_SITE_STATUS/$ss_var_staging_site/g" /tmp/config
+    sed -i "s/@STAGING_SITE_STATUS/$ss_var_staging_site/g" /tmp/ss-config
     
     ## new line ##
     printf "\n"
     
     ## PROMPT: enable native dev site features ##
     read -t 300 -p "$(echo -e $LIGHTPURPLE"Enable native dev site: "$NORMAL)" -e -i 'true' ss_var_dev_site || ss_var_dev_site=true
-    sed -i "s/@DEV_SITE_STATUS/$ss_var_dev_site/g" /tmp/config
+    sed -i "s/@DEV_SITE_STATUS/$ss_var_dev_site/g" /tmp/ss-config
     
     ## new line ##
     printf "\n"
     
     ## copy files to their destinations ##
     mkdir /var/www
-    cp /tmp/config /var/www/ss-config
-    
+    cp /tmp/ss-config /var/www/ss-config
     
 ####################################################################################################
 #### SS-Install: Message (Last Chance To Exit) #####################################################
@@ -489,7 +488,7 @@ if [[ ! -f "/var/www/ss-config" ]]; then
     echo -e ""
     
 ####################################################################################################
-#### SS-Install: Welcome (If SS-Config Exists Already) #############################################
+#### SS-Install: Welcome Back (If SS-Config Exists) ################################################
 ####################################################################################################
 
 else
@@ -597,11 +596,11 @@ source /var/www/ss-install-ubuntu-ssh
 ## run ss-install-ubuntu-crontab ##
 source /var/www/ss-install-ubuntu-crontab
 
-## run ss-install-ubuntu-utils ##
-source /var/www/ss-install-ubuntu-utils
-
 ## run ss-install-ubuntu-swap ##
 source /var/www/ss-install-ubuntu-swap
+
+## run ss-install-ubuntu-utils ##
+source /var/www/ss-install-ubuntu-utils
 
 ## we save this for near last just in case the kernel gets messed up and requires fixing ##
 ## in SlickStack the kernel is modified to pretty much uncap all limitations ##
@@ -630,7 +629,7 @@ source /var/www/ss-install-php
 source /var/www/ss-install-nginx
 
 ####################################################################################################
-#### SS-Install: Enable Maintenance Mode (Via SS-Maintenance-Enable) ###############################
+#### SS-Install: Enable Maintenance Mode ###########################################################
 ####################################################################################################
 
 ## run ss-maintenance-enable ##
