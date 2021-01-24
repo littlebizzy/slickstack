@@ -25,50 +25,46 @@
 ## we keep these variables together for easy reference and better organization ##
 
 ## ss variables ##
-SS_LINUX_KERNEL=`uname -a`
-SS_OS_VERSION=`lsb_release -ds`
 SS_CPU_CORES=`grep -c ^processor /proc/cpuinfo 2>/dev/null || sysctl -n hw.ncpu || echo "$NUMBER_OF_PROCESSORS"`
 SS_DISK_FREE=`df -kh --output=avail "$PWD" | tail -n1`
 SS_DISK_TOTAL=`df | grep '^/dev/' | awk '{s+=$2} END {print s/1048576}'`
-# SS_MYSQL_VERSION=`mysqld --version`
-# SS_MYSQL_SIZE=`mysql --execute="SELECT table_schema AS "wordpress", SUM(data_length + index_length) / 1024 / 1024 / 1024 AS "Size (GB)" FROM information_schema.TABLES GROUP BY table_schema";`
-SS_NETWORK_INTERFACE=`ip route get 1.1.1.1 | head -n1 | awk '{print $5}'`
+SS_EOF="SS_EOF"
 SS_IPV4_ADDRESS=`ip addr show $SS_NETWORK_INTERFACE | grep "inet " | awk '{ print $2;exit }' | cut -d/ -f1`
 SS_IPV6_ADDRESS=`ip addr show $SS_NETWORK_INTERFACE | grep "inet6 " | awk '{ print $2;exit }' | cut -d/ -f1`
+SS_LINUX_KERNEL=`uname -a`
+SS_NETWORK_INTERFACE=`ip route get 1.1.1.1 | head -n1 | awk '{print $5}'`
+SS_OS_VERSION=`lsb_release -ds`
 
-SS_HOSTNAME=`/bin/hostname -f` ## remove -f in future
-SS_HOSTNAME_ALL=`/bin/hostname -A`
-SS_HOSTNAME_FQDN=`/bin/hostname -f`
-
-SS_TLD=`hostname -d`
-# SS_PHP_VERSION=`php -v | grep ^PHP | cut -d' ' -f2`
-# SS_PHP_EXTENSIONS=`php -r "print_r(implode(', ', get_loaded_extensions()));"`
-
-## old ##
-UBUNTU_VERSION=`lsb_release -rs`
-DISK_FREE=`df -k --output=avail "$PWD" | tail -n1`
-NETWORK_INTERFACE=`ip route get 1.1.1.1 | head -n1 | awk '{print $5}'`
-IPV4_ADDRESS=`ip addr show $NETWORK_INTERFACE | grep "inet " | awk '{ print $2;exit }' | cut -d/ -f1`
-IPV6_ADDRESS=`ip addr show $NETWORK_INTERFACE | grep "inet6 " | awk '{ print $2;exit }' | cut -d/ -f1`
-
-## general ##
-SS_EOF="SS_EOF"
 SLEEP_MESSAGE_BEGIN="1s"
 
-## mirror links ##
+## ss file mirror links ##
 MIRROR_SS_CHECK="http://mirrors.slickstack.io/bash/ss-check.txt"
 MIRROR_SS_CONFIG_SAMPLE="http://mirrors.slickstack.io/bash/ss-config-sample.txt"
 MIRROR_SS_WORKER="http://mirrors.slickstack.io/bash/ss-worker.txt"
 
-## file paths (temp) ##
+## ss file paths (temp) ##
 TMP_SS_CONFIG="/tmp/ss-config"
 TMP_WORDPRESS_CONFIG_DEV="/tmp/wp-config-dev.php"
 TMP_WORDPRESS_CONFIG_PRODUCTION="/tmp/wp-config-production.php"
 TMP_WORDPRESS_CONFIG_STAGING="/tmp/wp-config-staging.php"
 
-## file paths (final) ##
+## ss file paths (final) ##
 PATH_SS_CHECK="/var/www/ss-check"
 PATH_SS_WORKER="/var/www/ss-worker"
+
+## old stuff ##
+UBUNTU_VERSION=`lsb_release -rs`
+NETWORK_INTERFACE=`ip route get 1.1.1.1 | head -n1 | awk '{print $5}'`
+IPV4_ADDRESS=`ip addr show $NETWORK_INTERFACE | grep "inet " | awk '{ print $2;exit }' | cut -d/ -f1`
+IPV6_ADDRESS=`ip addr show $NETWORK_INTERFACE | grep "inet6 " | awk '{ print $2;exit }' | cut -d/ -f1`
+SS_HOSTNAME=`/bin/hostname -f` ## remove -f in future
+SS_HOSTNAME_ALL=`/bin/hostname -A`
+SS_HOSTNAME_FQDN=`/bin/hostname -f`
+SS_TLD=`hostname -d`
+# SS_MYSQL_VERSION=`mysqld --version`
+# SS_MYSQL_SIZE=`mysql --execute="SELECT table_schema AS "wordpress", SUM(data_length + index_length) / 1024 / 1024 / 1024 AS "Size (GB)" FROM information_schema.TABLES GROUP BY table_schema";`
+# SS_PHP_VERSION=`php -v | grep ^PHP | cut -d' ' -f2`
+# SS_PHP_EXTENSIONS=`php -r "print_r(implode(', ', get_loaded_extensions()));"`
 
 ####################################################################################################
 #### SS-Functions: Critical Bash Functions #########################################################
