@@ -38,51 +38,54 @@ sleep "$SLEEP_MESSAGE_BEGIN"
 
 
 ####################################################################################################
-#### SS-Perms: Reset SlickStack Core Files Permissions #############################################
+#### SS-Perms: Reset Permissions (SlickStack Core Files) ##########################################
 ####################################################################################################
 
-## SlickStack Core bash scripts and cron jobs are still executable by root regardless ##
-## but these permissions help ensure consistency and better overall security ##
+## SNIPPET: ss-check, ss-perms, ss-worker
 
-## ensure core directories exist (except html) ##
+## because SlickStack core permissions are critical this is hardcoded in multiple scripts ##
+## this ensures that permissions are reset regularly and do not rely on sourcing ##
+
+## make directories ##
 mkdir /var/www
 mkdir /var/www/cache
-mkdir /var/www/cache/fastcgi
+mkdir /var/www/cache/nginx
 mkdir /var/www/cache/opcache
-mkdir /var/www/logs
-mkdir /var/www/meta
-
-## chroot (SFTP) user directory ##
-chown root:root /var ## must be root:root
-chown root:root /var/www ## must be root:root
-chmod 0755 /var/www ## must be 0755
-
-## SlickStack core scripts ##
-chown root:root /var/www/*cron* ## must be root:root
-chown root:root /var/www/ss* ## must be root:root
-chmod 0740 /var/www/*cron* ## 0740 is enough
-chmod 0740 /var/www/ss* ## 0740 is enough
-
-## no worries if the SFTP user accesses this stuff (but www-data access is the priority) ##
-chown www-data:www-data /var/www/cache ## must be www-data:www-data
-chown www-data:www-data /var/www/cache/fastcgi ## must be www-data:www-data
-chown www-data:www-data /var/www/cache/opcache ## must be www-data:www-data
-chown www-data:www-data /var/www/logs ## must be www-data:www-data
-chown www-data:www-data /var/www/meta ## must be www-data:www-data
-chmod 0755 /var/www/cache ## 775 should also work
-chmod 0755 /var/www/cache/fastcgi ## 775 should also work
-chmod 0755 /var/www/cache/opcache ## 755 should also work
-chmod 0755 /var/www/logs ## 755 should also work
-chmod 0755 /var/www/meta ## 755 should also work
-
-## ensure critical files and directories exist (will not overwrite) ##
+mkdir /var/www/cache/system
+mkdir /var/www/certs
+mkdir /var/www/certs/keys
+mkdir /var/www/crons
 mkdir /var/www/html
 mkdir /var/www/html/.well-known
 mkdir /var/www/html/.well-known/acme-challenge
+mkdir /var/www/logs
+mkdir /var/www/meta
+mkdir /var/www/sites
 
-## accessed by server for e.g. Cerbot but also by SFTP user for things like Stripe ##
+## reset permissions ##
+chown root:root /var ## must be root:root
+chown root:root /var/www ## must be root:root
+chown www-data:www-data /var/www/cache ## must be www-data:www-data
+chown www-data:www-data /var/www/cache/opcache ## must be www-data:www-data
+chown root:root /var/www/certs
+chown root:root /var/www/certs/keys
+chown root:root /var/www/crons ## must be root:root
 chown -R $SFTP_USER:www-data /var/www/html/.well-known
-chmod 0755 /var/www/html/.well-known
+chown www-data:www-data /var/www/logs ## must be www-data:www-data
+chown www-data:www-data /var/www/meta ## must be www-data:www-data
+chmod 0755 /var/www ## must be 0755
+chmod 0775 /var/www/cache ## 6755 should also work
+chmod 0755 /var/www/cache/opcache ## 755 should also work
+chmod 0755 /var/www/certs ## must be 0755
+chmod 0700 /var/www/certs/keys ## must be 0700
+chmod 0644 /var/www/certs/*.crt ## must be 0644
+chmod 0644 /var/www/certs/*.pem ## must be 0644
+chmod 0600 /var/www/certs/keys/*.key ## must be 0600
+chmod 0600 /var/www/certs/keys/*.pem ## must be 0600
+chmod 0755 /var/www/crons ## must be 0755
+chmod 0755 /var/www/html/.well-known ## accessed by server for e.g. Cerbot but also by SFTP user for things like Stripe ##
+chmod 0775 /var/www/logs ## 6755 should also work
+chmod 0775 /var/www/meta ## 6755 should also work
 
 ####################################################################################################
 #### SS-Perms: Reset Permissions (Adminer) #########################################################
