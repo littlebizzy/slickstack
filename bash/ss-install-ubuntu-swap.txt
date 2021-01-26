@@ -66,7 +66,12 @@ fi
 if [[ ! $(grep "swapfile" /etc/fstab) ]] && [[ $DISK_FREE -lt 32212254 ]]; then ## 3GB free space needed to make new 2GB swapfile
 
 ## create new swap file ##
-sudo fallocate -l 2G /var/www/cache/system/swapfile
+if [[ -z "$SS_SWAPFILE_SIZE" ]]; then 
+    sudo fallocate -l 2G /var/www/cache/system/swapfile
+else 
+    sudo fallocate -l "$SS_SWAPFILE_SIZE" /var/www/cache/system/swapfile
+fi
+
 chown root:root /var/www/cache/system/swapfile ## must be root:root
 chmod 0600 /var/www/cache/system/swapfile ## must be 0600
 
