@@ -51,17 +51,29 @@ if [[ ! -f "$PATH_SS_WORKER" ]] || [[ -z $(grep -q "$SS_EOF" "$PATH_SS_WORKER") 
 fi
 
 ####################################################################################################
-#### 01-Cron-Often: Run Scheduled Tasks ############################################################
+#### 01-Cron-Often: Run Custom Tasks ###############################################################
 ####################################################################################################
 
-## the below tasks will be called if configured to run at this interval in ss-config ##
-## certain tasks are automatically called if the relevant interval is missing ##
+## this will run custom shell commands that you can save to a reserved filename below ##
+## please carefully consider server resources and best practices 
 
 ## run custom cron jobs ##
 SS_CUSTOM_CRON_OFTEN_NOW=$(source /var/www/ss-config; echo $SS_CUSTOM_CRON_OFTEN)
 if [[ -n "$SS_CUSTOM_CRON_OFTEN" ]]; then 
     $SS_CUSTOM_CRON_OFTEN_NOW
 fi
+
+## run custom cron jobs ##
+if [[ -f "$PATH_CRON_OFTEN_CUSTOM" ]]; then
+    source "$PATH_CRON_OFTEN_CUSTOM"
+fi
+
+####################################################################################################
+#### 01-Cron-Often: Run Scheduled Tasks ############################################################
+####################################################################################################
+
+## the below tasks will be called if configured to run at this interval in ss-config ##
+## certain tasks are automatically called if the relevant interval is missing ##
 
 ## run ss-check if set to often ##
 if [[ "$SS_INTERVAL_CHECK" == "often" ]]; then 
