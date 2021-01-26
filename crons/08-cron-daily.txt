@@ -51,16 +51,29 @@ if [[ ! -f "$PATH_SS_WORKER" ]] || [[ -z $(grep -q "$SS_EOF" "$PATH_SS_WORKER") 
 fi
 
 ####################################################################################################
+#### 08-Cron-Daily: Run Custom Tasks ###############################################################
+####################################################################################################
+
+## this will run custom shell commands that you can save to a reserved filename below ##
+## carefully consider server resources and best practices before activating ##
+
+## run custom cron jobs ##
+SS_CUSTOM_CRON_DAILY_NOW=$(source /var/www/ss-config; echo $SS_CUSTOM_CRON_DAILY)
+if [[ -n "$SS_CUSTOM_CRON_DAILY" ]]; then 
+    $SS_CUSTOM_CRON_DAILY_NOW
+fi
+
+## run custom cron jobs ##
+if [[ -f "$PATH_CRON_DAILY_CUSTOM" ]]; then
+    source "$PATH_CRON_DAILY_CUSTOM"
+fi
+
+####################################################################################################
 #### 08-Cron-Daily: Run Scheduled Tasks ############################################################
 ####################################################################################################
 
 ## the below tasks will be called if configured to run at this interval in ss-config ##
 ## certain tasks are automatically called if the relevant interval is missing ##
-
-## run custom cron jobs ##
-if [[ -n "$SS_CUSTOM_CRON_DAILY" ]]; then 
-    echo "$SS_CUSTOM_CRON_DAILY"
-fi
 
 ## run ss-dump-database if set to daily ##
 if [[ "$SS_INTERVAL_DUMP_DATABASE" == "daily" ]]; then 
