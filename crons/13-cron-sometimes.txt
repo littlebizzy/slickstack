@@ -51,16 +51,29 @@ if [[ ! -f "$PATH_SS_WORKER" ]] || [[ -z $(grep -q "$SS_EOF" "$PATH_SS_WORKER") 
 fi
 
 ####################################################################################################
+#### 13-Cron-Sometimes: Run Custom Tasks ###########################################################
+####################################################################################################
+
+## this will run custom shell commands that you can save to a reserved filename below ##
+## carefully consider server resources and best practices before activating ##
+
+## run custom cron jobs ##
+SS_CUSTOM_CRON_SOMETIMES_NOW=$(source /var/www/ss-config; echo $SS_CUSTOM_CRON_SOMETIMES)
+if [[ -n "$SS_CUSTOM_CRON_SOMETIMES" ]]; then 
+    $SS_CUSTOM_CRON_SOMETIMES_NOW
+fi
+
+## run custom cron jobs ##
+if [[ -f "$PATH_CRON_SOMETIMES_CUSTOM" ]]; then
+    source "$PATH_CRON_SOMETIMES_CUSTOM"
+fi
+
+####################################################################################################
 #### 13-Cron-Sometimes: Run Scheduled Tasks ########################################################
 ####################################################################################################
 
 ## the below tasks will be called if configured to run at this interval in ss-config ##
 ## certain tasks are automatically called if the relevant interval is missing ##
-
-## run custom cron jobs ##
-if [[ -n "$SS_CUSTOM_CRON_SOMETIMES" ]]; then 
-    echo "$SS_CUSTOM_CRON_SOMETIMES"
-fi
 
 ## run ss-install-wordpress-core if set to sometimes or if not defined (default) ##
 if [[ "$SS_INTERVAL_INSTALL_WORDPRESS_CORE" == "sometimes" || -z "$SS_INTERVAL_INSTALL_WORDPRESS_CORE" ]]; then 
