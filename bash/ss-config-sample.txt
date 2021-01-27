@@ -24,7 +24,7 @@
 SS_BUILD="JAN2021F"
 
 ####################################################################################################
-#### SS-Config: Root + Sudo + SFTP Settings ########################################################
+#### SS-Config: Root User + Sudo User + SFTP User Settings #########################################
 ####################################################################################################
 
 ## write down your sudo password or you will be locked out of your server forever ##
@@ -47,6 +47,10 @@ SUDO_PASSWORD="@SUDO_PASSWORD"
 SFTP_USER="@SFTP_USER"
 SFTP_PASSWORD="@SFTP_PASSWORD"
 
+####################################################################################################
+#### SS-Config: SSH Settings (Affects SFTP) ########################################################
+####################################################################################################
+
 ## using SSH keys is only recommended for advanced users who know what they are doing ##
 ## be sure to copy your public key into: /var/www/meta/.ssh/authorized_keys ##
 
@@ -57,11 +61,26 @@ SSH_PORT="@SSH_PORT"
 SSH_KEYS="@SSH_KEYS"
 
 ####################################################################################################
+#### SS-Config: Domain Settings (Subdirectories Not Allowed) #######################################
+####################################################################################################
+
+## below domain values are used in order to hardcode Nginx and WordPress configuration ##
+## changing domain settings in the database will not override these settings ##
+
+## SITE_TLD = [example.com] w/o prefixes (required for certain modules to work properly) ##
+## SITE_DOMAIN = [www.example.com|sub.example.com] w/o suffixes (live site address) ##
+## SITE_NOINDEX = [false|true] Nginx header (noindex + nofollow + noarchive + nosnippet) ##
+
+SITE_TLD="@SITE_TLD"
+SITE_DOMAIN="@SITE_DOMAIN"
+SITE_NOINDEX="@SITE_NOINDEX"
+
+####################################################################################################
 #### SS-Config: Database Settings ##################################################################
 ####################################################################################################
 
 ## using a remote MySQL database has not been extensively tested (use at your own risk) ##
-## for security reasons choose a different password for the MySQL root user ##
+## for security reasons choose a unique password for the MySQL root/admin user ##
 
 ## DB_NAME = [wordpress|etc] only one production database (along with _staging and _dev) ##
 ## DB_USER = [example|etc] for easier management it can be the same as SFTP_USER ##
@@ -80,21 +99,6 @@ DB_HOST="@DB_HOST"
 DB_PREFIX="@DB_PREFIX"
 DB_CHARSET="utf8mb4"
 DB_COLLATE=""
-
-####################################################################################################
-#### SS-Config: Domain Settings (Subdirectories Not Allowed) #######################################
-####################################################################################################
-
-## below domain values are used in order to hardcode Nginx and WordPress configuration ##
-## database domain settings will have no effect after the ss-install completes ##
-
-## SITE_TLD = [example.com] w/o prefixes (required for certain modules to work properly) ##
-## SITE_DOMAIN = [www.example.com|sub.example.com] w/o suffixes (live site address) ##
-## SITE_NOINDEX = [false|true] Nginx header (noindex + nofollow + noarchive + nosnippet) ##
-
-SITE_TLD="@SITE_TLD"
-SITE_DOMAIN="@SITE_DOMAIN"
-SITE_NOINDEX="@SITE_NOINDEX"
 
 ####################################################################################################
 #### SS-Config: CloudFlare API + Related Settings (MU Plugin) ######################################
@@ -116,24 +120,26 @@ CLOUDFLARE_WIDGET_DNS="true"
 # CLOUDFLARE_RECOMMENDED_SETTINGS="true"
 
 ####################################################################################################
-#### SS-Config: Native Staging Site + Dev Site Settings (Both Optional) ############################
+#### SS-Config: Staging Site + Dev Site Settings (Both Optional) ###################################
 ####################################################################################################
 
 ## STAGING_SITE = [true|false] enables staging site and WP Admin toolbar switcher ##
 ## STAGING_SITE_SUBDOMAIN = [true|false] if you want staging site to load as subdomain ##
-## STAGING_REPLACE_LINKS_DB = [high|low|false] how aggressive to fix MySQL links ##
-## STAGING_REPLACE_LINKS_THEME = [high|low|false] how aggressive to fix hardcode links ##
 
 STAGING_SITE="@STAGING_SITE_STATUS"
 STAGING_SITE_SUBDOMAIN="true"
-# STAGING_REPLACE_LINKS_DB="high"
-# STAGING_REPLACE_LINKS_THEME="high"
 
 ## DEV_SITE = [true|false] enables dev site and WP Admin toolbar switcher ##
 ## DEV_SITE_SUBDOMAIN = [true|false] if you want dev site to load as subdomain ##
 
 DEV_SITE="@DEV_SITE_STATUS"
 DEV_SITE_SUBDOMAIN="true"
+
+## STAGING_REPLACE_LINKS_DB = [high|low|false] how aggressive to fix MySQL links ##
+## STAGING_REPLACE_LINKS_THEME = [high|low|false] how aggressive to fix hardcode links ##
+
+# STAGING_REPLACE_LINKS_DB="high"
+# STAGING_REPLACE_LINKS_THEME="high"
 
 ####################################################################################################
 #### SS-Config: Remote Backup (Via SFTP/API) Settings ##############################################
