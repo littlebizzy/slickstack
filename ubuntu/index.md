@@ -72,7 +72,8 @@ title: Ubuntu (Public Mirrors)
 * https://linuxreviews.org/HOWTO_make_Linux_run_blazing_fast_(again)_on_Intel_CPUs
 * https://askubuntu.com/questions/429512/dpkg-or-something-related-is-corrupted
 * https://en.wikipedia.org/wiki/ANSI_escape_code#Colors
+* https://haydenjames.io/linux-performance-almost-always-add-swap-space/
 
 ----
 
-*Last updated: Dec 18, 2020*
+*Last updated: Jan 27, 2021*
