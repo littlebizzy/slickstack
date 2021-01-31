@@ -47,7 +47,7 @@ source /var/www/ss-dump-database
 ####################################################################################################
 
 ## delete junk WordPress core tables ##
-mysql --execute="DROP TABLE IF EXISTS ${DB_PREFIX}links;" ## wp_links virtually deprecated
+mysql --database="$DB_NAME" --execute="DROP TABLE IF EXISTS ${DB_PREFIX}links;" ## wp_links virtually deprecated
 
 ## delete blacklisted plugins tables (etc) ##
 
@@ -67,7 +67,7 @@ cat /dev/null > /var/www/meta/drop_tables.txt
 cat /dev/null > /var/www/meta/drop_tables.sql
 
 ## generate list of run-on staging tables ##
-mysql --execute="SHOW TABLES LIKE 'staging\_staging%';" > /var/www/meta/drop_tables.txt
+mysql --database="$DB_NAME" --execute="SHOW TABLES LIKE 'staging\_staging%';" > /var/www/meta/drop_tables.txt
 
 ## cleanup file output ##
 sed -i '/Tables_in/d' /var/www/meta/drop_tables.txt
@@ -91,7 +91,7 @@ cat /dev/null > /var/www/meta/drop_tables.txt
 cat /dev/null > /var/www/meta/drop_tables.sql
 
 ## generate list of outdated staging tables ##
-mysql --execute="SHOW TABLES LIKE 'staging\_${DB_PREFIX_ESCAPED}%';" > /var/www/meta/drop_tables.txt
+mysql --database="$DB_NAME" --execute="SHOW TABLES LIKE 'staging\_${DB_PREFIX_ESCAPED}%';" > /var/www/meta/drop_tables.txt
 
 ## cleanup file output ##
 sed -i '/Tables_in/d' /var/www/meta/drop_tables.txt
@@ -103,6 +103,30 @@ sed -i 's/$/\;/' /var/www/meta/drop_tables.txt
 ## import the SQL query ##
 cp /var/www/meta/drop_tables.txt /var/www/meta/drop_tables.sql
 mysql $DB_NAME < /var/www/meta/drop_tables.sql
+
+
+
+## DROP DEV PREFIX (NO LONGER USED) ##
+
+## null previous data ##
+cat /dev/null > /var/www/meta/drop_tables.txt
+cat /dev/null > /var/www/meta/drop_tables.sql
+
+## generate list of outdated staging tables ##
+mysql --database="$DB_NAME" --execute="SHOW TABLES LIKE 'dev\_%';" > /var/www/meta/drop_tables.txt
+
+## cleanup file output ##
+sed -i '/Tables_in/d' /var/www/meta/drop_tables.txt
+
+## add DROP and semicolon to each line ##
+sed -i 's/^/DROP TABLE IF EXISTS /' /var/www/meta/drop_tables.txt
+sed -i 's/$/\;/' /var/www/meta/drop_tables.txt
+
+## import the SQL query ##
+cp /var/www/meta/drop_tables.txt /var/www/meta/drop_tables.sql
+mysql $DB_NAME < /var/www/meta/drop_tables.sql
+
+
 
 
 ## TEMP REFERENCE ##
@@ -125,7 +149,7 @@ cat /dev/null > /var/www/meta/myisam_tables.txt
 cat /dev/null > /var/www/meta/myisam_tables.sql
 
 ## generate list of MyISAM tables ##
-mysql --silent --batch --skip-column-names --execute="SELECT table_name FROM information_schema.tables WHERE engine='MyISAM' AND table_schema='${DB_NAME}';" > /var/www/meta/myisam_tables.txt
+mysql --database="$DB_NAME" --silent --batch --skip-column-names --execute="SELECT table_name FROM information_schema.tables WHERE engine='MyISAM' AND table_schema='${DB_NAME}';" > /var/www/meta/myisam_tables.txt
 
 ## cleanup file output ##
 sed -i '/TABLE_NAME/d' /var/www/meta/myisam_tables.txt
