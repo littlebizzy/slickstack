@@ -6,10 +6,10 @@
 #### mirror: http://mirrors.slickstack.io/bash/ss-install-mysql-core.txt ###########################
 #### path: /var/www/ss-install-mysql-core ##########################################################
 #### destination: n/a (not a boilerplate) ##########################################################
-#### purpose: Reinstalls the entire MySQL module for SlickStack servers (idempotent) ###############
+#### purpose: Reinstalls the MySQL module Ubuntu packages and extensions (idempotent) ##############
 #### module version: MySQL 8.0.x ###################################################################
 #### sourced by: ss-install ########################################################################
-#### bash aliases: ss install mysql ################################################################
+#### bash aliases: ss install mysql core ###########################################################
 ####################################################################################################
 
 ## SS-CONFIG MUST BE PROPERLY CONFIGURED AND ON CURRENT BUILD BEFORE RUNNING SS-INSTALL ##
@@ -22,18 +22,18 @@ source /var/www/ss-config
 source /var/www/ss-functions
 
 ####################################################################################################
-#### SS-Install-MySQL: Message (Begin Script) ######################################################
+#### SS-Install-MySQL-Core: Message (Begin Script) #################################################
 ####################################################################################################
 
 ## this is a simple message that announces to the shell the purpose of this bash script ##
 ## it will only be noticed by sudo users who manually call ss core bash scripts ##
 
 ## echo message ##
-echo -e "${PURPLE}Running ss-install-mysql: Reinstalls the entire MySQL module for SlickStack servers (idempotent)... ${NOCOLOR}"
+echo -e "${PURPLE}Running ss-install-mysql-core: Reinstalls the MySQL module Ubuntu packages and extensions (idempotent)... ${NOCOLOR}"
 sleep "$SLEEP_MESSAGE_BEGIN"
 
 ####################################################################################################
-#### SS-Install-MySQL: Backup MySQL Database Before Proceeding #####################################
+#### SS-Install-MySQL-Core: Backup MySQL Database Before Proceeding ################################
 ####################################################################################################
 
 ## here we first dump the live production database to /var/www/meta/ before proceeding ##
@@ -92,7 +92,7 @@ apt update
 # fi
 
 ####################################################################################################
-#### SS-Install-MySQL: Install MySQL Package #######################################################
+#### SS-Install-MySQL-Core: Install MySQL ##########################################################
 ####################################################################################################
 
 ## this script will only install the MySQL packages if not set to false in ss-config ##
@@ -212,14 +212,6 @@ sudo mysql -e "FLUSH PRIVILEGES;"
 # /usr/sbin/mysqld --user=mysql --skip-grant-tables --init-file=/tmp/init-mysql.txt &
 # mysqld_safe --skip-grant-tables &
 
-# mysqld --init-file=/tmp/init-mysql.txt &
-
-# rm /tmp/init-mysql.txt*
-# wget -O /tmp/init-mysql.txt http://mirrors.slickstack.io/mysql/init-mysql.txt
-# sed -i "s/@DB_PASSWORD_ROOT/${DB_PASSWORD_ROOT}/g" /tmp/init-mysql.txt
-# chown mysql:mysql /tmp/init-mysql.txt
-# chmod 0775 /tmp/init-mysql.txt
-
 ## start MySQL without authentication (safe mode) ##
 # mysqld --skip-grant-tables --user=mysql &
 # bin/mysqld --initialize-insecure --user=mysql
@@ -235,9 +227,6 @@ sudo mysql -e "FLUSH PRIVILEGES;"
 
 ## caching_sha2_password requires TLS, sockets, or shared memory ##
 
-# mysql --flush-privileges -e "ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD_ROOT}';"
-# SELECT plugin from mysql.user where User='root';
-# SELECT User,plugin from mysql.user where User='root';
 # SELECT user,authentication_string,plugin,host FROM mysql.user;
 
 ####################################################################################################
