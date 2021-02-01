@@ -33,13 +33,6 @@ echo -e "${PURPLE}Running ss-install-mysql: Reinstalls the entire MySQL module f
 sleep "$SLEEP_MESSAGE_BEGIN"
 
 ####################################################################################################
-#### SS-Install-MySQL: Cleanup Temporary Files #####################################################
-####################################################################################################
-
-## delete tmp files ##
-# n/a
-
-####################################################################################################
 #### SS-Install-MySQL: Backup MySQL Database Before Proceeding #####################################
 ####################################################################################################
 
@@ -106,7 +99,7 @@ apt update
 ## remote database environments might not require localhost MySQL installed ##
 
 ## only run ss-install-mysql if not set to false in ss-config ##
-# if [[ "$SS_MYSQL" != "false" ]]; then 
+# if [[ "$DB_HOST" != "127.0.0.1" ]]; then 
 # fi
 
 ## install MySQL 8.0 if server is running Ubuntu 20.04 ##
@@ -141,38 +134,18 @@ sudo mysql -e "DROP DATABASE IF EXISTS test;"
 ## we use root@localhost (auth_socket) and user@127.0.0.1 (TCP) for WordPress database ##
 ## the superuser admin@127.0.0.1 is also created to be used with phpMyAdmin, etc ##
 
-
-## WORDPRESS (DEFAULT) ##
-
 ## create production database ##
 sudo mysql -e "CREATE DATABASE IF NOT EXISTS ${DB_NAME};"
-
-# if [[ "$SS_APP" == "wordpress" || -z "$SS_APP"  ]]; then
-    # sudo mysql -e "CREATE DATABASE IF NOT EXISTS wordpress;"
-# fi
 
 ## create dev database unless it is explicity disabled ##
 if [[ "$DEV_SITE" != "false" ]]; then
     sudo mysql -e "CREATE DATABASE IF NOT EXISTS ${DB_NAME}_dev;" 
 fi
 
-# if [[ "$DEV_SITE" != "false" ]] && [[ "$SS_APP" == "wordpress" || -z "$SS_APP"  ]]; then
-    # sudo mysql -e "CREATE DATABASE IF NOT EXISTS wordpress_dev;"   
-# fi
-
 ## create staging database unless it is explictly disabled ##
 if [[ "$STAGING_SITE" != "false" ]]; then
     sudo mysql -e "CREATE DATABASE IF NOT EXISTS ${DB_NAME}_staging;"
 fi
-
-# if [[ "$STAGING_SITE" != "false" ]] && [[ "$SS_APP" == "wordpress" || -z "$SS_APP"  ]]; then
-    # sudo mysql -e "CREATE DATABASE IF NOT EXISTS wordpress_staging;"   
-# fi
-
-
-## OTHER APPS (COMING SOON) ##
-
-
 
 ## create admin superuser (can be used with Adminer/phpMyAdmin) ##
 sudo mysql -e "ALTER USER IF EXISTS 'admin'@'localhost' IDENTIFIED WITH caching_sha2_password BY '${DB_PASSWORD_ROOT}';"
@@ -221,13 +194,6 @@ sudo mysql -e "FLUSH PRIVILEGES;"
 ## mysql alias flags ##
     # command mysql --no-defaults --user=root --password=$DB_PASSWORD_ROOT --host=localhost --protocol=socket --socket=/var/run/mysqld/mysqld.sock --port=3306 --force "$@"
 
-# sudo mysql -e "ALTER USER IF EXISTS 'root'@'127.0.0.1' IDENTIFIED WITH caching_sha2_password BY '${DB_PASSWORD_ROOT}';"
-# sudo mysql -e "ALTER USER IF EXISTS 'root'@'::1' IDENTIFIED WITH caching_sha2_password BY '${DB_PASSWORD_ROOT}';"
-# sudo mysql -e "CREATE USER IF NOT EXISTS 'root'@'127.0.0.1' IDENTIFIED WITH caching_sha2_password BY '${DB_PASSWORD_ROOT}';"
-# sudo mysql -e "CREATE USER IF NOT EXISTS 'root'@'::1' IDENTIFIED WITH caching_sha2_password BY '${DB_PASSWORD_ROOT}';"
-# sudo mysql -e "GRANT ALL ON *.* TO 'root'@'127.0.0.1' WITH GRANT OPTION;"
-# sudo mysql -e "GRANT ALL ON *.* TO 'root'@'::1' WITH GRANT OPTION;"
-
 ## MYSQL IS PHASING OUT NATIVE PASSWORDS IN FAVOR OF UNIX SOCKETS AND/OR SHA2 HASHING ##
 ## WE USE SOCKETS FOR CORE SCRIPTS AND AIM TO USE TCP/SSL/SHA2 FOR WORDPRESS ##
 
@@ -262,11 +228,6 @@ sudo mysql -e "FLUSH PRIVILEGES;"
 # mysql --skip-password
 ## grep "A temporary password" /var/log/mysqld.log
 
-## ensure root@localhost uses mysql_native_password ##
-#####sudo mysql -e "ALTER USER IF EXISTS 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD_ROOT}';"
-#####sudo mysql -e "GRANT ALL ON *.* TO 'root'@'localhost' WITH GRANT OPTION;"
-#####sudo mysql -e "FLUSH PRIVILEGES;"
-
 ## reset admin (root alternative) password and make mysql_native_password the default ##
 #  -u root --skip-password --host="localhost" --protocol=socket --port=3306 
 # UPDATE mysql.user SET plugin = 'mysql_native_password' WHERE user = 'root' AND plugin = 'auth_socket';
@@ -280,22 +241,14 @@ sudo mysql -e "FLUSH PRIVILEGES;"
 # SELECT user,authentication_string,plugin,host FROM mysql.user;
 
 ####################################################################################################
-#### SS-Install-MySQL: Reset Permissions (MySQL) ###################################################
+#### SS-Install-MySQL-Core: Reset Permissions (MySQL Core) #########################################
 ####################################################################################################
 
 ## run ss-perms-mysql ##
 source /var/www/ss-perms-mysql
 
 ####################################################################################################
-#### SS-Install-MySQL: Cleanup Temporary Files #####################################################
-####################################################################################################
-
-## delete tmp files ##
-rm /tmp/init-mysql.txt*
-rm /var/run/mysqld.bak*
-
-####################################################################################################
-#### SS-Install-MySQL: Touch Timestamp File (End Script) ###########################################
+#### SS-Install-MySQL-Core: Touch Timestamp File (End Script) ######################################
 ####################################################################################################
 
 ## this is a dummy timestamp file that will remember the last time this script was run ##
