@@ -222,121 +222,8 @@ sudo mysql -e "FLUSH PRIVILEGES;"
 #### SS-Install-MySQL: Optimize My.cnf (MySQL Configuration) Settings ##############################
 ####################################################################################################
 
-## here we overwrite the default my.cnf with an optimized version (sub-config disabled) ##
-## all MySQL logs should be found under /var/www/logs/ after install complete ##
-
-## stop MySQL ##
-/etc/init.d/mysql* stop
-sleep 15s
-# killall mysql*
-# sleep 15s
-
-## cleanup leftover files ##
-rm /tmp/my.cnf
-
-## install custom my.cnf config file ##
-wget -O /tmp/my.cnf http://mirrors.slickstack.io/mysql/my-cnf.txt
-
-#### MySQL Settings ####
-## SQL mode ##
-if [[ -z "$SQL_MODE" ]]; then 
-    sed -i "s/@SQL_MODE/STRICT_TRANS_TABLES,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION/g" /tmp/my.cnf
-else 
-    sed -i "s/@SQL_MODE/${SQL_MODE}/g" /tmp/my.cnf
-fi
-
-## max allowed packet ##
-if [[ -z "$SQL_MAX_ALLOWED_PACKET" ]]; then 
-    sed -i "s/@SQL_MAX_ALLOWED_PACKET/256M/g" /tmp/my.cnf
-else 
-    sed -i "s/@SQL_MAX_ALLOWED_PACKET/${SQL_MAX_ALLOWED_PACKET}/g" /tmp/my.cnf
-fi
-
-## connect timeout ##
-if [[ -z "$SQL_CONNECT_TIMEOUT" ]]; then 
-    sed -i "s/@SQL_CONNECT_TIMEOUT/30/g" /tmp/my.cnf
-else 
-    sed -i "s/@SQL_CONNECT_TIMEOUT/${SQL_CONNECT_TIMEOUT}/g" /tmp/my.cnf
-fi
-
-## wait timeout ##
-if [[ -z "$SQL_WAIT_TIMEOUT" ]]; then 
-    sed -i "s/@SQL_WAIT_TIMEOUT/3600/g" /tmp/my.cnf
-else 
-    sed -i "s/@SQL_WAIT_TIMEOUT/${SQL_WAIT_TIMEOUT}/g" /tmp/my.cnf
-fi
-
-## interactive timeout ##
-if [[ -z "$SQL_INTERACTIVE_TIMEOUT" ]]; then 
-    sed -i "s/@SQL_INTERACTIVE_TIMEOUT/43200/g" /tmp/my.cnf
-else 
-    sed -i "s/@SQL_INTERACTIVE_TIMEOUT/${SQL_INTERACTIVE_TIMEOUT}/g" /tmp/my.cnf
-fi
-
-## net read timeout ##
-if [[ -z "$SQL_NET_READ_TIMEOUT" ]]; then 
-    sed -i "s/@SQL_NET_READ_TIMEOUT/30/g" /tmp/my.cnf
-else 
-    sed -i "s/@SQL_NET_READ_TIMEOUT/${SQL_NET_READ_TIMEOUT}/g" /tmp/my.cnf
-fi
-
-## net write timeout ##
-if [[ -z "$SQL_NET_WRITE_TIMEOUT" ]]; then 
-    sed -i "s/@SQL_NET_WRITE_TIMEOUT/60/g" /tmp/my.cnf
-else 
-    sed -i "s/@SQL_NET_WRITE_TIMEOUT/${SQL_NET_WRITE_TIMEOUT}/g" /tmp/my.cnf
-fi
-
-
-## set InnoDB buffer pool size (supports "auto" or manual via ss-config) ##
-PERCENT_RAM_MB=$(free -m | awk 'NR==2{printf "%d", $2*0.50 }')
-
-if [[ "$INNODB_BUFFER_POOL_SIZE" == "auto" ]]; then 
-    sed -i "s/@INNODB_BUFFER_POOL_SIZE/${PERCENT_RAM_MB}M/g" /tmp/my.cnf
-else 
-    sed -i "s/@INNODB_BUFFER_POOL_SIZE/${INNODB_BUFFER_POOL_SIZE}/g" /tmp/my.cnf
-fi
-
-## set InnoDB flush method ##
-if [[ -z "$INNODB_FLUSH_METHOD" ]]; then 
-    sed -i "s/@INNODB_FLUSH_METHOD/O_DIRECT/g" /tmp/my.cnf
-else 
-    sed -i "s/@INNODB_FLUSH_METHOD/${INNODB_FLUSH_METHOD}/g" /tmp/my.cnf
-fi
-
-## set InnoDB log file size ##
-if [[ -z "$INNODB_LOG_FILE_SIZE" ]]; then 
-    sed -i "s/@INNODB_LOG_FILE_SIZE/256M/g" /tmp/my.cnf
-else 
-    sed -i "s/@INNODB_LOG_FILE_SIZE/${INNODB_LOG_FILE_SIZE}/g" /tmp/my.cnf
-fi
-
-## set InnoDB log files in group ##
-if [[ -z "$INNODB_LOG_FILES_IN_GROUP" ]]; then 
-    sed -i "s/@INNODB_LOG_FILES_IN_GROUP/1/g" /tmp/my.cnf
-else 
-    sed -i "s/@INNODB_LOG_FILES_IN_GROUP/${INNODB_LOG_FILES_IN_GROUP}/g" /tmp/my.cnf
-fi
-
-## set InnoDB flush_log_at_trx_commit ##
-if [[ "$INNODB_FLUSH_LOG_AT_TRX_COMMIT" == "false" ]]; then
-    sed -i "s/@INNODB_FLUSH_LOG_AT_TRX_COMMIT/0/g" /tmp/my.cnf
-else 
-    sed -i "s/@INNODB_FLUSH_LOG_AT_TRX_COMMIT/1/g" /tmp/my.cnf
-fi
-
-## safe/clean/slow shutdown MySQL before update config ##
-# /etc/init.d/mysql stop ## too fast
-
-## copy files to their destinations ##
-cp /tmp/my.cnf /etc/mysql/my.cnf
-
-## restart MySQL ##
-/etc/init.d/mysql* restart
-
-## cleanup tmp files ##
-rm /tmp/init-mysql.txt*
-rm /var/run/mysqld.bak*
+## run ss-install-mysql-config ##
+source /var/www/ss-install-mysql-config
 
 ####################################################################################################
 #### SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ###############
@@ -415,7 +302,8 @@ source /var/www/ss-perms-mysql
 ####################################################################################################
 
 ## delete tmp files ##
-# n/a
+rm /tmp/init-mysql.txt*
+rm /var/run/mysqld.bak*
 
 ####################################################################################################
 #### SS-Install-MySQL: Touch Timestamp File (End Script) ###########################################
