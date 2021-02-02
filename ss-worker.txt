@@ -1,12 +1,10 @@
 #!/bin/bash
 
-## TEMP
-
 ####################################################################################################
 #### author: SlickStack ############################################################################
 #### link: https://slickstack.io ###################################################################
 #### mirror: http://mirrors.slickstack.io/bash/ss-worker.txt #######################################
-#### path: /var/www/bash/ss-worker #################################################################
+#### path: /var/www/ss-worker ######################################################################
 #### destination: n/a (not a boilerplate) ##########################################################
 #### purpose: Performs SlickStack maintenance tasks and retrieves the latest ss-check file #########
 #### module version: Ubuntu 20.04 LTS ##############################################################
@@ -64,7 +62,6 @@ cp /var/www/ss-config /var/www/meta/ss-config.bak.$current_time
 wget -O /tmp/ss-check http://mirrors.slickstack.io/bash/ss-check.txt
 
 ## move (install) ss-check ##
-cp /tmp/ss-check /var/www/bash/ss-check
 cp /tmp/ss-check /var/www/ss-check
 
 ####################################################################################################
@@ -109,56 +106,52 @@ chown www-data:www-data /var/www/meta/maintenance.html
 chmod 0444 /var/www/meta/maintenance.html ## 0444
 
 ####################################################################################################
-#### SS-Worker: Reset Permissions (SlickStack Core + SlickStack Config) ############################
+#### SS-Worker: Reset Permissions (SlickStack Core Files) ##########################################
 ####################################################################################################
 
-## SNIPPET: ss-check, ss-worker, ss-update
+## SNIPPET: ss-check, ss-perms, ss-worker
 
 ## because SlickStack core permissions are critical this is hardcoded in multiple scripts ##
 ## this ensures that permissions are reset regularly and do not rely on sourcing ##
 
-## ensure core directories exist ##
+## make directories ##
 mkdir /var/www
-mkdir /var/www/bash
 mkdir /var/www/cache
-mkdir /var/www/cache/fastcgi
+mkdir /var/www/cache/nginx
 mkdir /var/www/cache/opcache
+mkdir /var/www/cache/system
 mkdir /var/www/certs
 mkdir /var/www/certs/keys
 mkdir /var/www/crons
 mkdir /var/www/html
+mkdir /var/www/html/.well-known
+mkdir /var/www/html/.well-known/acme-challenge
 mkdir /var/www/logs
 mkdir /var/www/meta
 mkdir /var/www/sites
 
-## ssl certs slickstack ##
+## reset permissions ##
+chown root:root /var ## must be root:root
+chown root:root /var/www ## must be root:root
+chown www-data:www-data /var/www/cache ## must be www-data:www-data
+chown www-data:www-data /var/www/cache/opcache ## must be www-data:www-data
 chown root:root /var/www/certs
 chown root:root /var/www/certs/keys
+chown root:root /var/www/crons ## must be root:root
+chown -R $SFTP_USER:www-data /var/www/html/.well-known
+chown www-data:www-data /var/www/logs ## must be www-data:www-data
+chown www-data:www-data /var/www/meta ## must be www-data:www-data
+chmod 0755 /var/www ## must be 0755
+chmod 0775 /var/www/cache ## 6755 should also work
+chmod 0755 /var/www/cache/opcache ## 755 should also work
 chmod 0755 /var/www/certs ## must be 0755
 chmod 0700 /var/www/certs/keys ## must be 0700
 chmod 0644 /var/www/certs/*.crt ## must be 0644
 chmod 0644 /var/www/certs/*.pem ## must be 0644
 chmod 0600 /var/www/certs/keys/*.key ## must be 0600
 chmod 0600 /var/www/certs/keys/*.pem ## must be 0600
-
-## bash dir ##
-chown root:root /var/www/bash ## must be root:root
-chmod 0755 /var/www/bash ## must be 0755
-
-## crons dir ##
-chown root:root /var/www/crons ## must be root:root
 chmod 0755 /var/www/crons ## must be 0755
-
-## chroot (SFTP) user directory ##
-chown root:root /var ## must be root:root
-chown root:root /var/www ## must be root:root
-chmod 0755 /var/www ## must be 0755
-
-## its okay if the SFTP user accesses this stuff (but www-data access is the priority) ##
-chown www-data:www-data /var/www/cache ## must be www-data:www-data
-chown www-data:www-data /var/www/logs ## must be www-data:www-data
-chown www-data:www-data /var/www/meta ## must be www-data:www-data
-chmod 0775 /var/www/cache ## 6755 should also work
+chmod 0755 /var/www/html/.well-known ## accessed by server for e.g. Cerbot but also by SFTP user for things like Stripe ##
 chmod 0775 /var/www/logs ## 6755 should also work
 chmod 0775 /var/www/meta ## 6755 should also work
 
@@ -204,6 +197,15 @@ cat /dev/null > /var/www/html/staging/wp-content/blacklist.txt
 fi
 
 ####################################################################################################
+#### SS-Worker: Install Ubuntu Swapfile (If Not Exists) ############################################
+####################################################################################################
+
+## run ss-install-ubuntu-swap (conditional) ##
+if [[ ! -f "/var/www/cache/system/swapfile" ]]; then 
+    source /var/www/ss-install-ubuntu-swap
+fi
+
+####################################################################################################
 #### SS-Worker: Calculate Largest Directories On Server + Update Meta Records ######################
 ####################################################################################################
 
@@ -213,32 +215,21 @@ fi
 #### SS-Worker: Various TEMP Tasks (e.g. Urgent Patches From The SlickStack Team, Etc) #############
 ####################################################################################################
 
-# source /var/www/bash/ss-install-nginx
-# source /var/www/bash/ss-install-wordpress-core
-# source /var/www/bash/ss-install-wordpress-config
-# source /var/www/bash/ss-install-wordpress-mu-plugins
-# source /var/www/bash/ss-perms
-# source /var/www/bash/ss-purge
-# source /var/www/bash/ss-reset-password-sftp
-# source /var/www/bash/ss-clean-files
-# source /var/www/bash/ss-reboot
-# source /var/www/bash/ss-install-ubuntu-bash
-# source /var/www/bash/ss-install-ubuntu-crontab
-# source /var/www/bash/ss-encrypt-openssl
-# source /var/www/bash/ss-encrypt-certbot
+# source /var/www/ss-install-nginx
+# source /var/www/ss-install-wordpress-core
+# source /var/www/ss-install-wordpress-config
+# source /var/www/ss-install-wordpress-mu-plugins
+# source /var/www/ss-perms
+# source /var/www/ss-purge
+# source /var/www/ss-reset-password-sftp
+# source /var/www/ss-clean-files
+# source /var/www/ss-install-ubuntu-bash
+# source /var/www/ss-install-ubuntu-crontab
+# source /var/www/ss-encrypt-openssl
+# source /var/www/ss-encrypt-certbot
+# source /var/www/ss-reboot
 
 rm /var/www/html/dev/*
-
-## move this so ss-clean
-# rm /var/www/cron/
-
-
-## delete old cron job files ##
-found=$(cat /var/spool/cron/crontabs/root | grep -c "/var/www/crons/")
-
-if [[ $found -ne 0 ]] && [[ -f "/var/www/crons/01-cron-often" ]]; then
-   rm /var/www/*-cron*
-fi
 
 ####################################################################################################
 #### SS-Worker: Cleanup Temporary Files ############################################################
