@@ -178,7 +178,7 @@ title: SlickStack (Public Mirrors)
 * [clamav](/clamav/)
 * [cloudflare](/cloudflare/)
 * [craft](/modules/craft/)
-* [git](/git/)
+* [git](/modules/git/)
 * [letsencrypt](/letsencrypt/)
 * [magento](/magento/)
 * [mediawiki](/mediawiki/)
@@ -224,4 +224,4 @@ title: SlickStack (Public Mirrors)
 
 ----
 
-*Last updated: Feb 1, 2021*
+*Last updated: Feb 2, 2021*
