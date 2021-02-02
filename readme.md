@@ -10,6 +10,8 @@
 | :--------------: | :------: | :-----: | :--------------: | :-------------: | :-------------: |
 | [**A**](https://developers.google.com/speed/pagespeed/insights/?url=https%3A%2F%2Fslickstack.io%2F) | [**A**](https://gtmetrix.com/reports/slickstack.io/zpLMZ1eb) | [**A**](https://tools.pingdom.com/#5aeba9dea8000000) | [**A**](https://securityheaders.com/?q=https%3A%2F%2Fslickstack.io%2F&followRedirects=on) | [**A**](https://www.ssllabs.com/ssltest/analyze.html?d=slickstack.io&latest) | [**A**](https://www.webpagetest.org/result/190920_68_a4a541db9847ce601ef264b41df9d0f3/) |
 
+* **NEW!** If you have struggled with MySQL 8.0 performance on smaller servers, we realized that binary logging (now enabled by default) sometimes creates a massive amount of files and exhausts disk space and otherwise hurts performance. We have now disabled this feature by default, please run `ss-install-mysql-config` or reinstall your SlickStack server with `ss-install` if you have problems with disk space.
+
 * **NEW!** We have changed the way custom cron jobs can be added. Instead of adding to `ss-config` which was rather janky, you can now create a separate bash script under the `/var/www/crons/custom/` folder for every single custom cron job you wish to activate. Much cleaner and stable way to run custom jobs!
 
 * **NEW!** A 2GB swapfile is now installed by default due to issues with MySQL 8.0 we have seen on low memory VPS servers. The new swapfile should help guarantee stability and keep MySQL from crashing due to intensive processes like remote backup and restore (e.g. CodeGuard), etc.
