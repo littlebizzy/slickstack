@@ -47,43 +47,28 @@ mkdir /var/www/cache/system
 chown root:root /var/www/cache/system ## must be root:root
 chmod 0600 /var/www/cache/system ## must be 0600
 
-if [[ "$SS_SWAPFILE" == "false" ]]; then 
-    echo -e ""
-    echo "swapfile disabled in ss-config so exiting..."
-    echo -e ""
-    exit 1
-fi
-
-## exit if swapfile exists already ##
-if [[ $(grep "swapfile" /etc/fstab) ]]; then
-    echo -e ""
-    echo "swapfile found in /etc/fstab so skipping install..."
-    echo -e ""
-    exit 1
-fi
-
 ## ensure at least 3GB free disk space remains ##
-if [[ ! $(grep "swapfile" /etc/fstab) ]] && [[ $DISK_FREE -lt 32212254 ]]; then ## 3GB free space needed to make new 2GB swapfile
+if [[ "$SS_SWAPFILE" != "false" ]] && [[ ! $(grep "swapfile" /etc/fstab) ]] && [[ $DISK_FREE -lt 32212254 ]]; then ## 3GB free space needed to make new 2GB swapfile
 
-## create new swap file ##
-if [[ -z "$SS_SWAPFILE_SIZE" ]]; then 
-    sudo fallocate -l 2G /var/www/cache/system/swapfile
-else 
-    sudo fallocate -l "$SS_SWAPFILE_SIZE" /var/www/cache/system/swapfile
-fi
+    ## create new swap file ##
+    if [[ -z "$SS_SWAPFILE_SIZE" ]]; then 
+        sudo fallocate -l 2G /var/www/cache/system/swapfile
+    else 
+        sudo fallocate -l "$SS_SWAPFILE_SIZE" /var/www/cache/system/swapfile
+    fi
 
-chown root:root /var/www/cache/system/swapfile ## must be root:root
-chmod 0600 /var/www/cache/system/swapfile ## must be 0600
+    chown root:root /var/www/cache/system/swapfile ## must be root:root
+    chmod 0600 /var/www/cache/system/swapfile ## must be 0600
 
-## tell Ubuntu about the swap file ##
-sudo mkswap /var/www/cache/system/swapfile
+    ## tell Ubuntu about the swap file ##
+    sudo mkswap /var/www/cache/system/swapfile
 
-## enable the new swap file ##
-sudo swapon /var/www/cache/system/swapfile
+    ## enable the new swap file ##
+    sudo swapon /var/www/cache/system/swapfile
 
-## permanently add swapfile to /etc/fstab ##
-echo '
-/var/www/cache/system/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab
+    ## permanently add swapfile to /etc/fstab ##
+    echo '
+    /var/www/cache/system/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab
 
 fi
 
