@@ -22,32 +22,32 @@ source /var/www/ss-config
 source /var/www/ss-functions
 
 ####################################################################################################
-#### 04-Cron-Half-Hourly: Ensure SS-Check + SS-Worker Intact (Core Bash Scripts) ###################
+#### 04-Cron-Half-Hourly: Ensure SS-Check + SS-Worker Intact #######################################
 ####################################################################################################
 
 ## SNIPPET: ss core cron jobs
 
-## this improves redundancy by having ss core cron jobs ensure ss core bash scripts exist ##
-## the root crontab in SlickStack likewise ensures that ss core cron jobs exist ##
+## improves redundancy by having ss core cron jobs ensure ss core bash scripts exist ##
+## the root crontab in SlickStack likewise ensures ss core cron jobs exist ##
 
-## ensure ss-check exists and intact ##
+## ensure ss-check intact ##
 if [[ ! -f "$PATH_SS_CHECK" ]] || [[ -z $(grep -q "$SS_EOF" "$PATH_SS_CHECK") ]]; then
-    rm /tmp/ss-check*
-    wget -O /tmp/ss-check "$MIRROR_SS_CHECK"
-    cp /tmp/ss-check /var/www/ss-check
-    chown root:root /var/www/ss-check ## must be root:root
-    chmod 0700 /var/www/ss-check ## 0700 means root can execute
-    rm /tmp/ss-check*
+    rm "$TMP_SS_CHECK"
+    wget -O "$TMP_SS_CHECK" "$MIRROR_SS_CHECK"
+    cp "$TMP_SS_CHECK" "$PATH_SS_CHECK"
+    chown root:root "$PATH_SS_CHECK" ## must be root:root
+    chmod 0700 "$PATH_SS_CHECK" ## 0700 means root can execute
+    rm "$TMP_SS_CHECK"
 fi
 
-## ensure ss-worker exists and intact ##
+## ensure ss-worker intact ##
 if [[ ! -f "$PATH_SS_WORKER" ]] || [[ -z $(grep -q "$SS_EOF" "$PATH_SS_WORKER") ]]; then
-    rm /tmp/ss-worker*
-    wget -O /tmp/ss-worker "$MIRROR_SS_WORKER"
-    cp /tmp/ss-worker /var/www/ss-worker
-    chown root:root /var/www/ss-worker ## must be root:root
-    chmod 0700 /var/www/ss-worker ## 0700 means root can execute
-    rm /tmp/ss-worker*
+    rm "$TMP_SS_WORKER"
+    wget -O "$TMP_SS_WORKER" "$MIRROR_SS_WORKER"
+    cp "$TMP_SS_WORKER" "$PATH_SS_WORKER"
+    chown root:root "$PATH_SS_WORKER" ## must be root:root
+    chmod 0700 "$PATH_SS_WORKER" ## 0700 means root can execute
+    rm "$TMP_SS_WORKER"
 fi
 
 ####################################################################################################
