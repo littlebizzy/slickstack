@@ -1,7 +1,5 @@
 #!/bin/bash
 
-## TEMP
-
 ####################################################################################################
 #### author: SlickStack ############################################################################
 #### link: https://slickstack.io ###################################################################
@@ -40,56 +38,52 @@ rm /tmp/ss*
 rm /tmp/*cron*
 
 ####################################################################################################
-#### SS-Worker: Reset Permissions (SlickStack Core + SlickStack Config) ############################
+#### SS-Worker: Reset Permissions (SlickStack Core Files) ##########################################
 ####################################################################################################
 
-## SNIPPET: ss-check, ss-worker, ss-update
+## SNIPPET: ss-check, ss-perms, ss-worker
 
 ## because SlickStack core permissions are critical this is hardcoded in multiple scripts ##
 ## this ensures that permissions are reset regularly and do not rely on sourcing ##
 
-## ensure core directories exist ##
+## make directories ##
 mkdir /var/www
-mkdir /var/www/bash
 mkdir /var/www/cache
-mkdir /var/www/cache/fastcgi
+mkdir /var/www/cache/nginx
 mkdir /var/www/cache/opcache
+mkdir /var/www/cache/system
 mkdir /var/www/certs
 mkdir /var/www/certs/keys
 mkdir /var/www/crons
 mkdir /var/www/html
+mkdir /var/www/html/.well-known
+mkdir /var/www/html/.well-known/acme-challenge
 mkdir /var/www/logs
 mkdir /var/www/meta
 mkdir /var/www/sites
 
-## ssl certs slickstack ##
+## reset permissions ##
+chown root:root /var ## must be root:root
+chown root:root /var/www ## must be root:root
+chown www-data:www-data /var/www/cache ## must be www-data:www-data
+chown www-data:www-data /var/www/cache/opcache ## must be www-data:www-data
 chown root:root /var/www/certs
 chown root:root /var/www/certs/keys
+chown root:root /var/www/crons ## must be root:root
+chown -R $SFTP_USER:www-data /var/www/html/.well-known
+chown www-data:www-data /var/www/logs ## must be www-data:www-data
+chown www-data:www-data /var/www/meta ## must be www-data:www-data
+chmod 0755 /var/www ## must be 0755
+chmod 0775 /var/www/cache ## 6755 should also work
+chmod 0755 /var/www/cache/opcache ## 755 should also work
 chmod 0755 /var/www/certs ## must be 0755
 chmod 0700 /var/www/certs/keys ## must be 0700
 chmod 0644 /var/www/certs/*.crt ## must be 0644
 chmod 0644 /var/www/certs/*.pem ## must be 0644
 chmod 0600 /var/www/certs/keys/*.key ## must be 0600
 chmod 0600 /var/www/certs/keys/*.pem ## must be 0600
-
-## bash dir ##
-chown root:root /var/www/bash ## must be root:root
-chmod 0755 /var/www/bash ## must be 0755
-
-## crons dir ##
-chown root:root /var/www/crons ## must be root:root
 chmod 0755 /var/www/crons ## must be 0755
-
-## chroot (SFTP) user directory ##
-chown root:root /var ## must be root:root
-chown root:root /var/www ## must be root:root
-chmod 0755 /var/www ## must be 0755
-
-## its okay if the SFTP user accesses this stuff (but www-data access is the priority) ##
-chown www-data:www-data /var/www/cache ## must be www-data:www-data
-chown www-data:www-data /var/www/logs ## must be www-data:www-data
-chown www-data:www-data /var/www/meta ## must be www-data:www-data
-chmod 0775 /var/www/cache ## 6755 should also work
+chmod 0755 /var/www/html/.well-known ## accessed by server for e.g. Cerbot but also by SFTP user for things like Stripe ##
 chmod 0775 /var/www/logs ## 6755 should also work
 chmod 0775 /var/www/meta ## 6755 should also work
 
@@ -129,6 +123,7 @@ wget -O /tmp/ss-encrypt-openssl http://mirrors.slickstack.io/bash/ss-encrypt-ope
 wget -O /tmp/ss-functions http://mirrors.slickstack.io/bash/ss-functions.txt
 wget -O /tmp/ss-import http://mirrors.slickstack.io/bash/ss-import.txt
 wget -O /tmp/ss-import-database http://mirrors.slickstack.io/bash/ss-import-database.txt
+wget -O /tmp/ss-import-files http://mirrors.slickstack.io/bash/ss-import-files.txt
 wget -O /tmp/ss-install http://mirrors.slickstack.io/bash/ss-install.txt
 wget -O /tmp/ss-install-adminer http://mirrors.slickstack.io/bash/ss-install-adminer.txt
 wget -O /tmp/ss-install-clamav http://mirrors.slickstack.io/bash/ss-install-clamav.txt
@@ -141,6 +136,8 @@ wget -O /tmp/ss-install-mediawiki-core http://mirrors.slickstack.io/bash/ss-inst
 wget -O /tmp/ss-install-moodle-config http://mirrors.slickstack.io/bash/ss-install-moodle-config.txt
 wget -O /tmp/ss-install-moodle-core http://mirrors.slickstack.io/bash/ss-install-moodle-core.txt
 wget -O /tmp/ss-install-mysql http://mirrors.slickstack.io/bash/ss-install-mysql.txt
+wget -O /tmp/ss-install-mysql-config http://mirrors.slickstack.io/bash/ss-install-mysql-config.txt
+wget -O /tmp/ss-install-mysql-core http://mirrors.slickstack.io/bash/ss-install-mysql-core.txt
 wget -O /tmp/ss-install-nginx http://mirrors.slickstack.io/bash/ss-install-nginx.txt
 wget -O /tmp/ss-install-nginx-config http://mirrors.slickstack.io/bash/ss-install-nginx-config.txt
 wget -O /tmp/ss-install-nginx-core http://mirrors.slickstack.io/bash/ss-install-nginx-core.txt
@@ -160,6 +157,7 @@ wget -O /tmp/ss-install-ubuntu-bash http://mirrors.slickstack.io/bash/ss-install
 wget -O /tmp/ss-install-ubuntu-crontab http://mirrors.slickstack.io/bash/ss-install-ubuntu-crontab.txt
 wget -O /tmp/ss-install-ubuntu-kernel http://mirrors.slickstack.io/bash/ss-install-ubuntu-kernel.txt
 wget -O /tmp/ss-install-ubuntu-ssh http://mirrors.slickstack.io/bash/ss-install-ubuntu-ssh.txt
+wget -O /tmp/ss-install-ubuntu-swap http://mirrors.slickstack.io/bash/ss-install-ubuntu-swap.txt
 wget -O /tmp/ss-install-ubuntu-users http://mirrors.slickstack.io/bash/ss-install-ubuntu-users.txt
 wget -O /tmp/ss-install-ubuntu-utils http://mirrors.slickstack.io/bash/ss-install-ubuntu-utils.txt
 wget -O /tmp/ss-install-ufw http://mirrors.slickstack.io/bash/ss-install-ufw.txt
@@ -193,6 +191,8 @@ wget -O /tmp/ss-perms-nginx-ssl http://mirrors.slickstack.io/bash/ss-perms-nginx
 wget -O /tmp/ss-perms-opencart-config http://mirrors.slickstack.io/bash/ss-perms-opencart-config.txt
 wget -O /tmp/ss-perms-opencart-core http://mirrors.slickstack.io/bash/ss-perms-opencart-core.txt
 wget -O /tmp/ss-perms-php http://mirrors.slickstack.io/bash/ss-perms-php.txt
+wget -O /tmp/ss-perms-php-config http://mirrors.slickstack.io/bash/ss-perms-php-config.txt
+wget -O /tmp/ss-perms-php-core http://mirrors.slickstack.io/bash/ss-perms-php-core.txt
 wget -O /tmp/ss-perms-postfix http://mirrors.slickstack.io/bash/ss-perms-postfix.txt
 wget -O /tmp/ss-perms-prestashop-config http://mirrors.slickstack.io/bash/ss-perms-prestashop-config.txt
 wget -O /tmp/ss-perms-prestashop-core http://mirrors.slickstack.io/bash/ss-perms-prestashop-core.txt
@@ -205,9 +205,12 @@ wget -O /tmp/ss-perms-ubuntu-bash http://mirrors.slickstack.io/bash/ss-perms-ubu
 wget -O /tmp/ss-perms-ubuntu-crontab http://mirrors.slickstack.io/bash/ss-perms-ubuntu-crontab.txt
 wget -O /tmp/ss-perms-ubuntu-kernel http://mirrors.slickstack.io/bash/ss-perms-ubuntu-kernel.txt
 wget -O /tmp/ss-perms-ubuntu-ssh http://mirrors.slickstack.io/bash/ss-perms-ubuntu-ssh.txt
+wget -O /tmp/ss-perms-ubuntu-swap http://mirrors.slickstack.io/bash/ss-perms-ubuntu-swap.txt
 wget -O /tmp/ss-perms-ubuntu-users http://mirrors.slickstack.io/bash/ss-perms-ubuntu-users.txt
 wget -O /tmp/ss-perms-ubuntu-utils http://mirrors.slickstack.io/bash/ss-perms-ubuntu-utils.txt
 wget -O /tmp/ss-perms-ufw http://mirrors.slickstack.io/bash/ss-perms-ufw.txt
+wget -O /tmp/ss-perms-ufw-config http://mirrors.slickstack.io/bash/ss-perms-ufw-config.txt
+wget -O /tmp/ss-perms-ufw-core http://mirrors.slickstack.io/bash/ss-perms-ufw-core.txt
 wget -O /tmp/ss-purge http://mirrors.slickstack.io/bash/ss-purge.txt
 wget -O /tmp/ss-purge-nginx http://mirrors.slickstack.io/bash/ss-purge-nginx.txt
 wget -O /tmp/ss-purge-opcache http://mirrors.slickstack.io/bash/ss-purge-opcache.txt
@@ -218,21 +221,25 @@ wget -O /tmp/ss-remote http://mirrors.slickstack.io/bash/ss-remote.txt
 wget -O /tmp/ss-reset-logs http://mirrors.slickstack.io/bash/ss-reset-logs.txt
 wget -O /tmp/ss-reset-password-sftp http://mirrors.slickstack.io/bash/ss-reset-password-sftp.txt
 wget -O /tmp/ss-restart-services http://mirrors.slickstack.io/bash/ss-restart-services.txt
+wget -O /tmp/ss-restart-services-mysql http://mirrors.slickstack.io/bash/ss-restart-services-mysql.txt
 wget -O /tmp/ss-restart-services-nginx http://mirrors.slickstack.io/bash/ss-restart-services-nginx.txt
 wget -O /tmp/ss-restart-services-php http://mirrors.slickstack.io/bash/ss-restart-services-php.txt
+wget -O /tmp/ss-restart-services-redis http://mirrors.slickstack.io/bash/ss-restart-services-redis.txt
 wget -O /tmp/ss-scan-malware http://mirrors.slickstack.io/bash/ss-scan-malware.txt
 wget -O /tmp/ss-sync-staging http://mirrors.slickstack.io/bash/ss-sync-staging.txt
 wget -O /tmp/ss-update http://mirrors.slickstack.io/bash/ss-update.txt
+wget -O /tmp/ss-update-config http://mirrors.slickstack.io/bash/ss-update-config.txt
+wget -O /tmp/ss-update-packages http://mirrors.slickstack.io/bash/ss-update-packages.txt
 wget -O /tmp/ss-worker http://mirrors.slickstack.io/bash/ss-worker.txt
 
 ####################################################################################################
-#### SS-Check: Copy Latest SlickStack Core Files To /var/www/crons/ and /var/www/bash/ #############
+#### SS-Check: Install Latest SlickStack Core Files (Except SS-Check) ##############################
 ####################################################################################################
 
 ## here we copy all the downloaded core files to the proper folders where they remain ##
 ## the root crontab runs the core cron jobs which in turn run the bash scripts ##
 
-## move (install) ss core cron jobs ##
+## install ss core cron jobs ##
 cp /tmp/00-crontab /var/www/crons/00-crontab
 cp /tmp/01-cron-often /var/www/crons/01-cron-often
 cp /tmp/02-cron-regular /var/www/crons/02-cron-regular
@@ -248,8 +255,7 @@ cp /tmp/11-cron-half-monthly /var/www/crons/11-cron-half-monthly
 cp /tmp/12-cron-monthly /var/www/crons/12-cron-monthly
 cp /tmp/13-cron-sometimes /var/www/crons/13-cron-sometimes
 
-## OLD (DELETE LATER) ##
-## move (install) ss core bash scripts ##
+## install ss core bash scripts ##
 cp /tmp/ss-clean-files /var/www/ss-clean-files
 cp /tmp/ss-config-sample /var/www/ss-config-sample
 cp /tmp/ss-delete-database /var/www/ss-delete-database
@@ -262,6 +268,7 @@ cp /tmp/ss-encrypt-openssl /var/www/ss-encrypt-openssl
 cp /tmp/ss-functions /var/www/ss-functions
 cp /tmp/ss-import /var/www/ss-import
 cp /tmp/ss-import-database /var/www/ss-import-database
+cp /tmp/ss-import-files /var/www/ss-import-files
 cp /tmp/ss-install /var/www/ss-install
 cp /tmp/ss-install-adminer /var/www/ss-install-adminer
 cp /tmp/ss-install-clamav /var/www/ss-install-clamav
@@ -274,6 +281,8 @@ cp /tmp/ss-install-mediawiki-core /var/www/ss-install-mediawiki-core
 cp /tmp/ss-install-moodle-config /var/www/ss-install-moodle-config
 cp /tmp/ss-install-moodle-core /var/www/ss-install-moodle-core
 cp /tmp/ss-install-mysql /var/www/ss-install-mysql
+cp /tmp/ss-install-mysql-config /var/www/ss-install-mysql-config
+cp /tmp/ss-install-mysql-core /var/www/ss-install-mysql-core
 cp /tmp/ss-install-nginx /var/www/ss-install-nginx
 cp /tmp/ss-install-nginx-config /var/www/ss-install-nginx-config
 cp /tmp/ss-install-nginx-core /var/www/ss-install-nginx-core
@@ -293,6 +302,7 @@ cp /tmp/ss-install-ubuntu-bash /var/www/ss-install-ubuntu-bash
 cp /tmp/ss-install-ubuntu-crontab /var/www/ss-install-ubuntu-crontab
 cp /tmp/ss-install-ubuntu-kernel /var/www/ss-install-ubuntu-kernel
 cp /tmp/ss-install-ubuntu-ssh /var/www/ss-install-ubuntu-ssh
+cp /tmp/ss-install-ubuntu-swap /var/www/ss-install-ubuntu-swap
 cp /tmp/ss-install-ubuntu-users /var/www/ss-install-ubuntu-users
 cp /tmp/ss-install-ubuntu-utils /var/www/ss-install-ubuntu-utils
 cp /tmp/ss-install-ufw /var/www/ss-install-ufw
@@ -328,6 +338,8 @@ cp /tmp/ss-perms-nginx-letsencrypt /var/www/ss-perms-nginx-letsencrypt
 cp /tmp/ss-perms-opencart-config /var/www/ss-perms-opencart-config
 cp /tmp/ss-perms-opencart-core /var/www/ss-perms-opencart-core
 cp /tmp/ss-perms-php /var/www/ss-perms-php
+cp /tmp/ss-perms-php-config /var/www/ss-perms-php-config
+cp /tmp/ss-perms-php-core /var/www/ss-perms-php-core
 cp /tmp/ss-perms-postfix /var/www/ss-perms-postfix
 cp /tmp/ss-perms-prestashop-config /var/www/ss-perms-prestashop-config
 cp /tmp/ss-perms-prestashop-core /var/www/ss-perms-prestashop-core
@@ -336,9 +348,12 @@ cp /tmp/ss-perms-ubuntu-bash /var/www/ss-perms-ubuntu-bash
 cp /tmp/ss-perms-ubuntu-crontab /var/www/ss-perms-ubuntu-crontab
 cp /tmp/ss-perms-ubuntu-kernel /var/www/ss-perms-ubuntu-kernel
 cp /tmp/ss-perms-ubuntu-ssh /var/www/ss-perms-ubuntu-ssh
+cp /tmp/ss-perms-ubuntu-swap /var/www/ss-perms-ubuntu-swap
 cp /tmp/ss-perms-ubuntu-users /var/www/ss-perms-ubuntu-users
 cp /tmp/ss-perms-ubuntu-utils /var/www/ss-perms-ubuntu-utils
 cp /tmp/ss-perms-ufw /var/www/ss-perms-ufw
+cp /tmp/ss-perms-ufw-config /var/www/ss-perms-ufw-config
+cp /tmp/ss-perms-ufw-core /var/www/ss-perms-ufw-core
 cp /tmp/ss-perms-wordpress-cli /var/www/ss-perms-wordpress-cli
 cp /tmp/ss-perms-wordpress-config /var/www/ss-perms-wordpress-config
 cp /tmp/ss-perms-wordpress-core /var/www/ss-perms-wordpress-core
@@ -353,124 +368,16 @@ cp /tmp/ss-remote /var/www/ss-remote
 cp /tmp/ss-reset-logs /var/www/ss-reset-logs
 cp /tmp/ss-reset-password-sftp /var/www/ss-reset-password-sftp
 cp /tmp/ss-restart-services /var/www/ss-restart-services
+cp /tmp/ss-restart-services-mysql /var/www/ss-restart-services-mysql
 cp /tmp/ss-restart-services-nginx /var/www/ss-restart-services-nginx
 cp /tmp/ss-restart-services-php /var/www/ss-restart-services-php
+cp /tmp/ss-restart-services-redis /var/www/ss-restart-services-redis
 cp /tmp/ss-scan-malware /var/www/ss-scan-malware
 cp /tmp/ss-sync-staging /var/www/ss-sync-staging
 cp /tmp/ss-update /var/www/ss-update
+cp /tmp/ss-update-config /var/www/ss-update-config
+cp /tmp/ss-update-packages /var/www/ss-update-packages
 cp /tmp/ss-worker /var/www/ss-worker
-
-## NEW ##
-## move (install) ss core bash scripts ##
-cp /tmp/ss-clean-files /var/www/bash/ss-clean-files
-cp /tmp/ss-config-sample /var/www/bash/ss-config-sample
-cp /tmp/ss-delete-database /var/www/bash/ss-delete-database
-cp /tmp/ss-delete-files /var/www/bash/ss-delete-files
-cp /tmp/ss-dos2unix /var/www/bash/ss-dos2unix
-cp /tmp/ss-dump-database /var/www/bash/ss-dump-database
-cp /tmp/ss-encrypt /var/www/bash/ss-encrypt
-cp /tmp/ss-encrypt-certbot /var/www/bash/ss-encrypt-certbot
-cp /tmp/ss-encrypt-openssl /var/www/bash/ss-encrypt-openssl
-cp /tmp/ss-functions /var/www/bash/ss-functions
-cp /tmp/ss-import /var/www/bash/ss-import
-cp /tmp/ss-import-database /var/www/bash/ss-import-database
-cp /tmp/ss-install /var/www/bash/ss-install
-cp /tmp/ss-install-adminer /var/www/bash/ss-install-adminer
-cp /tmp/ss-install-clamav /var/www/bash/ss-install-clamav
-cp /tmp/ss-install-craft-config /var/www/bash/ss-install-craft-config
-cp /tmp/ss-install-craft-core /var/www/bash/ss-install-craft-core
-cp /tmp/ss-install-magento-config /var/www/bash/ss-install-magento-config
-cp /tmp/ss-install-magento-core /var/www/bash/ss-install-magento-core
-cp /tmp/ss-install-mediawiki-config /var/www/bash/ss-install-mediawiki-config
-cp /tmp/ss-install-mediawiki-core /var/www/bash/ss-install-mediawiki-core
-cp /tmp/ss-install-moodle-config /var/www/bash/ss-install-moodle-config
-cp /tmp/ss-install-moodle-core /var/www/bash/ss-install-moodle-core
-cp /tmp/ss-install-mysql /var/www/bash/ss-install-mysql
-cp /tmp/ss-install-nginx /var/www/bash/ss-install-nginx
-cp /tmp/ss-install-nginx-config /var/www/bash/ss-install-nginx-config
-cp /tmp/ss-install-nginx-core /var/www/bash/ss-install-nginx-core
-cp /tmp/ss-install-nginx-ssl /var/www/bash/ss-install-nginx-ssl
-cp /tmp/ss-install-nginx-openssl /var/www/bash/ss-install-nginx-openssl
-cp /tmp/ss-install-nginx-letsencrypt /var/www/bash/ss-install-nginx-letsencrypt
-cp /tmp/ss-install-opencart-config /var/www/bash/ss-install-opencart-config
-cp /tmp/ss-install-opencart-core /var/www/bash/ss-install-opencart-core
-cp /tmp/ss-install-php /var/www/bash/ss-install-php
-cp /tmp/ss-install-php-config /var/www/bash/ss-install-php-config
-cp /tmp/ss-install-php-core /var/www/bash/ss-install-php-core
-cp /tmp/ss-install-postfix /var/www/bash/ss-install-postfix
-cp /tmp/ss-install-prestashop-config /var/www/bash/ss-install-prestashop-config
-cp /tmp/ss-install-prestashop-core /var/www/bash/ss-install-prestashop-core
-cp /tmp/ss-install-redis /var/www/bash/ss-install-redis
-cp /tmp/ss-install-ubuntu-bash /var/www/bash/ss-install-ubuntu-bash
-cp /tmp/ss-install-ubuntu-crontab /var/www/bash/ss-install-ubuntu-crontab
-cp /tmp/ss-install-ubuntu-kernel /var/www/bash/ss-install-ubuntu-kernel
-cp /tmp/ss-install-ubuntu-ssh /var/www/bash/ss-install-ubuntu-ssh
-cp /tmp/ss-install-ubuntu-users /var/www/bash/ss-install-ubuntu-users
-cp /tmp/ss-install-ubuntu-utils /var/www/bash/ss-install-ubuntu-utils
-cp /tmp/ss-install-ufw /var/www/bash/ss-install-ufw
-cp /tmp/ss-install-ufw-config /var/www/bash/ss-install-ufw-config
-cp /tmp/ss-install-ufw-core /var/www/bash/ss-install-ufw-core
-cp /tmp/ss-install-wordpress-cli /var/www/bash/ss-install-wordpress-cli
-cp /tmp/ss-install-wordpress-config /var/www/bash/ss-install-wordpress-config
-cp /tmp/ss-install-wordpress-core /var/www/bash/ss-install-wordpress-core
-cp /tmp/ss-install-wordpress-mu-plugins /var/www/bash/ss-install-wordpress-mu-plugins
-cp /tmp/ss-maintenance-disable /var/www/bash/ss-maintenance-disable
-cp /tmp/ss-maintenance-enable /var/www/bash/ss-maintenance-enable
-cp /tmp/ss-monitor /var/www/bash/ss-monitor
-cp /tmp/ss-optimize-database /var/www/bash/ss-optimize-database
-cp /tmp/ss-overview /var/www/bash/ss-overview
-cp /tmp/ss-perms /var/www/bash/ss-perms
-cp /tmp/ss-perms-adminer /var/www/bash/ss-perms-adminer
-cp /tmp/ss-perms-clamav /var/www/bash/ss-perms-clamav
-cp /tmp/ss-perms-craft-config /var/www/bash/ss-perms-craft-config
-cp /tmp/ss-perms-craft-core /var/www/bash/ss-perms-craft-core
-cp /tmp/ss-perms-magento-config /var/www/bash/ss-perms-magento-config
-cp /tmp/ss-perms-magento-core /var/www/bash/ss-perms-magento-core
-cp /tmp/ss-perms-mediawiki-config /var/www/bash/ss-perms-mediawiki-config
-cp /tmp/ss-perms-mediawiki-core /var/www/bash/ss-perms-mediawiki-core
-cp /tmp/ss-perms-moodle-config /var/www/bash/ss-perms-moodle-config
-cp /tmp/ss-perms-moodle-core /var/www/bash/ss-perms-moodle-core
-cp /tmp/ss-perms-mysql /var/www/bash/ss-perms-mysql
-cp /tmp/ss-perms-nginx /var/www/bash/ss-perms-nginx
-cp /tmp/ss-perms-nginx-config /var/www/bash/ss-perms-nginx-config
-cp /tmp/ss-perms-nginx-core /var/www/bash/ss-perms-nginx-core
-cp /tmp/ss-perms-nginx-ssl /var/www/bash/ss-perms-nginx-ssl
-cp /tmp/ss-perms-nginx-openssl /var/www/bash/ss-perms-nginx-openssl
-cp /tmp/ss-perms-nginx-letsencrypt /var/www/bash/ss-perms-nginx-letsencrypt
-cp /tmp/ss-perms-opencart-config /var/www/bash/ss-perms-opencart-config
-cp /tmp/ss-perms-opencart-core /var/www/bash/ss-perms-opencart-core
-cp /tmp/ss-perms-php /var/www/bash/ss-perms-php
-cp /tmp/ss-perms-postfix /var/www/bash/ss-perms-postfix
-cp /tmp/ss-perms-prestashop-config /var/www/bash/ss-perms-prestashop-config
-cp /tmp/ss-perms-prestashop-core /var/www/bash/ss-perms-prestashop-core
-cp /tmp/ss-perms-redis /var/www/bash/ss-perms-redis
-cp /tmp/ss-perms-ubuntu-bash /var/www/bash/ss-perms-ubuntu-bash
-cp /tmp/ss-perms-ubuntu-crontab /var/www/bash/ss-perms-ubuntu-crontab
-cp /tmp/ss-perms-ubuntu-kernel /var/www/bash/ss-perms-ubuntu-kernel
-cp /tmp/ss-perms-ubuntu-ssh /var/www/bash/ss-perms-ubuntu-ssh
-cp /tmp/ss-perms-ubuntu-users /var/www/bash/ss-perms-ubuntu-users
-cp /tmp/ss-perms-ubuntu-utils /var/www/bash/ss-perms-ubuntu-utils
-cp /tmp/ss-perms-ufw /var/www/bash/ss-perms-ufw
-cp /tmp/ss-perms-wordpress-cli /var/www/bash/ss-perms-wordpress-cli
-cp /tmp/ss-perms-wordpress-config /var/www/bash/ss-perms-wordpress-config
-cp /tmp/ss-perms-wordpress-core /var/www/bash/ss-perms-wordpress-core
-cp /tmp/ss-perms-wordpress-mu-plugins /var/www/bash/ss-perms-wordpress-mu-plugins
-cp /tmp/ss-purge /var/www/bash/ss-purge
-cp /tmp/ss-purge-nginx /var/www/bash/ss-purge-nginx
-cp /tmp/ss-purge-opcache /var/www/bash/ss-purge-opcache
-cp /tmp/ss-purge-redis /var/www/bash/ss-purge-redis
-cp /tmp/ss-purge-transients /var/www/bash/ss-purge-transients
-cp /tmp/ss-reboot /var/www/bash/ss-reboot
-cp /tmp/ss-remote /var/www/bash/ss-remote
-cp /tmp/ss-reset-logs /var/www/bash/ss-reset-logs
-cp /tmp/ss-reset-password-sftp /var/www/bash/ss-reset-password-sftp
-cp /tmp/ss-restart-services /var/www/bash/ss-restart-services
-cp /tmp/ss-restart-services-nginx /var/www/bash/ss-restart-services-nginx
-cp /tmp/ss-restart-services-php /var/www/bash/ss-restart-services-php
-cp /tmp/ss-scan-malware /var/www/bash/ss-scan-malware
-cp /tmp/ss-sync-staging /var/www/bash/ss-sync-staging
-cp /tmp/ss-update /var/www/bash/ss-update
-cp /tmp/ss-worker /var/www/bash/ss-worker
 
 ####################################################################################################
 #### SS-Check: Reset Permissions (SS Core Cron Jobs) ###############################################
