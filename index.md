@@ -221,7 +221,9 @@ title: SlickStack (Public Mirrors)
 * https://alexgaynor.net/2020/nov/30/why-software-ends-up-complex/
 * https://www.brandonsmith.ninja/blog/write-code-not-too-much-mostly-functions
 * https://searchengineland.com/why-websites-should-be-using-hsts-to-improve-security-and-seo-304380
+* https://shkspr.mobi/blog/2021/01/the-unreasonable-effectiveness-of-simple-html/
+* https://jvns.ca/blog/2021/01/23/firecracker--start-a-vm-in-less-than-a-second/
 
 ----
 
-*Last updated: Feb 2, 2021*
+*Last updated: Feb 4, 2021*
