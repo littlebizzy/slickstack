@@ -1,14 +1,14 @@
 # SlickStack [Beta]
 
-## SlickStack is a free LEMP stack automation script written in Bash designed to enhance and simplify WordPress provisioning, performance, and security.
-
-⮕ ⮕ ⮕ [**Gab group**](https://gab.com/groups/7116)
+⮕ ⮕ ⮕ [**Gab group (private)**](https://gab.com/groups/7116)
 
 ⮕ ⮕ ⮕ [**Discord server**](https://discord.gg/nGskJdg)
 
-| PageSpeed | GTMetrix | Pingdom | Security Headers | SSL Labs | WebPageTest |
-| :--------------: | :------: | :-----: | :--------------: | :-------------: | :-------------: |
-| [**A**](https://developers.google.com/speed/pagespeed/insights/?url=https%3A%2F%2Fslickstack.io%2F) | [**A**](https://gtmetrix.com/reports/slickstack.io/zpLMZ1eb) | [**A**](https://tools.pingdom.com/#5aeba9dea8000000) | [**A**](https://securityheaders.com/?q=https%3A%2F%2Fslickstack.io%2F&followRedirects=on) | [**A**](https://www.ssllabs.com/ssltest/analyze.html?d=slickstack.io&latest) | [**A**](https://www.webpagetest.org/result/190920_68_a4a541db9847ce601ef264b41df9d0f3/) |
+⮕ ⮕ ⮕ [**Skype group chat**](https://join.skype.com/NdpqKrN2BHdN)
+
+| PageSpeed | GTMetrix | Pingdom | SecHeaders | SSL Labs | WebPageTest | ImmuniWeb |
+| :--------------: | :------: | :-----: | :--------------: | :-------------: | :-------------: | :-------------: |
+| [**A**](https://developers.google.com/speed/pagespeed/insights/?url=https%3A%2F%2Fslickstack.io%2F) | [**A**](https://gtmetrix.com/reports/slickstack.io/zpLMZ1eb) | [**A**](https://tools.pingdom.com/#5aeba9dea8000000) | [**A**](https://securityheaders.com/?q=https%3A%2F%2Fslickstack.io%2F&followRedirects=on) | [**A**](https://www.ssllabs.com/ssltest/analyze.html?d=slickstack.io&latest) | [**A**](https://www.webpagetest.org/result/190920_68_a4a541db9847ce601ef264b41df9d0f3/) | [**A**](https://www.immuniweb.com/websec/?id=pmqYyXDB) |
 
 * **NEW!** If you have noticed problems before with ss core cron jobs or ss core bash scripts being suddenly "null" (empty of content) and thus your entire stack becoming frozen out of receiving updates... fear not, we have discovered this is because GitHub servers sometimes timeout and result in `wget` overwriting core scripts with blank files... to solve this problem permanently, SlickStack `crontab` will now forcefully retrieve ss core cron jobs a few times each day, regardless of settings in `ss-config` and regardless of if all your other files are damaged or missing... a massive improvement to your SS server's longevity.
 
@@ -117,13 +117,7 @@ Because it’s written purely in [Bash](https://en.wikipedia.org/wiki/Bash_(Unix
 
 The below installation steps assume that you've already spun up a dedicated Ubuntu Linux VPS server (KVM) with at least 2GB RAM memory and that you are now logged in via SSH:
 
-1. `sudo mkdir /var/www/ && sudo chown root:root /var/www/ && sudo chmod 755 /var/www/`
-
-2. `sudo nano /var/www/ss-config`  [*configure as desired*](http://mirrors.slickstack.io/ss-config-sample.txt)
-
-3. `cd /var/www/ && sudo wget -O ss slick.fyi && sudo chmod 755 ss && sudo bash ss`
-
-4. `sudo reboot`
+`cd /tmp/ && wget -O ss slick.fyi && bash ss`
 
 **NOTE:** SlickStack [ss] requires CloudFlare to be activated on your domain before SSL (HTTPS) will be recognized as a fully secure and CA-signed domain, because of its self-signed OpenSSL certificate.
 
