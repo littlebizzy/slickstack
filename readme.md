@@ -72,7 +72,7 @@
 
 ## Core Modules [[read more](https://slickstack.io/modules)]
 
-*Last updated: Jan 13, 2021*
+*Last updated: Feb 5, 2021*
 
 *Default Ports: 80 (HTTP), 443 (HTTPS), 6969 (SSH)*
 
@@ -87,7 +87,7 @@
 | **PHP-FPM** | [mirrors](http://mirrors.slickstack.io/php-fpm/) | 7.4.x | `php.ini` + `php-fpm.conf` + `www.conf` |
 | **Zend / OPcache** | [mirrors](http://mirrors.slickstack.io/opcache/) | 3.4.x / 7.4.x | (same as PHP-FPM) |
 | **Redis (Obj Cache)** | [mirrors](http://mirrors.slickstack.io/redis/) | 5.0.x | `redis.conf` + `object-cache.php` |
-| **WordPress** | [mirrors](http://mirrors.slickstack.io/wordpress/) | 5.5.3 | some WP Core junk files are removed by `ss-clean` |
+| **WordPress** | [mirrors](http://mirrors.slickstack.io/wordpress/) | 5.6.1 | some WP Core junk files are removed by `ss-clean` |
 | **MU Plugins** | [mirrors](http://mirrors.slickstack.io/mu-plugins/) | (n/a) | optional `mu-plugins` by LittleBizzy |
 | **WP-CLI** | [mirrors](http://mirrors.slickstack.io/wp-cli/) | 2.4.0 | default config |
 | **Adminer** | [mirrors](http://mirrors.slickstack.io/adminer/) | 4.7.8 | default config |
