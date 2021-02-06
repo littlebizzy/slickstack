@@ -33,6 +33,15 @@ echo -e "${PURPLE}Running ss-install-wordpress-core: Reinstalls the WordPress mo
 sleep "$SLEEP_MESSAGE_BEGIN"
 
 ####################################################################################################
+#### SS-Install-WordPress-Core: Proceed If Rate-Limit Satisfied ####################################
+####################################################################################################
+
+## proceed if more than 720 mins (12 hours) ##
+if [[ ! -f "/var/www/meta/.timestamp-ss-install-wordpress-core" ]] || \
+   [[ -n $(find "/var/www/meta/.timestamp-ss-install-wordpress-core" -amin +720) ]]
+then
+
+####################################################################################################
 #### SS-Install-WordPress-Core: Enable Maintenance Mode (Via SS-Maintenance-Enable) ################
 ####################################################################################################
 
@@ -329,6 +338,18 @@ rm /tmp/throwaway*
 
 ## run ss-maintenance-disable ##
 # source /var/www/ss-maintenance-disable
+
+####################################################################################################
+#### SS-Install-WordPress-Core: Exit If Script Has Run Recently ####################################
+####################################################################################################
+
+## otherwise exit if script has run recently ##
+else 
+    echo -e ""
+    echo -e "${YELLOW}It appears this script has already run during the past several minutes, ${NOCOLOR}"
+    echo -e "${YELLOW}therefore it has exited without running (please try again later). ${NOCOLOR}"
+    echo -e ""
+fi
 
 ####################################################################################################
 #### SS-Install-WordPress-Core: Touch Timestamp File (End Script) ##################################
