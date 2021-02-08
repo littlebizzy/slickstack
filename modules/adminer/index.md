@@ -19,15 +19,7 @@ title: Adminer (Public Mirrors)
 #### adminer.php
 
 * [adminer-4.7.8.php](adminer-4.7.8.txt)
-----
-* [adminer-4.7.7.php](adminer-4.7.7.txt)
-* [adminer-4.7.6.php](adminer-4.7.6.txt)
-* [adminer-4.7.5.php](adminer-4.7.5.txt)
-* [adminer-4.7.4.php](adminer-4.7.4.txt)
-* [adminer-4.7.3.php](adminer-4.7.3.txt)
-* [adminer-4.7.2.php](adminer-4.7.2.txt)
-* [adminer-4.7.1.php](adminer-4.7.1.txt)
-* [adminer-4.7.0.php](adminer-4.7.0.txt)
+* coming soon
 
 ### Related Links
 
@@ -41,4 +33,4 @@ title: Adminer (Public Mirrors)
 
 ----
 
-*Last updated: 11 Dec, 2020*
+*Last updated: Feb 9, 2021*
