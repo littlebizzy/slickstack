@@ -174,7 +174,7 @@ title: SlickStack (Public Mirrors)
 
 *Main modules of SlickStack's optimized WordPress LEMP stack, including Ubuntu LTS, Nginx, MySQL, PHP-FPM, Redis, and optional LittleBizzy MU plugins.*
 
-* [adminer](/adminer/)
+* [adminer](/modules/adminer/)
 * [clamav](/clamav/)
 * [cloudflare](/cloudflare/)
 * [craft](/modules/craft/)
