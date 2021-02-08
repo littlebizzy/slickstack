@@ -183,7 +183,7 @@ title: SlickStack (Public Mirrors)
 * [magento](/magento/)
 * [mediawiki](/mediawiki/)
 * [moodle](/modules/moodle/)
-* [mysql](/mysql/)
+* [mysql](/modules/mysql/)
 * [nginx](/nginx/)
 * [nginx-fastcgi-cache](/fastcgi-cache/)
 * [opencart](/modules/opencart/)
@@ -226,4 +226,4 @@ title: SlickStack (Public Mirrors)
 
 ----
 
-*Last updated: Feb 4, 2021*
+*Last updated: Feb 9, 2021*
