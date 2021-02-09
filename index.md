@@ -175,30 +175,30 @@ title: SlickStack (Public Mirrors)
 *Main modules of SlickStack's optimized WordPress LEMP stack, including Ubuntu LTS, Nginx, MySQL, PHP-FPM, Redis, and optional LittleBizzy MU plugins.*
 
 * [adminer](/modules/adminer/)
-* [clamav](/clamav/)
-* [cloudflare](/cloudflare/)
+* [clamav](/modules/clamav/)
+* [cloudflare](/modules/cloudflare/)
 * [craft](/modules/craft/)
 * [git](/modules/git/)
-* [letsencrypt](/letsencrypt/)
-* [magento](/magento/)
-* [mediawiki](/mediawiki/)
+* [letsencrypt](/modules/letsencrypt/)
+* [magento](/modules/magento/)
+* [mediawiki](/modules/mediawiki/)
 * [moodle](/modules/moodle/)
 * [mysql](/modules/mysql/)
-* [nginx](/nginx/)
-* [nginx-fastcgi-cache](/fastcgi-cache/)
+* [nginx](/modules/nginx/)
+* [nginx-fastcgi-cache](/modules/fastcgi-cache/)
 * [opencart](/modules/opencart/)
-* [openssl](/openssl/)
-* [php-fpm](/php-fpm/)
+* [openssl](/modules/openssl/)
+* [php-fpm](/modules/php-fpm/)
 * [opcache](/modules/opcache/)
 * [postfix](/modules/postfix/)
 * [prestashop](/modules/prestashop/)
-* [redis](/redis/)
-* [ubuntu](/ubuntu/)
+* [redis](/modules/redis/)
+* [ubuntu](/modules/ubuntu/)
 * [ufw-firewall](/modules/ufw-firewall/)
-* [wordpress-cli](/wp-cli/)
-* [wordpress-core](/wordpress/)
-* [wordpress-mu-plugins](/mu-plugins/)
-* [wordpress-starter-themes](/starter-themes/)
+* [wordpress-cli](/modules/wp-cli/)
+* [wordpress-core](/modules/wordpress/)
+* [wordpress-mu-plugins](/modules/mu-plugins/)
+* [wordpress-starter-themes](/modules/starter-themes/)
 
 ### Core Meta Files
 
@@ -226,4 +226,4 @@ title: SlickStack (Public Mirrors)
 
 ----
 
-*Last updated: Feb 9, 2021*
+*Last updated: Feb 10, 2021*
