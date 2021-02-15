@@ -50,7 +50,7 @@ rm "$TMP_SS_CONFIG"
 
 ## backup ss-config ##
 current_time=$(date "+%Y.%b.%d-%H:%M:%S")
-cp /var/www/ss-config /var/www/meta/ss-config.bak.$current_time
+cp "$PATH_SS_CONFIG" /var/www/meta/ss-config.bak.$current_time
 
 ####################################################################################################
 #### SS-Update: Ensure Undefined Options Do Not Exist Before Proceeding ############################
@@ -1780,19 +1780,22 @@ if [[ "$SS_MU_PLUGINS" == "custom" ]] && [[ -n "$MU_PLUGIN_99_DIR" ]]; then
 sed -i "s|\(^MU_PLUGIN_99_DIR=\).*|MU_PLUGIN_99_DIR=\"$MU_PLUGIN_99_DIR\"|g" "$TMP_SS_CONFIG"
 fi
 
+####################################################################################################
+#### SS-Update-Config: Validate + Install Latest SS-Config Boilerplate #############################
+####################################################################################################
 
-## copy files to destinations ##
-if [[ -z $(grep -q "$SS_EOF" "$TMP_SS_CONFIG") ]]; then
-   rm "$TMP_SS_CONFIG"
-   echo "ss config damaged so not installing"
+## this snippet will ensure that the latest ss-config boilerplate appears intact ##
+## then it will proceed to overwrite the current ss-config with the new one ##
+
+## validate/install ss-config boilerplate ##
+VALIDATE_TMP_SS_CONFIG=`grep -q "$SS_EOF" "$TMP_SS_CONFIG"`
+if [[ -n "$VALIDATE_TMP_SS_CONFIG" ]]; then
+    cp "$TMP_SS_CONFIG" "$PATH_SS_CONFIG"
+    chown root:root "$PATH_SS_CONFIG" ## must be root:root
+    chmod 0700 "$PATH_SS_CONFIG" ## must be 0700
 else
-   cp "$TMP_SS_CONFIG" /var/www/ss-config
+    echo "ss config damaged so not installing"
 fi
-
-
-## reset permissions ##
-chown root:root /var/www/ss-config ## must be root:root
-chmod 0700 /var/www/ss-config ## must be 0700
 
 ####################################################################################################
 #### SS-Update-Config: Cleanup Temporary Files #####################################################
