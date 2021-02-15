@@ -1,8 +1,10 @@
 # SlickStack (Beta)
 
-⮕ ⮕ ⮕ [**Gab group (private)**](https://gab.com/groups/7116)
-⮕ ⮕ ⮕ [**Discord server**](https://discord.gg/nGskJdg)
-⮕ ⮕ ⮕ [**Skype group chat**](https://join.skype.com/NdpqKrN2BHdN)
+SlickStack is a free LEMP stack automation script written in Bash designed to enhance and simplify WordPress provisioning, performance, and security.
+
+* [**Gab group (private)**](https://gab.com/groups/7116)
+* [**Discord server**](https://discord.gg/nGskJdg)
+* [**Skype group chat**](https://join.skype.com/NdpqKrN2BHdN)
 
 | PageSpeed | GTMetrix | Pingdom | SecHeaders | SSL Labs | WebPageTest | ImmuniWeb |
 | :--------------: | :------: | :-----: | :--------------: | :-------------: | :-------------: | :-------------: |
@@ -86,7 +88,7 @@
 | **MySQL** | [mirrors](http://mirrors.slickstack.io/mysql/) | 8.0.x | `my.cnf` |
 | **PHP-FPM** | [mirrors](http://mirrors.slickstack.io/php-fpm/) | 7.4.x | `php.ini` + `php-fpm.conf` + `www.conf` |
 | **Zend / OPcache** | [mirrors](http://mirrors.slickstack.io/opcache/) | 3.4.x / 7.4.x | (same as PHP-FPM) |
-| **Redis (Obj Cache)** | [mirrors](http://mirrors.slickstack.io/redis/) | 5.0.x | `redis.conf` + `object-cache.php` |
+| **Redis** | [mirrors](http://mirrors.slickstack.io/redis/) | 5.0.x | `redis.conf` + `object-cache.php` |
 | **WordPress** | [mirrors](http://mirrors.slickstack.io/wordpress/) | 5.6.1 | some WP Core junk files are removed by `ss-clean` |
 | **MU Plugins** | [mirrors](http://mirrors.slickstack.io/mu-plugins/) | (n/a) | optional `mu-plugins` by LittleBizzy |
 | **WP-CLI** | [mirrors](http://mirrors.slickstack.io/wp-cli/) | 2.4.0 | default config |
