@@ -18,6 +18,9 @@ source /var/www/ss-config
 ## include SlickStack functions ##
 source /var/www/ss-functions
 
+## local variables ##
+
+
 ####################################################################################################
 #### SS-Worker: Message (Begin Script) #############################################################
 ####################################################################################################
@@ -82,11 +85,20 @@ if [[ ! -f "/var/www/html/wp-content/mu-plugins/autoloader.php" ]] && [[ "$SS_AP
 fi
 
 ## install required single-file MU plugins (XXX Common) ##
-if [[ ! -f "/var/www/html/wp-content/mu-plugins/xxx-common.php" ]] && [[ "$SS_APP" == "wordpress" || -z "$SS_APP"  ]]; then
-    wget -O /tmp/xxx-common.php http://mirrors.slickstack.io/mu-plugins/xxx-common.txt
-    cp /tmp/xxx-common.php /var/www/html/wp-content/mu-plugins/xxx-common.php
-    chmod 0440 /var/www/html/wp-content/mu-plugins/xxx-common.php ## 0440 (read-only)
-fi
+# if [[ ! -f "/var/www/html/wp-content/mu-plugins/xxx-common.php" ]] && [[ "$SS_APP" == "wordpress" || -z "$SS_APP"  ]]; then
+
+# fi
+
+wget -O "$TMP_XXX_COMMON_PHP" "$MIRROR_XXX_COMMON_PHP"
+# VALIDATE_XXX_COMMON_PHP=$(grep "$SS_EOF" "$PATH_XXX_COMMON_PHP")
+VALIDATE_TMP_XXX_COMMON_PHP=$(grep "$SS_EOF" "$TMP_XXX_COMMON_PHP")
+
+if [[ -n "$VALIDATE_TMP_XXX_COMMON_PHP" ]]; then
+    cp "$TMP_XXX_COMMON_PHP" "$PATH_XXX_COMMON_PHP"
+    chmod 0440 "$PATH_XXX_COMMON_PHP" ## 0440 (read-only)
+fi 
+
+rm "$TMP_XXX_COMMON_PHP"
 
 ####################################################################################################
 #### SS-Worker: Ensure WP-Config.php Intact ########################################################
