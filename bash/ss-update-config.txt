@@ -21,6 +21,9 @@ source /var/www/ss-config
 ## include SlickStack functions ##
 source /var/www/ss-functions
 
+## local variables ##
+SS_UPDATE_BUILD="FEB2021F"
+
 ####################################################################################################
 #### SS-Update: Message (Begin Script) #############################################################
 ####################################################################################################
@@ -76,9 +79,6 @@ fi
 ## variables will only be copied over from the previous ss-config file if they are defined ##
 ## otherwise default (recommended) options will be used from the new boilerplate ##
 
-## compability for updating ss-config ##
-SS_UPDATE_BUILD="FEB2021F"
-
 ## retrieve latest version of ss-config-sample ##
 wget -O "$TMP_SS_CONFIG" "$MIRROR_SS_CONFIG_SAMPLE"
 
@@ -98,25 +98,13 @@ fi
 sed -i "s|\(^ROOT_PASSWORD=\).*|ROOT_PASSWORD=\"$ROOT_PASSWORD\"|g" "$TMP_SS_CONFIG"
 sed -i "s|\(^SUDO_USER=\).*|SUDO_USER=\"$SUDO_USER\"|g" "$TMP_SS_CONFIG"
 sed -i "s|\(^SUDO_PASSWORD=\).*|SUDO_PASSWORD=\"$SUDO_PASSWORD\"|g" "$TMP_SS_CONFIG"
-
-if [[ -n "$SSH_PORT" ]]; then 
-    sed -i "s|\(^SSH_PORT=\).*|SSH_PORT=\"$SSH_PORT\"|g" "$TMP_SS_CONFIG"
-fi
-
-if [[ -n "$SSH_KEYS" ]]; then 
-    sed -i "s|\(^SSH_KEYS=\).*|SSH_KEYS=\"$SSH_KEYS\"|g" "$TMP_SS_CONFIG"
-fi
-
-## copy over sftp settings ##
+sed -i "s|\(^SSH_PORT=\).*|SSH_PORT=\"$SSH_PORT\"|g" "$TMP_SS_CONFIG"
+sed -i "s|\(^SSH_KEYS=\).*|SSH_KEYS=\"$SSH_KEYS\"|g" "$TMP_SS_CONFIG"
 sed -i "s|\(^SFTP_USER=\).*|SFTP_USER=\"$SFTP_USER\"|g" "$TMP_SS_CONFIG"
 sed -i "s|\(^SFTP_PASSWORD=\).*|SFTP_PASSWORD=\"$SFTP_PASSWORD\"|g" "$TMP_SS_CONFIG"
 
 ## copy over initial database settings ##
-
-if [[ -n "$DB_NAME" ]]; then 
 sed -i "s|\(^DB_NAME=\).*|DB_NAME=\"$DB_NAME\"|g" "$TMP_SS_CONFIG"
-fi
-
 sed -i "s|\(^DB_USER=\).*|DB_USER=\"$DB_USER\"|g" "$TMP_SS_CONFIG"
 sed -i "s|\(^DB_PASSWORD=\).*|DB_PASSWORD=\"$DB_PASSWORD\"|g" "$TMP_SS_CONFIG"
 sed -i "s|\(^DB_PASSWORD_ROOT=\).*|DB_PASSWORD_ROOT=\"$DB_PASSWORD_ROOT\"|g" "$TMP_SS_CONFIG"
@@ -132,25 +120,14 @@ if [[ -n "$DB_HOST" ]]; then
 fi
 
 ## copy over remaining database settings ##
-if [[ -n "$DB_PREFIX" ]]; then 
 sed -i "s|\(^DB_PREFIX=\).*|DB_PREFIX=\"$DB_PREFIX\"|g" "$TMP_SS_CONFIG"
-fi
-
-if [[ -n "$DB_CHARSET" ]]; then 
 sed -i "s|\(^DB_CHARSET=\).*|DB_CHARSET=\"$DB_CHARSET\"|g" "$TMP_SS_CONFIG"
-fi
-
-if [[ -n "$DB_COLLATE" ]]; then 
 sed -i "s|\(^DB_COLLATE=\).*|DB_COLLATE=\"$DB_COLLATE\"|g" "$TMP_SS_CONFIG"
-fi
 
 ## copy over site settings ##
 sed -i "s|\(^SITE_TLD=\).*|SITE_TLD=\"$SITE_TLD\"|g" "$TMP_SS_CONFIG"
 sed -i "s|\(^SITE_DOMAIN=\).*|SITE_DOMAIN=\"$SITE_DOMAIN\"|g" "$TMP_SS_CONFIG"
-
-if [[ -n "$SITE_NOINDEX" ]]; then 
 sed -i "s|\(^SITE_NOINDEX=\).*|SITE_NOINDEX=\"$SITE_NOINDEX\"|g" "$TMP_SS_CONFIG"
-fi
 
 ## copy over Multisite settings ##
 if [[ -n "$WP_MULTISITE" ]]; then 
@@ -281,25 +258,11 @@ fi
 
 
 ## copy over csr settings ##
-if [[ -n "$CSR_COUNTRY" ]]; then
 sed -i "s|\(^CSR_COUNTRY=\).*|CSR_COUNTRY=\"$CSR_COUNTRY\"|g" "$TMP_SS_CONFIG"
-fi
-
-if [[ -n "$CSR_STATE" ]]; then
 sed -i "s|\(^CSR_STATE=\).*|CSR_STATE=\"$CSR_STATE\"|g" "$TMP_SS_CONFIG"
-fi
-
-if [[ -n "$CSR_CITY" ]]; then
 sed -i "s|\(^CSR_CITY=\).*|CSR_CITY=\"$CSR_CITY\"|g" "$TMP_SS_CONFIG"
-fi
-
-if [[ -n "$CSR_COMPANY" ]]; then
 sed -i "s|\(^CSR_COMPANY=\).*|CSR_COMPANY=\"$CSR_COMPANY\"|g" "$TMP_SS_CONFIG"
-fi
-
-if [[ -n "$CSR_DEPT" ]]; then
 sed -i "s|\(^CSR_DEPT=\).*|CSR_DEPT=\"$CSR_DEPT\"|g" "$TMP_SS_CONFIG"
-fi
 
 ## copy over nginx settings ##
 if [[ -n "$NGINX_WORKER_RLIMIT_NOFILE" ]]; then
@@ -1789,7 +1752,8 @@ fi
 
 ## validate/install ss-config boilerplate ##
 VALIDATE_TMP_SS_CONFIG=$(grep "$SS_EOF" "$TMP_SS_CONFIG")
-if [[ -n "$VALIDATE_TMP_SS_CONFIG" ]]; then
+DB_NAME_NOW=$(source "$TMP_SS_CONFIG"; echo $DB_NAME)
+if [[ -n "$VALIDATE_TMP_SS_CONFIG" ]] && [[ -n "$DB_NAME_NOW" ]]; then
     cp "$TMP_SS_CONFIG" "$PATH_SS_CONFIG"
     chown root:root "$PATH_SS_CONFIG" ## must be root:root
     chmod 0700 "$PATH_SS_CONFIG" ## must be 0700
