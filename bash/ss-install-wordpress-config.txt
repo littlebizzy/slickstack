@@ -23,13 +23,9 @@ source /var/www/ss-functions
 
 ## proceed only if script has not run in past 30 mins ##
 if [[ ! -f "/var/www/meta/.timestamp-ss-install-wordpress-config" ]] || \
-   [[ -n $(find "/var/www/meta/.timestamp-ss-install-wordpress-config" -amin +30) ]]
+   [[ -n $(find "/var/www/meta/.timestamp-ss-install-wordpress-config" -amin +30) ]] || \
+   [[ ! -f "$PATH_WP_CONFIG_PHP" ]]
 then
-    echo -e ""
-    echo -e "${YELLOW}More than 60 mins since last wp-config reinstall, we will proceed... ${NOCOLOR}"
-    echo -e ""
-
-# if [[ -n $(find /var/www/meta/ -amin +60 | grep ".timestamp-ss-install-wordpress-config") ]]; then
 
 ####################################################################################################
 #### SS-Install-WordPress-Config: Message (Begin Script) ###########################################
@@ -50,6 +46,7 @@ sleep "$SLEEP_MESSAGE_BEGIN"
 rm "$TMP_WORDPRESS_CONFIG_PRODUCTION"
 rm "$TMP_WORDPRESS_CONFIG_STAGING"
 rm "$TMP_WORDPRESS_CONFIG_DEV"
+rm "$TMP_WP_CONFIG_PHP"
 
 ####################################################################################################
 #### SS-Install-WordPress-Config: Install WP-Config (Production) ###################################
