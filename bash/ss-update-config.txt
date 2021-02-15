@@ -1780,8 +1780,15 @@ if [[ "$SS_MU_PLUGINS" == "custom" ]] && [[ -n "$MU_PLUGIN_99_DIR" ]]; then
 sed -i "s|\(^MU_PLUGIN_99_DIR=\).*|MU_PLUGIN_99_DIR=\"$MU_PLUGIN_99_DIR\"|g" "$TMP_SS_CONFIG"
 fi
 
+
 ## copy files to destinations ##
-cp "$TMP_SS_CONFIG" /var/www/ss-config
+if [[ -z $(grep -q "$SS_EOF" "$TMP_SS_CONFIG") ]]; then
+   rm "$TMP_SS_CONFIG"
+   echo "ss config damaged so not installing"
+else
+   cp "$TMP_SS_CONFIG" /var/www/ss-config
+fi
+
 
 ## reset permissions ##
 chown root:root /var/www/ss-config ## must be root:root
