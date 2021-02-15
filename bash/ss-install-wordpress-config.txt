@@ -271,8 +271,16 @@ if [ ! -f "/var/www/meta/.cherry" ]; then
     sed -i "s#//VIRGIN//##g" "$TMP_WORDPRESS_CONFIG_PRODUCTION"
 fi
 
+
 ## copy files to destinations ##
-cp "$TMP_WORDPRESS_CONFIG_PRODUCTION" /var/www/html/wp-config.php
+if [[ -z $(grep -q "$SS_EOF" "$TMP_WORDPRESS_CONFIG_PRODUCTION") ]]; then
+   rm "$TMP_WORDPRESS_CONFIG_PRODUCTION"
+   echo "wp config production damaged so not installing"
+else
+   cp "$TMP_WORDPRESS_CONFIG_PRODUCTION" /var/www/html/wp-config.php
+fi
+
+
 
 ####################################################################################################
 #### SS-Install-WordPress-Config: Install WP-Config (Staging) ######################################
