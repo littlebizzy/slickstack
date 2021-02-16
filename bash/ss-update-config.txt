@@ -23,6 +23,7 @@ source /var/www/ss-functions
 
 ## local variables ##
 SS_UPDATE_BUILD="FEB2021F"
+VALIDATE_SS_CONFIG=$(grep "$SS_EOF" "$PATH_SS_CONFIG")
 
 ####################################################################################################
 #### SS-Update: Message (Begin Script) #############################################################
@@ -62,18 +63,21 @@ cp "$PATH_SS_CONFIG" /var/www/meta/ss-config.bak.$current_time
 ## below snippet will warn you and exit if undefined ss-config options are found to exist ##
 ## this way our team can be aware of bugs and avoid implementing unwanted options ##
 
+## validate ss-config ##
+if [[ -z "$VALIDATE_SS_CONFIG" ]]; then
+    echo -e "${DARKRED}Exiting ss-update-config: Your current ss-config file is missing or corrupt so update was skipped... ${NOCOLOR}"
+    exit 1
+fi
+
 ## warn if placeholders exist ##
 SS_CONFIG_OPTION_PLACEHOLDER="$(grep -c '"@' /var/www/ss-config)"
 if [[ "$SS_CONFIG_OPTION_PLACEHOLDER" -gt 0 ]]; then
-    echo -e ""
-    echo -e "${LIGHTRED}Your ss-config file contains \"@...\" placeholders. Please input values for ${NOCOLOR}"
-    echo -e "${LIGHTRED}all incomplete option fields, and then run ss-update again. ${NOCOLOR}"
-    echo -e ""
+    echo -e "${DARKRED}Exiting ss-update-config: Please replace all \"@...\" placeholders in your ss-config and try again... ${NOCOLOR}"
     exit 1
 fi
 
 ####################################################################################################
-#### SS-Update: Install Latest SS-Config Boilerplate (Replicates Existing Variables) ###############
+#### SS-Update-Config: Install Latest SS-Config Boilerplate (Replicates Existing Variables) ###############
 ####################################################################################################
 
 ## variables will only be copied over from the previous ss-config file if they are defined ##
