@@ -34,6 +34,27 @@ source /var/www/ss-functions
 # fi
 
 ####################################################################################################
+#### 01-Cron-Often: Validate SS-Functions ##########################################################
+####################################################################################################
+
+## runs first since ss core cron jobs and ss core bash scripts depend on ss-functions ##
+## if ss-functions is missing or damanaged this snippet will reinstall again ##
+
+## validate ss-functions ##
+VALIDATE_SS_FUNCTIONS=$(grep 'SS_EOF' /var/www/ss-functions)
+VALIDATE_TMP_SS_FUNCTIONS=$(grep 'SS_EOF' /tmp/ss-functions)
+if [[ -z "$VALIDATE_SS_FUNCTIONS" ]]; then
+    rm /tmp/ss-functions
+    wget -O /tmp/ss-functions http://mirrors.slickstack.io/bash/ss-functions.txt
+    if [[ -n "$VALIDATE_TMP_SS_FUNCTIONS" ]]; then
+        cp /tmp/ss-functions /var/www/ss-functions
+        chown root:root /var/www/ss-functions ## must be root:root
+        chmod 0700 /var/www/ss-functions ## 0700 means root can execute
+    fi
+    rm /tmp/ss-functions
+fi
+
+####################################################################################################
 #### 01-Cron-Often: Validate SS-Check + SS-Worker ##################################################
 ####################################################################################################
 
@@ -143,5 +164,6 @@ touch /var/www/meta/.timestamp-01-cron-often
 ## Ref: https://stackoverflow.com/questions/18656678/how-to-get-path-of-the-php-binary-on-server-where-it-is-located
 ## Ref: https://tldp.org/LDP/abs/html/nestedifthen.html
 ## Ref: https://unix.stackexchange.com/questions/282901/find-latest-file-created-in-folder-and-grep-contents
+## Ref: https://serverfault.com/questions/69283/when-to-use-single-quote-double-quote-in-grep
 
 ## SS_EOF
