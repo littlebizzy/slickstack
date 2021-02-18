@@ -60,7 +60,7 @@ mkdir /var/www/cache/nginx
 ## this approach is extremely stable and works fantastic with CloudFlare ##
 
 ## run ss-encrypt-openssl ##
-source /var/www/ss-encrypt-openssl
+source "$PATH_SS_ENCRYPT_OPENSSL"
 
 ####################################################################################################
 #### SS-Install-Nginx-Config: Install (Optimize) Nginx Config Files ################################
@@ -70,85 +70,85 @@ source /var/www/ss-encrypt-openssl
 ## this step is critical to setting up caching, SSL certs, and HTTP headers ##
 
 ## download latest Nginx config boilerplate ##
-wget -O /tmp/nginx.conf "$MIRROR_NGINX_CONF"
+wget -O "$TMP_NGINX_CONF" "$MIRROR_NGINX_CONF"
 
 ## noindex entire site using HTTP headers (if enabled) ##
 if [[ "$SITE_NOINDEX" == "true" ]]; then 
-    sed -i "s/#@NOINDEX# //g" /tmp/nginx.conf
+    sed -i "s/#@NOINDEX# //g" "$TMP_NGINX_CONF"
 else 
-    sed -i "/#@NOINDEX# /d" /tmp/nginx.conf
+    sed -i "/#@NOINDEX# /d" "$TMP_NGINX_CONF"
 fi
 
 ## FastCGI (FCGI) Cache Settings
 
 ## FCGI Cache memory ##
 if [[ -z "$FCGI_CACHE_MEMORY" ]]; then 
-    sed -i "s/@FCGI_CACHE_MEMORY/256m/g" /tmp/nginx.conf
+    sed -i "s/@FCGI_CACHE_MEMORY/256m/g" "$TMP_NGINX_CONF"
 else 
-    sed -i "s/@FCGI_CACHE_MEMORY/${FCGI_CACHE_MEMORY}/g" /tmp/nginx.conf
+    sed -i "s/@FCGI_CACHE_MEMORY/${FCGI_CACHE_MEMORY}/g" "$TMP_NGINX_CONF"
 fi
 
 ## FCGI Cache inactive ##
 if [[ -z "$FCGI_CACHE_INACTIVE" ]]; then 
-    sed -i "s/@FCGI_CACHE_INACTIVE/1440m/g" /tmp/nginx.conf
+    sed -i "s/@FCGI_CACHE_INACTIVE/1440m/g" "$TMP_NGINX_CONF"
 else 
-    sed -i "s/@FCGI_CACHE_INACTIVE/${FCGI_CACHE_INACTIVE}/g" /tmp/nginx.conf
+    sed -i "s/@FCGI_CACHE_INACTIVE/${FCGI_CACHE_INACTIVE}/g" "$TMP_NGINX_CONF"
 fi
 
 ## FCGI Cache max size ##
 if [[ -z "$FCGI_CACHE_MAX_SIZE" ]]; then 
-    sed -i "s/@FCGI_CACHE_MAX_SIZE/4096m/g" /tmp/nginx.conf
+    sed -i "s/@FCGI_CACHE_MAX_SIZE/4096m/g" "$TMP_NGINX_CONF"
 else 
-    sed -i "s/@FCGI_CACHE_MAX_SIZE/${FCGI_CACHE_MAX_SIZE}/g" /tmp/nginx.conf
+    sed -i "s/@FCGI_CACHE_MAX_SIZE/${FCGI_CACHE_MAX_SIZE}/g" "$TMP_NGINX_CONF"
 fi
 
 ## FCGI Cache connect timeout ##
 if [[ -z "$FCGI_CONNECT_TIMEOUT" ]]; then 
-    sed -i "s/@FCGI_CONNECT_TIMEOUT/60s/g" /tmp/nginx.conf
+    sed -i "s/@FCGI_CONNECT_TIMEOUT/60s/g" "$TMP_NGINX_CONF"
 else 
-    sed -i "s/@FCGI_CONNECT_TIMEOUT/${FCGI_CONNECT_TIMEOUT}/g" /tmp/nginx.conf
+    sed -i "s/@FCGI_CONNECT_TIMEOUT/${FCGI_CONNECT_TIMEOUT}/g" "$TMP_NGINX_CONF"
 fi
 
 ## FCGI Cache read timeout ##
 if [[ -z "$FCGI_READ_TIMEOUT" ]]; then 
-    sed -i "s/@FCGI_READ_TIMEOUT/60s/g" /tmp/nginx.conf
+    sed -i "s/@FCGI_READ_TIMEOUT/60s/g" "$TMP_NGINX_CONF"
 else 
-    sed -i "s/@FCGI_READ_TIMEOUT/${FCGI_READ_TIMEOUT}/g" /tmp/nginx.conf
+    sed -i "s/@FCGI_READ_TIMEOUT/${FCGI_READ_TIMEOUT}/g" "$TMP_NGINX_CONF"
 fi
 
 ## FCGI Cache send timeout ##
 if [[ -z "$FCGI_SEND_TIMEOUT" ]]; then 
-    sed -i "s/@FCGI_SEND_TIMEOUT/60s/g" /tmp/nginx.conf
+    sed -i "s/@FCGI_SEND_TIMEOUT/60s/g" "$TMP_NGINX_CONF"
 else 
-    sed -i "s/@FCGI_SEND_TIMEOUT/${FCGI_SEND_TIMEOUT}/g" /tmp/nginx.conf
+    sed -i "s/@FCGI_SEND_TIMEOUT/${FCGI_SEND_TIMEOUT}/g" "$TMP_NGINX_CONF"
 fi
 
 ## FCGI Cache buffers ##
 if [[ -z "$FCGI_BUFFERS" ]]; then 
-    sed -i "s/@FCGI_BUFFERS/32 32k/g" /tmp/nginx.conf
+    sed -i "s/@FCGI_BUFFERS/32 32k/g" "$TMP_NGINX_CONF"
 else 
-    sed -i "s/@FCGI_BUFFERS/${FCGI_BUFFERS}/g" /tmp/nginx.conf
+    sed -i "s/@FCGI_BUFFERS/${FCGI_BUFFERS}/g" "$TMP_NGINX_CONF"
 fi
 
 ## FCGI Cache buffer size ##
 if [[ -z "$FCGI_BUFFER_SIZE" ]]; then 
-    sed -i "s/@FCGI_BUFFER_SIZE/32k/g" /tmp/nginx.conf
+    sed -i "s/@FCGI_BUFFER_SIZE/32k/g" "$TMP_NGINX_CONF"
 else 
-    sed -i "s/@FCGI_BUFFER_SIZE/${FCGI_BUFFER_SIZE}/g" /tmp/nginx.conf
+    sed -i "s/@FCGI_BUFFER_SIZE/${FCGI_BUFFER_SIZE}/g" "$TMP_NGINX_CONF"
 fi
 
 ## FCGI Cache busy buffers size ##
 if [[ -z "$FCGI_BUSY_BUFFERS_SIZE" ]]; then 
-    sed -i "s/@FCGI_BUSY_BUFFERS_SIZE/256k/g" /tmp/nginx.conf
+    sed -i "s/@FCGI_BUSY_BUFFERS_SIZE/256k/g" "$TMP_NGINX_CONF"
 else 
-    sed -i "s/@FCGI_BUSY_BUFFERS_SIZE/${FCGI_BUSY_BUFFERS_SIZE}/g" /tmp/nginx.conf
+    sed -i "s/@FCGI_BUSY_BUFFERS_SIZE/${FCGI_BUSY_BUFFERS_SIZE}/g" "$TMP_NGINX_CONF"
 fi
 
 ## FCGI Cache temp file write size ##
 if [[ -z "$FCGI_TEMP_FILE_WRITE_SIZE" ]]; then 
-    sed -i "s/@FCGI_TEMP_FILE_WRITE_SIZE/256k/g" /tmp/nginx.conf
+    sed -i "s/@FCGI_TEMP_FILE_WRITE_SIZE/256k/g" "$TMP_NGINX_CONF"
 else 
-    sed -i "s/@FCGI_TEMP_FILE_WRITE_SIZE/${FCGI_TEMP_FILE_WRITE_SIZE}/g" /tmp/nginx.conf
+    sed -i "s/@FCGI_TEMP_FILE_WRITE_SIZE/${FCGI_TEMP_FILE_WRITE_SIZE}/g" "$TMP_NGINX_CONF"
 fi
 
 
@@ -157,173 +157,173 @@ fi
 
 ## Nginx worker rlimit nofile ##
 if [[ -z "$NGINX_WORKER_RLIMIT_NOFILE" ]]; then 
-    sed -i "s/@NGINX_WORKER_RLIMIT_NOFILE/65535/g" /tmp/nginx.conf
+    sed -i "s/@NGINX_WORKER_RLIMIT_NOFILE/65535/g" "$TMP_NGINX_CONF"
 else 
-    sed -i "s/@NGINX_WORKER_RLIMIT_NOFILE/${NGINX_WORKER_RLIMIT_NOFILE}/g" /tmp/nginx.conf
+    sed -i "s/@NGINX_WORKER_RLIMIT_NOFILE/${NGINX_WORKER_RLIMIT_NOFILE}/g" "$TMP_NGINX_CONF"
 fi
 
 ## Nginx worker connections ##
 if [[ -z "$NGINX_WORKER_CONNECTIONS" ]]; then 
-    sed -i "s/@NGINX_WORKER_CONNECTIONS/8192/g" /tmp/nginx.conf
+    sed -i "s/@NGINX_WORKER_CONNECTIONS/8192/g" "$TMP_NGINX_CONF"
 else 
-    sed -i "s/@NGINX_WORKER_CONNECTIONS/${NGINX_WORKER_CONNECTIONS}/g" /tmp/nginx.conf
+    sed -i "s/@NGINX_WORKER_CONNECTIONS/${NGINX_WORKER_CONNECTIONS}/g" "$TMP_NGINX_CONF"
 fi
 
 ## Nginx server names hash bucket size ##
 if [[ -z "$NGINX_SERVER_NAMES_HASH_BUCKET_SIZE" ]]; then 
-    sed -i "s/@NGINX_SERVER_NAMES_HASH_BUCKET_SIZE/64/g" /tmp/nginx.conf
+    sed -i "s/@NGINX_SERVER_NAMES_HASH_BUCKET_SIZE/64/g" "$TMP_NGINX_CONF"
 else 
-    sed -i "s/@NGINX_SERVER_NAMES_HASH_BUCKET_SIZE/${NGINX_SERVER_NAMES_HASH_BUCKET_SIZE}/g" /tmp/nginx.conf
+    sed -i "s/@NGINX_SERVER_NAMES_HASH_BUCKET_SIZE/${NGINX_SERVER_NAMES_HASH_BUCKET_SIZE}/g" "$TMP_NGINX_CONF"
 fi
 
 ## Nginx server names max hash size ##
 if [[ -z "$NGINX_SERVER_NAMES_MAX_HASH_SIZE" ]]; then 
-    sed -i "s/@NGINX_SERVER_NAMES_MAX_HASH_SIZE/64/g" /tmp/nginx.conf
+    sed -i "s/@NGINX_SERVER_NAMES_MAX_HASH_SIZE/64/g" "$TMP_NGINX_CONF"
 else 
-    sed -i "s/@NGINX_SERVER_NAMES_MAX_HASH_SIZE/${NGINX_SERVER_NAMES_MAX_HASH_SIZE}/g" /tmp/nginx.conf
+    sed -i "s/@NGINX_SERVER_NAMES_MAX_HASH_SIZE/${NGINX_SERVER_NAMES_MAX_HASH_SIZE}/g" "$TMP_NGINX_CONF"
 fi
 
 ## Nginx types max hash size ##
 if [[ -z "$NGINX_TYPES_MAX_HASH_SIZE" ]]; then 
-    sed -i "s/@NGINX_TYPES_MAX_HASH_SIZE/2048/g" /tmp/nginx.conf
+    sed -i "s/@NGINX_TYPES_MAX_HASH_SIZE/2048/g" "$TMP_NGINX_CONF"
 else 
-    sed -i "s/@NGINX_TYPES_MAX_HASH_SIZE/${NGINX_TYPES_MAX_HASH_SIZE}/g" /tmp/nginx.conf
+    sed -i "s/@NGINX_TYPES_MAX_HASH_SIZE/${NGINX_TYPES_MAX_HASH_SIZE}/g" "$TMP_NGINX_CONF"
 fi
 
 ## Nginx client max body size ##
 if [[ -z "$NGINX_CLIENT_MAX_BODY_SIZE" ]]; then 
-    sed -i "s/@NGINX_CLIENT_MAX_BODY_SIZE/512M/g" /tmp/nginx.conf
+    sed -i "s/@NGINX_CLIENT_MAX_BODY_SIZE/512M/g" "$TMP_NGINX_CONF"
 else 
-    sed -i "s/@NGINX_CLIENT_MAX_BODY_SIZE/${NGINX_CLIENT_MAX_BODY_SIZE}/g" /tmp/nginx.conf
+    sed -i "s/@NGINX_CLIENT_MAX_BODY_SIZE/${NGINX_CLIENT_MAX_BODY_SIZE}/g" "$TMP_NGINX_CONF"
 fi
 
 ## Nginx client body buffer size ##
 if [[ -z "$NGINX_CLIENT_BODY_BUFFER_SIZE" ]]; then 
-    sed -i "s/@NGINX_CLIENT_BODY_BUFFER_SIZE/16k/g" /tmp/nginx.conf
+    sed -i "s/@NGINX_CLIENT_BODY_BUFFER_SIZE/16k/g" "$TMP_NGINX_CONF"
 else 
-    sed -i "s/@NGINX_CLIENT_BODY_BUFFER_SIZE/${NGINX_CLIENT_BODY_BUFFER_SIZE}/g" /tmp/nginx.conf
+    sed -i "s/@NGINX_CLIENT_BODY_BUFFER_SIZE/${NGINX_CLIENT_BODY_BUFFER_SIZE}/g" "$TMP_NGINX_CONF"
 fi
 
 ## Nginx client header buffer size ##
 if [[ -z "$NGINX_CLIENT_HEADER_BUFFER_SIZE" ]]; then 
-    sed -i "s/@NGINX_CLIENT_HEADER_BUFFER_SIZE/4k/g" /tmp/nginx.conf
+    sed -i "s/@NGINX_CLIENT_HEADER_BUFFER_SIZE/4k/g" "$TMP_NGINX_CONF"
 else 
-    sed -i "s/@NGINX_CLIENT_HEADER_BUFFER_SIZE/${NGINX_CLIENT_HEADER_BUFFER_SIZE}/g" /tmp/nginx.conf
+    sed -i "s/@NGINX_CLIENT_HEADER_BUFFER_SIZE/${NGINX_CLIENT_HEADER_BUFFER_SIZE}/g" "$TMP_NGINX_CONF"
 fi
 
 ## Nginx large client header buffers ##
 if [[ -z "$NGINX_LARGE_CLIENT_HEADER_BUFFERS" ]]; then 
-    sed -i "s/@NGINX_LARGE_CLIENT_HEADER_BUFFERS/4 64k/g" /tmp/nginx.conf
+    sed -i "s/@NGINX_LARGE_CLIENT_HEADER_BUFFERS/4 64k/g" "$TMP_NGINX_CONF"
 else 
-    sed -i "s/@NGINX_LARGE_CLIENT_HEADER_BUFFERS/${NGINX_LARGE_CLIENT_HEADER_BUFFERS}/g" /tmp/nginx.conf
+    sed -i "s/@NGINX_LARGE_CLIENT_HEADER_BUFFERS/${NGINX_LARGE_CLIENT_HEADER_BUFFERS}/g" "$TMP_NGINX_CONF"
 fi
 
 ## Nginx client body timeout ##
 if [[ -z "$NGINX_CLIENT_BODY_TIMEOUT" ]]; then 
-    sed -i "s/@NGINX_CLIENT_BODY_TIMEOUT/15s/g" /tmp/nginx.conf
+    sed -i "s/@NGINX_CLIENT_BODY_TIMEOUT/15s/g" "$TMP_NGINX_CONF"
 else 
-    sed -i "s/@NGINX_CLIENT_BODY_TIMEOUT/${NGINX_CLIENT_BODY_TIMEOUT}/g" /tmp/nginx.conf
+    sed -i "s/@NGINX_CLIENT_BODY_TIMEOUT/${NGINX_CLIENT_BODY_TIMEOUT}/g" "$TMP_NGINX_CONF"
 fi
 
 ## Nginx client header timeout ##
 if [[ -z "$NGINX_CLIENT_HEADER_TIMEOUT" ]]; then 
-    sed -i "s/@NGINX_CLIENT_HEADER_TIMEOUT/15s/g" /tmp/nginx.conf
+    sed -i "s/@NGINX_CLIENT_HEADER_TIMEOUT/15s/g" "$TMP_NGINX_CONF"
 else 
-    sed -i "s/@NGINX_CLIENT_HEADER_TIMEOUT/${NGINX_CLIENT_HEADER_TIMEOUT}/g" /tmp/nginx.conf
+    sed -i "s/@NGINX_CLIENT_HEADER_TIMEOUT/${NGINX_CLIENT_HEADER_TIMEOUT}/g" "$TMP_NGINX_CONF"
 fi
 
 ## Nginx keepalive timeout ##
 if [[ -z "$NGINX_KEEPALIVE_TIMEOUT" ]]; then 
-    sed -i "s/@NGINX_KEEPALIVE_TIMEOUT/15s/g" /tmp/nginx.conf
+    sed -i "s/@NGINX_KEEPALIVE_TIMEOUT/15s/g" "$TMP_NGINX_CONF"
 else 
-    sed -i "s/@NGINX_KEEPALIVE_TIMEOUT/${NGINX_KEEPALIVE_TIMEOUT}/g" /tmp/nginx.conf
+    sed -i "s/@NGINX_KEEPALIVE_TIMEOUT/${NGINX_KEEPALIVE_TIMEOUT}/g" "$TMP_NGINX_CONF"
 fi
 
 ## Nginx keepalive requests ##
 if [[ -z "$NGINX_KEEPALIVE_REQUESTS" ]]; then 
-    sed -i "s/@NGINX_KEEPALIVE_REQUESTS/65535/g" /tmp/nginx.conf
+    sed -i "s/@NGINX_KEEPALIVE_REQUESTS/65535/g" "$TMP_NGINX_CONF"
 else 
-    sed -i "s/@NGINX_KEEPALIVE_REQUESTS/${NGINX_KEEPALIVE_REQUESTS}/g" /tmp/nginx.conf
+    sed -i "s/@NGINX_KEEPALIVE_REQUESTS/${NGINX_KEEPALIVE_REQUESTS}/g" "$TMP_NGINX_CONF"
 fi
 
 ## Nginx send timeout ##
 if [[ -z "$NGINX_SEND_TIMEOUT" ]]; then 
-    sed -i "s/@NGINX_SEND_TIMEOUT/15s/g" /tmp/nginx.conf
+    sed -i "s/@NGINX_SEND_TIMEOUT/15s/g" "$TMP_NGINX_CONF"
 else 
-    sed -i "s/@NGINX_SEND_TIMEOUT/${NGINX_SEND_TIMEOUT}/g" /tmp/nginx.conf
+    sed -i "s/@NGINX_SEND_TIMEOUT/${NGINX_SEND_TIMEOUT}/g" "$TMP_NGINX_CONF"
 fi
 
 ## Open File Cache Settings
 
 ## Open File Cache max files ##
 if [[ -z "$OPEN_FILE_CACHE_MAX" ]]; then 
-    sed -i "s/@OPEN_FILE_CACHE_MAX/200000/g" /tmp/nginx.conf
+    sed -i "s/@OPEN_FILE_CACHE_MAX/200000/g" "$TMP_NGINX_CONF"
 else 
-    sed -i "s/@OPEN_FILE_CACHE_MAX/${OPEN_FILE_CACHE_MAX}/g" /tmp/nginx.conf
+    sed -i "s/@OPEN_FILE_CACHE_MAX/${OPEN_FILE_CACHE_MAX}/g" "$TMP_NGINX_CONF"
 fi
 
 ## Open File Cache inactive ##
 if [[ -z "$OPEN_FILE_CACHE_INACTIVE" ]]; then 
-    sed -i "s/@OPEN_FILE_CACHE_INACTIVE/20s/g" /tmp/nginx.conf
+    sed -i "s/@OPEN_FILE_CACHE_INACTIVE/20s/g" "$TMP_NGINX_CONF"
 else 
-    sed -i "s/@OPEN_FILE_CACHE_INACTIVE/${OPEN_FILE_CACHE_INACTIVE}/g" /tmp/nginx.conf
+    sed -i "s/@OPEN_FILE_CACHE_INACTIVE/${OPEN_FILE_CACHE_INACTIVE}/g" "$TMP_NGINX_CONF"
 fi
 
 ## Open File Cache valid ##
 if [[ -z "$OPEN_FILE_CACHE_VALID" ]]; then 
-    sed -i "s/@OPEN_FILE_CACHE_VALID/30s/g" /tmp/nginx.conf
+    sed -i "s/@OPEN_FILE_CACHE_VALID/30s/g" "$TMP_NGINX_CONF"
 else 
-    sed -i "s/@OPEN_FILE_CACHE_VALID/${OPEN_FILE_CACHE_VALID}/g" /tmp/nginx.conf
+    sed -i "s/@OPEN_FILE_CACHE_VALID/${OPEN_FILE_CACHE_VALID}/g" "$TMP_NGINX_CONF"
 fi
 
 ## Open File Cache min uses ##
 if [[ -z "$OPEN_FILE_CACHE_MIN_USES" ]]; then 
-    sed -i "s/@OPEN_FILE_CACHE_MIN_USES/2/g" /tmp/nginx.conf
+    sed -i "s/@OPEN_FILE_CACHE_MIN_USES/2/g" "$TMP_NGINX_CONF"
 else 
-    sed -i "s/@OPEN_FILE_CACHE_MIN_USES/${OPEN_FILE_CACHE_MIN_USES}/g" /tmp/nginx.conf
+    sed -i "s/@OPEN_FILE_CACHE_MIN_USES/${OPEN_FILE_CACHE_MIN_USES}/g" "$TMP_NGINX_CONF"
 fi
 
 ## Open File Cache errors ##
 if [[ -z "$OPEN_FILE_CACHE_ERRORS" ]]; then 
-    sed -i "s/@OPEN_FILE_CACHE_ERRORS/on/g" /tmp/nginx.conf
+    sed -i "s/@OPEN_FILE_CACHE_ERRORS/on/g" "$TMP_NGINX_CONF"
 else 
-    sed -i "s/@OPEN_FILE_CACHE_ERRORS/${OPEN_FILE_CACHE_ERRORS}/g" /tmp/nginx.conf
+    sed -i "s/@OPEN_FILE_CACHE_ERRORS/${OPEN_FILE_CACHE_ERRORS}/g" "$TMP_NGINX_CONF"
 fi
 
 
 ## headers ##
 if [[ -z "$NGINX_HEADER_POWERED_BY" ]]; then 
-    sed -i "s/@NGINX_HEADER_POWERED_BY/SlickStack/g" /tmp/nginx.conf
+    sed -i "s/@NGINX_HEADER_POWERED_BY/SlickStack/g" "$TMP_NGINX_CONF"
 else 
-    sed -i "s/@NGINX_HEADER_POWERED_BY/${NGINX_HEADER_POWERED_BY}/g" /tmp/nginx.conf
+    sed -i "s/@NGINX_HEADER_POWERED_BY/${NGINX_HEADER_POWERED_BY}/g" "$TMP_NGINX_CONF"
 fi
 
 if [[ -z "$NGINX_HEADER_STRICT_TRANSPORT_SECURITY" ]]; then 
-    sed -i "s/@NGINX_HEADER_STRICT_TRANSPORT_SECURITY/max-age=15552000/g" /tmp/nginx.conf
+    sed -i "s/@NGINX_HEADER_STRICT_TRANSPORT_SECURITY/max-age=15552000/g" "$TMP_NGINX_CONF"
 else 
-    sed -i "s/@NGINX_HEADER_STRICT_TRANSPORT_SECURITY/${NGINX_HEADER_STRICT_TRANSPORT_SECURITY}/g" /tmp/nginx.conf
+    sed -i "s/@NGINX_HEADER_STRICT_TRANSPORT_SECURITY/${NGINX_HEADER_STRICT_TRANSPORT_SECURITY}/g" "$TMP_NGINX_CONF"
 fi
 
 if [[ -z "$NGINX_HEADER_REFERRER_POLICY" ]]; then 
-    sed -i "s/@NGINX_HEADER_REFERRER_POLICY/strict-origin-when-cross-origin/g" /tmp/nginx.conf
+    sed -i "s/@NGINX_HEADER_REFERRER_POLICY/strict-origin-when-cross-origin/g" "$TMP_NGINX_CONF"
 else 
-    sed -i "s/@NGINX_HEADER_REFERRER_POLICY/${NGINX_HEADER_REFERRER_POLICY}/g" /tmp/nginx.conf
+    sed -i "s/@NGINX_HEADER_REFERRER_POLICY/${NGINX_HEADER_REFERRER_POLICY}/g" "$TMP_NGINX_CONF"
 fi
 
 if [[ -z "$NGINX_HEADER_PERMISSIONS_POLICY" ]]; then 
-    sed -i "s/@NGINX_HEADER_PERMISSIONS_POLICY/accelerometer=(), ambient-light-sensor=(), autoplay=*, battery=(), camera=(), display-capture=*, document-domain=*, encrypted-media=*, fullscreen=*, geolocation=(self), gyroscope=(), layout-animations=*, legacy-image-formats=*, magnetometer=(), microphone=(self), midi=(), oversized-images=*, payment=*, picture-in-picture=*, publickey-credentials-get=*, sync-xhr=*, usb=(), vibrate=(), wake-lock=(), xr-spatial-tracking=()/g" /tmp/nginx.conf
+    sed -i "s/@NGINX_HEADER_PERMISSIONS_POLICY/accelerometer=(), ambient-light-sensor=(), autoplay=*, battery=(), camera=(), display-capture=*, document-domain=*, encrypted-media=*, fullscreen=*, geolocation=(self), gyroscope=(), layout-animations=*, legacy-image-formats=*, magnetometer=(), microphone=(self), midi=(), oversized-images=*, payment=*, picture-in-picture=*, publickey-credentials-get=*, sync-xhr=*, usb=(), vibrate=(), wake-lock=(), xr-spatial-tracking=()/g" "$TMP_NGINX_CONF"
 else 
-    sed -i "s/@NGINX_HEADER_PERMISSIONS_POLICY/${NGINX_HEADER_PERMISSIONS_POLICY}/g" /tmp/nginx.conf
+    sed -i "s/@NGINX_HEADER_PERMISSIONS_POLICY/${NGINX_HEADER_PERMISSIONS_POLICY}/g" "$TMP_NGINX_CONF"
 fi
 
 if [[ -z "$NGINX_HEADER_FEATURE_POLICY" ]]; then 
-    sed -i "s/@NGINX_HEADER_FEATURE_POLICY/ambient-light-sensor none; animations self; autoplay none; accelerometer none; camera none; display-capture none; document-domain none; document-write none; encrypted-media none; fullscreen self; geolocation none; gyroscope none; image-compression *; legacy-image-formats *; magnetometer none; max-downscaling-image *; microphone none; midi none; notifications self; payment none; picture-in-picture self; push none; speaker self; sync-xhr none; unsized-media *; usb none; vertical-scroll self; wake-lock none; webauthn none; vibrate none; vr none; xr-spatial-tracking none;/g" /tmp/nginx.conf
+    sed -i "s/@NGINX_HEADER_FEATURE_POLICY/ambient-light-sensor none; animations self; autoplay none; accelerometer none; camera none; display-capture none; document-domain none; document-write none; encrypted-media none; fullscreen self; geolocation none; gyroscope none; image-compression *; legacy-image-formats *; magnetometer none; max-downscaling-image *; microphone none; midi none; notifications self; payment none; picture-in-picture self; push none; speaker self; sync-xhr none; unsized-media *; usb none; vertical-scroll self; wake-lock none; webauthn none; vibrate none; vr none; xr-spatial-tracking none;/g" "$TMP_NGINX_CONF"
 else 
-    sed -i "s/@NGINX_HEADER_FEATURE_POLICY/${NGINX_HEADER_FEATURE_POLICY}/g" /tmp/nginx.conf
+    sed -i "s/@NGINX_HEADER_FEATURE_POLICY/${NGINX_HEADER_FEATURE_POLICY}/g" "$TMP_NGINX_CONF"
 fi
 
 ## copy files to their destinations ##
-cp /tmp/nginx.conf /etc/nginx/nginx.conf
+cp "$TMP_NGINX_CONF" "$PATH_NGINX_CONF"
 
 ####################################################################################################
 #### SS-Install-Nginx-Config: Delete Old Server Blocks #############################################
@@ -490,7 +490,7 @@ source /var/www/ss-install-nginx-openssl
 ####################################################################################################
 
 ## run ss-restart-services-nginx ##
-source /var/www/ss-restart-services-nginx
+source "$PATH_SS_RESTART_SERVICES_NGINX"
 
 ####################################################################################################
 #### SS-Install-Nginx-Config: Generate Lets Encrypt Certificate (Via SS-Encrypt-Certbot) ###########
@@ -510,7 +510,7 @@ source /var/www/ss-encrypt-certbot
 ## this depends on your ss-config settings (both certs should exist regardless) ##
 
 ## run ss-install-nginx-ssl ##
-source /var/www/ss-install-nginx-ssl
+source "$PATH_SS_INSTALL_NGINX_SSL"
 
 ####################################################################################################
 #### SS-Install-Nginx-Config: Enable TMPFS Mount (Optional) ########################################
@@ -530,14 +530,14 @@ fi
 ####################################################################################################
 
 ## run ss-perms-nginx-config ##
-source /var/www/ss-perms-nginx-config
+source "$PATH_SS_PERMS_NGINX_CONFIG"
 
 ####################################################################################################
 #### SS-Install-Nginx-Config: Restart Modules (Nginx) ##############################################
 ####################################################################################################
 
 ## restart Nginx module ##
-source /var/www/ss-restart-services-nginx
+source "$PATH_SS_RESTART_SERVICES_NGINX"
 
 ####################################################################################################
 #### SS-Install-Nginx-Config: Install WordPress Config (Via SS-Install-WordPress-Config) ###########
@@ -568,7 +568,7 @@ rm /tmp/openssl.conf*
 ## it can be useful for developer reference and is sometimes used by SlickStack ##
 
 ## script timestamp ##
-touch /var/www/meta/.timestamp-ss-install-nginx-config
+touch "$TIMESTAMP_SS_INSTALL_NGINX_CONFIG"
 
 ####################################################################################################
 #### SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ###############
