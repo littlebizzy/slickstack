@@ -22,16 +22,23 @@ source /var/www/ss-config
 source /var/www/ss-functions
 
 ####################################################################################################
-#### 01-Cron-Often: Ensure SS-Config Intact ########################################################
+#### 01-Cron-Often: Validate SS-Config #############################################################
 ####################################################################################################
 
-## ensure ss-config intact ##
-## scan /var/www/meta/ for latest intact version and generate new ss-config with it
-# if [[ -z "$VALIDATE_SS_CONFIG" ]]; then
- #   grep "$SS_EOF" "$(ls -1rt /var/www/meta/ | tail -n1)"
-  #  chown root:root "$PATH_SS_CONFIG" ## must be root:root
-  #  chmod 0700 "$PATH_SS_CONFIG" ## 0700 means root can execute
-# fi
+## this attempts to restore missing or damaged ss-config using a recent intact backup ##
+## however it is not fool-proof since there is no way to verify all settings ##
+
+## snippet constants ##
+VALIDATE_SS_CONFIG=$(grep 'SS_BUILD' /var/www/ss-config)
+SS_CONFIG_RECENT_BACKUPS=$(ls -1rta /var/www/meta/ss-config.bak* | tail -n1)
+SS_CONFIG_BEST_MATCH=$(grep -il 'SS_BUILD' "$SS_CONFIG_RECENT_BACKUPS")
+
+## validate ss-config ##
+if [[ -z "$VALIDATE_SS_CONFIG" ]]; then
+    mv "$SS_CONFIG_BEST_MATCH" /var/www/ss-config
+    chown root:root /var/www/ss-config ## must be root:root
+    chmod 0700 /var/www/ss-config ## 0700 means root can execute
+fi
 
 ####################################################################################################
 #### 01-Cron-Often: Validate SS-Functions ##########################################################
@@ -165,5 +172,6 @@ touch /var/www/meta/.timestamp-01-cron-often
 ## Ref: https://tldp.org/LDP/abs/html/nestedifthen.html
 ## Ref: https://unix.stackexchange.com/questions/282901/find-latest-file-created-in-folder-and-grep-contents
 ## Ref: https://serverfault.com/questions/69283/when-to-use-single-quote-double-quote-in-grep
+## Ref: https://unix.stackexchange.com/questions/277412/cp-vs-mv-which-operation-is-more-efficient
 
 ## SS_EOF
