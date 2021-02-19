@@ -15,54 +15,69 @@
 ## NEVER MODIFY THE ROOT CRONTAB OR SS CORE CRON JOBS OR YOUR STACK WILL STOP WORKING ##
 ## INSTEAD ADJUST SS_INTERVAL SETTINGS IN SS-CONFIG OR EDIT CUSTOM CRON FILES ##
 
-## include SlickStack configuration ##
-source /var/www/ss-config
+## critical constants ##
+XXX_PATH_SS_CONFIG="/var/www/ss-config"
+XXX_PATH_SS_FUNCTIONS="/var/www/ss-functions"
+XXX_TMP_SS_CONFIG="/tmp/ss-config"
+XXX_TMP_SS_FUNCTIONS="/tmp/ss-functions"
 
-## include SlickStack functions ##
-source /var/www/ss-functions
+## big bang ##
+source "$XXX_PATH_SS_CONFIG"
+source "$XXX_PATH_SS_FUNCTIONS"
 
 ####################################################################################################
-#### 01-Cron-Often: Validate SS-Config #############################################################
+#### 01-Cron-Often: Validate/Restore SS-Config #####################################################
 ####################################################################################################
+
+## SNIPPET: 
 
 ## this attempts to restore missing or damaged ss-config using a recent intact backup ##
 ## however it is not fool-proof since there is no way to verify all settings ##
 
 ## snippet constants ##
-VALIDATE_SS_CONFIG=$(grep 'SS_BUILD' /var/www/ss-config)
-SS_CONFIG_RECENT_BACKUPS=$(ls -1rta /var/www/meta/ss-config.bak* | tail -n1)
-SS_CONFIG_BEST_MATCH=$(grep -il 'SS_BUILD' "$SS_CONFIG_RECENT_BACKUPS")
+XXX_STRING_VALIDATE_SS_CONFIG="SS_BUILD"
+XXX_VALIDATE_SS_CONFIG=$(grep "$XXX_STRING_VALIDATE_SS_CONFIG" "$XXX_PATH_SS_CONFIG")
+XXX_VALIDATE_TMP_SS_CONFIG=$(grep "$XXX_STRING_VALIDATE_SS_CONFIG" "$XXX_TMP_SS_CONFIG")
+XXX_SS_CONFIG_RECENT_BACKUPS=$(ls -1rta /var/www/meta/ss-config.bak* | tail -n1)
+XXX_SS_CONFIG_BEST_MATCH=$(grep -il "$XXX_STRING_VALIDATE_SS_CONFIG" "$XXX_SS_CONFIG_RECENT_BACKUPS")
 
 ## validate ss-config ##
-if [[ -z "$VALIDATE_SS_CONFIG" ]]; then
-    mv "$SS_CONFIG_BEST_MATCH" /var/www/ss-config
-    chown root:root /var/www/ss-config ## must be root:root
-    chmod 0700 /var/www/ss-config ## 0700 means root can execute
+if [[ -z "$XXX_VALIDATE_SS_CONFIG" ]]; then
+    rm "$XXX_TMP_SS_CONFIG"
+    mv "$XXX_SS_CONFIG_BEST_MATCH" "$XXX_TMP_SS_CONFIG"
+    if [[ -n "$XXX_VALIDATE_TMP_SS_CONFIG" ]]; then
+        mv "$XXX_TMP_SS_CONFIG" "$XXX_PATH_SS_CONFIG"
+        chown root:root "$XXX_PATH_SS_CONFIG" ## must be root:root
+        chmod 0700 "$XXX_PATH_SS_CONFIG" ## 0700 means root can execute
+    fi
+    rm "$XXX_TMP_SS_CONFIG"
 fi
 
 ####################################################################################################
-#### 01-Cron-Often: Validate SS-Functions ##########################################################
+#### 01-Cron-Often: Validate/Restore SS-Functions ##################################################
 ####################################################################################################
+
+## SNIPPET: 
 
 ## runs first since ss core cron jobs and ss core bash scripts depend on ss-functions ##
 ## if ss-functions is missing or damanaged this snippet will reinstall again ##
 
 ## validate ss-functions ##
-VALIDATE_SS_FUNCTIONS=$(grep 'SS_EOF' /var/www/ss-functions)
-VALIDATE_TMP_SS_FUNCTIONS=$(grep 'SS_EOF' /tmp/ss-functions)
-if [[ -z "$VALIDATE_SS_FUNCTIONS" ]]; then
-    rm /tmp/ss-functions
-    wget -O /tmp/ss-functions http://mirrors.slickstack.io/bash/ss-functions.txt
-    if [[ -n "$VALIDATE_TMP_SS_FUNCTIONS" ]]; then
-        cp /tmp/ss-functions /var/www/ss-functions
-        chown root:root /var/www/ss-functions ## must be root:root
-        chmod 0700 /var/www/ss-functions ## 0700 means root can execute
+XXX_VALIDATE_SS_FUNCTIONS=$(grep 'SS_EOF' "$XXX_PATH_SS_FUNCTIONS")
+XXX_VALIDATE_TMP_SS_FUNCTIONS=$(grep 'SS_EOF' "$XXX_TMP_SS_FUNCTIONS")
+if [[ -z "$XXX_VALIDATE_SS_FUNCTIONS" ]]; then
+    rm "$XXX_TMP_SS_FUNCTIONS"
+    wget -O "$XXX_TMP_SS_FUNCTIONS" http://mirrors.slickstack.io/bash/ss-functions.txt
+    if [[ -n "$XXX_VALIDATE_TMP_SS_FUNCTIONS" ]]; then
+        cp "$XXX_TMP_SS_FUNCTIONS" "$XXX_PATH_SS_FUNCTIONS"
+        chown root:root "$XXX_PATH_SS_FUNCTIONS" ## must be root:root
+        chmod 0700 "$XXX_PATH_SS_FUNCTIONS" ## 0700 means root can execute
     fi
-    rm /tmp/ss-functions
+    rm "$XXX_TMP_SS_FUNCTIONS"
 fi
 
 ####################################################################################################
-#### 01-Cron-Often: Validate SS-Check + SS-Worker ##################################################
+#### 01-Cron-Often: Validate/Restore SS-Check + SS-Worker ##########################################
 ####################################################################################################
 
 ## SNIPPET: ss core cron jobs
@@ -173,5 +188,7 @@ touch /var/www/meta/.timestamp-01-cron-often
 ## Ref: https://unix.stackexchange.com/questions/282901/find-latest-file-created-in-folder-and-grep-contents
 ## Ref: https://serverfault.com/questions/69283/when-to-use-single-quote-double-quote-in-grep
 ## Ref: https://unix.stackexchange.com/questions/277412/cp-vs-mv-which-operation-is-more-efficient
+
+## NOTE: VARIABLES WITH $XXX_ PREFIX USED BY THIS SCRIPT ONLY
 
 ## SS_EOF
