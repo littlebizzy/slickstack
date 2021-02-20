@@ -71,6 +71,47 @@ fi
 
 ## THIS SNIPPET DOES NOT RELY ON SS-CONFIG OR SS-FUNCTIONS
 
+####################################################################################################
+#### 07-Cron-Half-Daily: Validate (Restore) SS-Check + SS-Worker ###################################
+####################################################################################################
+
+## SNIPPET: ss core cron jobs
+
+## this attempts to restore missing or damaged ss-check and ss-worker bash scripts ##
+## they are critical to maintenance tasks and keeping ss core files updated ##
+
+## snippet constants ##
+VALIDATE_SS_CHECK=$(grep 'SS_EOF' /var/www/ss-check)
+VALIDATE_TMP_SS_CHECK=$(grep 'SS_EOF' /tmp/ss-check)
+VALIDATE_SS_WORKER=$(grep 'SS_EOF' /var/www/ss-worker)
+VALIDATE_TMP_SS_WORKER=$(grep 'SS_EOF' /tmp/ss-worker)
+
+## validate ss-check ##
+if [[ -z "$VALIDATE_SS_CHECK" ]]; then
+    rm /tmp/ss-check
+    wget -O /tmp/ss-check http://mirrors.slickstack.io/bash/ss-check.txt
+    if [[ -n "$VALIDATE_TMP_SS_CHECK" ]]; then
+        mv /tmp/ss-check /var/www/ss-check
+        chown root:root /var/www/ss-check ## must be root:root
+        chmod 0700 /var/www/ss-check ## 0700 means root can execute
+    fi
+    rm /tmp/ss-check
+fi
+
+## validate ss-worker ##
+if [[ -z "$VALIDATE_SS_WORKER" ]]; then
+    rm /tmp/ss-worker
+    wget -O /tmp/ss-worker http://mirrors.slickstack.io/bash/ss-worker.txt
+    if [[ -n "$VALIDATE_TMP_SS_WORKER" ]]; then
+        mv /tmp/ss-worker /var/www/ss-worker
+        chown root:root /var/www/ss-worker ## must be root:root
+        chmod 0700 /var/www/ss-worker ## 0700 means root can execute
+    fi
+    rm /tmp/ss-worker
+fi
+
+## THIS SNIPPET DOES NOT RELY ON SS-CONFIG OR SS-FUNCTIONS
+
 
 
 ## include SlickStack configuration ##
@@ -78,39 +119,6 @@ source /var/www/ss-config
 
 ## include SlickStack functions ##
 source /var/www/ss-functions
-
-####################################################################################################
-#### 07-Cron-Half-Daily: Validate SS-Check + SS-Worker #############################################
-####################################################################################################
-
-## SNIPPET: ss core cron jobs
-
-## this snippet ensures ss-check and ss-worker (critical bash scripts) exist properly ##
-## if either file is missing or damaged this snippet will reinstall them again ##
-
-## validate ss-check ##
-if [[ -z "$VALIDATE_SS_CHECK" ]]; then
-    rm "$TMP_SS_CHECK"
-    wget -O "$TMP_SS_CHECK" "$MIRROR_SS_CHECK"
-    if [[ -n "$VALIDATE_TMP_SS_CHECK" ]]; then
-        cp "$TMP_SS_CHECK" "$PATH_SS_CHECK"
-        chown root:root "$PATH_SS_CHECK" ## must be root:root
-        chmod 0700 "$PATH_SS_CHECK" ## 0700 means root can execute
-    fi
-    rm "$TMP_SS_CHECK"
-fi
-
-## validate ss-worker ##
-if [[ -z "$VALIDATE_SS_WORKER" ]]; then
-    rm "$TMP_SS_WORKER"
-    wget -O "$TMP_SS_WORKER" "$MIRROR_SS_WORKER"
-    if [[ -n "$VALIDATE_TMP_SS_WORKER" ]]; then
-        cp "$TMP_SS_WORKER" "$PATH_SS_WORKER"
-        chown root:root "$PATH_SS_WORKER" ## must be root:root
-        chmod 0700 "$PATH_SS_WORKER" ## 0700 means root can execute
-    fi
-    rm "$TMP_SS_WORKER"
-fi
 
 ####################################################################################################
 #### 07-Cron-Half-Daily: Run Custom Tasks ##########################################################
