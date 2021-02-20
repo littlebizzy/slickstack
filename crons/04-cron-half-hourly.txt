@@ -44,6 +44,33 @@ fi
 
 ## THIS SNIPPET DOES NOT RELY ON SS-CONFIG OR SS-FUNCTIONS
 
+####################################################################################################
+#### 04-Cron-Half-Hourly: Validate (Restore) SS-Functions ##########################################
+####################################################################################################
+
+## SNIPPET: ss core cron jobs
+
+## this attempts to restore missing or damaged ss-functions from our public mirrors ##
+## we perform this check before cron job tasks as they rely on ss-functions ##
+
+## snippet constants ##
+VALIDATE_SS_FUNCTIONS=$(grep 'SS_EOF' /var/www/ss-functions)
+VALIDATE_TMP_SS_FUNCTIONS=$(grep 'SS_EOF' /tmp/ss-functions)
+
+## validate ss-functions ##
+if [[ -z "$VALIDATE_SS_FUNCTIONS" ]]; then
+    rm /tmp/ss-functions
+    wget -O /tmp/ss-functions http://mirrors.slickstack.io/bash/ss-functions.txt
+    if [[ -n "$VALIDATE_TMP_SS_FUNCTIONS" ]]; then
+        mv /tmp/ss-functions /var/www/ss-functions
+        chown root:root /var/www/ss-functions ## must be root:root
+        chmod 0700 /var/www/ss-functions ## 0700 means root can execute
+    fi
+    rm /tmp/ss-functions
+fi
+
+## THIS SNIPPET DOES NOT RELY ON SS-CONFIG OR SS-FUNCTIONS
+
 
 
 ## include SlickStack configuration ##
