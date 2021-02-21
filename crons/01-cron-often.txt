@@ -24,7 +24,7 @@
 ## this attempts to restore missing or damaged ss-config using a recent intact backup ##
 ## however it is not fool-proof since there is no way to verify all settings ##
 
-## snippet constants ##
+## constants ##
 VALIDATE_SS_CONFIG=$(grep 'SS_BUILD' /var/www/ss-config)
 VALIDATE_TMP_SS_CONFIG=$(grep 'SS_BUILD' /tmp/ss-config)
 SS_CONFIG_RECENT_BACKUPS=$(ls -1rta /var/www/meta/ss-config.bak* | tail -n1)
@@ -32,14 +32,14 @@ SS_CONFIG_BEST_MATCH=$(grep -il 'SS_BUILD' "$SS_CONFIG_RECENT_BACKUPS")
 
 ## validate ss-config ##
 if [[ -z "$VALIDATE_SS_CONFIG" ]]; then
-    rm /tmp/ss-config
-    mv "$SS_CONFIG_BEST_MATCH" /tmp/ss-config
+    rm -rf /tmp/ss-config
+    mv -f "$SS_CONFIG_BEST_MATCH" /tmp/ss-config
     if [[ -n "$VALIDATE_TMP_SS_CONFIG" ]]; then
-        mv /tmp/ss-config /var/www/ss-config
+        mv -f /tmp/ss-config /var/www/ss-config
         chown root:root /var/www/ss-config ## must be root:root
         chmod 0700 /var/www/ss-config ## 0700 means root can execute
     fi
-    rm /tmp/ss-config
+    rm -rf /tmp/ss-config
 fi
 
 ## THIS SNIPPET DOES NOT RELY ON SS-CONFIG OR SS-FUNCTIONS
@@ -53,20 +53,25 @@ fi
 ## this attempts to restore missing or damaged ss-functions from our public mirrors ##
 ## we perform this check before cron job tasks as they rely on ss-functions ##
 
-## snippet constants ##
+## constants ##
 VALIDATE_SS_FUNCTIONS=$(grep 'SS_EOF' /var/www/ss-functions)
 VALIDATE_TMP_SS_FUNCTIONS=$(grep 'SS_EOF' /tmp/ss-functions)
 
 ## validate ss-functions ##
 if [[ -z "$VALIDATE_SS_FUNCTIONS" ]]; then
-    rm /tmp/ss-functions
-    wget -O /tmp/ss-functions http://mirrors.slickstack.io/bash/ss-functions.txt
+    rm -rf /tmp/ss-functions
+    wget -q -4 -t 1 -T 15 -O /tmp/ss-functions http://mirrors.slickstack.io/bash/ss-functions.txt
     if [[ -n "$VALIDATE_TMP_SS_FUNCTIONS" ]]; then
-        mv /tmp/ss-functions /var/www/ss-functions
+        mv -f /tmp/ss-functions /var/www/ss-functions
+        chown root:root /var/www/ss-functions ## must be root:root
+        chmod 0700 /var/www/ss-functions ## 0700 means root can execute
+    else
+        wget -q -4 -t 3 -T 30 -O /tmp/ss-functions https://raw.githubusercontent.com/littlebizzy/slickstack/master/bash/ss-functions.txt
+        mv -f /tmp/ss-functions /var/www/ss-functions
         chown root:root /var/www/ss-functions ## must be root:root
         chmod 0700 /var/www/ss-functions ## 0700 means root can execute
     fi
-    rm /tmp/ss-functions
+    rm -rf /tmp/ss-functions
 fi
 
 ## THIS SNIPPET DOES NOT RELY ON SS-CONFIG OR SS-FUNCTIONS
@@ -80,7 +85,7 @@ fi
 ## this attempts to restore missing or damaged ss-check and ss-worker bash scripts ##
 ## they are critical to maintenance tasks and keeping ss core files updated ##
 
-## snippet constants ##
+## constants ##
 VALIDATE_SS_CHECK=$(grep 'SS_EOF' /var/www/ss-check)
 VALIDATE_TMP_SS_CHECK=$(grep 'SS_EOF' /tmp/ss-check)
 VALIDATE_SS_WORKER=$(grep 'SS_EOF' /var/www/ss-worker)
@@ -88,26 +93,36 @@ VALIDATE_TMP_SS_WORKER=$(grep 'SS_EOF' /tmp/ss-worker)
 
 ## validate ss-check ##
 if [[ -z "$VALIDATE_SS_CHECK" ]]; then
-    rm /tmp/ss-check
-    wget -O /tmp/ss-check http://mirrors.slickstack.io/bash/ss-check.txt
+    rm -rf /tmp/ss-check
+    wget -q -4 -t 1 -T 15 -O /tmp/ss-check http://mirrors.slickstack.io/bash/ss-check.txt
     if [[ -n "$VALIDATE_TMP_SS_CHECK" ]]; then
-        mv /tmp/ss-check /var/www/ss-check
+        mv -f /tmp/ss-check /var/www/ss-check
+        chown root:root /var/www/ss-check ## must be root:root
+        chmod 0700 /var/www/ss-check ## 0700 means root can execute
+    else
+        wget -q -4 -t 3 -T 30 -O /tmp/ss-check https://raw.githubusercontent.com/littlebizzy/slickstack/master/bash/ss-check.txt
+        mv -f /tmp/ss-check /var/www/ss-check
         chown root:root /var/www/ss-check ## must be root:root
         chmod 0700 /var/www/ss-check ## 0700 means root can execute
     fi
-    rm /tmp/ss-check
+    rm -rf /tmp/ss-check
 fi
 
 ## validate ss-worker ##
 if [[ -z "$VALIDATE_SS_WORKER" ]]; then
-    rm /tmp/ss-worker
-    wget -O /tmp/ss-worker http://mirrors.slickstack.io/bash/ss-worker.txt
+    rm -rf /tmp/ss-worker
+    wget -q -4 -t 1 -T 15 -O /tmp/ss-worker http://mirrors.slickstack.io/bash/ss-worker.txt
     if [[ -n "$VALIDATE_TMP_SS_WORKER" ]]; then
-        mv /tmp/ss-worker /var/www/ss-worker
+        mv -f /tmp/ss-worker /var/www/ss-worker
+        chown root:root /var/www/ss-worker ## must be root:root
+        chmod 0700 /var/www/ss-worker ## 0700 means root can execute
+    else
+        wget -q -4 -t 3 -T 30 -O /tmp/ss-worker https://raw.githubusercontent.com/littlebizzy/slickstack/master/bash/ss-worker.txt
+        mv -f /tmp/ss-worker /var/www/ss-worker
         chown root:root /var/www/ss-worker ## must be root:root
         chmod 0700 /var/www/ss-worker ## 0700 means root can execute
     fi
-    rm /tmp/ss-worker
+    rm -rf /tmp/ss-worker
 fi
 
 ## THIS SNIPPET DOES NOT RELY ON SS-CONFIG OR SS-FUNCTIONS
@@ -211,5 +226,6 @@ touch "$TIMESTAMP_01_CRON_OFTEN"
 ## Ref: https://programmerr47.medium.com/dont-put-constants-everywhere-b3bb9cb0bbae
 ## Ref: https://stackoverflow.com/questions/4234129/should-i-use-constants-instead-of-strings-even-if-the-strings-are-only-ever-used
 ## Ref: https://unix.stackexchange.com/questions/236659/what-is-the-point-of-mv-f
+## Ref: https://stackoverflow.com/questions/89989/is-there-a-curl-wget-option-that-says-not-to-save-files-upon-http-errors
 
 ## SS_EOF
