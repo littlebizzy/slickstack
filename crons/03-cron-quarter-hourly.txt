@@ -85,7 +85,7 @@ fi
 ## this attempts to restore missing or damaged ss-check and ss-worker bash scripts ##
 ## they are critical to maintenance tasks and keeping ss core files updated ##
 
-## snippet constants ##
+## constants ##
 VALIDATE_SS_CHECK=$(grep 'SS_EOF' /var/www/ss-check)
 VALIDATE_TMP_SS_CHECK=$(grep 'SS_EOF' /tmp/ss-check)
 VALIDATE_SS_WORKER=$(grep 'SS_EOF' /var/www/ss-worker)
@@ -93,26 +93,36 @@ VALIDATE_TMP_SS_WORKER=$(grep 'SS_EOF' /tmp/ss-worker)
 
 ## validate ss-check ##
 if [[ -z "$VALIDATE_SS_CHECK" ]]; then
-    rm /tmp/ss-check
-    wget -O /tmp/ss-check http://mirrors.slickstack.io/bash/ss-check.txt
+    rm -rf /tmp/ss-check
+    wget -q -4 -t 1 -T 15 -O /tmp/ss-check http://mirrors.slickstack.io/bash/ss-check.txt
     if [[ -n "$VALIDATE_TMP_SS_CHECK" ]]; then
-        mv /tmp/ss-check /var/www/ss-check
+        mv -f /tmp/ss-check /var/www/ss-check
+        chown root:root /var/www/ss-check ## must be root:root
+        chmod 0700 /var/www/ss-check ## 0700 means root can execute
+    else
+        wget -q -4 -t 3 -T 30 -O /tmp/ss-check https://raw.githubusercontent.com/littlebizzy/slickstack/master/bash/ss-check.txt
+        mv -f /tmp/ss-check /var/www/ss-check
         chown root:root /var/www/ss-check ## must be root:root
         chmod 0700 /var/www/ss-check ## 0700 means root can execute
     fi
-    rm /tmp/ss-check
+    rm -rf /tmp/ss-check
 fi
 
 ## validate ss-worker ##
 if [[ -z "$VALIDATE_SS_WORKER" ]]; then
-    rm /tmp/ss-worker
-    wget -O /tmp/ss-worker http://mirrors.slickstack.io/bash/ss-worker.txt
+    rm -rf /tmp/ss-worker
+    wget -q -4 -t 1 -T 15 -O /tmp/ss-worker http://mirrors.slickstack.io/bash/ss-worker.txt
     if [[ -n "$VALIDATE_TMP_SS_WORKER" ]]; then
-        mv /tmp/ss-worker /var/www/ss-worker
+        mv -f /tmp/ss-worker /var/www/ss-worker
+        chown root:root /var/www/ss-worker ## must be root:root
+        chmod 0700 /var/www/ss-worker ## 0700 means root can execute
+    else
+        wget -q -4 -t 3 -T 30 -O /tmp/ss-worker https://raw.githubusercontent.com/littlebizzy/slickstack/master/bash/ss-worker.txt
+        mv -f /tmp/ss-worker /var/www/ss-worker
         chown root:root /var/www/ss-worker ## must be root:root
         chmod 0700 /var/www/ss-worker ## 0700 means root can execute
     fi
-    rm /tmp/ss-worker
+    rm -rf /tmp/ss-worker
 fi
 
 ## THIS SNIPPET DOES NOT RELY ON SS-CONFIG OR SS-FUNCTIONS
