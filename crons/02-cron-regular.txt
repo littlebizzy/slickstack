@@ -153,29 +153,33 @@ source /var/www/ss-functions
 source "$PATH_02_CRON_REGULAR_CUSTOM"
 
 ####################################################################################################
-#### 02-Cron-Regular: Run Scheduled Tasks ##########################################################
+#### 02-Cron-Regular: Run WP-Cron (If Enabled) #####################################################
 ####################################################################################################
-
-## the below tasks will be called if configured to run at this interval in ss-config ##
-## certain tasks are automatically called if the relevant interval is missing ##
 
 ## run wp-cron if set to regular ##
 if [[ "$WP_CRON_METHOD" == "server" ]] && [[ "$WP_CRON_INTERVAL" == "regular" ]]; then 
     /usr/bin/php /var/www/html/wp-cron.php
 fi
 
+####################################################################################################
+#### 02-Cron-Regular: Run Scheduled Tasks ##########################################################
+####################################################################################################
+
+## the below tasks will be called if configured to run at this interval in ss-config ##
+## certain tasks are automatically called if the relevant interval is missing ##
+
 ## run ss-check if set to regular ##
-if [[ "$SS_INTERVAL_CHECK" == "regular" ]]; then 
+if [[ "$INTERVAL_SS_CHECK" == "regular" ]]; then 
     source /var/www/ss-check
 fi
 
 ## run ss-worker if set to regular or if not defined (default) ##
-if [[ "$SS_INTERVAL_WORKER" == "regular" || -z "$SS_INTERVAL_WORKER" ]]; then 
+if [[ "$INTERVAL_SS_WORKER" == "regular" || -z "$INTERVAL_SS_WORKER" ]]; then 
     source /var/www/ss-worker
 fi
 
 ## run ss-dump-database if set to regular ##
-if [[ "$SS_INTERVAL_DUMP_DATABASE" == "regular" ]]; then 
+if [[ "$INTERVAL_SS_DUMP_DATABASE" == "regular" ]]; then 
     source /var/www/ss-dump-database
 fi
 
