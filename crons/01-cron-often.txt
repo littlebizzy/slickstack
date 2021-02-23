@@ -24,16 +24,14 @@
 ## this attempts to restore missing or damaged ss-config using a recent intact backup ##
 ## however it is not fool-proof since there is no way to verify all settings ##
 
-## constants ##
-VALIDATE_SS_CONFIG=$(grep 'SS_BUILD' /var/www/ss-config)
-VALIDATE_TMP_SS_CONFIG=$(grep 'SS_BUILD' /tmp/ss-config)
-SS_CONFIG_RECENT_BACKUPS=$(ls -1rta /var/www/meta/ss-config.bak* | tail -n1)
-SS_CONFIG_BEST_MATCH=$(grep -il 'SS_BUILD' "$SS_CONFIG_RECENT_BACKUPS")
-
 ## validate ss-config ##
+VALIDATE_SS_CONFIG=$(grep 'SS_BUILD' /var/www/ss-config)
 if [[ -z "$VALIDATE_SS_CONFIG" ]]; then
+    SS_CONFIG_RECENT_BACKUPS=$(ls -1rta /var/www/meta/ss-config.bak* | tail -n1)
+    SS_CONFIG_BEST_MATCH=$(grep -il 'SS_BUILD' "$SS_CONFIG_RECENT_BACKUPS")
     rm -rf /tmp/ss-config
     mv -f "$SS_CONFIG_BEST_MATCH" /tmp/ss-config
+    VALIDATE_TMP_SS_CONFIG=$(grep 'SS_BUILD' /tmp/ss-config)
     if [[ -n "$VALIDATE_TMP_SS_CONFIG" ]]; then
         mv -f /tmp/ss-config /var/www/ss-config
         chown root:root /var/www/ss-config ## must be root:root
@@ -53,14 +51,12 @@ fi
 ## this attempts to restore missing or damaged ss-functions from our public mirrors ##
 ## we perform this check before cron job tasks as they rely on ss-functions ##
 
-## constants ##
-VALIDATE_SS_FUNCTIONS=$(grep 'SS_EOF' /var/www/ss-functions)
-VALIDATE_TMP_SS_FUNCTIONS=$(grep 'SS_EOF' /tmp/ss-functions)
-
 ## validate ss-functions ##
+VALIDATE_SS_FUNCTIONS=$(grep 'SS_EOF' /var/www/ss-functions)
 if [[ -z "$VALIDATE_SS_FUNCTIONS" ]]; then
     rm -rf /tmp/ss-functions
     wget -q -4 -t 1 -T 15 -O /tmp/ss-functions http://mirrors.slickstack.io/bash/ss-functions.txt
+    VALIDATE_TMP_SS_FUNCTIONS=$(grep 'SS_EOF' /tmp/ss-functions)
     if [[ -n "$VALIDATE_TMP_SS_FUNCTIONS" ]]; then
         mv -f /tmp/ss-functions /var/www/ss-functions
         chown root:root /var/www/ss-functions ## must be root:root
@@ -85,16 +81,13 @@ fi
 ## this attempts to restore missing or damaged ss-check and ss-worker bash scripts ##
 ## they are critical to maintenance tasks and keeping ss core files updated ##
 
-## constants ##
-VALIDATE_SS_CHECK=$(grep 'SS_EOF' /var/www/ss-check)
-VALIDATE_TMP_SS_CHECK=$(grep 'SS_EOF' /tmp/ss-check)
-VALIDATE_SS_WORKER=$(grep 'SS_EOF' /var/www/ss-worker)
-VALIDATE_TMP_SS_WORKER=$(grep 'SS_EOF' /tmp/ss-worker)
-
 ## validate ss-check ##
+VALIDATE_SS_CHECK=$(grep 'SS_EOF' /var/www/ss-check)
+
 if [[ -z "$VALIDATE_SS_CHECK" ]]; then
     rm -rf /tmp/ss-check
     wget -q -4 -t 1 -T 15 -O /tmp/ss-check http://mirrors.slickstack.io/bash/ss-check.txt
+    VALIDATE_TMP_SS_CHECK=$(grep 'SS_EOF' /tmp/ss-check)
     if [[ -n "$VALIDATE_TMP_SS_CHECK" ]]; then
         mv -f /tmp/ss-check /var/www/ss-check
         chown root:root /var/www/ss-check ## must be root:root
@@ -109,9 +102,11 @@ if [[ -z "$VALIDATE_SS_CHECK" ]]; then
 fi
 
 ## validate ss-worker ##
+VALIDATE_SS_WORKER=$(grep 'SS_EOF' /var/www/ss-worker)
 if [[ -z "$VALIDATE_SS_WORKER" ]]; then
     rm -rf /tmp/ss-worker
     wget -q -4 -t 1 -T 15 -O /tmp/ss-worker http://mirrors.slickstack.io/bash/ss-worker.txt
+    VALIDATE_TMP_SS_WORKER=$(grep 'SS_EOF' /tmp/ss-worker)
     if [[ -n "$VALIDATE_TMP_SS_WORKER" ]]; then
         mv -f /tmp/ss-worker /var/www/ss-worker
         chown root:root /var/www/ss-worker ## must be root:root
