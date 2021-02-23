@@ -147,55 +147,62 @@ source /var/www/ss-functions
 source "$PATH_06_CRON_QUARTER_DAILY_CUSTOM"
 
 ####################################################################################################
-#### 06-Cron-Quarter-Daily: Run Scheduled Tasks ####################################################
+#### 06-Cron-Quarter-Daily: Run WP-Cron (If Enabled) ###############################################
 ####################################################################################################
 
-## the below tasks will be called if configured to run at this interval in ss-config ##
-## certain tasks are automatically called if the relevant interval is missing ##
+## this snippet will call wp-cron via the server if enabled in your ss-config settings ##
+## it is useful for sites with low traffic or that need strict cron management ##
 
 ## run wp-cron if set to quarter-daily ##
 if [[ "$WP_CRON_METHOD" == "server" ]] && [[ "$WP_CRON_INTERVAL" == "quarter-daily" ]]; then 
     /usr/bin/php /var/www/html/wp-cron.php
 fi
 
+####################################################################################################
+#### 06-Cron-Quarter-Daily: Run Scheduled Tasks (DO NOT EDIT) ######################################
+####################################################################################################
+
+## the below tasks will be called if configured to run at this interval in ss-config ##
+## certain tasks are automatically called if the relevant interval is missing ##
+
 ## run ss-worker if set to quarter-daily ##
-if [[ "$SS_INTERVAL_WORKER" == "quarter-daily" ]]; then 
-    source /var/www/ss-worker
+if [[ "$INTERVAL_SS_WORKER" == "quarter-daily" ]]; then 
+    source "$PATH_SS_WORKER"
 fi
 
 ## run ss-dump-database if set to quarter-daily ##
-if [[ "$SS_INTERVAL_DUMP_DATABASE" == "quarter-daily" ]]; then 
-    source /var/www/ss-dump-database
+if [[ "$INTERVAL_SS_DUMP_DATABASE" == "quarter-daily" ]]; then 
+    source "$PATH_SS_DUMP_DATABASE"
 fi
 
 ## run ss-clean-files if set to quarter-daily ##
-if [[ "$SS_INTERVAL_CLEAN_FILES" == "quarter-daily" ]]; then 
-    source /var/www/ss-clean-files
+if [[ "$INTERVAL_SS_CLEAN_FILES" == "quarter-daily" ]]; then 
+    source "$PATH_SS_CLEAN_FILES"
 fi
 
 ## run ss-install-wordpress-config if set to quarter-daily ##
-if [[ "$SS_INTERVAL_INSTALL_WORDPRESS_CONFIG" == "quarter-daily" ]]; then 
-    source /var/www/ss-install-wordpress-config
+if [[ "$INTERVAL_SS_INSTALL_WORDPRESS_CONFIG" == "quarter-daily" ]]; then 
+    source "$PATH_SS_INSTALL_WORDPRESS_CONFIG"
 fi
 
 ## run ss-sync-staging if set to quarter-daily ##
-if [[ "$SS_INTERVAL_SYNC_STAGING" == "quarter-daily" ]]; then 
-    source /var/www/ss-sync-staging
+if [[ "$INTERVAL_SS_SYNC_STAGING" == "quarter-daily" ]]; then 
+    source "$PATH_SS_SYNC_STAGING"
 fi
 
 ## run ss-install-wordpress-mu-plugins if set to quarter-daily ##
-if [[ "$SS_INTERVAL_INSTALL_WORDPRESS_MU_PLUGINS" == "quarter-daily" ]]; then 
-    source /var/www/ss-install-wordpress-mu-plugins
+if [[ "$INTERVAL_SS_INSTALL_WORDPRESS_MU_PLUGINS" == "quarter-daily" ]]; then 
+    source "$PATH_SS_INSTALL_WORDPRESS_MU_PLUGINS"
 fi
 
 ## run ss-perms if set to quarter-daily or if not defined (default) ##
-if [[ "$SS_INTERVAL_PERMS" == "quarter-daily" || -z "$SS_INTERVAL_PERMS" ]]; then 
-    source /var/www/ss-perms
+if [[ "$INTERVAL_SS_PERMS" == "quarter-daily" || -z "$INTERVAL_SS_PERMS" ]]; then 
+    source "$PATH_SS_PERMS"
 fi
 
 ## run ss-purge if set to quarter-daily ##
-if [[ "$SS_INTERVAL_PURGE" == "quarter-daily" ]]; then 
-    source /var/www/ss-purge
+if [[ "$INTERVAL_SS_PURGE" == "quarter-daily" ]]; then 
+    source "$PATH_SS_PURGE"
 fi
 
 ####################################################################################################
