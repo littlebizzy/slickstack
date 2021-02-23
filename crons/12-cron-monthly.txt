@@ -24,16 +24,14 @@
 ## this attempts to restore missing or damaged ss-config using a recent intact backup ##
 ## however it is not fool-proof since there is no way to verify all settings ##
 
-## constants ##
-VALIDATE_SS_CONFIG=$(grep 'SS_BUILD' /var/www/ss-config)
-VALIDATE_TMP_SS_CONFIG=$(grep 'SS_BUILD' /tmp/ss-config)
-SS_CONFIG_RECENT_BACKUPS=$(ls -1rta /var/www/meta/ss-config.bak* | tail -n1)
-SS_CONFIG_BEST_MATCH=$(grep -il 'SS_BUILD' "$SS_CONFIG_RECENT_BACKUPS")
-
 ## validate ss-config ##
+VALIDATE_SS_CONFIG=$(grep 'SS_BUILD' /var/www/ss-config)
 if [[ -z "$VALIDATE_SS_CONFIG" ]]; then
+    SS_CONFIG_RECENT_BACKUPS=$(ls -1rta /var/www/meta/ss-config.bak* | tail -n1)
+    SS_CONFIG_BEST_MATCH=$(grep -il 'SS_BUILD' "$SS_CONFIG_RECENT_BACKUPS")
     rm -rf /tmp/ss-config
     mv -f "$SS_CONFIG_BEST_MATCH" /tmp/ss-config
+    VALIDATE_TMP_SS_CONFIG=$(grep 'SS_BUILD' /tmp/ss-config)
     if [[ -n "$VALIDATE_TMP_SS_CONFIG" ]]; then
         mv -f /tmp/ss-config /var/www/ss-config
         chown root:root /var/www/ss-config ## must be root:root
