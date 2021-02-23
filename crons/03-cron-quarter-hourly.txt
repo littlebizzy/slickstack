@@ -13,7 +13,7 @@
 ####################################################################################################
 
 ## NEVER MODIFY THE ROOT CRONTAB OR SS CORE CRON JOBS OR YOUR STACK WILL STOP WORKING ##
-## INSTEAD ADJUST SS_INTERVAL SETTINGS IN SS-CONFIG OR EDIT CUSTOM CRON FILES ##
+## INSTEAD ADJUST INTERVAL_SS SETTINGS IN SS-CONFIG OR EDIT CUSTOM CRON FILES ##
 
 ####################################################################################################
 #### 03-Cron-Quarter-Hourly: Validate (Restore) SS-Config ##########################################
@@ -153,35 +153,37 @@ source /var/www/ss-functions
 source "$PATH_03_CRON_QUARTER_HOURLY_CUSTOM"
 
 ####################################################################################################
-#### 03-Cron-Quarter-Hourly: Run Scheduled Tasks ###################################################
+#### 03-Cron-Quarter-Hourly: Run WP-Cron (If Enabled) ##############################################
 ####################################################################################################
 
-## the below tasks will be called if configured to run at this interval in ss-config ##
-## certain tasks are automatically called if the relevant interval is missing ##
-
-## run custom cron jobs ##
-if [[ -n "$SS_CUSTOM_CRON_QUARTER_HOURLY" ]]; then 
-    echo "$SS_CUSTOM_CRON_QUARTER_HOURLY"
-fi
+## this snippet will call wp-cron via the server if enabled in your ss-config settings ##
+## it is useful for sites with low traffic or that need strict cron management ##
 
 ## run wp-cron if set to quarter-hourly ##
 if [[ "$WP_CRON_METHOD" == "server" ]] && [[ "$WP_CRON_INTERVAL" == "quarter-hourly" ]]; then 
     /usr/bin/php /var/www/html/wp-cron.php
 fi
 
+####################################################################################################
+#### 03-Cron-Quarter-Hourly: Run Scheduled Tasks (DO NOT EDIT) #####################################
+####################################################################################################
+
+## the below tasks will be called if configured to run at this interval in ss-config ##
+## certain tasks are automatically called if the relevant interval is missing ##
+
 ## run ss-check if set to quarter-hourly ##
-if [[ "$SS_INTERVAL_CHECK" == "quarter-hourly" ]]; then 
-    source /var/www/ss-check
+if [[ "$INTERVAL_SS_CHECK" == "quarter-hourly" ]]; then 
+    source "$PATH_SS_CHECK"
 fi
 
 ## run ss-worker if set to quarter-hourly ##
-if [[ "$SS_INTERVAL_WORKER" == "quarter-hourly" ]]; then 
-    source /var/www/ss-worker
+if [[ "$INTERVAL_SS_WORKER" == "quarter-hourly" ]]; then 
+    source "$PATH_SS_WORKER"
 fi
 
 ## run ss-dump-database if set to quarter-hourly ##
-if [[ "$SS_INTERVAL_DUMP_DATABASE" == "quarter-hourly" ]]; then 
-    source /var/www/ss-dump-database
+if [[ "$INTERVAL_SS_DUMP_DATABASE" == "quarter-hourly" ]]; then 
+    source "$PATH_SS_DUMP_DATABASE"
 fi
 
 ## TEMP ##
