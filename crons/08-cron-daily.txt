@@ -13,7 +13,7 @@
 ####################################################################################################
 
 ## NEVER MODIFY THE ROOT CRONTAB OR SS CORE CRON JOBS OR YOUR STACK WILL STOP WORKING ##
-## INSTEAD ADJUST SS_INTERVAL SETTINGS IN SS-CONFIG OR EDIT CUSTOM CRON FILES ##
+## INSTEAD ADJUST INTERVAL_SS SETTINGS IN SS-CONFIG OR EDIT CUSTOM CRON FILES ##
 
 ####################################################################################################
 #### 08-Cron-Daily: Validate (Restore) SS-Config ###################################################
@@ -122,6 +122,21 @@ fi
 ## THIS SNIPPET DOES NOT RELY ON SS-CONFIG OR SS-FUNCTIONS
 
 ####################################################################################################
+#### 08-Cron-Daily: Source SS-Config + SS-Functions (After Validated) ##############################
+####################################################################################################
+
+## at this point we know that ss-config and ss-functions exist or have been restored ##
+## so we source them now to carry on with custom and scheduled cron job tasks ##
+
+## source ss-config ##
+source /var/www/ss-config
+
+## source ss-functions ##
+source /var/www/ss-functions
+
+## BELOW THIS RELIES ON SS-CONFIG AND SS-FUNCTIONS
+
+####################################################################################################
 #### 08-Cron-Daily: Run Custom Tasks (EDIT SOURCED FILES) ##########################################
 ####################################################################################################
 
@@ -132,70 +147,70 @@ fi
 source "$PATH_08_CRON_DAILY_CUSTOM"
 
 ####################################################################################################
-#### 08-Cron-Daily: Run Scheduled Tasks ############################################################
+#### 08-Cron-Daily: Run Scheduled Tasks (DO NOT EDIT) ##############################################
 ####################################################################################################
 
 ## the below tasks will be called if configured to run at this interval in ss-config ##
 ## certain tasks are automatically called if the relevant interval is missing ##
 
 ## run ss-dump-database if set to daily ##
-if [[ "$SS_INTERVAL_DUMP_DATABASE" == "daily" ]]; then 
-    source /var/www/ss-dump-database
+if [[ "$INTERVAL_SS_DUMP_DATABASE" == "daily" ]]; then 
+    source "$PATH_SS_DUMP_DATABASE"
 fi
 
 ## run ss-clean-files if set to daily ##
-if [[ "$SS_INTERVAL_CLEAN_FILES" == "daily" ]]; then 
-    source /var/www/ss-clean-files
+if [[ "$INTERVAL_SS_CLEAN_FILES" == "daily" ]]; then 
+    source "$PATH_SS_CLEAN_FILES"
 fi
 
 ## run ss-install-wordpress-config if set to daily ##
-if [[ "$SS_INTERVAL_INSTALL_WORDPRESS_CONFIG" == "daily" ]]; then 
-    source /var/www/ss-install-wordpress-config
+if [[ "$INTERVAL_SS_INSTALL_WORDPRESS_CONFIG" == "daily" ]]; then 
+    source "$PATH_SS_INSTALL_WORDPRESS_CONFIG"
 fi
 
 ## run ss-sync-staging if set to daily ##
-if [[ "$SS_INTERVAL_SYNC_STAGING" == "daily" ]]; then 
-    source /var/www/ss-sync-staging
+if [[ "$INTERVAL_SS_SYNC_STAGING" == "daily" ]]; then 
+    source "$PATH_SS_SYNC_STAGING"
 fi
 
 ## run ss-install-wordpress-mu-plugins if set to daily or if not defined (default) ##
-if [[ "$SS_INTERVAL_INSTALL_WORDPRESS_MU_PLUGINS" == "daily" || -z "$SS_INTERVAL_INSTALL_WORDPRESS_MU_PLUGINS" ]]; then 
-    source /var/www/ss-install-wordpress-mu-plugins
+if [[ "$INTERVAL_SS_INSTALL_WORDPRESS_MU_PLUGINS" == "daily" || -z "$INTERVAL_SS_INSTALL_WORDPRESS_MU_PLUGINS" ]]; then 
+    source "$PATH_SS_INSTALL_WORDPRESS_MU_PLUGINS"
 fi
 
 ## run ss-perms if set to daily ##
-if [[ "$SS_INTERVAL_PERMS" == "daily" ]]; then 
-    source /var/www/ss-perms
+if [[ "$INTERVAL_SS_PERMS" == "daily" ]]; then 
+    source "$PATH_SS_PERMS"
 fi
 
 ## run ss-dos2unix if set to daily ##
-if [[ "$SS_INTERVAL_DOS2UNIX" == "daily" ]]; then 
-    source /var/www/ss-dos2unix
+if [[ "$INTERVAL_SS_DOS2UNIX" == "daily" ]]; then 
+    source "$PATH_SS_DOS2UNIX"
 fi
 
 ## run ss-scan-malware if set to daily ##
-if [[ "$SS_INTERVAL_SCAN_MALWARE" == "daily" ]]; then 
-    source /var/www/ss-scan-malware
+if [[ "$INTERVAL_SS_SCAN_MALWARE" == "daily" ]]; then 
+    source "$PATH_SS_SCAN_MALWARE"
 fi
 
 ## run ss-optimize-database if set to daily ##
-if [[ "$SS_INTERVAL_OPTIMIZE_DATABASE" == "daily" ]]; then 
-    source /var/www/ss-optimize-database
+if [[ "$INTERVAL_SS_OPTIMIZE_DATABASE" == "daily" ]]; then 
+    source "$PATH_SS_OPTIMIZE_DATABASE"
 fi
 
 ## run ss-purge if set to daily ##
-if [[ "$SS_INTERVAL_PURGE" == "daily" ]]; then 
-    source /var/www/ss-purge
+if [[ "$INTERVAL_SS_PURGE" == "daily" ]]; then 
+    source "$PATH_SS_PURGE"
 fi
 
 ## run ss-install-ubuntu-crontab if set to daily ##
-if [[ "$SS_INTERVAL_INSTALL_UBUNTU_CRONTAB" == "daily" ]]; then 
-    source /var/www/ss-install-ubuntu-crontab
+if [[ "$INTERVAL_SS_INSTALL_UBUNTU_CRONTAB" == "daily" ]]; then 
+    source "$PATH_SS_INSTALL_UBUNTU_CRONTAB"
 fi
 
 ## run ss-install-ubuntu-bash if set to daily ##
-if [[ "$SS_INTERVAL_INSTALL_UBUNTU_BASH" == "daily" ]]; then 
-    source /var/www/ss-install-ubuntu-bash
+if [[ "$INTERVAL_SS_INSTALL_UBUNTU_BASH" == "daily" ]]; then 
+    source "$PATH_SS_INSTALL_UBUNTU_BASH"
 fi
 
 ####################################################################################################
