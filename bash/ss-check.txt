@@ -208,16 +208,16 @@ cp "$TMP_12_CRON_MONTHLY" "$PATH_12_CRON_MONTHLY"
 cp "$TMP_13_CRON_SOMETIMES" "$PATH_13_CRON_SOMETIMES"
 
 ## install ss core bash scripts ##
-cp /tmp/ss-clean-files /var/www/ss-clean-files
-cp /tmp/ss-config-sample /var/www/ss-config-sample
-cp /tmp/ss-delete-database /var/www/ss-delete-database
-cp /tmp/ss-delete-files /var/www/ss-delete-files
-cp /tmp/ss-dos2unix /var/www/ss-dos2unix
-cp /tmp/ss-dump-database /var/www/ss-dump-database
-cp /tmp/ss-encrypt /var/www/ss-encrypt
-cp /tmp/ss-encrypt-certbot /var/www/ss-encrypt-certbot
-cp /tmp/ss-encrypt-openssl /var/www/ss-encrypt-openssl
-cp /tmp/ss-functions /var/www/ss-functions
+cp "$TMP_SS_CLEAN_FILES" /var/www/ss-clean-files
+cp "$TMP_SS_CONFIG_SAMPLE" /var/www/ss-config-sample
+cp "$TMP_SS_DELETE_DATABASE" /var/www/ss-delete-database
+cp "$TMP_SS_DELETE_FILES" /var/www/ss-delete-files
+cp "$TMP_SS_DOS2UNIX" /var/www/ss-dos2unix
+cp "$TMP_SS_DUMP_DATABASE" /var/www/ss-dump-database
+cp "$TMP_SS_ENCRYPT" /var/www/ss-encrypt
+cp "$TMP_SS_ENCRYPT_CERTBOT" /var/www/ss-encrypt-certbot
+cp "$TMP_SS_ENCRYPT_OPENSSL" /var/www/ss-encrypt-openssl
+cp "$TMP_SS_FUNCTIONS" /var/www/ss-functions
 cp /tmp/ss-import /var/www/ss-import
 cp /tmp/ss-import-database /var/www/ss-import-database
 cp /tmp/ss-import-files /var/www/ss-import-files
@@ -340,21 +340,7 @@ cp /tmp/ss-worker /var/www/ss-worker
 ## because SlickStack core permissions are critical this is hardcoded in multiple scripts ##
 ## this ensures that permissions are reset regularly and do not rely on sourcing ##
 
-## make directories ##
-mkdir /var/www
-mkdir /var/www/cache
-mkdir /var/www/cache/nginx
-mkdir /var/www/cache/opcache
-mkdir /var/www/cache/system
-mkdir /var/www/certs
-mkdir /var/www/certs/keys
-mkdir /var/www/crons
-mkdir /var/www/html
-mkdir /var/www/html/.well-known
-mkdir /var/www/html/.well-known/acme-challenge
-mkdir /var/www/logs
-mkdir /var/www/meta
-mkdir /var/www/sites
+
 
 ## reset permissions ##
 chown root:root /var ## must be root:root
@@ -382,21 +368,37 @@ chmod 0775 /var/www/logs ## 6755 should also work
 chmod 0775 /var/www/meta ## 6755 should also work
 
 ####################################################################################################
-#### SS-Check: Reset Permissions (SS Core Bash Scripts + SS Core Cron Jobs) ########################
+#### SS-Check: Reset Permissions (SlickStack Core) #################################################
 ####################################################################################################
+
+## THIS SNIPPET DOES NOT RELY ON SS-CONFIG OR SS-FUNCTIONS ##
 
 ## SNIPPET: ss-check, ss-worker, ss core cron jobs
 
 ## we hardcode this permissions reset snippet into all ss core scripts for redundancy ##
 ## chmod 0700 means only the root/sudo users can execute the ss core scripts ##
 
+## make directories ##
+mkdir /var/www
+mkdir /var/www/cache
+mkdir /var/www/cache/nginx
+mkdir /var/www/cache/opcache
+mkdir /var/www/cache/system
+mkdir /var/www/certs
+mkdir /var/www/certs/keys
+mkdir /var/www/crons
+mkdir /var/www/html
+mkdir /var/www/html/.well-known
+mkdir /var/www/html/.well-known/acme-challenge
+mkdir /var/www/logs
+mkdir /var/www/meta
+mkdir /var/www/sites
+
 ## reset permissions ##
 chown root:root /var/www/ss* ## must be root:root
 chown root:root /var/www/crons/*cron* ## must be root:root
 chmod 0700 /var/www/ss* ## 0700 means root can execute
 chmod 0700 /var/www/crons/*cron* ## 0700 means root can execute
-
-## THIS SNIPPET DOES NOT RELY ON SS-CONFIG OR SS-FUNCTIONS ##
 
 ####################################################################################################
 #### SS-Check: Cleanup Temporary Files #############################################################
