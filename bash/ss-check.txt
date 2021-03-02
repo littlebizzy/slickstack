@@ -40,56 +40,6 @@ rm /tmp/ss*
 rm /tmp/*cron*
 
 ####################################################################################################
-#### SS-Worker: Reset Permissions (SlickStack Core Files) ##########################################
-####################################################################################################
-
-## SNIPPET: ss-check, ss-perms, ss-worker
-
-## because SlickStack core permissions are critical this is hardcoded in multiple scripts ##
-## this ensures that permissions are reset regularly and do not rely on sourcing ##
-
-## make directories ##
-mkdir /var/www
-mkdir /var/www/cache
-mkdir /var/www/cache/nginx
-mkdir /var/www/cache/opcache
-mkdir /var/www/cache/system
-mkdir /var/www/certs
-mkdir /var/www/certs/keys
-mkdir /var/www/crons
-mkdir /var/www/html
-mkdir /var/www/html/.well-known
-mkdir /var/www/html/.well-known/acme-challenge
-mkdir /var/www/logs
-mkdir /var/www/meta
-mkdir /var/www/sites
-
-## reset permissions ##
-chown root:root /var ## must be root:root
-chown root:root /var/www ## must be root:root
-chown www-data:www-data /var/www/cache ## must be www-data:www-data
-chown www-data:www-data /var/www/cache/opcache ## must be www-data:www-data
-chown root:root /var/www/certs
-chown root:root /var/www/certs/keys
-chown root:root /var/www/crons ## must be root:root
-chown -R $SFTP_USER:www-data /var/www/html/.well-known
-chown www-data:www-data /var/www/logs ## must be www-data:www-data
-chown www-data:www-data /var/www/meta ## must be www-data:www-data
-chmod 0755 /var/www ## must be 0755
-chmod 0775 /var/www/cache ## 6755 should also work
-chmod 0755 /var/www/cache/opcache ## 755 should also work
-chmod 0755 /var/www/certs ## must be 0755
-chmod 0700 /var/www/certs/keys ## must be 0700
-chmod 0644 /var/www/certs/*.crt ## must be 0644
-chmod 0644 /var/www/certs/*.pem ## must be 0644
-chmod 0600 /var/www/certs/keys/*.key ## must be 0600
-chmod 0600 /var/www/certs/keys/*.pem ## must be 0600
-chmod 0755 /var/www/crons ## must be 0755
-chmod 0755 /var/www/html/.well-known ## accessed by server for e.g. Cerbot but also by SFTP user for things like Stripe ##
-chmod 0775 /var/www/logs ## 6755 should also work
-chmod 0775 /var/www/meta ## 6755 should also work
-
-####################################################################################################
 #### SS-Check: Retrieve Latest SlickStack Core Files (Except SS-Check) #############################
 ####################################################################################################
 
@@ -223,12 +173,12 @@ wget -O /tmp/ss-remote "$MIRROR_SS_REMOTE"
 wget -O /tmp/ss-reset-logs "$MIRROR_SS_RESET_LOGS"
 wget -O /tmp/ss-reset-password-sftp "$MIRROR_SS_RESET_PASSWORD_SFTP"
 wget -O /tmp/ss-restart-services "$MIRROR_SS_RESTART_SERVICES"
-wget -O /tmp/ss-restart-services-mysql http://mirrors.slickstack.io/bash/ss-restart-services-mysql.txt
-wget -O /tmp/ss-restart-services-nginx http://mirrors.slickstack.io/bash/ss-restart-services-nginx.txt
-wget -O /tmp/ss-restart-services-php http://mirrors.slickstack.io/bash/ss-restart-services-php.txt
-wget -O /tmp/ss-restart-services-redis http://mirrors.slickstack.io/bash/ss-restart-services-redis.txt
+wget -O /tmp/ss-restart-services-mysql "$MIRROR_SS_RESTART_SERVICES_MYSQL"
+wget -O /tmp/ss-restart-services-nginx "$MIRROR_SS_RESTART_SERVICES_NGINX"
+wget -O /tmp/ss-restart-services-php "$MIRROR_SS_RESTART_SERVICES_PHP"
+wget -O /tmp/ss-restart-services-redis "$MIRROR_SS_RESTART_SERVICES_REDIS"
 wget -O /tmp/ss-scan-malware "$MIRROR_SS_SCAN_MALWARE"
-wget -O /tmp/ss-sync-staging http://mirrors.slickstack.io/bash/ss-sync-staging.txt
+wget -O /tmp/ss-sync-staging "$MIRROR_SS_SYNC_STAGING"
 wget -O /tmp/ss-update "$MIRROR_SS_UPDATE"
 wget -O /tmp/ss-update-config "$MIRROR_SS_UPDATE_CONFIG"
 wget -O /tmp/ss-update-packages "$MIRROR_SS_UPDATE_PACKAGES"
@@ -382,6 +332,56 @@ cp /tmp/ss-update-packages /var/www/ss-update-packages
 cp /tmp/ss-worker /var/www/ss-worker
 
 ####################################################################################################
+#### SS-Worker: Reset Permissions (SlickStack Core Files) ##########################################
+####################################################################################################
+
+## SNIPPET: ss-check, ss-perms, ss-worker
+
+## because SlickStack core permissions are critical this is hardcoded in multiple scripts ##
+## this ensures that permissions are reset regularly and do not rely on sourcing ##
+
+## make directories ##
+mkdir /var/www
+mkdir /var/www/cache
+mkdir /var/www/cache/nginx
+mkdir /var/www/cache/opcache
+mkdir /var/www/cache/system
+mkdir /var/www/certs
+mkdir /var/www/certs/keys
+mkdir /var/www/crons
+mkdir /var/www/html
+mkdir /var/www/html/.well-known
+mkdir /var/www/html/.well-known/acme-challenge
+mkdir /var/www/logs
+mkdir /var/www/meta
+mkdir /var/www/sites
+
+## reset permissions ##
+chown root:root /var ## must be root:root
+chown root:root /var/www ## must be root:root
+chown www-data:www-data /var/www/cache ## must be www-data:www-data
+chown www-data:www-data /var/www/cache/opcache ## must be www-data:www-data
+chown root:root /var/www/certs
+chown root:root /var/www/certs/keys
+chown root:root /var/www/crons ## must be root:root
+chown -R $SFTP_USER:www-data /var/www/html/.well-known
+chown www-data:www-data /var/www/logs ## must be www-data:www-data
+chown www-data:www-data /var/www/meta ## must be www-data:www-data
+chmod 0755 /var/www ## must be 0755
+chmod 0775 /var/www/cache ## 6755 should also work
+chmod 0755 /var/www/cache/opcache ## 755 should also work
+chmod 0755 /var/www/certs ## must be 0755
+chmod 0700 /var/www/certs/keys ## must be 0700
+chmod 0644 /var/www/certs/*.crt ## must be 0644
+chmod 0644 /var/www/certs/*.pem ## must be 0644
+chmod 0600 /var/www/certs/keys/*.key ## must be 0600
+chmod 0600 /var/www/certs/keys/*.pem ## must be 0600
+chmod 0755 /var/www/crons ## must be 0755
+chmod 0755 /var/www/html/.well-known ## accessed by server for e.g. Cerbot but also by SFTP user for things like Stripe ##
+chmod 0775 /var/www/logs ## 6755 should also work
+chmod 0775 /var/www/meta ## 6755 should also work
+
+####################################################################################################
 #### SS-Check: Reset Permissions (SS Core Bash Scripts + SS Core Cron Jobs) ########################
 ####################################################################################################
 
@@ -398,12 +398,6 @@ chmod 0700 /var/www/crons/*cron* ## 0700 means root can execute
 
 ## THIS SNIPPET DOES NOT RELY ON SS-CONFIG OR SS-FUNCTIONS ##
 
-
-
-
-## echo message ##
-echo -e "${GREEN}Exiting ss-check: It appears we successfully retrieved latest ss core cron jobs and bash scripts... ${NOCOLOR}"
-
 ####################################################################################################
 #### SS-Check: Cleanup Temporary Files #############################################################
 ####################################################################################################
@@ -413,7 +407,7 @@ rm /tmp/ss*
 rm /tmp/*cron*
 
 ####################################################################################################
-#### SS-Check: Touch Timestamp File (End Script) ###################################################
+#### SS-Check: Touch Timestamp File ################################################################
 ####################################################################################################
 
 ## this is a dummy timestamp file that will remember the last time this script was run ##
@@ -421,6 +415,16 @@ rm /tmp/*cron*
 
 ## script timestamp ##
 touch "$TIMESTAMP_SS_CHECK"
+
+####################################################################################################
+#### SS-Check: Message (End Script) ################################################################
+####################################################################################################
+
+## this is a simple message that announces to the shell the purpose of this bash script ##
+## it will only be noticed by sudo users who manually call ss core bash scripts ##
+
+## echo message ##
+echo -e "${GREEN}Exiting ss-check: It appears we successfully retrieved latest ss core cron jobs and bash scripts... ${NOCOLOR}"
 
 ####################################################################################################
 #### SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ###############
