@@ -43,7 +43,7 @@ rm /tmp/ss*
 rm /tmp/*cron*
 
 ####################################################################################################
-#### SS-Check: Retrieve Latest SlickStack Core Files (Except SS-Check) #############################
+#### SS-Check: Retrieve SS Core Cron Jobs + SS Core Bash Scripts (Except SS-Check) #################
 ####################################################################################################
 
 ## here we retrieve all the latest ss core cron jobs and bash scripts to keep them updated ##
@@ -188,7 +188,7 @@ wget -O "$TMP_SS_UPDATE_PACKAGES" "$MIRROR_SS_UPDATE_PACKAGES"
 wget -O "$TMP_SS_WORKER" "$MIRROR_SS_WORKER"
 
 ####################################################################################################
-#### SS-Check: Install Latest SlickStack Core Files (Except SS-Check) ##############################
+#### SS-Check: Install SS Core Cron Jobs + SS Core Bash Scripts (Except SS-Check) ##################
 ####################################################################################################
 
 ## here we copy all the downloaded core files to the proper folders where they remain ##
@@ -333,15 +333,30 @@ cp "$TMP_SS_UPDATE_PACKAGES" "$PATH_SS_UPDATE_PACKAGES"
 cp "$TMP_SS_WORKER" "$PATH_SS_WORKER"
 
 ####################################################################################################
-#### SS-Worker: Reset Permissions (SlickStack Core Files) ##########################################
+#### SS-Check: Reset Permissions (SlickStack Core) #################################################
 ####################################################################################################
 
-## SNIPPET: ss-check, ss-perms, ss-worker
+## THIS SNIPPET DOES NOT RELY ON SS-CONFIG OR SS-FUNCTIONS ##
+## SNIPPET: ss-check, ss-worker, ss core cron jobs
 
-## because SlickStack core permissions are critical this is hardcoded in multiple scripts ##
+## we hardcode this permissions reset snippet into all ss core scripts for redundancy ##
 ## this ensures that permissions are reset regularly and do not rely on sourcing ##
 
-
+## make directories ##
+mkdir /var/www
+mkdir /var/www/cache
+mkdir /var/www/cache/nginx
+mkdir /var/www/cache/opcache
+mkdir /var/www/cache/system
+mkdir /var/www/certs
+mkdir /var/www/certs/keys
+mkdir /var/www/crons
+mkdir /var/www/html
+mkdir /var/www/html/.well-known
+mkdir /var/www/html/.well-known/acme-challenge
+mkdir /var/www/logs
+mkdir /var/www/meta
+mkdir /var/www/sites
 
 ## reset permissions ##
 chown root:root /var ## must be root:root
@@ -368,32 +383,8 @@ chmod 0755 /var/www/html/.well-known ## accessed by server for e.g. Cerbot but a
 chmod 0775 /var/www/logs ## 6755 should also work
 chmod 0775 /var/www/meta ## 6755 should also work
 
-####################################################################################################
-#### SS-Check: Reset Permissions (SlickStack Core) #################################################
-####################################################################################################
 
-## THIS SNIPPET DOES NOT RELY ON SS-CONFIG OR SS-FUNCTIONS ##
 
-## SNIPPET: ss-check, ss-worker, ss core cron jobs
-
-## we hardcode this permissions reset snippet into all ss core scripts for redundancy ##
-## chmod 0700 means only the root/sudo users can execute the ss core scripts ##
-
-## make directories ##
-mkdir /var/www
-mkdir /var/www/cache
-mkdir /var/www/cache/nginx
-mkdir /var/www/cache/opcache
-mkdir /var/www/cache/system
-mkdir /var/www/certs
-mkdir /var/www/certs/keys
-mkdir /var/www/crons
-mkdir /var/www/html
-mkdir /var/www/html/.well-known
-mkdir /var/www/html/.well-known/acme-challenge
-mkdir /var/www/logs
-mkdir /var/www/meta
-mkdir /var/www/sites
 
 ## reset permissions ##
 chown root:root /var/www/ss* ## must be root:root
