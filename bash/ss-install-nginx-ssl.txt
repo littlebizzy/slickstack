@@ -39,75 +39,134 @@ sleep "$SLEEP_MESSAGE_BEGIN"
 ## here we update the Nginx config files to activate either OpenSSL or Lets Encrypt SSL ##
 ## this depends on your ss-config settings (both certs should exist regardless) ##
 
-## retrieve Lets Encrypt and OpenSSL sub-config file ##
-wget -O /tmp/letsencrypt.conf "$MIRROR_LETSENCRYPT_CONF"
-wget -O /tmp/openssl.conf "$MIRROR_OPENSSL_CONF"
+## install letsencrypt.conf (if preferred) ##
+if [[ "$SSL_TYPE" == "letsencrypt" ]] || [[ "$SSL_TYPE" == "certbot" ]]; then 
 
-## SEARCH AND REPLACE SSL SETTINGS ## 
+    ## retrieve boilerplate ##
+    wget -O /tmp/letsencrypt.conf "$MIRROR_LETSENCRYPT_CONF"
 
-## SSL protocols ##
-if [[ -z "$SSL_PROTOCOLS" ]]; then 
-    sed -i "s/@SSL_PROTOCOLS/TLSv1.2 TLSv1.3/g" /tmp/letsencrypt.conf
-    sed -i "s/@SSL_PROTOCOLS/TLSv1.2 TLSv1.3/g" /tmp/openssl.conf
-else 
-    sed -i "s/@SSL_PROTOCOLS/${SSL_PROTOCOLS}/g" /tmp/letsencrypt.conf
-    sed -i "s/@SSL_PROTOCOLS/${SSL_PROTOCOLS}/g" /tmp/openssl.conf
-fi
+    ## protocols ##
+    if [[ -z "$SSL_PROTOCOLS" ]]; then 
+        sed -i "s/@SSL_PROTOCOLS/TLSv1.2 TLSv1.3/g" /tmp/letsencrypt.conf
+    else 
+        sed -i "s/@SSL_PROTOCOLS/${SSL_PROTOCOLS}/g" /tmp/letsencrypt.conf
+    fi
 
-## SSL ciphers ##
-if [[ -z "$SSL_CIPHERS" ]]; then 
-    sed -i "s/@SSL_CIPHERS/ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384/g" /tmp/letsencrypt.conf
-    sed -i "s/@SSL_CIPHERS/ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384/g" /tmp/openssl.conf
-else 
-    sed -i "s/@SSL_CIPHERS/${SSL_CIPHERS}/g" /tmp/letsencrypt.conf
-    sed -i "s/@SSL_CIPHERS/${SSL_CIPHERS}/g" /tmp/openssl.conf
-fi
+    ## ciphers ##
+    if [[ -z "$SSL_CIPHERS" ]]; then 
+        sed -i "s/@SSL_CIPHERS/ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384/g" /tmp/letsencrypt.conf
+    else 
+        sed -i "s/@SSL_CIPHERS/${SSL_CIPHERS}/g" /tmp/letsencrypt.conf
+    fi
 
-## SSL session timeout ##
-if [[ -z "$SSL_SESSION_TIMEOUT" ]]; then 
-    sed -i "s/@SSL_SESSION_TIMEOUT/1d/g" /tmp/letsencrypt.conf
-    sed -i "s/@SSL_SESSION_TIMEOUT/1d/g" /tmp/openssl.conf
-else 
-    sed -i "s/@SSL_SESSION_TIMEOUT/${SSL_SESSION_TIMEOUT}/g" /tmp/letsencrypt.conf
-    sed -i "s/@SSL_SESSION_TIMEOUT/${SSL_SESSION_TIMEOUT}/g" /tmp/openssl.conf
-fi
+    ## session timeout ##
+    if [[ -z "$SSL_SESSION_TIMEOUT" ]]; then 
+        sed -i "s/@SSL_SESSION_TIMEOUT/1d/g" /tmp/letsencrypt.conf
+    else 
+        sed -i "s/@SSL_SESSION_TIMEOUT/${SSL_SESSION_TIMEOUT}/g" /tmp/letsencrypt.conf
+    fi
 
-## SSL session cache ##
-if [[ -z "$SSL_SESSION_CACHE" ]]; then 
-    sed -i "s/@SSL_SESSION_CACHE/shared:SSL:64m/g" /tmp/letsencrypt.conf
-    sed -i "s/@SSL_SESSION_CACHE/shared:SSL:64m/g" /tmp/openssl.conf
-else 
-    sed -i "s/@SSL_SESSION_CACHE/${SSL_SESSION_CACHE}/g" /tmp/letsencrypt.conf
-    sed -i "s/@SSL_SESSION_CACHE/${SSL_SESSION_CACHE}/g" /tmp/openssl.conf
-fi
+    ## session cache ##
+    if [[ -z "$SSL_SESSION_CACHE" ]]; then 
+        sed -i "s/@SSL_SESSION_CACHE/shared:SSL:64m/g" /tmp/letsencrypt.conf
+    else 
+        sed -i "s/@SSL_SESSION_CACHE/${SSL_SESSION_CACHE}/g" /tmp/letsencrypt.conf
+    fi
 
-## SSL buffer size ##
-if [[ -z "$SSL_BUFFER_SIZE" ]]; then 
-    sed -i "s/@SSL_BUFFER_SIZE/16k/g" /tmp/letsencrypt.conf
-    sed -i "s/@SSL_BUFFER_SIZE/16k/g" /tmp/openssl.conf
-else 
-    sed -i "s/@SSL_BUFFER_SIZE/${SSL_BUFFER_SIZE}/g" /tmp/letsencrypt.conf
-    sed -i "s/@SSL_BUFFER_SIZE/${SSL_BUFFER_SIZE}/g" /tmp/openssl.conf
+    ## buffer size ##
+    if [[ -z "$SSL_BUFFER_SIZE" ]]; then 
+        sed -i "s/@SSL_BUFFER_SIZE/16k/g" /tmp/letsencrypt.conf
+    else 
+        sed -i "s/@SSL_BUFFER_SIZE/${SSL_BUFFER_SIZE}/g" /tmp/letsencrypt.conf
+    fi
+    
+    ## move file ##
+    cp /tmp/letsencrypt.conf /etc/nginx/conf.d/letsencrypt.conf
+    rm /etc/nginx/conf.d/openssl.conf*
+    echo -e "${GREEN}Lets Encrypt installation appears to have been successful. ${NOCOLOR}"
+
 fi
 
 ## here we modify the live Nginx configuration files to activate Lets Encrypt certificates ##
 ## this snippet will only be executed if Lets Encrypt certs appear to be successful ##
 
-## copy SSL sub-config file to /etc/nginx/conf.d/ and delete conflicting files ##
-if [[ "$SSL_TYPE" == "certbot" ]] && [[ -f "/var/www/certs/fullchain.pem" ]] && [[ -f "/var/www/certs/keys/privkey.pem" ]]; then
-    cp /tmp/letsencrypt.conf /etc/nginx/conf.d/letsencrypt.conf
-    rm /etc/nginx/conf.d/openssl.conf*
-    echo -e "${GREEN}Lets Encrypt installation appears to have been successful. ${NOCOLOR}"
-elif [[ "$SSL_TYPE" == "certbot" ]] && [[ ! -f "/etc/letsencrypt/live/slickstack/fullchain.pem" || ! -f "/etc/letsencrypt/live/slickstack/privkey.pem" ]]; then
-    cp /tmp/openssl.conf /etc/nginx/conf.d/openssl.conf
-    rm /etc/nginx/conf.d/letsencrypt.conf*
-    # sed -i "s#SSL_TYPE="certbot"#SSL_TYPE="openssl"#g" /var/www/ss-config
-    echo -e "${GREEN}Lets Encrypt installation was not successful, reverting to OpenSSL instead. ${NOCOLOR}"
-else
+    
+##########
+#########
+#########
+
+## install letsencrypt.conf (if preferred) ##
+if [[ "$SSL_TYPE" == "openssl" ]] || [[ -z "$SSL_TYPE" ]]; then 
+
+    ## retrieve Lets Encrypt and OpenSSL sub-config file ##
+    wget -O /tmp/openssl.conf "$MIRROR_OPENSSL_CONF"
+
+    ## protocols ##
+    if [[ -z "$SSL_PROTOCOLS" ]]; then 
+        sed -i "s/@SSL_PROTOCOLS/TLSv1.2 TLSv1.3/g" /tmp/openssl.conf
+    else 
+        sed -i "s/@SSL_PROTOCOLS/${SSL_PROTOCOLS}/g" /tmp/openssl.conf
+    fi
+
+    ## ciphers ##
+    if [[ -z "$SSL_CIPHERS" ]]; then 
+        sed -i "s/@SSL_CIPHERS/ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384/g" /tmp/openssl.conf
+    else 
+        sed -i "s/@SSL_CIPHERS/${SSL_CIPHERS}/g" /tmp/openssl.conf
+    fi
+
+    ## session timeout ##
+    if [[ -z "$SSL_SESSION_TIMEOUT" ]]; then 
+        sed -i "s/@SSL_SESSION_TIMEOUT/1d/g" /tmp/openssl.conf
+    else 
+        sed -i "s/@SSL_SESSION_TIMEOUT/${SSL_SESSION_TIMEOUT}/g" /tmp/openssl.conf
+    fi
+
+    ## session cache ##
+    if [[ -z "$SSL_SESSION_CACHE" ]]; then 
+        sed -i "s/@SSL_SESSION_CACHE/shared:SSL:64m/g" /tmp/openssl.conf
+    else 
+        sed -i "s/@SSL_SESSION_CACHE/${SSL_SESSION_CACHE}/g" /tmp/openssl.conf
+    fi
+
+    ## buffer size ##
+    if [[ -z "$SSL_BUFFER_SIZE" ]]; then 
+        sed -i "s/@SSL_BUFFER_SIZE/16k/g" /tmp/openssl.conf
+    else 
+        sed -i "s/@SSL_BUFFER_SIZE/${SSL_BUFFER_SIZE}/g" /tmp/openssl.conf
+    fi
+
+## here we modify the live Nginx configuration files to activate Lets Encrypt certificates ##
+## this snippet will only be executed if Lets Encrypt certs appear to be successful ##
+
+    ## copy SSL sub-config file to /etc/nginx/conf.d/ and delete conflicting files ##
     cp /tmp/openssl.conf /etc/nginx/conf.d/openssl.conf
     rm /etc/nginx/conf.d/letsencrypt.conf*
     echo -e "${YELLOW}OpenSSL installation appears to have been successful. ${NOCOLOR}"
+    
 fi
+    
+    
+    
+
+## here we modify the live Nginx configuration files to activate Lets Encrypt certificates ##
+## this snippet will only be executed if Lets Encrypt certs appear to be successful ##
+
+## copy SSL sub-config file to /etc/nginx/conf.d/ and delete conflicting files ##
+# if [[ "$SSL_TYPE" == "certbot" ]] && [[ -f "/var/www/certs/fullchain.pem" ]] && [[ -f "/var/www/certs/keys/privkey.pem" ]]; then
+#    cp /tmp/letsencrypt.conf /etc/nginx/conf.d/letsencrypt.conf
+#    rm /etc/nginx/conf.d/openssl.conf*
+#    echo -e "${GREEN}Lets Encrypt installation appears to have been successful. ${NOCOLOR}"
+# elif [[ "$SSL_TYPE" == "certbot" ]] && [[ ! -f "/etc/letsencrypt/live/slickstack/fullchain.pem" || ! -f "/etc/letsencrypt/live/slickstack/privkey.pem" ]]; then
+#    cp /tmp/openssl.conf /etc/nginx/conf.d/openssl.conf
+#    rm /etc/nginx/conf.d/letsencrypt.conf*
+    # sed -i "s#SSL_TYPE="certbot"#SSL_TYPE="openssl"#g" /var/www/ss-config
+#    echo -e "${GREEN}Lets Encrypt installation was not successful, reverting to OpenSSL instead. ${NOCOLOR}"
+#else
+#    cp /tmp/openssl.conf /etc/nginx/conf.d/openssl.conf
+#    rm /etc/nginx/conf.d/letsencrypt.conf*
+#    echo -e "${YELLOW}OpenSSL installation appears to have been successful. ${NOCOLOR}"
+# fi
 
 ####################################################################################################
 #### SS-Install-Nginx-SSL: Reset Permissions (Nginx SSL) ###########################################
