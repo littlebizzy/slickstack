@@ -6,7 +6,7 @@ title: WordPress (Public Mirrors)
 
 ----
 
-### Live Files (WordPress 5.6.1)
+### Live Files (WordPress 5.6.2)
 
 *Live configuration files and boilerplates used by current SlickStack installation that may be altered by LittleBizzy or Ubuntu for better performance.*
 
@@ -24,6 +24,7 @@ title: WordPress (Public Mirrors)
 
 #### wordpress.zip
 
+* [wordpress-5.6.2.zip](wordpress-5.6.2.zip)
 * [wordpress-5.6.1.zip](wordpress-5.6.1.zip)
 * [wordpress-5.6.0.zip]
 * [wordpress-5.5.3.zip](wordpress-5.5.3.zip)
@@ -177,4 +178,4 @@ title: WordPress (Public Mirrors)
 
 ----
 
-*Last updated: Feb 5, 2021*
+*Last updated: Mar 5, 2021*
