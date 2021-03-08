@@ -8,23 +8,23 @@
 #### destination: n/a (not a boilerplate) ##########################################################
 #### purpose: Reinstalls WordPress module (CMS) config files based on ss-config (idempotent) #######
 #### module version: WordPress 5.6.x ###############################################################
-#### sourced by: ss-install, ss-install-wordpress, ss-install-nginx-config #########################
+#### sourced by: ss-install, ss-install-nginx-config, ss install wordpress #########################
 #### bash aliases: ss install wordpress config, ss install wp config ###############################
 ####################################################################################################
 
 ## SS-CONFIG MUST BE PROPERLY CONFIGURED AND ON CURRENT BUILD BEFORE RUNNING SS-INSTALL ##
 ## ENSURE YOUR SS-CONFIG BUILD REMAINS CURRENT BY RUNNING SS-UPDATE OCCASIONALLY ##
 
-## include SlickStack configuration ##
+## source ss-config ##
 source /var/www/ss-config
 
-## include SlickStack functions ##
+## source ss-functions ##
 source /var/www/ss-functions
 
-## local variables ##
-VALIDATE_WP_CONFIG_PHP=$(grep 'EOF' "$PATH_WP_CONFIG_PHP")
-VALIDATE_TMP_WP_CONFIG_PHP=$(grep 'EOF' "$TMP_WP_CONFIG_PHP")
+## BELOW THIS RELIES ON SS-CONFIG AND SS-FUNCTIONS ##   
 
+## local variables ##
+# VALIDATE_WP_CONFIG_PHP=$(grep 'EOF' "$PATH_WP_CONFIG_PHP")
 ## proceed under these conditions only ##
 # if [[ ! -f "/var/www/meta/.timestamp-ss-install-wordpress-config" ]] || \
 #   [[ -n $(find "/var/www/meta/.timestamp-ss-install-wordpress-config" -amin +15) ]] || \
@@ -33,7 +33,17 @@ VALIDATE_TMP_WP_CONFIG_PHP=$(grep 'EOF' "$TMP_WP_CONFIG_PHP")
 # then
 
 ####################################################################################################
-#### SS-Install-WordPress-Config: Message (Begin Script) ###########################################
+#### TABLE OF CONTENTS #############################################################################
+####################################################################################################
+
+## A. Message (Begin)
+## B. Cleanup Temporary Files
+## C. Install WP-Config.php File (Production)
+## D. Install WP-Config.php File (Staging)
+## E. Install WP-Config.php File (Dev)
+
+####################################################################################################
+#### A. SS-Install-WordPress-Config: Message (Begin Script) ########################################
 ####################################################################################################
 
 ## this is a simple message that announces to the shell the purpose of this bash script ##
@@ -44,7 +54,7 @@ echo -e "${PURPLE}Running ss-install-wordpress-config: Reinstalls WordPress modu
 sleep "$SLEEP_MESSAGE_BEGIN"
 
 ####################################################################################################
-#### SS-Install-WordPress-Config: Cleanup Temporary Files ##########################################
+#### B. SS-Install-WordPress-Config: Cleanup Temporary Files #######################################
 ####################################################################################################
 
 ## delete tmp files ##
@@ -53,7 +63,7 @@ rm "$TMP_WORDPRESS_CONFIG_STAGING"
 rm "$TMP_WORDPRESS_CONFIG_DEV"
 
 ####################################################################################################
-#### SS-Install-WordPress-Config: Install WP-Config (Production) ###################################
+#### C. SS-Install-WordPress-Config: Install WP-Config.php (Production) ############################
 ####################################################################################################
 
 ## here we retrieve latest wp-config.php boilerplate and customize per ss-config settings ##
@@ -237,7 +247,8 @@ if [ ! -f "/var/www/meta/.cherry" ]; then
     sed -i "s#//VIRGIN//##g" "$TMP_WP_CONFIG_PHP"
 fi
 
-## copy files to destinations ##
+## copy files to destinations (if valid) ##
+VALIDATE_TMP_WP_CONFIG_PHP=$(grep 'SS_EOF' "$TMP_WP_CONFIG_PHP")
 if [[ -n "$VALIDATE_TMP_WP_CONFIG_PHP" ]]; then
    cp "$TMP_WP_CONFIG_PHP" "$PATH_WP_CONFIG_PHP"
    echo "wp config install was successful"
@@ -247,7 +258,7 @@ fi
 
 
 ####################################################################################################
-#### SS-Install-WordPress-Config: Install WP-Config (Staging) ######################################
+#### D. SS-Install-WordPress-Config: Install WP-Config.php (Staging) ###############################
 ####################################################################################################
 
 ## here we retrieve latest wp-config.php boilerplate and customize per ss-config settings ##
@@ -393,7 +404,7 @@ fi
 cp "$TMP_WORDPRESS_CONFIG_STAGING" /var/www/html/staging/wp-config.php
 
 ####################################################################################################
-#### SS-Install-WordPress-Config: Install WP-Config (Dev) ##########################################
+#### E. SS-Install-WordPress-Config: Install WP-Config.php (Dev) ###################################
 ####################################################################################################
 
 ## here we retrieve latest wp-config.php boilerplate and customize per ss-config settings ##
