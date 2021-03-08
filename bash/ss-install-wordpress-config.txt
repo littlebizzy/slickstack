@@ -42,6 +42,9 @@ source /var/www/ss-functions
 ## D. Install WP-Config.php File (Staging)
 ## E. Install WP-Config.php File (Dev)
 
+## Cleanup Temporary Files
+## Touch Timestamp File
+
 ####################################################################################################
 #### A. SS-Install-WordPress-Config: Message (Begin Script) ########################################
 ####################################################################################################
@@ -67,30 +70,19 @@ rm "$TMP_WORDPRESS_CONFIG_DEV"
 ####################################################################################################
 
 ## here we retrieve latest wp-config.php boilerplate and customize per ss-config settings ##
-## you should never make changes directly to wp-config.php in SlickStack servers ##
+## you should never make changes directly to wp-config.php on SlickStack servers ##
 
-    ## retrieve latest boilerplate (production) ##
-    wget -O "$TMP_WP_CONFIG_PHP" "$MIRROR_WP_CONFIG_PHP"
+## retrieve latest boilerplate (production) ##
+wget -O "$TMP_WP_CONFIG_PHP" "$MIRROR_WP_CONFIG_PHP"
 
-
-    ###### WP Multisite settings ########
-
-
-    ## set multisite subdomains ##
-    ## THIS MUST COME BEFORE WP_MULTISITE REPLACEMENTS OTHERWISE IT WILL BE OVERWRITTEN ##
-    ## in the future fix this to have a more unique set of placeholders ##
-    if [[ -z "$WP_MULTISITE_SUBDOMAINS" ]]; then 
-        sed -i "s/@WP_MULTISITE_SUBDOMAINS/true/g" "$TMP_WP_CONFIG_PHP"
-    else 
-        sed -i "s/@WP_MULTISITE_SUBDOMAINS/${WP_MULTISITE_SUBDOMAINS}/g" "$TMP_WP_CONFIG_PHP"
-    fi
-
-    ## set multisite ##
-    if [[ -z "$WP_MULTISITE" ]]; then 
-        sed -i "s/@WP_MULTISITE/false/g" "$TMP_WP_CONFIG_PHP"
-    else 
-        sed -i "s/@WP_MULTISITE/${WP_MULTISITE}/g" "$TMP_WP_CONFIG_PHP"
-    fi
+## set multisite subdomains ##
+## THIS MUST COME BEFORE WP_MULTISITE REPLACEMENTS OTHERWISE IT WILL BE OVERWRITTEN ##
+## in the future fix this to have a more unique set of placeholders ##
+if [[ -z "$WP_MULTISITE_SUBDOMAINS" ]]; then 
+    sed -i "s/@WP_MULTISITE_SUBDOMAINS/true/g" "$TMP_WP_CONFIG_PHP"
+else 
+    sed -i "s/@WP_MULTISITE_SUBDOMAINS/${WP_MULTISITE_SUBDOMAINS}/g" "$TMP_WP_CONFIG_PHP"
+fi
 
 ## set multisite ##
 if [[ -z "$WP_MULTISITE" ]]; then 
@@ -99,19 +91,12 @@ else
     sed -i "s/@WP_MULTISITE/${WP_MULTISITE}/g" "$TMP_WP_CONFIG_PHP"
 fi
 
-
-####### other WP Config settings ##########
-
-
-
 ## set wp cron (always disabled in wp-config for staging and dev sites in slickstack servers) ##
 if [[ "$WP_CRON_METHOD" == "server" ]]; then 
     sed -i "s/@DISABLE_WP_CRON/true/g" "$TMP_WP_CONFIG_PHP"
 else 
    sed -i "s/@DISABLE_WP_CRON/false/g" "$TMP_WP_CONFIG_PHP"
 fi
-
-
 
 ## replace database placeholders ##
 sed -i "s/@DB_NAME/${DB_NAME}/g" "$TMP_WP_CONFIG_PHP"
@@ -129,18 +114,11 @@ else
     sed -i "s/@OBJECT_CACHE/${OBJECT_CACHE}/g" "$TMP_WP_CONFIG_PHP"
 fi
 
-## set object cache (optional) ##
-if [[ -z "$WP_LANG" ]]; then 
-    sed -i "s/@WP_LANG/en-US/g" "$TMP_WP_CONFIG_PHP"
-else 
-    sed -i "s/@WP_LANG/${WP_LANG}/g" "$TMP_WP_CONFIG_PHP"
-fi
-
-## replace domain placeholders ##
+## set domains ##
 sed -i "s/@SITE_DOMAIN/${SITE_DOMAIN}/g" "$TMP_WP_CONFIG_PHP"
 sed -i "s/@SITE_TLD/${SITE_TLD}/g" "$TMP_WP_CONFIG_PHP"
 
-## replace SFTP Details placeholders ##
+## set SFTP ##
 sed -i "s/@SFTP_USER/${SFTP_USER}/g" "$TMP_WP_CONFIG_PHP"
 sed -i "s/@SFTP_PASSWORD/${SFTP_PASSWORD}/g" "$TMP_WP_CONFIG_PHP"
 if [[ -z "$SSH_PORT" ]]; then 
@@ -160,7 +138,7 @@ else
     sed -i "s/@CLOUDFLARE_WIDGET_DNS/${CLOUDFLARE_WIDGET_DNS}/g" "$TMP_WP_CONFIG_PHP"
 fi
 
-## replace salt keys ##
+## set salts ##
 sed -i "s/@AUTHKEY/$(openssl rand -hex 48)/g" "$TMP_WP_CONFIG_PHP"
 sed -i "s/@SECUREAUTHKEY/$(openssl rand -hex 48)/g" "$TMP_WP_CONFIG_PHP"
 sed -i "s/@LOGGEDINKEY/$(openssl rand -hex 48)/g" "$TMP_WP_CONFIG_PHP"
@@ -255,7 +233,6 @@ if [[ -n "$VALIDATE_TMP_WP_CONFIG_PHP" ]]; then
 else
     echo "wp config temp file for production damaged so not installing"
 fi
-
 
 ####################################################################################################
 #### D. SS-Install-WordPress-Config: Install WP-Config.php (Staging) ###############################
