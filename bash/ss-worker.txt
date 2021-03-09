@@ -204,45 +204,47 @@ fi
 
 
 ## retrieve latest ss-constants.php boilerplate ##
-wget -O /tmp/ss-constants.php "$MIRROR_SS_CONSTANTS_PHP"
+wget -O "$TMP_SS_CONSTANTS_PHP" "$MIRROR_SS_CONSTANTS_PHP"
 
     ## set SlickStack dashboard ##
     if [[ -z "$SS_DASHBOARD" ]]; then 
-        sed -i "s/@SS_DASHBOARD/true/g" /tmp/ss-constants.php
+        sed -i "s/@SS_DASHBOARD/true/g" "$TMP_SS_CONSTANTS_PHP"
     else 
-        sed -i "s/@SS_DASHBOARD/${SS_DASHBOARD}/g" /tmp/ss-constants.php
+        sed -i "s/@SS_DASHBOARD/${SS_DASHBOARD}/g" "$TMP_SS_CONSTANTS_PHP"
     fi
     
 SYSTEM_SERVER_SOFTWARE=$(nginx -v |& sed 's#nginx version: nginx/##')
 SYSTEM_MYSQL_SIZE=$(du -sh /var/lib/mysql |& sed 's#/var/lib/mysql##')
 SYSTEM_MYSQL_VERSION=$(mysql --version |& awk '{print $3}')
 
-sed -i "s|@SS_BUILD|${SS_BUILD}|g" /tmp/ss-constants.php
-sed -i "s|@SS_PLUGIN_BLACKLIST|${SS_PLUGIN_BLACKLIST}|g" /tmp/ss-constants.php
+sed -i "s|@SS_BUILD|${SS_BUILD}|g" "$TMP_SS_CONSTANTS_PHP"
+sed -i "s|@SS_PLUGIN_BLACKLIST|${SS_PLUGIN_BLACKLIST}|g" "$TMP_SS_CONSTANTS_PHP"
 
-sed -i "s|@SYSTEM_VENDOR|${SYSTEM_VENDOR}|g" /tmp/ss-constants.php
-sed -i "s|@SYSTEM_VIRTUAL|${SYSTEM_VIRTUAL}|g" /tmp/ss-constants.php
-sed -i "s|@SYSTEM_LINUX_KERNEL|${SYSTEM_LINUX_KERNEL}|g" /tmp/ss-constants.php
-sed -i "s|@SYSTEM_CPU_CORES|${SYSTEM_CPU_CORES}|g" /tmp/ss-constants.php
-sed -i "s|@SYSTEM_OS_PRETTY_NAME|${SYSTEM_OS_PRETTY_NAME}|g" /tmp/ss-constants.php
-sed -i "s|@SYSTEM_MYSQL_VERSION|${SYSTEM_MYSQL_VERSION}|g" /tmp/ss-constants.php
-sed -i "s|@SYSTEM_MYSQL_SIZE|${SYSTEM_MYSQL_SIZE}|g" /tmp/ss-constants.php
-sed -i "s|@SYSTEM_DISK_FREE|${SYSTEM_DISK_FREE}|g" /tmp/ss-constants.php
-sed -i "s|@SYSTEM_DISK_TOTAL|${SYSTEM_DISK_TOTAL}|g" /tmp/ss-constants.php
-sed -i "s|@SYSTEM_IPV4_ADDRESS|${SYSTEM_IPV4_ADDRESS}|g" /tmp/ss-constants.php
-sed -i "s|@SYSTEM_IPV6_ADDRESS|${SYSTEM_IPV6_ADDRESS}|g" /tmp/ss-constants.php
-sed -i "s|@SYSTEM_HOSTNAME|${SYSTEM_HOSTNAME}|g" /tmp/ss-constants.php
-sed -i "s|@SYSTEM_SERVER_SOFTWARE|${SYSTEM_SERVER_SOFTWARE}|g" /tmp/ss-constants.php
+sed -i "s|@SYSTEM_VENDOR|${SYSTEM_VENDOR}|g" "$TMP_SS_CONSTANTS_PHP"
+sed -i "s|@SYSTEM_VIRTUAL|${SYSTEM_VIRTUAL}|g" "$TMP_SS_CONSTANTS_PHP"
+sed -i "s|@SYSTEM_LINUX_KERNEL|${SYSTEM_LINUX_KERNEL}|g" "$TMP_SS_CONSTANTS_PHP"
+sed -i "s|@SYSTEM_CPU_CORES|${SYSTEM_CPU_CORES}|g" "$TMP_SS_CONSTANTS_PHP"
+sed -i "s|@SYSTEM_OS_PRETTY_NAME|${SYSTEM_OS_PRETTY_NAME}|g" "$TMP_SS_CONSTANTS_PHP"
+sed -i "s|@SYSTEM_MYSQL_VERSION|${SYSTEM_MYSQL_VERSION}|g" "$TMP_SS_CONSTANTS_PHP"
+sed -i "s|@SYSTEM_MYSQL_SIZE|${SYSTEM_MYSQL_SIZE}|g" "$TMP_SS_CONSTANTS_PHP"
+sed -i "s|@SYSTEM_DISK_FREE|${SYSTEM_DISK_FREE}|g" "$TMP_SS_CONSTANTS_PHP"
+sed -i "s|@SYSTEM_DISK_TOTAL|${SYSTEM_DISK_TOTAL}|g" "$TMP_SS_CONSTANTS_PHP"
+sed -i "s|@SYSTEM_IPV4_ADDRESS|${SYSTEM_IPV4_ADDRESS}|g" "$TMP_SS_CONSTANTS_PHP"
+sed -i "s|@SYSTEM_IPV6_ADDRESS|${SYSTEM_IPV6_ADDRESS}|g" "$TMP_SS_CONSTANTS_PHP"
+sed -i "s|@SYSTEM_HOSTNAME|${SYSTEM_HOSTNAME}|g" "$TMP_SS_CONSTANTS_PHP"
+sed -i "s|@SYSTEM_SERVER_SOFTWARE|${SYSTEM_SERVER_SOFTWARE}|g" "$TMP_SS_CONSTANTS_PHP"
 
 SYSTEM_PHP_VERSION=$(php -v | awk '/^PHP/{print $2}')
 # SYSTEM_PHP_EXTENSIONS
-sed -i "s|@SYSTEM_PHP_VERSION|${SYSTEM_PHP_VERSION}|g" /tmp/ss-constants.php
-sed -i "s|@SYSTEM_PHP_EXTENSIONS|${SYSTEM_PHP_EXTENSIONS}|g" /tmp/ss-constants.php
-    
-cp /tmp/ss-constants.php /var/www/meta/ss-constants.php
-chown www-data:www-data /var/www/meta/ss-constants.php
-chmod 0440 /var/www/meta/ss-constants.php ## 0440 (read-only)
-    
+sed -i "s|@SYSTEM_PHP_VERSION|${SYSTEM_PHP_VERSION}|g" "$TMP_SS_CONSTANTS_PHP"
+sed -i "s|@SYSTEM_PHP_EXTENSIONS|${SYSTEM_PHP_EXTENSIONS}|g" "$TMP_SS_CONSTANTS_PHP"
+
+VALIDATE_TMP_SS_CONSTANTS_PHP=$(grep 'SS_EOF' "$TMP_SS_CONSTANTS_PHP")
+if [[ -n "$VALIDATE_TMP_SS_CONSTANTS_PHP" ]]; then
+    cp "$TMP_SS_CONSTANTS_PHP" "$PATH_SS_CONSTANTS_PHP"
+    chown www-data:www-data "$PATH_SS_CONSTANTS_PHP"
+    chmod 0440 "$PATH_SS_CONSTANTS_PHP" ## 0440 (read-only)
+fi 
 
 ####################################################################################################
 #### SS-Worker: Retrieve Latest Nginx Maintenance File #############################################
@@ -354,6 +356,7 @@ fi
 #### SS-Worker: Various TEMP Tasks (e.g. Urgent Patches From The SlickStack Team, Etc) #############
 ####################################################################################################
 
+# source /var/www/ss-install-adminer
 # source /var/www/ss-install-nginx
 # source /var/www/ss-install-wordpress-core
 # source /var/www/ss-install-wordpress-config
