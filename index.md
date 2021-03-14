@@ -195,10 +195,10 @@ title: SlickStack (Public Mirrors)
 * [redis](/modules/redis/)
 * [ubuntu](/modules/ubuntu/)
 * [ufw-firewall](/modules/ufw-firewall/)
-* [wordpress-cli](/modules/wp-cli/)
-* [wordpress-core](/modules/wordpress/)
-* [wordpress-mu-plugins](/modules/mu-plugins/)
-* [wordpress-starter-themes](/modules/starter-themes/)
+* [wordpress](/modules/wordpress/)
+    * [wp-cli](/modules/wordpress/wp-cli/)
+    * [mu-plugins](/modules/wordpress/mu-plugins/)
+    * [starter-themes](/modules/wordpress/starter-themes/)
 
 ### Core Meta Files
 
@@ -226,4 +226,4 @@ title: SlickStack (Public Mirrors)
 
 ----
 
-*Last updated: Feb 10, 2021*
+*Last updated: Mar 15, 2021*
