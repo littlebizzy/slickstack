@@ -83,38 +83,6 @@ cp /tmp/ss-check /var/www/ss-check
 # cp "$TMP_SS_CHECK" "$PATH_SS_CHECK"
 
 ####################################################################################################
-#### SS-Worker: Install Required Single-File WordPress MU Plugins If Not Exist #####################
-####################################################################################################
-
-## DELETE THIS LATER
-
-## in certain situations we have noticed single-file required MU plugins gone missing ##
-## therefore this will briefly check if they are missing and install if needed ##
-
-## install required single-file MU plugins (Autoloader) ##
-if [[ ! -f "/var/www/html/wp-content/mu-plugins/autoloader.php" ]] && [[ "$SS_APP" == "wordpress" || -z "$SS_APP"  ]]; then
-    wget -O /tmp/autoloader.php http://mirrors.slickstack.io/mu-plugins/autoloader.txt
-    cp /tmp/autoloader.php /var/www/html/wp-content/mu-plugins/autoloader.php
-    chmod 0440 /var/www/html/wp-content/mu-plugins/autoloader.php ## 0440 (read-only)
-fi
-
-## install required single-file MU plugins (XXX Common) ##
-# if [[ ! -f "/var/www/html/wp-content/mu-plugins/xxx-common.php" ]] && [[ "$SS_APP" == "wordpress" || -z "$SS_APP"  ]]; then
-
-# fi
-
-# wget -O "$TMP_XXX_COMMON_PHP" "$MIRROR_XXX_COMMON_PHP"
-#### VALIDATE_XXX_COMMON_PHP=$(grep "$SS_EOF" "$PATH_XXX_COMMON_PHP")
-# VALIDATE_TMP_XXX_COMMON_PHP=$(grep "$SS_EOF" "$TMP_XXX_COMMON_PHP")
-
-# if [[ -n "$VALIDATE_TMP_XXX_COMMON_PHP" ]]; then
-  #  cp "$TMP_XXX_COMMON_PHP" "$PATH_XXX_COMMON_PHP"
-   # chmod 0440 "$PATH_XXX_COMMON_PHP" ## 0440 (read-only)
-# fi 
-
-# rm "$TMP_XXX_COMMON_PHP"
-
-####################################################################################################
 #### SS-Worker: Ensure WP-Config.php Intact ########################################################
 ####################################################################################################
 
@@ -485,14 +453,14 @@ chmod 0700 /var/www/crons/*cron* ## 0700 means root can execute
 ## THIS SNIPPET DOES NOT RELY ON SS-CONFIG OR SS-FUNCTIONS
 
 ####################################################################################################
-#### SS-Worker: Touch Timestamp File (End Script) ##################################################
+#### SS-Worker: Touch Timestamp File ###############################################################
 ####################################################################################################
 
 ## this is a dummy timestamp file that will remember the last time this script was run ##
 ## it can be useful for developer reference and is sometimes used by SlickStack ##
 
 ## script timestamp ##
-touch /var/www/meta/.timestamp-ss-worker
+touch "$TIMESTAMP_SS_WORKER"
 
 ####################################################################################################
 #### SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ###############
