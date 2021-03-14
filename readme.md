@@ -5,12 +5,14 @@ SlickStack is a free LEMP stack automation script written in Bash designed to en
 * [**Discord server**](https://discord.gg/nGskJdg)
 * [**Skype group chat**](https://join.skype.com/NdpqKrN2BHdN)
 * [**Gab group (private)**](https://gab.com/groups/7116)
-* 
+
+## What To Expect
+
 | PageSpeed | GTMetrix | Pingdom | SecHeaders | SSL Labs | WebPageTest | ImmuniWeb |
 | :--------------: | :------: | :-----: | :--------------: | :-------------: | :-------------: | :-------------: |
 | [**A**](https://developers.google.com/speed/pagespeed/insights/?url=https%3A%2F%2Fslickstack.io%2F) | [**A**](https://gtmetrix.com/reports/slickstack.io/zpLMZ1eb) | [**A**](https://tools.pingdom.com/#5aeba9dea8000000) | [**A**](https://securityheaders.com/?q=https%3A%2F%2Fslickstack.io%2F&followRedirects=on) | [**A**](https://www.ssllabs.com/ssltest/analyze.html?d=slickstack.io&latest) | [**A**](https://www.webpagetest.org/result/190920_68_a4a541db9847ce601ef264b41df9d0f3/) | [**A**](https://www.immuniweb.com/websec/?id=pmqYyXDB) |
 
-## Core Modules [[read more](https://slickstack.io/modules)]
+## Core Modules
 
 *Last updated: Mar 5, 2021*
 
@@ -18,22 +20,22 @@ SlickStack is a free LEMP stack automation script written in Bash designed to en
 
 | LEMP Module | Mirrors | Version | What does SlickStack [ss] customize? |
 | :------------- | :----------: | :----------: | :----------: |
-| **Ubuntu LTS** | [mirrors](http://mirrors.slickstack.io/ubuntu/) | 20.04 | `crontab` + `gai.conf` + `sshd_config` + `sudoers` + `sysctl.conf` |
-| **Nginx** | [mirrors](http://mirrors.slickstack.io/nginx/) | 1.18.x | `nginx.conf` + `default` (server block) |
-| **FCGI Cache** | [mirrors](http://mirrors.slickstack.io/fastcgi-cache/) | 1.18.x | `fastcgi-cache.conf` (moved to `nginx.conf`) |
-| **OpenSSL** | [mirrors](http://mirrors.slickstack.io/openssl/) | 1.1.1x | `nginx.crt` + `nginx.key` |
-| **Lets Encrypt** | [mirrors](http://mirrors.slickstack.io/letsencrypt/) | 0.40.x | `cert.perm` + `privkey.pem` + `chain.pem` + `fullchain.pem` |
-| **MySQL** | [mirrors](http://mirrors.slickstack.io/mysql/) | 8.0.x | `my.cnf` |
-| **PHP-FPM** | [mirrors](http://mirrors.slickstack.io/php-fpm/) | 7.4.x | `php.ini` + `php-fpm.conf` + `www.conf` |
-| **Zend / OPcache** | [mirrors](http://mirrors.slickstack.io/opcache/) | 3.4.x / 7.4.x | (same as PHP-FPM) |
-| **Redis** | [mirrors](http://mirrors.slickstack.io/redis/) | 5.0.x | `redis.conf` + `object-cache.php` |
-| **WordPress** | [mirrors](http://mirrors.slickstack.io/wordpress/) | 5.6.2 | some WP Core junk files are removed by `ss-clean` |
-| **MU Plugins** | [mirrors](http://mirrors.slickstack.io/mu-plugins/) | (n/a) | optional `mu-plugins` by LittleBizzy |
-| **WP-CLI** | [mirrors](http://mirrors.slickstack.io/wp-cli/) | 2.4.0 | default config |
-| **Adminer** | [mirrors](http://mirrors.slickstack.io/adminer/) | 4.7.9 | default config |
-| **Git** | [mirrors](http://mirrors.slickstack.io/git/) | 2.25.x | default config |
-| **UFW Firewall** | [mirrors](http://mirrors.slickstack.io/ufw-firewall/) | 0.36 | `ufw` + `ufw.conf` + `user-rules` |
-| **ClamAV** | [mirrors](http://mirrors.slickstack.io/clamav/) | 0.102.x | `freshclam.conf` |
+| **Ubuntu LTS** | [mirrors](https://mirrors.slickstack.io/modules/ubuntu/) | 20.04 | `crontab` + `gai.conf` + `sshd_config` + `sudoers` + `sysctl.conf` |
+| **Nginx** | [mirrors](https://mirrors.slickstack.io/modules/nginx/) | 1.18.x | `nginx.conf` + `default` (server block) |
+| **FCGI Cache** | [mirrors](https://mirrors.slickstack.io/modules/nginx/fastcgi-cache/) | 1.18.x | `fastcgi-cache.conf` (moved to `nginx.conf`) |
+| **OpenSSL** | [mirrors](https://mirrors.slickstack.io/modules/openssl/) | 1.1.1x | `nginx.crt` + `nginx.key` |
+| **Lets Encrypt** | [mirrors](https://mirrors.slickstack.io/modules/letsencrypt/) | 0.40.x | `cert.perm` + `privkey.pem` + `chain.pem` + `fullchain.pem` |
+| **MySQL** | [mirrors](https://mirrors.slickstack.io/modules/mysql/) | 8.0.x | `my.cnf` |
+| **PHP-FPM** | [mirrors](https://mirrors.slickstack.io/modules/php-fpm/) | 7.4.x | `php.ini` + `php-fpm.conf` + `www.conf` |
+| **Zend / OPcache** | [mirrors](https://mirrors.slickstack.io/modules/php-fpm/opcache/) | 3.4.x / 7.4.x | (same as PHP-FPM) |
+| **Redis** | [mirrors](https://mirrors.slickstack.io/modules/redis/) | 5.0.x | `redis.conf` + `object-cache.php` |
+| **WordPress** | [mirrors](https://mirrors.slickstack.io/modules/wordpress/) | 5.6.2 | some WP Core junk files are removed by `ss-clean` |
+| **MU Plugins** | [mirrors](https://mirrors.slickstack.io/modules/wordpress/mu-plugins/) | (n/a) | optional `mu-plugins` by LittleBizzy |
+| **WP-CLI** | [mirrors](https://mirrors.slickstack.io/modules/wordpress/wp-cli/) | 2.4.0 | default config |
+| **Adminer** | [mirrors](https://mirrors.slickstack.io/modules/adminer/) | 4.7.9 | default config |
+| **Git** | [mirrors](https://mirrors.slickstack.io/modules/git/) | 2.25.x | default config |
+| **UFW Firewall** | [mirrors](https://mirrors.slickstack.io/modules/ufw-firewall/) | 0.36 | `ufw` + `ufw.conf` + `user-rules` |
+| **ClamAV** | [mirrors](https://mirrors.slickstack.io/modules/clamav/) | 0.102.x | `freshclam.conf` |
 
 ## Changelog
 
