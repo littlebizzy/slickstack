@@ -2,13 +2,40 @@
 
 SlickStack is a free LEMP stack automation script written in Bash designed to enhance and simplify WordPress provisioning, performance, and security.
 
-* [**Gab group (private)**](https://gab.com/groups/7116)
 * [**Discord server**](https://discord.gg/nGskJdg)
 * [**Skype group chat**](https://join.skype.com/NdpqKrN2BHdN)
-
+* [**Gab group (private)**](https://gab.com/groups/7116)
+* 
 | PageSpeed | GTMetrix | Pingdom | SecHeaders | SSL Labs | WebPageTest | ImmuniWeb |
 | :--------------: | :------: | :-----: | :--------------: | :-------------: | :-------------: | :-------------: |
 | [**A**](https://developers.google.com/speed/pagespeed/insights/?url=https%3A%2F%2Fslickstack.io%2F) | [**A**](https://gtmetrix.com/reports/slickstack.io/zpLMZ1eb) | [**A**](https://tools.pingdom.com/#5aeba9dea8000000) | [**A**](https://securityheaders.com/?q=https%3A%2F%2Fslickstack.io%2F&followRedirects=on) | [**A**](https://www.ssllabs.com/ssltest/analyze.html?d=slickstack.io&latest) | [**A**](https://www.webpagetest.org/result/190920_68_a4a541db9847ce601ef264b41df9d0f3/) | [**A**](https://www.immuniweb.com/websec/?id=pmqYyXDB) |
+
+## Core Modules [[read more](https://slickstack.io/modules)]
+
+*Last updated: Mar 5, 2021*
+
+*Default Ports: 80 (HTTP), 443 (HTTPS), 6969 (SSH)*
+
+| LEMP Module | Mirrors | Version | What does SlickStack [ss] customize? |
+| :------------- | :----------: | :----------: | :----------: |
+| **Ubuntu LTS** | [mirrors](http://mirrors.slickstack.io/ubuntu/) | 20.04 | `crontab` + `gai.conf` + `sshd_config` + `sudoers` + `sysctl.conf` |
+| **Nginx** | [mirrors](http://mirrors.slickstack.io/nginx/) | 1.18.x | `nginx.conf` + `default` (server block) |
+| **FCGI Cache** | [mirrors](http://mirrors.slickstack.io/fastcgi-cache/) | 1.18.x | `fastcgi-cache.conf` (moved to `nginx.conf`) |
+| **OpenSSL** | [mirrors](http://mirrors.slickstack.io/openssl/) | 1.1.1x | `nginx.crt` + `nginx.key` |
+| **Lets Encrypt** | [mirrors](http://mirrors.slickstack.io/letsencrypt/) | 0.40.x | `cert.perm` + `privkey.pem` + `chain.pem` + `fullchain.pem` |
+| **MySQL** | [mirrors](http://mirrors.slickstack.io/mysql/) | 8.0.x | `my.cnf` |
+| **PHP-FPM** | [mirrors](http://mirrors.slickstack.io/php-fpm/) | 7.4.x | `php.ini` + `php-fpm.conf` + `www.conf` |
+| **Zend / OPcache** | [mirrors](http://mirrors.slickstack.io/opcache/) | 3.4.x / 7.4.x | (same as PHP-FPM) |
+| **Redis** | [mirrors](http://mirrors.slickstack.io/redis/) | 5.0.x | `redis.conf` + `object-cache.php` |
+| **WordPress** | [mirrors](http://mirrors.slickstack.io/wordpress/) | 5.6.2 | some WP Core junk files are removed by `ss-clean` |
+| **MU Plugins** | [mirrors](http://mirrors.slickstack.io/mu-plugins/) | (n/a) | optional `mu-plugins` by LittleBizzy |
+| **WP-CLI** | [mirrors](http://mirrors.slickstack.io/wp-cli/) | 2.4.0 | default config |
+| **Adminer** | [mirrors](http://mirrors.slickstack.io/adminer/) | 4.7.9 | default config |
+| **Git** | [mirrors](http://mirrors.slickstack.io/git/) | 2.25.x | default config |
+| **UFW Firewall** | [mirrors](http://mirrors.slickstack.io/ufw-firewall/) | 0.36 | `ufw` + `ufw.conf` + `user-rules` |
+| **ClamAV** | [mirrors](http://mirrors.slickstack.io/clamav/) | 0.102.x | `freshclam.conf` |
+
+## Changelog
 
 * **NEW!** Due to timeouts from GitHub servers, some `wget` calls have resulted in broken SS files in recent months, often totally breaking websites that are hosted on SS servers. We are beginning a process of implementing fail-safe features in all our cron jobs and scripts so that if files are retrieved from GitHub that do not contain a specific string `SS_EOF` then the file is assumed corrupt and the install task (etc) is skipped. Please offer your feedback for how to best implement this process or alternative ideas for avoiding file corruption due to `wget` timeouts and related issues, thanks!
 
@@ -73,31 +100,6 @@ SlickStack is a free LEMP stack automation script written in Bash designed to en
 * **NEW!** SlickStack now supports custom plugin blacklists using `PLUGIN_BLACKLIST_SOURCE` variable...
 
 * **NEW!** SlickStack now does `include_once` within wp-config.php on the Custom Functions (MU plugin) file `/var/www/html/wp-content/functions.php` meaning much more reliable PHP functions...
-
-## Core Modules [[read more](https://slickstack.io/modules)]
-
-*Last updated: Mar 5, 2021*
-
-*Default Ports: 80 (HTTP), 443 (HTTPS), 6969 (SSH)*
-
-| LEMP Module | Mirrors | Version | What does SlickStack [ss] customize? |
-| :------------- | :----------: | :----------: | :----------: |
-| **Ubuntu LTS** | [mirrors](http://mirrors.slickstack.io/ubuntu/) | 20.04 | `crontab` + `gai.conf` + `sshd_config` + `sudoers` + `sysctl.conf` |
-| **Nginx** | [mirrors](http://mirrors.slickstack.io/nginx/) | 1.18.x | `nginx.conf` + `default` (server block) |
-| **FCGI Cache** | [mirrors](http://mirrors.slickstack.io/fastcgi-cache/) | 1.18.x | `fastcgi-cache.conf` (moved to `nginx.conf`) |
-| **OpenSSL** | [mirrors](http://mirrors.slickstack.io/openssl/) | 1.1.1x | `nginx.crt` + `nginx.key` |
-| **Lets Encrypt** | [mirrors](http://mirrors.slickstack.io/letsencrypt/) | 0.40.x | `cert.perm` + `privkey.pem` + `chain.pem` + `fullchain.pem` |
-| **MySQL** | [mirrors](http://mirrors.slickstack.io/mysql/) | 8.0.x | `my.cnf` |
-| **PHP-FPM** | [mirrors](http://mirrors.slickstack.io/php-fpm/) | 7.4.x | `php.ini` + `php-fpm.conf` + `www.conf` |
-| **Zend / OPcache** | [mirrors](http://mirrors.slickstack.io/opcache/) | 3.4.x / 7.4.x | (same as PHP-FPM) |
-| **Redis** | [mirrors](http://mirrors.slickstack.io/redis/) | 5.0.x | `redis.conf` + `object-cache.php` |
-| **WordPress** | [mirrors](http://mirrors.slickstack.io/wordpress/) | 5.6.2 | some WP Core junk files are removed by `ss-clean` |
-| **MU Plugins** | [mirrors](http://mirrors.slickstack.io/mu-plugins/) | (n/a) | optional `mu-plugins` by LittleBizzy |
-| **WP-CLI** | [mirrors](http://mirrors.slickstack.io/wp-cli/) | 2.4.0 | default config |
-| **Adminer** | [mirrors](http://mirrors.slickstack.io/adminer/) | 4.7.9 | default config |
-| **Git** | [mirrors](http://mirrors.slickstack.io/git/) | 2.25.x | default config |
-| **UFW Firewall** | [mirrors](http://mirrors.slickstack.io/ufw-firewall/) | 0.36 | `ufw` + `ufw.conf` + `user-rules` |
-| **ClamAV** | [mirrors](http://mirrors.slickstack.io/clamav/) | 0.102.x | `freshclam.conf` |
 
 ## Abstract [[read more](https://slickstack.io/about)]
 
