@@ -223,22 +223,103 @@ rm /var/www/html/dev/wordpress* &> /dev/null
 ## a throwaway theme is an easy way to customize the cleanup routine for new installs ##
 ## there is no reason to install this for existing sites with live themes ##
 
-if [[ ! -f "$TIMESTAMP_SS_INSTALL_WORDPRESS_CORE" ]]; then
+if [[ ! -f "$TIMESTAMP_SS_INSTALL_WORDPRESS_CORE" ]] && [[ ! -f "$TIMESTAMP_SS_INSTALL_WORDPRESS_CONFIG" ]]; then
 
    ## retrieve latest throwaway theme ##
-   wget -O /tmp/throwaway.zip "$MIRROR_THROWAWAY_ZIP"
+   # wget -O /tmp/throwaway.zip "$MIRROR_THROWAWAY_ZIP"
 
    ## unzip ##
-   unzip -d /tmp/throwaway/ -o -j /tmp/throwaway.zip
+   # unzip -d /tmp/throwaway/ -o -j /tmp/throwaway.zip
 
    ## replace placeholders with ss-config variables ##
-   sed -i "s/@SITE_EMAIL/${SITE_EMAIL}/g" /tmp/throwaway/functions.php
-   sed -i "s/@SITE_NAME/${SITE_NAME}/g" /tmp/throwaway/functions.php
-   sed -i "s/@SITE_DOMAIN/${SITE_DOMAIN}/g" /tmp/throwaway/functions.php
+   # sed -i "s/@SITE_EMAIL/${SITE_EMAIL}/g" /tmp/throwaway/functions.php
+   # sed -i "s/@SITE_NAME/${SITE_NAME}/g" /tmp/throwaway/functions.php
+   # sed -i "s/@SITE_DOMAIN/${SITE_DOMAIN}/g" /tmp/throwaway/functions.php
 
    ## copy files to destinations ##
    # CAUSING PROBLEMS WITH CUSTOMIZER SINCE IT DELETES THE DEMO CONTENT FROM FRESH INSTALLS
    # cp /tmp/throwaway /var/www/html/wp-content/themes/
+
+## NEW METHOD (decisions, not options) ##
+mysql --execute="UPDATE ${DB_NAME}.${DB_PREFIX}options SET option_value='' WHERE option_name='admin_email'"; ## NULL
+mysql --execute="UPDATE ${DB_NAME}.${DB_PREFIX}options SET option_value='mystery' WHERE option_name='avatar_default'";
+mysql --execute="UPDATE ${DB_NAME}.${DB_PREFIX}options SET option_value='PG' WHERE option_name='avatar_rating'";
+mysql --execute="UPDATE ${DB_NAME}.${DB_PREFIX}options SET option_value='' WHERE option_name='blacklist_keys'";
+mysql --execute="UPDATE ${DB_NAME}.${DB_PREFIX}options SET option_value='UTF-8' WHERE option_name='blog_charset'";
+mysql --execute="UPDATE ${DB_NAME}.${DB_PREFIX}options SET option_value='1' WHERE option_name='blog_public'";
+mysql --execute="UPDATE ${DB_NAME}.${DB_PREFIX}options SET option_value='' WHERE option_name='blogdescription'"; ## NULL
+mysql --execute="UPDATE ${DB_NAME}.${DB_PREFIX}options SET option_value='' WHERE option_name='blogname'"; ## NULL
+mysql --execute="UPDATE ${DB_NAME}.${DB_PREFIX}options SET option_value='/.' WHERE option_name='category_base'";
+mysql --execute="UPDATE ${DB_NAME}.${DB_PREFIX}options SET option_value='90' WHERE option_name='close_comments_days_old'";
+mysql --execute="UPDATE ${DB_NAME}.${DB_PREFIX}options SET option_value='0' WHERE option_name='close_comments_for_old_posts'";
+mysql --execute="UPDATE ${DB_NAME}.${DB_PREFIX}options SET option_value='2' WHERE option_name='comment_max_links'";
+mysql --execute="UPDATE ${DB_NAME}.${DB_PREFIX}options SET option_value='1' WHERE option_name='comment_moderation'";
+mysql --execute="UPDATE ${DB_NAME}.${DB_PREFIX}options SET option_value='asc' WHERE option_name='comment_order'";
+mysql --execute="UPDATE ${DB_NAME}.${DB_PREFIX}options SET option_value='0' WHERE option_name='comment_registration'";
+mysql --execute="UPDATE ${DB_NAME}.${DB_PREFIX}options SET option_value='0' WHERE option_name='comment_whitelist'"; ## previously approved comments not required in order to be whitelisted
+mysql --execute="UPDATE ${DB_NAME}.${DB_PREFIX}options SET option_value='1' WHERE option_name='comments_notify'";
+mysql --execute="UPDATE ${DB_NAME}.${DB_PREFIX}options SET option_value='50' WHERE option_name='comments_per_page'";
+mysql --execute="UPDATE ${DB_NAME}.${DB_PREFIX}options SET option_value='M j, Y' WHERE option_name='date_format'"; ## M j, Y = Nov 6, 2010
+mysql --execute="UPDATE ${DB_NAME}.${DB_PREFIX}options SET option_value='open' WHERE option_name='default_comment_status'";
+mysql --execute="UPDATE ${DB_NAME}.${DB_PREFIX}options SET option_value='newest' WHERE option_name='default_comments_page'"; ## show newest comments on 1st page
+mysql --execute="UPDATE ${DB_NAME}.${DB_PREFIX}options SET option_value='closed' WHERE option_name='default_ping_status'"; ## disable pingbacks
+mysql --execute="UPDATE ${DB_NAME}.${DB_PREFIX}options SET option_value='0' WHERE option_name='default_pingback_flag'"; ## disable pingbacks
+mysql --execute="UPDATE ${DB_NAME}.${DB_PREFIX}options SET option_value='subscriber' WHERE option_name='default_role'";
+mysql --execute="UPDATE ${DB_NAME}.${DB_PREFIX}options SET option_value='0' WHERE option_name='embed_autourls'"; ## disable automatic (oEmbed) social media embeds
+mysql --execute="UPDATE ${DB_NAME}.${DB_PREFIX}options SET option_value='600' WHERE option_name='embed_size_h'";
+mysql --execute="UPDATE ${DB_NAME}.${DB_PREFIX}options SET option_value='' WHERE option_name='embed_size_w'"; ## NULL
+mysql --execute="UPDATE ${DB_NAME}.${DB_PREFIX}options SET option_value='0' WHERE option_name='enable_app'"; ## disable the Atom protocol
+mysql --execute="UPDATE ${DB_NAME}.${DB_PREFIX}options SET option_value='0' WHERE option_name='enable_xmlrpc'"; ## disable the XML-RPC protocol (REST API is already in WP Core)
+mysql --execute="UPDATE ${DB_NAME}.${DB_PREFIX}options SET option_value='0' WHERE option_name='gmt_offset'"; ## 0 = GMT (UTC)
+mysql --execute="UPDATE ${DB_NAME}.${DB_PREFIX}options SET option_value='0' WHERE option_name='gzipcompression'"; ## disable Gzip in WP (PHP) and let the server handle it
+mysql --execute="UPDATE ${DB_NAME}.${DB_PREFIX}options SET option_value='0' WHERE option_name='hack_file'"; ## legacy feature
+mysql --execute="UPDATE ${DB_NAME}.${DB_PREFIX}options SET option_value='text/html' WHERE option_name='html_type'";
+mysql --execute="UPDATE ${DB_NAME}.${DB_PREFIX}options SET option_value='none' WHERE option_name='image_default_align'"; ## disable image alignment by default
+mysql --execute="UPDATE ${DB_NAME}.${DB_PREFIX}options SET option_value='none' WHERE option_name='image_default_link_type'"; ## disable image links by default
+mysql --execute="UPDATE ${DB_NAME}.${DB_PREFIX}options SET option_value='medium' WHERE option_name='image_default_size'";
+mysql --execute="UPDATE ${DB_NAME}.${DB_PREFIX}options SET option_value='1024' WHERE option_name='large_size_h'"; ## large images height = 1024px
+mysql --execute="UPDATE ${DB_NAME}.${DB_PREFIX}options SET option_value='1024' WHERE option_name='large_size_w'"; ## large images width = 1024px
+mysql --execute="UPDATE ${DB_NAME}.${DB_PREFIX}options SET option_value='0' WHERE option_name='link_manager_enabled'"; ## disable janky links menu
+mysql --execute="UPDATE ${DB_NAME}.${DB_PREFIX}options SET option_value='' WHERE option_name='mailserver_login'"; ## NULL
+mysql --execute="UPDATE ${DB_NAME}.${DB_PREFIX}options SET option_value='' WHERE option_name='mailserver_pass'"; ## NULL
+mysql --execute="UPDATE ${DB_NAME}.${DB_PREFIX}options SET option_value='' WHERE option_name='mailserver_port'"; ## NULL
+mysql --execute="UPDATE ${DB_NAME}.${DB_PREFIX}options SET option_value='' WHERE option_name='mailserver_url'"; ## NULL
+mysql --execute="UPDATE ${DB_NAME}.${DB_PREFIX}options SET option_value='768' WHERE option_name='medium_large_size_h'"; ## medium-large images height = 768px
+mysql --execute="UPDATE ${DB_NAME}.${DB_PREFIX}options SET option_value='768' WHERE option_name='medium_large_size_w'"; ## medium-large images width = 768px
+mysql --execute="UPDATE ${DB_NAME}.${DB_PREFIX}options SET option_value='300' WHERE option_name='medium_size_h'"; ## medium images height = 300px
+mysql --execute="UPDATE ${DB_NAME}.${DB_PREFIX}options SET option_value='300' WHERE option_name='medium_size_w'"; ## medium images width = 300px
+mysql --execute="UPDATE ${DB_NAME}.${DB_PREFIX}options SET option_value='' WHERE option_name='moderation_keys'"; ## NULL
+mysql --execute="UPDATE ${DB_NAME}.${DB_PREFIX}options SET option_value='1' WHERE option_name='moderation_notify'"; ## email the admin when comments need moderation
+mysql --execute="UPDATE ${DB_NAME}.${DB_PREFIX}options SET option_value='0' WHERE option_name='page_comments'"; ## disable paged comments by default
+mysql --execute="UPDATE ${DB_NAME}.${DB_PREFIX}options SET option_value='0' WHERE option_name='page_for_posts'";
+#### mysql --execute="UPDATE ${DB_NAME}.${DB_PREFIX}options SET option_value='' WHERE option_name='page_on_front'"; ## NULL = it depends
+mysql --execute="UPDATE ${DB_NAME}.${DB_PREFIX}options SET option_value='/%category%/%postname%' WHERE option_name='permalink_structure'"; ## perfect for custom post types and taxonomies
+mysql --execute="UPDATE ${DB_NAME}.${DB_PREFIX}options SET option_value='' WHERE option_name='ping_sites'"; ## NULL
+mysql --execute="UPDATE ${DB_NAME}.${DB_PREFIX}options SET option_value='10' WHERE option_name='posts_per_page'";
+mysql --execute="UPDATE ${DB_NAME}.${DB_PREFIX}options SET option_value='10' WHERE option_name='posts_per_rss'";
+mysql --execute="UPDATE ${DB_NAME}.${DB_PREFIX}options SET option_value='1' WHERE option_name='require_name_email'"; ## comment authors must include their name and email address
+mysql --execute="UPDATE ${DB_NAME}.${DB_PREFIX}options SET option_value='1' WHERE option_name='rss_use_excerpt'"; ## encourage RSS subscribers to click through excerpts
+mysql --execute="UPDATE ${DB_NAME}.${DB_PREFIX}options SET option_value='1' WHERE option_name='show_avatars'"; ## enable comment avatars
+mysql --execute="UPDATE ${DB_NAME}.${DB_PREFIX}options SET option_value='0' WHERE option_name='show_comments_cookies_opt_in'"; ## disable the opt-in warning for comment cookies (GDPR bloat)
+mysql --execute="UPDATE ${DB_NAME}.${DB_PREFIX}options SET option_value='page' WHERE option_name='show_on_front'"; ## depends on page_on_front
+mysql --execute="UPDATE ${DB_NAME}.${DB_PREFIX}options SET option_value='' WHERE option_name='sidebars_widgets'"; ## NULL
+mysql --execute="UPDATE ${DB_NAME}.${DB_PREFIX}options SET option_value='0' WHERE option_name='site_icon'"; ## disabled by default
+mysql --execute="UPDATE ${DB_NAME}.${DB_PREFIX}options SET option_value='1' WHERE option_name='start_of_week'"; ## 1 = Monday
+mysql --execute="UPDATE ${DB_NAME}.${DB_PREFIX}options SET option_value='/tag' WHERE option_name='tag_base'";
+mysql --execute="UPDATE ${DB_NAME}.${DB_PREFIX}options SET option_value='1' WHERE option_name='thread_comments'"; ## enable threaded comments
+mysql --execute="UPDATE ${DB_NAME}.${DB_PREFIX}options SET option_value='2' WHERE option_name='thread_comments_depth'"; ## depth of comment threads = 2 levels (similar to Facebook, YouTube, etc)
+mysql --execute="UPDATE ${DB_NAME}.${DB_PREFIX}options SET option_value='1' WHERE option_name='thumbnail_crop'"; ## crop image thumbnails to exact dimensions (not proportional)
+mysql --execute="UPDATE ${DB_NAME}.${DB_PREFIX}options SET option_value='150' WHERE option_name='thumbnail_size_h'"; ## image thumbnails height = 150px
+mysql --execute="UPDATE ${DB_NAME}.${DB_PREFIX}options SET option_value='150' WHERE option_name='thumbnail_size_w'"; ## image thumbnails width = 150px
+mysql --execute="UPDATE ${DB_NAME}.${DB_PREFIX}options SET option_value='g:ia' WHERE option_name='time_format'"; ## g:i a = 12:50 am
+mysql --execute="UPDATE ${DB_NAME}.${DB_PREFIX}options SET option_value='' WHERE option_name='timezone_string'"; ## NULL (e.g. UTC but might overwrite gmt_offset)
+mysql --execute="UPDATE ${DB_NAME}.${DB_PREFIX}options SET option_value='' WHERE option_name='upload_path'"; ## NULL
+mysql --execute="UPDATE ${DB_NAME}.${DB_PREFIX}options SET option_value='' WHERE option_name='upload_url_path'"; ## NULL
+mysql --execute="UPDATE ${DB_NAME}.${DB_PREFIX}options SET option_value='1' WHERE option_name='uploads_use_yearmonth_folders'";
+mysql --execute="UPDATE ${DB_NAME}.${DB_PREFIX}options SET option_value='0' WHERE option_name='use_balanceTags'"; ## disable XHTML corrections
+mysql --execute="UPDATE ${DB_NAME}.${DB_PREFIX}options SET option_value='0' WHERE option_name='use_smilies'"; ## disable emojis
+mysql --execute="UPDATE ${DB_NAME}.${DB_PREFIX}options SET option_value='0' WHERE option_name='use_trackback'"; ## disable trackbacks
+mysql --execute="UPDATE ${DB_NAME}.${DB_PREFIX}options SET option_value='0' WHERE option_name='users_can_register'"; ## disable new user (guest) registrations by default
 
 fi
 
