@@ -217,34 +217,16 @@ rm /var/www/html/staging/wordpress* &> /dev/null
 rm /var/www/html/dev/wordpress* &> /dev/null
 
 ####################################################################################################
-#### SS-Install-WordPress-Core: Install Throwaway Theme (For Virgin Installs) ######################
+#### SS-Install-WordPress-Core: Optimize WP_Options (For Virgin Installs) ##########################
 ####################################################################################################
 
-## a throwaway theme is an easy way to customize the cleanup routine for new installs ##
-## there is no reason to install this for existing sites with live themes ##
+if [[ ! -f "$TIMESTAMP_SS_INSTALL_WORDPRESS_CORE" ]]; then
 
-if [[ ! -f "$TIMESTAMP_SS_INSTALL_WORDPRESS_CORE" ]] && [[ ! -f "$TIMESTAMP_SS_INSTALL_WORDPRESS_CONFIG" ]]; then
-
-   ## retrieve latest throwaway theme ##
-   # wget -O /tmp/throwaway.zip "$MIRROR_THROWAWAY_ZIP"
-
-   ## unzip ##
-   # unzip -d /tmp/throwaway/ -o -j /tmp/throwaway.zip
-
-   ## replace placeholders with ss-config variables ##
-   # sed -i "s/@SITE_EMAIL/${SITE_EMAIL}/g" /tmp/throwaway/functions.php
-   # sed -i "s/@SITE_NAME/${SITE_NAME}/g" /tmp/throwaway/functions.php
-   # sed -i "s/@SITE_DOMAIN/${SITE_DOMAIN}/g" /tmp/throwaway/functions.php
-
-   ## copy files to destinations ##
-   # CAUSING PROBLEMS WITH CUSTOMIZER SINCE IT DELETES THE DEMO CONTENT FROM FRESH INSTALLS
-   # cp /tmp/throwaway /var/www/html/wp-content/themes/
-
-## NEW METHOD (decisions, not options) ##
+## optimize wp_options ##
 mysql --execute="UPDATE ${DB_NAME}.${DB_PREFIX}options SET option_value='' WHERE option_name='admin_email'"; ## NULL
 mysql --execute="UPDATE ${DB_NAME}.${DB_PREFIX}options SET option_value='mystery' WHERE option_name='avatar_default'";
 mysql --execute="UPDATE ${DB_NAME}.${DB_PREFIX}options SET option_value='PG' WHERE option_name='avatar_rating'";
-mysql --execute="UPDATE ${DB_NAME}.${DB_PREFIX}options SET option_value='' WHERE option_name='blacklist_keys'";
+mysql --execute="UPDATE ${DB_NAME}.${DB_PREFIX}options SET option_value='' WHERE option_name='blacklist_keys'"; ## NULL
 mysql --execute="UPDATE ${DB_NAME}.${DB_PREFIX}options SET option_value='UTF-8' WHERE option_name='blog_charset'";
 mysql --execute="UPDATE ${DB_NAME}.${DB_PREFIX}options SET option_value='1' WHERE option_name='blog_public'";
 mysql --execute="UPDATE ${DB_NAME}.${DB_PREFIX}options SET option_value='' WHERE option_name='blogdescription'"; ## NULL
@@ -292,7 +274,7 @@ mysql --execute="UPDATE ${DB_NAME}.${DB_PREFIX}options SET option_value='' WHERE
 mysql --execute="UPDATE ${DB_NAME}.${DB_PREFIX}options SET option_value='1' WHERE option_name='moderation_notify'"; ## email the admin when comments need moderation
 mysql --execute="UPDATE ${DB_NAME}.${DB_PREFIX}options SET option_value='0' WHERE option_name='page_comments'"; ## disable paged comments by default
 mysql --execute="UPDATE ${DB_NAME}.${DB_PREFIX}options SET option_value='0' WHERE option_name='page_for_posts'";
-#### mysql --execute="UPDATE ${DB_NAME}.${DB_PREFIX}options SET option_value='' WHERE option_name='page_on_front'"; ## NULL = it depends
+mysql --execute="UPDATE ${DB_NAME}.${DB_PREFIX}options SET option_value='2' WHERE option_name='page_on_front'"; ## 2 = sample page
 mysql --execute="UPDATE ${DB_NAME}.${DB_PREFIX}options SET option_value='/%category%/%postname%' WHERE option_name='permalink_structure'"; ## perfect for custom post types and taxonomies
 mysql --execute="UPDATE ${DB_NAME}.${DB_PREFIX}options SET option_value='' WHERE option_name='ping_sites'"; ## NULL
 mysql --execute="UPDATE ${DB_NAME}.${DB_PREFIX}options SET option_value='10' WHERE option_name='posts_per_page'";
