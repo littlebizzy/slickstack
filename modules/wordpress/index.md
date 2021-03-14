@@ -16,7 +16,6 @@ title: WordPress (Public Mirrors)
 * [wp-config-staging.txt](wp-config-staging.txt)
 * [functions.txt](functions.txt)
 * [blacklist.txt](blacklist.txt)
-* [throwaway.zip](throwaway.zip)
 
 ### Original Files
 
@@ -144,13 +143,6 @@ title: WordPress (Public Mirrors)
 * [wp-config-sample-4.6.1.txt](wp-config-sample-4.6.1.txt)
 * [wp-config-sample-4.6.0.txt](wp-config-sample-4.6.0.txt)
 
-#### throwaway.zip
-
-* [throwaway-theme-1.2.1.zip](throwaway-theme-1.2.1.zip)
-* [throwaway-theme-1.2.0.zip](throwaway-theme-1.2.0.zip)
-* [throwaway-theme-1.1.0.zip](throwaway-theme-1.1.0.zip)
-* [throwaway-theme-1.0.0.zip](throwaway-theme-1.0.0.zip)
-
 ### Related Links
 
 *Links and resources related to the above module that may help users understand its functionality, or how it interacts with other LEMP stack modules.*
@@ -178,4 +170,4 @@ title: WordPress (Public Mirrors)
 
 ----
 
-*Last updated: Mar 5, 2021*
+*Last updated: Mar 15, 2021*
