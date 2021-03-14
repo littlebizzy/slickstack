@@ -223,22 +223,22 @@ rm /var/www/html/dev/wordpress* &> /dev/null
 ## a throwaway theme is an easy way to customize the cleanup routine for new installs ##
 ## there is no reason to install this for existing sites with live themes ##
 
-if [[ ! -f "/var/www/meta/.timestamp-ss-install-wordpress-core" ]]; then
+if [[ ! -f "$TIMESTAMP_SS_INSTALL_WORDPRESS_CORE" ]]; then
 
-## retrieve latest throwaway theme ##
-wget -O /tmp/throwaway.zip "$MIRROR_THROWAWAY_ZIP"
+   ## retrieve latest throwaway theme ##
+   wget -O /tmp/throwaway.zip "$MIRROR_THROWAWAY_ZIP"
 
-## unzip ##
-unzip -d /tmp/throwaway/ -o -j /tmp/throwaway.zip
+   ## unzip ##
+   unzip -d /tmp/throwaway/ -o -j /tmp/throwaway.zip
 
-## replace placeholders with ss-config variables ##
-sed -i "s/@SITE_EMAIL/${SITE_EMAIL}/g" /tmp/throwaway/functions.php
-sed -i "s/@SITE_NAME/${SITE_NAME}/g" /tmp/throwaway/functions.php
-sed -i "s/@SITE_DOMAIN/${SITE_DOMAIN}/g" /tmp/throwaway/functions.php
+   ## replace placeholders with ss-config variables ##
+   sed -i "s/@SITE_EMAIL/${SITE_EMAIL}/g" /tmp/throwaway/functions.php
+   sed -i "s/@SITE_NAME/${SITE_NAME}/g" /tmp/throwaway/functions.php
+   sed -i "s/@SITE_DOMAIN/${SITE_DOMAIN}/g" /tmp/throwaway/functions.php
 
-## copy files to destinations ##
-# CAUSING PROBLEMS WITH CUSTOMIZER SINCE IT DELETES THE DEMO CONTENT FROM FRESH INSTALLS
-# cp /tmp/throwaway /var/www/html/wp-content/themes/
+   ## copy files to destinations ##
+   # CAUSING PROBLEMS WITH CUSTOMIZER SINCE IT DELETES THE DEMO CONTENT FROM FRESH INSTALLS
+   # cp /tmp/throwaway /var/www/html/wp-content/themes/
 
 fi
 
@@ -288,13 +288,6 @@ fi
 # fi
 
 ####################################################################################################
-#### SS-Install-WordPress-Core: Reset Permissions (WordPress Core) #################################
-####################################################################################################
-
-## run ss-perms-wordpress-core ##
-source /var/www/ss-perms-wordpress-core
-
-####################################################################################################
 #### SS-Install-WordPress-Core: Purge Cache (WordPress Transients) #################################
 ####################################################################################################
 
@@ -302,28 +295,28 @@ source /var/www/ss-perms-wordpress-core
 ## this is a more forceful approach than simply purging the Redis object cache ##
 
 ## run ss-purge-transients ##
-source /var/www/ss-purge-transients
+source "$PATH_SS_PURGE_TRANSIENTS"
 
 ####################################################################################################
 #### SS-Install-WordPress-Core: Purge Cache (PHP OPcache) ##########################################
 ####################################################################################################
 
 ## run ss-purge-opcache ##
-source /var/www/ss-purge-opcache
+source "$PATH_SS_PURGE_OPCACHE"
 
 ####################################################################################################
 #### SS-Install-WordPress-Core: Purge Cache (Redis) ################################################
 ####################################################################################################
 
 ## run ss-purge-redis ##
-source /var/www/ss-purge-redis
+source "$PATH_SS_PURGE_REDIS"
 
 ####################################################################################################
 #### SS-Install-WordPress-Core: Reset Permissions (WordPress Core) #################################
 ####################################################################################################
 
 ## run ss-perms-wordpress-core ##
-source /var/www/ss-perms-wordpress-core
+source "$PATH_SS_PERMS_WORDPRESS_CORE"
 
 ####################################################################################################
 #### SS-Install-WordPress-Core: Cleanup Temporary Files ############################################
@@ -353,14 +346,14 @@ else
 fi
 
 ####################################################################################################
-#### SS-Install-WordPress-Core: Touch Timestamp File (End Script) ##################################
+#### SS-Install-WordPress-Core: Touch Timestamp File ###############################################
 ####################################################################################################
 
 ## this is a dummy timestamp file that will remember the last time this script was run ##
 ## it can be useful for developer reference and is sometimes used by SlickStack ##
 
 ## script timestamp ##
-touch /var/www/meta/.timestamp-ss-install-wordpress-core
+touch "$TIMESTAMP_SS_INSTALL_WORDPRESS_CORE"
 
 ####################################################################################################
 #### SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ###############
