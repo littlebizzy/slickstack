@@ -46,6 +46,8 @@ fi
 #### 05-Cron-Hourly: Validate (Restore) SS-Functions ###############################################
 ####################################################################################################
 
+## THIS SNIPPET DOES NOT RELY ON SS-CONFIG OR SS-FUNCTIONS
+
 ## SNIPPET: ss core cron jobs
 
 ## this attempts to restore missing or damaged ss-functions from our public mirrors ##
@@ -55,22 +57,20 @@ fi
 VALIDATE_SS_FUNCTIONS=$(grep 'SS_EOF' /var/www/ss-functions)
 if [[ -z "$VALIDATE_SS_FUNCTIONS" ]]; then
     rm -rf /tmp/ss-functions
-    wget -q -4 -t 1 -T 15 -O /tmp/ss-functions http://mirrors.slickstack.io/bash/ss-functions.txt
+    wget --no-check-certificate -q -4 -t 1 -T 15 -O /tmp/ss-functions http://mirrors.slickstack.io/bash/ss-functions.txt
     VALIDATE_TMP_SS_FUNCTIONS=$(grep 'SS_EOF' /tmp/ss-functions)
     if [[ -n "$VALIDATE_TMP_SS_FUNCTIONS" ]]; then
         mv -f /tmp/ss-functions /var/www/ss-functions
         chown root:root /var/www/ss-functions ## must be root:root
-        chmod 0700 /var/www/ss-functions ## 0700 means root can execute
+        chmod 0700 /var/www/ss-functions ## 0700 means only root can execute
     else
         wget --no-check-certificate -q -4 -t 3 -T 30 -O /tmp/ss-functions https://raw.githubusercontent.com/littlebizzy/slickstack/master/bash/ss-functions.txt
         mv -f /tmp/ss-functions /var/www/ss-functions
         chown root:root /var/www/ss-functions ## must be root:root
-        chmod 0700 /var/www/ss-functions ## 0700 means root can execute
+        chmod 0700 /var/www/ss-functions ## 0700 means only root can execute
     fi
     rm -rf /tmp/ss-functions
 fi
-
-## THIS SNIPPET DOES NOT RELY ON SS-CONFIG OR SS-FUNCTIONS
 
 ####################################################################################################
 #### 05-Cron-Hourly: Validate (Restore) SS-Check + SS-Worker #######################################
