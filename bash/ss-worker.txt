@@ -28,7 +28,7 @@ source /var/www/ss-functions
 ## B. Cleanup Temporary Files
 ## C. Backup Current SS-Config File
 ## D. Retrieve Latest SS-Check Script
-## E. 
+## E. Reset SlickStack Core Permissions
 
 ####################################################################################################
 #### A. SS-Worker: Message (Begin Script) ##########################################################
@@ -289,13 +289,15 @@ chown www-data:www-data /var/www/meta/maintenance.html
 chmod 0444 /var/www/meta/maintenance.html ## 0444
 
 ####################################################################################################
-#### SS-Worker: Reset Permissions (SlickStack Core Files) ##########################################
+#### SS-Worker: Reset Permissions (SlickStack Core) #################################################
 ####################################################################################################
 
-## SNIPPET: ss-check, ss-perms, ss-worker
+## THIS SNIPPET DOES NOT RELY ON SS-CONFIG OR SS-FUNCTIONS ##
 
-## because SlickStack core permissions are critical this is hardcoded in multiple scripts ##
-## this ensures that permissions are reset regularly and do not rely on sourcing ##
+## SNIPPET: ss-check, ss-worker, ss core cron jobs
+
+## we hardcode this permissions reset snippet into all ss core scripts for redundancy ##
+## this ensures permissions are regularly fixed without requiring dependencies ##
 
 ## make directories ##
 mkdir /var/www
@@ -314,18 +316,26 @@ mkdir /var/www/logs
 mkdir /var/www/meta
 mkdir /var/www/sites
 
-## reset permissions ##
-chown root:root /var ## must be root:root
+## user/group ownership ##
 chown root:root /var/www ## must be root:root
 chown www-data:www-data /var/www/cache ## must be www-data:www-data
+chown www-data:www-data /var/www/cache/nginx ## must be www-data:www-data
 chown www-data:www-data /var/www/cache/opcache ## must be www-data:www-data
-chown root:root /var/www/certs
-chown root:root /var/www/certs/keys
+chown root:root /var/www/cache/system ## must be root:root
+chown root:root /var/www/certs ## must be root:root
+chown root:root /var/www/certs/keys ## must be root:root
 chown root:root /var/www/crons ## must be root:root
+chown root:root /var/www/crons/*cron* ## must be root:root
 chown root:root /var/www/crons/custom ## must be root:root
-chown -R $SFTP_USER:www-data /var/www/html/.well-known
+chown root:root /var/www/crons/custom/*cron* ## must be root:root
+chown -R "${SFTP_USER}":www-data /var/www/html/.well-known ## accessed by server for e.g. Cerbot but also by SFTP user for things like Stripe ##
+chown -R "${SFTP_USER}":www-data /var/www/html/.well-known/acme-challenge ## accessed by server for e.g. Cerbot but also by SFTP user for things like Stripe ##
 chown www-data:www-data /var/www/logs ## must be www-data:www-data
 chown www-data:www-data /var/www/meta ## must be www-data:www-data
+chown www-data:www-data /var/www/meta/ss-constants.php ## must be www-data:www-data
+chown root:root /var/www/ss* ## must be root:root
+
+## linux permissions ##
 chmod 0755 /var/www ## must be 0755
 chmod 0775 /var/www/cache ## 6755 should also work
 chmod 0755 /var/www/cache/opcache ## 755 should also work
@@ -336,10 +346,14 @@ chmod 0644 /var/www/certs/*.pem ## must be 0644
 chmod 0600 /var/www/certs/keys/*.key ## must be 0600
 chmod 0600 /var/www/certs/keys/*.pem ## must be 0600
 chmod 0755 /var/www/crons ## must be 0755
+chmod 0700 /var/www/crons/*cron* ## 0700 means only root can execute
 chmod 0755 /var/www/crons/custom ## must be 0755
+chmod 0700 /var/www/crons/custom/*cron* ## 0700 means only root can execute
 chmod 0755 /var/www/html/.well-known ## accessed by server for e.g. Cerbot but also by SFTP user for things like Stripe ##
 chmod 0775 /var/www/logs ## 6755 should also work
 chmod 0775 /var/www/meta ## 6755 should also work
+chmod 0440 /var/www/meta/ss-constants.php
+chmod 0700 /var/www/ss* ## 0700 means only root can execute
 
 ####################################################################################################
 ## SS-Worker: Download Latest Blacklist.txt File For Plugin Blacklist (MU Plugin) ##################
