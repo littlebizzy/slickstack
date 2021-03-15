@@ -46,6 +46,8 @@ fi
 #### 02-Cron-Regular: Validate (Restore) SS-Functions ##############################################
 ####################################################################################################
 
+## THIS SNIPPET DOES NOT RELY ON SS-CONFIG OR SS-FUNCTIONS
+
 ## SNIPPET: ss core cron jobs
 
 ## this attempts to restore missing or damaged ss-functions from our public mirrors ##
@@ -60,17 +62,15 @@ if [[ -z "$VALIDATE_SS_FUNCTIONS" ]]; then
     if [[ -n "$VALIDATE_TMP_SS_FUNCTIONS" ]]; then
         mv -f /tmp/ss-functions /var/www/ss-functions
         chown root:root /var/www/ss-functions ## must be root:root
-        chmod 0700 /var/www/ss-functions ## 0700 means root can execute
+        chmod 0700 /var/www/ss-functions ## 0700 means only root can execute
     else
         wget --no-check-certificate -q -4 -t 3 -T 30 -O /tmp/ss-functions https://raw.githubusercontent.com/littlebizzy/slickstack/master/bash/ss-functions.txt
         mv -f /tmp/ss-functions /var/www/ss-functions
         chown root:root /var/www/ss-functions ## must be root:root
-        chmod 0700 /var/www/ss-functions ## 0700 means root can execute
+        chmod 0700 /var/www/ss-functions ## 0700 means only root can execute
     fi
     rm -rf /tmp/ss-functions
 fi
-
-## THIS SNIPPET DOES NOT RELY ON SS-CONFIG OR SS-FUNCTIONS
 
 ####################################################################################################
 #### 02-Cron-Regular: Validate (Restore) SS-Check + SS-Worker ######################################
