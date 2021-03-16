@@ -214,21 +214,23 @@ if [[ "$INTERVAL_SS_INSTALL_UBUNTU_BASH" == "daily" ]]; then
 fi
 
 ####################################################################################################
-#### 08-Cron-Daily: Reset Permissions (SS Core Bash Scripts + SS Core Cron Jobs) ###################
+#### 08-Cron-Daily: Reset Permissions (SS Core Cron Jobs + SS Core Bash Scripts) ###################
 ####################################################################################################
 
-## SNIPPET: ss-check, ss-worker, ss core cron jobs
+## THIS SNIPPET DOES NOT RELY ON SS-CONFIG OR SS-FUNCTIONS
 
-## we hardcode this permissions reset snippet into all ss core scripts for redundancy ##
+## SNIPPET: ss core cron jobs
+
+## we hardcode this permissions reset snippet in all ss core cron jobs for redundancy ##
 ## chmod 0700 means only the root/sudo users can execute the ss core scripts ##
 
 ## reset permissions ##
 chown root:root /var/www/ss* ## must be root:root
 chown root:root /var/www/crons/*cron* ## must be root:root
-chmod 0700 /var/www/ss* ## 0700 means root can execute
-chmod 0700 /var/www/crons/*cron* ## 0700 means root can execute
-
-## THIS SNIPPET DOES NOT RELY ON SS-CONFIG OR SS-FUNCTIONS
+chown root:root /var/www/crons/custom/*cron* ## must be root:root
+chmod 0700 /var/www/ss* ## 0700 means only root can execute
+chmod 0700 /var/www/crons/*cron* ## 0700 means only root can execute
+chmod 0700 /var/www/crons/custom/*cron* ## 0700 means only root can execute
 
 ####################################################################################################
 #### 08-Cron-Daily: Delete Lock File ###############################################################
