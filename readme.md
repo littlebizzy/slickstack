@@ -39,6 +39,8 @@ SlickStack is a free LEMP stack automation script written in Bash designed to en
 
 ## Changelog
 
+* **NEW!** All Nginx server blocks are now installed under `/var/www/sites` instead of the default Debian folder `/etc/nginx/sites-available` and/or `/etc/nginx/sites-enabled` ... this means that you can now easily backup your server blocks by setting your remote SFTP backup service to sync everything under the `/var/www/` parent directory... it also means one more thing you don't need to `cd` around Linux to find anymore... since SlickStack only supports a single domain and everything is automated using our `ss-config` settings, there was no need to keep the Debian approach to Nginx server blocks anymore.
+
 * **NEW!** Due to timeouts from GitHub servers, some `wget` calls have resulted in broken SS files in recent months, often totally breaking websites that are hosted on SS servers. We are beginning a process of implementing fail-safe features in all our cron jobs and scripts so that if files are retrieved from GitHub that do not contain a specific string `SS_EOF` then the file is assumed corrupt and the install task (etc) is skipped. Please offer your feedback for how to best implement this process or alternative ideas for avoiding file corruption due to `wget` timeouts and related issues, thanks!
 
 * **NEW!** Organization of our GitHub repo is now complete with a much easier structure to understand. All bash scripts are under the `bash` folder and all cron jobs are under the `crons` folder... custom cron job templates can be found under the `/crons/custom/` folder. The rest of LEMP stack module config boilerplates can be found in the relevant child folders under `modules` folder... this should make things much simpler to browse going forward.
