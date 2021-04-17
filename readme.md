@@ -14,7 +14,7 @@ SlickStack is a free LEMP stack automation script written in Bash designed to en
 
 ## Core Modules
 
-*Last updated: Mar 5, 2021*
+*Last updated: Apr 17, 2021*
 
 *Default Ports: 80 (HTTP), 443 (HTTPS), 6969 (SSH)*
 
@@ -29,7 +29,7 @@ SlickStack is a free LEMP stack automation script written in Bash designed to en
 | **PHP-FPM** | [mirrors](https://mirrors.slickstack.io/modules/php-fpm/) | 7.4.x | `php.ini` + `php-fpm.conf` + `www.conf` |
 | **Zend / OPcache** | [mirrors](https://mirrors.slickstack.io/modules/php-fpm/opcache/) | 3.4.x / 7.4.x | (same as PHP-FPM) |
 | **Redis** | [mirrors](https://mirrors.slickstack.io/modules/redis/) | 5.0.x | `redis.conf` + `object-cache.php` |
-| **WordPress** | [mirrors](https://mirrors.slickstack.io/modules/wordpress/) | 5.6.2 | some WP Core junk files are removed by `ss-clean` |
+| **WordPress** | [mirrors](https://mirrors.slickstack.io/modules/wordpress/) | 5.7.1 | some WP Core junk files are removed by `ss-clean` |
 | **MU Plugins** | [mirrors](https://mirrors.slickstack.io/modules/wordpress/mu-plugins/) | (n/a) | optional `mu-plugins` by LittleBizzy |
 | **WP-CLI** | [mirrors](https://mirrors.slickstack.io/modules/wordpress/wp-cli/) | 2.4.0 | default config |
 | **Adminer** | [mirrors](https://mirrors.slickstack.io/modules/adminer/) | 4.7.9 | default config |
