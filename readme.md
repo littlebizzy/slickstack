@@ -2,9 +2,9 @@
 
 SlickStack is a free LEMP stack automation script written in Bash designed to enhance and simplify WordPress provisioning, performance, and security.
 
+* [**Matrix/Element room (public)**](https://app.element.io/#/room/#general:matrix.slickstack.io)
 * [**Discord server**](https://discord.gg/nGskJdg)
 * [**Skype group chat**](https://join.skype.com/NdpqKrN2BHdN)
-* [**Gab group (private)**](https://gab.com/groups/7116)
 
 ## What To Expect
 
@@ -38,6 +38,8 @@ SlickStack is a free LEMP stack automation script written in Bash designed to en
 | **ClamAV** | [mirrors](https://mirrors.slickstack.io/modules/clamav/) | 0.102.x | `freshclam.conf` |
 
 ## Changelog
+
+* **NEW!** A new variable `SS_DATABASE_REMOTE` in the `ss-config` now indicates whether your origin server is using a remote MySQL database or not. If this variable is set to `true` than `ss-install` will skip installation of MySQL module on the origin server.
 
 * **NEW!** All Nginx server blocks are now installed under `/var/www/sites` instead of the default Debian folder `/etc/nginx/sites-available` and/or `/etc/nginx/sites-enabled` ... this means that you can now easily backup your server blocks by setting your remote SFTP backup service to sync everything under the `/var/www/` parent directory... it also means one more thing you don't need to `cd` around Linux to find anymore... since SlickStack only supports a single domain and everything is automated using our `ss-config` settings, there was no need to keep the Debian approach to Nginx server blocks anymore.
 
