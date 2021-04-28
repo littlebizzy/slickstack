@@ -223,7 +223,8 @@ title: SlickStack (Public Mirrors)
 * https://searchengineland.com/why-websites-should-be-using-hsts-to-improve-security-and-seo-304380
 * https://shkspr.mobi/blog/2021/01/the-unreasonable-effectiveness-of-simple-html/
 * https://jvns.ca/blog/2021/01/23/firecracker--start-a-vm-in-less-than-a-second/
+* https://unixsheikh.com/articles/sqlite-the-only-database-you-will-ever-need-in-most-cases.html
 
 ----
 
-*Last updated: Mar 15, 2021*
+*Last updated: Apr 28, 2021*
