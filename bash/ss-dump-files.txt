@@ -1,0 +1,75 @@
+#!/bin/bash
+
+####################################################################################################
+#### author: SlickStack ############################################################################
+#### link: https://slickstack.io ###################################################################
+#### mirror: https://mirrors.slickstack.io/bash/ss-dump-files.txt ##################################
+#### path: /var/www/ss-dump-files ##################################################################
+#### destination: n/a (not a boilerplate) ##########################################################
+#### purpose: Dumps all html files to /var/www/meta/html.tar.gz (SFTP user can access it) ##########
+#### module version: ###################################################################
+#### sourced by: ss core bash scripts ###########################################
+#### bash aliases: ss dump files ######################################
+####################################################################################################
+
+## include SlickStack configuration ##
+source /var/www/ss-config
+
+## include SlickStack functions ##
+source /var/www/ss-functions
+
+####################################################################################################
+#### SS-Dump-Files: Message (Begin Script) #########################################################
+####################################################################################################
+
+## this is a simple message that announces to the shell the purpose of this bash script ##
+## it will only be noticed by sudo users who manually call ss core bash scripts ##
+
+## echo message ##
+echo -e "${PURPLE}Running ss-dump-files: Dumps all html files to /var/www/meta/html.tar.gz (SFTP user can access it)... ${NOCOLOR}"
+sleep "$SLEEP_MESSAGE_BEGIN"
+
+####################################################################################################
+#### SS-Dump-Files: Export The Live MySQL Database (mysqldump) ##################################
+####################################################################################################
+
+## here we use mysqldump to dump a copy of the live production database to /var/www/meta ##
+## to ensure support for remote databases we force the TCP protocol to be used ##
+
+
+
+####################################################################################################
+#### SS-Dump-Files: Reset Permissions (Allows SFTP User To Access The SQL Dump File) ############
+####################################################################################################
+
+## here we do a quick permissions reset to ensure SFTP users can access the dump file ##
+## keep in mind that root/sudo users will have access to this file regardless ##
+
+## reset permissions ##
+chown -R $SFTP_USER:www-data /var/www/meta/wp.sql
+chmod 0775 /var/www/meta/wp.sql
+
+####################################################################################################
+#### SS-Dump-Files: SUCCESS (OR FAIL) MESSAGE ###################################################
+####################################################################################################
+
+## FUTURE: if = file exists + recent touch time + file contents not zero ##
+echo -e "${YELLOW}The MySQL database was successfully dumped to: /var/www/meta/wp.sql${NORMAL}" >&2
+
+####################################################################################################
+#### SS-Dump-Database: Touch Timestamp File (End Script) ###########################################
+####################################################################################################
+
+## this is a dummy timestamp file that will remember the last time this script was run ##
+## it can be useful for developer reference and is sometimes used by SlickStack ##
+
+## script timestamp ##
+touch "$TIMESTAMP_SS_DUMP_FILES"
+
+####################################################################################################
+#### SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ###############
+####################################################################################################
+
+
+
+## SS_EOF
