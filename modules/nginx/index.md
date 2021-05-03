@@ -10,48 +10,15 @@ title: Nginx (Public Mirrors)
 
 *Live configuration files and boilerplates used by current SlickStack installation that may be altered by LittleBizzy or Ubuntu for better performance.*
 
+* [block-development](block-development.txt)
+* [block-production](block-production.txt)
+* [block-staging](block-staging.txt)
+* [fastcgi-cache.conf](fastcgi-cache-conf.txt)
+* [letsencrypt.conf](letsencrypt-conf.txt)
+* [maintenance.html](maintenance.txt)
 * [nginx.conf](nginx-conf.txt)
-* server-block-dev
-* server-block-staging
-* server-block-production
-* [default-single-site](default-single-site.txt)
+* [openssl.conf](openssl-conf.txt)
 * [default-multisite-subdomains](default-multisite-subdomains.txt)
-* default-multisite-subdirectories.txt
-
-### Original Files
-
-*Raw files from the vendor’s original release (e.g. official repo), not altered by other providers, included for reference and documentation purposes.*
-
-#### nginx.conf
-
-* [nginx-conf-1.18.0.txt](nginx-conf-1.18.0.txt)
-* [nginx-conf-1.17.10.txt](nginx-conf-1.17.10.txt)
-* [nginx-conf-1.17.9.txt](nginx-conf-1.17.9.txt)
-* [nginx-conf-1.17.8.txt](nginx-conf-1.17.8.txt)
-* [nginx-conf-1.17.7.txt](nginx-conf-1.17.7.txt)
-* [nginx-conf-1.17.6.txt](nginx-conf-1.17.6.txt)
-* [nginx-conf-1.17.5.txt](nginx-conf-1.17.5.txt)
-* [nginx-conf-1.17.4.txt](nginx-conf-1.17.4.txt)
-* [nginx-conf-1.17.3.txt](nginx-conf-1.17.3.txt)
-* [nginx-conf-1.17.2.txt](nginx-conf-1.17.2.txt)
-* [nginx-conf-1.17.1.txt](nginx-conf-1.17.1.txt)
-* [nginx-conf-1.17.0.txt](nginx-conf-1.17.0.txt)
-* [nginx-conf-1.16.1.txt](nginx-conf-1.16.1.txt)
-* [nginx-conf-1.16.0.txt](nginx-conf-1.16.0.txt)
-* [nginx-conf-1.15.9.txt](nginx-conf-1.15.9.txt)
-* [nginx-conf-1.15.8.txt](nginx-conf-1.15.8.txt)
-* [nginx-conf-1.15.7.txt](nginx-conf-1.15.7.txt)
-* [nginx-conf-1.15.6.txt](nginx-conf-1.15.6.txt)
-* [nginx-conf-1.15.5.txt](nginx-conf-1.15.5.txt)
-* [nginx-conf-1.15.4.txt](nginx-conf-1.15.4.txt)
-* [nginx-conf-1.15.3.txt](nginx-conf-1.15.3.txt)
-* [nginx-conf-1.15.2.txt](nginx-conf-1.15.2.txt)
-* [nginx-conf-1.15.1.txt](nginx-conf-1.15.1.txt)
-* [nginx-conf-1.15.0.txt](nginx-conf-1.15.0.txt)
-
-#### default (server block)
-
-* (coming soon)
 
 ### Related Links
 
@@ -76,4 +43,4 @@ title: Nginx (Public Mirrors)
 
 ----
 
-*Last updated: Nov 22, 2020*
+*Last updated: May 4, 2021*
