@@ -6,7 +6,7 @@ title: Nginx (Public Mirrors)
 
 ----
 
-### Live Files (Nginx Extras 1.18.x)
+### Module Files
 
 *Live configuration files and boilerplates used by current SlickStack installation that may be altered by LittleBizzy or Ubuntu for better performance.*
 
@@ -18,7 +18,6 @@ title: Nginx (Public Mirrors)
 * [maintenance.html](maintenance.txt)
 * [nginx.conf](nginx-conf.txt)
 * [openssl.conf](openssl-conf.txt)
-* [default-multisite-subdomains](default-multisite-subdomains.txt)
 
 ### Related Links
 
