@@ -6,20 +6,11 @@ title: MySQL (Public Mirrors)
 
 ----
 
-### Live Files (MySQL 8.0.x)
+### Modules Files
 
 *Live configuration files and boilerplates used by current SlickStack installation that may be altered by LittleBizzy or Ubuntu for better performance.*
 
 * [my.cnf](my-cnf.txt)
-* init-mysql.txt
-
-### Original Files
-
-*Raw files from the vendor’s original release (e.g. official repo), not altered by other providers, included for reference and documentation purposes.*
-
-#### my.cnf
-
-* (coming soon)
 
 ### Related Links
 
@@ -37,4 +28,4 @@ title: MySQL (Public Mirrors)
 
 ----
 
-*Last updated: Feb 9, 2021*
+*Last updated: May 4, 2021*
