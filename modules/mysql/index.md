@@ -6,7 +6,7 @@ title: MySQL (Public Mirrors)
 
 ----
 
-### Modules Files
+### Module Files
 
 *Live configuration files and boilerplates used by current SlickStack installation that may be altered by LittleBizzy or Ubuntu for better performance.*
 
