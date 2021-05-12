@@ -47,34 +47,35 @@ rm /tmp/wp-completion*
 ## to keep things simple we include the WP-CLI aliases within our own Bash aliases file ##
 ## here we retrieve latest WP-CLI files and move aliases to /var/www/meta/ ##
 
+## delete outdated configuration ##
+# sed -i '/WP-CLI/d' /home/${SUDO_USER}/.bashrc
+# sed -i '/wp-completion/d' /home/${SUDO_USER}/.bashrc
+# rm /home/wp-completion.bash
+# rm /home/${SUDO_USER}/wp-cli.yml
+# rm /var/www/html/.wp-cli
+# rm /var/www/html/wp-cli
+
 ## uninstall current wp-cli versions ##
 rm /usr/local/bin/wp
-rm /home/wp-completion.bash
-rm /home/${SUDO_USER}/wp-cli.yml
 rm /var/www/meta/.wp-completion*
 rm /var/www/meta/wp-cli.yml
-rm /var/www/html/.wp-cli
-rm /var/www/html/wp-cli
-
-sed -i '/WP-CLI/d' /home/${SUDO_USER}/.bashrc
-sed -i '/wp-completion/d' /home/${SUDO_USER}/.bashrc
 
 ## symlinks for wp-cli.yml ##
 ln /home/${SUDO_USER}/.wp-cli/config.yml /var/www/meta/wp-cli.yml
 ln /root/.wp-cli/config.yml /var/www/meta/wp-cli.yml
 
 ## download latest versions ##
-wget -O /tmp/wp-cli.phar "$MIRROR_WP_CLI_PHAR"
-wget -O /tmp/wp-cli.yml "$MIRROR_WP_CLI_YML"
-wget -O /tmp/wp-completion.txt "$MIRROR_WP_COMPLETION"
+wget -O "$TMP_WP_CLI_PHAR" "$MIRROR_WP_CLI_PHAR"
+wget -O "$TMP_WP_CLI_YML" "$MIRROR_WP_CLI_YML"
+wget -O "$TMP_WP_COMPLETION" "$MIRROR_WP_COMPLETION"
 
 ## make files executable ##
 chmod +x /tmp/wp-cli.phar
 
 ## copy files to destinations ##
-cp /tmp/wp-cli.phar /usr/local/bin/wp
-cp /tmp/wp-cli.yml /var/www/meta/wp-cli.yml
-cp /tmp/wp-completion.txt /var/www/meta/.wp-completion
+cp "$TMP_WP_CLI_PHAR" /usr/local/bin/wp
+cp "$TMP_WP_CLI_YML" /var/www/meta/wp-cli.yml
+cp "$TMP_WP_COMPLETION" /var/www/meta/.wp-completion
 
 ####################################################################################################
 #### SS-Install-WordPress-CLI: Reset Permissions (WordPress CLI) ###################################
