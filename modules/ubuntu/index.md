@@ -2,11 +2,11 @@
 title: Ubuntu (Public Mirrors)
 ---
 
-# Ubuntu LTS (Linux OS)
+# Ubuntu (LTS)
 
 ----
 
-### Live Files (Ubuntu 20.04 LTS)
+### Module Files
 
 *Live configuration files and boilerplates used by current SlickStack installation that may be modified by LittleBizzy or Ubuntu for better performance.*
 
@@ -19,40 +19,6 @@ title: Ubuntu (Public Mirrors)
 * nanorc.txt
 * logrotate.txt
 * limits-conf.txt
-
-### Original Files
-
-*Raw files from the vendor’s original release (e.g. official repo), not altered by other providers, included for reference and documentation purposes.*
-
-#### sshd_config
-
-* [sshd-config-20.04.txt](sshd-config-20.04.txt)
-* [sshd-config-18.04.txt](sshd-config-18.04.txt)
-* [sshd-config-16.04.txt](sshd-config-16.04.txt)
-
-#### sudoers
-
-* [sudoers-20.04.txt](sudoers-20.04.txt)
-* [sudoers-18.04.txt](sudoers-18.04.txt)
-* [sudoers-16.04.txt](sudoers-16.04.txt)
-
-#### sysctl.conf
-
-* [sysctl-conf-20.04.txt](sysctl-conf-20.04.txt)
-* [sysctl-conf-18.04.txt](sysctl-conf-18.04.txt)
-* [sysctl-conf-16.04.txt](sysctl-conf-16.04.txt)
-
-#### gai.conf
-
-* [gai-conf-20.04.txt](gai-conf-20.04.txt)
-* [gai-conf-18.04.txt](gai-conf-18.04.txt)
-* [gai-conf-16.04.txt](gai-conf-16.04.txt)
-
-#### nanorc
-
-* [nanorc-20.04.txt](nanorc-20.04.txt)
-* [nanorc-18.04.txt](nanorc-18.04.txt)
-* [nanorc-16.04.txt](nanorc-16.04.txt)
 
 ### Related Links
 
@@ -76,4 +42,4 @@ title: Ubuntu (Public Mirrors)
 
 ----
 
-*Last updated: Jan 27, 2021*
+*Last updated: May 17, 2021*
