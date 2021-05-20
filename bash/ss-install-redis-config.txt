@@ -1,0 +1,91 @@
+#!/bin/bash
+
+####################################################################################################
+#### author: SlickStack ############################################################################
+#### link: https://slickstack.io ###################################################################
+#### mirror: https://mirrors.slickstack.io/bash/ss-install-redis-config.txt ################################
+#### path: /var/www/ss-install-redis-config ###############################################################
+#### destination: n/a (not a boilerplate) ##########################################################
+#### purpose: Reinstalls the entire Redis module for SlickStack servers (idempotent) ###############
+#### module version: Redis 5.0.x ###################################################################
+#### sourced by: ss-install ########################################################################
+#### bash aliases: ss install redis ################################################################
+####################################################################################################
+
+## SS-CONFIG MUST BE PROPERLY CONFIGURED AND ON CURRENT BUILD BEFORE RUNNING SS-INSTALL ##
+## ENSURE YOUR SS-CONFIG BUILD REMAINS CURRENT BY RUNNING SS-UPDATE OCCASIONALLY ##
+
+## include SlickStack configuration ##
+source /var/www/ss-config
+
+## include SlickStack functions ##
+source /var/www/ss-functions
+
+####################################################################################################
+#### SS-Install-Redis: Message (Begin Script) ######################################################
+####################################################################################################
+
+## this is a simple message that announces to the shell the purpose of this bash script ##
+## it will only be noticed by sudo users who manually call ss core bash scripts ##
+
+## echo message ##
+echo -e "${PURPLE}Running ss-install-redis: Reinstalls the entire Redis module for SlickStack servers (idempotent)... ${NOCOLOR}"
+sleep "$SLEEP_MESSAGE_BEGIN"
+
+####################################################################################################
+#### SS-Install-Redis: Install Redis (Object Cache) ################################################
+####################################################################################################
+
+## here we install redis-server (no client) for use in WordPress object caching (only) ##
+## this Redis server package also includes the Redis CLI command line tools ##
+
+## purge redis-server + php-redis ##
+apt purge redis-server
+apt purge php-redis
+
+## for Ubuntu 20.04 LTS only ##
+if [[ "${UBUNTU_VERSION}" = "20.04" ]]; then
+    apt install redis-server
+    apt install php-redis
+fi
+
+## NEEDS TO BE IMPROVED AND EXPANDED ##
+
+## configure redis-server for object caching (only) ##
+sed -i '/maxmemory.*bytes.*/c\maxmemory 256mb' /etc/redis/redis.conf
+sed -i '/maxmemory-policy noeviction/c\maxmemory-policy allkeys-lru' /etc/redis/redis.conf
+sed -i '/always-show-logo yes/c\always-show-logo no' /etc/redis/redis.conf
+# sed -i '/logfile/c\logfile /var/www/logs/redis.log' /etc/redis/redis.conf
+# sed -i '/dir /c\dir /tmp' /etc/redis/redis.conf
+
+####################################################################################################
+#### SS-Install-Redis: Reset Permissions (Redis) ###################################################
+####################################################################################################
+
+## run ss-perms-redis ##
+source /var/www/ss-perms-redis
+
+####################################################################################################
+#### SS-Install-Redis: Purge Cache (Redis) #########################################################
+####################################################################################################
+
+## run ss-purge-redis ##
+source /var/www/ss-purge-redis
+
+####################################################################################################
+#### SS-Install-Redis: Touch Timestamp File (End Script) ###########################################
+####################################################################################################
+
+## this is a dummy timestamp file that will remember the last time this script was run ##
+## it can be useful for developer reference and is sometimes used by SlickStack ##
+
+## script timestamp ##
+touch /var/www/meta/.timestamp-ss-install-redis-config
+
+####################################################################################################
+#### SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ###############
+####################################################################################################
+
+## Ref: 
+
+## SS_EOF
