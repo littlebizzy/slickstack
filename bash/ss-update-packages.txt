@@ -33,6 +33,49 @@ echo -e "${PURPLE}Running ss-update-packages: Updates and cleans up required Ubu
 sleep "$SLEEP_MESSAGE_BEGIN"
 
 ####################################################################################################
+#### SS-Update: Message (Begin Script) #############################################################
+####################################################################################################
+
+## this is a simple message that announces to the shell the purpose of this bash script ##
+## it will only be noticed by sudo users who manually call ss core bash scripts ##
+
+## echo message ##
+# echo -e "${PURPLE}Running ss-update: Updates ss-config file, root crontab, Ubuntu packages, Linux kernel, and CMS... ${NOCOLOR}"
+# sleep "$SLEEP_MESSAGE_BEGIN"
+
+####################################################################################################
+#### SS-Update: Backup MySQL Database Before Proceeding ############################################
+####################################################################################################
+
+## here we first dump the live production database to /var/www/meta/ before proceeding ##
+## this ensures a recent backup exists in case any database corruption occurs ##
+
+## run ss-dump-database ##
+source /var/www/ss-dump-database
+
+####################################################################################################
+#### SS-Update: Retrieve Latest SS-Check + SS-Worker (Core Bash Scripts) ###########################
+####################################################################################################
+
+## here we run ss-check and ss-worker in case ss core cron jobs have not been running ##
+## this ensures that all ss core bash scripts are updated before proceeding ##
+
+## run ss-check and ss-worker ##
+source /var/www/ss-check
+source /var/www/ss-worker
+source /var/www/ss-check
+
+####################################################################################################
+#### SS-Update: Install SlickStack (Root) Crontab ##################################################
+####################################################################################################
+
+## because the crontab is so critical we reinstall it anytime that ss-update is executed ##
+## ss-install is the only other time that the crontab is automatically installed ##
+
+## run ss-install-ubuntu-crontab ##
+source /var/www/ss-install-ubuntu-crontab
+
+####################################################################################################
 #### SS-Update-Packages: Purge Irrelevant Ubuntu Packages ##########################################
 ####################################################################################################
 
@@ -48,6 +91,97 @@ apt purge expect
 
 ## set confold as dpkg default (fail-safe in case apt upgrade called directly) ##
 DEBIAN_FRONTEND=noninteractive dpkg --configure -a --force-confold
+
+####################################################################################################
+#### SS-Install: Configure MySQL Users + Connections (Supports IPv4 + IPv6) ########################
+####################################################################################################
+
+## THIS IS REQUIRED BECAUSE NEW SS-CONFIG TEMPLATE SWITCHED TO 127.0.0.1 DATABASE HOST ##
+## delete/move/improve this snippet
+
+## prepare MySQL root password (suppresses MySQL security warnings) ##
+export MYSQL_PWD=$DB_PASSWORD_ROOT
+
+## create root user (required before granting privileges after MySQL 8.0) ##
+mysql -uroot -p${DB_PASSWORD_ROOT} -e "CREATE USER 'root'@'localhost' IDENTIFIED BY '${DB_PASSWORD_ROOT}';"
+mysql -uroot -p${DB_PASSWORD_ROOT} -e "CREATE USER 'root'@'127.0.0.1' IDENTIFIED BY '${DB_PASSWORD_ROOT}';"
+mysql -uroot -p${DB_PASSWORD_ROOT} -e "CREATE USER 'root'@'::1' IDENTIFIED BY '${DB_PASSWORD_ROOT}';"
+
+## grant root user all privileges on wordpress database (all connections) ##
+mysql -uroot -p${DB_PASSWORD_ROOT} -e "GRANT ALL PRIVILEGES ON ${DB_NAME}.* TO 'root'@'localhost';"
+mysql -uroot -p${DB_PASSWORD_ROOT} -e "GRANT ALL PRIVILEGES ON ${DB_NAME}.* TO 'root'@'127.0.0.1';"
+mysql -uroot -p${DB_PASSWORD_ROOT} -e "GRANT ALL PRIVILEGES ON ${DB_NAME}.* TO 'root'@'::1';"
+
+## create database user as per ss-config ##
+mysql -uroot -p${DB_PASSWORD_ROOT} -e "CREATE USER '${DB_USER}'@'localhost' IDENTIFIED BY '${DB_PASSWORD}';"
+mysql -uroot -p${DB_PASSWORD_ROOT} -e "CREATE USER '${DB_USER}'@'127.0.0.1' IDENTIFIED BY '${DB_PASSWORD}';"
+mysql -uroot -p${DB_PASSWORD_ROOT} -e "CREATE USER '${DB_USER}'@'::1' IDENTIFIED BY '${DB_PASSWORD}';"
+
+## grant database user all privileges on wordpress database only (all connections) ##
+mysql -uroot -p${DB_PASSWORD_ROOT} -e "GRANT ALL PRIVILEGES ON ${DB_NAME}.* TO '${DB_USER}'@'localhost';"
+mysql -uroot -p${DB_PASSWORD_ROOT} -e "GRANT ALL PRIVILEGES ON ${DB_NAME}.* TO '${DB_USER}'@'127.0.0.1';"
+mysql -uroot -p${DB_PASSWORD_ROOT} -e "GRANT ALL PRIVILEGES ON ${DB_NAME}.* TO '${DB_USER}'@'::1';"
+
+## flush MySQL privileges ##
+mysql --user=root --execute="FLUSH PRIVILEGES;"
+
+
+####################################################################################################
+#### SS-Update: Install CMS (WordPress, PrestaShop, MediaWiki, Etc) ################################
+####################################################################################################
+
+## SNIPPET: ss-install, ss-update
+
+## this snippet fetches the latest stable version of WordPress from SlickStack mirrors ##
+## major CMS releases (unpatched) are never considered stable for our purposes ##
+    
+if [[ "$SS_APP" == "wordpress" || -z "$SS_APP"  ]]; then
+
+    ## run ss-install-wordpress-core ##
+    source /var/www/ss-install-wordpress-core
+
+    ## here we retrieve latest wp-config.php boilerplate and customize per ss-config settings ##
+    ## you should never make changes directly to wp-config.php in SlickStack servers ##
+
+    ## run ss-install-wordpress-config ##
+    source /var/www/ss-install-wordpress-config
+
+    ## this will install the designated MU plugins and also Custom Functions and Object Cache ##
+    ## with a few exceptions these can all be customized using ss-config settings ##
+
+    ## run ss-install-wordpress-mu-plugins ##
+    source /var/www/ss-install-wordpress-mu-plugins
+    
+    ## run ss-install-wordpress-cli ##
+    source /var/www/ss-install-wordpress-cli
+
+fi
+
+## this snippet fetches the latest stable version of PrestaShop from SlickStack mirrors ##
+## major CMS releases (unpatched) are never considered stable for our purposes ##
+
+if [[ "$SS_APP" == "prestashop" ]]; then
+
+    ## run ss-install-prestashop-core ##
+    source /var/www/ss-install-prestashop-core
+    
+    ## run ss-install-prestashop-config ##
+    source /var/www/ss-install-prestashop-config
+    
+fi
+
+## this snippet fetches the latest stable version of MediaWiki from SlickStack mirrors ##
+## major CMS releases (unpatched) are never considered stable for our purposes ##
+
+if [[ "$SS_APP" == "mediawiki" ]]; then
+
+    ## run ss-install-prestashop-core ##
+    source /var/www/ss-install-mediawiki-core
+    
+    ## run ss-install-prestashop-config ##
+    source /var/www/ss-install-mediawiki-config
+    
+fi
 
 ####################################################################################################
 #### SS-Update-Packages: Upgrade Ubuntu Packages + Linux Kernel ####################################
@@ -129,8 +263,21 @@ rm /tmp/ufw*
 rm /tmp/user*
 
 ####################################################################################################
+#### SS-Update: Reset Permissions (All Permissions) ################################################
+####################################################################################################
+
+## intuitively resets all file and user permissions across the entire SlickStack server ##
+## depending on the CMS installed it will also reset those permissions as well ##
+
+## run ss-perms ##
+# source /var/www/ss-perms
+
+####################################################################################################
 #### SS-Update-Packages: Restart Modules (All Modules) #############################################
 ####################################################################################################
+
+## this script is using init.d instead of systemd shortcuts to allow for absolute paths ##
+## we are looking into including other snippets here such as unmasking (etc) ##
 
 ## run ss-restart-php ##
 source /var/www/ss-restart-services-php
@@ -198,5 +345,45 @@ touch /var/www/meta/.timestamp-ss-update-packages
 ## Ref: https://stackoverflow.com/questions/6946677/grep-with-quotation-mark
 ## Ref: https://unix.stackexchange.com/questions/48535/can-grep-return-true-false-or-are-there-alternative-methods
 ## Ref: https://www.cyberciti.biz/faq/can-i-delete-var-cache-apt-archives-for-ubuntu-debian-linux/
+
+## Ref: https://linux.die.net/man/8/apt-get
+## Ref: https://askubuntu.com/questions/1112555/is-apt-dist-upgrade-not-necessary-anymore
+## Ref: https://unix.stackexchange.com/questions/467552/reboot-over-ssh/467996#467996
+## Ref: https://askubuntu.com/questions/254129/how-to-display-all-apt-get-dpkgoptions-and-their-current-values
+## Ref: https://serverfault.com/questions/48724/100-non-interactive-debian-dist-upgrade
+## Ref: https://askubuntu.com/questions/938359/apt-get-install-remove-update-upgrade-via-cron-job
+## Ref: http://manpages.ubuntu.com/manpages/trusty/man8/apt.8.html
+## Ref: https://www.debian.org/doc/manuals/apt-guide/index.en.html
+## Ref: https://serverfault.com/questions/478461/how-to-install-packages-with-apt-without-user-interaction
+## Ref: https://serverfault.com/questions/644180/what-does-qq-argument-for-apt-get-mean
+## Ref: https://superuser.com/questions/1438031/ubuntu-18-command-apt-get-dist-upgrade-qq-force-yes-deprecated
+## Ref: https://superuser.com/questions/1412054/non-interactive-apt-upgrade
+## Ref: https://serverfault.com/questions/227190/how-do-i-ask-apt-get-to-skip-any-interactive-post-install-configuration-steps
+## Ref: https://bugzilla.redhat.com/show_bug.cgi?id=1253351
+## Ref: https://kb.cloudberrylab.com/backup-mac-linux/silent-install-macos-and-linux-builds
+## Ref: https://unix.stackexchange.com/questions/32533/debian-how-to-delay-configuration-when-installing-upgrading
+## Ref: https://raymii.org/s/tutorials/Silent-automatic-apt-get-upgrade.html
+## Ref: https://unix.stackexchange.com/questions/138504/setting-path-vs-exporting-path-in-bash-profile
+## Ref: https://askubuntu.com/questions/578568/path-error-in-ubuntu
+## Ref: https://stackoverflow.com/questions/38977713/what-is-snap-bin-directory-in-path-can-i-remove-it-from-path
+## Ref: https://askubuntu.com/questions/1121495/add-snap-bin-to-path-used-by-systemd
+## Ref: https://askubuntu.com/questions/163200/e-dpkg-was-interrupted-run-sudo-dpkg-configure-a
+## Ref: https://stackoverflow.com/questions/1305237/how-to-list-variables-declared-in-script-in-bash
+## Ref: https://stackoverflow.com/questions/32739572/bash-search-and-replace-value-of-a-variable-inside-a-file
+## Ref: https://askubuntu.com/questions/76808/how-do-i-use-variables-in-a-sed-command
+## Ref: https://unix.stackexchange.com/questions/69112/how-can-i-use-variables-in-the-lhs-and-rhs-of-a-sed-substitution
+## Ref: https://stackoverflow.com/questions/19151954/how-to-use-variables-in-a-command-in-sed
+## Ref: https://unix.stackexchange.com/questions/47584/in-a-bash-script-using-the-conditional-or-in-an-if-statement
+## Ref: https://stackoverflow.com/questions/11287861/how-to-check-if-a-file-contains-a-specific-string-using-bash
+## Ref: https://stackoverflow.com/questions/25564051/how-to-compare-grep-result-with-a-variable
+## Ref: https://stackoverflow.com/questions/26458121/grep-a-specific-string-from-bash-script-and-compare
+## Ref: https://unix.stackexchange.com/questions/372733/get-output-and-return-value-of-grep-in-single-operation-in-bash
+## Ref: https://stackoverflow.com/questions/18789907/read-values-from-configuration-file-and-use-in-shell-script
+## Ref: https://stackoverflow.com/questions/38385963/sed-replacing-string-with-quotation-marks
+## Ref: https://github.com/littlebizzy/slickstack/issues/36
+## Ref: http://manpages.ubuntu.com/manpages/bionic/man1/date.1.html
+## Ref: https://crunchify.com/shell-script-append-timestamp-to-file-name/
+## Ref: https://stackoverflow.com/questions/6946677/grep-with-quotation-mark
+## Ref: https://unix.stackexchange.com/questions/48535/can-grep-return-true-false-or-are-there-alternative-methods
 
 ## SS_EOF
