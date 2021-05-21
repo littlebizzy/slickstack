@@ -390,9 +390,15 @@ cp "$TMP_NGINX_BLOCK_DEVELOPMENT" "$PATH_NGINX_BLOCK_DEVELOPMENT"
 wget -O "$TMP_NGINX_BLOCK_STAGING" "$MIRROR_NGINX_BLOCK_STAGING"
 
 ## replace site variables ##
-sed -i "s/@DOMAIN/${SITE_DOMAIN}/g" "$TMP_NGINX_BLOCK_STAGING"
-sed -i "s/@SITE_TLD/${SITE_TLD}/g" "$TMP_NGINX_BLOCK_STAGING"
-sed -i "s/@SITE_DOMAIN/${SITE_DOMAIN}/g" "$TMP_NGINX_BLOCK_STAGING"
+
+## example.com = staging.example.com
+## www.example.com = staging.example.com
+## sub.example.com = staging.sub.example.com
+SITE_DOMAIN_EXCLUDING_WWW=$(sed -i "s/www.//g" "${SITE_DOMAIN}")
+
+sed -i "s/@SITE_DOMAIN_EXCLUDING_WWW/${SITE_DOMAIN}/g" "$TMP_NGINX_BLOCK_STAGING"
+
+
 sed -i "s/@CACHEVALID/${FCGI_CACHE_VALID}/g" "$TMP_NGINX_BLOCK_STAGING"
 
 ## Multisite domain mapping (optional) ##
