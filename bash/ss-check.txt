@@ -353,6 +353,14 @@ mkdir /var/www/logs
 mkdir /var/www/meta
 mkdir /var/www/sites
 
+## if staging enabled
+if [[ "$STAGING_SITE" != "false" ]]; then 
+    mkdir /var/www/html/staging/.well-known
+    mkdir /var/www/html/staging/.well-known/acme-challenge
+    chown -R "${SFTP_USER}":www-data /var/www/html/staging/.well-known ## accessed by server for e.g. Cerbot but also by SFTP user for things like Stripe ##
+    chown -R "${SFTP_USER}":www-data /var/www/html/staging/.well-known/acme-challenge ## accessed by server for e.g. Cerbot but also by SFTP user for things like Stripe ##
+fi
+
 ## user/group ownership ##
 chown root:root /var/www ## must be root:root
 chown root:root /var/www/backups ## must be root:root
