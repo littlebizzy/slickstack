@@ -25,7 +25,7 @@ server {
     listen                 [::]:80;
     listen                 [::]:443 ssl;
     server_name            _;
-    return 301             https://@DOMAIN$request_uri;
+    return 301             https://@SITE_DOMAIN$request_uri;
 }
 
 ####################################################################################################
@@ -36,13 +36,14 @@ server {
 ## because SlickStack is HTTPS-only the canonical block is port 443 (SSL) only ##
 
 server {
-    listen                 443 ssl http2;
-    listen                 [::]:443 ssl http2;
-    server_name            @SITE_DOMAIN;
-		if ($http_host !~ "@SITE_DOMAIN|dev.@SITE_DOMAIN_EXCLUDING_WWW|staging.@SITE_DOMAIN_EXCLUDING_WWW") {
-            return 301    $scheme://@SITE_DOMAIN$request_uri;
-    	}
-	root /var/www/html;
+    listen				443 ssl http2;
+    listen				[::]:443 ssl http2;
+    server_name			@SITE_DOMAIN;
+	root				/var/www/html;
+	
+	if ($http_host !~ "@SITE_DOMAIN|staging.@SITE_DOMAIN_EXCLUDING_WWW") {
+    	return 301    $scheme://@SITE_DOMAIN$request_uri;
+		}
     
 ####################################################################################################
 #### Server Block (Production): Indexing + Public URI + Try Files Settings #########################
