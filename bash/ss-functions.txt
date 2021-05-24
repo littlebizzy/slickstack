@@ -42,7 +42,21 @@ SYSTEM_HOSTNAME=$(/bin/hostname -f) ## remove -f in future
 SS_EOF="SS_EOF"
 SLEEP_MESSAGE_BEGIN="1s"
 
+## https://linuxize.com/post/how-to-check-if-string-contains-substring-in-bash/
+## https://stackoverflow.com/questions/2440947/how-to-build-a-conditional-assignment-in-bash
+## myvar="default" && [[ <some_condition_is_true> ]]  && myvar="non-default"
+
 SITE_DOMAIN_EXCLUDING_WWW=$(echo "${SITE_DOMAIN/www./}")
+
+PREFIX_WWW="www."
+SITE_DOMAIN_CONTAINS_WWW=$(grep -q "${PREFIX_WWW}" <<< "${SITE_DOMAIN}")
+
+if [[ "$SITE_DOMAIN_CONTAINS_WWW" == "true" ]]; then
+    SITE_DOMAIN_INCLUDING_WWW="${SITE_DOMAIN}"
+else 
+    SITE_DOMAIN_INCLUDING_WWW="www.${SITE_DOMAIN}"
+fi
+
 
 ## mirror links (ss core cron jobs) ##
 MIRROR_00_CRONTAB="https://raw.githubusercontent.com/littlebizzy/slickstack/master/crons/00-crontab.txt"
@@ -934,5 +948,7 @@ ENDSTAND=$(tput rmso) # end standout
 ## Ref: https://linoxide.com/linux-command/how-to-display-system-hardware-information-in-bios/
 ## Ref: https://unix.stackexchange.com/questions/288521/with-the-linux-cat-command-how-do-i-show-only-certain-lines-by-number
 ## Ref: https://www.howtoforge.com/linux-lshw-command/
+## Ref: https://linuxize.com/post/how-to-check-if-string-contains-substring-in-bash/
+## Ref: https://stackoverflow.com/questions/2440947/how-to-build-a-conditional-assignment-in-bash
 
 ## SS_EOF
