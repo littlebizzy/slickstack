@@ -39,6 +39,8 @@ SlickStack is a free LEMP stack automation script written in Bash designed to en
 
 ## Changelog
 
+* **NEW!** The self-signed OpenSSL certificate has been modernized to use 4096 bit key (previously only 2048) and to support the full array of domain names required by a typical SlickStack server including example.com, www.example.com, staging.example.com, and dev.example.com (previously just a single FQDN). This improvement is crucial to preparing SlickStack to properly and securely handle staging sites, etc.
+
 * **NEW!** A new variable `SS_DATABASE_REMOTE` in the `ss-config` now indicates whether your origin server is using a remote MySQL database or not. If this variable is set to `true` than `ss-install` will skip installation of MySQL module on the origin server.
 
 * **NEW!** All Nginx server blocks are now installed under `/var/www/sites` instead of the default Debian folder `/etc/nginx/sites-available` and/or `/etc/nginx/sites-enabled` ... this means that you can now easily backup your server blocks by setting your remote SFTP backup service to sync everything under the `/var/www/` parent directory... it also means one more thing you don't need to `cd` around Linux to find anymore... since SlickStack only supports a single domain and everything is automated using our `ss-config` settings, there was no need to keep the Debian approach to Nginx server blocks anymore.
