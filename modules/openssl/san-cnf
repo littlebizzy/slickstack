@@ -1,23 +1,29 @@
 ## really only needed for CSR requests to third-party CA certificates ##
 ## https://virtuallytd.com/post/ssl-certificates-with-san-attributes/ ##
+## generate CSR: 
+## openssl req -out /tmp/san_cert/san_cert.csr -newkey rsa:2048 -nodes -keyout /tmp/san_cert/san_cert_private.key -config /tmp/san_cert/san_cert.cnf
+## verify after done: openssl req -noout -text -in /tmp/san_cert/san_cert.csr | grep DNS
 
 [ req ]
-default_bits       = 4096
+default_bits = 4096
 distinguished_name = req_distinguished_name
-req_extensions     = req_ext
+req_extensions = req_ext
+prompt = no
 [ req_distinguished_name ]
-countryName                = @CSR_COUNTRY
-stateOrProvinceName        = @CSR_STATE
-localityName               = @CSR_CITY
-organizationName           = @CSR_COMPANY
-commonName                 = @SITE_DOMAIN
+countryName = @CSR_COUNTRY
+stateOrProvinceName = @CSR_STATE
+localityName = @CSR_CITY
+organizationName = @CSR_COMPANY
+organizationalUnitName = @CSR_DEPT
+commonName = @SITE_DOMAIN
 [ req_ext ]
 subjectAltName = @alt_names
 [alt_names]
-DNS.1   = @SITE_DOMAIN_EXCLUDING_WWW
-DNS.2   = @SITE_DOMAIN_INCLUDING_WWW
-DNS.3   = staging.@SITE_DOMAIN_EXCLUDING_WWW
-DNS.3   = dev.@SITE_DOMAIN_EXCLUDING_WWW
+DNS.1 = @SITE_DOMAIN_EXCLUDING_WWW
+DNS.2 = @SITE_DOMAIN_INCLUDING_WWW
+DNS.3 = staging.@SITE_DOMAIN_EXCLUDING_WWW
+DNS.4 = dev.@SITE_DOMAIN_EXCLUDING_WWW
+IP.1 = @SYSTEM_IPV4_ADDRESS
 
 ####################################################################################################
 #### SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ###############
@@ -33,5 +39,6 @@ DNS.3   = dev.@SITE_DOMAIN_EXCLUDING_WWW
 ## Ref: https://security.stackexchange.com/questions/74345/provide-subjectaltname-to-openssl-directly-on-the-command-line/198409#198409
 ## Ref: https://gist.github.com/patrickcrocker/a9256ecdb758ce85d01d
 ## Ref: https://virtuallytd.com/post/ssl-certificates-with-san-attributes/
+## Ref: https://ospi.fi/blog/openssl-req-with-san-subjectaltname-.html
 
 ## SS_EOF
