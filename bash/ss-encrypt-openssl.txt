@@ -56,21 +56,12 @@ rm /var/www/certs/*.crt
 rm /var/www/certs/keys/*.key	
 
 ## generate self-signed certificate (expires after 10 years) ##
-openssl req -new -x509 -nodes -days 3650 -newkey rsa:2048 -keyout /var/www/certs/keys/slickstack.key -out /var/www/certs/slickstack.crt -subj "/C=${CSR_COUNTRY}/ST=${CSR_STATE}/L=${CSR_CITY}/O=${CSR_COMPANY}/OU=${CSR_DEPT}/CN=${SITE_DOMAIN}"
+openssl req -x509 -newkey rsa:4096 -sha256 -days 3650 -nodes -keyout /var/www/certs/keys/slickstack.key -out /var/www/certs/slickstack.crt -subj "/C=${CSR_COUNTRY}/ST=${CSR_STATE}/L=${CSR_CITY}/O=${CSR_COMPANY}/OU=${CSR_DEPT}/CN=${SITE_DOMAIN}"
 
-# openssl req -new -key my.key -out my.csr -subj "/CN=*.domain.com" -addext "subjectAltName=DNS:one.complex.domain.com,DNS:completely.another.domain.com"
+#openssl req -x509 -newkey rsa:4096 -sha256 -days 3650 -nodes \
+#  -keyout /var/www/certs/keys/slickstack.key -out /var/www/certs/slickstack.crt -subj "/CN=${SITE_DOMAIN}" \
+#  -addext "subjectAltName=DNS:${SITE_DOMAIN_EXCLUDING_WWW},DNS:${SITE_DOMAIN_INCLUDING_WWW},DNS:staging.${SITE_DOMAIN_EXCLUDING_WWW},DNS:dev.${SITE_DOMAIN_EXCLUDING_WWW},IP:${SYSTEM_IPV4_ADDRESS}"
 
-# openssl req -out sslcert.csr -newkey rsa:2048 -nodes -keyout private.key -config /var/www/certs/san.cnf
-
-# openssl req -new -subj "/C=GB/CN=foo" \
-##                   -addext "subjectAltName = DNS:foo.co.uk" \
-#                  -addext "certificatePolicies = 1.2.3.4" \
-#                  -newkey rsa:2048 -keyout key.pem -out req.pem
-                  
-# openssl req -x509 -newkey rsa:4096 -sha256 -days 3650 -nodes \
-#   -keyout example.key -out example.crt -subj '/CN=example.com' \
-#  -addext 'subjectAltName=DNS:example.com,DNS:example.net'
-  
 ## VERIFY command: openssl x509 -noout -text -in example.crt
 ## VERIFY alt: openssl req -noout -text -in sslcert.csr | grep DNS
 
@@ -162,5 +153,10 @@ touch "$TIMESTAMP_SS_ENCRYPT_OPENSSL"
 ## Ref: https://support.citrix.com/article/CTX135602_
 ## Ref: https://support.citrix.com/article/CTX227983
 ## Ref: https://security.stackexchange.com/questions/74345/provide-subjectaltname-to-openssl-directly-on-the-command-line
+## Ref: https://stackoverflow.com/questions/37035300/how-to-determine-the-default-location-for-openssl-cnf
+## Ref: https://stackoverflow.com/questions/10175812/how-to-create-a-self-signed-certificate-with-openssl/41366949#41366949
+## Ref: https://www.freecodecamp.org/news/openssl-command-cheatsheet-b441be1e8c4a/
+## Ref: https://www.redhat.com/sysadmin/6-openssl-commands
+## Ref: https://geekflare.com/openssl-commands-certificates/
 
 ## SS_EOF
