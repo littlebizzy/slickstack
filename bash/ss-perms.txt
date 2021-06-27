@@ -8,8 +8,8 @@
 #### destination: n/a (not a boilerplate) ##########################################################
 #### purpose: Resets all file and user permissions across the entire SlickStack server #############
 #### module version: Ubuntu 20.04 LTS ##############################################################
-#### sourced by: ss-install, ss-update, ss core cron jobs ##########################################
-#### bash aliases: ss perms ########################################################################
+#### sourced by: ss core cron jobs, ss-install, ss-update-modules ##################################
+#### bash aliases: ss perms, ss reset perms ########################################################
 ####################################################################################################
 
 ## source ss-config ##
@@ -32,15 +32,7 @@ echo -e "${PURPLE}Running ss-perms: Resets all file and user permissions across 
 sleep "$SLEEP_MESSAGE_BEGIN"
 
 ####################################################################################################
-#### SS-Perms: Reset Ubuntu (System Files + Users/Groups) Permissions ##############################
-####################################################################################################
-
-## here we ensure permissions are safe for general system (Linux) files and otherwise ##
-## since this is a single-user stack we can lock these down without issues ##
-
-
-####################################################################################################
-#### SS-Perms: Reset Permissions (SlickStack Core Files) ##########################################
+#### SS-Perms: Reset Permissions (SlickStack) ######################################################
 ####################################################################################################
 
 ## SNIPPET: ss-check, ss-perms, ss-worker
@@ -90,6 +82,34 @@ chmod 0775 /var/www/logs ## 6755 should also work
 chmod 0775 /var/www/meta ## 6755 should also work
 
 ####################################################################################################
+#### SS-Perms: Reset Permissions (Ubuntu) ##########################################################
+####################################################################################################
+
+## here we ensure permissions are safe for general system (Linux) files and otherwise ##
+## since this is a single-user stack we can lock these down without issues ##
+
+## run ss-perms-ubuntu-bash ##
+source "$PATH_SS_PERMS_UBUNTU_BASH"
+
+## run ss-perms-ubuntu-crontab ##
+source "$PATH_SS_PERMS_UBUNTU_CRONTAB"
+
+## run ss-perms-ubuntu-kernel ##
+source "$PATH_SS_PERMS_UBUNTU_KERNEL"
+
+## run ss-perms-ubuntu-ssh ##
+source "$PATH_SS_PERMS_UBUNTU_SSH"
+
+## run ss-perms-ubuntu-swapfile ##
+source "$PATH_SS_PERMS_UBUNTU_SWAPFILE"
+
+## run ss-perms-ubuntu-users ##
+source "$PATH_SS_PERMS_UBUNTU_USERS"
+
+## run ss-perms-ubuntu-utils ##
+source "$PATH_SS_PERMS_UBUNTU_UTILS"
+
+####################################################################################################
 #### SS-Perms: Reset Permissions (Adminer) #########################################################
 ####################################################################################################
 
@@ -134,7 +154,7 @@ source "$PATH_SS_PERMS_NGINX_PACKAGES"
 source "$PATH_SS_PERMS_NGINX_CONFIG"
 
 ####################################################################################################
-#### SS-Perms: Reset Permissions (CMS) #######################################################
+#### SS-Perms: Reset Permissions (CMS) #############################################################
 ####################################################################################################
 
 if [[ "$SS_APP" == "craft" ]]; then
@@ -200,16 +220,16 @@ fi
 if [[ "$SS_APP" == "wordpress" || -z "$SS_APP"  ]]; then
 
     ## run ss-perms-wordpress-core ##
-    source /var/www/ss-perms-wordpress-core
+    source "$PATH_SS_PERMS_WORDPRESS_CORE"
 
     ## run ss-perms-wordpress-config ##
-    source /var/www/ss-perms-wordpress-config
+    source "$PATH_SS_PERMS_WORDPRESS_CONFIG"
 
     ## run ss-perms-wordpress-mu-plugins ##
-    source /var/www/ss-perms-wordpress-mu-plugins
+    source "$PATH_SS_PERMS_WORDPRESS_MU_PLUGINS"
 
     ## run ss-perms-wordpress-cli ##
-    source /var/www/ss-perms-wordpress-cli
+    source "$PATH_SS_PERMS_WORDPRESS_CLI"
     
 fi
 
@@ -222,28 +242,6 @@ source "$PATH_SS_PERMS_REDIS_PACKAGES"
 
 ## run ss-perms-redis-config ##
 source "$PATH_SS_PERMS_REDIS_CONFIG"
-
-####################################################################################################
-#### SS-Perms: Reset Permissions (Ubuntu) ##########################################################
-####################################################################################################
-
-## run ss-perms-ubuntu-bash ##
-source /var/www/ss-perms-ubuntu-bash
-
-## run ss-perms-ubuntu-crontab ##
-source /var/www/ss-perms-ubuntu-crontab
-
-## run ss-perms-ubuntu-kernel ##
-source /var/www/ss-perms-ubuntu-kernel
-
-## run ss-perms-ubuntu-ssh ##
-source /var/www/ss-perms-ubuntu-ssh
-
-## run ss-perms-ubuntu-users ##
-source /var/www/ss-perms-ubuntu-users
-
-## run ss-perms-ubuntu-utils ##
-source /var/www/ss-perms-ubuntu-utils
 
 ####################################################################################################
 #### SS-Perms: Reset Permissions (UFW Firewall) ####################################################
