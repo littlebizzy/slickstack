@@ -6,14 +6,14 @@
 #### mirror: https://mirrors.slickstack.io/bash/ss-dump-database.txt ###############################
 #### path: /var/www/ss-dump-database ###############################################################
 #### destination: n/a (not a boilerplate) ##########################################################
-#### purpose: Dumps prod database to /var/www/meta/archive/mysql/wp.sql (SFTP user can access) #####
+#### purpose: Dumps database(s) under /var/www/backups/mysql/... (SFTP user can access) ############
 #### module version: MySQL 8.0.x ###################################################################
-#### sourced by: ss core bash scripts, ss core cron jobs ###########################################
+#### sourced by: ss core cron jobs, ss core bash scripts ###########################################
 #### bash aliases: ss dump database, ss dump db, ss dump mysql #####################################
 ####################################################################################################
 
-## KEEP IN MIND THAT SS-DUMP MIGHT ONLY FUNCTION PROPERLY ON LOCALHOST DATABASES ##
-## REMOTE MYSQL AND SERVER SETTINGS MIGHT PREVENT REMOTE DATABASE DUMPING ##
+## KEEP IN MIND SS-DUMP-DATABASE MIGHT ONLY FUNCTION PROPERLY ON LOCALHOST DATABASES ##
+## REMOTE MYSQL SERVER SETTINGS (ETC) MIGHT PREVENT REMOTE DATABASE DUMPING ##
 
 ## source ss-config ##
 source /var/www/ss-config
@@ -35,20 +35,30 @@ echo -e "${PURPLE}Running ss-dump-database: Dumps prod database to /var/www/meta
 sleep "$SLEEP_MESSAGE_BEGIN"
 
 ####################################################################################################
-#### SS-Dump-Database: Dump The Live (Production) MySQL Database ###################################
+#### SS-Dump-Database: Dump The MySQL Database(s) ##################################################
 ####################################################################################################
 
-## here we use mysqldump to dump the live production database to /var/www/meta/archive/ ##
-## to ensure support for remote databases we force the TCP protocol to be used ##
+## here we use mysqldump to dump the various databases under /var/www/backups/mysql/ ##
+## to support remote database servers we force the TCP protocol (not sockets) ##
 
 ## dump production database ##
-if [[ "$SS_DUMP_MYSQL_DB" != "false" ]]; then
-    mysqldump --databases "$DB_NAME" > "$PATH_DUMP_MYSQL_DATABASE"
+if [[ "$SS_DUMP_DATABASE_PRODUCTION" != "false" ]]; then
+    mysqldump --databases "$DB_NAME" > "$PATH_DUMP_DATABASE_PRODUCTION"
+fi
+
+## dump staging database ##
+if [[ "$SS_DUMP_DATABASE_STAGING" == "true" ]]; then
+    mysqldump --databases "$DB_NAME" > "$PATH_DUMP_DATABASE_STAGING"
+fi
+
+## dump development database ##
+if [[ "$SS_DUMP_DATABASE_DEVELOPMENT" == "true" ]]; then
+    mysqldump --databases "$DB_NAME" > "$PATH_DUMP_DATABASE_DEVELOPMENT"
 fi
 
 ## DO NOT ENABLE THIS IN SS-CONFIG UNLESS YOUR SERVER HAS A TON OF EXTRA DISK SPACE ##
 ## (also in future should stop mysql-server here before ss-dump to avoid corrupted mysql data files) ##
-if [[ "$SS_DUMP_MYSQL_FILES" == "true" ]]; then 
+if [[ "$SS_DUMP_DATABASE_FILES" == "true" ]]; then 
     cp /var/lib/mysql /var/www/backups/mysql/data/mysql.bak
     cp /var/lib/mysql-files /var/www/backups/mysql/data/mysql-files.bak
     cp /var/lib/mysql-keyring /var/www/backups/mysql/data/mysql-keyring.bak
