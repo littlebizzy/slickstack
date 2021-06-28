@@ -14,7 +14,7 @@ SlickStack is a free LEMP stack automation script written in Bash designed to en
 
 ## Core Modules
 
-*Last updated: May 24, 2021*
+*Last updated: Jun 27, 2021*
 
 *Default Ports: 80 (HTTP), 443 (HTTPS), 6969 (SSH)*
 
@@ -32,7 +32,7 @@ SlickStack is a free LEMP stack automation script written in Bash designed to en
 | **WordPress** | [mirrors](https://mirrors.slickstack.io/modules/wordpress/) | 5.7.2 | some WP Core junk files are removed by `ss-clean` |
 | **MU Plugins** | [mirrors](https://mirrors.slickstack.io/modules/wordpress/mu-plugins/) | (n/a) | optional `mu-plugins` by LittleBizzy |
 | **WP-CLI** | [mirrors](https://mirrors.slickstack.io/modules/wordpress/wp-cli/) | 2.4.0 | default config |
-| **Adminer** | [mirrors](https://mirrors.slickstack.io/modules/adminer/) | 4.7.9 | default config |
+| **Adminer** | [mirrors](https://mirrors.slickstack.io/modules/adminer/) | 4.8.1 | default config |
 | **Git** | [mirrors](https://mirrors.slickstack.io/modules/git/) | 2.25.x | default config |
 | **UFW Firewall** | [mirrors](https://mirrors.slickstack.io/modules/ufw-firewall/) | 0.36 | `ufw` + `ufw.conf` + `user-rules` |
 | **ClamAV** | [mirrors](https://mirrors.slickstack.io/modules/clamav/) | 0.102.x | `freshclam.conf` |
