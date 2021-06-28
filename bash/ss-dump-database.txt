@@ -6,7 +6,7 @@
 #### mirror: https://mirrors.slickstack.io/bash/ss-dump-database.txt ###############################
 #### path: /var/www/ss-dump-database ###############################################################
 #### destination: n/a (not a boilerplate) ##########################################################
-#### purpose: Dumps database(s) under /var/www/backups/mysql/... (SFTP user can access) ############
+#### purpose: Dumps the database(s) to /var/www/backups/mysql/ (SFTP user can access) ##############
 #### module version: MySQL 8.0.x ###################################################################
 #### sourced by: ss core cron jobs, ss core bash scripts ###########################################
 #### bash aliases: ss dump database, ss dump db, ss dump mysql #####################################
@@ -31,7 +31,7 @@ source /var/www/ss-functions
 ## it will only be noticed by sudo users who manually call ss core bash scripts ##
 
 ## echo message ##
-echo -e "${PURPLE}Running ss-dump-database: Dumps database(s) under /var/www/backups/mysql/... (SFTP user can access)... ${NOCOLOR}"
+echo -e "${PURPLE}Running ss-dump-database: Dumps the database(s) to /var/www/backups/mysql/ (SFTP user can access)... ${NOCOLOR}"
 sleep "$SLEEP_MESSAGE_BEGIN"
 
 ####################################################################################################
@@ -72,15 +72,19 @@ fi
 ## keep in mind that root/sudo users will have access to this file regardless ##
 
 ## reset permissions ##
-chown -R $SFTP_USER:www-data /var/www/meta/wp.sql
-chmod 0775 /var/www/meta/wp.sql
+chown -R $SFTP_USER:www-data "$PATH_DUMP_DATABASE_PRODUCTION"
+chown -R $SFTP_USER:www-data "$PATH_DUMP_DATABASE_STAGING"
+chown -R $SFTP_USER:www-data "$PATH_DUMP_DATABASE_DEVELOPMENT"
+chmod 0775 "$PATH_DUMP_DATABASE_PRODUCTION"
+chmod 0775 "$PATH_DUMP_DATABASE_STAGING"
+chmod 0775 "$PATH_DUMP_DATABASE_DEVELOPMENT"
 
 ####################################################################################################
 #### SS-Dump-Database: SUCCESS (OR FAIL) MESSAGE ###################################################
 ####################################################################################################
 
 ## FUTURE: if = file exists + recent touch time + file contents not zero ##
-echo -e "${GREEN}Exiting ss-dump-database: The database was successfully dumped to /var/www/meta/archive/mysql/wp.sql... ${NOCOLOR}"
+echo -e "${GREEN}Exiting ss-dump-database: The database(s) were successfully dumped to /var/www/backups/mysql/... ${NOCOLOR}"
 
 ####################################################################################################
 #### SS-Dump-Database: Touch Timestamp File (End Script) ###########################################
