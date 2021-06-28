@@ -222,13 +222,13 @@ WP_ALLOW_UNFILTERED_UPLOADS="true"
 ## some of the below SSL settings only apply to either OpenSSL or Lets Encrypt certs ##
 ## to avoid confusion we maintain all SSL related settings in the same place ##
 
-## SSL_TYPE = [openssl|certbot] OpenSSL is easier to manage (CloudFlare required if chosen) ##
-## SSL_PROTOCOLS = [TLSv1.2 TLSv1.3|etc] for PCI standards etc best to use 1.2 + 1.3 ##
+## SSL_TYPE = [openssl|certbot|thirdparty] OpenSSL is easiest but requires CloudFlare ##
+## SSL_PROTOCOLS = [TLSv1.2 TLSv1.3] nearly all servers should be using 1.2 and 1.3 ##
 ## SSL_SESSION_TIMEOUT = [120m|360m|1d|etc] less sensitive sites can use a higher setting ##
 ## SSL_SESSION_CACHE = [shared:SSL:64m] there should be no reason to use other settings ##
 ## SSL_BUFFER_SIZE = [4K|8k|16k] smaller is better but less than 16k can cause errors ##
 
-SSL_TYPE="@SSL_TYPE"
+SSL_TYPE="@SSL_TYPE" ## thirdparty coming soon
 SSL_PROTOCOLS="TLSv1.2 TLSv1.3"
 SSL_CIPHERS="ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384"
 SSL_SESSION_TIMEOUT="1d"
@@ -251,38 +251,38 @@ CSR_DEPT="DevOps"
 ## ...ss-install wizard would need to pause or something if DNS verify chosen?
 
 ####################################################################################################
-#### SS-Config: Nginx + Open File Cache Settings (nginx.conf) ######################################
+#### SS-Config: Nginx + Open File Cache Settings (Nginx.conf) ######################################
 ####################################################################################################
 
 ## default Nginx settings assume that CloudFlare is in front of your origin VPS server ##
 ## this means that most settings are very liberal to allow for traffic scaling ##
 
-## NGINX_HEADER_POWERED_BY = [SlickStack|etc] keep this or change to your agency name, etc ##
-## NGINX_HEADER_STRICT_TRANSPORT_SECURITY = [max-age=15552000|etc] only for experts ##
-## NGINX_HEADER_REFERRER_POLICY = [strict-origin-when-cross-origin|etc] only for experts ##
+## NGINX_HEADER_POWERED_BY = [SlickStack|etc] keep this or change to your super cool name ##
+## NGINX_HEADER_STRICT_TRANSPORT_SECURITY = [max-age=15552000] only for experts ##
+## NGINX_HEADER_REFERRER_POLICY = [strict-origin-when-cross-origin] only for experts ##
 ## NGINX_HEADER_PERMISSIONS_POLICY = [*bleeding edge*] a very new and evolving header ##
 ## NGINX_HEADER_FEATURE_POLICY = [*bleeding edge*] a very new and evolving header ##
 
 NGINX_HEADER_POWERED_BY="SlickStack"
-NGINX_HEADER_STRICT_TRANSPORT_SECURITY="max-age=15552000" ## 180 days (always)
+NGINX_HEADER_STRICT_TRANSPORT_SECURITY="max-age=15552000" ## 180 days
 NGINX_HEADER_REFERRER_POLICY="strict-origin-when-cross-origin"
 NGINX_HEADER_PERMISSIONS_POLICY="accelerometer=(), ambient-light-sensor=(), autoplay=*, battery=(), camera=(), display-capture=*, document-domain=*, encrypted-media=*, fullscreen=*, geolocation=(self), gyroscope=(), layout-animations=*, legacy-image-formats=*, magnetometer=(), microphone=(self), midi=(), oversized-images=*, payment=*, picture-in-picture=*, publickey-credentials-get=*, sync-xhr=*, usb=(), vibrate=(), wake-lock=(), xr-spatial-tracking=()"
 NGINX_HEADER_FEATURE_POLICY="ambient-light-sensor none; animations self; autoplay none; accelerometer none; camera none; display-capture none; document-domain none; document-write none; encrypted-media none; fullscreen self; geolocation none; gyroscope none; image-compression *; legacy-image-formats *; magnetometer none; max-downscaling-image *; microphone none; midi none; notifications self; payment none; picture-in-picture self; push none; speaker self; sync-xhr none; unsized-media *; usb none; vertical-scroll self; wake-lock none; webauthn none; vibrate none; vr none; xr-spatial-tracking none;"
 
-## NGINX_WORKER_RLIMIT_NOFILE =
-## NGINX_WORKER_CONNECTIONS =
-## NGINX_SERVER_NAMES_HASH_BUCKET_SIZE = 
-## NGINX_SERVER_NAMES_MAX_HASH_SIZE =
-## NGINX_TYPES_MAX_HASH_SIZE =
-## NGINX_CLIENT_MAX_BODY_SIZE =
-## NGINX_CLIENT_BODY_BUFFER_SIZE =
-## NGINX_CLIENT_HEADER_BUFFER_SIZE =
-## NGINX_LARGE_CLIENT_HEADER_BUFFERS =
-## NGINX_CLIENT_BODY_TIMEOUT =
-## NGINX_CLIENT_HEADER_TIMEOUT =
-## NGINX_KEEPALIVE_TIMEOUT =
-## NGINX_KEEPALIVE_REQUESTS =
-## NGINX_SEND_TIMEOUT =
+## NGINX_WORKER_RLIMIT_NOFILE = [655535] our default is the max limit for nofile ##
+## NGINX_WORKER_CONNECTIONS = [8192|etc] be careful changing in relation to other settings ##
+## NGINX_SERVER_NAMES_HASH_BUCKET_SIZE = [64|etc] only for experts ##
+## NGINX_SERVER_NAMES_MAX_HASH_SIZE = [512|etc] only for experts ##
+## NGINX_TYPES_MAX_HASH_SIZE = [2048|etc] only for experts ##
+## NGINX_CLIENT_MAX_BODY_SIZE = [512M|etc] decreasing this might produce fatal errors ##
+## NGINX_CLIENT_BODY_BUFFER_SIZE = [16k|etc] be a good boy dont mess with buffers ##
+## NGINX_CLIENT_HEADER_BUFFER_SIZE = [4k|etc] be a good boy dont mess with buffers ##
+## NGINX_LARGE_CLIENT_HEADER_BUFFERS = [4 64k|etc] yes that space is required ##
+## NGINX_CLIENT_BODY_TIMEOUT = [15s|etc] be a good boy dont mess with timeouts ##
+## NGINX_CLIENT_HEADER_TIMEOUT = [15s|etc] be a good boy dont mess with timeouts ##
+## NGINX_KEEPALIVE_TIMEOUT = [90s|etc] be a good boy dont mess with timeouts ##
+## NGINX_KEEPALIVE_REQUESTS = [65535] our default is the max limit for requests ##
+## NGINX_SEND_TIMEOUT = [120s|etc] might not do what you think it does ##
 
 NGINX_WORKER_RLIMIT_NOFILE="65535"
 NGINX_WORKER_CONNECTIONS="8192"
