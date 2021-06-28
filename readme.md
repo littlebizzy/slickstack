@@ -16,8 +16,6 @@ SlickStack is a free LEMP stack automation script written in Bash designed to en
 
 *Last updated: Jun 27, 2021*
 
-*Default Ports: 80 (HTTP), 443 (HTTPS), 6969 (SSH)*
-
 | LEMP Module | Mirrors | Version | What does SlickStack [ss] customize? |
 | :------------- | :----------: | :----------: | :----------: |
 | **Ubuntu LTS** | [mirrors](https://mirrors.slickstack.io/modules/ubuntu/) | 20.04 | `crontab` + `gai.conf` + `sshd_config` + `sudoers` + `sysctl.conf` |
