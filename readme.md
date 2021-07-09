@@ -34,6 +34,8 @@ SlickStack is a free LEMP stack automation script written in Bash designed to en
 
 ## Changelog
 
+* **NEW!** `ss-install-php-packages` will now verify that your "custom" PHP extensions are the correct version in `ss-config` before installing them, otherwise it will revert to using our default PHP extensions. We've also cleaned up the script to begin our goal of automatic compatibility with any Ubuntu LTS (and PHP) version so that SlickStack will automatically install the default PHP version preferred by each Ubuntu LTS version. At this time, we have no plans to support multiple PHP versions per server or non-standard PHP versions per server, since predictability is a major goal for us.
+
 * **NEW!** More generic filenames now exist by default for database dumps, and we have prepared (not fully supported yet) to support dumping any of the 3 databases e.g. production.sql, staging.sql, and development.sql into the `/var/www/backups/mysql/` directory whenever `ss-dump-database` runs. Keep in mind that by default only the production database will be dumped at scheduled intervals. For large databases, be sure you have disk space!
 
 * **NEW!** We have decided to not proceed with support for Postfix (email module) at this time, probably indefinitely. There are too many security and configuration issues to worry about and maintain. Also, modern cloud platforms have their own email alert systems in place for server resources, so there is less reason to support the server OS to be able to send out email alerts (which was the main reason we were considering Postfix support). Alternatively, we will continue to improve the SlickStack panel in WP Admin which may eventually support having WordPress sending out email alerts based on SLickStack status reports.
