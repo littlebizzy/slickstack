@@ -92,24 +92,30 @@ apt update
 # fi
 
 ####################################################################################################
-#### SS-Install-MySQL-Core: Install MySQL ##########################################################
+#### SS-Install-MySQL-Packages: Install MySQL ######################################################
 ####################################################################################################
 
-## this script will only install the MySQL packages if not set to false in ss-config ##
-## remote database environments might not require localhost MySQL installed ##
+## this script will install the MySQL packages unless it is set to false in ss-config ##
+## remote database environments should not require localhost MySQL installed ##
 
-## only run ss-install-mysql if not set to false in ss-config ##
-# if [[ "$DB_HOST" != "127.0.0.1" ]]; then 
-# fi
+## for localhost databases ##
+if [[ "$SS_DATABASE_REMOTE" != "true" ]]; then 
 
-## install MySQL 8.0 if server is running Ubuntu 20.04 ##
-if [[ "${UBUNTU_VERSION}" = "20.04" || -z "${UBUNTU_VERSION}" ]]; then 
-    apt install mysql-server-8.0
-fi
+    ## mysql-server-8.1 (Ubuntu 22.04 LTS) ##
+    if [[ "${UBUNTU_VERSION}" = "22.04" ]]; then 
+        apt install mysql-server-8.1
+    fi
 
-## install MySQL 5.7 if server is running Ubuntu 18.04 ##
-if [[ "${UBUNTU_VERSION}" = "18.04" ]]; then
-    apt install mysql-server-5.7
+    ## mysql-server-8.0 (Ubuntu 20.04 LTS) ##
+    if [[ "${UBUNTU_VERSION}" = "20.04" || -z "${UBUNTU_VERSION}" ]]; then 
+        apt install mysql-server-8.0
+    fi
+
+    ## mysql-server-5.7 (Ubuntu 18.04 LTS) ##
+    if [[ "${UBUNTU_VERSION}" = "18.04" ]]; then
+        apt install mysql-server-5.7
+    fi
+
 fi
 
 ####################################################################################################
@@ -415,5 +421,6 @@ touch "$TIMESTAMP_SS_INSTALL_MYSQL_PACKAGES"
 ## Ref: https://www.digitalocean.com/community/tutorials/how-to-configure-ssl-tls-for-mysql-on-ubuntu-18-04
 ## Ref: https://dev.mysql.com/doc/refman/8.0/en/encrypted-connections.html
 ## Ref: https://unix.stackexchange.com/questions/47584/in-a-bash-script-using-the-conditional-or-in-an-if-statement
+## Ref: https://vettabase.com/blog/the-risks-of-mysql-release-policy/
 
 ## SS_EOF
