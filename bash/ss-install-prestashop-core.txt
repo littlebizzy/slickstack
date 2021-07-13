@@ -48,6 +48,8 @@ source "$PATH_SS_INSTALL_UBUNTU_UTILS"
 #### SS-Install-PrestaShop-Core: Install Latest Stable (Minor) PrestaShop Version ##################
 ####################################################################################################
 
+if [[ "$SS_APP" == "prestashop" ]]; then
+
 ## cleanup files ##
 rm /tmp/prestashop.zip*
 rm /var/www/html/prestashop*
@@ -85,6 +87,10 @@ rm "$TMP_PRESTASHOP_ZIP"
 rm /var/www/html/prestashop*
 rm /var/www/html/staging/prestashop*
 
+else
+    echo -e "${PURPLE}Exiting ss-install-prestashop-core: It appears your SlickStack is configured to use a CMS other than Prestashop... ${NOCOLOR}"
+fi
+
 ####################################################################################################
 #### SS-Install-WordPress-Core: Modify Database Options For WordPress ##############################
 ####################################################################################################
@@ -95,16 +101,6 @@ rm /var/www/html/staging/prestashop*
 ## ensure home + siteurl options are correct in the wp_options table ##
 # mysql --execute="UPDATE ${DB_PREFIX}options SET option_value='https://$SITE_DOMAIN' WHERE option_name='home'";
 # mysql --execute="UPDATE ${DB_PREFIX}options SET option_value='https://$SITE_DOMAIN' WHERE option_name='siteurl'";
-
-####################################################################################################
-#### SS-Install-WordPress-Core: Configure WP-Config File (Production + Staging) ####################
-####################################################################################################
-
-## this wp-config setup script is distinct so that it can be run separately if needed ##
-## it will also be called whenever the ss-sync (staging sync) script is run ##
-
-## run ss-install-wpconfig ##
-# source /var/www/ss-install-wpconfig
 
 ####################################################################################################
 #### SS-Install-PrestaShop-Core: Reset Permissions (PrestaShop Core) ###############################
