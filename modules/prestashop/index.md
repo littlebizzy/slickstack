@@ -15,6 +15,7 @@
 * https://www.prestashop.com
 * https://www.prestashop.com/en/versions
 * https://github.com/PrestaShop/PrestaShop/releases
+* https://github.com/PrestaShop/PrestaShop/releases/download/1.7.7.5/prestashop_1.7.7.5.zip
 
 ----
 
