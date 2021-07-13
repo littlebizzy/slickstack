@@ -7,7 +7,7 @@
 #### path: /var/www/ss-install-prestashop-core #####################################################
 #### destination: n/a (not a boilerplate) ##########################################################
 #### purpose: Reinstalls the PrestaShop module (CMS) package and non-config files (idempotent) #####
-#### module version: PrestaShop x.x.x ##############################################################
+#### module version: PrestaShop 1.7.x.x ############################################################
 #### sourced by: ss-install ########################################################################
 #### bash aliases: ss install prestashop core ######################################################
 ####################################################################################################
@@ -38,8 +38,11 @@ sleep "$SLEEP_MESSAGE_BEGIN"
 #### SS-Install-PrestaShop-Core: Install Ubuntu Utils ##############################################
 ####################################################################################################
 
+## after trial and error we have realized that installing Ubuntu utils first is good ##
+## this is because sometimes zip or other utilities are missing or so forth ##
+
 ## run ss-install-ubuntu-utils ##
-source /var/www/ss-install-ubuntu-utils
+source "$PATH_SS_INSTALL_UBUNTU_UTILS"
 
 ####################################################################################################
 #### SS-Install-PrestaShop-Core: Install Latest Stable (Minor) PrestaShop Version ##################
@@ -61,28 +64,26 @@ chmod 6775 /var/www/html
 chmod 6775 /var/www/html/staging
 
 ## download latest (patched) WordPress version ##
-wget -O /tmp/prestashop.zip http://mirrors.slickstack.io/prestashop/prestashop.zip
+wget -O "$TMP_PRESTASHOP_ZIP" "$MIRROR_PRESTASHOP_ZIP"
 
 ## install WordPress to web directory ##
-cp /tmp/prestashop.zip /var/www/html
+cp "$TMP_PRESTASHOP_ZIP" /var/www/html
 unzip /var/www/html/prestashop.zip -d /var/www/html
 chown -R www-data:slickstack /var/www/html/prestashop
 chmod 775 /var/www/html/prestashop
 rsync /var/www/html/prestashop/* /var/www/html
 
 ## install WordPress to staging subdirectory ##
-cp /tmp/prestashop.zip /var/www/html/staging
+cp "$TMP_PRESTASHOP_ZIP" /var/www/html/staging
 unzip /var/www/html/staging/prestashop.zip -d /var/www/html/staging
 chown -R www-data:slickstack /var/www/html/staging/prestashop
 chmod 775 /var/www/html/staging/prestashop
 rsync /var/www/html/staging/prestashop/* /var/www/html/staging
 
 ## cleanup files ##
-rm /tmp/prestashop.zip* &> /dev/null
-rm /var/www/html/prestashop* &> /dev/null
-rm /var/www/html/staging/prestashop* &> /dev/null
-# rm /var/www/html/wp-content/plugins/hello.php &> /dev/null
-# rm /var/www/html/staging/wp-content/plugins/hello.php &> /dev/null
+rm "$TMP_PRESTASHOP_ZIP"
+rm /var/www/html/prestashop*
+rm /var/www/html/staging/prestashop*
 
 ####################################################################################################
 #### SS-Install-WordPress-Core: Modify Database Options For WordPress ##############################
@@ -133,6 +134,6 @@ touch "$TIMESTAMP_SS_INSTALL_PRESTASHOP_CORE"
 #### SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ###############
 ####################################################################################################
 
-## Ref: 
+## Ref: https://stackoverflow.com/questions/24987542/is-there-a-link-to-github-for-downloading-a-file-in-the-latest-release-of-a-repo
 
 ## SS_EOF
