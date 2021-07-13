@@ -34,6 +34,8 @@ SlickStack is a free LEMP stack automation script written in Bash designed to en
 
 ## Changelog
 
+* **NEW!** Early support for whitelabel branding now exists, at least for changing the WP Admin menu name from "SlickStack" to a name you choose, such as your agency's name, using the new ss-config variable `WHITELABEL_BRAND`... this variable will likely be used elsewhere, in the future.
+
 * **NEW!** `ss-install-php-packages` will now verify that your "custom" PHP extensions are the correct version in `ss-config` before installing them, otherwise it will revert to using our default PHP extensions. We've also cleaned up the script to begin our goal of automatic compatibility with any Ubuntu LTS (and PHP) version so that SlickStack will automatically install the default PHP version preferred by each Ubuntu LTS version. At this time, we have no plans to support multiple PHP versions per server or non-standard PHP versions per server, since predictability is a major goal for us.
 
 * **NEW!** More generic filenames now exist by default for database dumps, and we have prepared (not fully supported yet) to support dumping any of the 3 databases e.g. production.sql, staging.sql, and development.sql into the `/var/www/backups/mysql/` directory whenever `ss-dump-database` runs. Keep in mind that by default only the production database will be dumped at scheduled intervals. For large databases, be sure you have disk space!
