@@ -6,7 +6,7 @@
 
 *Live configuration files and boilerplates used by current SlickStack installation that may be altered by LittleBizzy or Ubuntu for better performance.*
 
-* [prestashop.zip](prestashop.zip)
+* [prestashop.zip](https://github.com/PrestaShop/PrestaShop/releases/download/1.7.7.5/prestashop_1.7.7.5.zip)
 
 ### Related Links
 
