@@ -74,19 +74,20 @@ if [[ -z "$VALIDATE_SS_FUNCTIONS" ]] || [[ -n "$OUTDATED_SS_FUNCTIONS" ]]; then
 fi
 
 ####################################################################################################
-#### 13-Cron-Sometimes: Validate (Restore) SS-Functions ############################################
+#### 13-Cron-Sometimes: Validate (Restore) SS-Check + SS-Worker ####################################
 ####################################################################################################
 
 ## THIS SNIPPET DOES NOT RELY ON SS-CONFIG OR SS-FUNCTIONS
 
 ## SNIPPET: ss core cron jobs
 
-## this attempts to restore missing or damaged ss-check and ss-worker bash scripts ##
+## this attempts to restore damaged or outdated ss-check and ss-worker bash scripts ##
 ## they are critical to maintenance tasks and keeping ss core files updated ##
 
 ## validate ss-check ##
 VALIDATE_SS_CHECK=$(grep 'SS_EOF' /var/www/ss-check)
-if [[ -z "$VALIDATE_SS_CHECK" ]]; then
+OUTDATED_SS_CHECK=$(find "/var/www/ss-check" -mtime +1)
+if [[ -z "$VALIDATE_SS_CHECK" ]] || [[ -n "$OUTDATED_SS_CHECK" ]]; then
     rm -rf /tmp/ss-check
     wget --no-check-certificate -q -4 -t 1 -T 15 -O /tmp/ss-check https://raw.githubusercontent.com/littlebizzy/slickstack/master/bash/ss-check.txt
     VALIDATE_TMP_SS_CHECK=$(grep 'SS_EOF' /tmp/ss-check)
