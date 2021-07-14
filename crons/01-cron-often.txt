@@ -50,12 +50,13 @@ fi
 
 ## SNIPPET: ss core cron jobs
 
-## this attempts to restore missing or damaged ss-functions from our public mirrors ##
+## this attempts to restore damaged or outdated ss-functions from our public mirrors ##
 ## we perform this check before cron job tasks as they rely on ss-functions ##
 
 ## validate ss-functions ##
 VALIDATE_SS_FUNCTIONS=$(grep 'SS_EOF' /var/www/ss-functions)
-if [[ -z "$VALIDATE_SS_FUNCTIONS" ]]; then
+OUTDATED_SS_FUNCTIONS=$(find "/var/www/ss-functions" -mtime +1)
+if [[ -z "$VALIDATE_SS_FUNCTIONS" ]] || [[ -n "$OUTDATED_SS_FUNCTIONS" ]]; then
     rm -rf /tmp/ss-functions
     wget --no-check-certificate -q -4 -t 1 -T 15 -O /tmp/ss-functions https://raw.githubusercontent.com/littlebizzy/slickstack/master/bash/ss-functions.txt
     VALIDATE_TMP_SS_FUNCTIONS=$(grep 'SS_EOF' /tmp/ss-functions)
@@ -225,5 +226,7 @@ touch "$TIMESTAMP_01_CRON_OFTEN"
 ## Ref: https://stackoverflow.com/questions/89989/is-there-a-curl-wget-option-that-says-not-to-save-files-upon-http-errors
 ## Ref: https://unix.stackexchange.com/questions/47584/in-a-bash-script-using-the-conditional-or-in-an-if-statement
 ## Ref: https://serverfault.com/questions/52034/what-is-the-difference-between-double-and-single-square-brackets-in-bash
+## Ref: https://unix.stackexchange.com/questions/92346/why-does-find-mtime-1-only-return-files-older-than-2-days
+## Ref: https://unix.stackexchange.com/questions/257960/how-do-i-find-files-older-than-1-days-using-mtime
 
 ## SS_EOF
