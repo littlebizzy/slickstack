@@ -39,7 +39,7 @@ sleep "$SLEEP_MESSAGE_BEGIN"
 ####################################################################################################
 
 ## delete tmp files ##
-rm /tmp/sshd_config*
+rm "$TMP_SSHD_CONFIG"
 
 ####################################################################################################
 #### SS-Install-Ubuntu-SSH: Install (Configure) SSH Daemon #########################################
@@ -49,31 +49,31 @@ rm /tmp/sshd_config*
 ## keep in mind that the port number will change (and root disabled) after this ##
 
 ## download latest versions ##
-wget -O /tmp/sshd_config "$MIRROR_SSHD_CONFIG"
+wget -O "$TMP_SSHD_CONFIG" "$MIRROR_SSHD_CONFIG"
 
 ## replace variables ##
-sed -i "s/@SUDO_USER/${SUDO_USER}/g" /tmp/sshd_config
-sed -i "s/@SFTP_USER/${SFTP_USER}/g" /tmp/sshd_config
+sed -i "s/@SUDO_USER/${SUDO_USER}/g" "$TMP_SSHD_CONFIG"
+sed -i "s/@SFTP_USER/${SFTP_USER}/g" "$TMP_SSHD_CONFIG"
 
 ## set SSH port number (optional) ##
 if [[ -z "$SSH_PORT" ]]; then 
-    sed -i "s/@SSH_PORT/6969/g" /tmp/sshd_config
+    sed -i "s/@SSH_PORT/6969/g" "$TMP_SSHD_CONFIG"
 else 
-    sed -i "s/@SSH_PORT/${SSH_PORT}/g" /tmp/sshd_config
+    sed -i "s/@SSH_PORT/${SSH_PORT}/g" "$TMP_SSHD_CONFIG"
 fi
 
 ## enable/disable password authentication (depending on if SSH_KEYS is enabled) ##
 if [[ "$SSH_KEYS" == "true" ]]; then 
-    sed -i "s/@SSH_PASSWORD_AUTHENTICATION/no/g" /tmp/sshd_config
+    sed -i "s/@SSH_PASSWORD_AUTHENTICATION/no/g" "$TMP_SSHD_CONFIG"
 else 
-    sed -i "s/@SSH_PASSWORD_AUTHENTICATION/yes/g" /tmp/sshd_config
+    sed -i "s/@SSH_PASSWORD_AUTHENTICATION/yes/g" "$TMP_SSHD_CONFIG"
 fi
 
 ## enable/disable public key authentication (depending on if SSH_KEYS is enabled) ##
 if [[ "$SSH_KEYS" == "true" ]]; then 
-    sed -i "s/@SSH_PUBKEY_AUTHENTICATION/yes/g" /tmp/sshd_config
+    sed -i "s/@SSH_PUBKEY_AUTHENTICATION/yes/g" "$TMP_SSHD_CONFIG"
 else 
-    sed -i "s/@SSH_PUBKEY_AUTHENTICATION/no/g" /tmp/sshd_config
+    sed -i "s/@SSH_PUBKEY_AUTHENTICATION/no/g" "$TMP_SSHD_CONFIG"
 fi
 
 ## allow IPv6 SSH sessions (any) if no IPv4 address is detected on the server ##
@@ -85,7 +85,7 @@ fi
 ## Ref: https://www.cyberciti.biz/faq/bash-shell-command-to-find-get-ip-address/
 
 ## copy files to their destinations ##
-cp /tmp/sshd_config /etc/ssh/sshd_config
+cp "$TMP_SSHD_CONFIG" "$PATH_SSHD_CONFIG"
 
 ####################################################################################################
 #### SS-Install-Ubuntu-SSH: Reset Permissions (Ubuntu SSH) #########################################
@@ -106,7 +106,7 @@ source "$PATH_SS_PERMS_UBUNTU_SSH"
 ####################################################################################################
 
 ## delete tmp files ##
-rm /tmp/sshd_config*
+rm "$TMP_SSHD_CONFIG"
 
 ####################################################################################################
 #### SS-Install-Ubuntu-SSH: Touch Timestamp File (End Script) ######################################
