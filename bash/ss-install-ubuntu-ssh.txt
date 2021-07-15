@@ -102,7 +102,9 @@ if [[ "$SSH_KEYS" == "true" ]] && [[ ! -f "/var/www/meta/shell/id_rsa.pub" ]]; t
 fi
 
 ## append any public key found to authorized_keys list ##
-cat /var/www/meta/shell/id_rsa.pub >> /var/www/meta/shell/authorized_keys
+if [[ "$SSH_KEYS" == "true" ]] && [[ -f "/var/www/meta/shell/id_rsa.pub" ]]; then
+    cat /var/www/meta/shell/id_rsa.pub >> /var/www/meta/shell/authorized_keys
+fi
 
 ####################################################################################################
 #### SS-Install-Ubuntu-SSH: Reset Permissions (Ubuntu SSH) #########################################
@@ -125,10 +127,12 @@ source "$PATH_SS_PERMS_UBUNTU_SSH"
 ## delete tmp files ##
 rm "$TMP_SSHD_CONFIG"
 
+####################################################################################################
+#### SS-Install-Ubuntu-SSH: Message ######################################
+####################################################################################################
 
-## messsage for users who already have a private key and want to append public key to SS server ##
-cat ~/.ssh/id_rsa.pub | ssh USER@HOST "cat >> /var/www/meta/shell/authorized_keys"
-
+## message ##
+# echo -e "${YELLOW}Exiting ss-install-ubuntu-ssh: ... ${NOCOLOR}"
 
 ####################################################################################################
 #### SS-Install-Ubuntu-SSH: Touch Timestamp File (End Script) ######################################
