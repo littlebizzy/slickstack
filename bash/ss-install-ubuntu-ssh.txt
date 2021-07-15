@@ -93,7 +93,16 @@ cp "$TMP_SSHD_CONFIG" "$PATH_SSHD_CONFIG"
 #### SS-Install-Ubuntu-SSH: Reset Permissions (Ubuntu SSH) #########################################
 ####################################################################################################
 
-# ssh-keygen -f /var/www/meta/shell/id_rsa -t rsa -N ''
+## SlickStack will automatically generate a public/private SSH key pair if you want it ##
+## if you already have a preferred key pair then you must manually append it ##
+
+## generate key pair (if not exists) ##
+if [[ "$SSH_KEYS" == "true" ]] && [[ ! -f "/var/www/meta/shell/id_rsa.pub" ]]; then
+    ssh-keygen -f /var/www/meta/shell/id_rsa -b 2048 -t rsa -q -N ""
+fi
+
+## append any public key found to authorized_keys list ##
+cat /var/www/meta/shell/id_rsa.pub >> /var/www/meta/shell/authorized_keys
 
 ####################################################################################################
 #### SS-Install-Ubuntu-SSH: Reset Permissions (Ubuntu SSH) #########################################
@@ -116,6 +125,11 @@ source "$PATH_SS_PERMS_UBUNTU_SSH"
 ## delete tmp files ##
 rm "$TMP_SSHD_CONFIG"
 
+
+## messsage for users who already have a private key and want to append public key to SS server ##
+cat ~/.ssh/id_rsa.pub | ssh USER@HOST "cat >> /var/www/meta/shell/authorized_keys"
+
+
 ####################################################################################################
 #### SS-Install-Ubuntu-SSH: Touch Timestamp File (End Script) ######################################
 ####################################################################################################
@@ -136,5 +150,10 @@ touch "$TIMESTAMP_SS_INSTALL_UBUNTU_SSH"
 ## Ref: https://askubuntu.com/questions/46424/how-do-i-add-ssh-keys-to-authorized-keys-file
 ## Ref: https://www.redhat.com/sysadmin/passwordless-ssh
 ## Ref: https://unix.stackexchange.com/questions/69314/automated-ssh-keygen-without-passphrase-how
+## Ref: https://www.fastly.com/blog/key-size-for-tls
+## Ref: https://www.yubico.com/blog/big-debate-2048-4096-yubicos-stand/
+## Ref: https://security.stackexchange.com/questions/65174/4096-bit-rsa-encryption-keys-vs-2048
+## Ref: https://superuser.com/questions/421997/what-is-a-ssh-key-fingerprint-and-how-is-it-generated
+## Ref: https://en.wikipedia.org/wiki/Public_key_fingerprint
 
 ## SS_EOF
