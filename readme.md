@@ -34,6 +34,8 @@ SlickStack is a free LEMP stack automation script written in Bash designed to en
 
 ## Changelog
 
+* **NEW!** Support for third-party SSL certificates is here, by popular demand! We have not tested this, but it should now work. For those interested in using third-party SSL please test the feature and offer us your feedback. You will need to upload your cert bundle to `/var/www/certs/thirdparty.pem` and your private key to `/var/www/certs/keys/thirdparty.key` ... if any conflicts or problems please tell us so we can expand features here as required.
+
 * **NEW!** Early support for whitelabel branding now exists, at least for changing the WP Admin menu name from "SlickStack" to a name you choose, such as your agency's name, using the new ss-config variable `WHITELABEL_BRAND`... this variable will likely be used elsewhere, in the future.
 
 * **NEW!** `ss-install-php-packages` will now verify that your "custom" PHP extensions are the correct version in `ss-config` before installing them, otherwise it will revert to using our default PHP extensions. We've also cleaned up the script to begin our goal of automatic compatibility with any Ubuntu LTS (and PHP) version so that SlickStack will automatically install the default PHP version preferred by each Ubuntu LTS version. At this time, we have no plans to support multiple PHP versions per server or non-standard PHP versions per server, since predictability is a major goal for us.
