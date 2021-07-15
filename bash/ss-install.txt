@@ -474,6 +474,12 @@ if [[ ! -f "/var/www/ss-config" ]]; then
 ## this is a simple message that announces to the shell the purpose of this bash script ##
 ## it will only be noticed by sudo users who manually call ss core bash scripts ##
 
+## force edit if thirdparty SSL chosen ##
+THIRDPARTY_CHOSEN=$(source /var/www/ss-config; echo $SSL_TYPE)
+if [[ "$THIRDPARTY_CHOSEN" == "thirdparty" ]] && [[ ! -f "/var/www/certs/thirdparty.pem" || ! -f "/var/www/certs/keys/thirdparty.key" ]]; then
+    echo -e "${PURPLE}Exiting ss-install: Since you chose thirdparty SSL please upload your cert/key before proceeding... ${NOCOLOR}"
+fi
+
     ## echo message ##
     echo -e "${YELLOW}Your /var/www/ss-config file is now setup, yay! Ctrl+C to exit now if you  ${NOCOLOR}"
 
