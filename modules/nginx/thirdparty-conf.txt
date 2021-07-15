@@ -1,0 +1,47 @@
+####################################################################################################
+#### author: SlickStack ############################################################################
+#### link: https://slickstack.io ###################################################################
+#### mirror: https://mirrors.slickstack.io/modules/nginx/thirdparty-conf.txt #######################
+#### path: n/a (boilerplate) #######################################################################
+#### destination: /etc/nginx/conf.d/thirdparty.conf (after install) ################################
+#### purpose: Nginx config file for third-party SSL (condtionally included in nginx.conf) ##########
+#### module version: Nginx 1.18.x ##################################################################
+#### sourced by: /etc/nginx/nginx.conf #############################################################
+#### bash aliases: n/a #############################################################################
+####################################################################################################
+
+## after TLS 1.3 it is becoming best practice to let browsers choose their own SSL ciphers ##
+## below settings will only be enabled for Certbot (OpenSSL + CloudFlare are fine) ##
+    
+    ssl_certificate /var/www/certs/thirdparty.pem;
+    ssl_certificate_key /var/www/certs/keys/thirdparty.key;
+    
+    ssl_protocols @SSL_PROTOCOLS;
+    ssl_session_timeout @SSL_SESSION_TIMEOUT;
+    ssl_session_cache @SSL_SESSION_CACHE;
+    ssl_session_tickets off;
+    ssl_buffer_size @SSL_BUFFER_SIZE;
+    
+    ssl_ciphers @SSL_CIPHERS;
+    ssl_prefer_server_ciphers off;
+    ssl_early_data off;
+    ssl_ecdh_curve auto;
+    ssl_dhparam /var/www/certs/dhparam.pem;
+    ssl_stapling on;
+    ssl_stapling_verify on;
+    ssl_trusted_certificate /var/www/certs/chain.pem; ## not fullchain.pem
+    resolver 1.1.1.1 8.8.8.8 valid=300s; ## 86400s
+    resolver_timeout 10s;
+    
+####################################################################################################
+#### SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ###############
+####################################################################################################
+
+## Ref: https://github.com/littlebizzy/slickstack/blob/master/nginx/nginx-conf.txt
+## Ref: https://www.digicert.com/kb/ssl-support/pem-ssl-creation.htm
+## Ref: https://crypto.stackexchange.com/questions/21102/what-is-the-ssl-private-key-file-format
+## Ref: https://www.ssls.com/knowledgebase/what-are-certificate-formats-and-what-is-the-difference-between-them/
+## Ref: https://www.namecheap.com/support/knowledgebase/article.aspx/9834/69/how-can-i-find-the-private-key-for-my-ssl-certificate/
+## Ref: https://www.digicert.com/kb/csr-ssl-installation/nginx-openssl.htm
+
+## SS_EOF
