@@ -1,11 +1,12 @@
 ####################################################################################################
 #### author: SlickStack ############################################################################
 #### link: https://slickstack.io ###################################################################
-#### mirror: http://mirrors.slickstack.io/ubuntu/sshd-config.txt ###################################
+#### mirror: https://mirrors.slickstack.io/modules/ubuntu/sshd-config.txt ##########################
 #### path: n/a (boilerplate) #######################################################################
 #### destination: /etc/ssh/sshd_config (after install) #############################################
 #### purpose: SSH configuration file boilerplate including settings for jailed SFTP user ###########
 #### module version: Ubuntu 20.04 LTS ##############################################################
+#### bash aliases: n/a #############################################################################
 ####################################################################################################
 
 ## SLICKSTACK CURRENTLY RELIES ON PASSWORD AUTHENTICATION AND DOES NOT SUPPORT SSH KEYS ##
@@ -14,7 +15,7 @@
 ## Include /etc/ssh/sshd_config.d/*.conf
 
 ####################################################################################################
-#### OpenSSH: SSH (SFTP) Port Number + Address Settings ############################################
+#### SSHD_Config: SSH (SFTP) Port Number + Address Settings ########################################
 ####################################################################################################
 
 ## we only allow IPv4 connections and disable DNS lookups to speed up SSH connections ##
@@ -26,7 +27,7 @@ ListenAddress 0.0.0.0
 UseDNS no
 
 ####################################################################################################
-#### OpenSSH: Keying + Cipher Settings #############################################################
+#### SSHD_Config: Keying + Cipher Settings #########################################################
 ####################################################################################################
 
 HostKey /etc/ssh/ssh_host_rsa_key
@@ -35,21 +36,21 @@ HostKey /etc/ssh/ssh_host_ed25519_key
 RekeyLimit default none
 
 ####################################################################################################
-#### OpenSSH: Logging Settings #####################################################################
+#### SSHD_Config: Logging Settings #################################################################
 ####################################################################################################
 
 SyslogFacility AUTH
 LogLevel INFO
 
 ####################################################################################################
-#### OpenSSH: User Login + Authentication Settings #################################################
+#### SSHD_Config: User Login + Authentication Settings #############################################
 ####################################################################################################
 
 ## the root user cannot access SSH after the first ss-install setup process is completed ##
 ## ensure that you remember your sudo user and password (set in your ss-config) ##
 
 AllowUsers @SUDO_USER @SFTP_USER
-AuthorizedKeysFile /var/www/meta/.ssh/authorized_keys
+AuthorizedKeysFile @PATH_SSH_AUTHORIZED_KEYS_FILE
 PasswordAuthentication @SSH_PASSWORD_AUTHENTICATION
 PubkeyAuthentication @SSH_PUBKEY_AUTHENTICATION
 
@@ -69,7 +70,7 @@ IgnoreRhosts yes
 HostbasedAuthentication no
 
 ####################################################################################################
-#### OpenSSH: Kerberos + GSSAPI Settings ###########################################################
+#### SSHD_Config: Kerberos + GSSAPI Settings #######################################################
 ####################################################################################################
 
 ## Kerberos options
@@ -85,7 +86,7 @@ HostbasedAuthentication no
 #GSSAPIKeyExchange no
 
 ####################################################################################################
-#### OpenSSH: Misc Settings ########################################################################
+#### SSHD_Config: Misc Settings ####################################################################
 ####################################################################################################
 
 UsePAM yes
@@ -118,7 +119,7 @@ Banner none
 AcceptEnv LANG LC_*
 
 ####################################################################################################
-#### OpenSSH: Jailed (Chroot) SFTP User Settings ###################################################
+#### SSHD_Config: Jailed (Chroot) SFTP User Settings ###############################################
 ####################################################################################################
 
 ## the SFTP user must be different than your sudo user and has limited server access ##
