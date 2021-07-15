@@ -186,8 +186,9 @@ RCLONE_TOKEN=""
 ## SS_SWAPFILE_SIZE = [1G|2G|4G] usually same size as your RAM but not more than 4G ##
 ## SS_TIMEZONE = [UTC|Greenwich|etc] almost nobody should have a reason to not use UTC ##
 
-SS_APP="wordpress"
+SS_APP="wordpress" ## only wordpress supported
 SS_DASHBOARD="true"
+# SS_WORDPRESS_ADMIN_DASHBOARD="true"
 SS_DATABASE_REMOTE="@SS_DATABASE_REMOTE"
 SS_WORDPRESS_MU_PLUGINS="default"
 SS_WORDPRESS_PLUGIN_BLACKLIST="true"
@@ -209,7 +210,43 @@ WHITELABEL_BRAND="SlickStack"
 WHITELABEL_HOMEPAGE="https://slickstack.io"
 
 ####################################################################################################
-#### SS-Config: WordPress + WP-Config Settings #####################################################
+#### SS-Config: SSL Settings (CSR Optional) ########################################################
+####################################################################################################
+
+## some of these settings only apply to OpenSSL or Lets Encrypt / third-party certs ##
+## to avoid confusion we maintain all SSL related settings in the same place ##
+
+## SSL_TYPE = [openssl|certbot|thirdparty] OpenSSL is easiest but requires CloudFlare ##
+## SSL_PROTOCOLS = [TLSv1.2 TLSv1.3] nearly all servers should be using 1.2 and 1.3 ##
+## SSL_CIPHERS = [*changes regularly*] the Mozilla cipher list is one of the best ##
+## SSL_SESSION_TIMEOUT = [120m|360m|1d|etc] less sensitive sites can use a higher setting ##
+## SSL_SESSION_CACHE = [shared:SSL:64m] there should be no reason to use other settings ##
+## SSL_BUFFER_SIZE = [16k|8k|4k] smaller is better but less than 16k can cause errors ##
+
+SSL_TYPE="@SSL_TYPE"
+SSL_PROTOCOLS="TLSv1.2 TLSv1.3"
+SSL_CIPHERS="ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384"
+SSL_SESSION_TIMEOUT="1d"
+SSL_SESSION_CACHE="shared:SSL:64m"
+SSL_BUFFER_SIZE="16k"
+
+## CSR_COUNTRY = [US|etc] country to be used with your SSL CSR request data ##
+## CSR_STATE = [Nevada|etc] state or province to be used with your SSL CSR request data ##
+## CSR_CITY = [Las Vegas|etc] city or town to be used with your SSL CSR request data ##
+## CSR_COMPANY = [Example, LLC|etc] company name to be used with your SSL CSR request data ##
+## CSR_DEPT = [DevOps|etc] department to be used with your SSL CSR request data ##
+
+CSR_COUNTRY="US"
+CSR_STATE="Nevada"
+CSR_CITY="Las Vegas"
+CSR_COMPANY="Example, LLC"
+CSR_DEPT="DevOps"
+
+## CERTBOT_CHALLENGE_TYPE = [http|dns] which method of verifying your domain do you want ##
+## ...ss-install wizard would need to pause or something if DNS verify chosen?
+
+####################################################################################################
+#### SS-Config: WordPress Settings #################################################################
 ####################################################################################################
 
 ## by default wp-cron will be managed entirely by WordPress unless you modify it here ##
@@ -250,42 +287,6 @@ WP_ACCESSIBLE_HOSTS="api.wordpress.org"
 WP_DISALLOW_FILE_EDIT="false"
 WP_DISALLOW_FILE_MODS="false"
 WP_ALLOW_UNFILTERED_UPLOADS="true"
-
-####################################################################################################
-#### SS-Config: SSL Settings (CSR Optional) ########################################################
-####################################################################################################
-
-## some of these settings only apply to OpenSSL or Lets Encrypt / third-party certs ##
-## to avoid confusion we maintain all SSL related settings in the same place ##
-
-## SSL_TYPE = [openssl|certbot|thirdparty] OpenSSL is easiest but requires CloudFlare ##
-## SSL_PROTOCOLS = [TLSv1.2 TLSv1.3] nearly all servers should be using 1.2 and 1.3 ##
-## SSL_CIPHERS = [*changes regularly*] the Mozilla cipher list is one of the best ##
-## SSL_SESSION_TIMEOUT = [120m|360m|1d|etc] less sensitive sites can use a higher setting ##
-## SSL_SESSION_CACHE = [shared:SSL:64m] there should be no reason to use other settings ##
-## SSL_BUFFER_SIZE = [16k|8k|4k] smaller is better but less than 16k can cause errors ##
-
-SSL_TYPE="@SSL_TYPE"
-SSL_PROTOCOLS="TLSv1.2 TLSv1.3"
-SSL_CIPHERS="ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384"
-SSL_SESSION_TIMEOUT="1d"
-SSL_SESSION_CACHE="shared:SSL:64m"
-SSL_BUFFER_SIZE="16k"
-
-## CSR_COUNTRY = [US|etc] country to be used with your SSL CSR request data ##
-## CSR_STATE = [Nevada|etc] state or province to be used with your SSL CSR request data ##
-## CSR_CITY = [Las Vegas|etc] city or town to be used with your SSL CSR request data ##
-## CSR_COMPANY = [Example, LLC|etc] company name to be used with your SSL CSR request data ##
-## CSR_DEPT = [DevOps|etc] department to be used with your SSL CSR request data ##
-
-CSR_COUNTRY="US"
-CSR_STATE="Nevada"
-CSR_CITY="Las Vegas"
-CSR_COMPANY="Example, LLC"
-CSR_DEPT="DevOps"
-
-## CERTBOT_CHALLENGE_TYPE = [http|dns] which method of verifying your domain do you want ##
-## ...ss-install wizard would need to pause or something if DNS verify chosen?
 
 ####################################################################################################
 #### SS-Config: Nginx + Open File Cache Settings (Nginx.conf) ######################################
