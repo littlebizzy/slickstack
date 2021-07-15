@@ -151,11 +151,59 @@ fi
 #### SS-Install-Nginx-SSL: Install Third Party SSL (Per SS-Config) #################################
 ####################################################################################################
 
-## retrieve boilerplate ##
-# wget -O /tmp/thirdparty.conf "$MIRROR_THIRDPARTY_CONF"
 
 
+## install thirdparty.conf ##
+if [[ "$SSL_TYPE" == "thirdparty" ]]; then 
 
+    ## retrieve boilerplate ##
+    wget -O "$TMP_THIRDPARTY_CONF" "$MIRROR_THIRDPARTY_CONF"
+
+    ## protocols ##
+    if [[ -z "$SSL_PROTOCOLS" ]]; then 
+        sed -i "s/@SSL_PROTOCOLS/TLSv1.2 TLSv1.3/g" "$TMP_THIRDPARTY_CONF"
+    else 
+        sed -i "s/@SSL_PROTOCOLS/${SSL_PROTOCOLS}/g" "$TMP_THIRDPARTY_CONF"
+    fi
+
+    ## ciphers ##
+    if [[ -z "$SSL_CIPHERS" ]]; then 
+        sed -i "s/@SSL_CIPHERS/ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384/g" "$TMP_THIRDPARTY_CONF"
+    else 
+        sed -i "s/@SSL_CIPHERS/${SSL_CIPHERS}/g" "$TMP_THIRDPARTY_CONF"
+    fi
+
+    ## session timeout ##
+    if [[ -z "$SSL_SESSION_TIMEOUT" ]]; then 
+        sed -i "s/@SSL_SESSION_TIMEOUT/1d/g" "$TMP_THIRDPARTY_CONF"
+    else 
+        sed -i "s/@SSL_SESSION_TIMEOUT/${SSL_SESSION_TIMEOUT}/g" "$TMP_THIRDPARTY_CONF"
+    fi
+
+    ## session cache ##
+    if [[ -z "$SSL_SESSION_CACHE" ]]; then 
+        sed -i "s/@SSL_SESSION_CACHE/shared:SSL:64m/g" "$TMP_THIRDPARTY_CONF"
+    else 
+        sed -i "s/@SSL_SESSION_CACHE/${SSL_SESSION_CACHE}/g" "$TMP_THIRDPARTY_CONF"
+    fi
+
+    ## buffer size ##
+    if [[ -z "$SSL_BUFFER_SIZE" ]]; then 
+        sed -i "s/@SSL_BUFFER_SIZE/16k/g" "$TMP_THIRDPARTY_CONF"
+    else 
+        sed -i "s/@SSL_BUFFER_SIZE/${SSL_BUFFER_SIZE}/g" "$TMP_THIRDPARTY_CONF"
+    fi
+    
+    ## move file ##
+    cp "$TMP_THIRDPARTY_CONF" "$PATH_THIRDPARTY_CONF"
+    rm /etc/nginx/conf.d/openssl.conf*
+    echo -e "${GREEN}Exiting ss-install-nginx-ssl: Third party SSL installation to the Nginx server appears to have been successful... ${NOCOLOR}"
+
+fi
+
+####################################################################################################
+#### SS-Install-Nginx-SSL: XXXXXX ###########################################
+####################################################################################################
 
 ## here we modify the live Nginx configuration files to activate Lets Encrypt certificates ##
 ## this snippet will only be executed if Lets Encrypt certs appear to be successful ##
