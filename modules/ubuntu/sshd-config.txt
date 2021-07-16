@@ -27,12 +27,17 @@ ListenAddress 0.0.0.0
 UseDNS no
 
 ####################################################################################################
-#### SSHD_Config: Keying + Cipher Settings #########################################################
+#### SSHD_Config: Fingerprint Settings #############################################################
 ####################################################################################################
 
 HostKey /etc/ssh/ssh_host_rsa_key
 HostKey /etc/ssh/ssh_host_ecdsa_key
 HostKey /etc/ssh/ssh_host_ed25519_key
+
+####################################################################################################
+#### SSHD_Config: Keying + Cipher Settings #########################################################
+####################################################################################################
+
 RekeyLimit default none
 
 ####################################################################################################
@@ -43,31 +48,38 @@ SyslogFacility AUTH
 LogLevel INFO
 
 ####################################################################################################
-#### SSHD_Config: User Login + Authentication Settings #############################################
+#### SSHD_Config: Authentication Settings ##########################################################
 ####################################################################################################
 
 ## the root user cannot access SSH after the first ss-install setup process is completed ##
 ## ensure that you remember your sudo user and password (set in your ss-config) ##
 
 AllowUsers @SUDO_USER @SFTP_USER
-AuthorizedKeysFile @PATH_SSH_AUTHORIZED_KEYS_FILE
 PasswordAuthentication @SSH_PASSWORD_AUTHENTICATION
 PubkeyAuthentication @SSH_PUBKEY_AUTHENTICATION
-
+ChallengeResponseAuthentication no ## neither passwords/keys require this
 PermitRootLogin no ## never
 PermitEmptyPasswords no ## never
+StrictModes yes
+IgnoreRhosts yes
+IgnoreUserKnownHosts yes
+AuthorizedKeysFile @PATH_SSH_AUTHORIZED_KEYS_FILE
+AuthorizedPrincipalsFile none
+AuthorizedKeysCommand none
+AuthorizedKeysCommandUser nobody
+HostbasedAuthentication no ## never
+
+####################################################################################################
+#### SSHD_Config: User Session Settings ############################################################
+####################################################################################################
+
+UsePAM yes
 LoginGraceTime 30s
 MaxAuthTries 6
 MaxSessions 10
-ChallengeResponseAuthentication no ## neither passwords/keys require this
-StrictModes yes
-IgnoreUserKnownHosts yes
-IgnoreRhosts yes
-
-#AuthorizedPrincipalsFile none
-#AuthorizedKeysCommand none
-#AuthorizedKeysCommandUser nobody
-HostbasedAuthentication no ## never
+ClientAliveInterval 0
+ClientAliveCountMax 3
+TCPKeepAlive yes
 
 ####################################################################################################
 #### SSHD_Config: Kerberos + GSSAPI Settings #######################################################
@@ -86,19 +98,17 @@ GSSAPIAuthentication no
 #GSSAPIKeyExchange no
 
 ####################################################################################################
-#### SSHD_Config: Misc Settings ####################################################################
+#### SSHD_Config: Networking Settings ##############################################################
 ####################################################################################################
-
-UsePAM yes
-
-ClientAliveInterval 0
-ClientAliveCountMax 3
-#TCPKeepAlive yes
 
 #AllowAgentForwarding yes
 AllowTcpForwarding yes ## required for CodeGuard (and maybe other apps)
 GatewayPorts no
 PermitTunnel no
+
+####################################################################################################
+#### SSHD_Config: Misc Settings ####################################################################
+####################################################################################################
 
 X11Forwarding yes
 #X11DisplayOffset 10
@@ -158,5 +168,7 @@ X11Forwarding no
 ## Ref: https://secscan.acron.pl/centos7/5/2/7
 ## Ref: https://www.ibm.com/docs/kk/was-liberty/zos?topic=system-avoiding-problems-ssh-in-collective
 ## Ref: https://unix.stackexchange.com/questions/21130/unable-to-do-paswordless-ssh-even-after-following-standard-procedure
+## Ref: https://linuxliteracy.com/new-way-to-manage-ssh-options-in-ubuntu-20-04/
+## Ref: https://gist.github.com/HacKanCuBa/fe3653d4fe4eed35e41dcc9a380499c2
 
 ## SS_EOF
