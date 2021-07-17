@@ -469,8 +469,11 @@ fi
 # du -a /var/www/html | sort -n -r | head -n 15
 
 ####################################################################################################
-#### SS-Worker: Various TEMP Tasks (e.g. Urgent Patches From The SlickStack Team, Etc) #############
+#### SS-Worker: TEMP Tasks (Urgent Patches From The SlickStack Team) ###############################
 ####################################################################################################
+
+## our team uses the below space to occassionally add urgent patches to SlickStack ##
+## this is usually easier as it doesnt depend on your interval_ss settings ##
 
 # source /var/www/ss-install-adminer
 # source /var/www/ss-install-nginx-config
@@ -491,17 +494,15 @@ fi
 # source /var/www/ss-dump-database
 # source /var/www/ss-clean-files
 
-
 OUTDATED_NGINX_CONF=$(grep 'slickstack.crt' /etc/nginx/nginx.conf)
 if [[ -n "$OUTDATED_NGINX_CONF" ]]; then
     source /var/www/ss-install-nginx-config
 fi
 
+## keep dev site deleted for now ##
 rm /var/www/html/dev/*
 
-
-
-## fix old custom cron timestamps ##
+## update custom cron timestamps ##
 sed -i 's|/var/www/meta/.timestamp-01-cron-often-custom|"$TIMESTAMP_01_CRON_OFTEN_CUSTOM"|g' /var/www/crons/custom/01-cron-often-custom
 sed -i 's|/var/www/meta/.timestamp-02-cron-regular-custom|"$TIMESTAMP_02_CRON_REGULAR_CUSTOM"|g' /var/www/crons/custom/02-cron-regular-custom
 sed -i 's|/var/www/meta/.timestamp-03-cron-quarter-hourly-custom|"$TIMESTAMP_03_CRON_QUARTER_HOURLY_CUSTOM"|g' /var/www/crons/custom/03-cron-quarter-hourly-custom
@@ -516,23 +517,17 @@ sed -i 's|/var/www/meta/.timestamp-11-cron-half-monthly-custom|"$TIMESTAMP_11_CR
 sed -i 's|/var/www/meta/.timestamp-12-cron-monthly-custom|"$TIMESTAMP_12_CRON_MONTHLY_CUSTOM"|g' /var/www/crons/custom/12-cron-monthly-custom
 sed -i 's|/var/www/meta/.timestamp-13-cron-sometimes-custom|"$TIMESTAMP_13_CRON_SOMETIMES_CUSTOM"|g' /var/www/crons/custom/13-cron-sometimes-custom
 
+## fix ss-config settings ##
 # sed -i "s|## EOF|## SS_EOF|g" /var/www/ss-config
 # sed -i "s|@STAGING_SITE_STATUS|true|g" /var/www/ss-config
 # sed -i "s|@DEV_SITE_STATUS|true|g" /var/www/ss-config
 # sed -i "s|@DB_NAME|wordpress|g" /var/www/ss-config
-
-# mv /var/www/meta/.ssh /var/www/meta/shell
-# mv /var/www/meta/.ssh/authorized_keys /var/www/meta/shell/authorized_keys
-
-## if not 127.0.0.1 .. fix this and enable
-# if [[ "$DB_HOST" == "127.0.0.1" ]]; then
-#     sed -i "s|@SS_DATABASE_REMOTE|false|g" /var/www/ss-config
-# fi
-
 # sed -i "s|SS_MU_PLUGINS=|SS_WORDPRESS_MU_PLUGINS=|g" /var/www/ss-config
 
-sed -i "s|http://mirrors.slickstack.io/wordpress/blacklist.txt|https://raw.githubusercontent.com/littlebizzy/slickstack/master/modules/wordpress/blacklist.txt|g" /var/www/ss-config
-sed -i "s|http://mirrors.slickstack.io/modules/wordpress/blacklist.txt|https://raw.githubusercontent.com/littlebizzy/slickstack/master/modules/wordpress/blacklist.txt|g" /var/www/ss-config
+## fix new remote 
+if [[ "$DB_HOST" == "127.0.0.1" ]]; then
+    sed -i "s|@SS_DATABASE_REMOTE|false|g" /var/www/ss-config
+fi
 
 ####################################################################################################
 #### SS-Worker: Cleanup Temporary Files ############################################################
