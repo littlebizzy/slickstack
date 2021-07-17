@@ -74,13 +74,11 @@ cp /var/www/ss-config /var/www/backups/config/ss-config.bak.$current_time
 ## here we retrieve the latest ss-check core bash script to improve overall redundancy ##
 ## thus ss-check avoids installing itself and no single point of failure (SPOF) ##
 
-## retrieve latest ss-check (ss core bash script) ##
-wget -O /tmp/ss-check https://raw.githubusercontent.com/littlebizzy/slickstack/master/bash/ss-check.txt
-# wget -O "$TMP_SS_CHECK" "$MIRROR_SS_CHECK"
+## retrieve latest ss-check ##
+wget -O "$TMP_SS_CHECK" "$MIRROR_SS_CHECK"
 
-## move (install) ss-check ##
-cp /tmp/ss-check /var/www/ss-check
-# cp "$TMP_SS_CHECK" "$PATH_SS_CHECK"
+## install ss-check ##
+cp "$TMP_SS_CHECK" "$PATH_SS_CHECK"
 
 ####################################################################################################
 #### SS-Worker: Ensure WP-Config.php Intact ########################################################
@@ -340,14 +338,21 @@ if [[ -n "$VALIDATE_TMP_SS_CONSTANTS_PHP" ]]; then
 fi 
 
 ####################################################################################################
-#### SS-Worker: Retrieve Latest Nginx Maintenance File #############################################
+#### SS-Worker: Retrieve Latest Maintenance.html (Parsed By Nginx) #################################
 ####################################################################################################
 
-## retrieve latest maintenance.html file ##
-wget -O /tmp/maintenance.html "$MIRROR_MAINTENANCE_HTML"
-cp /tmp/maintenance.html /var/www/meta/maintenance.html
-chown www-data:www-data /var/www/meta/maintenance.html
-chmod 0444 /var/www/meta/maintenance.html ## 0444
+## here we retrieve the latest maintenance.html file in case the design has changed ##
+## this file is parsed by Nginx to enable maintenance mode via SlickStack ##
+
+## retrieve latest maintenance.html ##
+wget -O "$TMP_MAINTENANCE_HTML" "$MIRROR_MAINTENANCE_HTML"
+
+## install maintenance.html ##
+cp "$TMP_MAINTENANCE_HTML" "$PATH_MAINTENANCE_HTML"
+
+## reset permissions ##
+chown www-data:www-data "$PATH_MAINTENANCE_HTML"
+chmod 0444 "$PATH_MAINTENANCE_HTML" ## 0444 is enough
 
 ####################################################################################################
 #### SS-Worker: Reset Permissions (SlickStack Core) #################################################
