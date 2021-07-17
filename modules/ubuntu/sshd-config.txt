@@ -5,7 +5,7 @@
 #### path: n/a (boilerplate) #######################################################################
 #### destination: /etc/ssh/sshd_config (after install) #############################################
 #### purpose: SSH configuration file boilerplate including settings for jailed SFTP user ###########
-#### module version: OpenSSH 1.1.1f (Ubuntu 20.04 LTS) #############################################
+#### module version: OpenSSH 1.1.1f ################################################################
 #### bash aliases: n/a #############################################################################
 ####################################################################################################
 
@@ -24,6 +24,7 @@
 Port @SSH_PORT
 AddressFamily inet
 ListenAddress 0.0.0.0
+# ListenAddress ::
 UseDNS no
 
 ####################################################################################################
@@ -56,25 +57,25 @@ LogLevel INFO
 
 AllowUsers @SUDO_USER @SFTP_USER
 PasswordAuthentication @SSH_PASSWORD_AUTHENTICATION
-PubkeyAuthentication @SSH_PUBKEY_AUTHENTICATION
+PubkeyAuthentication yes
 ChallengeResponseAuthentication no ## only for stuff like OTP systems
 PermitRootLogin no ## never
 PermitEmptyPasswords no ## never
 StrictModes yes
+HostbasedAuthentication no ## never
 IgnoreRhosts yes
 IgnoreUserKnownHosts yes
 AuthorizedKeysFile @PATH_SSH_AUTHORIZED_KEYS_FILE
 AuthorizedPrincipalsFile none
 AuthorizedKeysCommand none
 AuthorizedKeysCommandUser nobody
-HostbasedAuthentication no ## never
 
 ####################################################################################################
 #### SSHD_Config: User Session Settings ############################################################
 ####################################################################################################
 
 UsePAM yes
-LoginGraceTime 30s
+LoginGraceTime 1m
 MaxAuthTries 6
 MaxSessions 10
 ClientAliveInterval 0
@@ -85,48 +86,50 @@ TCPKeepAlive yes
 #### SSHD_Config: Kerberos + GSSAPI Settings #######################################################
 ####################################################################################################
 
-## Kerberos options
-#KerberosAuthentication no
-#KerberosOrLocalPasswd yes
-#KerberosTicketCleanup yes
+KerberosAuthentication no
+KerberosOrLocalPasswd yes
+KerberosTicketCleanup yes
 #KerberosGetAFSToken no
+KerberosUseKuserok yes
 
-## GSSAPI options
-GSSAPIAuthentication no
-#GSSAPICleanupCredentials yes
-#GSSAPIStrictAcceptorCheck yes
-#GSSAPIKeyExchange no
+GSSAPIAuthentication yes
+GSSAPICleanupCredentials no
+GSSAPIStrictAcceptorCheck yes
+GSSAPIKeyExchange no
+GSSAPIEnablek5users no
 
 ####################################################################################################
 #### SSHD_Config: Networking Settings ##############################################################
 ####################################################################################################
 
-#AllowAgentForwarding yes
-AllowTcpForwarding yes ## required for CodeGuard (and maybe other apps)
+AllowAgentForwarding yes
+AllowTcpForwarding yes ## unfortunately required by CodeGuard (and maybe other apps)
 GatewayPorts no
+X11Forwarding yes
+X11DisplayOffset 10
+X11UseLocalhost yes
 PermitTunnel no
+PermitTTY yes
 
 ####################################################################################################
 #### SSHD_Config: Misc Settings ####################################################################
 ####################################################################################################
 
-X11Forwarding yes
-#X11DisplayOffset 10
-#X11UseLocalhost yes
-#PermitTTY yes
 PrintMotd no
-#PrintLastLog yes
-#PermitUserEnvironment no
-#Compression delayed
-
-#PidFile /var/run/sshd.pid
-#MaxStartups 10:30:100
-
-#ChrootDirectory none
-#VersionAddendum none
-
+PrintLastLog yes
+PermitUserEnvironment no
+Compression delayed
+PidFile /var/run/sshd.pid
+MaxStartups 10:30:100
+ChrootDirectory none
+VersionAddendum none
 Banner none
+
 AcceptEnv LANG LC_*
+AcceptEnv LANG LC_CTYPE LC_NUMERIC LC_TIME LC_COLLATE LC_MONETARY LC_MESSAGES
+AcceptEnv LC_PAPER LC_NAME LC_ADDRESS LC_TELEPHONE LC_MEASUREMENT
+AcceptEnv LC_IDENTIFICATION LC_ALL LANGUAGE
+AcceptEnv XMODIFIERS
 
 ####################################################################################################
 #### SSHD_Config: Jailed (Chroot) SFTP User Settings ###############################################
