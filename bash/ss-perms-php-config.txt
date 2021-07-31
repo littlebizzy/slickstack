@@ -6,10 +6,10 @@
 #### mirror: https://mirrors.slickstack.io/bash/ss-perms-php-config.txt ############################
 #### path: /var/www/ss-perms-php-config ############################################################
 #### destination: n/a (not a boilerplate) ##########################################################
-#### purpose: Resets all file and user permissions across the entire PHP-FPM module ################
+#### purpose: Resets file and user permissions for PHP-FPM module configuration files ##############
 #### module version: PHP-FPM 7.4.x #################################################################
-#### sourced by: ss-perms, ss-install-php ##########################################################
-#### bash aliases: ss perms php, ss perms php-fpm ##################################################
+#### sourced by: ss-install-php-config, ss-perms ###################################################
+#### bash aliases: ss perms php config, ss perms php-fpm config ####################################
 ####################################################################################################
 
 ## source ss-config ##
@@ -28,7 +28,7 @@ source /var/www/ss-functions
 ## it will only be noticed by sudo users who manually call ss core bash scripts ##
 
 ## echo message ##
-echo -e "${PURPLE}Running ss-perms-php: Resets all file and user permissions across the entire PHP-FPM module... ${NOCOLOR}"
+echo -e "${PURPLE}Running ss-perms-php-config: Resets file and user permissions for PHP-FPM module configuration files... ${NOCOLOR}"
 sleep "$SLEEP_MESSAGE_BEGIN"
 
 ####################################################################################################
@@ -38,19 +38,19 @@ sleep "$SLEEP_MESSAGE_BEGIN"
 mkdir /var/run/php
 
 # chown www-data:www-data /var/run/php
-chown root:root /etc/php/7.2/fpm/php.ini &> /dev/null
-chown root:root /etc/php/7.2/fpm/php-fpm.conf &> /dev/null
-chown root:root /etc/php/7.2/cli/php.ini &> /dev/null
-chown root:root /etc/php/7.4/fpm/php.ini &> /dev/null
-chown root:root /etc/php/7.4/fpm/php-fpm.conf &> /dev/null
-chown root:root /etc/php/7.4/cli/php.ini &> /dev/null
 
+if [[ "${UBUNTU_VERSION}" == "18.04" ]]; then
+    chown root:root /etc/php/7.2/fpm/php.ini
+    chown root:root /etc/php/7.2/fpm/php-fpm.conf
+    chown root:root /etc/php/7.2/cli/php.ini
+fi
 
-## reset permissions ##
-chown root:root /etc/php/7.4/fpm/php-fpm.conf
-chown root:root /etc/php/7.4/fpm/php.ini
-chown root:root /etc/php/7.4/cli/php.ini
-chown root:root /etc/php/7.4/fpm/pool.d/www.conf
+if [[ "${UBUNTU_VERSION}" == "20.04" ]]; then
+    chown root:root /etc/php/7.4/fpm/php.ini
+    chown root:root /etc/php/7.4/fpm/php-fpm.conf
+    chown root:root /etc/php/7.4/cli/php.ini
+    chown root:root /etc/php/7.4/fpm/pool.d/www.conf
+fi
 
 if [ ! -f "/var/www/logs/error.log" ]; then touch "/var/www/logs/error.log"; fi
 chown www-data:www-data /var/www/logs/error*.log*
