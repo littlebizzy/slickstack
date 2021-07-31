@@ -441,10 +441,12 @@ chmod 0700 /var/www/ss* ## 0700 means only root can execute
 ## maintaining a thoughtful blacklist vastly improves WP performance and security ##
 
 ## download latest blacklist (or custom blacklist) ##
-if [[ -z "$PLUGIN_BLACKLIST_SOURCE" ]]; then 
+if [[ -z "$PLUGIN_BLACKLIST_SOURCE" ]] && [[ -z "$SS_WORDPRESS_PLUGIN_BLACKLIST_SOURCE" ]]; then 
     wget -O /tmp/blacklist.txt "$MIRROR_BLACKLIST_TXT"
-else 
+elif [[ -n "$PLUGIN_BLACKLIST_SOURCE" ]]; then
     wget -O /tmp/blacklist.txt "$PLUGIN_BLACKLIST_SOURCE"
+elif [[ -n "$SS_WORDPRESS_PLUGIN_BLACKLIST_SOURCE" ]]; then
+    wget -O /tmp/blacklist.txt "$SS_WORDPRESS_PLUGIN_BLACKLIST_SOURCE"
 fi
 
 ## copy file to wp-content directory ##
