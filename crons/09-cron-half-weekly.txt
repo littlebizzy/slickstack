@@ -16,7 +16,21 @@
 ## INSTEAD ADJUST INTERVAL_SS SETTINGS IN SS-CONFIG OR EDIT CUSTOM CRON FILES ##
 
 ####################################################################################################
-#### 09-Cron-Half-Weekly: Validate (Restore) SS-Config #############################################
+#### TABLE OF CONTENTS (02-Cron-Regular) ###########################################################
+####################################################################################################
+
+## A. Validate (Restore) SS-Config
+## B. Validate (Restore) SS-Functions
+## C. Validate (Restore) SS-Check + SS-Worker
+## D. Source SS-Config + SS-Functions (After Validated)
+## E. Run Custom Tasks (EDIT SOURCED FILES)
+## F. Touch Timestamp File (Before Tasks To Ensure Firing)
+## G. Run Scheduled Tasks (DO NOT EDIT)
+## H. Reset Permissions (Cron Jobs + Bash Scripts)
+## I. Delete Lock File (End Script)
+
+####################################################################################################
+#### A. 09-Cron-Half-Weekly: Validate (Restore) SS-Config ##########################################
 ####################################################################################################
 
 ## THIS SNIPPET DOES NOT RELY ON SS-CONFIG OR SS-FUNCTIONS
@@ -43,7 +57,7 @@ if [[ -z "$VALIDATE_SS_CONFIG" ]]; then
 fi
 
 ####################################################################################################
-#### 09-Cron-Half-Weekly: Validate (Restore) SS-Functions ##########################################
+#### B. 09-Cron-Half-Weekly: Validate (Restore) SS-Functions #######################################
 ####################################################################################################
 
 ## THIS SNIPPET DOES NOT RELY ON SS-CONFIG OR SS-FUNCTIONS
@@ -74,7 +88,7 @@ if [[ -z "$VALIDATE_SS_FUNCTIONS" ]] || [[ -n "$OUTDATED_SS_FUNCTIONS" ]]; then
 fi
 
 ####################################################################################################
-#### 09-Cron-Half-Weekly: Validate (Restore) SS-Check + SS-Worker ##################################
+#### C. 09-Cron-Half-Weekly: Validate (Restore) SS-Check + SS-Worker ###############################
 ####################################################################################################
 
 ## THIS SNIPPET DOES NOT RELY ON SS-CONFIG OR SS-FUNCTIONS
@@ -125,7 +139,7 @@ if [[ -z "$VALIDATE_SS_WORKER" ]] || [[ -n "$OUTDATED_SS_WORKER" ]]; then
 fi
 
 ####################################################################################################
-#### 09-Cron-Half-Weekly: Source SS-Config + SS-Functions (After Validated) ########################
+#### D. 09-Cron-Half-Weekly: Source SS-Config + SS-Functions (After Validated) #####################
 ####################################################################################################
 
 ## at this point we know that ss-config and ss-functions exist or have been restored ##
@@ -140,7 +154,7 @@ source /var/www/ss-functions
 ## BELOW THIS RELIES ON SS-CONFIG AND SS-FUNCTIONS
 
 ####################################################################################################
-#### 09-Cron-Half-Weekly: Run Custom Tasks (EDIT SOURCED FILES) ####################################
+#### E. 09-Cron-Half-Weekly: Run Custom Tasks (EDIT SOURCED FILES) #################################
 ####################################################################################################
 
 ## this will run custom shell commands that you can save in a reserved filename below ##
@@ -150,7 +164,17 @@ source /var/www/ss-functions
 source "$PATH_09_CRON_HALF_WEEKLY_CUSTOM"
 
 ####################################################################################################
-#### 09-Cron-Half-Weekly: Run Scheduled Tasks (DO NOT EDIT) ########################################
+#### F. 09-Cron-Half-Weekly: Touch Timestamp File (Before Tasks To Ensure Firing) ##################
+####################################################################################################
+
+## this is a dummy timestamp file that will remember the last time this script was run ##
+## it can be useful for developer reference and is sometimes used by SlickStack ##
+
+## script timestamp ##
+touch "$TIMESTAMP_09_CRON_HALF_WEEKLY"
+
+####################################################################################################
+#### G. 09-Cron-Half-Weekly: Run Scheduled Tasks (DO NOT EDIT) #####################################
 ####################################################################################################
 
 ## the below tasks will be called if configured to run at this interval in ss-config ##
@@ -212,7 +236,7 @@ if [[ "$INTERVAL_SS_INSTALL_UBUNTU_BASH" == "half-weekly" ]] || [[ -z "$INTERVAL
 fi
 
 ####################################################################################################
-#### 09-Cron-Half-Weekly: Reset Permissions (SS Core Cron Jobs + SS Core Bash Scripts) #############
+#### H. 09-Cron-Half-Weekly: Reset Permissions (Cron Jobs + Bash Scripts) ##########################
 ####################################################################################################
 
 ## THIS SNIPPET DOES NOT RELY ON SS-CONFIG OR SS-FUNCTIONS
@@ -231,7 +255,7 @@ chmod 0700 /var/www/crons/*cron* ## 0700 means only root can execute
 chmod 0700 /var/www/crons/custom/*cron* ## 0700 means only root can execute
 
 ####################################################################################################
-#### 09-Cron-Half-Weekly: Delete Lock File #########################################################
+#### I. 09-Cron-Half-Weekly: Delete Lock File (End Script) #########################################
 ####################################################################################################
 
 ## here we delete the lock file associated with this cron job to clear the cron queue ##
@@ -239,16 +263,6 @@ chmod 0700 /var/www/crons/custom/*cron* ## 0700 means only root can execute
 
 ## delete lock ##
 rm "$LOCK_09_CRON_HALF_WEEKLY"
-
-####################################################################################################
-#### 09-Cron-Half-Weekly: Touch Timestamp File (End Script) ########################################
-####################################################################################################
-
-## this is a dummy timestamp file that will remember the last time this script was run ##
-## it can be useful for developer reference and is sometimes used by SlickStack ##
-
-## script timestamp ##
-touch "$TIMESTAMP_09_CRON_HALF_WEEKLY"
 
 ####################################################################################################
 #### SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ###############
