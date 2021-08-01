@@ -16,7 +16,22 @@
 ## INSTEAD ADJUST INTERVAL_SS SETTINGS IN SS-CONFIG OR EDIT CUSTOM CRON FILES ##
 
 ####################################################################################################
-#### 02-Cron-Regular: Validate (Restore) SS-Config #################################################
+#### TABLE OF CONTENTS (02-Cron-Regular) ###########################################################
+####################################################################################################
+
+## A. Validate (Restore) SS-Config
+## B. Validate (Restore) SS-Functions
+## C. Validate (Restore) SS-Check + SS-Worker
+## D. Source SS-Config + SS-Functions (After Validated)
+## E. Run Custom Tasks (EDIT SOURCED FILES)
+## F. Touch Timestamp File (Before Tasks To Ensure Firing)
+## G. Run WP-Cron (If Enabled)
+## H. Run Scheduled Tasks (DO NOT EDIT)
+## I. Reset Permissions (Cron Jobs + Bash Scripts)
+## J. Delete Lock File (End Script)
+
+####################################################################################################
+#### A. 02-Cron-Regular: Validate (Restore) SS-Config ##############################################
 ####################################################################################################
 
 ## THIS SNIPPET DOES NOT RELY ON SS-CONFIG OR SS-FUNCTIONS
@@ -43,7 +58,7 @@ if [[ -z "$VALIDATE_SS_CONFIG" ]]; then
 fi
 
 ####################################################################################################
-#### 02-Cron-Regular: Validate (Restore) SS-Functions ##############################################
+#### B. 02-Cron-Regular: Validate (Restore) SS-Functions ###########################################
 ####################################################################################################
 
 ## THIS SNIPPET DOES NOT RELY ON SS-CONFIG OR SS-FUNCTIONS
@@ -74,7 +89,7 @@ if [[ -z "$VALIDATE_SS_FUNCTIONS" ]] || [[ -n "$OUTDATED_SS_FUNCTIONS" ]]; then
 fi
 
 ####################################################################################################
-#### 02-Cron-Regular: Validate (Restore) SS-Check + SS-Worker ######################################
+#### C. 02-Cron-Regular: Validate (Restore) SS-Check + SS-Worker ###################################
 ####################################################################################################
 
 ## THIS SNIPPET DOES NOT RELY ON SS-CONFIG OR SS-FUNCTIONS
@@ -125,7 +140,7 @@ if [[ -z "$VALIDATE_SS_WORKER" ]] || [[ -n "$OUTDATED_SS_WORKER" ]]; then
 fi
 
 ####################################################################################################
-#### 02-Cron-Regular: Source SS-Config + SS-Functions (After Validated) ############################
+#### D. 02-Cron-Regular: Source SS-Config + SS-Functions (After Validated) #########################
 ####################################################################################################
 
 ## at this point we know that ss-config and ss-functions exist or have been restored ##
@@ -140,7 +155,7 @@ source /var/www/ss-functions
 ## BELOW THIS RELIES ON SS-CONFIG AND SS-FUNCTIONS
 
 ####################################################################################################
-#### 02-Cron-Regular: Run Custom Tasks (EDIT SOURCED FILES) ########################################
+#### E. 02-Cron-Regular: Run Custom Tasks (EDIT SOURCED FILES) #####################################
 ####################################################################################################
 
 ## this will run custom shell commands that you can save in a reserved filename below ##
@@ -150,7 +165,17 @@ source /var/www/ss-functions
 source "$PATH_02_CRON_REGULAR_CUSTOM"
 
 ####################################################################################################
-#### 02-Cron-Regular: Run WP-Cron (If Enabled) #####################################################
+#### F. 02-Cron-Regular: Touch Timestamp File (Before Tasks To Ensure Firing) ######################
+####################################################################################################
+
+## this is a dummy timestamp file that will remember the last time this script was run ##
+## it can be useful for developer reference and is sometimes used by SlickStack ##
+
+## script timestamp ##
+touch "$TIMESTAMP_02_CRON_REGULAR"
+
+####################################################################################################
+#### G. 02-Cron-Regular: Run WP-Cron (If Enabled) ##################################################
 ####################################################################################################
 
 ## this snippet will call wp-cron via the server if enabled in your ss-config settings ##
@@ -162,7 +187,7 @@ if [[ "$WP_CRON_METHOD" == "server" ]] && [[ "$WP_CRON_INTERVAL" == "regular" ]]
 fi
 
 ####################################################################################################
-#### 02-Cron-Regular: Run Scheduled Tasks (DO NOT EDIT) ############################################
+#### H. 02-Cron-Regular: Run Scheduled Tasks (DO NOT EDIT) #########################################
 ####################################################################################################
 
 ## the below tasks will be called if configured to run at this interval in ss-config ##
@@ -184,7 +209,7 @@ if [[ "$INTERVAL_SS_DUMP_DATABASE" == "regular" ]]; then
 fi
 
 ####################################################################################################
-#### 02-Cron-Regular: Reset Permissions (SS Core Cron Jobs + SS Core Bash Scripts) #################
+#### I. 02-Cron-Regular: Reset Permissions (Cron Jobs + Bash Scripts) ##############################
 ####################################################################################################
 
 ## THIS SNIPPET DOES NOT RELY ON SS-CONFIG OR SS-FUNCTIONS
@@ -203,7 +228,7 @@ chmod 0700 /var/www/crons/*cron* ## 0700 means only root can execute
 chmod 0700 /var/www/crons/custom/*cron* ## 0700 means only root can execute
 
 ####################################################################################################
-#### 02-Cron-Regular: Delete Lock File #############################################################
+#### J. 02-Cron-Regular: Delete Lock File (End Script) #############################################
 ####################################################################################################
 
 ## here we delete the lock file associated with this cron job to clear the cron queue ##
@@ -211,16 +236,6 @@ chmod 0700 /var/www/crons/custom/*cron* ## 0700 means only root can execute
 
 ## delete lock ##
 rm "$LOCK_02_CRON_REGULAR"
-
-####################################################################################################
-#### 02-Cron-Regular: Touch Timestamp File (End Script) ############################################
-####################################################################################################
-
-## this is a dummy timestamp file that will remember the last time this script was run ##
-## it can be useful for developer reference and is sometimes used by SlickStack ##
-
-## script timestamp ##
-touch "$TIMESTAMP_02_CRON_REGULAR"
 
 ####################################################################################################
 #### SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ###############
