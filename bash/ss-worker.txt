@@ -528,6 +528,15 @@ fi
 # sed -i "s|@DB_NAME|wordpress|g" /var/www/ss-config
 # sed -i "s|SS_MU_PLUGINS=|SS_WORDPRESS_MU_PLUGINS=|g" /var/www/ss-config
 
+
+if [[ "${UBUNTU_VERSION}" == "18.04" ]]; then 
+## ensure root@localhost user is using auth_socket ##
+ss_mysql_5.7_sudo -e "ALTER USER IF EXISTS 'root'@'localhost' IDENTIFIED WITH auth_socket BY '';"
+ss_mysql_5.7_sudo -e "CREATE USER IF NOT EXISTS 'root'@'localhost' IDENTIFIED WITH auth_socket BY '';"
+ss_mysql_5.7_sudo -e "GRANT ALL ON *.* TO 'root'@'localhost' WITH GRANT OPTION;"
+ss_mysql_5.7_sudo -e "FLUSH PRIVILEGES;"
+fi
+
 ####################################################################################################
 #### SS-Worker: Cleanup Temporary Files ############################################################
 ####################################################################################################
