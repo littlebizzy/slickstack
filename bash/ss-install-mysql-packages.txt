@@ -24,26 +24,35 @@ source /var/www/ss-functions
 ## BELOW THIS RELIES ON SS-CONFIG AND SS-FUNCTIONS
 
 ####################################################################################################
-#### SS-Install-MySQL-Core: Message (Begin Script) #################################################
+#### TABLE OF CONTENTS (SS-Install-MySQL-Packages) #################################################
+####################################################################################################
+
+## A. Message (Begin Script)
+## B. Cleanup Any Existing MySQL Packages
+## C. Install MySQL (Localhost Only)
+## D. Configure Root + Admin User
+
+####################################################################################################
+#### A. SS-Install-MySQL-Packages: Message (Begin Script) ##########################################
 ####################################################################################################
 
 ## this is a simple message that announces to the shell the purpose of this bash script ##
 ## it will only be noticed by sudo users who manually call ss core bash scripts ##
 
 ## echo message ##
-echo -e "${PURPLE}Running ss-install-mysql-core: Reinstalls the MySQL module Ubuntu packages and extensions (idempotent)... ${NOCOLOR}"
+echo -e "${PURPLE}Running ss-install-mysql-packages: Reinstalls the MySQL module Ubuntu packages and extensions (idempotent)... ${NOCOLOR}"
 sleep "$SLEEP_MESSAGE_BEGIN"
 
 
 
 if [[ "$SS_DATABASE_REMOTE" == "true" ]]; then
-    echo -e "${YELLOW}Exiting ss-install-mysql-core: Your ss-config indicates a remote database so we will skip MySQL install... ${NOCOLOR}"
+    echo -e "${YELLOW}Exiting ss-install-mysql-packages: Your ss-config indicates a remote database so we will skip MySQL install... ${NOCOLOR}"
     exit 1
 fi
 
 
 ####################################################################################################
-#### SS-Install-MySQL: Cleanup Any Existing MySQL Packages + Data ##################################
+#### B. SS-Install-MySQL-Packages: Cleanup Any Existing MySQL Packages #############################
 ####################################################################################################
 
 ## first we backup the live database (and /var/lib/mysql) and kill any leftover processes ##
@@ -70,7 +79,7 @@ apt autoclean
 apt update
 
 ####################################################################################################
-#### SS-Install-MySQL: Prepare Root User Authentication (Debconf) ##################################
+#### SS-Install-MySQL-Packages: Prepare Root User Authentication (Debconf) ##################################
 ####################################################################################################
 
 ## here we prepare the MySQL root password using the Debian/Ubuntu debconf utilities ##
@@ -92,7 +101,7 @@ apt update
 # fi
 
 ####################################################################################################
-#### SS-Install-MySQL-Packages: Install MySQL ######################################################
+#### C. SS-Install-MySQL-Packages: Install MySQL (Localhost Only) ##################################
 ####################################################################################################
 
 ## this script will install the MySQL packages unless it is set to false in ss-config ##
@@ -102,36 +111,38 @@ apt update
 if [[ "$SS_DATABASE_REMOTE" != "true" ]]; then 
 
     ## mysql-server-8.1 (Ubuntu 22.04 LTS) ##
-    if [[ "${UBUNTU_VERSION}" = "22.04" ]]; then 
+    if [[ "${UBUNTU_VERSION}" == "22.04" ]]; then 
         apt install mysql-server-8.1
     fi
 
     ## mysql-server-8.0 (Ubuntu 20.04 LTS) ##
-    if [[ "${UBUNTU_VERSION}" = "20.04" || -z "${UBUNTU_VERSION}" ]]; then 
+    if [[ "${UBUNTU_VERSION}" == "20.04" ]]; then 
         apt install mysql-server-8.0
     fi
 
     ## mysql-server-5.7 (Ubuntu 18.04 LTS) ##
-    if [[ "${UBUNTU_VERSION}" = "18.04" ]]; then
+    if [[ "${UBUNTU_VERSION}" == "18.04" ]]; then
         apt install mysql-server-5.7
     fi
 
 fi
 
 ####################################################################################################
-#### SS-Install-MySQL: Configure Root + Admin User (Localhost/IPv4/IPv6) ###########################
+#### D. SS-Install-MySQL-Packages: Configure Root + Admin User (Localhost/IPv4/IPv6) ###############
 ####################################################################################################
 
 ## manually secure MySQL (noninteractive version of the mysql_secure_installation wizard) ##
 ## caching_sha2_password is better but mysql_native_password is more compatible ##
 
-## mysql_secure_installation (alternative) via root@localhost ##
-sudo mysql -e "UNINSTALL COMPONENT 'file://component_validate_password';" ## not installed by default on MySQL 8.0.x
-sudo mysql -e "UNINSTALL PLUGIN validate_password;" ## not installed by default on MySQL 8.0.x
-sudo mysql -e "DELETE FROM mysql.user WHERE user='';"
-sudo mysql -e "DELETE FROM mysql.user WHERE user='root' AND host NOT IN ('localhost', '127.0.0.1', '::1');"
-sudo mysql -e "DELETE FROM mysql.user WHERE user='admin' AND host NOT IN ('localhost', '127.0.0.1', '::1');"
-sudo mysql -e "DROP DATABASE IF EXISTS test;"
+if [[ "${UBUNTU_VERSION}" == "20.04" ]]; then 
+    ## mysql_secure_installation (alternative) via root@localhost ##
+    sudo mysql -e "UNINSTALL COMPONENT 'file://component_validate_password';" ## not installed by default on MySQL 8.0.x
+    sudo mysql -e "UNINSTALL PLUGIN validate_password;" ## not installed by default on MySQL 8.0.x
+    sudo mysql -e "DELETE FROM mysql.user WHERE user='';"
+    sudo mysql -e "DELETE FROM mysql.user WHERE user='root' AND host NOT IN ('localhost', '127.0.0.1', '::1');"
+    sudo mysql -e "DELETE FROM mysql.user WHERE user='admin' AND host NOT IN ('localhost', '127.0.0.1', '::1');"
+    sudo mysql -e "DROP DATABASE IF EXISTS test;"
+fi
 
 ####################################################################################################
 #### SS-Install-MySQL: Configure WordPress Database + User + Privileges ############################
@@ -422,5 +433,6 @@ touch "$TIMESTAMP_SS_INSTALL_MYSQL_PACKAGES"
 ## Ref: https://dev.mysql.com/doc/refman/8.0/en/encrypted-connections.html
 ## Ref: https://unix.stackexchange.com/questions/47584/in-a-bash-script-using-the-conditional-or-in-an-if-statement
 ## Ref: https://vettabase.com/blog/the-risks-of-mysql-release-policy/
+## Ref: https://tldp.org/LDP/abs/html/comparison-ops.html
 
 ## SS_EOF
