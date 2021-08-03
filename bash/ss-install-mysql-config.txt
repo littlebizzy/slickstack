@@ -47,7 +47,7 @@ fi
 ####################################################################################################
 
 ## delete tmp files ##
-rm /tmp/my.cnf
+rm "$TMP_MY_CNF"
 
 ####################################################################################################
 #### SS-Install-MySQL-Config: Install MySQL Config #################################################
@@ -63,56 +63,56 @@ sleep 15s
 # sleep 15s
 
 ## install custom my.cnf config file ##
-wget -O /tmp/my.cnf "$MIRROR_MY_CNF"
+wget -O "$TMP_MY_CNF" "$MIRROR_MY_CNF"
 
 #### MySQL Settings ####
 ## SQL mode ##
 if [[ -z "$SQL_MODE" ]]; then 
-    sed -i "s/@SQL_MODE/STRICT_TRANS_TABLES,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION/g" /tmp/my.cnf
+    sed -i "s/@SQL_MODE/STRICT_TRANS_TABLES,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION/g" "$TMP_MY_CNF"
 else 
-    sed -i "s/@SQL_MODE/${SQL_MODE}/g" /tmp/my.cnf
+    sed -i "s/@SQL_MODE/${SQL_MODE}/g" "$TMP_MY_CNF"
 fi
 
 ## max allowed packet ##
 if [[ -z "$SQL_MAX_ALLOWED_PACKET" ]]; then 
-    sed -i "s/@SQL_MAX_ALLOWED_PACKET/256M/g" /tmp/my.cnf
+    sed -i "s/@SQL_MAX_ALLOWED_PACKET/256M/g" "$TMP_MY_CNF"
 else 
-    sed -i "s/@SQL_MAX_ALLOWED_PACKET/${SQL_MAX_ALLOWED_PACKET}/g" /tmp/my.cnf
+    sed -i "s/@SQL_MAX_ALLOWED_PACKET/${SQL_MAX_ALLOWED_PACKET}/g" "$TMP_MY_CNF"
 fi
 
 ## connect timeout ##
 if [[ -z "$SQL_CONNECT_TIMEOUT" ]]; then 
-    sed -i "s/@SQL_CONNECT_TIMEOUT/30/g" /tmp/my.cnf
+    sed -i "s/@SQL_CONNECT_TIMEOUT/30/g" "$TMP_MY_CNF"
 else 
-    sed -i "s/@SQL_CONNECT_TIMEOUT/${SQL_CONNECT_TIMEOUT}/g" /tmp/my.cnf
+    sed -i "s/@SQL_CONNECT_TIMEOUT/${SQL_CONNECT_TIMEOUT}/g" "$TMP_MY_CNF"
 fi
 
 ## wait timeout ##
 if [[ -z "$SQL_WAIT_TIMEOUT" ]]; then 
-    sed -i "s/@SQL_WAIT_TIMEOUT/3600/g" /tmp/my.cnf
+    sed -i "s/@SQL_WAIT_TIMEOUT/3600/g" "$TMP_MY_CNF"
 else 
-    sed -i "s/@SQL_WAIT_TIMEOUT/${SQL_WAIT_TIMEOUT}/g" /tmp/my.cnf
+    sed -i "s/@SQL_WAIT_TIMEOUT/${SQL_WAIT_TIMEOUT}/g" "$TMP_MY_CNF"
 fi
 
 ## interactive timeout ##
 if [[ -z "$SQL_INTERACTIVE_TIMEOUT" ]]; then 
-    sed -i "s/@SQL_INTERACTIVE_TIMEOUT/43200/g" /tmp/my.cnf
+    sed -i "s/@SQL_INTERACTIVE_TIMEOUT/43200/g" "$TMP_MY_CNF"
 else 
-    sed -i "s/@SQL_INTERACTIVE_TIMEOUT/${SQL_INTERACTIVE_TIMEOUT}/g" /tmp/my.cnf
+    sed -i "s/@SQL_INTERACTIVE_TIMEOUT/${SQL_INTERACTIVE_TIMEOUT}/g" "$TMP_MY_CNF"
 fi
 
 ## net read timeout ##
 if [[ -z "$SQL_NET_READ_TIMEOUT" ]]; then 
-    sed -i "s/@SQL_NET_READ_TIMEOUT/30/g" /tmp/my.cnf
+    sed -i "s/@SQL_NET_READ_TIMEOUT/30/g" "$TMP_MY_CNF"
 else 
-    sed -i "s/@SQL_NET_READ_TIMEOUT/${SQL_NET_READ_TIMEOUT}/g" /tmp/my.cnf
+    sed -i "s/@SQL_NET_READ_TIMEOUT/${SQL_NET_READ_TIMEOUT}/g" "$TMP_MY_CNF"
 fi
 
 ## net write timeout ##
 if [[ -z "$SQL_NET_WRITE_TIMEOUT" ]]; then 
-    sed -i "s/@SQL_NET_WRITE_TIMEOUT/60/g" /tmp/my.cnf
+    sed -i "s/@SQL_NET_WRITE_TIMEOUT/60/g" "$TMP_MY_CNF"
 else 
-    sed -i "s/@SQL_NET_WRITE_TIMEOUT/${SQL_NET_WRITE_TIMEOUT}/g" /tmp/my.cnf
+    sed -i "s/@SQL_NET_WRITE_TIMEOUT/${SQL_NET_WRITE_TIMEOUT}/g" "$TMP_MY_CNF"
 fi
 
 
@@ -120,41 +120,41 @@ fi
 PERCENT_RAM_MB=$(free -m | awk 'NR==2{printf "%d", $2*0.50 }')
 
 if [[ "$INNODB_BUFFER_POOL_SIZE" == "auto" ]]; then 
-    sed -i "s/@INNODB_BUFFER_POOL_SIZE/${PERCENT_RAM_MB}M/g" /tmp/my.cnf
+    sed -i "s/@INNODB_BUFFER_POOL_SIZE/${PERCENT_RAM_MB}M/g" "$TMP_MY_CNF"
 else 
-    sed -i "s/@INNODB_BUFFER_POOL_SIZE/${INNODB_BUFFER_POOL_SIZE}/g" /tmp/my.cnf
+    sed -i "s/@INNODB_BUFFER_POOL_SIZE/${INNODB_BUFFER_POOL_SIZE}/g" "$TMP_MY_CNF"
 fi
 
 ## set InnoDB flush method ##
 if [[ -z "$INNODB_FLUSH_METHOD" ]]; then 
-    sed -i "s/@INNODB_FLUSH_METHOD/O_DIRECT/g" /tmp/my.cnf
+    sed -i "s/@INNODB_FLUSH_METHOD/O_DIRECT/g" "$TMP_MY_CNF"
 else 
-    sed -i "s/@INNODB_FLUSH_METHOD/${INNODB_FLUSH_METHOD}/g" /tmp/my.cnf
+    sed -i "s/@INNODB_FLUSH_METHOD/${INNODB_FLUSH_METHOD}/g" "$TMP_MY_CNF"
 fi
 
 ## set InnoDB log file size ##
 if [[ -z "$INNODB_LOG_FILE_SIZE" ]]; then 
-    sed -i "s/@INNODB_LOG_FILE_SIZE/256M/g" /tmp/my.cnf
+    sed -i "s/@INNODB_LOG_FILE_SIZE/256M/g" "$TMP_MY_CNF"
 else 
-    sed -i "s/@INNODB_LOG_FILE_SIZE/${INNODB_LOG_FILE_SIZE}/g" /tmp/my.cnf
+    sed -i "s/@INNODB_LOG_FILE_SIZE/${INNODB_LOG_FILE_SIZE}/g" "$TMP_MY_CNF"
 fi
 
 ## set InnoDB log files in group ##
 if [[ -z "$INNODB_LOG_FILES_IN_GROUP" ]]; then 
-    sed -i "s/@INNODB_LOG_FILES_IN_GROUP/1/g" /tmp/my.cnf
+    sed -i "s/@INNODB_LOG_FILES_IN_GROUP/1/g" "$TMP_MY_CNF"
 else 
-    sed -i "s/@INNODB_LOG_FILES_IN_GROUP/${INNODB_LOG_FILES_IN_GROUP}/g" /tmp/my.cnf
+    sed -i "s/@INNODB_LOG_FILES_IN_GROUP/${INNODB_LOG_FILES_IN_GROUP}/g" "$TMP_MY_CNF"
 fi
 
 ## set InnoDB flush_log_at_trx_commit ##
 if [[ "$INNODB_FLUSH_LOG_AT_TRX_COMMIT" == "false" ]]; then
-    sed -i "s/@INNODB_FLUSH_LOG_AT_TRX_COMMIT/0/g" /tmp/my.cnf
+    sed -i "s/@INNODB_FLUSH_LOG_AT_TRX_COMMIT/0/g" "$TMP_MY_CNF"
 else 
-    sed -i "s/@INNODB_FLUSH_LOG_AT_TRX_COMMIT/1/g" /tmp/my.cnf
+    sed -i "s/@INNODB_FLUSH_LOG_AT_TRX_COMMIT/1/g" "$TMP_MY_CNF"
 fi
 
 ## copy files to their destinations ##
-cp /tmp/my.cnf "$PATH_MY_CNF"
+cp "$TMP_MY_CNF" "$PATH_MY_CNF"
 
 ####################################################################################################
 #### SS-Install-MySQL-COnfig: Restart Modules (MySQL) ##############################################
@@ -175,7 +175,7 @@ source "$PATH_SS_PERMS_MYSQL_CONFIG"
 ####################################################################################################
 
 ## delete tmp files ##
-rm /tmp/my.cnf
+rm "$TMP_MY_CNF"
 
 ####################################################################################################
 #### SS-Install-MySQL-Config: Touch Timestamp File (End Script) ####################################
