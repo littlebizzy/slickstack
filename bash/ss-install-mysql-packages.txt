@@ -216,6 +216,71 @@ sudo mysql -e "GRANT ALL ON *.* TO 'root'@'localhost' WITH GRANT OPTION;"
 sudo mysql -e "FLUSH PRIVILEGES;"
 
 ####################################################################################################
+#### SS-Install-MySQL: Configure WordPress Database + User + Privileges ############################
+####################################################################################################
+
+
+if [[ "${UBUNTU_VERSION}" == "18.04" ]]; then 
+
+## we use root@localhost (auth_socket) and user@127.0.0.1 (TCP) for WordPress database ##
+## the superuser admin@127.0.0.1 is also created to be used with phpMyAdmin, etc ##
+
+## create production database ##
+sudo ss_mysql_5.7 -e "CREATE DATABASE IF NOT EXISTS ${DB_NAME};"
+
+## create dev database unless it is explicity disabled ##
+if [[ "$DEV_SITE" != "false" ]]; then
+    sudo ss_mysql_5.7 -e "CREATE DATABASE IF NOT EXISTS ${DB_NAME}_dev;" 
+fi
+
+## create staging database unless it is explictly disabled ##
+if [[ "$STAGING_SITE" != "false" ]]; then
+    sudo ss_mysql_5.7 -e "CREATE DATABASE IF NOT EXISTS ${DB_NAME}_staging;"
+fi
+
+## create admin superuser (can be used with Adminer/phpMyAdmin) ##
+sudo ss_mysql_5.7 -e "ALTER USER IF EXISTS 'admin'@'localhost' IDENTIFIED WITH caching_sha2_password BY '${DB_PASSWORD_ROOT}';"
+sudo ss_mysql_5.7 -e "ALTER USER IF EXISTS 'admin'@'127.0.0.1' IDENTIFIED WITH caching_sha2_password BY '${DB_PASSWORD_ROOT}';"
+sudo ss_mysql_5.7 -e "ALTER USER IF EXISTS 'admin'@'::1' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD_ROOT}';"
+sudo ss_mysql_5.7 -e "CREATE USER IF NOT EXISTS 'admin'@'localhost' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD_ROOT}';"
+sudo ss_mysql_5.7 -e "CREATE USER IF NOT EXISTS 'admin'@'127.0.0.1' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD_ROOT}';"
+sudo ss_mysql_5.7 -e "CREATE USER IF NOT EXISTS 'admin'@'::1' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD_ROOT}';"
+
+## grant admin superuser all privileges on all databases (localhost/IPv4/IPv6) ##
+sudo ss_mysql_5.7 -e "GRANT ALL ON *.* TO 'admin'@'localhost' WITH GRANT OPTION;"
+sudo ss_mysql_5.7 -e "GRANT ALL ON *.* TO 'admin'@'127.0.0.1' WITH GRANT OPTION;"
+sudo ss_mysql_5.7 -e "GRANT ALL ON *.* TO 'admin'@'::1' WITH GRANT OPTION;"
+
+## create limited user for WordPress database ##
+sudo ss_mysql_5.7 -e "ALTER USER IF EXISTS '${DB_USER}'@'localhost' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD}';"
+sudo ss_mysql_5.7 -e "ALTER USER IF EXISTS '${DB_USER}'@'127.0.0.1' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD}';"
+sudo ss_mysql_5.7 -e "ALTER USER IF EXISTS '${DB_USER}'@'::1' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD}';"
+sudo ss_mysql_5.7 -e "CREATE USER IF NOT EXISTS '${DB_USER}'@'localhost' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD}';"
+sudo ss_mysql_5.7 -e "CREATE USER IF NOT EXISTS '${DB_USER}'@'127.0.0.1' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD}';"
+sudo ss_mysql_5.7 -e "CREATE USER IF NOT EXISTS '${DB_USER}'@'::1' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD}';"
+
+## grant limited user privileges on WordPress database only (localhost/IPv4/IPv6) ##
+sudo ss_mysql_5.7 -e "GRANT ALL ON ${DB_NAME}.* TO '${DB_USER}'@'localhost';"
+sudo ss_mysql_5.7 -e "GRANT ALL ON ${DB_NAME}.* TO '${DB_USER}'@'127.0.0.1';"
+sudo ss_mysql_5.7 -e "GRANT ALL ON ${DB_NAME}.* TO '${DB_USER}'@'::1';"
+
+## install auth_socket plugin ##
+sudo ss_mysql_5.7 -e "INSTALL PLUGIN auth_socket SONAME 'auth_socket.so';"
+
+## create sudo@localhost user via auth_socket ##
+sudo ss_mysql_5.7 -e "ALTER USER IF EXISTS '${SUDO_USER}'@'localhost' IDENTIFIED WITH auth_socket BY '';"
+sudo ss_mysql_5.7 -e "CREATE USER IF NOT EXISTS '${SUDO_USER}'@'localhost' IDENTIFIED WITH auth_socket BY '';"
+sudo ss_mysql_5.7 -e "GRANT ALL ON *.* TO '${SUDO_USER}'@'localhost' WITH GRANT OPTION;"
+
+## ensure root@localhost user is using auth_socket ##
+sudo ss_mysql_5.7 -e "ALTER USER IF EXISTS 'root'@'localhost' IDENTIFIED WITH auth_socket BY '';"
+sudo ss_mysql_5.7 -e "CREATE USER IF NOT EXISTS 'root'@'localhost' IDENTIFIED WITH auth_socket BY '';"
+sudo ss_mysql_5.7 -e "GRANT ALL ON *.* TO 'root'@'localhost' WITH GRANT OPTION;"
+sudo ss_mysql_5.7 -e "FLUSH PRIVILEGES;"
+
+fi
+
+####################################################################################################
 #### SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ###############
 ####################################################################################################
 
