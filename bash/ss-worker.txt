@@ -206,7 +206,14 @@ fi
     
 SYSTEM_SERVER_SOFTWARE=$(nginx -v |& sed 's#nginx version: nginx/##')
 SYSTEM_MYSQL_SIZE=$(du -sh /var/lib/mysql |& sed 's#/var/lib/mysql##')
+
+if [[ "${UBUNTU_VERSION}" == "18.04" ]]; then
 SYSTEM_MYSQL_VERSION=$(mysql --version |& awk '{print $5}' | sed 's/,//g')
+fi
+
+if [[ "${UBUNTU_VERSION}" == "20.04" ]]; then
+SYSTEM_MYSQL_VERSION=$(mysql --version |& awk '{print $3}' | sed 's/,//g')
+fi
 
 LAST_TIMESTAMP_00_CRONTAB=$(stat -c %x "$TIMESTAMP_SS_INSTALL_UBUNTU_CRONTAB")
 LAST_TIMESTAMP_01_CRON_OFTEN=$(stat -c %x "$TIMESTAMP_01_CRON_OFTEN")
