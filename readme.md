@@ -14,7 +14,7 @@ SlickStack is a free LEMP stack automation script written in Bash designed to en
 
 ## Core Modules
 
-*Last updated: Jun 28, 2021*
+*Last updated: Aug 8, 2021*
 
 | LEMP Module | Mirrors | Version | What does SlickStack [ss] customize? |
 | :------------- | :----------: | :----------: | :----------: |
@@ -31,6 +31,7 @@ SlickStack is a free LEMP stack automation script written in Bash designed to en
 | **Git** | [mirrors](https://mirrors.slickstack.io/modules/git/) | 2.25.x | default config |
 | **UFW Firewall** | [mirrors](https://mirrors.slickstack.io/modules/ufw-firewall/) | 0.36 | `ufw` + `ufw.conf` + `user-rules` |
 | **ClamAV** | [mirrors](https://mirrors.slickstack.io/modules/clamav/) | 0.102.x | `freshclam.conf` |
+| **Rclone** | [mirrors](https://mirrors.slickstack.io/modules/rclone/) | 1.50.x | `rclone.conf` |
 
 ## Changelog
 
