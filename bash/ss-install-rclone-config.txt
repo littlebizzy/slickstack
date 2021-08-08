@@ -35,6 +35,32 @@ echo -e "${PURPLE}Running ss-install-rclone-config: Reinstalls the Rclone module
 sleep "$SLEEP_MESSAGE_BEGIN"
 
 
+
+
+####################################################################################################
+#### SS-Install-Rclond-Config: #########################
+####################################################################################################
+
+## next we optimize the PHP-FPM configuration files based on settings from ss-config ##
+## several common PHP settings are hardcoded to improve LEMP server stability ##
+
+## download latest versions ##
+wget -O "$TMP_RCLONE_CONF" "$MIRROR_RCLONE_CONF"
+
+sed -i "s/@RCLONE_SERVICE/${RCLONE_SERVICE}/g" "$TMP_RCLONE_CONF"
+sed -i "s/@RCLONE_USER/${RCLONE_USER}/g" "$TMP_RCLONE_CONF"
+sed -i "s/@RCLONE_CLIENT_SECRET/${RCLONE_CLIENT_SECRET}/g" "$TMP_RCLONE_CONF"
+
+
+cp "$TMP_RCLONE_CONF" "$PATH_RCLONE_CONF"
+
+####################################################################################################
+#### SS-Install-Rclone-Config: Reset Permissions (Rclone Config) ###################################
+####################################################################################################
+
+## run ss-perms-rclone-config ##
+source "$PATH_SS_PERMS_RCLONE_CONFIG"
+
 ####################################################################################################
 #### SS-Install-Rclone-Config: Touch Timestamp File (End Script) ###################################
 ####################################################################################################
