@@ -101,48 +101,48 @@ fi
 if [[ "$SSL_TYPE" == "openssl" ]] || [[ -z "$SSL_TYPE" ]]; then 
 
     ## retrieve Lets Encrypt and OpenSSL sub-config file ##
-    wget -O /tmp/openssl.conf "$MIRROR_OPENSSL_CONF"
+    wget -O "$TMP_OPENSSL_CONF" "$MIRROR_OPENSSL_CONF"
 
     ## protocols ##
     if [[ -z "$SSL_PROTOCOLS" ]]; then 
-        sed -i "s/@SSL_PROTOCOLS/TLSv1.2 TLSv1.3/g" /tmp/openssl.conf
+        sed -i "s/@SSL_PROTOCOLS/TLSv1.2 TLSv1.3/g" "$TMP_OPENSSL_CONF"
     else 
-        sed -i "s/@SSL_PROTOCOLS/${SSL_PROTOCOLS}/g" /tmp/openssl.conf
+        sed -i "s/@SSL_PROTOCOLS/${SSL_PROTOCOLS}/g" "$TMP_OPENSSL_CONF"
     fi
 
     ## ciphers ##
     if [[ -z "$SSL_CIPHERS" ]]; then 
-        sed -i "s/@SSL_CIPHERS/ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384/g" /tmp/openssl.conf
+        sed -i "s/@SSL_CIPHERS/ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384/g" "$TMP_OPENSSL_CONF"
     else 
-        sed -i "s/@SSL_CIPHERS/${SSL_CIPHERS}/g" /tmp/openssl.conf
+        sed -i "s/@SSL_CIPHERS/${SSL_CIPHERS}/g" "$TMP_OPENSSL_CONF"
     fi
 
     ## session timeout ##
     if [[ -z "$SSL_SESSION_TIMEOUT" ]]; then 
-        sed -i "s/@SSL_SESSION_TIMEOUT/1d/g" /tmp/openssl.conf
+        sed -i "s/@SSL_SESSION_TIMEOUT/1d/g" "$TMP_OPENSSL_CONF"
     else 
-        sed -i "s/@SSL_SESSION_TIMEOUT/${SSL_SESSION_TIMEOUT}/g" /tmp/openssl.conf
+        sed -i "s/@SSL_SESSION_TIMEOUT/${SSL_SESSION_TIMEOUT}/g" "$TMP_OPENSSL_CONF"
     fi
 
     ## session cache ##
     if [[ -z "$SSL_SESSION_CACHE" ]]; then 
-        sed -i "s/@SSL_SESSION_CACHE/shared:SSL:64m/g" /tmp/openssl.conf
+        sed -i "s/@SSL_SESSION_CACHE/shared:SSL:64m/g" "$TMP_OPENSSL_CONF"
     else 
-        sed -i "s/@SSL_SESSION_CACHE/${SSL_SESSION_CACHE}/g" /tmp/openssl.conf
+        sed -i "s/@SSL_SESSION_CACHE/${SSL_SESSION_CACHE}/g" "$TMP_OPENSSL_CONF"
     fi
 
     ## buffer size ##
     if [[ -z "$SSL_BUFFER_SIZE" ]]; then 
-        sed -i "s/@SSL_BUFFER_SIZE/16k/g" /tmp/openssl.conf
+        sed -i "s/@SSL_BUFFER_SIZE/16k/g" "$TMP_OPENSSL_CONF"
     else 
-        sed -i "s/@SSL_BUFFER_SIZE/${SSL_BUFFER_SIZE}/g" /tmp/openssl.conf
+        sed -i "s/@SSL_BUFFER_SIZE/${SSL_BUFFER_SIZE}/g" "$TMP_OPENSSL_CONF"
     fi
 
 ## here we modify the live Nginx configuration files to activate Lets Encrypt certificates ##
 ## this snippet will only be executed if Lets Encrypt certs appear to be successful ##
 
     ## copy SSL sub-config file to /etc/nginx/conf.d/ and delete conflicting files ##
-    cp /tmp/openssl.conf /etc/nginx/conf.d/openssl.conf
+    cp "$TMP_OPENSSL_CONF" /etc/nginx/conf.d/openssl.conf
     rm /etc/nginx/conf.d/letsencrypt.conf*
     rm /etc/nginx/conf.d/thirdparty.conf*
     echo -e "${GREEN}Exiting ss-install-nginx-ssl: OpenSSL installation to the Nginx server appears to have been successful... ${NOCOLOR}"
