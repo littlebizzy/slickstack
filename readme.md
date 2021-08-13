@@ -35,6 +35,8 @@ SlickStack is a free LEMP stack automation script written in Bash designed to en
 
 ## Changelog
 
+* **NEW!** The script `ss-dump-files` is now functional, and will TAR gzip your entire `html` directory to `/var/www/backups/html/export.tar.gz` whenever run... by default we will not enable this script on any cron schedule because many servers might not have the space for it.
+
 * **NEW!** SSH keys are now finally working! We are using a "centralized" auth keys file to avoid data loss and for easier management and backup purposes. The public key file is located under `/var/www/auth/authorized_keys` and a private/public key pair will be generated automatically for you during `ss-install` and/or `ss-install-ubuntu-ssh` ... the private key will automatically be deleted after a few hours, and the public key is automatically installed for you. At the end of the `ss-install` process (when it runs `ss-stack-overview`) the shell will display your private key hash briefly so you can copy it to your local computer. Please note that you can use a different key pair if you prefer, just be sure to upload your public key file to `/var/www/auth/id_rsa.pub` before `ss-install` runs. We are looking for feedback on our current default settings in `sshd_config` so please let us know if you're an SSH guru!
 
 * **NEW!** Support for third-party SSL certificates is here, by popular demand! We have not tested this, but it should now work. For those interested in using third-party SSL please test the feature and offer us your feedback. You will need to upload your cert bundle to `/var/www/certs/thirdparty.pem` and your private key to `/var/www/certs/keys/thirdparty.key` ... if any conflicts or problems please tell us so we can expand features here as required.
