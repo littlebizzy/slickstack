@@ -81,13 +81,17 @@ apt install zip unzip
 
 ## ensure MU (Must-Use) plugins directory exists ##
 mkdir /var/www/html/wp-content/mu-plugins
-mkdir /var/www/html/dev/wp-content/mu-plugins
-mkdir /var/www/html/staging/wp-content/mu-plugins
-
-## delete all currently installed MU (Must-Use) plugins ##
 rm /var/www/html/wp-content/mu-plugins/*
-rm /var/www/html/dev/wp-content/mu-plugins/*
-rm /var/www/html/staging/wp-content/mu-plugins/*
+
+if [[ "${DEV_SITE}" == "true" ]]; then
+    mkdir /var/www/html/dev/wp-content/mu-plugins
+    rm /var/www/html/dev/wp-content/mu-plugins/*
+fi
+
+if [[ "${STAGING_SITE}" == "true" ]]; then
+    mkdir /var/www/html/staging/wp-content/mu-plugins
+    rm /var/www/html/staging/wp-content/mu-plugins/*
+fi
 
 ####################################################################################################
 #### SS-Muplugs: Install Required MU (Must-Use) Plugins + Object Cache #############################
@@ -113,11 +117,6 @@ wget -O /tmp/object-cache.php "$MIRROR_OBJECT_CACHE_PHP"
 # unzip /tmp/custom-functions.zip -d /tmp
 unzip /tmp/disable-emails.zip -d /tmp
 unzip /tmp/disable-default-runner.zip -d /tmp
-
-## delete potentially conflicting Autoloader scripts ##
-rm /var/www/html/wp-content/plugins/autoloader*
-rm /var/www/html/staging/wp-content/plugins/autoloader*
-rm /var/www/html/dev/wp-content/plugins/autoloader*
 
 ## delete potentially conflicting normal plugins (with required MU plugins) ##
 # rm /var/www/html/wp-content/plugins/custom-functions* ## don't delete others until ours is working 100% perfect
@@ -834,81 +833,70 @@ rm /var/www/html/staging/wp-content/plugins/virtual-robotstxt*
 rm /var/www/html/dev/wp-content/plugins/virtual-robotstxt*
 
 ## copy to destination ##
-cp /tmp/clear-caches /var/www/html/wp-content/mu-plugins/clear-caches
-cp /tmp/clear-caches /var/www/html/staging/wp-content/mu-plugins/clear-caches
-# cp /tmp/clear-caches /var/www/html/dev/wp-content/mu-plugins/clear-caches
-
-cp /tmp/cloudflare /var/www/html/wp-content/mu-plugins/cloudflare
-cp /tmp/cloudflare /var/www/html/staging/wp-content/mu-plugins/cloudflare
-# cp /tmp/cloudflare /var/www/html/dev/wp-content/mu-plugins/cloudflare
-
-cp /tmp/dashboard-cleanup /var/www/html/wp-content/mu-plugins/dashboard-cleanup
-cp /tmp/dashboard-cleanup /var/www/html/staging/wp-content/mu-plugins/dashboard-cleanup
-# cp /tmp/dashboard-cleanup /var/www/html/dev/wp-content/mu-plugins/dashboard-cleanup
-
-cp /tmp/delete-expired-transients /var/www/html/wp-content/mu-plugins/delete-expired-transients
-cp /tmp/delete-expired-transients /var/www/html/staging/wp-content/mu-plugins/delete-expired-transients
-# cp /tmp/delete-expired-transients /var/www/html/dev/wp-content/mu-plugins/delete-expired-transients
-
-cp /tmp/disable-attachment-pages /var/www/html/wp-content/mu-plugins/disable-attachment-pages
-cp /tmp/disable-attachment-pages /var/www/html/staging/wp-content/mu-plugins/disable-attachment-pages
-# cp /tmp/disable-attachment-pages /var/www/html/dev/wp-content/mu-plugins/disable-attachment-pages
-
-cp /tmp/disable-embeds /var/www/html/wp-content/mu-plugins/disable-embeds
-cp /tmp/disable-embeds /var/www/html/staging/wp-content/mu-plugins/disable-embeds
-# cp /tmp/disable-embeds /var/www/html/dev/wp-content/mu-plugins/disable-embeds
-
-cp /tmp/disable-emojis /var/www/html/wp-content/mu-plugins/disable-emojis
-cp /tmp/disable-emojis /var/www/html/staging/wp-content/mu-plugins/disable-emojis
-# cp /tmp/disable-emojis /var/www/html/dev/wp-content/mu-plugins/disable-emojis
-
-cp /tmp/disable-empty-trash /var/www/html/wp-content/mu-plugins/disable-empty-trash
-cp /tmp/disable-empty-trash /var/www/html/staging/wp-content/mu-plugins/disable-empty-trash
-# cp /tmp/disable-empty-trash /var/www/html/dev/wp-content/mu-plugins/disable-empty-trash
-
-# cp /tmp/disable-gutenberg /var/www/html/wp-content/mu-plugins/disable-gutenberg
-# cp /tmp/disable-gutenberg /var/www/html/staging/wp-content/mu-plugins/disable-gutenberg
-# cp /tmp/disable-gutenberg /var/www/html/dev/wp-content/mu-plugins/disable-gutenberg
-
-cp /tmp/disable-image-compression /var/www/html/wp-content/mu-plugins/disable-image-compression
-cp /tmp/disable-image-compression /var/www/html/staging/wp-content/mu-plugins/disable-image-compression
-# cp /tmp/disable-image-compression /var/www/html/dev/wp-content/mu-plugins/disable-image-compression
-
-cp /tmp/disable-post-via-email /var/www/html/wp-content/mu-plugins/disable-post-via-email
-cp /tmp/disable-post-via-email /var/www/html/staging/wp-content/mu-plugins/disable-post-via-email
-# cp /tmp/disable-post-via-email /var/www/html/dev/wp-content/mu-plugins/disable-post-via-email
-
-cp /tmp/disable-xml-rpc /var/www/html/wp-content/mu-plugins/disable-xml-rpc
-cp /tmp/disable-xml-rpc /var/www/html/staging/wp-content/mu-plugins/disable-xml-rpc
-# cp /tmp/disable-xml-rpc /var/www/html/dev/wp-content/mu-plugins/disable-xml-rpc
-
-cp /tmp/force-https /var/www/html/wp-content/mu-plugins/force-https
-cp /tmp/force-https /var/www/html/staging/wp-content/mu-plugins/force-https
-# cp /tmp/force-https /var/www/html/dev/wp-content/mu-plugins/force-https
-
-cp /tmp/force-strong-hashing /var/www/html/wp-content/mu-plugins/force-strong-hashing
-cp /tmp/force-strong-hashing /var/www/html/staging/wp-content/mu-plugins/force-strong-hashing
-# cp /tmp/force-strong-hashing /var/www/html/dev/wp-content/mu-plugins/force-strong-hashing
-
-cp /tmp/header-cleanup /var/www/html/wp-content/mu-plugins/header-cleanup
-cp /tmp/header-cleanup /var/www/html/staging/wp-content/mu-plugins/header-cleanup
-# cp /tmp/header-cleanup /var/www/html/dev/wp-content/mu-plugins/header-cleanup
-
-cp /tmp/limit-heartbeat /var/www/html/wp-content/mu-plugins/limit-heartbeat
-cp /tmp/limit-heartbeat /var/www/html/staging/wp-content/mu-plugins/limit-heartbeat
-# cp /tmp/limit-heartbeat /var/www/html/dev/wp-content/mu-plugins/limit-heartbeat
 
 # cp /tmp/minify-html /var/www/html/wp-content/mu-plugins/minify-html
-# cp /tmp/minify-html /var/www/html/staging/wp-content/mu-plugins/minify-html
-# cp /tmp/minify-html /var/www/html/dev/wp-content/mu-plugins/minify-html
-
+# cp /tmp/disable-gutenberg /var/www/html/wp-content/mu-plugins/disable-gutenberg
+cp /tmp/clear-caches /var/www/html/wp-content/mu-plugins/clear-caches
+cp /tmp/cloudflare /var/www/html/wp-content/mu-plugins/cloudflare
+cp /tmp/dashboard-cleanup /var/www/html/wp-content/mu-plugins/dashboard-cleanup
+cp /tmp/delete-expired-transients /var/www/html/wp-content/mu-plugins/delete-expired-transients
+cp /tmp/disable-attachment-pages /var/www/html/wp-content/mu-plugins/disable-attachment-pages
+cp /tmp/disable-embeds /var/www/html/wp-content/mu-plugins/disable-embeds
+cp /tmp/disable-emojis /var/www/html/wp-content/mu-plugins/disable-emojis
+cp /tmp/disable-empty-trash /var/www/html/wp-content/mu-plugins/disable-empty-trash
+cp /tmp/disable-image-compression /var/www/html/wp-content/mu-plugins/disable-image-compression
+cp /tmp/disable-post-via-email /var/www/html/wp-content/mu-plugins/disable-post-via-email
+cp /tmp/disable-xml-rpc /var/www/html/wp-content/mu-plugins/disable-xml-rpc
+cp /tmp/force-https /var/www/html/wp-content/mu-plugins/force-https
+cp /tmp/force-strong-hashing /var/www/html/wp-content/mu-plugins/force-strong-hashing
+cp /tmp/header-cleanup /var/www/html/wp-content/mu-plugins/header-cleanup
+cp /tmp/limit-heartbeat /var/www/html/wp-content/mu-plugins/limit-heartbeat
 cp /tmp/plugin-blacklist /var/www/html/wp-content/mu-plugins/plugin-blacklist
-cp /tmp/plugin-blacklist /var/www/html/staging/wp-content/mu-plugins/plugin-blacklist
-# cp /tmp/plugin-blacklist /var/www/html/dev/wp-content/mu-plugins/plugin-blacklist
-
 cp /tmp/virtual-robotstxt /var/www/html/wp-content/mu-plugins/virtual-robotstxt
-cp /tmp/virtual-robotstxt /var/www/html/staging/wp-content/mu-plugins/virtual-robotstxt
-# cp /tmp/virtual-robotstxt /var/www/html/dev/wp-content/mu-plugins/virtual-robotstxt
+
+    if [[ "${STAGING_SITE}" == "true" ]]; then
+        # cp /tmp/minify-html /var/www/html/staging/wp-content/mu-plugins/minify-html
+        # cp /tmp/disable-gutenberg /var/www/html/staging/wp-content/mu-plugins/disable-gutenberg
+        cp /tmp/clear-caches /var/www/html/staging/wp-content/mu-plugins/clear-caches
+        cp /tmp/cloudflare /var/www/html/staging/wp-content/mu-plugins/cloudflare
+        cp /tmp/dashboard-cleanup /var/www/html/staging/wp-content/mu-plugins/dashboard-cleanup
+        cp /tmp/delete-expired-transients /var/www/html/staging/wp-content/mu-plugins/delete-expired-transients
+        cp /tmp/disable-attachment-pages /var/www/html/staging/wp-content/mu-plugins/disable-attachment-pages
+        cp /tmp/disable-embeds /var/www/html/staging/wp-content/mu-plugins/disable-embeds
+        cp /tmp/plugin-blacklist /var/www/html/staging/wp-content/mu-plugins/plugin-blacklist
+        cp /tmp/virtual-robotstxt /var/www/html/staging/wp-content/mu-plugins/virtual-robotstxt
+        cp /tmp/limit-heartbeat /var/www/html/staging/wp-content/mu-plugins/limit-heartbeat
+        cp /tmp/header-cleanup /var/www/html/staging/wp-content/mu-plugins/header-cleanup
+        cp /tmp/force-strong-hashing /var/www/html/staging/wp-content/mu-plugins/force-strong-hashing
+        cp /tmp/force-https /var/www/html/staging/wp-content/mu-plugins/force-https
+        cp /tmp/disable-xml-rpc /var/www/html/staging/wp-content/mu-plugins/disable-xml-rpc
+        cp /tmp/disable-post-via-email /var/www/html/staging/wp-content/mu-plugins/disable-post-via-email
+        cp /tmp/disable-image-compression /var/www/html/staging/wp-content/mu-plugins/disable-image-compression
+        cp /tmp/disable-empty-trash /var/www/html/staging/wp-content/mu-plugins/disable-empty-trash
+        cp /tmp/disable-emojis /var/www/html/staging/wp-content/mu-plugins/disable-emojis
+    fi
+
+    if [[ "${DEV_SITE}" == "true" ]]; then
+        # cp /tmp/minify-html /var/www/html/dev/wp-content/mu-plugins/minify-html
+        # cp /tmp/disable-gutenberg /var/www/html/dev/wp-content/mu-plugins/disable-gutenberg
+        cp /tmp/disable-embeds /var/www/html/dev/wp-content/mu-plugins/disable-embeds
+        cp /tmp/disable-image-compression /var/www/html/dev/wp-content/mu-plugins/disable-image-compression
+        cp /tmp/disable-post-via-email /var/www/html/dev/wp-content/mu-plugins/disable-post-via-email
+        cp /tmp/disable-xml-rpc /var/www/html/dev/wp-content/mu-plugins/disable-xml-rpc
+        cp /tmp/force-https /var/www/html/dev/wp-content/mu-plugins/force-https
+        cp /tmp/force-strong-hashing /var/www/html/dev/wp-content/mu-plugins/force-strong-hashing
+        cp /tmp/header-cleanup /var/www/html/dev/wp-content/mu-plugins/header-cleanup
+        cp /tmp/limit-heartbeat /var/www/html/dev/wp-content/mu-plugins/limit-heartbeat
+        cp /tmp/plugin-blacklist /var/www/html/dev/wp-content/mu-plugins/plugin-blacklist
+        cp /tmp/virtual-robotstxt /var/www/html/dev/wp-content/mu-plugins/virtual-robotstxt
+        cp /tmp/disable-empty-trash /var/www/html/dev/wp-content/mu-plugins/disable-empty-trash
+        cp /tmp/disable-attachment-pages /var/www/html/dev/wp-content/mu-plugins/disable-attachment-pages
+        cp /tmp/delete-expired-transients /var/www/html/dev/wp-content/mu-plugins/delete-expired-transients
+        cp /tmp/dashboard-cleanup /var/www/html/dev/wp-content/mu-plugins/dashboard-cleanup
+        cp /tmp/disable-emojis /var/www/html/dev/wp-content/mu-plugins/disable-emojis
+        cp /tmp/cloudflare /var/www/html/dev/wp-content/mu-plugins/cloudflare
+        cp /tmp/clear-caches /var/www/html/dev/wp-content/mu-plugins/clear-caches
+    fi
 
 
 ## end if ##
