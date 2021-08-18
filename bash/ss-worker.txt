@@ -168,6 +168,29 @@ if [[ ! -f "/var/www/crons/custom/13-cron-sometimes-custom" ]]; then
 fi
 
 ####################################################################################################
+#### SS-Worker: Install Pilot File Variables #######################################################
+####################################################################################################
+
+## retrieve pilot file if defined ##
+wget -O /tmp/ss-pilot "$SS_PILOT_FILE"
+
+## read pilot variables if exist ##
+PILOT_WHITELABEL_BRAND=$(source /tmp/ss-pilot; echo $WHITELABEL_BRAND)
+PILOT_WHITELABEL_HOMEPAGE=$(source /tmp/ss-pilot; echo $WHITELABEL_HOMEPAGE)
+
+## replace ss-config variables with pilot variables if exist ##
+if [[ -n "$PILOT_WHITELABEL_BRAND" ]]; then 
+sed -i "s|\(^WHITELABEL_BRAND=\).*|WHITELABEL_BRAND=\"$PILOT_WHITELABEL_BRAND\"|g" /var/www/ss-config
+fi
+
+if [[ -n "$PILOT_WHITELABEL_HOMEPAGE" ]]; then 
+sed -i "s|\(^WHITELABEL_HOMEPAGE=\).*|WHITELABEL_HOMEPAGE=\"$PILOT_WHITELABEL_BRAND\"|g" /var/www/ss-config
+fi
+
+## cleanup ##
+rm /tmp/ss-pilot
+
+####################################################################################################
 #### SS-Worker: Install Latest SS-Constants.php Boilerplate ########################################
 ####################################################################################################
 
