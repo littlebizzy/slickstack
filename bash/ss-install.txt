@@ -193,7 +193,7 @@ ENDSTAND=$(tput rmso) # end standout
 ## in case of emergencies the SlickStack team might purposefully mismatch builds ##
 
 ## ensure ss-config (if exists) build matches ss-install ##
-if [[ -f "/var/www/ss-config" ]] && [[ "$SS_BUILD" != "AUG2021D" ]]; then 
+if [[ -f "/var/www/ss-config" ]] && [[ "$SS_BUILD" != "AUG2021E" ]]; then 
     echo -e "${YELLOW}Exiting ss-install: Please run ss-update-config since your ss-config is outdated and try again... ${NOCOLOR}"
     exit 1
 fi
@@ -351,6 +351,13 @@ if [[ ! -f "/var/www/ss-config" ]]; then
     ## PROMPT: choose app (default = wordpress) ##
     read -t 300 -p "$(echo -e $LIGHTPURPLE"Choose app (only wordpress supported currently): "$NORMAL)" -e -i 'wordpress' ss_var_app_name || ss_var_app_name=wordpress
     sed -i "s/@SS_APP/$ss_var_app_name/g" /tmp/ss-config
+    
+    ## new line ##
+    printf "\n"
+    
+    ## PROMPT: link your pilot file (default = blank) ##
+    read -t 300 -p "$(echo -e $LIGHTPURPLE"Link to your pilot file here (or leave blank): "$NORMAL)" -e -i 'https://gist.githubusercontent.com/...' ss_var_pilot_file || ss_var_pilot_file=
+    sed -i "s/@SS_PILOT_FILE/$ss_var_pilot_file/g" /tmp/ss-config
     
     ## new line ##
     printf "\n"
