@@ -71,13 +71,21 @@ fi
 ## here we do a quick permissions reset to ensure SFTP users can access the dump file ##
 ## keep in mind that root/sudo users will have access to this file regardless ##
 
-## reset permissions ##
+## reset permissions (production) ##
 chown -R $SFTP_USER:www-data "$PATH_DUMP_DATABASE_PRODUCTION"
-chown -R $SFTP_USER:www-data "$PATH_DUMP_DATABASE_STAGING"
-chown -R $SFTP_USER:www-data "$PATH_DUMP_DATABASE_DEVELOPMENT"
 chmod 0440 "$PATH_DUMP_DATABASE_PRODUCTION"
-chmod 0440 "$PATH_DUMP_DATABASE_STAGING"
-chmod 0440 "$PATH_DUMP_DATABASE_DEVELOPMENT"
+
+## reset permissions (staging) ##
+if [[ "$SS_DUMP_DATABASE_STAGING" == "true" ]]; then
+    chown -R $SFTP_USER:www-data "$PATH_DUMP_DATABASE_STAGING"
+    chmod 0440 "$PATH_DUMP_DATABASE_STAGING"
+fi
+
+## reset permissions (development) ##
+if [[ "$SS_DUMP_DATABASE_DEVELOPMENT" == "true" ]]; then
+    chown -R $SFTP_USER:www-data "$PATH_DUMP_DATABASE_DEVELOPMENT"
+    chmod 0440 "$PATH_DUMP_DATABASE_DEVELOPMENT"
+fi
 
 ####################################################################################################
 #### SS-Dump-Database: SUCCESS (OR FAIL) MESSAGE ###################################################
