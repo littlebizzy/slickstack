@@ -348,36 +348,40 @@ rm /var/www/sites/*
 ## here we install the Nginx server block for dev subdomain if enabled in ss-config ##
 ## this block is independent and distinct from other Nginx server blocks ##
 
-## download latest server block (staging site) ##
-wget -O "$TMP_NGINX_BLOCK_DEVELOPMENT" "$MIRROR_NGINX_BLOCK_DEVELOPMENT"
+if [[ "$DEV_SITE" == "true" ]]; then 
 
-## replace site variables ##
-sed -i "s/@DOMAIN/${SITE_DOMAIN}/g" "$TMP_NGINX_BLOCK_DEVELOPMENT"
-sed -i "s/@SITE_TLD/${SITE_TLD}/g" "$TMP_NGINX_BLOCK_DEVELOPMENT"
-sed -i "s/@SITE_DOMAIN/${SITE_DOMAIN}/g" "$TMP_NGINX_BLOCK_DEVELOPMENT"
-sed -i "s/@CACHEVALID/${FCGI_CACHE_VALID}/g" "$TMP_NGINX_BLOCK_DEVELOPMENT"
+    ## download latest server block (staging site) ##
+    wget -O "$TMP_NGINX_BLOCK_DEVELOPMENT" "$MIRROR_NGINX_BLOCK_DEVELOPMENT"
 
-## Multisite domain mapping (optional) ##
-if [[ "$WP_MULTISITE_DOMAIN_MAPPING" == "true" ]]; then 
-   sed -i "s/#@WP_MULTISITE_DOMAIN_MAPPING# //g" "$TMP_NGINX_BLOCK_DEVELOPMENT"
-else
-    sed -i "s/#@WP_MULTISITE_DOMAIN_MAPPING_FALSE# //g" "$TMP_NGINX_BLOCK_DEVELOPMENT"
+    ## replace site variables ##
+    sed -i "s/@DOMAIN/${SITE_DOMAIN}/g" "$TMP_NGINX_BLOCK_DEVELOPMENT"
+    sed -i "s/@SITE_TLD/${SITE_TLD}/g" "$TMP_NGINX_BLOCK_DEVELOPMENT"
+    sed -i "s/@SITE_DOMAIN/${SITE_DOMAIN}/g" "$TMP_NGINX_BLOCK_DEVELOPMENT"
+    sed -i "s/@CACHEVALID/${FCGI_CACHE_VALID}/g" "$TMP_NGINX_BLOCK_DEVELOPMENT"
+
+    ## Multisite domain mapping (optional) ##
+    if [[ "$WP_MULTISITE_DOMAIN_MAPPING" == "true" ]]; then 
+        sed -i "s/#@WP_MULTISITE_DOMAIN_MAPPING# //g" "$TMP_NGINX_BLOCK_DEVELOPMENT"
+    else
+        sed -i "s/#@WP_MULTISITE_DOMAIN_MAPPING_FALSE# //g" "$TMP_NGINX_BLOCK_DEVELOPMENT"
+    fi
+
+    ## Multisite subdomains (optional) ##
+    if [[ "$WP_MULTISITE_SUBDOMAINS" == "true" ]]; then 
+        sed -i "s/#@WP_MULTISITE_SUBDOMAINS# //g" "$TMP_NGINX_BLOCK_DEVELOPMENT"
+    fi
+
+    ## FastCGI Cache ##
+    if [[ "$FCGI_CACHE" == "false" ]]; then 
+        sed -i "s/@FCGI_CACHE/1/g" "$TMP_NGINX_BLOCK_DEVELOPMENT"
+    else 
+        sed -i "s/@FCGI_CACHE/0/g" "$TMP_NGINX_BLOCK_DEVELOPMENT"
+    fi
+
+    ## copy files to destinations ##
+    cp "$TMP_NGINX_BLOCK_DEVELOPMENT" "$PATH_NGINX_BLOCK_DEVELOPMENT"
+
 fi
-
-## Multisite subdomains (optional) ##
-if [[ "$WP_MULTISITE_SUBDOMAINS" == "true" ]]; then 
-    sed -i "s/#@WP_MULTISITE_SUBDOMAINS# //g" "$TMP_NGINX_BLOCK_DEVELOPMENT"
-fi
-
-## FastCGI Cache ##
-if [[ "$FCGI_CACHE" == "false" ]]; then 
-    sed -i "s/@FCGI_CACHE/1/g" "$TMP_NGINX_BLOCK_DEVELOPMENT"
-else 
-    sed -i "s/@FCGI_CACHE/0/g" "$TMP_NGINX_BLOCK_DEVELOPMENT"
-fi
-
-## copy files to destinations ##
-cp "$TMP_NGINX_BLOCK_DEVELOPMENT" "$PATH_NGINX_BLOCK_DEVELOPMENT"
 
 ####################################################################################################
 #### SS-Install-Nginx-Config: Install Nginx Server Block (Staging Site) ############################
@@ -386,42 +390,46 @@ cp "$TMP_NGINX_BLOCK_DEVELOPMENT" "$PATH_NGINX_BLOCK_DEVELOPMENT"
 ## here we install the Nginx server block for staging subdomain if enabled in ss-config ##
 ## this block is independent and distinct from other Nginx server blocks ##
 
-## download latest server block (staging site) ##
-wget -O "$TMP_NGINX_BLOCK_STAGING" "$MIRROR_NGINX_BLOCK_STAGING"
+if [[ "$STAGING_SITE" == "true" ]]; then 
 
-## replace site variables ##
+    ## download latest server block (staging site) ##
+    wget -O "$TMP_NGINX_BLOCK_STAGING" "$MIRROR_NGINX_BLOCK_STAGING"
 
-## example.com = staging.example.com
-## www.example.com = staging.example.com
-## sub.example.com = staging.sub.example.com
-SITE_DOMAIN_EXCLUDING_WWW=$(echo "${SITE_DOMAIN/www./}")
+    ## replace site variables ##
 
-sed -i "s/@SITE_DOMAIN_EXCLUDING_WWW/${SITE_DOMAIN_EXCLUDING_WWW}/g" "$TMP_NGINX_BLOCK_STAGING"
+    ## example.com = staging.example.com
+    ## www.example.com = staging.example.com
+    ## sub.example.com = staging.sub.example.com
+    SITE_DOMAIN_EXCLUDING_WWW=$(echo "${SITE_DOMAIN/www./}")
+
+    sed -i "s/@SITE_DOMAIN_EXCLUDING_WWW/${SITE_DOMAIN_EXCLUDING_WWW}/g" "$TMP_NGINX_BLOCK_STAGING"
 
 
-sed -i "s/@CACHEVALID/${FCGI_CACHE_VALID}/g" "$TMP_NGINX_BLOCK_STAGING"
+    sed -i "s/@CACHEVALID/${FCGI_CACHE_VALID}/g" "$TMP_NGINX_BLOCK_STAGING"
 
-## Multisite domain mapping (optional) ##
-if [[ "$WP_MULTISITE_DOMAIN_MAPPING" == "true" ]]; then 
-   sed -i "s/#@WP_MULTISITE_DOMAIN_MAPPING# //g" "$TMP_NGINX_BLOCK_STAGING"
-else
-    sed -i "s/#@WP_MULTISITE_DOMAIN_MAPPING_FALSE# //g" "$TMP_NGINX_BLOCK_STAGING"
+    ## Multisite domain mapping (optional) ##
+    if [[ "$WP_MULTISITE_DOMAIN_MAPPING" == "true" ]]; then 
+        sed -i "s/#@WP_MULTISITE_DOMAIN_MAPPING# //g" "$TMP_NGINX_BLOCK_STAGING"
+    else
+        sed -i "s/#@WP_MULTISITE_DOMAIN_MAPPING_FALSE# //g" "$TMP_NGINX_BLOCK_STAGING"
+    fi
+
+    ## Multisite subdomains (optional) ##
+    if [[ "$WP_MULTISITE_SUBDOMAINS" == "true" ]]; then 
+        sed -i "s/#@WP_MULTISITE_SUBDOMAINS# //g" "$TMP_NGINX_BLOCK_STAGING"
+    fi
+
+    ## FastCGI Cache ##
+    if [[ "$FCGI_CACHE" == "false" ]]; then 
+        sed -i "s/@FCGI_CACHE/1/g" "$TMP_NGINX_BLOCK_STAGING"
+    else 
+        sed -i "s/@FCGI_CACHE/0/g" "$TMP_NGINX_BLOCK_STAGING"
+    fi
+
+    ## copy files to destinations ##
+    cp "$TMP_NGINX_BLOCK_STAGING" "$PATH_NGINX_BLOCK_STAGING"
+
 fi
-
-## Multisite subdomains (optional) ##
-if [[ "$WP_MULTISITE_SUBDOMAINS" == "true" ]]; then 
-    sed -i "s/#@WP_MULTISITE_SUBDOMAINS# //g" "$TMP_NGINX_BLOCK_STAGING"
-fi
-
-## FastCGI Cache ##
-if [[ "$FCGI_CACHE" == "false" ]]; then 
-    sed -i "s/@FCGI_CACHE/1/g" "$TMP_NGINX_BLOCK_STAGING"
-else 
-    sed -i "s/@FCGI_CACHE/0/g" "$TMP_NGINX_BLOCK_STAGING"
-fi
-
-## copy files to destinations ##
-cp "$TMP_NGINX_BLOCK_STAGING" "$PATH_NGINX_BLOCK_STAGING"
 
 ####################################################################################################
 #### SlickStack: Install Nginx Servers Blocks (Supports Single Sites + Multisite) ##################
