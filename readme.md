@@ -35,6 +35,10 @@ SlickStack is a free LEMP stack automation script written in Bash designed to en
 
 ## Changelog
 
+* **NEW!** Dedicated script `ss-install-mysql-database` being created for better staging/dev/prod clarity. Will update this description soon.
+
+* **NEW!** Staging/Dev preparation continues: `ss-install-clean-files` will now delete non-production Nginx server blocks if staging/dev are set to `false` in your ss-config and will also delete `/staging` and `/dev` directories within those conditions, too. `ss-install-nginx-config` will only install staging/dev blocks going forward if stag/dev are explicity set to `true` in your ss-config. `ss-install-wordpress-core` will only install WordPress to staging/dev directories within those conditions, too. Likewise the staging/dev directories will be auto-created from a variety of methods if set to `true` in your ss-config.
+
 * **NEW!** A major new (experimental) feature is called the SlickStack pilot file. This file can be specified (linked) during new installations using the setup wizard, and/or within your ss-config file. The purpose of the pilot file is to allow teams to easily/rapidly customize settings across all their SlickStack servers using a file that can be retrieved from the public web e.g. via Secret Gist files on GitHub, etc. For example your team could change a PHP setting across 100+ servers within 5-10 minutes or less by using the pilot file.  We are excited about this feature but also cautious about security, so please offer your feedback regarding which settings you think we should support or not support when it comes to the new pilot file concept.
 
 * **NEW!** The script `ss-dump-files` is now functional, and will TAR gzip your entire `html` directory to `/var/www/backups/html/export.tar.gz` whenever run... by default we will not enable this script on any cron schedule because many servers might not have the space for it.
