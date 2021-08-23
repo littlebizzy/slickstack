@@ -8,8 +8,8 @@
 #### destination: n/a (not a boilerplate) ##########################################################
 #### purpose: Reinstalls the entire Redis module for SlickStack servers (idempotent) ###############
 #### module version: Redis 5.0.x ###################################################################
-#### sourced by: ss-install ########################################################################
-#### bash aliases: ss install redis ################################################################
+#### sourced by: ss-install, ss install redis ######################################################
+#### bash aliases: ss install redis config #########################################################
 ####################################################################################################
 
 ## SS-CONFIG MUST BE PROPERLY CONFIGURED AND ON CURRENT BUILD BEFORE RUNNING SS-INSTALL ##
@@ -57,6 +57,10 @@ fi
 sed -i '/maxmemory.*bytes.*/c\maxmemory 256mb' "$PATH_REDIS_CONF"
 sed -i '/maxmemory-policy noeviction/c\maxmemory-policy allkeys-lru' "$PATH_REDIS_CONF"
 sed -i '/always-show-logo yes/c\always-show-logo no' "$PATH_REDIS_CONF"
+
+## systemd since 16.04 LTS ##
+sed -i '/supervised no/c\supervised systemd' "$PATH_REDIS_CONF"
+
 # sed -i '/logfile/c\logfile /var/www/logs/redis.log' "$PATH_REDIS_CONF"
 # sed -i '/dir /c\dir /tmp' "$PATH_REDIS_CONF"
 
@@ -88,6 +92,10 @@ touch "$TIMESTAMP_SS_INSTALL_REDIS_CONFIG"
 #### SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ###############
 ####################################################################################################
 
-## Ref: 
+## Ref: https://serverfault.com/questions/893066/redis-not-starting-with-systemctl
+## Ref: https://stackoverflow.com/questions/48496250/redis-fails-to-start-with-error-redis-server-service-failed-at-step-namespace
+## Ref: https://www.digitalocean.com/community/tutorials/how-to-install-and-secure-redis-on-ubuntu-20-04
+## Ref: https://ostoday.org/linux/when-did-ubuntu-switch-to-systemd.html
+## Ref: https://www.pcworld.com/article/2895517/ubuntu-just-switched-to-systemd-the-project-sparking-controversy-throughout-linux.html
 
 ## SS_EOF
