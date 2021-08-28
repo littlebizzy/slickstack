@@ -601,17 +601,17 @@ apt update
 apt upgrade
 
 ####################################################################################################
-#### SS-Install: Install Ubuntu Features ###########################################################
+#### SS-Install: Configure Ubuntu ##################################################################
 ####################################################################################################
 
 ## first we need to setup all users and passwords for Ubuntu and set sudo permissions ##
-## this process will also set the default SSH port and disable root SSH logins ##
+## this process will also set the default SSH port and disable root logins ##
 
-## run ss-install-ubuntu-users (includes ss-install-ubuntu-aliases) ##
+## run ss-install-ubuntu-users ##
 source "$PATH_SS_INSTALL_UBUNTU_USERS"
 
 ## SlickStack aims to emphasize traditional bash scripts but we still support aliases ##
-## in most cases using aliases are not necessary but this will evolve over time ##
+## in most cases using aliases are not necessary but can help you save time ##
 
 ## run ss-install-ubuntu-bash ##
 source "$PATH_SS_INSTALL_UBUNTU_BASH"
@@ -620,7 +620,7 @@ source "$PATH_SS_INSTALL_UBUNTU_BASH"
 source "$PATH_SS_INSTALL_UBUNTU_SSH"
 
 ## cron should be installed by default on Ubuntu but this script will install otherwise ##
-## it will also install root crontab and core cron jobs from SlickStack mirrors ##
+## it will also install a crontab file and cron jobs from SlickStack mirrors ##
 
 ## run ss-install-ubuntu-crontab ##
 source "$PATH_SS_INSTALL_UBUNTU_CRONTAB"
@@ -644,11 +644,15 @@ source "$PATH_SS_INSTALL_UBUNTU_KERNEL"
 ## here we install the PHP-FPM module which includes OPcache for better performance ##
 ## FastCGI is configured to interface with Nginx using TCP (127.0.0.1:9000) ##
 
-## run ss-install-php-packages ##
-source "$PATH_SS_INSTALL_PHP_PACKAGES"
+if [[ "$SS_APP" != "mysql" ]]; then
 
-## run ss-install-php-config ##
-source "$PATH_SS_INSTALL_PHP_CONFIG"
+    ## run ss-install-php-packages ##
+    source "$PATH_SS_INSTALL_PHP_PACKAGES"
+
+    ## run ss-install-php-config ##
+    source "$PATH_SS_INSTALL_PHP_CONFIG"
+
+fi
 
 ####################################################################################################
 #### SS-Install: Install Nginx + SSL Certificates ##################################################
@@ -657,14 +661,18 @@ source "$PATH_SS_INSTALL_PHP_CONFIG"
 ## the Nginx installer includes OpenSSL and Lets Encrypt generation to avoid conflicts ##
 ## default settings allow for very high-traffic so CloudFlare is recommended ##
 
-## run ss-install-nginx-packages ##
-source "$PATH_SS_INSTALL_NGINX_PACKAGES"
+if [[ "$SS_APP" != "mysql" ]]; then
 
-## run ss-install-nginx-config ##
-source "$PATH_SS_INSTALL_NGINX_CONFIG"
+    ## run ss-install-nginx-packages ##
+    source "$PATH_SS_INSTALL_NGINX_PACKAGES"
 
-## run ss-install-nginx-ssl ##
-# source "$PATH_SS_INSTALL_NGINX_SSL"
+    ## run ss-install-nginx-config ##
+    source "$PATH_SS_INSTALL_NGINX_CONFIG"
+
+    ## run ss-install-nginx-ssl ##
+    # source "$PATH_SS_INSTALL_NGINX_SSL"
+
+fi
 
 ####################################################################################################
 #### SS-Install: Enable Maintenance Mode ###########################################################
@@ -673,8 +681,12 @@ source "$PATH_SS_INSTALL_NGINX_CONFIG"
 ## this is a nifty snippet that will put up a public maintenance page during install ##
 ## it helps prevent users from interacting with your website at this stage ##
 
-## run ss-maintenance-enable ##
-source "$PATH_SS_MAINTENANCE_ENABLE"
+if [[ "$SS_APP" != "mysql" ]]; then
+
+    ## run ss-maintenance-enable ##
+    source "$PATH_SS_MAINTENANCE_ENABLE"
+
+fi
 
 ####################################################################################################
 #### SS-Install: Install MySQL #####################################################################
@@ -699,11 +711,15 @@ source "$PATH_SS_INSTALL_MYSQL_CONFIG"
 ## Redis is only installed to enable object caching in WordPress (if plugin exists) ##
 ## full page caching is provided solely by Nginx FastCGI and not by Redis ##
 
-## run ss-install-redis-packages ##
-source "$PATH_SS_INSTALL_REDIS_PACKAGES"
+if [[ "$SS_APP" != "mysql" ]]; then
 
-## run ss-install-redis-config ##
-source "$PATH_SS_INSTALL_REDIS_CONFIG"
+    ## run ss-install-redis-packages ##
+    source "$PATH_SS_INSTALL_REDIS_PACKAGES"
+
+    ## run ss-install-redis-config ##
+    source "$PATH_SS_INSTALL_REDIS_CONFIG"
+
+fi
 
 ####################################################################################################
 #### SS-Install: Install Adminer ###################################################################
@@ -783,7 +799,7 @@ source "$PATH_SS_INSTALL_RCLONE_PACKAGES"
 source "$PATH_SS_INSTALL_RCLONE_CONFIG"
 
 ####################################################################################################
-#### SS-Install: Install ClamAV (Antivirus) ########################################################
+#### SS-Install: Install ClamAV ####################################################################
 ####################################################################################################
 
 ## this will install ClamAV for occassional malware logging: /var/www/logs/clamav.log ##
@@ -797,7 +813,7 @@ source "$PATH_SS_INSTALL_CLAMAV"
 ####################################################################################################
 
 ## here we install and configure the very simple UFW Firewall that Ubuntu maintains ##
-## only ports 80, 443, and your designated SSH port (6969) will be allowed ##
+## only ports 80, 443, and your designated SSH port (22) will be allowed ##
 
 ## run ss-install-ufw-packages ##
 source "$PATH_SS_INSTALL_UFW_PACKAGES"
@@ -806,10 +822,10 @@ source "$PATH_SS_INSTALL_UFW_PACKAGES"
 source "$PATH_SS_INSTALL_UFW_CONFIG"
 
 ####################################################################################################
-#### SS-Install: Reset All SlickStack Logs To Null #################################################
+#### SS-Install: Reset All Logs To NULL ############################################################
 ####################################################################################################
 
-## run ss-reset-logs ##
+## run ss-empty-logs ##
 source "$PATH_SS_EMPTY_LOGS"
 
 ####################################################################################################
@@ -836,17 +852,21 @@ source "$PATH_SS_MAINTENANCE_DISABLE"
 ## this clears all caches i.e. Nginx, OPcache, Redis object cache, and WP transients ##
 ## we run this after ss-perms and before ss-restart-modules to avoid conflicts ##
 
-## run ss-purge-nginx ##
-source "$PATH_SS_PURGE_NGINX"
+if [[ "$SS_APP" != "mysql" ]]; then
 
-## run ss-purge-opcache ##
-source "$PATH_SS_PURGE_OPCACHE"
+    ## run ss-purge-nginx ##
+    source "$PATH_SS_PURGE_NGINX"
 
-## run ss-purge-redis ##
-source "$PATH_SS_PURGE_REDIS"
+    ## run ss-purge-opcache ##
+    source "$PATH_SS_PURGE_OPCACHE"
 
-## run ss-purge-transients ##
-source "$PATH_SS_PURGE_TRANSIENTS"
+    ## run ss-purge-redis ##
+    source "$PATH_SS_PURGE_REDIS"
+
+    ## run ss-purge-transients ##
+    source "$PATH_SS_PURGE_TRANSIENTS"
+
+fi
 
 ####################################################################################################
 #### SS-Install: Restart Modules (All Modules) #####################################################
@@ -855,17 +875,21 @@ source "$PATH_SS_PURGE_TRANSIENTS"
 ## this script is using init.d instead of systemd shortcuts to allow for absolute paths ##
 ## we are looking into including other snippets here such as unmasking (etc) ##
 
-## run ss-restart-php ##
-source "$PATH_SS_RESTART_PHP"
+if [[ "$SS_APP" != "mysql" ]]; then
 
-## run ss-restart-nginx ##
-source "$PATH_SS_RESTART_NGINX"
+    ## run ss-restart-php ##
+    source "$PATH_SS_RESTART_PHP"
+
+    ## run ss-restart-nginx ##
+    source "$PATH_SS_RESTART_NGINX"
+
+    ## run ss-restart-redis ##
+    source "$PATH_SS_RESTART_REDIS"
+
+fi
 
 ## run ss-restart-mysql ##
 source "$PATH_SS_RESTART_MYSQL"
-
-## run ss-restart-redis ##
-source "$PATH_SS_RESTART_REDIS"
 
 ## run ss-restart-ufw ##
 source "$PATH_SS_RESTART_UFW"
@@ -995,5 +1019,6 @@ touch "$TIMESTAMP_SS_INSTALL"
 ## Ref: https://stackoverflow.com/questions/13210880/replace-one-substring-for-another-string-in-shell-script
 ## Ref: https://stackoverflow.com/questions/11953185/counting-the-number-of-dots-in-a-string
 ## Ref: https://stackoverflow.com/questions/21157435/how-can-i-compare-a-string-to-multiple-correct-values-in-bash
+## Ref: https://stackoverflow.com/questions/4792434/redis-on-web-server-front-end-or-database-server-back-end
 
 ## SS_EOF
