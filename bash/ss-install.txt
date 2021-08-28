@@ -302,7 +302,7 @@ if [[ ! -f "/var/www/ss-config" ]]; then
     echo -e "${LIGHTPURPLE}###########################################################################${NOCOLOR}"
     echo -e ""
     
-    ## replace all password fields with random strings ##
+    ## replace root password fields with random strings ##
     sed -i "s/@ROOT_PASSWORD/$(openssl rand -hex 12)/g" /tmp/ss-config
     sed -i "s/@DB_PASSWORD_ROOT/$(openssl rand -hex 12)/g" /tmp/ss-config
     
@@ -358,7 +358,7 @@ if [[ ! -f "/var/www/ss-config" ]]; then
     printf "\n"
     
     ## PROMPT: link your pilot file (default = blank) ##
-    read -t 300 -p "$(echo -e $LIGHTPURPLE"Link to your pilot file here (or leave blank): "$NORMAL)" -e -i 'https://gist.githubusercontent.com/...' ss_var_pilot_file || ss_var_pilot_file=
+    read -t 300 -p "$(echo -e $LIGHTPURPLE"Link to your pilot file (leave blank if none): "$NORMAL)" -e -i 'https://gist.githubusercontent.com/...' ss_var_pilot_file || ss_var_pilot_file=
     sed -i "s/@SS_PILOT_FILE/$ss_var_pilot_file/g" /tmp/ss-config
     
     ## new line ##
@@ -651,21 +651,27 @@ source "$PATH_SS_INSTALL_PHP_PACKAGES"
 source "$PATH_SS_INSTALL_PHP_CONFIG"
 
 ####################################################################################################
-#### SS-Install: Install Nginx (Server) + SSL Certificates #########################################
+#### SS-Install: Install Nginx + SSL Certificates ##################################################
 ####################################################################################################
 
-## the Nginx installer includes OpenSSL and Let's Encrypt configuration to avoid errors ##
-## default settings allow for extremely high-traffic so Cloudflare is recommended ##
+## the Nginx installer includes OpenSSL and Lets Encrypt generation to avoid conflicts ##
+## default settings allow for very high-traffic so CloudFlare is recommended ##
 
-## run ss-install-nginx-core ##
+## run ss-install-nginx-packages ##
 source "$PATH_SS_INSTALL_NGINX_PACKAGES"
 
 ## run ss-install-nginx-config ##
 source "$PATH_SS_INSTALL_NGINX_CONFIG"
 
+## run ss-install-nginx-ssl ##
+# source "$PATH_SS_INSTALL_NGINX_SSL"
+
 ####################################################################################################
 #### SS-Install: Enable Maintenance Mode ###########################################################
 ####################################################################################################
+
+## this is a nifty snippet that will put up a public maintenance page during install ##
+## it helps prevent users from interacting with your website at this stage ##
 
 ## run ss-maintenance-enable ##
 source "$PATH_SS_MAINTENANCE_ENABLE"
@@ -683,11 +689,14 @@ source "$PATH_SS_INSTALL_MYSQL_PACKAGES"
 ## run ss-install-mysql-config ##
 source "$PATH_SS_INSTALL_MYSQL_CONFIG"
 
+## run ss-install-mysql-database ##
+# source "$PATH_SS_INSTALL_MYSQL_DATABASE"
+
 ####################################################################################################
-#### SS-Install: Install Redis (Object Cache) ######################################################
+#### SS-Install: Install Redis #####################################################################
 ####################################################################################################
 
-## Redis is only installed to enable our default (optional) Object Cache (MU plugin) ##
+## Redis is only installed to enable object caching in WordPress (if plugin exists) ##
 ## full page caching is provided solely by Nginx FastCGI and not by Redis ##
 
 ## run ss-install-redis-packages ##
@@ -697,11 +706,11 @@ source "$PATH_SS_INSTALL_REDIS_PACKAGES"
 source "$PATH_SS_INSTALL_REDIS_CONFIG"
 
 ####################################################################################################
-#### SS-Install: Install Adminer (i.e. phpMyAdmin) #################################################
+#### SS-Install: Install Adminer ###################################################################
 ####################################################################################################
 
 ## should be installed after PHP-FPM and Nginx modules to ensure seamless installation ##
-## Adminer (similar to phpMyAdmin) can be publicly accessed at the /adminer URI ##
+## Adminer (similar to phpMyAdmin) can be publicly accessed at /adminer URI ##
 
 ## run ss-install-adminer ##
 source "$PATH_SS_INSTALL_ADMINER"
