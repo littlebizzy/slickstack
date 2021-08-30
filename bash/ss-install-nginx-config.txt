@@ -354,9 +354,14 @@ if [[ "$DEV_SITE" == "true" ]]; then
     wget -O "$TMP_NGINX_BLOCK_DEVELOPMENT" "$MIRROR_NGINX_BLOCK_DEVELOPMENT"
 
     ## replace site variables ##
-    sed -i "s/@DOMAIN/${SITE_DOMAIN}/g" "$TMP_NGINX_BLOCK_DEVELOPMENT"
-    sed -i "s/@SITE_TLD/${SITE_TLD}/g" "$TMP_NGINX_BLOCK_DEVELOPMENT"
+
+    SITE_DOMAIN_EXCLUDING_WWW=$(echo "${SITE_DOMAIN/www./}")
+
+    sed -i "s/@SITE_DOMAIN_EXCLUDING_WWW/${SITE_DOMAIN_EXCLUDING_WWW}/g" "$TMP_NGINX_BLOCK_DEVELOPMENT"
+    sed -i "s/@SITE_DOMAIN_INCLUDING_WWW/${SITE_DOMAIN_INCLUDING_WWW}/g" "$TMP_NGINX_BLOCK_DEVELOPMENT"
     sed -i "s/@SITE_DOMAIN/${SITE_DOMAIN}/g" "$TMP_NGINX_BLOCK_DEVELOPMENT"
+    sed -i "s/@SITE_TLD/${SITE_TLD}/g" "$TMP_NGINX_BLOCK_DEVELOPMENT"
+    sed -i "s/@DOMAIN/${SITE_DOMAIN}/g" "$TMP_NGINX_BLOCK_DEVELOPMENT"
     sed -i "s/@CACHEVALID/${FCGI_CACHE_VALID}/g" "$TMP_NGINX_BLOCK_DEVELOPMENT"
 
     ## Multisite domain mapping (optional) ##
@@ -396,15 +401,13 @@ if [[ "$STAGING_SITE" == "true" ]]; then
     wget -O "$TMP_NGINX_BLOCK_STAGING" "$MIRROR_NGINX_BLOCK_STAGING"
 
     ## replace site variables ##
-
-    ## example.com = staging.example.com
-    ## www.example.com = staging.example.com
-    ## sub.example.com = staging.sub.example.com
     SITE_DOMAIN_EXCLUDING_WWW=$(echo "${SITE_DOMAIN/www./}")
 
     sed -i "s/@SITE_DOMAIN_EXCLUDING_WWW/${SITE_DOMAIN_EXCLUDING_WWW}/g" "$TMP_NGINX_BLOCK_STAGING"
-
-
+    sed -i "s/@SITE_DOMAIN_INCLUDING_WWW/${SITE_DOMAIN_INCLUDING_WWW}/g" "$TMP_NGINX_BLOCK_STAGING"
+    sed -i "s/@SITE_DOMAIN/${SITE_DOMAIN}/g" "$TMP_NGINX_BLOCK_STAGING"
+    sed -i "s/@SITE_TLD/${SITE_TLD}/g" "$TMP_NGINX_BLOCK_STAGING"
+    sed -i "s/@DOMAIN/${SITE_DOMAIN}/g" "$TMP_NGINX_BLOCK_STAGING"
     sed -i "s/@CACHEVALID/${FCGI_CACHE_VALID}/g" "$TMP_NGINX_BLOCK_STAGING"
 
     ## Multisite domain mapping (optional) ##
@@ -447,11 +450,13 @@ else
 fi
 
 ## replace site variables ##
-sed -i "s/@DOMAIN/${SITE_DOMAIN}/g" /tmp/default
-sed -i "s/@SITE_TLD/${SITE_TLD}/g" /tmp/default
-sed -i "s/@SITE_DOMAIN/${SITE_DOMAIN}/g" /tmp/default
+    SITE_DOMAIN_EXCLUDING_WWW=$(echo "${SITE_DOMAIN/www./}")
+    
 sed -i "s/@SITE_DOMAIN_EXCLUDING_WWW/${SITE_DOMAIN_EXCLUDING_WWW}/g" /tmp/default
 sed -i "s/@SITE_DOMAIN_INCLUDING_WWW/${SITE_DOMAIN_INCLUDING_WWW}/g" /tmp/default
+sed -i "s/@SITE_DOMAIN/${SITE_DOMAIN}/g" /tmp/default
+sed -i "s/@SITE_TLD/${SITE_TLD}/g" /tmp/default
+sed -i "s/@DOMAIN/${SITE_DOMAIN}/g" /tmp/default
 sed -i "s/@CACHEVALID/${FCGI_CACHE_VALID}/g" /tmp/default
 
 ## Multisite domain mapping (optional) ##
