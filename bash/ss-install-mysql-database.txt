@@ -6,10 +6,10 @@
 #### mirror: https://mirrors.slickstack.io/bash/ss-install-mysql-database.txt ######################
 #### path: /var/www/ss-install-mysql-database ######################################################
 #### destination: n/a (not a boilerplate) ##########################################################
-#### purpose: Reinstalls the MySQL database ##############
+#### purpose: Reinstalls the MySQL database and required users to access the database ##############
 #### module version: MySQL 8.0.x ###################################################################
 #### sourced by: ss-install-mysql-packages, ss-install-mysql-config ########################################################################
-#### bash aliases: ss install database, ss install mysql database #######################################################
+#### bash aliases: ss install database, ss install db, ss install mysql database ###################
 ####################################################################################################
 
 ## SS-CONFIG MUST BE PROPERLY CONFIGURED AND ON CURRENT BUILD BEFORE RUNNING SS-INSTALL ##
@@ -27,7 +27,9 @@ source /var/www/ss-functions
 #### TABLE OF CONTENTS (SS-Install-MySQL-Packages) #################################################
 ####################################################################################################
 
-
+## A. Message (Begin Script)
+## B. 
+## C. Configure Database + Users + Privileges
 
 ####################################################################################################
 #### A. SS-Install-MySQL-Packages: Message (Begin Script) ##########################################
@@ -51,7 +53,7 @@ fi
 
 
 ####################################################################################################
-#### D. SS-Install-MySQL-Packages: Configure Root + Admin User (Localhost/IPv4/IPv6) ###############
+#### D. SS-Install-MySQL-Database: Configure Root + Admin User (Localhost/IPv4/IPv6) ###############
 ####################################################################################################
 
 ## manually secure MySQL (noninteractive version of the mysql_secure_installation wizard) ##
@@ -68,34 +70,34 @@ if [[ "${UBUNTU_VERSION}" == "20.04" ]]; then
 fi
 
 ####################################################################################################
-#### SS-Install-MySQL: Configure WordPress Database + User + Privileges ############################
+#### SS-Install-MySQL-Database: Configure Database + Users + Privileges ############################
 ####################################################################################################
+
+## we use root@localhost (auth_socket) and user@127.0.0.1 (TCP) for WordPress database ##
+## the superuser admin@127.0.0.1 is also created to be used for i.e. Adminer ##
 
 if [[ "${UBUNTU_VERSION}" == "20.04" ]]; then
 
-## we use root@localhost (auth_socket) and user@127.0.0.1 (TCP) for WordPress database ##
-## the superuser admin@127.0.0.1 is also created to be used with phpMyAdmin, etc ##
+    ## create production site database ##
+    sudo mysql -e "CREATE DATABASE IF NOT EXISTS ${DB_NAME};"
 
-## create production database ##
-sudo mysql -e "CREATE DATABASE IF NOT EXISTS ${DB_NAME};"
+    ## create dev site database if enabled ##
+    if [[ "$DEV_SITE" == "true" ]]; then
+        sudo mysql -e "CREATE DATABASE IF NOT EXISTS ${DB_NAME}_dev;" 
+    fi
 
-## create dev database unless it is explicity disabled ##
-if [[ "$DEV_SITE" == "true" ]]; then
-    sudo mysql -e "CREATE DATABASE IF NOT EXISTS ${DB_NAME}_dev;" 
-fi
+    ## create staging site database if enabled ##
+    if [[ "$STAGING_SITE" == "true" ]]; then
+        sudo mysql -e "CREATE DATABASE IF NOT EXISTS ${DB_NAME}_staging;"
+    fi
 
-## create staging database unless it is explictly disabled ##
-if [[ "$STAGING_SITE" == "true" ]]; then
-    sudo mysql -e "CREATE DATABASE IF NOT EXISTS ${DB_NAME}_staging;"
-fi
-
-## create admin superuser (can be used with Adminer/phpMyAdmin) ##
-sudo mysql -e "ALTER USER IF EXISTS 'admin'@'localhost' IDENTIFIED WITH caching_sha2_password BY '${DB_PASSWORD_ROOT}';"
-sudo mysql -e "ALTER USER IF EXISTS 'admin'@'127.0.0.1' IDENTIFIED WITH caching_sha2_password BY '${DB_PASSWORD_ROOT}';"
-sudo mysql -e "ALTER USER IF EXISTS 'admin'@'::1' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD_ROOT}';"
-sudo mysql -e "CREATE USER IF NOT EXISTS 'admin'@'localhost' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD_ROOT}';"
-sudo mysql -e "CREATE USER IF NOT EXISTS 'admin'@'127.0.0.1' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD_ROOT}';"
-sudo mysql -e "CREATE USER IF NOT EXISTS 'admin'@'::1' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD_ROOT}';"
+    ## create admin superuser (can be used with Adminer) ##
+    sudo mysql -e "ALTER USER IF EXISTS 'admin'@'localhost' IDENTIFIED WITH caching_sha2_password BY '${DB_PASSWORD_ROOT}';"
+    sudo mysql -e "ALTER USER IF EXISTS 'admin'@'127.0.0.1' IDENTIFIED WITH caching_sha2_password BY '${DB_PASSWORD_ROOT}';"
+    sudo mysql -e "ALTER USER IF EXISTS 'admin'@'::1' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD_ROOT}';"
+    sudo mysql -e "CREATE USER IF NOT EXISTS 'admin'@'localhost' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD_ROOT}';"
+    sudo mysql -e "CREATE USER IF NOT EXISTS 'admin'@'127.0.0.1' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD_ROOT}';"
+    sudo mysql -e "CREATE USER IF NOT EXISTS 'admin'@'::1' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD_ROOT}';"
 
 ## grant admin superuser all privileges on all databases (localhost/IPv4/IPv6) ##
 sudo mysql -e "GRANT ALL ON *.* TO 'admin'@'localhost' WITH GRANT OPTION;"
