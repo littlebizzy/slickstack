@@ -198,6 +198,7 @@ wget -O "$TMP_WP_CONFIG_PHP" "$MIRROR_WP_CONFIG_PHP"
 ## set multisite subdomains ##
 ## THIS MUST COME BEFORE WP_MULTISITE REPLACEMENTS OTHERWISE IT WILL BE OVERWRITTEN ##
 ## in the future fix this to have a more unique set of placeholders ##
+
 if [[ -z "$WP_MULTISITE_SUBDOMAINS" ]]; then 
     sed -i "s/@WP_MULTISITE_SUBDOMAINS/true/g" "$TMP_WP_CONFIG_PHP"
 else 
@@ -210,6 +211,14 @@ if [[ -z "$WP_MULTISITE" ]]; then
 else 
     sed -i "s/@WP_MULTISITE/${WP_MULTISITE}/g" "$TMP_WP_CONFIG_PHP"
 fi
+
+## multisite ##
+if [[ "$WP_MULTISITE" == "true" ]]; then 
+    sed -i "s/@WP_MULTISITE/true/g" "$TMP_WP_CONFIG_PHP"
+else 
+    sed -i "s/@WP_MULTISITE/false/g" "$TMP_WP_CONFIG_PHP"
+fi
+
 
 ## set wp cron (always disabled in wp-config for staging and dev sites in slickstack servers) ##
 if [[ "$WP_CRON_METHOD" == "server" ]]; then 
@@ -277,12 +286,6 @@ else
     sed -i "s/@WP_LOCAL_DEV/false/g" "$TMP_WP_CONFIG_PHP"
 fi
 
-## multisite ##
-if [[ "$WP_MULTISITE" == "true" ]]; then 
-    sed -i "s/@WP_MULTISITE/true/g" "$TMP_WP_CONFIG_PHP"
-else 
-    sed -i "s/@WP_MULTISITE/false/g" "$TMP_WP_CONFIG_PHP"
-fi
 
 ## core auto updates ##
 if [[ -z "$WP_AUTO_UPDATE_CORE" ]]; then 
@@ -351,7 +354,7 @@ if [[ -n "$VALIDATE_TMP_WP_CONFIG_PHP" ]]; then
    cp "$TMP_WP_CONFIG_PHP" "$PATH_WP_CONFIG_PHP"
    echo -e "${GREEN}Continue ss-install-wordpress-config: Installation of the wp-config.php file appears to have been successful... ${NOCOLOR}"
 else
-    echo "wp config temp file for production damaged so not installing"
+    echo -e "${RED}wp config temp file for production damaged so not installing... ${NOCOLOR}"
 fi
 
 ####################################################################################################
@@ -399,17 +402,11 @@ sed -i "s/@DB_PASSWORD/${DB_PASSWORD}/g" "$TMP_WORDPRESS_CONFIG_STAGING"
 sed -i "s/@DB_HOST/${DB_HOST}/g" "$TMP_WORDPRESS_CONFIG_STAGING"
 sed -i "s/@DB_CHARSET/${DB_CHARSET}/g" "$TMP_WORDPRESS_CONFIG_STAGING"
 sed -i "s/@DB_COLLATE/${DB_COLLATE}/g" "$TMP_WORDPRESS_CONFIG_STAGING"
-sed -i "s/@DB_PREFIX/staging_/g" "$TMP_WORDPRESS_CONFIG_STAGING"
+sed -i "s/@DB_PREFIX/${DB_PREFIX}/g" "$TMP_WORDPRESS_CONFIG_STAGING"
 
 ## disable object cache (staging) ##
 sed -i "s/@OBJECT_CACHE/false/g" "$TMP_WORDPRESS_CONFIG_STAGING"
 
-## set language ##
-if [[ -z "$WP_LANG" ]]; then 
-    sed -i "s/@WP_LANG/en-US/g" "$TMP_WORDPRESS_CONFIG_STAGING"
-else 
-    sed -i "s/@WP_LANG/${WP_LANG}/g" "$TMP_WORDPRESS_CONFIG_STAGING"
-fi
 
 ## replace domain placeholders ##
 sed -i "s#@SITE_DOMAIN#${SITE_DOMAIN}#g" "$TMP_WORDPRESS_CONFIG_STAGING"
@@ -550,17 +547,11 @@ sed -i "s/@DB_PASSWORD/${DB_PASSWORD}/g" "$TMP_WORDPRESS_CONFIG_DEV"
 sed -i "s/@DB_HOST/${DB_HOST}/g" "$TMP_WORDPRESS_CONFIG_DEV"
 sed -i "s/@DB_CHARSET/${DB_CHARSET}/g" "$TMP_WORDPRESS_CONFIG_DEV"
 sed -i "s/@DB_COLLATE/${DB_COLLATE}/g" "$TMP_WORDPRESS_CONFIG_DEV"
-sed -i "s/@DB_PREFIX/dev_/g" "$TMP_WORDPRESS_CONFIG_DEV"
+sed -i "s/@DB_PREFIX/${DB_PREFIX}/g" "$TMP_WORDPRESS_CONFIG_DEV"
 
 ## disable object cache (staging) ##
 sed -i "s/@OBJECT_CACHE/false/g" "$TMP_WORDPRESS_CONFIG_DEV"
 
-## set language ##
-if [[ -z "$WP_LANG" ]]; then 
-    sed -i "s/@WP_LANG/en-US/g" "$TMP_WORDPRESS_CONFIG_DEV"
-else 
-    sed -i "s/@WP_LANG/${WP_LANG}/g" "$TMP_WORDPRESS_CONFIG_DEV"
-fi
 
 ## replace domain placeholders ##
 sed -i "s#@SITE_DOMAIN#${SITE_DOMAIN}#g" "$TMP_WORDPRESS_CONFIG_DEV"
