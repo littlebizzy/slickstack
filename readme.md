@@ -35,6 +35,8 @@ SlickStack is a free LEMP stack automation script written in Bash designed to en
 
 ## Changelog
 
+* **NEW!** Staging/dev sites are now working! This is still experimental and needs more review of all settings so please keep that in mind and please offer your detailed feedback to our team in the chat rooms so we can get this feature totally stable... woo hoo!
+
 * **NEW!** Dedicated script `ss-install-mysql-database` being created for better staging/dev/prod clarity. Will update this description soon.
 
 * **NEW!** Staging/Dev preparation continues: `ss-install-clean-files` will now delete non-production Nginx server blocks if staging/dev are set to `false` in your ss-config and will also delete `/staging` and `/dev` directories within those conditions, too. `ss-install-nginx-config` will only install staging/dev blocks going forward if stag/dev are explicity set to `true` in your ss-config. `ss-install-wordpress-core` will only install WordPress to staging/dev directories within those conditions, too. Likewise the staging/dev directories will be auto-created from a variety of methods if set to `true` in your ss-config.
