@@ -1,0 +1,212 @@
+####################################################################################################
+#### author: SlickStack ############################################################################
+#### link: https://slickstack.io ###################################################################
+#### mirror: https://mirrors.slickstack.io/modules/mysql/8.0/my-cnf.txt ############################
+#### path: n/a (boilerplate) #######################################################################
+#### destination: /etc/mysql/my.cnf (after install) ################################################
+#### purpose: MySQL configuration file boilerplate (symlink to /etc/alternatives/my.cnf) ###########
+#### module version: MySQL 8.0.x ###################################################################
+#### bash aliases: n/a (ss-install-mysql-config) ###################################################
+####################################################################################################
+
+## 
+
+####################################################################################################
+#### My.cnf: Client Settings (Applies To CLI As Well) ##############################################
+####################################################################################################
+
+## we avoid hardcoding client settings to support both Unix sockets and TCP connections ##
+## this allows root@localhost to use auth_socket and WordPress to use 127.0.0.1 ##
+
+## [client]
+
+## host = localhost,127.0.0.1
+## protocol = socket,tcp
+## port = 3306
+
+####################################################################################################
+#### My.cnf: MySQL Daemon Settings #################################################################
+####################################################################################################
+
+## InnoDB (and MySQL 8.0+) is quite intuitive but we optimize networking and logging ##
+## you can run ss-optimize-database to convert MyISAM tables to InnoDB engine ##
+
+[mysqld]
+
+# sql-mode="@SQL_MODE"
+
+## here we hardcode a few connection settings to avoid DNS lookups and MyISAM locking ##
+## keep in mind that below settings will not apply if using a remote database ##
+
+user = mysql
+# bind_address = 127.0.0.1 ## breaks remote dbs
+port = 3306
+default-authentication-plugin = caching_sha2_password ## MySQL 8.0
+default-authentication-plugin = mysql_native_password ## MySQL 5.7
+tmpdir = /tmp
+skip_external_locking
+skip_name_resolve
+
+# basedir = /usr
+# datadir = /var/lib/mysql
+# pid-file = /var/run/mysqld/mysqld.pid
+# socket = /var/run/mysqld/mysqld.sock
+
+# plugin-load-add = auth_socket.so
+# auth_socket = FORCE_PLUS_PERMANENT
+
+disable-log-bin
+
+# general_log = 0
+# slow_query_log = 1
+# log_error = /var/www/logs/mysql-error.log
+# general_log_file = /var/www/logs/mysql-gen.log
+# slow_query_log_file = /var/www/logs/mysql-slow.log
+# long_query_time = 2
+# log-queries-not-using-indexes
+ 
+## net_buffer_length will autoscale up to the value of max_allowed_packet in MySQL 5.7+ ##
+## below values help to avoid MySQL timeouts esp. for staging/backup services ##
+
+max_allowed_packet = @SQL_MAX_ALLOWED_PACKET
+connect_timeout = @SQL_CONNECT_TIMEOUT
+wait_timeout = @SQL_WAIT_TIMEOUT
+interactive_timeout = @SQL_INTERACTIVE_TIMEOUT
+net_read_timeout = @SQL_NET_READ_TIMEOUT
+net_write_timeout = @SQL_NET_WRITE_TIMEOUT
+key_buffer_size = 16M
+
+myisam-recover-options = BACKUP
+
+# thread_stack          = 256K
+# thread_cache_size       = -1
+# max_connections        = 151
+# table_open_cache       = 4000
+
+# The following can be used as easy to replay backup logs or for replication.
+# note: if you are setting up a replication slave, see README.Debian about
+#       other settings you may need to change.
+# server-id             = 1
+# log_bin                       = /var/log/mysql/mysql-bin.log
+# binlog_expire_logs_seconds    = 2592000
+
+max_binlog_size = 100M
+
+# binlog_do_db          = include_database_name
+# binlog_ignore_db      = include_database_name
+
+## buffer pool size at least 1GB+ will automatically trigger 8 buffer pools (not just 1) ##
+## a bigger log file size is generally better but can cause slower crash recovery ##
+
+default-storage-engine = innodb
+innodb_buffer_pool_size = @INNODB_BUFFER_POOL_SIZE
+innodb_log_file_size = @INNODB_LOG_FILE_SIZE
+innodb_log_files_in_group = @INNODB_LOG_FILES_IN_GROUP
+innodb_flush_log_at_trx_commit = @INNODB_FLUSH_LOG_AT_TRX_COMMIT
+innodb_flush_method = @INNODB_FLUSH_METHOD
+
+####################################################################################################
+#### My.cnf: Mysqldump Settings (Affects SS-Dump-Database + CLI) ###################################
+####################################################################################################
+
+## keep in mind that these settings will override the mysqld settings so be very mindful ##
+## in general you should keep these as liberal as to possible to avoid issues ##
+
+[mysqldump]
+
+quick
+quote-names
+max_allowed_packet = 1024M ## avoids MySQL server has gone away errors
+
+####################################################################################################
+#### My.cnf: Include Other Configuration Files (Disabled) ##########################################
+####################################################################################################
+
+## to ensure a consistent environment and settings we comment out the sub-config files ##
+## you might occassionally review the default options installed to these files ##
+
+# !includedir /etc/mysql/conf.d/
+# !includedir /etc/mysql/mysql.conf.d/
+
+####################################################################################################
+#### SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ###############
+####################################################################################################
+
+## Ref: https://dev.mysql.com/doc/mysql/en/server-system-variables.html
+## Ref: https://dev.mysql.com/doc/refman/8.0/en/server-system-variables.html
+## Ref: https://dev.mysql.com/doc/refman/5.7/en/innodb-parameters.html
+## Ref: https://www.percona.com/blog/2016/10/12/mysql-5-7-performance-tuning-immediately-after-installation/
+## Ref: https://www.percona.com/blog/2017/10/18/chose-mysql-innodb_log_file_size/
+## Ref: https://www.percona.com/blog/2016/05/31/what-is-a-big-innodb_log_file_size/
+## Ref: https://stackoverflow.com/questions/8020297/mysql-my-cnf-file-found-option-without-preceding-group
+## Ref: https://stackoverflow.com/questions/22357513/how-to-check-the-sql-mode-in-mysql-for-a-single-process
+## Ref: http://www.thecompletelistoffeatures.com
+## Ref: https://mysqlserverteam.com/the-complete-list-of-new-features-in-mysql-8-0/
+## Ref: https://dba.stackexchange.com/questions/197690/mysql-innodb-log-file-size-how-big-is-too-big
+## Ref: https://github.com/major/MySQLTuner-perl/issues/258
+## Ref: https://dzone.com/articles/how-to-choose-the-mysql-innodb-log-file-size
+## Ref: https://www.speedemy.com/mysql/17-key-mysql-config-file-settings/innodb_log_file_size/
+## Ref: https://dba.stackexchange.com/questions/12611/is-it-safe-to-use-innodb-flush-log-at-trx-commit-2
+## Ref: https://dba.stackexchange.com/questions/156330/does-innodb-flush-log-at-trx-commit-1-wear-out-ssds-more-than-innodb-flush-log
+## Ref: https://mariadb.com/docs/reference/all/system-variables/innodb_flush_log_at_trx_commit/
+## Ref: https://www.rathishkumar.in/2017/10/understanding-mysql-innodb-flush-log-at-trx-commit.html
+## Ref: http://www.mysqlab.net/knowledge/kb/detail/topic/innodb/id/6553
+## Ref: https://stackoverflow.com/questions/18806377/setting-correct-innodb-log-file-size-in-mysql
+## Ref: https://stackoverflow.com/questions/28849293/how-to-make-sql-mode-no-engine-substitution-permanent-in-mysql-my-cnf
+## Ref: https://dev.mysql.com/doc/refman/5.7/en/innodb-redo-log.html
+## Ref: https://www.percona.com/blog/2019/02/21/mysql-8-is-not-always-faster-than-mysql-5-7/
+## Ref: https://blog.softhints.com/mysql-5-7-vs-mysql-8-do-you-need-to-upgrade-to-mysql-8/
+## Ref: https://dev.mysql.com/doc/refman/8.0/en/innodb-parameters.html#sysvar_innodb_flush_log_at_trx_commit
+## Ref: https://www.percona.com/blog/2018/03/26/mysql-8-0-innodb_dedicated_server-variable-optimizes-innodb/
+## Ref: https://dev.mysql.com/doc/refman/8.0/en/innodb-dedicated-server.html
+## Ref: https://jira.mariadb.org/browse/MDEV-20907
+## Ref: https://salsa.debian.org/mariadb-team/mariadb-server/commit/743ac7c2d0f7c27699d53f35137e02ee3cfd4b71
+## Ref: https://dev.mysql.com/doc/refman/5.7/en/host-cache.html
+## Ref: https://www.vionblog.com/skip-name-resolve-to-speed-up-mysql-and-avoid-problems/
+## Ref: https://dev.mysql.com/doc/refman/5.7/en/server-system-variables.html#sysvar_skip_name_resolve
+## Ref: https://stackoverflow.com/questions/6668073/how-to-use-the-option-skip-name-resolve-when-using-mysqldb-for-python
+## Ref: https://gist.github.com/rhtyd/d59078be4dc88123104e
+## Ref: https://mariadb.com/kb/en/library/mysqld-options/
+## Ref: https://dba.stackexchange.com/questions/152755/how-to-define-custom-path-to-mysql-socket-file
+## Ref: https://gist.github.com/fevangelou/fb72f36bbe333e059b66
+## Ref: https://gist.github.com/tanchao90/d758912446b122d70a0ce64d0ed98b37
+## Ref: https://www.thegeekdiary.com/what-is-the-purpose-of-mysql-syslocalhost-user/
+## Ref: https://serverfault.com/questions/9948/what-is-the-debian-sys-maint-mysql-user-and-more
+## Ref: https://stackoverflow.com/questions/43080687/what-is-the-difference-between-my-cnf-vs-mysql-cnf
+## Ref: https://stackoverflow.com/questions/28540772/using-utf8mb4-in-mysql
+## Ref: https://stackoverflow.com/questions/10563619/error-code-2013-lost-connection-to-mysql-server-during-query
+## Ref: https://dba.stackexchange.com/questions/257786/why-is-max-allowed-packet-shows-2048-even-though-its-set-as-16m-in-mysqld-cnf
+## Ref: https://dev.mysql.com/doc/refman/5.7/en/packet-too-large.html
+## Ref: https://stackoverflow.com/questions/21076306/what-is-the-default-mysql-wait-timeout-and-interactive-timeout
+## Ref: https://github.com/docker-library/mariadb/issues/113
+## Ref: https://support.rackspace.com/how-to/how-to-change-the-mysql-timeout-on-a-server/
+## Ref: https://dba.stackexchange.com/questions/45665/what-max-allowed-packet-is-big-enough-and-why-do-i-need-to-change-it
+## Ref: https://drupal.stackexchange.com/questions/31890/what-is-a-reasonable-value-for-max-allowed-packet-for-drupal-7-with-moderate-tra
+## Ref: https://stackoverflow.com/questions/54007824/how-to-set-sql-mode-in-my-cnf-in-mysql-8
+## Ref: https://bugs.mysql.com/bug.php?id=90967
+## Ref: https://dev.mysql.com/doc/relnotes/mysql/8.0/en/news-8-0-11.html
+## Ref: https://medium.com/@crmcmullen/how-to-run-mysql-8-0-with-native-password-authentication-502de5bac661
+## Ref: https://stackoverflow.com/questions/15453555/mysql-configuration-file-sections
+## Ref: https://serverfault.com/questions/337818/how-to-force-mysql-to-connect-by-tcp-instead-of-a-unix-socket
+## Ref: https://jira.percona.com/browse/PS-5622?attachmentOrder=desc
+## Ref: https://tecadmin.net/enable-logs-in-mysql/
+## Ref: https://stackoverflow.com/questions/26471316/mariadb-error-log-configuration
+## Ref: https://stackoverflow.com/questions/44871109/mysql-host-1-or-127-0-0-1-is-not-allowed-to-connect-to-this-mysql-server
+## Ref: https://serverfault.com/questions/706166/mysql-doesnt-start-mysqld-sock-is-missing
+## Ref: https://dev.mysql.com/doc/mysql-secure-deployment-guide/8.0/en/secure-deployment-configure-authentication.html
+## Ref: https://stackoverflow.com/questions/43440534/mysql-doesnt-start-at-all
+## Ref: https://mysqlserverteam.com/mysql-8-0-4-new-default-authentication-plugin-caching_sha2_password/
+## Ref: https://mysqlserverteam.com/the-bind-address-option-now-supports-multiple-addresses/
+## Ref: https://security.stackexchange.com/questions/48892/is-there-a-benefit-to-having-ssl-connections-on-localhost
+## Ref: https://security.stackexchange.com/questions/14334/when-is-it-appropriate-to-ssl-encrypt-database-connections
+## Ref: https://www.digitalocean.com/community/questions/how-to-set-no-timeout-to-mysql
+## Ref: https://stackoverflow.com/questions/49250324/how-to-take-backup-of-a-database-which-has-table-size-105-gb/49324082
+## Ref: https://dba.stackexchange.com/questions/97846/mysqldump-error-2013
+## Ref: https://dba.stackexchange.com/questions/45665/what-max-allowed-packet-is-big-enough-and-why-do-i-need-to-change-it
+## Ref: https://stackoverflow.com/questions/10474922/error-2006-hy000-mysql-server-has-gone-away
+## Ref: https://www.sysopnotes.com/archives/jamf-mysql-8-turn-off-binary-logging/
+## Ref: https://dba.stackexchange.com/questions/226269/disable-binary-logs-in-mysql-8-0
+## Ref: https://docs.bitnami.com/aws/infrastructure/mysql/troubleshooting/disable-binary-logging-mysql/
+## Ref: https://simonauer.medium.com/disabling-mysql-binary-logging-c43ce9aeac2e
+
+## SS_EOF
