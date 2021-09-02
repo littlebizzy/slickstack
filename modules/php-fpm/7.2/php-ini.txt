@@ -1,0 +1,555 @@
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;; author: SlickStack ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;; link: https://slickstack.io ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;; mirror: http://mirrors.slickstack.io/php-fpm/php-ini.txt ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;; path: n/a (boilerplate) ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;; destination: /etc/php/7.4/fpm/php.ini (after install) ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;; purpose: PHP (ini) configuration file boilerplate optimized for SlickStack servers ;;;;;;;;;;;;
+;;;; module version: PHP-FPM 7.2.x ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+[PHP]
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;; PHP.ini: Language Options Settings ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; some items hardcoded for stability and security reasons, compression is done by Nginx ;;
+;; be sure to disable risky PHP functions on more interactive WordPress websites ;;
+
+engine = On
+short_open_tag = Off
+precision = @PHP_PRECISION
+output_buffering = @PHP_OUTPUT_BUFFERING
+zlib.output_compression = Off
+implicit_flush = Off
+unserialize_callback_func =
+unserialize_max_depth = @PHP_UNSERIALIZE_MAX_DEPTH ;; PHP 7.4+
+serialize_precision = @PHP_SERIALIZE_PRECISION
+disable_functions = @PHP_DISABLE_FUNCTIONS
+disable_classes = @PHP_DISABLE_CLASSES
+zend.enable_gc = On
+zend.exception_ignore_args = On ;; PHP 7.4+
+
+;; open_basedir = /var/www
+;; output_handler =
+;; url_rewriter.tags
+;; url_rewriter.hosts
+;; zlib.output_compression_level = -1
+;; zlib.output_handler =
+;; highlight.string  = #DD0000
+;; highlight.comment = #FF9900
+;; highlight.keyword = #007700
+;; highlight.default = #0000BB
+;; highlight.html    = #000000
+;; ignore_user_abort = On
+;; realpath_cache_size = 4096k
+;; realpath_cache_ttl = 120
+;; zend.multibyte = Off
+;; zend.script_encoding =
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;; PHP.ini: Resource Limits Settings ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; beware of extremely bloated WordPress themes (or plugins) that tell you to modify these ;;
+;; in most cases properly coded projects should not require high resource limits ;;
+
+max_execution_time = @PHP_MAX_EXECUTION_TIME
+max_input_time = @PHP_MAX_INPUT_TIME
+max_input_nesting_level = @PHP_MAX_INPUT_NESTING_LEVEL
+max_input_vars = @PHP_MAX_INPUT_VARS
+memory_limit = @PHP_MEMORY_LIMIT
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;; PHP.ini: Error Handling + Logging Settings ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; error handling is mostly hardcoded in SlickStack to avoid conflicts and resource abuse ;;
+;; for detailed debugging enable WP_DEBUG in WordPress to log all PHP error levels ;;
+
+error_reporting = E_ERROR | E_WARNING | E_PARSE ;; enabling WP_DEBUG changes this to E_ALL
+display_errors = Off
+display_startup_errors = Off
+log_errors = On
+error_log = /var/www/logs/error.log
+log_errors_max_len = 1024
+ignore_repeated_errors = On
+ignore_repeated_source = Off
+report_memleaks = On
+xmlrpc_errors = 0
+html_errors = Off
+
+;; report_zend_debug = 0
+;; xmlrpc_error_number = 0
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;; PHP.ini: Data Handling Settings ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; modifying most of these settings would cause the sky to fall so they are hardcoded ;;
+;; post_max_size can usually be set quite high for non-interactive websites ;;
+
+variables_order = "GPCS"
+request_order = "GP"
+register_argc_argv = Off
+auto_globals_jit = On
+post_max_size = @PHP_POST_MAX_SIZE
+auto_prepend_file =
+auto_append_file =
+default_mimetype = "text/html"
+default_charset = "UTF-8"
+
+;; arg_separator.output = "&amp;"
+;; arg_separator.input = ";&"
+;; enable_post_data_reading = Off
+;; internal_encoding =
+;; input_encoding =
+;; output_encoding =
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;; PHP.ini: Paths and Directories Settings ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; most of these paths are irrelevant and/or are hardcoded for LEMP security reasons ;;
+;; since SlickStack runs PHP-FPM on Nginx there is no reason to modify these ;;
+
+doc_root =
+user_dir =
+sys_temp_dir = "/tmp"
+enable_dl = Off
+cgi.force_redirect = 1
+
+;; extension_dir = "./"
+;; cgi.nph = 1
+;; cgi.redirect_status_env =
+;; cgi.fix_pathinfo=1
+;; cgi.discard_path=1
+;; fastcgi.impersonate = 1
+;; fastcgi.logging = 0
+;; cgi.rfc2616_headers = 0
+;; cgi.check_shebang_line=1
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;; PHP.ini: File Uploads Settings ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; for stability reasons SlickStack hardcodes the temp directory used by PHP (WordPress) ;;
+;; these file upload limits are more relevant to WP communities with many users ;;
+
+file_uploads = On
+upload_tmp_dir = /var/www/html/wp-content/temp
+upload_max_filesize = @PHP_UPLOAD_MAX_FILESIZE
+max_file_uploads = @PHP_MAX_FILE_UPLOADS
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;; PHP.ini: Fopen Wrappers Settings ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; lots of rumors still exist about allow_url_fopen security but generally it is safe ;;
+;; however allow_url_include is not very safe and is disabled on SlickStack ;;
+
+allow_url_fopen = @PHP_ALLOW_URL_FOPEN
+allow_url_include = Off
+default_socket_timeout = @PHP_DEFAULT_SOCKET_TIMEOUT
+auto_detect_line_endings = Off
+
+;; from="john@doe.com"
+;; user_agent="PHP"
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;; PHP.ini: Dynamic Extensions Settings ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; because the LEMP environment for SlickStack is managed most of these are not needed ;;
+;; common PHP extensions are already bundled with the SlickStack installation ;;
+
+;; extension=bz2
+;; extension=curl
+;; extension=ffi ;; PHP 7.4+
+;; extension=fileinfo
+;; extension=gd2
+;; extension=gettext
+;; extension=gmp
+;; extension=intl
+;; extension=imap
+;;;; extension=interbase ;; removed in PHP 7.4
+;; extension=ldap
+;; extension=mbstring
+;; extension=exif ;; must be after mbstring as it depends on it ;;
+;; extension=mysqli
+;; extension=oci8_12c
+;; extension=odbc
+;; extension=openssl
+;; extension=pdo_firebird
+;; extension=pdo_mysql
+;; extension=pdo_oci
+;; extension=pdo_odbc
+;; extension=pdo_pgsql
+;; extension=pdo_sqlite
+;; extension=pgsql
+;; extension=shmop
+;; extension=snmp
+;; extension=soap
+;; extension=sockets
+;; extension=sqlite3
+;; extension=tidy
+;; extension=xmlrpc
+;; extension=xsl
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;; PHP.ini: Various Module Settings ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; there is really no need for modifying these settings so they are hardcoded below ;;
+;; keep in mind that the Interbase module will be unsupported after PHP 7.4 ;;
+
+[CLI Server]
+cli_server.color = On
+
+[Date]
+;; date.timezone =
+;; date.default_latitude = 31.7667
+;; date.default_longitude = 35.2333
+;; date.sunrise_zenith = 90.583333
+;; date.sunset_zenith = 90.583333
+
+[filter]
+;; filter.default = unsafe_raw
+;; filter.default_flags =
+
+[iconv]
+;; iconv.input_encoding =
+;; iconv.internal_encoding =
+;; iconv.output_encoding =
+
+[imap]
+;; imap.enable_insecure_rsh=0
+
+[intl]
+;; intl.default_locale =
+;; intl.error_level = E_WARNING
+;; intl.use_exceptions = 0
+
+[sqlite3]
+;; sqlite3.extension_dir =
+;; sqlite3.defensive = 1
+
+[Pcre]
+;; pcre.backtrack_limit=100000
+;; pcre.recursion_limit=100000
+;; pcre.jit=1
+
+[Pdo]
+;; pdo_odbc.connection_pooling=strict
+;; pdo_odbc.db2_instance_name
+
+[Pdo_mysql]
+;;;; pdo_mysql.cache_size = 2000 ;; removed in PHP 7.4??
+pdo_mysql.default_socket=
+
+[Phar]
+;; phar.readonly = On
+;; phar.require_hash = On
+;; phar.cache_list =
+
+[mail function]
+SMTP = localhost
+smtp_port = 25
+;; sendmail_from = me@example.com
+;; sendmail_path =
+;; mail.force_extra_parameters =
+mail.add_x_header = Off
+;; mail.log = syslog
+
+[ODBC]
+;; odbc.default_db = Not yet implemented
+;; odbc.default_user = Not yet implemented
+;; odbc.default_pw = Not yet implemented
+;; odbc.default_cursortype
+odbc.allow_persistent = On
+odbc.check_persistent = On
+odbc.max_persistent = -1
+odbc.max_links = -1
+odbc.defaultlrl = 4096
+odbc.defaultbinmode = 1
+;;;; birdstep.max_links = -1 ;; remove in PHP 7.4??
+
+;;;; [Interbase] ;; MODULE REMOVED IN PHP 7.4
+;;;; ibase.allow_persistent = 1
+;;;; ibase.max_persistent = -1
+;;;; ibase.max_links = -1
+;;;; ibase.default_db =
+;;;; ibase.default_user =
+;;;; ibase.default_password =
+;;;; ibase.default_charset =
+;;;; ibase.timestampformat = "%Y-%m-%d %H:%M:%S"
+;;;; ibase.dateformat = "%Y-%m-%d"
+;;;; ibase.timeformat = "%H:%M:%S"
+
+[MySQLi]
+mysqli.max_persistent = -1
+;; mysqli.allow_local_infile = On
+mysqli.allow_persistent = On
+mysqli.max_links = -1
+mysqli.cache_size = 2000 ;; remove in PHP 7.4??
+mysqli.default_port = 3306
+mysqli.default_socket =
+mysqli.default_host =
+mysqli.default_user =
+mysqli.default_pw =
+mysqli.reconnect = Off
+
+[mysqlnd]
+mysqlnd.collect_statistics = On
+mysqlnd.collect_memory_statistics = Off
+;; mysqlnd.debug =
+;; mysqlnd.log_mask = 0
+;; mysqlnd.mempool_default_size = 16000
+;; mysqlnd.net_cmd_buffer_size = 2048
+;; mysqlnd.net_read_buffer_size = 32768
+;; mysqlnd.net_read_timeout = 31536000
+;; mysqlnd.sha256_server_public_key =
+
+[OCI8]
+;; oci8.privileged_connect = Off
+;; oci8.max_persistent = -1
+;; oci8.persistent_timeout = -1
+;; oci8.ping_interval = 60
+;; oci8.connection_class =
+;; oci8.events = Off
+;; oci8.statement_cache_size = 20
+;; oci8.default_prefetch = 100
+;; oci8.old_oci_close_semantics = Off
+
+[PostgreSQL]
+pgsql.allow_persistent = On
+pgsql.auto_reset_persistent = Off
+pgsql.max_persistent = -1
+pgsql.max_links = -1
+pgsql.ignore_notice = 0
+pgsql.log_notice = 0
+
+[bcmath]
+bcmath.scale = 0
+
+[browscap]
+;; browscap = extra/browscap.ini
+
+[Session]
+session.save_handler = files
+;; session.save_path = "/tmp"
+session.use_strict_mode = 0
+session.use_cookies = 1
+;; session.cookie_secure =
+session.use_only_cookies = 1
+session.name = PHPSESSID
+session.auto_start = 0
+session.cookie_lifetime = 0
+session.cookie_path = /
+session.cookie_domain =
+session.cookie_httponly =
+session.cookie_samesite = ;; PHP 7.4+
+session.serialize_handler = php
+session.gc_probability = 1
+session.gc_divisor = 1000
+session.gc_maxlifetime = 1440
+session.referer_check =
+session.cache_limiter = nocache
+session.cache_expire = 180
+session.use_trans_sid = 0
+session.sid_length = 26
+session.trans_sid_tags = "a=href,area=href,frame=src,form="
+;; session.trans_sid_hosts=""
+session.sid_bits_per_character = 5
+;; session.upload_progress.enabled = On
+;; session.upload_progress.cleanup = On
+;; session.upload_progress.prefix = "upload_progress_"
+;; session.upload_progress.name = "PHP_SESSION_UPLOAD_PROGRESS"
+;; session.upload_progress.freq =  "1%"
+;; session.upload_progress.min_freq = "1"
+;; session.lazy_write = On
+
+[Assertion]
+zend.assertions = -1
+;; assert.active = On
+;; assert.exception = On
+;; assert.warning = On
+;; assert.bail = Off
+;; assert.callback = 0
+;; assert.quiet_eval = 0
+
+[COM]
+;; com.typelib_file =
+;; com.allow_dcom = true
+;; com.autoregister_typelib = true
+;; com.autoregister_casesensitive = false
+;; com.autoregister_verbose = true
+;; com.code_page=
+
+[mbstring]
+;; mbstring.language = Japanese
+;; mbstring.internal_encoding =
+;; mbstring.http_input =
+;; mbstring.http_output =
+;; mbstring.encoding_translation = Off
+;; mbstring.detect_order = auto
+;; mbstring.substitute_character = none
+;; mbstring.func_overload = 0
+;; mbstring.strict_detection = On
+;; mbstring.http_output_conv_mimetype=
+;; mbstring.regex_stack_limit=100000 ;; PHP 7.4+
+;; mbstring.regex_retry_limit=1000000 ;; PHP 7.4+
+
+[gd]
+;; gd.jpeg_ignore_warning = 1
+
+[exif]
+;; exif.encode_unicode = ISO-8859-15
+;; exif.decode_unicode_motorola = UCS-2BE
+;; exif.decode_unicode_intel = UCS-2LE
+;; exif.encode_jis =
+;; exif.decode_jis_motorola = JIS
+;; exif.decode_jis_intel = JIS
+
+[Tidy]
+;; tidy.default_config = /usr/local/lib/php/default.tcfg
+tidy.clean_output = Off
+
+[soap]
+soap.wsdl_cache_enabled=1
+soap.wsdl_cache_dir="/tmp"
+soap.wsdl_cache_ttl=86400
+soap.wsdl_cache_limit = 5
+
+[sysvshm]
+;; sysvshm.init_mem = 10000
+
+[ldap]
+ldap.max_links = -1
+
+[dba]
+;; dba.default_handler=
+
+[curl]
+;; curl.cainfo =
+
+[openssl]
+;; openssl.cafile=
+;; openssl.capath=
+
+[ffi] ;; PHP 7.4+
+;; ffi.enable=preload
+;; ffi.preload=
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;; PHP.ini: OPcache Module Settings ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; for stability reasons certain OPcache settings like validate_timestamps are hardcoded ;;
+
+;; opcache.use_cwd = should enable to avoid collisions between similar file names ;;
+;; opcache.validate_timestamps = should enable to avoid having to manually purge OPcache ;;
+;; opcache.revalidate_freq = how often should OPcache check files for new code ;;
+;; opcache.revalidate_path = should disable (overkill) ;;
+;; opcache.save_comments = should enable since PHP comments are helpful ;;
+;; opcache.consistency_checks = should disable to improve performance (overkill) ;;
+;; opcache.enable_file_override = enable for better performance ;;
+;; opcache.validate_permission = should disable since SlickStack is not shared hosting ;;
+;; opcache.validate_root = should disable since SlickStack is not shared hosting ;;
+
+;; opcache.file_cache_only = should be disabled on PHP-FPM server config ;;
+
+[opcache]
+opcache.enable=1
+opcache.enable_cli=1
+opcache.memory_consumption=@OPCACHE_MEMORY_CONSUMPTION
+opcache.interned_strings_buffer=@OPCACHE_INTERNED_STRINGS_BUFFER
+opcache.max_accelerated_files=@OPCACHE_MAX_ACCELERATED_FILES
+opcache.max_wasted_percentage=@OPCACHE_MAX_WASTED_PERCENTAGE
+opcache.use_cwd=1
+opcache.validate_timestamps=1
+opcache.revalidate_freq=@OPCACHE_REVALIDATE_FREQUENCY
+opcache.revalidate_path=0
+opcache.save_comments=1
+opcache.enable_file_override=1
+opcache.consistency_checks=0
+opcache.error_log=/var/www/logs/error.log
+opcache.log_verbosity_level=1
+
+;opcache.file_cache=/var/www/cache/opcache
+;opcache.file_cache_only=0
+;opcache.file_cache_consistency_checks=1
+
+;opcache.file_cache_fallback=1
+;; opcache.cache_id= ;; PHP 7.4+
+;; opcache.preload= ;; PHP 7.4+
+;; opcache.preload_user= ;; PHP 7.4+
+;; opcache.file_update_protection=2 ;; PHP 7.4+
+;; opcache.lockfile_path=/tmp ;; PHP 7.4+
+opcache.huge_code_pages=@OPCACHE_HUGE_CODE_PAGES
+opcache.validate_permission=0
+opcache.validate_root=0
+
+;; opcache.optimization_level=0xffffffff
+;;;; opcache.inherited_hack=1 ;; removed in PHP 7.4
+;; opcache.dups_fix=0
+;; opcache.blacklist_filename=
+;; opcache.max_file_size=0
+;; opcache.force_restart_timeout=180
+;; opcache.preferred_memory_model=
+;; opcache.protect_memory=0
+;; opcache.restrict_api=
+;; opcache.mmap_base=
+;; opcache.opt_debug_level=0
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;; PHP.ini: Miscellaneous Settings ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+expose_php = Off
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;; External References Used By SlickStack To Improve This Script (Thanks, Interwebz) ;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; Ref: https://github.com/php/php-src/blob/php-7.2.24/php.ini-production
+;; Ref: https://www.php.net/manual/en/configuration.file.php
+;; Ref: https://www.php.net/manual/en/errorfunc.configuration.php
+;; Ref: https://mediatemple.net/community/products/grid/204643900/why-is-allow_url_fopen-disabled-on-the-grid
+;; Ref: https://codex.wordpress.org/Editing_wp-config.php#Configure_Error_Logging
+;; Ref: https://www.owasp.org/index.php/PHP_Configuration_Cheat_Sheet#php.ini
+;; Ref: https://www.alibabacloud.com/help/faq-detail/50218.htm
+;; Ref: https://www.debyum.com/top-10-php-security-best-practices/
+;; Ref: https://www.eukhost.com/blog/webhosting/dangerous-php-functions-must-be-disabled/
+;; Ref: https://www.reddit.com/r/lolphp/comments/41gkss/the_existence_of_the_precision_ini_setting_php/
+;; Ref: https://alanstorm.com/php-meminfo-and-memory-leaks/
+;; Ref: https://serverfault.com/questions/574880/nginx-php-fpm-error-logging
+;; Ref: https://stackoverflow.com/questions/24049534/is-allow-url-fopen-safe/24049626#24049626
+;; Ref: https://patrickkerrigan.uk/blog/php-opcache-file-cache/
+;; Ref: https://ckon.wordpress.com/2015/09/18/php7-opcache-performance/
+;; Ref: https://www.getpagespeed.com/server-setup/linux-huge-pages-and-web-performance
+;; Ref: https://forum.directadmin.com/showthread.php?t=55111
+;; Ref: https://docs.moodle.org/29/en/OPcache
+;; Ref: https://stackoverflow.com/questions/25747174/opcache-revalidate-freq-config-in-php-ini
+;; Ref: https://stackoverflow.com/questions/23382615/apc-apcu-opcache-performance-poor
+;; Ref: https://ma.ttias.be/mitigating-phps-long-standing-issue-opcache-leaking-sensitive-data/
+;; Ref: https://medium.com/appstract/make-your-laravel-app-fly-with-php-opcache-9948db2a5f93
+;; Ref: https://www.lowendtalk.com/discussion/138890/php7-2-opcache-file-cache-multiple-php-fpm-pool-owners
+;; Ref: https://github.com/symfony/flex/issues/386
+;; Ref: https://stackoverflow.com/questions/6858432/disable-garbage-collection
+;; Ref: https://stackoverflow.com/questions/25363864/zlib-output-compression-and-output-buffering
+;; Ref: http://www.tutorialsscripts.com/php-ini-tutorials/php-ini-unserialize_callback_func.php
+;; Ref: https://salsa.debian.org/php-team/php/blob/bd37595a1059785f7ad177b0b208b3d7e515dc50/UPGRADING
+;; Ref: https://wordpress.stackexchange.com/questions/19689/wp-debug-is-not-set-but-im-still-getting-warnings
+;; Ref: https://stackoverflow.com/questions/1308379/how-can-i-stop-php-notices-from-appearing-in-wordpress
+;; Ref: https://stackoverflow.com/questions/1955079/difference-between-error-reporting-and-ini-seterror-reporting
+;; Ref: https://codex.wordpress.org/WP_DEBUG
+;; Ref: https://wordpress.org/support/article/editing-wp-config-php/#configure-error-logging
+;; Ref: https://wycks.wordpress.com/2013/12/05/how-to-remove-error-notices-using-wordpresss-wp_debug/
+;; Ref: https://raygun.com/blog/php-error-reporting/
+;; Ref: https://www.codeclouds.com/blog/php7-error-reporting-a-2019-developers-guide/
+;; Ref: https://forums.cubecart.com/topic/50862-resolved-error-establishing-a-database-connection/
+;; Ref: https://phoenixnap.com/kb/php-error-reporting
+;; Ref: http://php.net/manual/en/function.error-reporting.php
+;; Ref: https://stackoverflow.com/questions/25044817/zend-opcache-opcache-enable-cli-1-or-0-what-does-it-do
