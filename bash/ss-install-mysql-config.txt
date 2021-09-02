@@ -153,6 +153,20 @@ else
     sed -i "s/@INNODB_FLUSH_LOG_AT_TRX_COMMIT/1/g" "$TMP_MY_CNF"
 fi
 
+####################################################################################################
+#### SS-Install-MySQL-Config: Remove Version-Specific Settings #####################################
+####################################################################################################
+
+## delete incompatible settings if running mysql 8.0 ##
+if [[ "${UBUNTU_VERSION}" == "20.04" ]]; then
+    sed -i '/## MySQL 5.7/d' "$TMP_MY_CNF"
+fi
+
+## delete incompatible settings if running mysql 5.7 ##
+if [[ "${UBUNTU_VERSION}" == "18.04" ]]; then
+    sed -i '/## MySQL 8.0/d' "$TMP_MY_CNF"
+fi
+
 ## copy files to their destinations ##
 cp "$TMP_MY_CNF" "$PATH_MY_CNF"
 
@@ -280,5 +294,6 @@ touch "$TIMESTAMP_SS_INSTALL_MYSQL_CONFIG"
 ## Ref: https://www.digitalocean.com/community/tutorials/how-to-configure-ssl-tls-for-mysql-on-ubuntu-18-04
 ## Ref: https://dev.mysql.com/doc/refman/8.0/en/encrypted-connections.html
 ## Ref: https://unix.stackexchange.com/questions/47584/in-a-bash-script-using-the-conditional-or-in-an-if-statement
+## Ref: https://www.baeldung.com/linux/delete-lines-containing-string-from-file
 
 ## SS_EOF
