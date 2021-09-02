@@ -1,0 +1,102 @@
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;; author: SlickStack ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;; link: https://slickstack.io ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;; mirror: http://mirrors.slickstack.io/php-fpm/www-conf.txt ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;; path: n/a (boilerplate) ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;; destination: /etc/php/7.4/fpm/pool.d/www.conf (after install) ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;; purpose: WWW pool configuration file boilerplate optimized for SlickStack servers ;;;;;;;;;;;;;
+;;;; module version: PHP-FPM 7.2.x ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+[www]
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;; WWW Pool: General Settings ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; users, groups, and listen directives are hardcoded in SlickStack to avoid conflicts ;;
+;; www-data is the default user for Nginx and TCP/IP listening avoids disk I/O ;;
+
+user = www-data
+group = www-data
+listen = 127.0.0.1:9000
+listen.allowed_clients = 127.0.0.1
+listen.backlog = @WWW_LISTEN_BACKLOG
+listen.owner = www-data
+listen.group = www-data
+
+;; prefix = /path/to/pools/$pool
+;; listen.mode = 0660
+;; listen.acl_users =
+;; listen.acl_groups =
+;; process.priority = -19
+;; process.dumpable = yes
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;; WWW Pool: Child Processes Settings ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; ondemand is best for the majority of VPS servers (contrary to many online tutorials) ;;
+;; only incredibly high traffic servers should use dynamic after tuning settings ;;
+
+pm = @WWW_PM_MODE
+pm.max_children = @WWW_PM_MAX_CHILDREN
+pm.start_servers = @WWW_PM_START_SERVERS
+pm.min_spare_servers = @WWW_PM_MIN_SPARE_SERVERS
+pm.max_spare_servers = @WWW_PM_MAX_SPARE_SERVERS
+pm.process_idle_timeout = @WWW_PM_PROCESS_IDLE_TIMEOUT;
+pm.max_requests = @WWW_PM_MAX_REQUESTS
+request_terminate_timeout = @WWW_REQUEST_TERMINATE_TIMEOUT
+rlimit_files = @WWW_RLIMIT_FILES
+rlimit_core = @WWW_RLIMIT_CORE
+
+security.limit_extensions = .php
+catch_workers_output = yes
+decorate_workers_output = no ;; PHP 7.4+
+php_admin_value[error_log] = /var/www/logs/error.log
+php_admin_flag[log_errors] = on
+
+;; pm.status_path = /status
+;; ping.path = /ping
+;; ping.response = pong
+;; access.log = log/$pool.access.log
+;; access.format = "%R - %u %t \"%m %r%Q%q\" %s %f %{mili}d %{kilo}M %C%%"
+;; slowlog = log/$pool.log.slow
+;; request_slowlog_timeout = 0
+;; request_slowlog_trace_depth = 20
+;; chroot =
+;; chdir = /var/www
+;; clear_env = no
+;; env[HOSTNAME] = $HOSTNAME
+;; env[PATH] = /usr/local/bin:/usr/bin:/bin
+;; env[TMP] = /tmp
+;; env[TMPDIR] = /tmp
+;; env[TEMP] = /tmp
+;; php_admin_value[sendmail_path] = /usr/sbin/sendmail -t -i -f www@my.domain.com
+;; php_flag[display_errors] = off
+;; php_admin_value[memory_limit] = 32M
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;; SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; Ref: https://github.com/php/php-src/blob/master/sapi/fpm/www.conf.in
+;; Ref: https://gist.github.com/holmberd/44fa5c2555139a1a46e01434d3aaa512
+;; Ref: https://easyengine.io/docs/prevent-mysql-crashing
+;; Ref: https://gist.github.com/fyrebase/62262b1ff33a6aaf5a54
+;; Ref: https://www.kinamo.be/en/support/faq/determining-the-correct-number-of-child-processes-for-php-fpm-on-nginx
+;; Ref: https://geekflare.com/php-fpm-optimization/
+;; Ref: https://ma.ttias.be/a-better-way-to-run-php-fpm/
+;; Ref: https://haydenjames.io/php-fpm-tuning-using-pm-static-max-performance/
+;; Ref: https://serversforhackers.com/c/php-fpm-configuration-the-listen-directive
+;; Ref: https://easyengine.io/tutorials/php/fpm-sysctl-tweaking/
+;; Ref: https://ypereirareis.github.io/blog/2017/02/20/php-fpm-cli-error-log/
+;; Ref: https://stackoverflow.com/questions/12461810/php-fpm-too-many-open-files
+;; Ref: https://www.digitalocean.com/community/questions/optimizing-php7-with-nginx
+;; Ref: https://server-support.co/sysadmin/webhosting/sysadmin-php-fpm-modular-config/
+;; Ref: https://serversforhackers.com/c/php-fpm-process-management
+;; Ref: https://dev.to/jake/configuring-php-fpm-for-high-network-traffic-47le
+;; Ref: https://ypereirareis.github.io/blog/2019/07/30/php-fpm-truncated-log-workaround-solution-trick/
+;; Ref: https://stackoverflow.com/questions/48863756/log-to-stdout-stderr-with-laravel-5-6-and-php-fpm
+
+;; SS_EOF
