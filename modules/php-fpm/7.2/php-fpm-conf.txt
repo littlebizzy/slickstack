@@ -1,0 +1,73 @@
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;; author: SlickStack ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;; link: https://slickstack.io ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;; mirror: https://mirrors.slickstack.io/modules/php-fpm/7.2/php-fpm-conf.txt ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;; path: n/a (boilerplate) ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;; destination: /etc/php/7.2/fpm/php-fpm.conf (after install) ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;; purpose: PHP-FPM configuration file boilerplate optimized for SlickStack servers ;;;;;;;;;;;;;;
+;;;; module version: PHP-FPM 7.2.x ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+[global]
+
+pid = /run/php/php7.4-fpm.pid ;; PHP 7.4
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;; PHP-FPM: Error Handing + Logging Settings ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; hardcoding error log settings reduces potential conflicts and server resource usage ;;
+;; temporarily enabling debug.log in WordPress (when needed) is best practice ;;
+
+error_log = /var/www/logs/error.log
+log_level = error
+syslog.facility = daemon
+syslog.ident = php-fpm
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;; PHP-FPM: Various Settings ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; because SlickStack does not use any containers we can safely daemonize PHP-FPM ;;
+;; take extreme caution in modifying below settings in your ss-config ;;
+
+daemonize = yes
+events.mechanism = epoll
+emergency_restart_threshold = @FPM_EMERGENCY_RESTART_THRESHOLD
+emergency_restart_interval = @FPM_EMERGENCY_RESTART_INTERVAL
+process_control_timeout = @FPM_PROCESS_CONTROL_TIMEOUT
+systemd_interval = @FPM_SYSTEMD_INTERVAL
+process.max = @FPM_PROCESS_MAX
+process.priority = @FPM_PROCESS_PRIORITY
+rlimit_files = @FPM_RLIMIT_FILES
+rlimit_core = @FPM_RLIMIT_CORE
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;; PHP-FPM: Pool Definitions ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+include=/etc/php/7.4/fpm/pool.d/*.conf
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;; External References Used By SlickStack To Improve This Script (Thanks, Interwebz) ;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; Ref: https://www.php.net/manual/en/install.fpm.configuration.php
+;; Ref: https://ma.ttias.be/a-better-way-to-run-php-fpm/
+;; Ref: https://serversforhackers.com/c/div-configuring-php-fpm
+;; Ref: https://myjeeva.com/php-fpm-configuration-101.html
+;; Ref: https://github.com/kerberos-io/web/issues/47
+;; Ref: https://serverfault.com/questions/917137/what-does-graceful-reload-actually-mean-with-php-fpm
+;; Ref: https://selivan.github.io/2016/10/25/php-fpm-502-error-on-reload.html
+;; Ref: https://github.com/voxpupuli/puppet-php/issues/395
+;; Ref: https://tkacz.pro/php-fpm-config-improvements/
+;; Ref: https://itresident.com/nginx/nginx-and-php-fpm-for-heavy-load-wordpress-web-server-with-high-traffic-2000-concurrent-connections/
+;; Ref: https://www.if-not-true-then-false.com/2011/nginx-and-php-fpm-configuration-and-optimizing-tips-and-tricks/
+;; Ref: https://bbs.archlinux.org/viewtopic.php?id=190202
+;; Ref: https://geekflare.com/php-fpm-optimization/
+;; Ref: https://git.autistici.org/ai3/docker/roundcube/commit/bad4e15ea7b12a22403f0bb8f677fbaafe9d43d2
+;; Ref: https://radwebhosting.com/client_area/knowledgebase/110/PHP-FPM-Configurable-Options.html
+;; Ref: https://news.ycombinator.com/item?id=7951457
+;; Ref: https://community.centminmod.com/threads/centos-7-proper-php-fpm-systemd-service-file.16511/
+;; Ref: https://git.lug.ustc.edu.cn/vanabel/php-sandbox/commit/886cf1a3185919096b8fb6a9abfeb5ff9f13281e
+;; Ref: https://www.digitalocean.com/community/questions/optimizing-php7-with-nginx
