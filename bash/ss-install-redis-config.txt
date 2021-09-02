@@ -41,19 +41,9 @@ sleep "$SLEEP_MESSAGE_BEGIN"
 ## here we install redis-server (no client) for use in WordPress object caching (only) ##
 ## this Redis server package also includes the Redis CLI command line tools ##
 
-## purge redis-server + php-redis ##
-apt purge redis-server
-apt purge php-redis
-
-## for Ubuntu 20.04 LTS only ##
-if [[ "${UBUNTU_VERSION}" = "20.04" ]]; then
-    apt install redis-server
-    apt install php-redis
-fi
-
 ## NEEDS TO BE IMPROVED AND EXPANDED ##
 
-## configure redis-server for object caching (only) ##
+## configure redis-server for object caching only ##
 sed -i '/maxmemory.*bytes.*/c\maxmemory 256mb' "$PATH_REDIS_CONF"
 sed -i '/maxmemory-policy noeviction/c\maxmemory-policy allkeys-lru' "$PATH_REDIS_CONF"
 sed -i '/always-show-logo yes/c\always-show-logo no' "$PATH_REDIS_CONF"
