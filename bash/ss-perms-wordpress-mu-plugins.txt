@@ -40,8 +40,13 @@ sleep "$SLEEP_MESSAGE_BEGIN"
 
 
 ## ensure files exist (production only because ss-sync will copy to staging) ##
-if [ ! -f "/var/www/html/wp-content/blacklist.txt" ]; then touch "/var/www/html/wp-content/blacklist.txt"; fi
-if [ ! -f "/var/www/html/wp-content/functions.php" ]; then touch "/var/www/html/wp-content/functions.php"; fi
+if [[ ! -f "/var/www/html/wp-content/blacklist.txt" ]]; then 
+    touch "/var/www/html/wp-content/blacklist.txt"
+fi
+
+if [ ! -f "/var/www/html/wp-content/functions.php" ]; then 
+    touch "/var/www/html/wp-content/functions.php"
+fi
 
 
 
@@ -58,7 +63,9 @@ chmod 0664 /var/www/html/wp-content/functions.php ## 0664 to allow WP edit files
 chmod 0440 /var/www/html/wp-content/blacklist.txt ## 0440 (read-only)
 
 ## reset MU plugins permissions (staging) ##
-if [[ "$STAGING_SITE" != "false" ]]; then 
+if [[ "$STAGING_SITE" == "true" ]]; then 
+    touch "/var/www/html/staging/wp-content/blacklist.txt"
+    touch "/var/www/html/staging/wp-content/functions.php"
     chown -R www-data:wordpress /var/www/html/staging/wp-content/mu-plugins
     chown $SFTP_USER:wordpress /var/www/html/staging/wp-content/functions.php ## allows for editing via SFTP
     chown www-data:wordpress /var/www/html/staging/wp-content/blacklist.txt
@@ -72,7 +79,9 @@ if [[ "$STAGING_SITE" != "false" ]]; then
 fi
 
 ## reset MU plugins permissions (dev) ##
-if [[ "$DEV_SITE" != "false" ]]; then 
+if [[ "$DEV_SITE" == "true" ]]; then 
+    touch "/var/www/html/dev/wp-content/blacklist.txt"
+    touch "/var/www/html/dev/wp-content/functions.php"
     chown -R www-data:wordpress /var/www/html/dev/wp-content/mu-plugins
     chown $SFTP_USER:wordpress /var/www/html/dev/wp-content/functions.php ## allows for editing via SFTP
     chown www-data:wordpress /var/www/html/dev/wp-content/blacklist.txt
@@ -88,8 +97,14 @@ fi
 ## NULL blacklist.txt if ss-config false (allows default SS MU plugin to be installed while still being able to disable plugin blacklist) ##
 if [[ "$SS_PLUGIN_BLACKLIST" == "false" ]]; then 
 cat /dev/null > /var/www/html/wp-content/blacklist.txt
-cat /dev/null > /var/www/html/dev/wp-content/blacklist.txt
-cat /dev/null > /var/www/html/staging/wp-content/blacklist.txt
+fi
+
+if [[ "$SS_PLUGIN_BLACKLIST" == "false" ]] && [[ "$DEV_SITE" == "true" ]]; then 
+    cat /dev/null > /var/www/html/dev/wp-content/blacklist.txt
+fi
+
+if [[ "$SS_PLUGIN_BLACKLIST" == "false" ]] && [[ "$STAGING_SITE" == "true" ]]; then 
+    cat /dev/null > /var/www/html/staging/wp-content/blacklist.txt
 fi
 
 ####################################################################################################
