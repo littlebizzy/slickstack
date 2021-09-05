@@ -27,12 +27,23 @@ source /var/www/ss-functions
 #### TABLE OF CONTENTS #############################################################################
 ####################################################################################################
 
-## A. Message (Begin Script)
-## B.  Delete SSH Private Key (If Exists)
-## C. Delete Bash Command History (Root + Sudo + SFTP User)
+## A. Touch Timestamp File
+## B. Message (Begin Script)
+## C.  Delete SSH Private Key (If Exists)
+## D. Delete Bash Command History (Root + Sudo + SFTP User)
 
 ####################################################################################################
-#### A. SS-Clean-Files: Message (Begin Script) #####################################################
+#### A. SS-Clean-Files: Touch Timestamp File #######################################################
+####################################################################################################
+
+## this is a dummy timestamp file that will remember the last time this script was run ##
+## it can be useful for developer reference and is sometimes used by SlickStack ##
+
+## script timestamp ##
+touch "$TIMESTAMP_SS_CLEAN_FILES"
+
+####################################################################################################
+#### B. SS-Clean-Files: Message (Begin Script) #####################################################
 ####################################################################################################
 
 ## this is a simple message that announces to the shell the purpose of this bash script ##
@@ -43,7 +54,7 @@ echo -e "${PURPLE}Running ss-clean-files: Cleans up various unsafe and unnecessa
 sleep "$SLEEP_MESSAGE_BEGIN"
 
 ####################################################################################################
-#### SS-Clean-Files: Delete SSH Private Key (If Exists) ############################################
+#### C. SS-Clean-Files: Delete SSH Private Key (If Exists) #########################################
 ####################################################################################################
 
 ## delete private key if more than 360 mins (6 hours) old ##
@@ -52,7 +63,7 @@ if [[ -n $(find "$PATH_SSH_PRIVATE_KEY_FILE" -amin +360) ]]; then
 fi
 
 ####################################################################################################
-#### SS-Clean-Files: Delete Bash Command History (Root + Sudo + SFTP User) #########################
+#### D. SS-Clean-Files: Delete Bash Command History (Root + Sudo + SFTP User) ######################
 ####################################################################################################
 
 ## many sensitive data items like passwords are often saved indefinitely in Bash history ##
@@ -1153,16 +1164,6 @@ rm /var/www/html/wp-content/uploads/cache* ## improper cache path
 
 ## run ss-purge-opcache ##
 source "$PATH_SS_PURGE_OPCACHE"
-
-####################################################################################################
-#### SS-Clean-Files: Touch Timestamp File (End Script) #############################################
-####################################################################################################
-
-## this is a dummy timestamp file that will remember the last time this script was run ##
-## it can be useful for developer reference and is sometimes used by SlickStack ##
-
-## script timestamp ##
-touch "$TIMESTAMP_SS_CLEAN_FILES"
 
 ####################################################################################################
 #### SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ###############
