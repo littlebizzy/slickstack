@@ -35,7 +35,7 @@ SlickStack is a free LEMP stack automation script written in Bash designed to en
 
 ## Changelog
 
-* **NEW!** `ss-optimize-files` will now strip EXIF data from all public files under /var/www/html for security and privacy reasons.
+* **NEW!** `ss-optimize-files` will now strip EXIF data from all public JPEG and JPG files under /var/www/html for security and privacy reasons.
 
 * **NEW!** Staging/dev sites are now working! This is still experimental and needs more review of all settings so please keep that in mind and please offer your detailed feedback to our team in the chat rooms so we can get this feature totally stable... woo hoo!
 
