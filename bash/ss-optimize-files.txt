@@ -61,8 +61,13 @@ find /var/www/html/ -type f -exec dos2unix --quiet --keepdate --oldfile --safe {
 ## for better file and image security run exiftool to remove any EXIF data from files ##
 ## this helps prevent people from seeing things like GPS location and etc ##
 
-## exiftool ##
-apt install libimage-exiftool-perl
+
+PACKAGE_EXIFTOOL_EXISTS=$(dpkg-query -W --showformat='${Status}\n' $PACKAGE_EXIFTOOL|grep "install ok installed")
+echo Checking for $PACKAGE_EXIFTOOL: $PACKAGE_EXIFTOOL_EXISTS
+if [ "" = "$PACKAGE_EXIFTOOL_EXISTS" ]; then
+    echo "$PACKAGE_EXIFTOOL package not found. We will install the package before proceeding."
+    sudo apt install $PACKAGE_EXIFTOOL
+fi
 
 exiftool -recurse -overwrite_original -EXIF= /var/www/html
 
