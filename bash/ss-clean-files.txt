@@ -9,9 +9,10 @@
 #### purpose: Cleans up various unsafe and unnecessary files on the SlickStack server ##############
 #### module version: Ubuntu 20.04 LTS ##############################################################
 #### sourced by: ss core cron jobs #################################################################
-#### bash aliases: ss clean, ss cleanup, ss clean files, ss cleanup files ##########################
+#### bash aliases: ss clean files, ss cleanup files ################################################
 ####################################################################################################
 
+## update below cuz not true anymore with new setting SS_CLEAN_FILES_WORDPRESS_PLUGINS ##
 ## CERTAIN WP PLUGINS WILL BE FORCE-DELETED: https://slickstack.io/faq/blacklisted-plugins ##
 ## SS-CLEAN DOES NOT PERFORM ANY MALWARE FILE SCANNING (PLEASE USE SS-SCAN INSTEAD) ##
 
@@ -106,7 +107,7 @@ if [[ "$DEV_SITE" == "false" ]]; then
 fi
 
 ####################################################################################################
-#### SS-Clean: Delete MySQL Directory Backup If Not Explicity Enabled ##############################
+#### SS-Clean-Files: Delete MySQL Directory Backup If Not Explicity Enabled ########################
 ####################################################################################################
 
 if [[ "$SS_DUMP_MYSQL_FILES" != "true" ]]; then 
@@ -114,14 +115,14 @@ if [[ "$SS_DUMP_MYSQL_FILES" != "true" ]]; then
 fi
 
 ####################################################################################################
-#### SS-Clean: Delete Old SS-Config Backup Files #######################################
+#### SS-Clean-Files: Delete Old SS-Config Backup Files #############################################
 ####################################################################################################
 
 ## delete old ss-config backups ##
 find /var/www/meta/ -maxdepth 1 -name "ss-config.bak*" -type f -mtime +3 -delete
 
 ####################################################################################################
-#### SS-Clean: Delete Outdated + Unnecessary SlickStack Files ######################################
+#### SS-Clean-Files: Delete Outdated + Unnecessary SlickStack Files ################################
 ####################################################################################################
 
 ## as both SlickStack and WordPress evolve there are certain files that become irrelevant ##
@@ -150,7 +151,7 @@ rm /var/www/html/staging/wp-content/mu-plugins/sftp-details*
 rm /var/www/html/dev/wp-content/mu-plugins/sftp-details*
 
 ####################################################################################################
-#### SS-Clean: Delete Unsafe + Unnecessary WordPress Core Files ####################################
+#### SS-Clean-Files: Delete Unsafe + Unnecessary WordPress Core Files ##############################
 ####################################################################################################
 
 ## partly for backwards compatibility (but also stubborness) WP Core retains these files ##
@@ -175,7 +176,7 @@ rm /var/www/html/staging/wp-trackback*.php*
 rm /var/www/html/staging/xmlrpc*.php*
 
 ####################################################################################################
-#### SS-Clean: Empty Out (Null) Log Files To Prevent Large Files ###################
+#### SS-Clean-Files: Empty Out (Null) Log Files To Prevent Large Files #############################
 ####################################################################################################
 
 cat /dev/null > /var/www/logs/cron.log
@@ -205,7 +206,7 @@ cat /dev/null > /var/www/logs/cron.log
 # rm /etc/ssl/privkey.pem ## symlink
 
 ####################################################################################################
-#### SS-Clean: Delete Any PHP Error Handling Hacks In WordPress Plugins + Themes ###################
+#### SS-Clean-Files: Delete Any PHP Error Handling Hacks In WordPress Plugins + Themes #############
 ####################################################################################################
 
 ## an unfortunate feature of PHP is that scripts can override WP or server-level settings ##
@@ -220,7 +221,7 @@ cat /dev/null > /var/www/logs/cron.log
 # find /var/www/html/wp-content/themes -type f -name "*.php" -exec sed -i '/error_reporting/d' {} \;
 
 ####################################################################################################
-#### SS-Clean: Delete Various Junk Files From Ubuntu (Etc) Outside Public Directory ################
+#### SS-Clean-Files: Delete Various Junk Files From Ubuntu (Etc) Outside Public Directory ##########
 ####################################################################################################
 
 ## delete Ubuntu junk files ##
@@ -246,7 +247,7 @@ find /var/www/html/ -name "wget-log*" -type f -delete
 rm /etc/nginx/cache*
 
 ####################################################################################################
-#### SS-Clean: Cleanup SlickStack Core Files Under /var/www/ #######################################
+#### SS-Clean-Files: Cleanup SlickStack Core Files Under /var/www/ #################################
 ####################################################################################################
 
 ## delete mistake during playing with bash shell prompt ## /home/user/'s'$'\033\033'
@@ -422,7 +423,7 @@ rm /var/www/meta/myisam-tables.txt*
 rm /var/www/meta/myisam-tables.sql*
 
 ####################################################################################################
-#### SS-Clean: cleanup Various Files Throughout Public Web Root /var/www/html/ #####################
+#### SS-Clean-Files: cleanup Various Files Throughout Public Web Root /var/www/html/ ###############
 ####################################################################################################
 
 ## these powerful commands delete several unsafe file types throughout the html web root ##
@@ -589,7 +590,7 @@ find /var/www/html/wp-content/uploads/ -name "*.php" -type f -delete
 find /var/www/html/wp-content/temp/ -name "*.php" -type f -delete
 
 ####################################################################################################
-#### SS-Clean: cleanup Various Files Directly Under /var/www/html/ #################################
+#### SS-Clean-Files: cleanup Various Files Directly Under /var/www/html/ ###########################
 ####################################################################################################
 
 # rm /var/www/html/http_* ## improper wget leftovers?
@@ -670,7 +671,7 @@ rm /var/www/html/wp-snapshots* ## unsafe archives (Duplicator)
 rm /var/www/html/wps-fbre-logs* ## unknown
 
 ####################################################################################################
-#### SS-Clean: Cleanup Files Under /var/www/html/wp-content/ #######################################
+#### SS-Clean-Files: Cleanup Files Under /var/www/html/wp-content/ #################################
 ####################################################################################################
 
 ## no cache folder in SlickStack ##
@@ -780,7 +781,7 @@ rm /var/www/html/wp-content/wpo-cache* ## ss conflicts (WP-Optimize)
 rm /var/www/html/wp-content/siteground-migrator.log* ## vendor-specific
 
 ####################################################################################################
-#### cleanup /var/www/html/wp-content/mu-plugins/ ##################################################
+#### SS-Clean-Files: /var/www/html/wp-content/mu-plugins/ ##########################################
 ####################################################################################################
 
 rm /var/www/html/wp-content/mu-plugins/0-worker* ## creates instability, resource intensive (ManageWP)
@@ -789,7 +790,7 @@ rm /var/www/html/wp-content/mu-plugins/mainwp-child* ## creates instability, res
 rm /var/www/html/wp-content/mu-plugins/SupportCenterMUAutoloader.php* ## Elegant Themes
 
 ####################################################################################################
-#### cleanup /var/www/html/wp-content/plugins/ #####################################################
+#### SS-Clean-Files: /var/www/html/wp-content/plugins/ #############################################
 ####################################################################################################
 
 ## even if you disable the Plugin Blacklist certain problematic plugins are still deleted ##
@@ -1049,7 +1050,7 @@ rm /var/www/html/wp-content/plugins/yuzo-related-post* ## deprecated, exploitabl
 fi
 
 ####################################################################################################
-#### cleanup /var/www/html/wp-content/themes/ ######################################################
+#### SS-Clean-Files: /var/www/html/wp-content/themes/ ##############################################
 ####################################################################################################
 
 ## cleanup file types ##
@@ -1058,7 +1059,7 @@ find /var/www/html/wp-content/themes/ -name "*.tar" -type f -delete
 find /var/www/html/wp-content/themes/ -name "*.zip" -type f -delete
 
 ####################################################################################################
-#### cleanup /var/www/wp-content/uploads/ ##########################################################
+#### SS-Clean-Files: /var/www/wp-content/uploads/ ##################################################
 ####################################################################################################
 
 rm /var/www/html/wp-content/uploads/.shortpixel* ## junk files (Shortpixel)
@@ -1163,7 +1164,7 @@ rm /var/www/html/wp-content/uploads/fw-backup*
 rm /var/www/html/wp-content/uploads/cache* ## improper cache path
 
 ####################################################################################################
-#### SS-Clean: Purge Cache (PHP OPcache) ###########################################################
+#### SS-Clean-Files: Purge Cache (PHP OPcache) #####################################################
 ####################################################################################################
 
 ## run ss-purge-opcache ##
