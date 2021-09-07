@@ -35,6 +35,8 @@ SlickStack is a free LEMP stack automation script written in Bash designed to en
 
 ## Changelog
 
+* **NEW!** You can now prevent ss-clean-files from deleting or cleaning WordPress files if you prefer not using the new ss-config options `SS_CLEAN_FILES_WORDPRESS_PLUGINS` and `SS_CLEAN_FILES_WORDPRESS_THEMES` and `SS_CLEAN_FILES_WORDPRESS_CONTENT` ...
+
 * **NEW!** `ss-optimize-files` will now strip EXIF data from all public JPEG and JPG files under /var/www/html for security and privacy reasons.
 
 * **NEW!** Staging/dev sites are now working! This is still experimental and needs more review of all settings so please keep that in mind and please offer your detailed feedback to our team in the chat rooms so we can get this feature totally stable... woo hoo!
