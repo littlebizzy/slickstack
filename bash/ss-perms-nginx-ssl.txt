@@ -8,8 +8,8 @@
 #### destination: n/a (not a boilerplate) ##########################################################
 #### purpose: Resets all file and user permissions for SSL certs and related Nginx files ###########
 #### module version: Nginx 1.18.x, OpenSSL 1.1.1x, Certbot 0.40.x ##################################
-#### sourced by: ss-perms, ss-encrypt-openssl, ss-encrypt-certbot, ss-install-nginx-ssl ############
-#### bash aliases: ss perms nginx ssl, ss perms ssl ################################################
+#### sourced by: ss-encrypt-certbot, ss-encrypt-openssl, ss-install-nginx-ssl, ss-perms ############
+#### bash aliases: ss perms letsencrypt, ss perms nginx ssl, ss perms openssl, ss perms ssl ########
 ####################################################################################################
 
 ## source ss-config ##
@@ -21,7 +21,25 @@ source /var/www/ss-functions
 ## BELOW THIS RELIES ON SS-CONFIG AND SS-FUNCTIONS
 
 ####################################################################################################
-#### SS-Perms-Nginx-SSL: Message (Begin Script) ####################################################
+#### TABLE OF CONTENTS #############################################################################
+####################################################################################################
+
+## A. Touch Timestamp File
+## B. Message (Begin Script)
+## C. Reset Permissions (SSL Certs + Related Files)
+
+####################################################################################################
+#### A. SS-Perms-Nginx-SSL: Touch Timestamp File ###################################################
+####################################################################################################
+
+## this is a dummy timestamp file that will remember the last time this script was run ##
+## it can be useful for developer reference and is sometimes used by SlickStack ##
+
+## script timestamp ##
+touch "$TIMESTAMP_SS_PERMS_NGINX_SSL"
+
+####################################################################################################
+#### B. SS-Perms-Nginx-SSL: Message (Begin Script) #################################################
 ####################################################################################################
 
 ## this is a simple message that announces to the shell the purpose of this bash script ##
@@ -32,7 +50,7 @@ echo -e "${PURPLE}Running ss-perms-nginx-ssl: Resets all file and user permissio
 sleep "$SLEEP_MESSAGE_BEGIN"
 
 ####################################################################################################
-#### SS-Perms-Nginx-SSL: Reset Permissions (SSL Certs + Related Nginx Files) #######################
+#### C. SS-Perms-Nginx-SSL: Reset Permissions (SSL Certs + Related Files) ##########################
 ####################################################################################################
 
 ## make dirs ##
@@ -74,21 +92,12 @@ chmod 0700 /var/www/certs/keys ## must be 0700
 chmod 0644 /var/www/certs/slickstack.crt ## public certs should be 0644
 chmod 0600 /var/www/certs/keys/slickstack.key ## must be 0600
 
-
-####################################################################################################
-#### SS-Perms-Nginx-SSL: Touch Timestamp File (End Script) #########################################
-####################################################################################################
-
-## this is a dummy timestamp file that will remember the last time this script was run ##
-## it can be useful for developer reference and is sometimes used by SlickStack ##
-
-## script timestamp ##
-touch "$TIMESTAMP_SS_PERMS_NGINX_SSL"
-
 ####################################################################################################
 #### SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ###############
 ####################################################################################################
 
-## Ref: 
+## Ref: https://unix.stackexchange.com/questions/87200/change-permissions-for-a-symbolic-link
+## Ref: https://serverfault.com/questions/939682/lets-encrypt-certificate-permissions
+## Ref: https://community.letsencrypt.org/t/recommended-permissions-on-files-distributed-by-lets-encrypt/104266
 
 ## SS_EOF
