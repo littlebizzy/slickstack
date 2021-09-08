@@ -24,7 +24,7 @@ source /var/www/ss-functions
 ## BELOW THIS RELIES ON SS-CONFIG AND SS-FUNCTIONS
 
 
-SS_UPDATE_BUILD="SEP2021C"
+SS_UPDATE_BUILD="SEP2021D"
 VALIDATE_SS_CONFIG=$(grep 'EOF' "$PATH_SS_CONFIG") ## change to "$SS_EOF" later
 
 ####################################################################################################
@@ -150,6 +150,15 @@ fi
 
 
 
+## copy dev site settings ##
+if [[ -n "$DEV_SITE" ]]; then 
+sed -i "s|\(^DEV_SITE=\).*|DEV_SITE=\"$DEV_SITE\"|g" "$TMP_SS_CONFIG"
+fi
+
+if [[ -n "$DEV_SITE_PROTECT" ]]; then 
+sed -i "s|\(^DEV_SITE_PROTECT=\).*|DEV_SITE_PROTECT=\"$DEV_SITE_PROTECT\"|g" "$TMP_SS_CONFIG"
+fi
+
 
 ## copy staging site settings ##
 if [[ -n "$STAGING_SITE" ]]; then 
@@ -160,14 +169,13 @@ if [[ -n "$STAGING_SITE_PROTECT" ]]; then
 sed -i "s|\(^STAGING_SITE_PROTECT=\).*|STAGING_SITE_PROTECT=\"$STAGING_SITE_PROTECT\"|g" "$TMP_SS_CONFIG"
 fi
 
-
-## copy dev site settings ##
-if [[ -n "$DEV_SITE" ]]; then 
-sed -i "s|\(^DEV_SITE=\).*|DEV_SITE=\"$DEV_SITE\"|g" "$TMP_SS_CONFIG"
+## guest user login ##
+if [[ -n "$GUEST_USER" ]]; then 
+sed -i "s|\(^GUEST_USER=\).*|GUEST_USER=\"$GUEST_USER\"|g" "$TMP_SS_CONFIG"
 fi
 
-if [[ -n "$DEV_SITE_PROTECT" ]]; then 
-sed -i "s|\(^DEV_SITE_PROTECT=\).*|DEV_SITE_PROTECT=\"$DEV_SITE_PROTECT\"|g" "$TMP_SS_CONFIG"
+if [[ -n "$GUEST_PASSWORD" ]]; then 
+sed -i "s|\(^GUEST_PASSWORD=\).*|GUEST_PASSWORD=\"$GUEST_PASSWORD\"|g" "$TMP_SS_CONFIG"
 fi
 
 
