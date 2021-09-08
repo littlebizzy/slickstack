@@ -76,7 +76,8 @@ source "$PATH_SS_ENCRYPT_OPENSSL"
 cat /dev/null > /var/www/meta/.htpasswd
 
 ## copy guest user credentials ##
-printf "${GUEST_USER}:${GUEST_PASSWORD}\n" >> /var/www/meta/.htpasswd
+ENCRYPTED_GUEST_PASSWORD=$(openssl passwd -crypt ${GUEST_PASSWORD})
+printf "${GUEST_USER}:${ENCRYPTED_GUEST_PASSWORD}\n" >> /var/www/meta/.htpasswd
 
 ####################################################################################################
 #### D. SS-Install-Nginx-Config: Install (Optimize) Nginx Config Files #############################
@@ -616,5 +617,8 @@ touch "$TIMESTAMP_SS_INSTALL_NGINX_CONFIG"
 ## Ref: https://www.shellscript.sh/tips/pattern-substitution/
 ## Ref: https://stackoverflow.com/questions/11618696/shell-write-variable-contents-to-a-file
 ## Ref: https://coderwall.com/p/zvvgna/create-htpasswd-file-for-nginx-without-apache
+## Ref: https://www.tecmint.com/password-protect-web-directories-in-nginx/
+## Ref: https://www.web2generators.com/apache-tools/htpasswd-generator
+## Ref: https://www.mkssoftware.com/docs/man1/openssl_passwd.1.asp
 
 ## SS_EOF
