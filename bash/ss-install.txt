@@ -193,7 +193,7 @@ ENDSTAND=$(tput rmso) # end standout
 ## in case of emergencies the SlickStack team might purposefully mismatch builds ##
 
 ## ensure ss-config (if exists) build matches ss-install ##
-if [[ -f "/var/www/ss-config" ]] && [[ "$SS_BUILD" != "SEP2021D" ]]; then 
+if [[ -f "/var/www/ss-config" ]] && [[ "$SS_BUILD" != "SEP2021E" ]]; then 
     echo -e "${YELLOW}Exiting ss-install: Please run ss-update-config since your ss-config is outdated and try again... ${NOCOLOR}"
     exit 1
 fi
@@ -459,16 +459,45 @@ if [[ ! -f "/var/www/ss-config" ]]; then
     ## new line ##
     printf "\n"
     
-    ## PROMPT: enable native staging site features ##
-    read -t 300 -p "$(echo -e $LIGHTPURPLE"Enable native staging site: "$NORMAL)" -e -i 'true' ss_var_staging_site || ss_var_staging_site=true
+    ## PROMPT: enable staging site ##
+    read -t 300 -p "$(echo -e $LIGHTPURPLE"Enable staging site (subdomain): "$NORMAL)" -e -i 'true' ss_var_staging_site || ss_var_staging_site=true
     sed -i "s/@STAGING_SITE_STATUS/$ss_var_staging_site/g" /tmp/ss-config
     
     ## new line ##
     printf "\n"
     
-    ## PROMPT: enable native dev site features ##
-    read -t 300 -p "$(echo -e $LIGHTPURPLE"Enable native dev site: "$NORMAL)" -e -i 'true' ss_var_dev_site || ss_var_dev_site=true
+    ## PROMPT: protect staging site ##
+    read -t 300 -p "$(echo -e $LIGHTPURPLE"Password protect staging site: "$NORMAL)" -e -i 'false' ss_var_staging_site_protect || ss_var_staging_site_protect=false
+    sed -i "s/@STAGING_SITE_PROTECT/$ss_var_staging_site_protect/g" /tmp/ss-config
+    
+    ## new line ##
+    printf "\n"
+    
+    ## PROMPT: enable dev site ##
+    read -t 300 -p "$(echo -e $LIGHTPURPLE"Enable dev site (subdomain): "$NORMAL)" -e -i 'true' ss_var_dev_site || ss_var_dev_site=true
     sed -i "s/@DEV_SITE_STATUS/$ss_var_dev_site/g" /tmp/ss-config
+    
+    ## new line ##
+    printf "\n"
+    
+    ## PROMPT: protect dev site ##
+    read -t 300 -p "$(echo -e $LIGHTPURPLE"Password protect dev site: "$NORMAL)" -e -i 'false' ss_var_dev_site_protect || ss_var_dev_site_protect=false
+    sed -i "s/@DEV_SITE_PROTECT/$ss_var_dev_site_protect/g" /tmp/ss-config
+    
+    ## new line ##
+    printf "\n"
+    
+    ## PROMPT: choose guest username (default = guest) ##
+    read -t 300 -p "$(echo -e $LIGHTPURPLE"Choose guest username (to view staging/dev): "$NORMAL)" -e -i 'guest' ss_var_guest_user || ss_var_guest_user=guest
+    sed -i "s/@GUEST_USER/$ss_var_guest_user/g" /tmp/ss-config
+    
+    ## new line ##
+    printf "\n"
+    
+    ## PROMPT: choose guest password (default = random) ##
+    guest_pass_random=$(openssl rand -hex 12)
+    read -t 300 -p "$(echo -e $LIGHTPURPLE"Choose guest password (easy is fine): "$NORMAL)" -e -i ${guest_pass_random} ss_var_guest_password || ss_var_guest_password=${guest_pass_random}
+    sed -i "s/@GUEST_PASSWORD/$ss_var_guest_password/g" /tmp/ss-config
     
     ## new line ##
     printf "\n"
