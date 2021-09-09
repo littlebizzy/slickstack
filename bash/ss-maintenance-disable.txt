@@ -35,12 +35,19 @@ echo -e "${PURPLE}Running ss-maintenance-disable: Deletes maintenance.html that 
 sleep "$SLEEP_MESSAGE_BEGIN"
 
 ####################################################################################################
+### SS-Maintenance-Disable: Purge Cache (Nginx) ####################################################
+####################################################################################################
+
+## run ss-purge-nginx ##
+source "$PATH_SS_PURGE_NGINX"
+
+####################################################################################################
 #### SS-Maintenance-Disable: Disable Maintenance Mode (Nginx) ######################################
 ####################################################################################################
 
 ## retrieve latest maintenance.html file (if not exists) ##
 if [[ ! -f "/var/www/meta/maintenance.html" ]]; then 
-  wget -O /tmp/maintenance.html http://mirrors.slickstack.io/nginx/maintenance.txt
+  wget -O /tmp/maintenance.html https://raw.githubusercontent.com/littlebizzy/slickstack/master/modules/nginx/maintenance.txt
   cp /tmp/maintenance.html /var/www/meta/maintenance.html
   chown www-data:www-data /var/www/meta/maintenance.html
   chmod 0644 /var/www/meta/maintenance.html ## 0644
