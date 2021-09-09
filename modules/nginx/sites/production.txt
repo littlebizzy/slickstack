@@ -41,11 +41,6 @@ server {
 	server_name			@SITE_DOMAIN;
 	root				/var/www/html;
 	
-	## 503 error if maintenance file found in web root ##
-	if (-f /var/www/html/maintenance.html) {
-		return 503;
-		}
-	
 	if ($http_host !~ "@SITE_DOMAIN|staging.@SITE_DOMAIN_EXCLUDING_WWW") {
     	return 301    $scheme://@SITE_DOMAIN$request_uri;
 		}
@@ -64,6 +59,11 @@ server {
     
     ## try files order ##
     location / {
+	
+		## 503 error if maintenance file found in web root ##
+		if (-f /var/www/html/maintenance.html) {
+			return 503;
+		}
   
         ## first try files, then directories, otherwise query index
         try_files $uri $uri/ /index.php?$args;
