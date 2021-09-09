@@ -21,7 +21,24 @@ source /var/www/ss-functions
 ## BELOW THIS RELIES ON SS-CONFIG AND SS-FUNCTIONS
 
 ####################################################################################################
-#### SS-Maintenance-Enable: Message (Begin Script) #################################################
+#### TABLE OF CONTENTS #############################################################################
+####################################################################################################
+
+## A. Touch Timestamp File
+## B. Message (Begin Script)
+
+####################################################################################################
+#### A. SS-Maintenance-Enable: Touch Timestamp File ################################################
+####################################################################################################
+
+## this is a dummy timestamp file that will remember the last time this script was run ##
+## it can be useful for developer reference and is sometimes used by SlickStack ##
+
+## script timestamp ##
+touch "$TIMESTAMP_SS_MAINTENANCE_ENABLE"
+
+####################################################################################################
+#### B. SS-Maintenance-Enable: Message (Begin Script) ##############################################
 ####################################################################################################
 
 ## this is a simple message that announces to the shell the purpose of this bash script ##
@@ -39,13 +56,13 @@ sleep "$SLEEP_MESSAGE_BEGIN"
 source "$PATH_SS_PURGE_NGINX"
 
 ####################################################################################################
-#### SS-Maintenance-Enable: Enable Maintenance Mode (Nginx) ########################################
+#### SS-Maintenance-Enable: Enable Maintenance Mode (Via Nginx) ####################################
 ####################################################################################################
 
 ## retrieve latest maintenance.html file (if not exists) ##
 if [[ ! -f "/var/www/meta/maintenance.html" ]]; then 
-  wget -O /tmp/maintenance.html https://raw.githubusercontent.com/littlebizzy/slickstack/master/modules/nginx/maintenance.txt
-  cp /tmp/maintenance.html /var/www/meta/maintenance.html
+  wget -O "$TMP_MAINTENANCE_HTML" "$MIRROR_MAINTENANCE_HTML"
+  cp "$TMP_MAINTENANCE_HTML" /var/www/meta/maintenance.html
   chown www-data:www-data /var/www/meta/maintenance.html
   chmod 0644 /var/www/meta/maintenance.html ## 0644
 fi
@@ -66,16 +83,6 @@ chmod 0644 /var/www/html/maintenance.html ## 0644
 
 ## run ss-purge-nginx ##
 source "$PATH_SS_PURGE_NGINX"
-
-####################################################################################################
-#### SS-Maintenance-Enable: Touch Timestamp File (End Script) ######################################
-####################################################################################################
-
-## this is a dummy timestamp file that will remember the last time this script was run ##
-## it can be useful for developer reference and is sometimes used by SlickStack ##
-
-## script timestamp ##
-touch "$TIMESTAMP_SS_MAINTENANCE_ENABLE"
 
 ####################################################################################################
 #### SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ###############
