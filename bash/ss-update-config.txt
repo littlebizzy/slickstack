@@ -28,7 +28,26 @@ SS_UPDATE_BUILD="SEP2021J"
 VALIDATE_SS_CONFIG=$(grep 'EOF' "$PATH_SS_CONFIG") ## change to "$SS_EOF" later
 
 ####################################################################################################
-#### SS-Update: Message (Begin Script) #############################################################
+#### TABLE OF CONTENTS #############################################################################
+####################################################################################################
+
+## A. Touch Timestamp File
+## B. Message (Begin Script)
+## C. Cleanup Temporary Files
+## D. Backup Current SS-Config File
+
+####################################################################################################
+#### A. SS-Update-Config: Touch Timestamp File #####################################################
+####################################################################################################
+
+## this is a dummy timestamp file that will remember the last time this script was run ##
+## it can be useful for developer reference and is sometimes used by SlickStack ##
+
+## script timestamp ##
+touch "$TIMESTAMP_SS_UPDATE_CONFIG"
+
+####################################################################################################
+#### B. SS-Update: Message (Begin Script) ##########################################################
 ####################################################################################################
 
 ## this is a simple message that announces to the shell the purpose of this bash script ##
@@ -39,24 +58,24 @@ echo -e "${PURPLE}Running ss-update-config: Updates ss-config file to latest boi
 sleep "$SLEEP_MESSAGE_BEGIN"
 
 ####################################################################################################
-#### SS-Update-Config: Cleanup Temporary Files #####################################################
+#### C. SS-Update-Config: Cleanup Temporary Files ##################################################
 ####################################################################################################
 
 ## delete tmp files ##
 rm "$TMP_SS_CONFIG"
 
 ####################################################################################################
-#### SS-Update-Config: Backup Current SS-Config File ###############################################
+#### D. SS-Update-Config: Backup Current SS-Config File ############################################
 ####################################################################################################
 
-## SNIPPET: ss-worker, ss-update-config
+## SNIPPET: ss-update-config, ss-worker
 
-## this snippet will duplicate your live ss-config file to the /var/www/meta/ folder ##
-## the timestamped .bak files will be cleaned up periodically by ss-clean ##
+## this will replicate your current ss-config file (and settings) to the backups dir ##
+## the older .bak files will be cleaned up periodically by ss-clean-files ##
 
 ## backup ss-config ##
-current_time=$(date "+%Y.%b.%d-%H:%M:%S")
-cp "$PATH_SS_CONFIG" /var/www/backups/config/ss-config.bak.$current_time
+CURRENT_TIME=$(date "+%Y.%b.%d-%H:%M:%S")
+cp /var/www/ss-config /var/www/backups/config/ss-config.bak.$CURRENT_TIME
 
 ####################################################################################################
 #### SS-Update: Ensure Undefined Options Do Not Exist Before Proceeding ############################
@@ -1892,16 +1911,6 @@ fi
 
 ## delete tmp files ##
 rm "$TMP_SS_CONFIG"
-
-####################################################################################################
-#### SS-Update-Config: Touch Timestamp File (End Script) ###########################################
-####################################################################################################
-
-## this is a dummy timestamp file that will remember the last time this script was run ##
-## it can be useful for developer reference and is sometimes used by SlickStack ##
-
-## script timestamp ##
-touch "$TIMESTAMP_SS_UPDATE_CONFIG"
 
 ####################################################################################################
 #### SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ###############
