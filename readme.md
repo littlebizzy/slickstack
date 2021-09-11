@@ -35,6 +35,8 @@ SlickStack is a free LEMP stack automation script written in Bash designed to en
 
 ## Changelog
 
+* **NEW!** `ss-dump-files` can now export/archive your dev/staging sites if you enable in ss-config (along with production site).
+ 
 * **NEW!** Staging and dev sites (subdomains) can now be password protected and a new user `GUEST_USER` and `GUEST_PASSWORD` is supported who can login and view either site.
 
 * **NEW!** You can now prevent ss-clean-files from deleting or cleaning WordPress files if you prefer not using the new ss-config options `SS_CLEAN_FILES_WORDPRESS_PLUGINS` and `SS_CLEAN_FILES_WORDPRESS_THEMES` and `SS_CLEAN_FILES_WORDPRESS_CONTENT` ...
