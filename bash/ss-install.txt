@@ -933,8 +933,18 @@ source "$PATH_SS_RESTART_UFW"
 source "$PATH_SS_WORKER"
 
 
-## ADD HERE FINAL CHECK OF CRONTAB OTHERWISE INSTALL IT AGAIN ##
+####################################################################################################
+#### SS-Install: Validate Crontab ##################################################################
+####################################################################################################
 
+## this is a final check to ensure the root crontab was installed properly by ss-install ##
+## otherwise it will attempt to reinstall the crontab one more time here ##
+
+## validate crontab ##
+VALIDATE_CRONTAB=$(grep 'SS_EOF' /var/spool/cron/crontabs/root)
+if [[ -z "$VALIDATE_CRONTAB" ]]; then
+    source "$PATH_SS_INSTALL_UBUNTU_CRONTAB"
+fi
 
 ####################################################################################################
 #### SS-Install: Display SlickStack Configuration Overview #########################################
