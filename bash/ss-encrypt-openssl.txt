@@ -23,8 +23,30 @@ source /var/www/ss-functions
 
 ## BELOW THIS RELIES ON SS-CONFIG AND SS-FUNCTIONS
 
+
 ####################################################################################################
-#### SS-Encrypt-OpenSSL: Message (Begin Script) ####################################################
+#### TABLE OF CONTENTS #############################################################################
+####################################################################################################
+
+## A. Touch Timestamp File
+## B. Message (Begin Script)
+## C. Hide Bug In OpenSSL 1.1.1x
+## D. (Re)generate OpenSSL Certificate
+## E. Reset Permissions (Nginx SSL)
+## F. Restart Modules (Nginx)
+
+####################################################################################################
+#### A. SS-Encrypt-OpenSSL: Touch Timestamp File ###################################################
+####################################################################################################
+
+## this is a dummy timestamp file that will remember the last time this script was run ##
+## it can be useful for developer reference and is sometimes used by SlickStack ##
+
+## script timestamp ##
+touch "$TIMESTAMP_SS_ENCRYPT_OPENSSL"
+
+####################################################################################################
+#### B. SS-Encrypt-OpenSSL: Message (Begin Script) #################################################
 ####################################################################################################
 
 ## this is a simple message that announces to the shell the purpose of this bash script ##
@@ -35,7 +57,7 @@ echo -e "${PURPLE}Running ss-encrypt-openssl: Regenerates free self-signed OpenS
 sleep "$SLEEP_MESSAGE_BEGIN"
 
 ####################################################################################################
-#### SS-Encrypt-OpenSSL: Hide Irrelevant Errors (Bug) In OpenSSL 1.1.1x ############################
+#### C. SS-Encrypt-OpenSSL: Hide Bug In OpenSSL 1.1.1x #############################################
 ####################################################################################################
 
 ## hide error message (workaround) ##
@@ -43,7 +65,7 @@ touch /home/${SUDO_USER}/.rnd
 touch /home/${SFTP_USER}/.rnd
 
 ####################################################################################################
-#### SS-Encrypt-OpenSSL: Regenerate OpenSSL Certificate ############################################
+#### D. SS-Encrypt-OpenSSL: (Re)generate OpenSSL Certificate #######################################
 ####################################################################################################
 
 ## this will generate a new self-signed OpenSSL certificate every single time it runs ##
@@ -67,28 +89,18 @@ openssl req -x509 -newkey rsa:4096 -sha256 -days 3650 -nodes \
 ## VERIFY command: openssl x509 -noout -text -in example.crt
 
 ####################################################################################################
-#### SS-Install-Nginx-SSL: Reset Permissions (Nginx SSL) ###########################################
+#### E. SS-Install-Nginx-SSL: Reset Permissions (Nginx SSL) ########################################
 ####################################################################################################
 
 ## run ss-perms-nginx-ssl ##
 source "$PATH_SS_PERMS_NGINX_SSL"
 
 ####################################################################################################	
-#### SS-Encrypt-OpenSSL: Restart Modules (Nginx) ###################################################	
+#### F. SS-Encrypt-OpenSSL: Restart Modules (Nginx) ################################################	
 ####################################################################################################	
 
-## run ss-restart-services-nginx ##	
-source "$PATH_SS_RESTART_SERVICES_NGINX"
-
-####################################################################################################
-#### SS-Encrypt-OpenSSL: Touch Timestamp File (End Script) #########################################
-####################################################################################################
-
-## this is a dummy timestamp file that will remember the last time this script was run ##
-## it can be useful for developer reference and is sometimes used by SlickStack ##
-
-## script timestamp ##
-touch "$TIMESTAMP_SS_ENCRYPT_OPENSSL"
+## run ss-restart-nginx ##	
+source "$PATH_SS_RESTART_NGINX"
 
 ####################################################################################################
 #### SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ###############
