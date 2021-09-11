@@ -29,9 +29,12 @@ source /var/www/ss-functions
 
 ## A. Message (Begin)
 ## B. Cleanup Temporary Files
-## C. Generate OpenSSL Certificate
-## D. Install Nginx.conf
-## E. 
+## C. Retrieve Latest Maintenance.html
+## D. Generate OpenSSL Certificate
+## E. Generate Htpasswd File
+## F. Install Nginx.conf
+## G. Delete Old Server Blocks
+## H.
 
 ####################################################################################################
 #### A. SS-Install-Nginx-Config: Message (Begin Script) ############################################
@@ -59,7 +62,24 @@ rm /tmp/letsencrypt.conf*
 rm /tmp/openssl.conf*
 
 ####################################################################################################
-#### C. SS-Install-Nginx-Config: Generate OpenSSL Certificate ######################################
+#### C. SS-Install-Nginx-Config: Retrieve Latest Maintenance.html ##################################
+####################################################################################################
+
+## here we retrieve the latest default maintenance.html file (or use your own design) ##
+## this file is parsed by Nginx to enable maintenance mode via SlickStack ##
+
+## retrieve latest maintenance.html ##
+wget -O "$TMP_MAINTENANCE_HTML" "$MIRROR_MAINTENANCE_HTML"
+
+## install maintenance.html ##
+cp "$TMP_MAINTENANCE_HTML" "$PATH_MAINTENANCE_HTML"
+
+## reset permissions ##
+chown www-data:www-data "$PATH_MAINTENANCE_HTML"
+chmod 0444 "$PATH_MAINTENANCE_HTML" ## 0444 is enough
+
+####################################################################################################
+#### D. SS-Install-Nginx-Config: Generate OpenSSL Certificate ######################################
 ####################################################################################################
 
 ## here we generate slickstack.crt and slickstack.key as the default SSL for Nginx ##
@@ -69,7 +89,7 @@ rm /tmp/openssl.conf*
 source "$PATH_SS_ENCRYPT_OPENSSL"
 
 ####################################################################################################
-#### C. SS-Install-Nginx-Config: Generate Htpasswd File ############################################
+#### E. SS-Install-Nginx-Config: Generate Htpasswd File ############################################
 ####################################################################################################
 
 ## null file contents ##
@@ -80,7 +100,7 @@ ENCRYPTED_GUEST_PASSWORD=$(openssl passwd -crypt "${GUEST_PASSWORD}")
 printf "${GUEST_USER}:${ENCRYPTED_GUEST_PASSWORD}\n" >> /var/www/meta/.htpasswd
 
 ####################################################################################################
-#### D. SS-Install-Nginx-Config: Install (Optimize) Nginx Config Files #############################
+#### F. SS-Install-Nginx-Config: Install Nginx.conf ################################################
 ####################################################################################################
 
 ## here we install an optimized Nginx config designed for high traffic and CloudFlare ##
@@ -343,12 +363,13 @@ fi
 cp "$TMP_NGINX_CONF" "$PATH_NGINX_CONF"
 
 ####################################################################################################
-#### SS-Install-Nginx-Config: Delete Old Server Blocks #############################################
+#### G. SS-Install-Nginx-Config: Delete Old Server Blocks #############################################
 ####################################################################################################
 
 ## here we delete any existing previous server blocks to avoid conflicts with Nginx ##
 ## if this step is not performed then Nginx could result in fatal errors ##
 
+## ADD CHECK FIRST THAT TEMP BLOCK FILES VALID ##
 ## delete server blocks ##
 rm /var/www/sites/*
 
