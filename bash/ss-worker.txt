@@ -28,10 +28,10 @@ source /var/www/ss-functions
 ## B. Message (Begin Script)
 ## C. Cleanup Temporary Files
 ## D. Backup Current SS-Config File
+## E. Retrieve Latest SS-Check (Bash Script)
 
-## D. Retrieve Latest SS-Check Script
 ## E. Reset SlickStack Core Permissions
-## F. Retrieve Latest Maintenance.html
+
 ## H. Install Ubuntu Swapfile (If Not Exists)
 
 ####################################################################################################
@@ -83,7 +83,7 @@ CURRENT_TIME=$(date "+%Y.%b.%d-%H:%M:%S")
 cp /var/www/ss-config /var/www/backups/config/ss-config.bak.$CURRENT_TIME
 
 ####################################################################################################
-#### D. SS-Worker: Retrieve Latest SS-Check File (SS Core Bash Script) #############################
+#### E. SS-Worker: Retrieve Latest SS-Check (Bash Script) ##########################################
 ####################################################################################################
 
 ## here we retrieve the latest ss-check core bash script to improve overall redundancy ##
@@ -96,7 +96,7 @@ wget -O "$TMP_SS_CHECK" "$MIRROR_SS_CHECK"
 cp "$TMP_SS_CHECK" "$PATH_SS_CHECK"
 
 ####################################################################################################
-#### SS-Worker: Ensure WP-Config.php Intact ########################################################
+#### SS-Worker: Validate Current WP-Config.php ##################################################
 ####################################################################################################
 
 ## this snippet will check to ensure wp-config.php exists and contains SS_EOF string ##
@@ -391,22 +391,7 @@ if [[ -n "$VALIDATE_TMP_SS_CONSTANTS_PHP" ]]; then
     chmod 0440 "$PATH_SS_CONSTANTS_PHP" ## 0440 (read-only)
 fi 
 
-####################################################################################################
-#### F. SS-Worker: Retrieve Latest Maintenance.html (Parsed By Nginx) ##############################
-####################################################################################################
 
-## here we retrieve the latest maintenance.html file in case the design has changed ##
-## this file is parsed by Nginx to enable maintenance mode via SlickStack ##
-
-## retrieve latest maintenance.html ##
-wget -O "$TMP_MAINTENANCE_HTML" "$MIRROR_MAINTENANCE_HTML"
-
-## install maintenance.html ##
-cp "$TMP_MAINTENANCE_HTML" "$PATH_MAINTENANCE_HTML"
-
-## reset permissions ##
-chown www-data:www-data "$PATH_MAINTENANCE_HTML"
-chmod 0444 "$PATH_MAINTENANCE_HTML" ## 0444 is enough
 
 ####################################################################################################
 #### SS-Worker: Reset Permissions (SlickStack Core) #################################################
