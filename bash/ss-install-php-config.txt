@@ -24,7 +24,28 @@ source /var/www/ss-functions
 ## BELOW THIS RELIES ON SS-CONFIG AND SS-FUNCTIONS
 
 ####################################################################################################
-#### SS-Install-PHP-Config: Message (Begin Script) #################################################
+#### TABLE OF CONTENTS (SS-Install-PHP-Config) #####################################################
+####################################################################################################
+
+## A. Touch Timestamp File
+## B. Message (Begin Script)
+## C. Cleanup Temporary Files
+## D. Install PHP.ini Files
+## E. Install PHP-FPM.conf
+## F. Install WWW.conf
+
+####################################################################################################
+#### A. SS-Install-PHP-Config: Touch Timestamp File ################################################
+####################################################################################################
+
+## this is a dummy timestamp file that will remember the last time this script was run ##
+## it can be useful for developer reference and is sometimes used by SlickStack ##
+
+## script timestamp ##
+touch "$TIMESTAMP_SS_INSTALL_PHP_CONFIG"
+
+####################################################################################################
+#### B. SS-Install-PHP-Config: Message (Begin Script) ##############################################
 ####################################################################################################
 
 ## this is a simple message that announces to the shell the purpose of this bash script ##
@@ -35,16 +56,16 @@ echo -e "${PURPLE}Running ss-install-php-config: Reinstalls the PHP-FPM module c
 sleep "$SLEEP_MESSAGE_BEGIN"
 
 ####################################################################################################
-#### SS-Install-PHP-Config: Cleanup Temporary Files ################################################
+#### C. SS-Install-PHP-Config: Cleanup Temporary Files #############################################
 ####################################################################################################
 
 ## delete tmp files ##
-rm /tmp/php-fpm*
-rm /tmp/php-ini*
-rm /tmp/www*
+rm "$TMP_PHP_FPM_CONF"
+rm "$TMP_PHP_INI"
+rm "$TMP_WWW_CONF"
 
 ####################################################################################################
-#### SS-Install-PHP-Config: Install (Optimize) PHP-FPM Configuration Files #########################
+#### D. SS-Install-PHP-Config: Install PHP.ini Files ###############################################
 ####################################################################################################
 
 ## next we optimize the PHP-FPM configuration files based on settings from ss-config ##
@@ -233,9 +254,9 @@ else
     sed -i "s/@OPCACHE_MEMORY_CONSUMPTION/${OPCACHE_MEMORY_CONSUMPTION}/g" "$TMP_PHP_INI"
 fi
 
-######################
-#### PHP-FPM.conf ####
-######################
+####################################################################################################
+#### E. SS-Install-PHP-Config: Install PHP-FPM.conf ################################################
+####################################################################################################
 
 ## emerg restart threshold ##
 if [[ -z "$FPM_EMERGENCY_RESTART_THRESHOLD" ]]; then 
@@ -293,9 +314,9 @@ else
     sed -i "s/@FPM_SYSTEMD_INTERVAL/${FPM_SYSTEMD_INTERVAL}/g" /tmp/php-fpm.conf
 fi
 
-##################
-#### WWW.conf ####
-##################
+####################################################################################################
+#### F. SS-Install-PHP-Config: Install WWW.conf ####################################################
+####################################################################################################
 
 ## pool listen backlog ##
 if [[ -z "$WWW_LISTEN_BACKLOG" ]]; then 
@@ -385,17 +406,17 @@ fi
 
 ## copy files to destination ##
 if [[ "${UBUNTU_VERSION}" == "20.04" ]]; then
-    cp /tmp/php-fpm.conf /etc/php/7.4/fpm/php-fpm.conf
-    cp /tmp/php.ini /etc/php/7.4/fpm/php.ini
-    cp /tmp/php.ini /etc/php/7.4/cli/php.ini
-    cp /tmp/www.conf /etc/php/7.4/fpm/pool.d/www.conf
+    cp "$TMP_PHP_FPM_CONF" /etc/php/7.4/fpm/php-fpm.conf
+    cp "$TMP_PHP_INI" /etc/php/7.4/fpm/php.ini
+    cp "$TMP_PHP_INI" /etc/php/7.4/cli/php.ini
+    cp "$TMP_WWW_CONF" /etc/php/7.4/fpm/pool.d/www.conf
 fi
 
 if [[ "${UBUNTU_VERSION}" == "18.04" ]]; then
-    cp /tmp/php-fpm.conf /etc/php/7.2/fpm/php-fpm.conf
-    cp /tmp/php.ini /etc/php/7.2/fpm/php.ini
-    cp /tmp/php.ini /etc/php/7.2/cli/php.ini
-    cp /tmp/www.conf /etc/php/7.2/fpm/pool.d/www.conf
+    cp "$TMP_PHP_FPM_CONF" /etc/php/7.2/fpm/php-fpm.conf
+    cp "$TMP_PHP_INI" /etc/php/7.2/fpm/php.ini
+    cp "$TMP_PHP_INI" /etc/php/7.2/cli/php.ini
+    cp "$TMP_WWW_CONF" /etc/php/7.2/fpm/pool.d/www.conf
 fi
 
 ####################################################################################################
@@ -420,16 +441,6 @@ source "$PATH_SS_RESTART_SERVICES_PHP"
 rm /tmp/php-fpm*
 rm /tmp/php-ini*
 rm /tmp/www*
-
-####################################################################################################
-#### SS-Install-PHP-Config: Touch Timestamp File (End Script) ######################################
-####################################################################################################
-
-## this is a dummy timestamp file that will remember the last time this script was run ##
-## it can be useful for developer reference and is sometimes used by SlickStack ##
-
-## script timestamp ##
-touch "$TIMESTAMP_SS_INSTALL_PHP_CONFIG"
 
 ####################################################################################################
 #### SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ###############
