@@ -16,7 +16,7 @@
 ## INSTEAD ADJUST INTERVAL_SS SETTINGS IN SS-CONFIG OR EDIT CUSTOM CRON FILES ##
 
 ####################################################################################################
-#### TABLE OF CONTENTS (02-Cron-Regular) ###########################################################
+#### TABLE OF CONTENTS (10-Cron-Weekly) ############################################################
 ####################################################################################################
 
 ## TEMPLATE: cron jobs
@@ -187,29 +187,14 @@ if [[ "$INTERVAL_SS_CLEAN_DATABASE" == "weekly" ]]; then
     source "$PATH_SS_CLEAN_DATABASE"
 fi
 
+## run ss-optimize-database if set to weekly or if not defined (default) ##
+if [[ "$INTERVAL_SS_OPTIMIZE_DATABASE" == "weekly" ]] || [[ -z "$INTERVAL_SS_OPTIMIZE_DATABASE" ]]; then 
+    source "$PATH_SS_OPTIMIZE_DATABASE"
+fi
+
 ## run ss-clean-files if set to weekly ##
 if [[ "$INTERVAL_SS_CLEAN_FILES" == "weekly" ]]; then 
     source "$PATH_SS_CLEAN_FILES"
-fi
-
-## run ss-empty-logs if set to weekly ##
-if [[ "$INTERVAL_SS_EMPTY_LOGS" == "weekly" ]]; then 
-    source "$PATH_SS_EMPTY_LOGS"
-fi
-
-## run ss-install-wordpress-cli if set to weekly ##
-if [[ "$INTERVAL_SS_INSTALL_WORDPRESS_CLI" == "weekly" ]]; then 
-    source "$PATH_SS_INSTALL_WORDPRESS_CLI"
-fi
-
-## run ss-install-wordpress-core if set to weekly ##
-if [[ "$INTERVAL_SS_INSTALL_WORDPRESS_CORE" == "weekly" ]]; then 
-    source "$PATH_SS_INSTALL_WORDPRESS_CORE"
-fi
-
-## run ss-install-wordpress-config if set to weekly ##
-if [[ "$INTERVAL_SS_INSTALL_WORDPRESS_CONFIG" == "weekly" ]]; then 
-    source "$PATH_SS_INSTALL_WORDPRESS_CONFIG"
 fi
 
 ## run ss-optimize-files if set to weekly ##
@@ -222,14 +207,29 @@ if [[ "$INTERVAL_SS_SCAN_MALWARE" == "weekly" ]] || [[ -z "$INTERVAL_SS_SCAN_MAL
     source "$PATH_SS_SCAN_MALWARE"
 fi
 
-## run ss-optimize-database if set to weekly or if not defined (default) ##
-if [[ "$INTERVAL_SS_OPTIMIZE_DATABASE" == "weekly" ]] || [[ -z "$INTERVAL_SS_OPTIMIZE_DATABASE" ]]; then 
-    source "$PATH_SS_OPTIMIZE_DATABASE"
+## run ss-install-adminer if set to weekly ##
+if [[ "$INTERVAL_SS_INSTALL_ADMINER" == "weekly" ]]; then 
+    source "$PATH_SS_INSTALL_ADMINER"
 fi
 
-## run ss-install-php-core if set to weekly ##
-if [[ "$INTERVAL_SS_INSTALL_PHP_CORE" == "weekly" ]]; then 
-    source "$PATH_SS_INSTALL_PHP_CORE"
+## run ss-install-wordpress-config if set to weekly ##
+if [[ "$INTERVAL_SS_INSTALL_WORDPRESS_CONFIG" == "weekly" ]]; then 
+    source "$PATH_SS_INSTALL_WORDPRESS_CONFIG"
+fi
+
+## run ss-install-wordpress-core if set to weekly ##
+if [[ "$INTERVAL_SS_INSTALL_WORDPRESS_CORE" == "weekly" ]]; then 
+    source "$PATH_SS_INSTALL_WORDPRESS_CORE"
+fi
+
+## run ss-install-wordpress-cli if set to weekly ##
+if [[ "$INTERVAL_SS_INSTALL_WORDPRESS_CLI" == "weekly" ]]; then 
+    source "$PATH_SS_INSTALL_WORDPRESS_CLI"
+fi
+
+## run ss-install-php-packages if set to weekly ##
+if [[ "$INTERVAL_SS_INSTALL_PHP_PACKAGES" == "weekly" ]]; then 
+    source "$PATH_SS_INSTALL_PHP_PACKAGES"
 fi
 
 ## run ss-install-php-config if set to weekly ##
@@ -237,9 +237,9 @@ if [[ "$INTERVAL_SS_INSTALL_PHP_CONFIG" == "weekly" ]]; then
     source "$PATH_SS_INSTALL_PHP_CONFIG"
 fi
 
-## run ss-install-redis-core if set to weekly ##
-if [[ "$INTERVAL_SS_INSTALL_REDIS_CORE" == "weekly" ]]; then 
-    source "$PATH_SS_INSTALL_REDIS_CORE"
+## run ss-install-redis-packages if set to weekly ##
+if [[ "$INTERVAL_SS_INSTALL_REDIS_PACKAGES" == "weekly" ]]; then 
+    source "$PATH_SS_INSTALL_REDIS_PACKAGES"
 fi
 
 ## run ss-install-redis-config if set to weekly ##
@@ -247,9 +247,9 @@ if [[ "$INTERVAL_SS_INSTALL_REDIS_CONFIG" == "weekly" ]]; then
     source "$PATH_SS_INSTALL_REDIS_CONFIG"
 fi
 
-## run ss-install-mysql-core if set to weekly ##
-if [[ "$INTERVAL_SS_INSTALL_MYSQL_CORE" == "weekly" ]]; then 
-    source "$PATH_SS_INSTALL_MYSQL_CORE"
+## run ss-install-mysql-packages if set to weekly ##
+if [[ "$INTERVAL_SS_INSTALL_MYSQL_PACKAGES" == "weekly" ]]; then 
+    source "$PATH_SS_INSTALL_MYSQL_PACKAGES"
 fi
 
 ## run ss-install-mysql-config if set to weekly ##
@@ -257,14 +257,19 @@ if [[ "$INTERVAL_SS_INSTALL_MYSQL_CONFIG" == "weekly" ]]; then
     source "$PATH_SS_INSTALL_MYSQL_CONFIG"
 fi
 
-## run ss-install-nginx-core if set to weekly ##
-if [[ "$INTERVAL_SS_INSTALL_NGINX_CORE" == "weekly" ]]; then 
-    source "$PATH_SS_INSTALL_NGINX_CORE"
+## run ss-install-nginx-packages if set to weekly ##
+if [[ "$INTERVAL_SS_INSTALL_NGINX_PACKAGES" == "weekly" ]]; then 
+    source "$PATH_SS_INSTALL_NGINX_PACKAGES"
 fi
 
 ## run ss-install-nginx-config if set to weekly ##
 if [[ "$INTERVAL_SS_INSTALL_NGINX_CONFIG" == "weekly" ]]; then 
     source "$PATH_SS_INSTALL_NGINX_CONFIG"
+fi
+
+## run ss-install-clamav if set to weekly ##
+if [[ "$INTERVAL_SS_INSTALL_CLAMAV" == "weekly" ]]; then 
+    source "$PATH_SS_INSTALL_CLAMAV"
 fi
 
 ## run ss-encrypt-certbot if set to weekly ##
@@ -275,11 +280,6 @@ fi
 ## run ss-encrypt-openssl if set to weekly ##
 if [[ "$INTERVAL_SS_ENCRYPT_OPENSSL" == "weekly" ]]; then 
     source "$PATH_SS_ENCRYPT_OPENSSL"
-fi
-
-## run ss-install-adminer if set to weekly ##
-if [[ "$INTERVAL_SS_INSTALL_ADMINER" == "weekly" ]]; then 
-    source "$PATH_SS_INSTALL_ADMINER"
 fi
 
 ## run ss-purge-nginx if set to weekly ##
@@ -302,19 +302,19 @@ if [[ "$INTERVAL_SS_PURGE_TRANSIENTS" == "weekly " ]]; then
     source "$PATH_SS_PURGE_TRANSIENTS"
 fi
 
-## run ss-install-clamav if set to weekly ##
-if [[ "$INTERVAL_SS_INSTALL_CLAMAV" == "weekly" ]]; then 
-    source "$PATH_SS_INSTALL_CLAMAV"
-fi
-
-## run ss-install-ubuntu-bash if set to weekly ##
-if [[ "$INTERVAL_SS_INSTALL_UBUNTU_BASH" == "weekly" ]]; then 
-    source "$PATH_SS_INSTALL_UBUNTU_BASH"
+## run ss-reset-password-sftp if set to weekly ##
+if [[ "$INTERVAL_SS_RESET_PASSWORD_SFTP" == "weekly" ]]; then 
+    source "$PATH_SS_RESET_PASSWORD_SFTP"
 fi
 
 ## run ss-install-ubuntu-users if set to weekly ##
 if [[ "$INTERVAL_SS_INSTALL_UBUNTU_USERS" == "weekly" ]]; then 
     source "$PATH_SS_INSTALL_UBUNTU_USERS"
+fi
+
+## run ss-install-ubuntu-bash if set to weekly ##
+if [[ "$INTERVAL_SS_INSTALL_UBUNTU_BASH" == "weekly" ]]; then 
+    source "$PATH_SS_INSTALL_UBUNTU_BASH"
 fi
 
 ## run ss-install-ubuntu-ssh if set to weekly ##
@@ -325,11 +325,6 @@ fi
 ## run ss-install-ubuntu-kernel if set to weekly ##
 if [[ "$INTERVAL_SS_INSTALL_UBUNTU_KERNEL" == "weekly" ]]; then 
     source "$PATH_SS_INSTALL_UBUNTU_KERNEL"
-fi
-
-## run ss-reset-password-sftp if set to weekly ##
-if [[ "$INTERVAL_SS_RESET_PASSWORD_SFTP" == "weekly" ]]; then 
-    source "$PATH_SS_RESET_PASSWORD_SFTP"
 fi
 
 ## run ss-remote-backup if set to weekly ##
@@ -360,6 +355,11 @@ fi
 ## run ss-restart-ufw if set to weekly ##
 if [[ "$INTERVAL_SS_RESTART_UFW" == "weekly" ]]; then 
     source "$PATH_SS_RESTART_UFW"
+fi
+
+## run ss-empty-logs if set to weekly ##
+if [[ "$INTERVAL_SS_EMPTY_LOGS" == "weekly" ]]; then 
+    source "$PATH_SS_EMPTY_LOGS"
 fi
 
 ## run ss-reboot-machine if set to weekly ##
