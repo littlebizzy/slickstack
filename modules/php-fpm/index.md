@@ -12,7 +12,7 @@ title: PHP-FPM (Public Mirrors)
 https://github.com/littlebizzy/slickstack/blob/master/modules/php-fpm/7.4/php-fpm-conf.txt
 * [php.ini](/blob/master/modules/php-fpm/7.4/php-ini.txt)
 * [php-fpm.conf](/php-fpm/7.4/php-fpm-conf.txt)
-* [www.conf](/7.4/www-conf.txt)
+* [www.conf](7.4/www-conf.txt)
 * [ss-constants.php](ss-constants.txt)
 
 ### Related Links
