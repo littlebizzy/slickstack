@@ -27,30 +27,38 @@ source /var/www/ss-functions
 #### TABLE OF CONTENTS (SS-Install-MySQL-Packages) #################################################
 ####################################################################################################
 
-## A. Message (Begin Script)
-## B. 
+## A. Touch Timestamp File
+## B. Message (Begin Script)
 ## C. Configure Database + Users + Privileges
+## D. Configure Root + Admin User (Localhost/IPv4/IPv6)
+## E. Configure Database + Users + Privileges
+## F. Reset Permissions (MySQL Database)
 
 ####################################################################################################
-#### A. SS-Install-MySQL-Packages: Message (Begin Script) ##########################################
+#### SS-Install-MySQL-Database: Touch Timestamp File ###############################################
+####################################################################################################
+
+## this is a dummy timestamp file that will remember the last time this script was run ##
+## it can be useful for developer reference and is sometimes used by SlickStack ##
+
+## script timestamp ##
+touch "$TIMESTAMP_SS_INSTALL_MYSQL_DATABASE"
+
+####################################################################################################
+#### B. SS-Install-MySQL-Database: Message (Begin Script) ##########################################
 ####################################################################################################
 
 ## this is a simple message that announces to the shell the purpose of this bash script ##
 ## it will only be noticed by sudo users who manually call ss core bash scripts ##
 
 ## echo message ##
-echo -e "${PURPLE}Running ss-install-mysql-packages: Reinstalls the MySQL module Ubuntu packages and extensions (idempotent)... ${NOCOLOR}"
+echo -e "${PURPLE}Running ss-install-mysql-database: Reinstalls the MySQL database and required users to access the database... ${NOCOLOR}"
 sleep "$SLEEP_MESSAGE_BEGIN"
 
-
-
 if [[ "$SS_DATABASE_REMOTE" == "true" ]]; then
-    echo -e "${YELLOW}Exiting ss-install-mysql-packages: Your ss-config indicates a remote database so we will skip MySQL install... ${NOCOLOR}"
+    echo -e "${YELLOW}Exiting ss-install-mysql-database: Your ss-config indicates a remote database so we will skip MySQL install... ${NOCOLOR}"
     exit 1
 fi
-
-
-
 
 ####################################################################################################
 #### D. SS-Install-MySQL-Database: Configure Root + Admin User (Localhost/IPv4/IPv6) ###############
@@ -70,8 +78,10 @@ if [[ "${UBUNTU_VERSION}" == "20.04" ]]; then
 fi
 
 ####################################################################################################
-#### SS-Install-MySQL-Database: Configure Database + Users + Privileges ############################
+#### E. SS-Install-MySQL-Database: Configure Database + Users + Privileges #########################
 ####################################################################################################
+
+## 20.04 ##
 
 ## we use root@localhost (auth_socket) and user@127.0.0.1 (TCP) for WordPress database ##
 ## the superuser admin@127.0.0.1 is also created to be used for i.e. Adminer ##
@@ -80,15 +90,18 @@ if [[ "${UBUNTU_VERSION}" == "20.04" ]]; then
 
     ## create production site database ##
     sudo mysql -e "CREATE DATABASE IF NOT EXISTS ${DB_NAME};"
+    # sudo mysql -e "CREATE DATABASE IF NOT EXISTS production;"
 
     ## create dev site database if enabled ##
     if [[ "$DEV_SITE" == "true" ]]; then
         sudo mysql -e "CREATE DATABASE IF NOT EXISTS ${DB_NAME}_dev;" 
+        # sudo mysql -e "CREATE DATABASE IF NOT EXISTS development;"
     fi
 
     ## create staging site database if enabled ##
     if [[ "$STAGING_SITE" == "true" ]]; then
         sudo mysql -e "CREATE DATABASE IF NOT EXISTS ${DB_NAME}_staging;"
+        # sudo mysql -e "CREATE DATABASE IF NOT EXISTS staging;"
     fi
 
     ## create admin superuser (can be used with Adminer) ##
@@ -147,10 +160,7 @@ sudo mysql -e "FLUSH PRIVILEGES;"
 
 fi
 
-####################################################################################################
-#### SS-Install-MySQL: Configure WordPress Database + User + Privileges ############################
-####################################################################################################
-
+## 18.04 ##
 
 if [[ "${UBUNTU_VERSION}" == "18.04" ]]; then 
 
@@ -159,15 +169,18 @@ if [[ "${UBUNTU_VERSION}" == "18.04" ]]; then
 
 ## create production database ##
 ss_mysql_5.7 -e "CREATE DATABASE IF NOT EXISTS ${DB_NAME};"
+# ss_mysql_5.7 -e "CREATE DATABASE IF NOT EXISTS production;"
 
 ## create dev database unless it is explicity disabled ##
 if [[ "$DEV_SITE" != "false" ]]; then
     ss_mysql_5.7 -e "CREATE DATABASE IF NOT EXISTS ${DB_NAME}_dev;" 
+    # ss_mysql_5.7 -e "CREATE DATABASE IF NOT EXISTS development;" 
 fi
 
 ## create staging database unless it is explictly disabled ##
 if [[ "$STAGING_SITE" != "false" ]]; then
     ss_mysql_5.7 -e "CREATE DATABASE IF NOT EXISTS ${DB_NAME}_staging;"
+    # ss_mysql_5.7 -e "CREATE DATABASE IF NOT EXISTS staging;"
 fi
 
 ## create admin superuser (can be used with Adminer/phpMyAdmin) ##
@@ -214,37 +227,11 @@ fi
 
 
 ####################################################################################################
-#### SS-Install-MySQL-Core: Reset Permissions (MySQL Core) #########################################
+#### F. SS-Install-MySQL-Database: Reset Permissions (MySQL Database) ##############################
 ####################################################################################################
 
-## run ss-perms-mysql-packages ##
+## run ss-perms-mysql-database ##
 source "$PATH_SS_PERMS_MYSQL_DATABASE"
-
-####################################################################################################
-#### SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ###############
-####################################################################################################
-
-
-
-
-
-####################################################################################################
-#### SS-Install-MySQL: Cleanup Temporary Files #####################################################
-####################################################################################################
-
-## delete tmp files ##
-
-
-
-####################################################################################################
-#### SS-Install-MySQL-Packages: Touch Timestamp File (End Script) ##################################
-####################################################################################################
-
-## this is a dummy timestamp file that will remember the last time this script was run ##
-## it can be useful for developer reference and is sometimes used by SlickStack ##
-
-## script timestamp ##
-touch "$TIMESTAMP_SS_INSTALL_MYSQL_DATABASE"
 
 ####################################################################################################
 #### SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ###############
