@@ -101,60 +101,57 @@ if [[ "${UBUNTU_VERSION}" == "20.04" ]]; then
     ## create admin superuser (can be used with Adminer) ##
     sudo mysql -e "ALTER USER IF EXISTS 'admin'@'localhost' IDENTIFIED WITH caching_sha2_password BY '${DB_PASSWORD_ROOT}';"
     sudo mysql -e "ALTER USER IF EXISTS 'admin'@'127.0.0.1' IDENTIFIED WITH caching_sha2_password BY '${DB_PASSWORD_ROOT}';"
-    sudo mysql -e "ALTER USER IF EXISTS 'admin'@'::1' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD_ROOT}';"
-    sudo mysql -e "CREATE USER IF NOT EXISTS 'admin'@'localhost' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD_ROOT}';"
-    sudo mysql -e "CREATE USER IF NOT EXISTS 'admin'@'127.0.0.1' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD_ROOT}';"
-    sudo mysql -e "CREATE USER IF NOT EXISTS 'admin'@'::1' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD_ROOT}';"
+    sudo mysql -e "ALTER USER IF EXISTS 'admin'@'::1' IDENTIFIED WITH caching_sha2_password BY '${DB_PASSWORD_ROOT}';"
 
-## grant admin superuser all privileges on all databases (localhost/IPv4/IPv6) ##
-sudo mysql -e "GRANT ALL ON *.* TO 'admin'@'localhost' WITH GRANT OPTION;"
-sudo mysql -e "GRANT ALL ON *.* TO 'admin'@'127.0.0.1' WITH GRANT OPTION;"
-sudo mysql -e "GRANT ALL ON *.* TO 'admin'@'::1' WITH GRANT OPTION;"
+    ## grant admin superuser all privileges on all databases (localhost/IPv4/IPv6) ##
+    sudo mysql -e "GRANT ALL ON *.* TO 'admin'@'localhost' WITH GRANT OPTION;"
+    sudo mysql -e "GRANT ALL ON *.* TO 'admin'@'127.0.0.1' WITH GRANT OPTION;"
+    sudo mysql -e "GRANT ALL ON *.* TO 'admin'@'::1' WITH GRANT OPTION;"
 
-## create limited user for WordPress database ##
-sudo mysql -e "ALTER USER IF EXISTS '${DB_USER}'@'localhost' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD}';"
-sudo mysql -e "ALTER USER IF EXISTS '${DB_USER}'@'127.0.0.1' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD}';"
-sudo mysql -e "ALTER USER IF EXISTS '${DB_USER}'@'::1' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD}';"
-sudo mysql -e "CREATE USER IF NOT EXISTS '${DB_USER}'@'localhost' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD}';"
-sudo mysql -e "CREATE USER IF NOT EXISTS '${DB_USER}'@'127.0.0.1' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD}';"
-sudo mysql -e "CREATE USER IF NOT EXISTS '${DB_USER}'@'::1' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD}';"
+    ## create limited user for WordPress database ##
+    sudo mysql -e "ALTER USER IF EXISTS '${DB_USER}'@'localhost' IDENTIFIED WITH caching_sha2_password BY '${DB_PASSWORD}';"
+    sudo mysql -e "ALTER USER IF EXISTS '${DB_USER}'@'127.0.0.1' IDENTIFIED WITH caching_sha2_password BY '${DB_PASSWORD}';"
+    sudo mysql -e "ALTER USER IF EXISTS '${DB_USER}'@'::1' IDENTIFIED WITH caching_sha2_password BY '${DB_PASSWORD}';"
 
-## grant limited user privileges on WordPress database only (localhost/IPv4/IPv6) ##
-sudo mysql -e "GRANT ALL ON ${DB_NAME}.* TO '${DB_USER}'@'localhost';"
-sudo mysql -e "GRANT ALL ON ${DB_NAME}.* TO '${DB_USER}'@'127.0.0.1';"
-sudo mysql -e "GRANT ALL ON ${DB_NAME}.* TO '${DB_USER}'@'::1';"
-
-if [[ "$DEV_SITE" == "true" ]]; then
     ## grant limited user privileges on WordPress database only (localhost/IPv4/IPv6) ##
-    sudo mysql -e "GRANT ALL ON development.* TO '${DB_USER}'@'localhost';"
-    sudo mysql -e "GRANT ALL ON development.* TO '${DB_USER}'@'127.0.0.1';"
-    sudo mysql -e "GRANT ALL ON development.* TO '${DB_USER}'@'::1';"
+    sudo mysql -e "GRANT ALL ON ${DB_NAME}.* TO '${DB_USER}'@'localhost';"
+    sudo mysql -e "GRANT ALL ON ${DB_NAME}.* TO '${DB_USER}'@'127.0.0.1';"
+    sudo mysql -e "GRANT ALL ON ${DB_NAME}.* TO '${DB_USER}'@'::1';"
+
+    if [[ "${DEV_SITE}" == "true" ]]; then
+        ## grant limited user privileges on WordPress database only (localhost/IPv4/IPv6) ##
+        sudo mysql -e "GRANT ALL ON development.* TO '${DB_USER}'@'localhost';"
+        sudo mysql -e "GRANT ALL ON development.* TO '${DB_USER}'@'127.0.0.1';"
+        sudo mysql -e "GRANT ALL ON development.* TO '${DB_USER}'@'::1';"
+    fi
+
+    if [[ "${STAGING_SITE}" == "true" ]]; then
+        ## grant limited user privileges on WordPress database only (localhost/IPv4/IPv6) ##
+        sudo mysql -e "GRANT ALL ON staging.* TO '${DB_USER}'@'localhost';"
+        sudo mysql -e "GRANT ALL ON staging.* TO '${DB_USER}'@'127.0.0.1';"
+        sudo mysql -e "GRANT ALL ON staging.* TO '${DB_USER}'@'::1';"
+    fi
+
+    ## install auth_socket plugin ##
+    sudo mysql -e "INSTALL PLUGIN auth_socket SONAME 'auth_socket.so';"
+
+    ## create sudo@localhost user via auth_socket ##
+    sudo mysql -e "ALTER USER IF EXISTS '${SUDO_USER}'@'localhost' IDENTIFIED WITH auth_socket BY '';"
+    sudo mysql -e "CREATE USER IF NOT EXISTS '${SUDO_USER}'@'localhost' IDENTIFIED WITH auth_socket BY '';"
+    sudo mysql -e "GRANT ALL ON *.* TO '${SUDO_USER}'@'localhost' WITH GRANT OPTION;"
+
+    ## ensure root@localhost user is using auth_socket ##
+    sudo mysql -e "ALTER USER IF EXISTS 'root'@'localhost' IDENTIFIED WITH auth_socket BY '';"
+    sudo mysql -e "CREATE USER IF NOT EXISTS 'root'@'localhost' IDENTIFIED WITH auth_socket BY '';"
+    sudo mysql -e "GRANT ALL ON *.* TO 'root'@'localhost' WITH GRANT OPTION;"
+    
+    ## flush privileges ##
+    sudo mysql -e "FLUSH PRIVILEGES;"
+
 fi
 
-if [[ "$STAGING_SITE" == "true" ]]; then
-    ## grant limited user privileges on WordPress database only (localhost/IPv4/IPv6) ##
-    sudo mysql -e "GRANT ALL ON staging.* TO '${DB_USER}'@'localhost';"
-    sudo mysql -e "GRANT ALL ON staging.* TO '${DB_USER}'@'127.0.0.1';"
-    sudo mysql -e "GRANT ALL ON staging.* TO '${DB_USER}'@'::1';"
-fi
 
-## install auth_socket plugin ##
-sudo mysql -e "INSTALL PLUGIN auth_socket SONAME 'auth_socket.so';"
-
-## create sudo@localhost user via auth_socket ##
-sudo mysql -e "ALTER USER IF EXISTS '${SUDO_USER}'@'localhost' IDENTIFIED WITH auth_socket BY '';"
-sudo mysql -e "CREATE USER IF NOT EXISTS '${SUDO_USER}'@'localhost' IDENTIFIED WITH auth_socket BY '';"
-sudo mysql -e "GRANT ALL ON *.* TO '${SUDO_USER}'@'localhost' WITH GRANT OPTION;"
-
-## ensure root@localhost user is using auth_socket ##
-sudo mysql -e "ALTER USER IF EXISTS 'root'@'localhost' IDENTIFIED WITH auth_socket BY '';"
-sudo mysql -e "CREATE USER IF NOT EXISTS 'root'@'localhost' IDENTIFIED WITH auth_socket BY '';"
-sudo mysql -e "GRANT ALL ON *.* TO 'root'@'localhost' WITH GRANT OPTION;"
-sudo mysql -e "FLUSH PRIVILEGES;"
-
-fi
-
-## 18.04 ##
+############ 18.04 ###############################################
 
 if [[ "${UBUNTU_VERSION}" == "18.04" ]]; then 
 
