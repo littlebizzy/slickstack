@@ -14,7 +14,6 @@ title: WordPress (Public Mirrors)
 * [wp-config.txt](wp-config.txt)
 * [wp-config-dev.txt](wp-config-dev.txt)
 * [wp-config-staging.txt](wp-config-staging.txt)
-* [functions.txt](functions.txt)
 * [blacklist.txt](blacklist.txt)
 
 ### Related Links
@@ -44,4 +43,4 @@ title: WordPress (Public Mirrors)
 
 ----
 
-*Last updated: May 5, 2021*
+*Last updated: Sep 13, 2021*
