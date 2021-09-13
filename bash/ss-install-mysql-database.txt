@@ -87,17 +87,14 @@ fi
 
 if [[ "${UBUNTU_VERSION}" == "20.04" ]]; then
 
-    ## create production site database ##
+    ## create databases ##
     sudo mysql -e "CREATE DATABASE IF NOT EXISTS ${DB_NAME};"
-    ## sudo mysql -e "CREATE DATABASE IF NOT EXISTS production;"
 
-    ## create dev site database if enabled ##
-    if [[ "$DEV_SITE" == "true" ]]; then
+    if [[ "${DEV_SITE}" == "true" ]]; then
         sudo mysql -e "CREATE DATABASE IF NOT EXISTS development;"
     fi
-
-    ## create staging site database if enabled ##
-    if [[ "$STAGING_SITE" == "true" ]]; then
+    
+    if [[ "${STAGING_SITE}" == "true" ]]; then
         sudo mysql -e "CREATE DATABASE IF NOT EXISTS staging;"
     fi
 
@@ -164,19 +161,17 @@ if [[ "${UBUNTU_VERSION}" == "18.04" ]]; then
 ## we use root@localhost (auth_socket) and user@127.0.0.1 (TCP) for WordPress database ##
 ## the superuser admin@127.0.0.1 is also created to be used with phpMyAdmin, etc ##
 
-## create production database ##
+## create databases ##
+
 ss_mysql_5.7 -e "CREATE DATABASE IF NOT EXISTS ${DB_NAME};"
-## ss_mysql_5.7 -e "CREATE DATABASE IF NOT EXISTS production;"
 
-## create dev database unless it is explicity disabled ##
-if [[ "$DEV_SITE" != "false" ]]; then
-    ss_mysql_5.7 -e "CREATE DATABASE IF NOT EXISTS development;" 
-fi
+    if [[ "${DEV_SITE}" == "false" ]]; then
+        ss_mysql_5.7 -e "CREATE DATABASE IF NOT EXISTS development;" 
+    fi
 
-## create staging database unless it is explictly disabled ##
-if [[ "$STAGING_SITE" != "false" ]]; then
-    ss_mysql_5.7 -e "CREATE DATABASE IF NOT EXISTS staging;"
-fi
+    if [[ "${STAGING_SITE}" == "false" ]]; then
+        ss_mysql_5.7 -e "CREATE DATABASE IF NOT EXISTS staging;"
+    fi
 
 ## create admin superuser (can be used with Adminer/phpMyAdmin) ##
 ss_mysql_5.7 -e "ALTER USER IF EXISTS 'admin'@'localhost' IDENTIFIED WITH caching_sha2_password BY '${DB_PASSWORD_ROOT}';"
