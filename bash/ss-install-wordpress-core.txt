@@ -29,10 +29,12 @@ source /var/www/ss-functions
 
 ## A. Touch Timestamp File
 ## B. Message (Begin Script)
-## C. 
+## C. Install Ubuntu Utils
+## D. Cleanup Temporary Files
+## E. Install WordPress Core
 
 ####################################################################################################
-#### SS-Install-WordPress-Core: Touch Timestamp File ###############################################
+#### A. SS-Install-WordPress-Core: Touch Timestamp File ############################################
 ####################################################################################################
 
 ## this is a dummy timestamp file that will remember the last time this script was run ##
@@ -42,7 +44,7 @@ source /var/www/ss-functions
 touch "$TIMESTAMP_SS_INSTALL_WORDPRESS_CORE"
 
 ####################################################################################################
-#### SS-Install-WordPress-Core: Message (Begin Script) #############################################
+#### B. SS-Install-WordPress-Core: Message (Begin Script) ##########################################
 ####################################################################################################
 
 ## this is a simple message that announces to the shell the purpose of this bash script ##
@@ -57,55 +59,41 @@ sleep "$SLEEP_MESSAGE_BEGIN"
 ####################################################################################################
 
 ## proceed if more than 720 mins (12 hours) ##
-if [[ ! -f "/var/www/meta/.timestamp-ss-install-wordpress-core" ]] || \
-   [[ -n $(find "/var/www/meta/.timestamp-ss-install-wordpress-core" -amin +720) ]]
-then
+# if [[ ! -f "/var/www/meta/.timestamp-ss-install-wordpress-core" ]] || \
+ #  [[ -n $(find "/var/www/meta/.timestamp-ss-install-wordpress-core" -amin +720) ]]
+# then
 
 ####################################################################################################
-#### SS-Install-WordPress-Core: Install Ubuntu Utils ###############################################
+#### C. SS-Install-WordPress-Core: Install Ubuntu Utils ############################################
 ####################################################################################################
 
 ## run ss-install-ubuntu-utils ##
 source "$PATH_SS_INSTALL_UBUNTU_UTILS"
 
 ####################################################################################################
-#### SS-Install-WordPress-Core: Cleanup Temporary Files ############################################
+#### D. SS-Install-WordPress-Core: Cleanup Temporary Files #########################################
 ####################################################################################################
 
 ## delete tmp files ##
 rm "$TMP_WORDPRESS_ZIP"
-
-####################################################################################################
-#### SS-Install-WordPress-Core: Install WordPress Core (CMS) #######################################
-####################################################################################################
-
-## CMS modules are installed on SlickStack via files hosted on our public mirror servers ##
-## we always install the latest stable patched minor version (not major versions) ##
-
-## cleanup files ##
 rm /var/www/html/wordpress*
 rm /var/www/html/staging/wordpress*
 rm /var/www/html/dev/wordpress*
 
-## make dirs ##
-mkdir /var/www/html
+####################################################################################################
+#### E. SS-Install-WordPress-Core: Install WordPress Core ##########################################
+####################################################################################################
 
-## brief permissions reset ##
-chown -R $SFTP_USER:wordpress /var/www/html
-chown -R $SFTP_USER:wordpress /var/www/html/staging
-chown -R $SFTP_USER:wordpress /var/www/html/dev
-chmod 6775 /var/www/html
-chmod 6775 /var/www/html/staging
-chmod 6775 /var/www/html/dev
+## CMS modules are installed by SlickStack via files from our public mirror servers ##
+## we always install the latest stable minor version (never major versions) ##
 
-
-
-## download latest (patched) WordPress version ##
+## retrieve latest version ##
 wget -O "$TMP_WORDPRESS_ZIP" "$MIRROR_WORDPRESS_ZIP"
 
-
-## ADD CHECK HERE... if /tmp/wordpress.zip not found (e.g. SS mirror down) then retrieve latest from wordpress.org/latest.zip
-
+## try third party mirror if file not exists ##
+if [[ ! -f "$TMP_WORDPRESS_ZIP" ]]; then
+    wget -O "$TMP_WORDPRESS_ZIP" "$MIRROR_THIRDPARTY_WORDPRESS_ZIP"
+fi
 
 ####################################################################################################
 #### SS-Install-WordPress-Core: Cleanup Files + Install WordPress Core (Production) ################
@@ -409,5 +397,6 @@ fi
 ## Ref: https://pressidium.com/blog/2020/wordpress-image-sizes-explained/
 ## Ref: https://developer.wordpress.org/cli/commands/core/install/
 ## Ref: https://www.linuxtweaks.in/how-to-install-wordpress-using-bash-script-and-wp-cli/
+## Ref: https://stackoverflow.com/questions/10062513/install-wordpress-using-bash-shell-without-visiting-wp-admin-install-php
 
 ## SS_EOF
