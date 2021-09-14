@@ -63,16 +63,13 @@ sleep "$SLEEP_MESSAGE_BEGIN"
 ## schedule ss-clean beforehand in order to remove various (large) junk files ##
 
 ## only if staging site not disabled in ss-config ##
-if [[ "$STAGING_SITE" == "true" ]] && [[ "$SS_APP" == "wordpress" || -z "$SS_APP"  ]]; then
+if [[ "$STAGING_SITE" == "true" ]] && [[ "$SS_APP" == "wordpress" ]]; then
 
-    ## create staging database ##
-    sudo mysql -e "CREATE DATABASE IF NOT EXISTS staging;"
-
-    ## copy WordPress Core directories (wp-admin and wp-includes) ##
+    ## copy wp core directories ##
     rsync /var/www/html/wp-admin/ /var/www/html/staging/wp-admin
     rsync /var/www/html/wp-includes/ /var/www/html/staging/wp-includes
 
-    ## copy WordPress Core (PHP) files in web root ##
+    ## copy wp core php files (root) ##
     # --exclude-from="/var/www/meta/exclude.txt" 
     rsync --exclude="wp-config*.php*" --include="index.php" --include="wp-*.php" --exclude="*" /var/www/html/ /var/www/html/staging
 
@@ -95,13 +92,6 @@ if [[ "$STAGING_SITE" == "true" ]] && [[ "$SS_APP" == "wordpress" || -z "$SS_APP
 
     ## duplicate production SQL dump to temporary staging SQL dump ##
  #   cp /var/www/backups/mysql/production.sql /tmp/staging.sql
-
-    ## change production table prefixes to staging_ prefix (shared database) ##
-  #  if [[ -z "$DB_PREFIX" ]]; then 
-  #      sed -i "s#wp_#staging_#g" /tmp/staging.sql
- #   else 
- #       sed -i "s#${DB_PREFIX}#staging_#g" /tmp/staging.sql
- #   fi
 
     ## replace all URLs with staging ##
  #   sed -i "s#https://$SITE_DOMAIN#https://$SITE_DOMAIN/staging#g" /tmp/staging.sql
