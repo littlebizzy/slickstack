@@ -24,7 +24,28 @@ source /var/www/ss-functions
 ## BELOW THIS RELIES ON SS-CONFIG AND SS-FUNCTIONS
 
 ####################################################################################################
-#### SS-Sync-Staging: Message (Begin Script) #######################################################
+#### TABLE OF CONTENTS (SS-Sync-Staging) ###########################################################
+####################################################################################################
+
+## A. Touch Timestamp File
+## B. Message (Begin Script)
+## C. Copy All Relevant Files From Production To Staging
+## D. Copy Database From Production To Staging
+## E. Fix Any Hardcoded Links In Staging Theme Files
+## F. Reset Permissions (WordPress Config + WordPress Core) 
+
+####################################################################################################
+#### A. SS-Sync-Staging: Touch Timestamp File ######################################################
+####################################################################################################
+
+## this is a dummy timestamp file that will remember the last time this script was run ##
+## it can be useful for developer reference and is sometimes used by SlickStack ##
+
+## script timestamp ##
+touch "$TIMESTAMP_SS_SYNC_STAGING"
+
+####################################################################################################
+#### B. SS-Sync-Staging: Message (Begin Script) ####################################################
 ####################################################################################################
 
 ## this is a simple message that announces to the shell the purpose of this bash script ##
@@ -35,7 +56,7 @@ echo -e "${PURPLE}Running ss-sync-staging: Syncs relevant files and database fro
 sleep "$SLEEP_MESSAGE_BEGIN"
 
 ####################################################################################################
-#### SS-Sync-Staging: Copy All Relevant Files From Production To Staging ###########################
+#### C. SS-Sync-Staging: Copy All Relevant Files From Production To Staging ########################
 ####################################################################################################
 
 ## here we copy over everything from production to staging besides uploads (media files) ##
@@ -62,7 +83,7 @@ if [[ "$STAGING_SITE" == "true" ]] && [[ "$SS_APP" == "wordpress" || -z "$SS_APP
     rm /var/www/html/staging/staging*
 
 ####################################################################################################
-#### SS-Sync-Staging: Copy Database From Production To Staging (Modify Table Prefix) ###############
+#### D. SS-Sync-Staging: Copy Database From Production To Staging ##################################
 ####################################################################################################
 
 ## schedule ss-dump beforehand to dump the MySQL database optimally before ss-sync runs ##
@@ -143,7 +164,7 @@ if [[ "$STAGING_SITE" == "true" ]] && [[ "$SS_APP" == "wordpress" || -z "$SS_APP
  #   sed -i "s#staging_staging_#staging_#g" /tmp/staging.sql
 
 ####################################################################################################
-#### SS-Sync-Staging: Fix Any Hardcoded Links In Theme Files #######################################
+#### E. SS-Sync-Staging: Fix Any Hardcoded Links In Staging Theme Files ############################
 ####################################################################################################
 
 ## many themes (or custom-coded themes) often contain hardcoded HTML assets and links ##
@@ -165,10 +186,8 @@ if [[ "$STAGING_SITE" == "true" ]] && [[ "$SS_APP" == "wordpress" || -z "$SS_APP
     # find /var/www/html/staging/wp-content/themes/ -type f -exec sed -i "s#src='http://$SITE_DOMAIN#src='https://$SITE_DOMAIN/staging#g" {} +
     # find /var/www/html/staging/wp-content/themes/ -type f -exec sed -i "s#src='//$SITE_DOMAIN#src='https://$SITE_DOMAIN/staging#g" {} +
 
-    find /var/www/html/staging/wp-content/themes/ -type f -exec sed -i "s#https://$SITE_DOMAIN#https://$SITE_DOMAIN/staging#g" {} +
-    find /var/www/html/staging/wp-content/themes/ -type f -exec sed -i "s#http://$SITE_DOMAIN#https://$SITE_DOMAIN/staging#g" {} +
-    find /var/www/html/staging/wp-content/themes/ -type f -exec sed -i "s#//$SITE_DOMAIN#//$SITE_DOMAIN/staging#g" {} +
-    find /var/www/html/staging/wp-content/themes/ -type f -exec sed -i "s#$SITE_DOMAIN#$SITE_DOMAIN/staging#g" {} +
+    find /var/www/html/staging/wp-content/themes/ -type f -exec sed -i "s#https://$SITE_DOMAIN#https://staging.${SITE_DOMAIN}#g" {} +
+    find /var/www/html/staging/wp-content/themes/ -type f -exec sed -i "s#http://$SITE_DOMAIN#https://staging.${SITE_DOMAIN}#g" {} +
 
     ## now we fix potential hardcoded run-on paths in theme files (caused by previous seds) ##
     find /var/www/html/staging/wp-content/themes/ -type f -exec sed -i "s#staging/staging/staging/staging/staging/staging/staging/staging/staging/staging/staging/staging/staging/staging/staging#staging#g" {} +
@@ -211,8 +230,6 @@ if [[ "$STAGING_SITE" == "true" ]] && [[ "$SS_APP" == "wordpress" || -z "$SS_APP
 
 
     ## import database ##
-    # mysql "$DB_NAME" < /tmp/staging.sql
-    
     sudo mysql staging < /var/www/backups/mysql/production.sql
 
     ## fix staging home and siteurl fields (no mass search/replace to avoid potential conflicts) ##
@@ -221,53 +238,26 @@ if [[ "$STAGING_SITE" == "true" ]] && [[ "$SS_APP" == "wordpress" || -z "$SS_APP
 
   ##  mysql --execute="UPDATE ${DB_NAME}.dev_options SET option_value='https://$SITE_DOMAIN/dev' WHERE option_name='home'";
   ###  mysql --execute="UPDATE ${DB_NAME}.dev_options SET option_value='https://$SITE_DOMAIN/dev' WHERE option_name='siteurl'";
-    
-    ## cleanup tmp files ##
-    rm /var/www/meta/staging*.sql*
-    rm /tmp/staging*.sql*
 
 ####################################################################################################
 #### SS-Sync-Staging: Configure Staging Site WP-Config File (Same As SS-Install) ###################
 ####################################################################################################
-
-    ## MODULE VERSION: WP-Config Build #
-
-    ## retrieve latest wp-config boilerplate ##
- ####   wget -O /var/www/html/staging/wp-config.php http://mirrors.slickstack.io/wordpress/wp-config-staging.txt
-
-    ###### WP Multisite settings ########
-
-
+    
+    ## run ss-install-wordpress-config ##
+    ## source "$PATH_SS_INSTALL_WORDPRESS_CONFIG"
 
 ####################################################################################################
-#### SS-Sync-Staging: Install WordPress MU Plugins #################################################
+#### F. SS-Sync-Staging: Reset Permissions (WordPress Config + WordPress Core) #####################
 ####################################################################################################
-
-    ## run ss-muplugs ##
-  ##  source /var/www/ss-muplugs
-
-####################################################################################################
-#### SS-Sync-Staging: Reset Permissions (WordPress Core + WordPress Config) ########################
-####################################################################################################
-
-    ## run ss-perms-wordpress-core ##
-    source /var/www/ss-perms-wordpress-core
 
     ## run ss-perms-wordpress-config ##
-    source /var/www/ss-perms-wordpress-config
+    source "$PATH_SS_PERMS_WORDPRESS_CONFIG"
+    
+    ## run ss-perms-wordpress-core ##
+    source "$PATH_SS_PERMS_WORDPRESS_CORE"
 
 ## end parent if ##
 fi
-
-####################################################################################################
-#### SS-Sync-Staging: Touch Timestamp File (End Of Script) #########################################
-####################################################################################################
-
-## this is a dummy timestamp file that will remember the last time this script was run ##
-## it can be useful for developer reference and is sometimes used by SlickStack ##
-
-## script timestamp ##
-touch "$TIMESTAMP_SS_SYNC_STAGING"
 
 ####################################################################################################
 #### SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ###############
