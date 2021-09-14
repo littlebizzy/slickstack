@@ -195,6 +195,14 @@ rm /var/www/html/dev/wordpress*
 #### SS-Install-WordPress-Core: Optimize WP_Options (For Virgin Installs) ##########################
 ####################################################################################################
 
+## minimum options required to avoid /wp-admin/install.php redirect are as follows ##
+## home/siteurl, blogname, admin_user, admin_email, admin_password ##
+
+# home/siteurl is done below so just these
+# mysql --execute="UPDATE ${DB_NAME}.${DB_PREFIX}options SET option_value='${SITE_DOMAIN}' WHERE option_name='blogname'";
+# mysql --execute="UPDATE ${DB_NAME}.${DB_PREFIX}options SET option_value='' WHERE option_name='admin_email'";
+### mysql --execute="UPDATE ${DB_NAME}.${DB_PREFIX}options SET option_value='' WHERE option_name='admin_password'";
+
 if [[ ! -f "$TIMESTAMP_SS_INSTALL_WORDPRESS_CORE" ]] && [[ "$SS_INSTALL_WORDPRESS_CORE_CLEANUP_OPTIONS" == "disabledfornow" ]]; then
 
 ## optimize wp_options ##
@@ -391,5 +399,6 @@ touch "$TIMESTAMP_SS_INSTALL_WORDPRESS_CORE"
 
 ## Ref: https://github.com/littlebizzy/throwaway-theme/blob/master/functions.php
 ## Ref: https://pressidium.com/blog/2020/wordpress-image-sizes-explained/
+## Ref: https://developer.wordpress.org/cli/commands/core/install/
 
 ## SS_EOF
