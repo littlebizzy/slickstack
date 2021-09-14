@@ -86,13 +86,6 @@ if [[ "$STAGING_SITE" == "true" ]] && [[ "$SS_APP" == "wordpress" ]]; then
 ## schedule ss-dump beforehand to dump the MySQL database optimally before ss-sync runs ##
 ## table prefix changed to staging_ (hardcoded) and minor search/replace occurs ##
 
-    ## cleanup tmp files ##
-    rm /var/www/meta/staging*.sql*
-    rm /tmp/staging*.sql*
-
-    ## duplicate production SQL dump to temporary staging SQL dump ##
- #   cp /var/www/backups/mysql/production.sql /tmp/staging.sql
-
     ## replace all URLs with staging ##
  #   sed -i "s#https://$SITE_DOMAIN#https://$SITE_DOMAIN/staging#g" /tmp/staging.sql
   #  sed -i "s#http://$SITE_DOMAIN#https://$SITE_DOMAIN/staging#g" /tmp/staging.sql
@@ -217,10 +210,15 @@ if [[ "$STAGING_SITE" == "true" ]] && [[ "$SS_APP" == "wordpress" ]]; then
     find /var/www/html/staging/wp-content/themes/ -type f -exec sed -i "s#///staging#/staging#g" {} +
     find /var/www/html/staging/wp-content/themes/ -type f -exec sed -i "s#//staging#/staging#g" {} +
 
-
+####################################################################################################
+#### SS-Sync-Staging: Import Production Database (Backup) To Staging Database ###################
+####################################################################################################
 
     ## import database ##
-    sudo mysql staging < /var/www/backups/mysql/production.sql
+    cp /var/www/backups/mysql/production.sql /tmp/staging.sql
+    sudo mysql -f staging < /tmp/staging.sql
+    rm /tmp/staging.sql
+    rm /tmp/production.sql
 
     ## fix staging home and siteurl fields (no mass search/replace to avoid potential conflicts) ##
     mysql --execute="UPDATE staging.${DB_PREFIX}options SET option_value='https://staging.$SITE_DOMAIN' WHERE option_name='home'";
