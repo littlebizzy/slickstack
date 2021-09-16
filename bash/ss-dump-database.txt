@@ -24,11 +24,13 @@ source /var/www/ss-functions
 ## BELOW THIS RELIES ON SS-CONFIG AND SS-FUNCTIONS
 
 ####################################################################################################
-#### TABLE OF CONTENTS #############################################################################
+#### TABLE OF CONTENTS (SS-Dump-Database) ##########################################################
 ####################################################################################################
 
 ## A. Touch Timestamp File
 ## B. Message (Begin Script)
+## C. Dump MySQL Database(s)
+## D. Reset Permissions (Database Dump Files)
 
 ####################################################################################################
 #### A. SS-Dump-Database: Touch Timestamp File #####################################################
@@ -52,7 +54,7 @@ echo -e "${PURPLE}Running ss-dump-database: Dumps the database(s) to /var/www/ba
 sleep "$SLEEP_MESSAGE_BEGIN"
 
 ####################################################################################################
-#### SS-Dump-Database: Dump The MySQL Database(s) ##################################################
+#### C. SS-Dump-Database: Dump MySQL Database(s) ###################################################
 ####################################################################################################
 
 ## here we use mysqldump to dump the various databases under /var/www/backups/mysql/ ##
@@ -60,29 +62,32 @@ sleep "$SLEEP_MESSAGE_BEGIN"
 
 ## dump production database ##
 if [[ "$SS_DUMP_DATABASE_PRODUCTION" != "false" ]]; then
-    mysqldump --databases "$DB_NAME" > "$PATH_DUMP_DATABASE_PRODUCTION"
+    ss_mysqldump "$DB_NAME" > "$PATH_DUMP_DATABASE_PRODUCTION"
 fi
 
 ## dump staging database ##
 if [[ "$SS_DUMP_DATABASE_STAGING" == "true" ]]; then
-    mysqldump --databases "$DB_NAME" > "$PATH_DUMP_DATABASE_STAGING"
+    ss_mysqldump staging > "$PATH_DUMP_DATABASE_STAGING"
 fi
 
 ## dump development database ##
 if [[ "$SS_DUMP_DATABASE_DEVELOPMENT" == "true" ]]; then
-    mysqldump --databases "$DB_NAME" > "$PATH_DUMP_DATABASE_DEVELOPMENT"
+    ss_mysqldump development > "$PATH_DUMP_DATABASE_DEVELOPMENT"
 fi
 
 ## DO NOT ENABLE THIS IN SS-CONFIG UNLESS YOUR SERVER HAS A TON OF EXTRA DISK SPACE ##
 ## (also in future should stop mysql-server here before ss-dump to avoid corrupted mysql data files) ##
+## also should check if enough disk space before doing this ##
 if [[ "$SS_DUMP_DATABASE_FILES" == "true" ]]; then 
     cp "$PATH_DATABASE_FILES_01" "$PATH_DUMP_DATABASE_FILES_01"
     cp "$PATH_DATABASE_FILES_02" "$PATH_DUMP_DATABASE_FILES_02"
     cp "$PATH_DATABASE_FILES_03" "$PATH_DUMP_DATABASE_FILES_03"
+    cp "$PATH_DATABASE_FILES_04" "$PATH_DUMP_DATABASE_FILES_04"
+    cp "$PATH_DATABASE_FILES_05" "$PATH_DUMP_DATABASE_FILES_05"
 fi
 
 ####################################################################################################
-#### SS-Dump-Database: Reset Permissions (Allows SFTP User To Access The SQL Dump File) ############
+#### D. SS-Dump-Database: Reset Permissions (Database Dump Files) ##################################
 ####################################################################################################
 
 ## here we do a quick permissions reset to ensure SFTP users can access the dump file ##
@@ -135,5 +140,7 @@ fi
 ## Ref: https://stackoverflow.com/questions/2482491/is-copying-var-lib-mysql-a-good-alterntive-to-mysqldump
 ## Ref: https://serverfault.com/questions/659048/can-i-copy-the-entire-var-lib-mysql-folder-to-a-different-server-mysql-vs-mar/659049
 ## Ref: https://serverfault.com/questions/81241/making-backup-by-copying-mysql-data-folder-is-ok-as-long-as-both-source-and-tar
+## Ref: https://stackoverflow.com/questions/30835874/how-to-avoid-use-database-statement-on-mysqldump-backups
+## Ref: https://forums.asp.net/t/1534483.aspx?mysql+dump+don+t+generate+USE+database+
 
 ## SS_EOF
