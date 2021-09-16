@@ -35,6 +35,8 @@ SlickStack is a free LEMP stack automation script written in Bash designed to en
 
 ## Changelog
 
+* **NEW!** `ss-sync-staging` has now been fixed to work properly with the new subdomain and dedicated database approach we've settled on for staging sites. So, now this script will briefly duplicate the MySQL database dump (that ss-dump-database generates) and upload it to the `staging` database. Then this script will rsync all files from production to staging directory but NOT the media uploads, which staging automagically loads from the production directory using Nginx magic.
+
 * **NEW!** `ss-dump-files` can now export/archive your dev/staging sites if you enable in ss-config (along with production site).
  
 * **NEW!** Staging and dev sites (subdomains) can now be password protected and a new user `GUEST_USER` and `GUEST_PASSWORD` is supported who can login and view either site.
