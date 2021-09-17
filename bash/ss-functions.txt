@@ -8,17 +8,30 @@
 #### destination: n/a (not a boilerplate) ##########################################################
 #### purpose: Required functions and variables used by ss core cron jobs and bash scripts ##########
 #### module version: Ubuntu 20.04 LTS ##############################################################
-#### sourced by: ss core cron jobs, ss core bash scripts ###########################################
+#### sourced by: ss core bash scripts, ss core cron jobs ###########################################
 #### bash aliases: n/a #############################################################################
 ####################################################################################################
 
 ## SS-FUNCTIONS MUST BE INCLUDED IN ALL SS SCRIPTS IN ORDER FOR THEM TO WORK PROPERLY ##
-## IT NOT ONLY DEFINES BASH FUNCTIONS AND VARIABLES BUT ALSO MIRROR/FILE PATHS ##
+## IT NOT ONLY DEFINES BASH VARIABLES AND FUNCTIONS BUT ALSO MIRROR/FILE PATHS ##
 
 ## SS-CONFIG SHOULD NOT BE INCLUDED IN THIS SCRIPT
 
 ####################################################################################################
-#### SS-Functions: Critical Bash Variables #########################################################
+#### TABLE OF CONTENTS (SS-Functions) ##############################################################
+####################################################################################################
+
+## A. SlickStack Variables
+## B. Public Mirror Links
+## C. Temporary File Paths
+## D. Permanent File Paths
+## E. Timestamp File Paths
+## F. Lock File Paths
+## G. SlickStack Functions
+## H. Pretty Colors + Styles For The Shell
+
+####################################################################################################
+#### A. SS-Functions: SlickStack Variables #########################################################
 ####################################################################################################
 
 ## SNIPPET: ss-functions, ss-install
@@ -62,8 +75,32 @@ else
     SITE_DOMAIN_INCLUDING_WWW="www.${SITE_DOMAIN}"
 fi
 
+## ubuntu packages ##
+PACKAGE_DOS2UNIX="dos2unix"
+PACKAGE_EXIFTOOL="libimage-exiftool-perl"
+
+## validate files (these lines must appear under others above) ##
+# VALIDATE_SS_CHECK=$(grep "$SS_EOF" "$PATH_SS_CHECK")
+# VALIDATE_SS_WORKER=$(grep "$SS_EOF" "$PATH_SS_WORKER")
+# VALIDATE_TMP_SS_CHECK=$(grep "$SS_EOF" "$TMP_SS_CHECK")
+# VALIDATE_TMP_SS_WORKER=$(grep "$SS_EOF" "$TMP_SS_WORKER")
+
+# VALIDATE_NGINX_CONF=$(grep "$SS_EOF" "$PATH_NGINX_CONF")
+# VALIDATE_PHP_INI=$(grep "$SS_EOF" "$PATH_PHP_INI")
+# VALIDATE_WP_CONFIG_PHP=$(grep "$SS_EOF" "$PATH_WP_CONFIG_PHP")
+
+## old stuff ##
+# NETWORK_INTERFACE=`ip route get 1.1.1.1 | head -n1 | awk '{print $5}'`
+# SS_HOSTNAME_ALL=`/bin/hostname -A`
+# SS_HOSTNAME_FQDN=`/bin/hostname -f`
+# SS_TLD=`hostname -d`
+# SS_MYSQL_VERSION=`mysqld --version`
+# SS_MYSQL_SIZE=`mysql --execute="SELECT table_schema AS "wordpress", SUM(data_length + index_length) / 1024 / 1024 / 1024 AS "Size (GB)" FROM information_schema.TABLES GROUP BY table_schema";`
+# SS_PHP_VERSION=`php -v | grep ^PHP | cut -d' ' -f2`
+# SS_PHP_EXTENSIONS=`php -r "print_r(implode(', ', get_loaded_extensions()));"`
+
 ####################################################################################################
-#### SS-Functions: Public Mirror Links #############################################################
+#### B. SS-Functions: Public Mirror Links ##########################################################
 ####################################################################################################
 
 ## cron jobs ##
@@ -306,7 +343,7 @@ MIRROR_DISABLE_EMAILS_ZIP="https://github.com/littlebizzy/slickstack/raw/master/
 MIRROR_DISABLE_DEFAULT_RUNNER_ZIP="https://github.com/littlebizzy/slickstack/raw/master/modules/wordpress/mu-plugins/disable-default-runner.zip"
 
 ####################################################################################################
-#### SS-Functions: Temporary File Paths ############################################################
+#### C. SS-Functions: Temporary File Paths #########################################################
 ####################################################################################################
 
 ## cron jobs ##
@@ -496,7 +533,7 @@ TMP_WP_CLI_YML="/tmp/wp-cli.yml"
 TMP_WP_COMPLETION="/tmp/wp-completion.bash"
 
 ####################################################################################################
-#### SS-Functions: Permanent File Paths ############################################################
+#### D. SS-Functions: Permanent File Paths #########################################################
 ####################################################################################################
 
 ## directories ##
@@ -709,7 +746,7 @@ PATH_DUMP_DATABASE_FILES_02="/var/www/backups/mysql/data/mysql-files.bak"
 PATH_DUMP_DATABASE_FILES_03="/var/www/backups/mysql/data/mysql-keyring.bak"
 
 ####################################################################################################
-#### SS-Functions: Timestamp Files #################################################################
+#### E. SS-Functions: Timestamp File Paths #########################################################
 ####################################################################################################
 
 ## cron jobs ##
@@ -864,7 +901,7 @@ TIMESTAMP_SS_UPDATE_MODULES="/var/www/meta/timestamps/ss-update-modules.timestam
 TIMESTAMP_SS_WORKER="/var/www/meta/timestamps/ss-worker.timestamp"
 
 ####################################################################################################
-#### SS-Functions: Lock Files ######################################################################
+#### F. SS-Functions: Lock File Paths ##############################################################
 ####################################################################################################
 
 ## these lock files are used by Linux to ensure cron jobs do not overrun each other ##
@@ -886,35 +923,7 @@ LOCK_12_CRON_MONTHLY="/tmp/12-cron-monthly.lock"
 LOCK_13_CRON_SOMETIMES="/tmp/13-cron-sometimes.lock"
 
 ####################################################################################################
-#### SS-Functions: Misc #################################################################
-####################################################################################################
-
-## ubuntu packages ##
-PACKAGE_DOS2UNIX="dos2unix"
-PACKAGE_EXIFTOOL="libimage-exiftool-perl"
-
-## validate files (these lines must appear under others above) ##
-# VALIDATE_SS_CHECK=$(grep "$SS_EOF" "$PATH_SS_CHECK")
-# VALIDATE_SS_WORKER=$(grep "$SS_EOF" "$PATH_SS_WORKER")
-# VALIDATE_TMP_SS_CHECK=$(grep "$SS_EOF" "$TMP_SS_CHECK")
-# VALIDATE_TMP_SS_WORKER=$(grep "$SS_EOF" "$TMP_SS_WORKER")
-
-# VALIDATE_NGINX_CONF=$(grep "$SS_EOF" "$PATH_NGINX_CONF")
-# VALIDATE_PHP_INI=$(grep "$SS_EOF" "$PATH_PHP_INI")
-# VALIDATE_WP_CONFIG_PHP=$(grep "$SS_EOF" "$PATH_WP_CONFIG_PHP")
-
-## old stuff ##
-# NETWORK_INTERFACE=`ip route get 1.1.1.1 | head -n1 | awk '{print $5}'`
-# SS_HOSTNAME_ALL=`/bin/hostname -A`
-# SS_HOSTNAME_FQDN=`/bin/hostname -f`
-# SS_TLD=`hostname -d`
-# SS_MYSQL_VERSION=`mysqld --version`
-# SS_MYSQL_SIZE=`mysql --execute="SELECT table_schema AS "wordpress", SUM(data_length + index_length) / 1024 / 1024 / 1024 AS "Size (GB)" FROM information_schema.TABLES GROUP BY table_schema";`
-# SS_PHP_VERSION=`php -v | grep ^PHP | cut -d' ' -f2`
-# SS_PHP_EXTENSIONS=`php -r "print_r(implode(', ', get_loaded_extensions()));"`
-
-####################################################################################################
-#### SS-Functions: Critical Bash Functions #########################################################
+#### G. SS-Functions: SlickStack Functions #########################################################
 ####################################################################################################
 
 ## SNIPPET: ss-functions, ss-install
@@ -1034,7 +1043,7 @@ function ss_wget_slow {
 }
 
 ####################################################################################################
-#### SS-Functions: Pretty Colors + Styles For The Shell ############################################
+#### H. SS-Functions: Pretty Colors + Styles For The Shell #########################################
 ####################################################################################################
 
 ## SNIPPET: ss-functions, ss-install
@@ -1136,5 +1145,6 @@ ENDSTAND=$(tput rmso) # end standout
 ## Ref: https://www.howtoforge.com/linux-lshw-command/
 ## Ref: https://linuxize.com/post/how-to-check-if-string-contains-substring-in-bash/
 ## Ref: https://stackoverflow.com/questions/2440947/how-to-build-a-conditional-assignment-in-bash
+## Ref: https://stackoverflow.com/questions/3341372/difference-between-shell-and-environment-variables
 
 ## SS_EOF
