@@ -32,7 +32,6 @@ source /var/www/ss-functions
 ## C. Import Production Database To Staging Database
 ## D. Copy All Relevant Files From Production To Staging
 ## E. Fix Any Hardcoded Links In Staging Theme Files
-## F. Reset Permissions (WordPress Core) 
 
 ####################################################################################################
 #### A. SS-Sync-Staging: Touch Timestamp File ######################################################
@@ -86,15 +85,15 @@ if [[ "$STAGING_SITE" == "true" ]]; then
 ## schedule ss-clean beforehand in order to remove various (large) junk files ##
 
     ## copy wp core directories ##
-    rsync /var/www/html/wp-admin/ /var/www/html/staging/wp-admin
-    rsync /var/www/html/wp-includes/ /var/www/html/staging/wp-includes
+    ss_rsync /var/www/html/wp-admin/ /var/www/html/staging/wp-admin
+    ss_rsync /var/www/html/wp-includes/ /var/www/html/staging/wp-includes
 
     ## copy wp core root php files (only) ##
     # --exclude-from="/var/www/meta/exclude.txt" 
-    rsync --exclude="wp-config*.php*" --include="index.php" --include="wp-*.php" --exclude="*" /var/www/html/ /var/www/html/staging
+    ss_rsync --exclude="wp-config*.php*" --include="index.php" --include="wp-*.php" --exclude="*" /var/www/html/ /var/www/html/staging
 
     ## copy wp-content files over (skips media uploads) ##
-    rsync --max-size=5mb --exclude="mu-plugins*" --exclude="uploads*" /var/www/html/wp-content/ /var/www/html/staging/wp-content
+    ss_rsync --max-size=5mb --exclude="mu-plugins*" --exclude="uploads*" /var/www/html/wp-content/ /var/www/html/staging/wp-content
     
     ## remove potential run-on subdirectories ##
     rm /var/www/html/staging/staging*
@@ -109,13 +108,6 @@ if [[ "$STAGING_SITE" == "true" ]]; then
     ## change prod hardlinks to staging ##
     find /var/www/html/staging/wp-content/themes/ -type f -exec sed -i "s#https://$SITE_DOMAIN#https://staging.${SITE_DOMAIN}#g" {} +
     find /var/www/html/staging/wp-content/themes/ -type f -exec sed -i "s#http://$SITE_DOMAIN#https://staging.${SITE_DOMAIN}#g" {} +
-
-####################################################################################################
-#### F. SS-Sync-Staging: Reset Permissions (WordPress Config + WordPress Core) #####################
-####################################################################################################
-
-    ## run ss-perms-wordpress-core ##
-    # source "$PATH_SS_PERMS_WORDPRESS_CORE"
 
 ## end parent if ##
 fi
