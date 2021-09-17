@@ -13,19 +13,19 @@
 ## SLICKSTACK SUPPORTS HTTPS-ONLY NGINX SERVER BLOCKS WITH HSTS ENABLED BY DEFAULT ##
 
 ####################################################################################################
-#### Server Block (Production): Catch-All + Redirect To Canonical Domain ###########################
+#### Server Block (Production): Catch-All Redirect To Canonical Domain #############################
 ####################################################################################################
 
 ## here we force redirect any non-canonical requests to the canonical server block below ##
 ## this vastly improves security, prevents IP snooping, SEO problems, and beyond ##
 
 server {
-    listen                 80 default_server;
-    listen                 443 ssl default_server;
-    listen                 [::]:80;
-    listen                 [::]:443 ssl;
-    server_name            _;
-    return 301             https://@SITE_DOMAIN$request_uri;
+	listen             80 default_server;
+    listen             443 ssl default_server;
+    listen             [::]:80;
+    listen             [::]:443 ssl;
+    server_name        _;
+    return 301         https://@SITE_DOMAIN$request_uri;
 }
 
 ####################################################################################################
@@ -36,26 +36,27 @@ server {
 ## because SlickStack is HTTPS-only the canonical block is port 443 (SSL) only ##
 
 server {
-	listen				443 ssl http2;
-	listen				[::]:443 ssl http2;
-	server_name			@SITE_DOMAIN;
-	root				/var/www/html;
+	listen             443 ssl http2;
+	listen             [::]:443 ssl http2;
+	server_name        @SITE_DOMAIN;
+	root               /var/www/html;
 	
-	if ($http_host !~ "@SITE_DOMAIN|staging.@SITE_DOMAIN_EXCLUDING_WWW") {
-    	return 301    $scheme://@SITE_DOMAIN$request_uri;
+	## redirect any requests that do not match production/staging/dev ##
+	if ($http_host !~ "@SITE_DOMAIN|staging.@SITE_DOMAIN_EXCLUDING_WWW|dev.@SITE_DOMAIN_EXCLUDING_WWW") {
+    	return 301     https://@SITE_DOMAIN$request_uri;
 		}
     
 ####################################################################################################
 #### Server Block (Production): Indexing + Public URI + Try Files Settings #########################
 ####################################################################################################
 
-    ## redirect index.php requests ##
+    ## redirect index.php to root ##
     if ($request_uri ~* "^(.*/)index\.php$") {
         return 301 $1;
     }
     
     ## force trailing slash on */wp-admin requests ##
-    rewrite /wp-admin$ $scheme://$host$uri/ permanent;
+    rewrite /wp-admin$ https://$host$uri/ permanent;
     
     ## try files order ##
     location / {
