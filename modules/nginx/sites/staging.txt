@@ -24,6 +24,8 @@ server {
 	listen		[::]:443 ssl http2;
 	server_name	staging.@SITE_DOMAIN_EXCLUDING_WWW;
 	root		/var/www/html/staging;
+	auth_basic "Restricted Content";
+	auth_basic_user_file /var/www/meta/.htpasswd;
 
 ####################################################################################################
 #### Server Block (Staging): Indexing + Public URI + Try Files Settings ############################
@@ -43,9 +45,6 @@ server {
         try_files $uri $uri/ /index.php?$args;
 	## force trailing slashes on urls (do not enable for bbPress/BuddyPress sites)
         # rewrite ^([^.]*[^/])$ $1/ permanent;
-	## password protect ##
-	auth_basic "Restricted Content";
-        auth_basic_user_file /var/www/meta/.htpasswd;
     }
     
     ## hidden files (block access) ##
@@ -54,7 +53,7 @@ server {
 	# deny all;
     }
     
-    ## Certbot domain verification ##
+    ## domain verification ##
     location = /.well-known* {
         # default_type "text/plain";
         allow all;
@@ -67,7 +66,7 @@ server {
     }
 
 ####################################################################################################
-#### Server Block: FastCGI Cache Settings ##########################################################
+#### Server Block (Staging): FastCGI Cache Settings ################################################
 ####################################################################################################
 
 ## several common URI patterns are configured to skip FastCGI caching to avoid conflicts ##
@@ -145,10 +144,6 @@ server {
         fastcgi_no_cache $skip_cache;
         ## below line should not be needed
         # include snippets/fastcgi-php.conf;
-	
-	## password protect ##
-	auth_basic "Restricted Content";
-        auth_basic_user_file /var/www/meta/.htpasswd;
     }
 
 ####################################################################################################
@@ -354,5 +349,7 @@ server {
 ## Ref: https://stackoverflow.com/questions/2010677/nginx-and-auth-basic
 ## Ref: https://www.digitalocean.com/community/tutorials/how-to-set-up-password-authentication-with-nginx-on-ubuntu-14-04
 ## Ref: https://serverfault.com/questions/290428/nginx-basic-auth-timeout
+## Ref: https://www.tecmint.com/setup-nginx-basic-http-authentication/
+## Ref: https://ubiq.co/tech-blog/how-to-configure-basic-authentication-in-nginx/
 
 ## SS_EOF
