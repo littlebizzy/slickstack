@@ -120,7 +120,7 @@ server {
 ####################################################################################################
 
     location ~ \.php$ {
-        set $rt_session "";
+	set $rt_session "";
         if ($http_cookie ~* "wp_woocommerce_session_[^=]*=([^%]+)%7C") {
                 set $rt_session wp_woocommerce_session_$1;
         }	
@@ -128,37 +128,9 @@ server {
                 more_clear_headers "Set-Cookie*";
                 set $rt_session "";
         }
-
-        ## include /etc/nginx/fastcgi_params for older nginx versions
         include /etc/nginx/fastcgi.conf;
         try_files $uri =404;
         fastcgi_split_path_info ^(.+\.php)(/.+)$;
-        ## fastcgi_pass unix:/var/run/php/php7.4-fpm.sock
-	## fastcgi_pass unix:/run/php/php7.4-fpm.sock;
-	fastcgi_pass 127.0.0.1:9000;
-	fastcgi_read_timeout 300;
-        fastcgi_index index.php;
-        fastcgi_cache WORDPRESS;
-        fastcgi_cache_valid 200 301 404 @CACHEVALID;
-        fastcgi_cache_bypass $skip_cache;
-        fastcgi_no_cache $skip_cache;
-        ## below line should not be needed
-        # include snippets/fastcgi-php.conf;
-    }
-
-####################################################################################################
-#### Server Block: WP-Login Settings (Rate Limiting) ###############################################
-####################################################################################################
-
-    location = /wp-login.php {
-        ## limit access to one request per second per IP address
-        limit_req zone=wplogin burst=1 nodelay;
-        ## we must re-include this routing for php-fpm ##
-        include /etc/nginx/fastcgi.conf;
-        try_files $uri =404;
-        fastcgi_split_path_info ^(.+\.php)(/.+)$;
-        ## fastcgi_pass unix:/var/run/php/php7.4-fpm.sock
-	## fastcgi_pass unix:/run/php/php7.4-fpm.sock;
 	fastcgi_pass 127.0.0.1:9000;
 	fastcgi_read_timeout 300;
         fastcgi_index index.php;
@@ -167,6 +139,29 @@ server {
         fastcgi_cache_bypass $skip_cache;
         fastcgi_no_cache $skip_cache;
     }
+
+####################################################################################################
+#### Server Block (Staging): WP-Login Settings (Rate Limiting) #####################################
+####################################################################################################
+
+## because of goofy Nginx we must reinclude all PHP directives here as they exist above ##
+## next we enable rate-limiting to prevent automated brute force hack attempts ##
+
+	location = /wp-login.php {
+		include /etc/nginx/fastcgi.conf;
+        	try_files $uri =404;
+        	fastcgi_split_path_info ^(.+\.php)(/.+)$;
+		fastcgi_pass 127.0.0.1:9000;
+		fastcgi_read_timeout 300;
+        	fastcgi_index index.php;
+        	fastcgi_cache WORDPRESS;
+        	fastcgi_cache_valid 200 301 404 @CACHEVALID;
+        	fastcgi_cache_bypass $skip_cache;
+        	fastcgi_no_cache $skip_cache;
+	
+		## rate limit zone
+        	limit_req zone=wplogin burst=1 nodelay;
+    	}
     
 ####################################################################################################
 #### Server Block (Staging): Static Resource Settings ##############################################
@@ -352,5 +347,6 @@ server {
 ## Ref: https://serverfault.com/questions/290428/nginx-basic-auth-timeout
 ## Ref: https://www.tecmint.com/setup-nginx-basic-http-authentication/
 ## Ref: https://ubiq.co/tech-blog/how-to-configure-basic-authentication-in-nginx/
+## Ref: https://stackoverflow.com/questions/32104731/directive-inheritance-in-nested-location-blocks
 
 ## SS_EOF
