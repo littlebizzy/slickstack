@@ -23,16 +23,22 @@ source /var/www/ss-functions
 
 ## BELOW THIS RELIES ON SS-CONFIG AND SS-FUNCTIONS
 
-SS_UPDATE_BUILD="SEP2021X"
+SS_UPDATE_BUILD="SEP2021Y"
 
 ####################################################################################################
-#### TABLE OF CONTENTS #############################################################################
+#### TABLE OF CONTENTS (SS-Update-Config) ##########################################################
 ####################################################################################################
 
 ## A. Touch Timestamp File
 ## B. Message (Begin Script)
 ## C. Cleanup Temporary Files
 ## D. Backup Current SS-Config File
+## E. Validate Current SS-Confing Before Proceeding
+## F. Ensure Undefined Options Do Not Exist Before Proceeding
+## G. Retrieve Latest SS-Config Boilerplate
+## H. Install Latest SS-Config Boilerplate (Copies Existing Settings)
+## I. Validate Latest SS-Config Boilerplate
+## J. Cleanup Temporary Files
 
 ####################################################################################################
 #### A. SS-Update-Config: Touch Timestamp File #####################################################
@@ -45,7 +51,7 @@ SS_UPDATE_BUILD="SEP2021X"
 touch "$TIMESTAMP_SS_UPDATE_CONFIG"
 
 ####################################################################################################
-#### B. SS-Update: Message (Begin Script) ##########################################################
+#### B. SS-Update-Config: Message (Begin Script) ###################################################
 ####################################################################################################
 
 ## this is a simple message that announces to the shell the purpose of this bash script ##
@@ -77,11 +83,8 @@ CURRENT_TIME=$(date "+%Y.%b.%d-%H:%M:%S")
 cp /var/www/ss-config /var/www/backups/config/ss-config.bak.$CURRENT_TIME
 
 ####################################################################################################
-#### SS-Update: Ensure Undefined Options Do Not Exist Before Proceeding ############################
+#### E. SS-Update-Config: Validate Current SS-Confing Before Proceeding ############################
 ####################################################################################################
-
-## below snippet will warn you and exit if undefined ss-config options are found to exist ##
-## this way our team can be aware of bugs and avoid implementing unwanted options ##
 
 VALIDATE_SS_CONFIG=$(grep 'EOF' "$PATH_SS_CONFIG") ## change to "$SS_EOF" later
 
@@ -91,6 +94,13 @@ if [[ -z "$VALIDATE_SS_CONFIG" ]]; then
     exit 1
 fi
 
+####################################################################################################
+#### F. SS-Update-Config: Ensure Undefined Options Do Not Exist Before Proceeding ##################
+####################################################################################################
+
+## below snippet will warn you and exit if undefined ss-config options are found to exist ##
+## this way our team can be aware of bugs and avoid implementing unwanted options ##
+
 ## warn if placeholders exist ##
 SS_CONFIG_OPTION_PLACEHOLDER="$(grep -c '"@' /var/www/ss-config)"
 if [[ "$SS_CONFIG_OPTION_PLACEHOLDER" -gt 0 ]]; then
@@ -99,7 +109,7 @@ if [[ "$SS_CONFIG_OPTION_PLACEHOLDER" -gt 0 ]]; then
 fi
 
 ####################################################################################################
-#### SS-Update-Config: Install Latest SS-Config Boilerplate (Replicates Existing Variables) ###############
+#### G. SS-Update-Config: Retrieve Latest SS-Config Boilerplate ####################################
 ####################################################################################################
 
 ## variables will only be copied over from the previous ss-config file if they are defined ##
@@ -117,7 +127,7 @@ if [[ "$SS_BUILD_LATEST" != "$SS_UPDATE_BUILD" ]]; then
 fi
 
 ####################################################################################################
-#### SS-Update: Install Latest SS-Config File (Safely Replicates Existing Variables) ###############
+#### H. SS-Update-Config: Install Latest SS-Config Boilerplate (Copies Existing Settings) ##########
 ####################################################################################################
 
 ## this will update the existing ss-config file to latest boilerplate from our mirrors ##
@@ -166,9 +176,6 @@ sed -i "s|\(^CLOUDFLARE_API_EMAIL=\).*|CLOUDFLARE_API_EMAIL=\"$CLOUDFLARE_API_EM
 if [[ -n "$CLOUDFLARE_RECOMMENDED_SETTINGS" ]]; then 
 sed -i "s|\(^CLOUDFLARE_RECOMMENDED_SETTINGS=\).*|CLOUDFLARE_RECOMMENDED_SETTINGS=\"$CLOUDFLARE_RECOMMENDED_SETTINGS\"|g" "$TMP_SS_CONFIG"
 fi
-
-
-
 
 ## copy dev site settings ##
 if [[ -n "$DEV_SITE" ]]; then 
@@ -1961,10 +1968,8 @@ if [[ "$SS_WORDPRESS_MU_PLUGINS" == "custom" || "$SS_MU_PLUGINS" == "custom" ]] 
 sed -i "s|\(^MU_PLUGIN_99_DIR=\).*|MU_PLUGIN_99_DIR=\"$MU_PLUGIN_99_DIR\"|g" "$TMP_SS_CONFIG"
 fi
 
-
-
 ####################################################################################################
-#### SS-Update-Config: Validate + Install Latest SS-Config Boilerplate #############################
+#### I. SS-Update-Config: Validate Latest SS-Config Boilerplate ####################################
 ####################################################################################################
 
 ## this snippet will ensure that the latest ss-config boilerplate appears intact ##
@@ -1982,7 +1987,7 @@ else
 fi
 
 ####################################################################################################
-#### SS-Update-Config: Cleanup Temporary Files #####################################################
+#### J. SS-Update-Config: Cleanup Temporary Files ##################################################
 ####################################################################################################
 
 ## delete tmp files ##
