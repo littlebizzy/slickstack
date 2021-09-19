@@ -650,25 +650,30 @@ fi
 #### SS-Install-WordPress-Config: Fix Site Domains (Modify Database Options) #######################
 ####################################################################################################
 
-## SNIPPET: ss-install-wordpress-core, ss-install-wordpress-config
+## SNIPPET: ss-install-wordpress-config, ss-install-wordpress-core
+## UPDATED: 19SEP2021
 
-## here we manually fix certain fields in the MySQL database to ensure proper functions ##
-## this fix required for WP Multisite (wp-config will override on single sites) ##
+## here we manually fix certain fields in the database to ensure proper functionality ##
+## this fix required for WP Multisite (wp-config.php enough for single sites) ##
 
-## fix site domains (production) ##
-mysql --execute="UPDATE ${DB_NAME}.${DB_PREFIX}options SET option_value='https://$SITE_DOMAIN' WHERE option_name='home'";
-mysql --execute="UPDATE ${DB_NAME}.${DB_PREFIX}options SET option_value='https://$SITE_DOMAIN' WHERE option_name='siteurl'";
+if [[ "$SS_APP" == "wordpress" ]]; then 
 
-## fix site domains (staging) ##
-if [[ "$STAGING_SITE" == "true" ]]; then 
-    mysql --execute="UPDATE ${DB_NAME}_staging.${DB_PREFIX}options SET option_value='https://staging.$SITE_TLD' WHERE option_name='home'";
-    mysql --execute="UPDATE ${DB_NAME}_staging.${DB_PREFIX}options SET option_value='https://staging.$SITE_TLD' WHERE option_name='siteurl'";
-fi
+    ## production ##
+    mysql --execute="UPDATE ${DB_NAME}.${DB_PREFIX}options SET option_value='https://$SITE_DOMAIN' WHERE option_name='home'";
+    mysql --execute="UPDATE ${DB_NAME}.${DB_PREFIX}options SET option_value='https://$SITE_DOMAIN' WHERE option_name='siteurl'";
 
-## fix site domains (dev) ##
-if [[ "$DEV_SITE" == "true" ]]; then 
-    mysql --execute="UPDATE ${DB_NAME}_dev.${DB_PREFIX}options SET option_value='https://dev.$SITE_TLD' WHERE option_name='home'";
-    mysql --execute="UPDATE ${DB_NAME}_dev.${DB_PREFIX}options SET option_value='https://dev.$SITE_TLD' WHERE option_name='siteurl'";
+    ## staging ##
+    if [[ "$STAGING_SITE" == "true" ]]; then 
+        mysql --execute="UPDATE staging.${DB_PREFIX}options SET option_value='https://staging.$SITE_DOMAIN_EXCLUDING_WWW' WHERE option_name='home'";
+        mysql --execute="UPDATE staging.${DB_PREFIX}options SET option_value='https://staging.$SITE_DOMAIN_EXCLUDING_WWW' WHERE option_name='siteurl'";
+    fi
+
+    ## development ##
+    if [[ "$DEV_SITE" == "true" ]]; then 
+        mysql --execute="UPDATE development.${DB_PREFIX}options SET option_value='https://dev.$SITE_DOMAIN_EXCLUDING_WWW' WHERE option_name='home'";
+        mysql --execute="UPDATE development.${DB_PREFIX}options SET option_value='https://dev.$SITE_DOMAIN_EXCLUDING_WWW' WHERE option_name='siteurl'";
+    fi
+
 fi
 
 ####################################################################################################
