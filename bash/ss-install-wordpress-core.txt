@@ -198,6 +198,31 @@ rm /var/www/html/wordpress*
 rm /var/www/html/staging/wordpress*
 rm /var/www/html/dev/wordpress*
 
+
+
+#########################################################
+#########################################################
+#########################################################
+
+## install database basics to avoid /wp-admin/install.php redirects
+
+## /usr/bin/php -r "
+## define('WP_SITEURL', '"${WP_SITEURL}"');
+## include '/app/wp-admin/install.php';
+## wp_install('"${WP_SITE}"', 'admin', '"${WP_EMAIL}"', 1, '', '"${DB_PASSWORD}"');
+## "
+
+## populate dev database basics ##
+$DIRR="/var/www/html/dev/wp-content/uploads/"
+subdirs=$(ls  -d $DIRR/.*/ | grep -v "/./\|/../")
+if [[ -z "$subdirs" ]]; then
+    /usr/bin/php -r "
+    define('WP_SITEURL', '"${SITE_DOMAIN}"');
+    include '/var/www/html/dev/wp-admin/install.php';
+    wp_install('"${SITE_DOMAIN_EXCLUDING_WWW}"', '"${SFTP_USER}"', '"${SFTP_USER}"@"${SITE_DOMAIN_EXCLUDING_WWW}"', 1, '', '"${SFTP_PASSWORD}"');
+    "
+fi
+
 ####################################################################################################
 #### SS-Install-WordPress-Core: Optimize WP_Options (For Virgin Installs) ##########################
 ####################################################################################################
@@ -397,5 +422,6 @@ fi
 ## Ref: https://serverascode.com/2014/06/22/automated-wordpress-database-deployment.html
 ## Ref: https://web.archive.org/web/20140711110900/http://www.openlogic.com/wazi/bid/324425/How-to-install-WordPress-from-the-command-line
 ## Ref: https://wordpress.org/support/article/how-to-install-wordpress/
+## Ref: https://stackoverflow.com/questions/6781225/how-do-i-check-if-a-directory-has-child-directories/6781343
 
 ## SS_EOF
