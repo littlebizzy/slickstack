@@ -206,11 +206,12 @@ rm /var/www/html/dev/wordpress*
 
 ## populate database basics to avoid /wp-admin/install.php redirects ##
 
+# define('WP_SITEURL', 'https://dev."${SITE_DOMAIN}"');
+
 INSTALLED_ALREADY_DEV=$(mysql --database=development --execute="SELECT * FROM ${DB_PREFIX}options WHERE option_name LIKE 'admin_email'";)
 
 if [[ "$DEV_SITE" == "true" ]] && [[ -z "$INSTALLED_ALREADY_DEV" ]]; then
     /usr/bin/php -q -r "
-    # define('WP_SITEURL', 'https://dev."${SITE_DOMAIN}"');
     include '/var/www/html/dev/wp-admin/install.php';
     wp_install('dev site', '"${SFTP_USER}"', '"${SFTP_USER}"@"${SITE_DOMAIN_EXCLUDING_WWW}"', 1, '', '"${SFTP_PASSWORD}"');
     "
