@@ -213,9 +213,9 @@ rm /var/www/html/dev/wordpress*
 ## "
 
 ## populate dev database basics ##
-$DIRR="/var/www/html/dev/wp-content/uploads"
-subdirs=$(ls  -d $DIRR/.*/ | grep -v "/./\|/../")
-if [[ -z "$subdirs" ]]; then
+INSTALLED_ALREADY_DEV=$(mysql --database=development --execute="SELECT option_name='admin_email' on ${DB_PREFIX}options";)
+
+if [[ "$DEV_SITE" == "true" ]] && [[ -z "$INSTALLED_ALREADY_DEV" ]]; then
     /usr/bin/php -r "
     define('WP_SITEURL', '"${SITE_DOMAIN}"');
     include '/var/www/html/dev/wp-admin/install.php';
