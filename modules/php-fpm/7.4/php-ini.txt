@@ -459,8 +459,7 @@ ldap.max_links = -1
 ;; opcache.enable_file_override = enable for better performance ;;
 ;; opcache.validate_permission = should disable since SlickStack is not shared hosting ;;
 ;; opcache.validate_root = should disable since SlickStack is not shared hosting ;;
-
-;; opcache.file_cache_only = should be disabled on PHP-FPM server config ;;
+;; opcache.file_cache = /var/www/cache/opcache hardcoded in SlickStack ;;
 
 [opcache]
 opcache.enable=1
@@ -479,19 +478,22 @@ opcache.consistency_checks=0
 opcache.error_log=/var/www/logs/error.log
 opcache.log_verbosity_level=1
 
-opcache.file_cache=/var/www/cache/opcache
-opcache.file_cache_only=@OPCACHE_FILE_CACHE_ONLY ;; default = 0
-;opcache.file_cache_consistency_checks=1
-;opcache.file_cache_fallback=1
-;; opcache.cache_id= ;; PHP 7.4+
+;; opcache file cache ;;
+opcache.file_cache=/var/www/cache/opcache ;; ss = /var/www/cache/opcache
+opcache.file_cache_only=0 ;; ss = 0 (PHP-FPM pool should use OPcache file cache as a fallback only)
+opcache.file_cache_consistency_checks=1 ;; ss = 1
+
 opcache.preload=@OPCACHE_PRELOAD ;; default = 0 (PHP 7.4+)
-;; opcache.preload_user= ;; PHP 7.4+
-;; opcache.file_update_protection=2 ;; PHP 7.4+
-;; opcache.lockfile_path=/tmp ;; PHP 7.4+
 opcache.huge_code_pages=@OPCACHE_HUGE_CODE_PAGES ;; default = 0
 opcache.validate_permission=0
 opcache.validate_root=0
 
+;; opcache.cache_id= ;; PHP 7.4+
+;; opcache.preload_user= ;; PHP 7.4+
+;; opcache.file_update_protection=2 ;; PHP 7.4+
+;; opcache.lockfile_path=/tmp ;; PHP 7.4+
+
+;; opcache.file_cache_fallback=1 ;; (for Windows only)
 ;; opcache.optimization_level=0xffffffff
 ;; opcache.dups_fix=0
 ;; opcache.blacklist_filename=
@@ -553,5 +555,10 @@ expose_php = Off
 ;; Ref: https://phoenixnap.com/kb/php-error-reporting
 ;; Ref: http://php.net/manual/en/function.error-reporting.php
 ;; Ref: https://stackoverflow.com/questions/25044817/zend-opcache-opcache-enable-cli-1-or-0-what-does-it-do
+;; Ref: https://www.ionos.com/digitalguide/websites/web-development/php-7-and-opcache-speed-up-websites/
+;; Ref: https://patrickkerrigan.uk/blog/php-opcache-file-cache/
+;; Ref: https://github.com/WordPress/hosting-handbook/issues/42
+;; Ref: https://techsemicolon.github.io/blog/2019/10/05/php-fpm-and-opcache-settings-and-invalidation-simplified/
+;; Ref: https://unix.stackexchange.com/questions/30190/how-do-i-set-the-user-of-php-fpm-to-be-php-user-instead-of-www-data
 
 ;; SS_EOF
