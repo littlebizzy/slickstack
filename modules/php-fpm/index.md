@@ -10,9 +10,19 @@ title: PHP-FPM (Public Mirrors)
 
 *Live configuration files and boilerplates used by current SlickStack installation that may be altered by LittleBizzy or Ubuntu for better performance.*
 
+#### 8.1
+* coming soon
+
+#### 7.4 
 * [php.ini](7.4/php-ini.txt)
 * [php-fpm.conf](7.4/php-fpm-conf.txt)
 * [www.conf](7.4/www-conf.txt)
+
+#### 7.2
+* [php.ini](7.2/php-ini.txt)
+* [php-fpm.conf](7.2/php-fpm-conf.txt)
+* [www.conf](7.2/www-conf.txt)
+
 * [ss-constants.php](ss-constants.txt)
 
 ### Related Links
@@ -26,4 +36,4 @@ title: PHP-FPM (Public Mirrors)
 
 ----
 
-*Last updated: Sep 12, 2021*
+*Last updated: Sep 28, 2021*
