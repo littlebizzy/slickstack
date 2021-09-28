@@ -10,6 +10,8 @@ title: PHP-FPM (Public Mirrors)
 
 *Live configuration files and boilerplates used by current SlickStack installation that may be altered by LittleBizzy or Ubuntu for better performance.*
 
+* [ss-constants.php](ss-constants.txt)
+
 #### 8.1
 * coming soon
 
@@ -22,8 +24,6 @@ title: PHP-FPM (Public Mirrors)
 * [php.ini](7.2/php-ini.txt)
 * [php-fpm.conf](7.2/php-fpm-conf.txt)
 * [www.conf](7.2/www-conf.txt)
-
-* [ss-constants.php](ss-constants.txt)
 
 ### Related Links
 
