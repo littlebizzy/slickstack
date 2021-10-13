@@ -47,17 +47,20 @@ server {
 	}
     
 ####################################################################################################
-#### Server Block (Production): Indexing + Public URI + Try Files Settings #########################
+#### Server Block (Production): Root Location Block ################################################
 ####################################################################################################
 
-		## force trailing slash on */wp-admin requests ##
-		rewrite /wp-admin$ https://$host$uri/ permanent;
+## below is the main location block that applies to pretty much the entire website ##
+## this includes site-wide rules for security, maintenance, and other purposes ##
+
+	## force trailing slash on */wp-admin requests ##
+	rewrite /wp-admin$ https://$host$uri/ permanent;
 		
-    location / {
-    	## redirect index.php to root ##
-    	if ($request_uri ~* "^(.*/)index\.php$") {
-        	return 301 $1;
-    	}
+    	location / {
+    		## redirect index.php to root ##
+    		if ($request_uri ~* "^(.*/)index\.php$") {
+        		return 301 $1;
+    		}
 
 		## 503 error if maintenance file found in web root ##
 		if (-f /var/www/html/maintenance.html) {
