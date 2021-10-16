@@ -193,7 +193,7 @@ ENDSTAND=$(tput rmso) # end standout
 ## in case of emergencies the SlickStack team might purposefully mismatch builds ##
 
 ## ensure ss-config (if exists) build matches ss-install ##
-if [[ -f "/var/www/ss-config" ]] && [[ "$SS_BUILD" != "OCT2021C" ]]; then 
+if [[ -f "/var/www/ss-config" ]] && [[ "$SS_BUILD" != "OCT2021D" ]]; then 
     echo -e "${YELLOW}Exiting ss-install: Please run ss-update-config since your ss-config is outdated and try again... ${NOCOLOR}"
     exit 1
 fi
@@ -436,21 +436,18 @@ if [[ ! -f "/var/www/ss-config" ]]; then
     printf "\n"
     
     ## PROMPT: which SSL do you want ##
-    read -t 300 -p "$(echo -e $PINK"Choose SSL cert [openssl|certbot]: "$NORMAL)" -e -i 'openssl' ss_var_ssl_type || ss_var_ssl_type=openssl
+    read -t 300 -p "$(echo -e $LIGHTPURPLE"Choose SSL cert [openssl|certbot]: "$NORMAL)" -e -i 'openssl' ss_var_ssl_type || ss_var_ssl_type=openssl
     sed -i "s/@SSL_TYPE/$ss_var_ssl_type/g" /tmp/ss-config
     
     ## new line ##
     printf "\n"
     
-    ## Multisite not supported yet ##
-    ## PROMPT: enable WP multisite (otherwise disabled) ##
-    # read -p 'Enable WP multisite (no): ' ss_var_wp_multisite
+    ## PROMPT: enable WP Multisite ##
+    read -t 300 -p "$(echo -e $LIGHTPURPLE"Enable WordPress Multisite (experimental): "$NORMAL)" -e -i 'false' ss_var_wp_multisite_status || ss_var_wp_multisite_status=false
+    sed -i "s/@WP_MULTISITE_STATUS/$ss_var_wp_multisite_status/g" /tmp/ss-config
     
-    ## PROMPT: disable WP multisite subdomains (otherwise enabled) ##
-    # read -p 'Enable WP multisite subdomains (yes): ' ss_var_wp_multisite_subdomains
-    
-    ## PROMPT: enable WP multisite domain mapping (otherwise disabled) ##
-    # read -p 'Enable WP multisite domain mapping (no): ' ss_var_wp_multisite_domain_mapping
+    ## new line ##
+    printf "\n"
     
     ## PROMPT: choose Cloudflare API key (otherwise 123456789) ##
     read -t 300 -p "$(echo -e $LIGHTPURPLE"Choose Cloudflare API key (account profile): "$NORMAL)" -e -i '123456789' ss_var_cloudflare_api_key || ss_var_cloudflare_api_key=123456789
