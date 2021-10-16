@@ -204,28 +204,29 @@ server {
         ## below line should not be needed
         # include snippets/fastcgi-php.conf;
     }
-
+    
 ####################################################################################################
-#### Server Block: WP-Login Settings (Rate Limiting) ###############################################
+#### Server Block (Production): WP-Login Settings (Rate Limiting) ##################################
 ####################################################################################################
 
-    location = /wp-login.php {
-        ## limit access to one request per second per IP address
-        limit_req zone=one burst=1 nodelay;
-        ## we must re-include this routing for php-fpm ##
-        include /etc/nginx/fastcgi.conf;
-        try_files $uri =404;
-        fastcgi_split_path_info ^(.+\.php)(/.+)$;
-        ## fastcgi_pass unix:/var/run/php/php7.4-fpm.sock
-	## fastcgi_pass unix:/run/php/php7.4-fpm.sock;
-	fastcgi_pass 127.0.0.1:9000;
-	fastcgi_read_timeout 300;
-        fastcgi_index index.php;
-        fastcgi_cache WORDPRESS;
-        fastcgi_cache_valid 200 301 404 @CACHEVALID;
-        fastcgi_cache_bypass $skip_cache;
-        fastcgi_no_cache $skip_cache;
-    }
+## because of goofy Nginx we must reinclude all PHP directives here as they exist above ##
+## next we enable rate-limiting to prevent automated brute force hack attempts ##
+
+	location = /wp-login.php {
+		include /etc/nginx/fastcgi.conf;
+        	try_files $uri =404;
+        	fastcgi_split_path_info ^(.+\.php)(/.+)$;
+		fastcgi_pass 127.0.0.1:9000;
+		fastcgi_read_timeout 300;
+        	fastcgi_index index.php;
+        	fastcgi_cache WORDPRESS;
+        	fastcgi_cache_valid 200 301 404 @CACHEVALID;
+        	fastcgi_cache_bypass $skip_cache;
+        	fastcgi_no_cache $skip_cache;
+	
+		## rate limit zone
+        	limit_req zone=wplogin burst=1 nodelay;
+    	}
     
 ####################################################################################################
 #### Server Block: Staging URI Settings (Supports WP-Staging, Etc) #################################
@@ -245,20 +246,22 @@ server {
     }
 
 ####################################################################################################
-#### Server Block: Static Resource Settings (Expiration Headers) ###################################
+#### Server Block (Production): Static Resource Settings ###########################################
 ####################################################################################################
 
-    ## CloudFlare (or CDNs) overwrite these headers ##
-    location ~* \.(atom|bmp|bz2|css|doc|docx|eot|gif|gz|ico|jpeg|jpg|js|mid|midi|mp4|ogg|ogv|otf|png|ppt|rar|rss|rtf|svg|svgz|tar|tgz|ttf|wav|woff|xls|zip)$ {
+## this snippet controls expiration headers and any other settings for static assets ##
+## keep in mind that CloudFlare or CDNs will likely overwrite these settings ##
+    
+    location ~* .(atom|bmp|bz2|css|doc|docx|eot|gif|gz|ico|jpeg|jpg|js|mid|midi|mp4|ogg|ogv|otf|png|ppt|rar|rss|rtf|svg|svgz|tar|tgz|ttf|wav|webp|woff|xls|zip)$ {
         expires max;
-    }
-
+	
 ####################################################################################################
 #### Server Block: Browser Resource (Render) Settings ##############################################
 ####################################################################################################
 
-    location ~ \.(eot|ttf|ttc|otf|woff|woff2|svg|css|js)$ {
-        ## avoid render security errors in certain browsers e.g. Firefox/IE ##
+## avoid render security errors in certain browsers e.g. Firefox/IE ##
+
+    location ~* .(eot|ttf|ttc|otf|woff|woff2|svg|css|js)$ {
         add_header Access-Control-Allow-Origin "*";
 	expires max;
     }
@@ -293,22 +296,6 @@ server {
     }
     
 ####################################################################################################
-#### Server Block: Custom Functions (MU Plugin) Settings ###########################################
-####################################################################################################
-    
-    location = /wp-content/functions.php {
-	deny all;
-    }
-    
-####################################################################################################
-#### Server Block: Plugin Blacklist (MU Plugin) Settings ###########################################
-####################################################################################################
-    
-    location = /wp-content/blacklist.txt {
-	deny all;
-    }
-    
-####################################################################################################
 #### Server Block: Git Configuration Settings ######################################################
 ####################################################################################################
 
@@ -316,6 +303,13 @@ server {
         deny all;
     }
     
+####################################################################################################
+#### Server Block: Deny Access To Various (Unsafe + Unused) WordPress Core Files ###################
+####################################################################################################
+
+
+
+
 ####################################################################################################
 #### Server Block: Deny Access To Various (Unsafe + Unused) WordPress Core Files ###################
 ####################################################################################################
@@ -369,7 +363,17 @@ server {
         rewrite / permanent;
     }
     
-    ## more coming soon... ##
+####################################################################################################
+#### Server Block (Production): Maintenance File (Named Location) ##################################
+####################################################################################################
+
+  ## activate named @maintenance location for any 503 errors ##
+  error_page 503 @maintenance;
+  
+  ## location rules for maintenance.html ##
+  location @maintenance {
+       rewrite ^(.*)$ /maintenance.html break;
+  }
     
     
 ## DO NOT REMOVE THIS CURLY BRACKET ᕦ⊙෴⊙ᕤ ##
