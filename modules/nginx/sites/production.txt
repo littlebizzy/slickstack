@@ -235,24 +235,28 @@ server {
     }
     
 ####################################################################################################
-#### Server Block: Staging URI Settings (Supports WP-Staging, Etc) #################################
+#### Server Block (Production): Staging Subdirectory Settings ######################################
 ####################################################################################################
     
-## staging sites are noindexed, FastCGI caching is disabled, and paths are hardcoded ## 
-## media files (uploads) are aliased to existing files from the production site ##
+## staging subdirectory is noindexed, caching is disabled, and paths are hardcoded ## 
+## media files are aliased to load existing files from the production site ##
+
+## NEEDS IMPROVEMENT ##
     
     location /staging/ {
-        ## first try files, then directories, otherwise query index ##
+        ## try files, then directories, otherwise query index ##
         try_files $uri $uri/ /staging/index.php?$args;
-        ## tweak FastCGI Cache (needs to be improved with mild cache settings) ##
+	
+        ## tweak fastcgi cache ##
         include /etc/nginx/fastcgi.conf;
         fastcgi_split_path_info ^(.+\.php)(/.+)$;
 	fastcgi_pass 127.0.0.1:9000;
         fastcgi_read_timeout 300;
         fastcgi_index index.php;
         fastcgi_cache off;
+	
+	## tweak http headers ##
 	add_header X-Robots-Tag "noindex, nofollow, nosnippet, noarchive";
-	add_header X-Powered-By "SlickStack";
         add_header Strict-Transport-Security "max-age=15552000" always; ## 180 days
         add_header X-FastCGI-Cache $upstream_cache_status;
         add_header X-Frame-Options SAMEORIGIN;
@@ -261,10 +265,6 @@ server {
         add_header Referrer-Policy "strict-origin-when-cross-origin";
 	add_header Permissions-Policy "accelerometer=(), ambient-light-sensor=(), autoplay=*, battery=(), camera=(), display-capture=*, document-domain=*, encrypted-media=*, fullscreen=*, geolocation=(self), gyroscope=(), layout-animations=*, legacy-image-formats=*, magnetometer=(), microphone=(self), midi=(), oversized-images=*, payment=*, picture-in-picture=*, publickey-credentials-get=*, sync-xhr=*, usb=(), vibrate=(), wake-lock=(), xr-spatial-tracking=()";
     }
-    
-    # location ~ ^/staging/wp-content/uploads/(.*) {
-    #    return 302             https://@DOMAIN/wp-content/uploads/$1;
-    # }
     
     location ^~ /staging/wp-content/uploads/ {
         alias /var/www/html/wp-content/uploads/;
