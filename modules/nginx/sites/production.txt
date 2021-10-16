@@ -149,8 +149,11 @@ server {
     # }
 
 ####################################################################################################
-#### Server Block: PHP-FPM Routing + FastCGI Routing Settings ######################################
+#### Server Block (Production): PHP-FPM Routing Settings ###########################################
 ####################################################################################################
+
+## here are the infamous settings that allow Nginx and PHP to work together via FCGI ##
+## we also have to optimize cookies here too since working with WordPress ##
 
     location ~ \.php$ {
         set $rt_session "";
@@ -162,12 +165,9 @@ server {
                 set $rt_session "";
         }
 
-        ## include /etc/nginx/fastcgi_params for older nginx versions
         include /etc/nginx/fastcgi.conf;
         try_files $uri =404;
         fastcgi_split_path_info ^(.+\.php)(/.+)$;
-        ## fastcgi_pass unix:/var/run/php/php7.4-fpm.sock
-	## fastcgi_pass unix:/run/php/php7.4-fpm.sock;
 	fastcgi_pass 127.0.0.1:9000;
 	fastcgi_read_timeout 300;
         fastcgi_index index.php;
@@ -175,10 +175,8 @@ server {
         fastcgi_cache_valid 200 301 404 @CACHEVALID;
         fastcgi_cache_bypass $skip_cache;
         fastcgi_no_cache $skip_cache;
-        ## below line should not be needed
-        # include snippets/fastcgi-php.conf;
     }
-
+    
 ####################################################################################################
 #### Server Block (Production): WP-Login Settings (Rate Limiting) ##################################
 ####################################################################################################
