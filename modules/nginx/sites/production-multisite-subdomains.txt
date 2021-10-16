@@ -211,6 +211,43 @@ server {
     	}
     
 ####################################################################################################
+#### Server Block (Production): Adminer Settings ###################################################
+####################################################################################################
+
+## this snippet lets you load Adminer via the frontend (requires more repeat rules) ##
+## we include some basic rate limiting rules to avoid attacks on these URLs ##
+
+## NEEDS IMPROVEMENT ##
+
+    location ^~ /adminer {
+        ## limit access to one request per second per IP address
+        limit_req zone=adminer burst=1 nodelay;
+        alias /var/www/meta/adminer.php;
+        ## PHP-FPM routing must be re-included here to ensure processing ##
+        include /etc/nginx/fastcgi.conf;
+        try_files $uri =404;
+        fastcgi_split_path_info ^(.+\.php)(/.+)$;
+        fastcgi_pass 127.0.0.1:9000;
+        fastcgi_read_timeout 300;
+        fastcgi_index index.php;
+        fastcgi_cache off;
+    }
+    
+    location ^~ /phpmyadmin {
+        ## limit access to one request per 30 second per IP address
+        limit_req zone=phpmyadmin burst=1 nodelay;
+        alias /var/www/meta/adminer.php;
+        ## PHP-FPM routing must be re-included here to ensure processing ##
+        include /etc/nginx/fastcgi.conf;
+        try_files $uri =404;
+        fastcgi_split_path_info ^(.+\.php)(/.+)$;
+        fastcgi_pass 127.0.0.1:9000;
+        fastcgi_read_timeout 300;
+        fastcgi_index index.php;
+        fastcgi_cache off;
+    }
+    
+####################################################################################################
 #### Server Block (Production): Staging Subdirectory Settings ######################################
 ####################################################################################################
     
