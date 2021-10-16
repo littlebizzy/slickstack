@@ -14,7 +14,7 @@ SlickStack is a free LEMP stack automation script written in Bash designed to en
 
 ## Core Modules
 
-*Last updated: Sep 9, 2021*
+*Last updated: Oct 16, 2021*
 
 | LEMP Module | Mirrors | Version | What does SlickStack [ss] customize? |
 | :------------- | :----------: | :----------: | :----------: |
@@ -34,6 +34,8 @@ SlickStack is a free LEMP stack automation script written in Bash designed to en
 | **Rclone** | [mirrors](https://mirrors.slickstack.io/modules/rclone/) | 1.50.x | `rclone.conf` |
 
 ## Changelog
+
+* **NEW!** WordPress Multisite can now be enabled during ss-install wizard (or via ss-config), however it is experimental. Specifically, we need feedback from the community re: the Nginx server block configuration for Multisite which is different from our default server block boilerplate for single sites. Also, going forward we are planning to ONLY support the "subdomains" version of WP Multisite and probably not the "subdirectories" version... TLD domain mapping is not yet supported and will also require feedback re: Nginx configuration along with community testing and debugging.
 
 * **NEW!** `ss-sync-staging` has now been fixed to work properly with the new subdomain and dedicated database approach we've settled on for staging sites. So, now this script will briefly duplicate the MySQL database dump (that ss-dump-database generates) and upload it to the `staging` database. Then this script will rsync all files from production to staging directory but NOT the media uploads, which staging automagically loads from the production directory using Nginx magic.
 
