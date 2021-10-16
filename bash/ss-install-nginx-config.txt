@@ -481,7 +481,7 @@ if [[ "$STAGING_SITE" == "true" ]]; then
 fi
 
 ####################################################################################################
-#### SlickStack: Install Nginx Servers Blocks (Supports Single Sites + Multisite) ##################
+#### SS-Install-Nginx-Config: Install Nginx Server Block (Production) ##################
 ####################################################################################################
 
 ## here we install the Nginx server block for production (default) site no matter what ##
@@ -489,14 +489,16 @@ fi
 
 ## download latest server block boilerplate (single site / Multisite) ##
 if [[ "$WP_MULTISITE" == "true" ]]; then 
-    wget -O /tmp/default "$MIRROR_SERVER_BLOCK_WP_MULTISITE"
-    # elif [[ "$WP_MULTISITE" == "true" ]] && [[ "$WP_MULTISITE_SUBDOMAINS" == "false" ]]; then 
+    wget -O /tmp/default "$MIRROR_NGINX_BLOCK_PRODUCTION_MULTISITE"
+elif [[ "$WP_MULTISITE" == "true" ]] && [[ "$WP_MULTISITE_SUBDOMAINS" == "false" ]]; then 
+    wget -O /tmp/default "$MIRROR_NGINX_BLOCK_PRODUCTION_MULTISITE_SUBDIRECTORIES"
 else 
     wget -O /tmp/default "$MIRROR_NGINX_BLOCK_PRODUCTION"
 fi
 
 ## replace site variables ##
-    SITE_DOMAIN_EXCLUDING_WWW=$(echo "${SITE_DOMAIN/www./}")
+
+SITE_DOMAIN_EXCLUDING_WWW=$(echo "${SITE_DOMAIN/www./}")
     
 sed -i "s/@SITE_DOMAIN_EXCLUDING_WWW/${SITE_DOMAIN_EXCLUDING_WWW}/g" /tmp/default
 sed -i "s/@SITE_DOMAIN_INCLUDING_WWW/${SITE_DOMAIN_INCLUDING_WWW}/g" /tmp/default
