@@ -114,11 +114,11 @@ server {
     }
 
 ####################################################################################################
-#### Server Block: FastCGI Cache Settings ##########################################################
+#### Server Block (Production): FastCGI Cache Settings #############################################
 ####################################################################################################
 
-## several common URI patterns are configured to skip FastCGI caching to avoid conflicts ##
-## ensure your site follows correct URI spelling e.g. /cart and /checkout (etc) ##
+## several common patterns are configured to skip FastCGI caching to avoid conflicts ##
+## ensure your site uses correct URL spellings e.g. /cart and /checkout (etc) ##
 
     ## set to either 1/0 to skip fastcgi cache by default ##
     set $skip_cache @FCGI_CACHE;
@@ -138,7 +138,12 @@ server {
         set $skip_cache 1;
     }
     
-    ## logged in users or recent commenters etc should always skip the cache
+    ## do not cache RSS feeds or sitemaps (special 5 minute cache rule or something would be better in the future) ##
+    if ($request_uri ~* "/feed/|sitemap(_index)?.xml") {
+        set $skip_cache 1;
+    }
+    
+    ## certain cookies (logged in users or recent commenters etc) should always skip the cache
     if ($http_cookie ~* "wordpress_logged_in|wp-postpass|woocommerce_items_in_cart|woocommerce_cart_hash|comment_author") {
         set $skip_cache 1;
     }
