@@ -6,10 +6,10 @@
 #### mirror: https://mirrors.slickstack.io/bash/ss-encrypt-openssl.txt #############################
 #### path: /var/www/ss-encrypt-openssl #############################################################
 #### destination: n/a (not a boilerplate) ##########################################################
-#### purpose: Regenerates free self-signed OpenSSL certs and adjusts Nginx config (idempotent) #####
+#### purpose: Regenerates free self-signed OpenSSL certificate for use by Nginx (idempotent) #######
 #### module version: OpenSSL 1.1.1x ################################################################
-#### sourced by: ss core cron jobs, ss-encrypt, ss-install-nginx-config ############################
-#### bash aliases: ss encrypt openssl, ss install openssl ##########################################
+#### sourced by: ss-install-nginx-config ###########################################################
+#### bash aliases: ss encrypt openssl, ss generate openssl #########################################
 ####################################################################################################
 
 ## SS-ENCRYPT PERFORMS BASIC NGINX CONFIG MODIFICATION REGARDLESS OF SS-INSTALL-NGINX ##
@@ -23,15 +23,14 @@ source /var/www/ss-functions
 
 ## BELOW THIS RELIES ON SS-CONFIG AND SS-FUNCTIONS
 
-
 ####################################################################################################
-#### TABLE OF CONTENTS #############################################################################
+#### TABLE OF CONTENTS (SS-Encrypt-OpenSSL) ########################################################
 ####################################################################################################
 
 ## A. Touch Timestamp File
 ## B. Message (Begin Script)
 ## C. Hide Bug In OpenSSL 1.1.1x
-## D. (Re)generate OpenSSL Certificate
+## D. Regenerate OpenSSL Certificate
 ## E. Reset Permissions (Nginx SSL)
 ## F. Restart Modules (Nginx)
 
@@ -53,7 +52,7 @@ touch "$TIMESTAMP_SS_ENCRYPT_OPENSSL"
 ## it will only be noticed by sudo users who manually call ss core bash scripts ##
 
 ## echo message ##
-echo -e "${PURPLE}Running ss-encrypt-openssl: Regenerates free self-signed OpenSSL certs and adjusts Nginx config (idempotent)... ${NOCOLOR}"
+echo -e "${PURPLE}Running ss-encrypt-openssl: Regenerates free self-signed OpenSSL certificate for use by Nginx (idempotent)... ${NOCOLOR}"
 sleep "$SLEEP_MESSAGE_BEGIN"
 
 ####################################################################################################
@@ -65,7 +64,7 @@ touch /home/${SUDO_USER}/.rnd
 touch /home/${SFTP_USER}/.rnd
 
 ####################################################################################################
-#### D. SS-Encrypt-OpenSSL: (Re)generate OpenSSL Certificate #######################################
+#### D. SS-Encrypt-OpenSSL: Regenerate OpenSSL Certificate #########################################
 ####################################################################################################
 
 ## this will generate a new self-signed OpenSSL certificate every single time it runs ##
@@ -86,10 +85,17 @@ openssl req -x509 -newkey rsa:4096 -sha256 -days 3650 -nodes \
     -keyout /var/www/certs/keys/slickstack.key -out /var/www/certs/slickstack.crt -subj "/CN=${SITE_DOMAIN}" \
     -addext "subjectAltName=DNS:${SITE_DOMAIN_EXCLUDING_WWW},DNS:${SITE_DOMAIN_INCLUDING_WWW},DNS:staging.${SITE_DOMAIN_EXCLUDING_WWW},DNS:dev.${SITE_DOMAIN_EXCLUDING_WWW},IP:${SYSTEM_IPV4_ADDRESS}"
 
+if [[ "$WP_MULTISITE" == "true" ]] && [[ "$WP_MULTISITE_SUBDOMAINS" != "false" ]]; then 
+    openssl req -x509 -newkey rsa:4096 -sha256 -days 3650 -nodes \
+    -keyout /var/www/certs/keys/slickstack.key -out /var/www/certs/slickstack.crt -subj "/CN=${SITE_DOMAIN}" \
+    -addext "subjectAltName=DNS:${SITE_DOMAIN_EXCLUDING_WWW},DNS:${SITE_DOMAIN_INCLUDING_WWW},DNS:staging.${SITE_DOMAIN_EXCLUDING_WWW},DNS:dev.${SITE_DOMAIN_EXCLUDING_WWW},IP:${SYSTEM_IPV4_ADDRESS}"
+fi
+
+
 ## VERIFY command: openssl x509 -noout -text -in example.crt
 
 ####################################################################################################
-#### E. SS-Install-Nginx-SSL: Reset Permissions (Nginx SSL) ########################################
+#### E. SS-Encrypt-OpenSSL: Reset Permissions (Nginx SSL) ##########################################
 ####################################################################################################
 
 ## run ss-perms-nginx-ssl ##
