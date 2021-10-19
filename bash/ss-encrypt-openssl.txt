@@ -81,14 +81,16 @@ rm /var/www/certs/keys/*.key
 ## generate self-signed certificate (expires after 10 years) ##
 # openssl req -x509 -newkey rsa:4096 -sha256 -days 3650 -nodes -keyout /var/www/certs/keys/slickstack.key -out /var/www/certs/slickstack.crt -subj "/C=${CSR_COUNTRY}/ST=${CSR_STATE}/L=${CSR_CITY}/O=${CSR_COMPANY}/OU=${CSR_DEPT}/CN=${SITE_DOMAIN}"
 
+if [[ "$WP_MULTISITE" == "false" ]]; then 
 openssl req -x509 -newkey rsa:4096 -sha256 -days 3650 -nodes \
     -keyout /var/www/certs/keys/slickstack.key -out /var/www/certs/slickstack.crt -subj "/CN=${SITE_DOMAIN}" \
     -addext "subjectAltName=DNS:${SITE_DOMAIN_EXCLUDING_WWW},DNS:${SITE_DOMAIN_INCLUDING_WWW},DNS:staging.${SITE_DOMAIN_EXCLUDING_WWW},DNS:dev.${SITE_DOMAIN_EXCLUDING_WWW},IP:${SYSTEM_IPV4_ADDRESS}"
 
-if [[ "$WP_MULTISITE" == "true" ]] && [[ "$WP_MULTISITE_SUBDOMAINS" != "false" ]]; then 
+elif [[ "$WP_MULTISITE" == "true" ]] && [[ "$WP_MULTISITE_SUBDOMAINS" != "false" ]]; then 
     openssl req -x509 -newkey rsa:4096 -sha256 -days 3650 -nodes \
     -keyout /var/www/certs/keys/slickstack.key -out /var/www/certs/slickstack.crt -subj "/CN=${SITE_DOMAIN}" \
-    -addext "subjectAltName=DNS:${SITE_DOMAIN_EXCLUDING_WWW},DNS:${SITE_DOMAIN_INCLUDING_WWW},DNS:staging.${SITE_DOMAIN_EXCLUDING_WWW},DNS:dev.${SITE_DOMAIN_EXCLUDING_WWW},IP:${SYSTEM_IPV4_ADDRESS}"
+    -addext "subjectAltName=DNS:${SITE_DOMAIN_EXCLUDING_WWW},DNS:${SITE_DOMAIN_INCLUDING_WWW},DNS:*.${SITE_DOMAIN_EXCLUDING_WWW},IP:${SYSTEM_IPV4_ADDRESS}"
+    
 fi
 
 
@@ -177,5 +179,6 @@ source "$PATH_SS_RESTART_NGINX"
 ## Ref: https://www.freecodecamp.org/news/openssl-command-cheatsheet-b441be1e8c4a/
 ## Ref: https://www.redhat.com/sysadmin/6-openssl-commands
 ## Ref: https://geekflare.com/openssl-commands-certificates/
+## Ref: https://stackoverflow.com/questions/1822268/how-do-i-create-my-own-wildcard-certificate-on-linux/1822279
 
 ## SS_EOF
