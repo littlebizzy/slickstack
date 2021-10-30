@@ -45,7 +45,17 @@ server {
 	if ($http_host !~ "@SITE_DOMAIN|staging.@SITE_DOMAIN_EXCLUDING_WWW|dev.@SITE_DOMAIN_EXCLUDING_WWW") {
 	return 301	https://@SITE_DOMAIN$request_uri;
 	}
-    
+	
+####################################################################################################
+#### Server Block (Production): Redirect Any AMP Requests ##########################################
+####################################################################################################
+
+	#### snippet to 301 any /amp or /amp/ or /?amp... to parent URL ##
+	
+        rewrite ^(.*/)amp/$ $1 permanent;
+        rewrite ^(.*/)amp$ $1 permanent;
+        rewrite ^(.*/)?amp$ $1 permanent;
+
 ####################################################################################################
 #### Server Block (Production): Root Location Block ################################################
 ####################################################################################################
@@ -55,11 +65,6 @@ server {
 
 	## force trailing slash on */wp-admin requests ##
 	rewrite /wp-admin$ https://$host$uri/ permanent;
-	
-#### snippet to 301 any /amp or /amp/ or /?amp... to parent URL ##
-  	rewrite ^(.*/)amp/$ $1 permanent;
-	rewrite ^/(.*)\/amp $1 permanent;
-	rewrite ^(.*/)?amp$ $1 permanent;
 		
     	location / {
     		## redirect index.php to root ##
