@@ -24,7 +24,22 @@ server {
 	listen				[::]:443 ssl http2;
 	server_name			dev.@SITE_DOMAIN_EXCLUDING_WWW;
 	root 				/var/www/html/dev;
-    
+	
+####################################################################################################
+#### Server Block (Development): Redirect Any AMP Requests #########################################
+####################################################################################################
+
+## this powerful snippet will redirect all the messy URLs created by AMP software ##
+## SlickStack does not support AMP for both stability and political reasons ##
+
+	## redirect /amp queries ##
+	rewrite ^(.*/)amp(.*)$ $1 permanent;
+	
+	## redirect ?amp queries ##
+	if ($query_string ~ "^(.*)amp(.*)$") {
+        	rewrite ^(.*)$ $uri? permanent;
+	}
+
 ####################################################################################################
 #### Server Block: Indexing + Public URI + Try Files Settings ######################################
 ####################################################################################################
