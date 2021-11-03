@@ -72,8 +72,6 @@ rm /tmp/*cron*
 ## here we retrieve all the latest ss core cron jobs and bash scripts to keep them updated ##
 ## this process does not affect ss-config or LEMP modules, nor the ss-check file ##
 
-## retrieve ss core cron jobs ##
-
 ## 00-crontab ##
 ss_wget_fast -O "$TMP_00_CRONTAB" "$MIRROR_00_CRONTAB"
 VALIDATE_TMP_00_CRONTAB=$(grep 'SS_EOF' "${TMP_00_CRONTAB}")
@@ -95,7 +93,13 @@ if [[ -z "$VALIDATE_TMP_02_CRON_REGULAR" ]]; then
     ss_wget_slow -O "$TMP_02_CRON_REGULAR" "$MIRROR2_02_CRON_REGULAR"
 fi
 
+## 03-cron-quarter-hourly ##
 ss_wget_fast -O "$TMP_03_CRON_QUARTER_HOURLY" "$MIRROR_03_CRON_QUARTER_HOURLY"
+VALIDATE_TMP_03_CRON_QUARTER_HOURLY=$(grep 'SS_EOF' "${TMP_03_CRON_QUARTER_HOURLY}")
+if [[ -z "$VALIDATE_TMP_03_CRON_QUARTER_HOURLY" ]]; then
+    ss_wget_slow -O "$TMP_03_CRON_QUARTER_HOURLY" "$MIRROR2_03_CRON_QUARTER_HOURLY"
+fi
+
 ss_wget_fast -O "$TMP_04_CRON_HALF_HOURLY" "$MIRROR_04_CRON_HALF_HOURLY"
 ss_wget_fast -O "$TMP_05_CRON_HOURLY" "$MIRROR_05_CRON_HOURLY"
 ss_wget_fast -O "$TMP_06_CRON_QUARTER_DAILY" "$MIRROR_06_CRON_QUARTER_DAILY"
