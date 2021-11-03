@@ -175,9 +175,23 @@ fi
 #### E. SS-Check: Retrieve Bash Scripts (Except SS-Check) ##########################################
 ####################################################################################################
 
-## retrieve ss core bash scripts ##
+## here we retrieve all the latest ss core cron jobs and bash scripts to keep them updated ##
+## this process does not affect ss-config or LEMP modules, nor the ss-check file ##
+
+## ss-clean-database ##
 ss_wget_fast -O "$TMP_SS_CLEAN_DATABASE" "$MIRROR_SS_CLEAN_DATABASE"
+VALIDATE_TMP_SS_CLEAN_DATABASE=$(grep 'SS_EOF' "${TMP_SS_CLEAN_DATABASE}")
+if [[ -z "$VALIDATE_TMP_SS_CLEAN_DATABASE" ]]; then
+    ss_wget_slow -O "$TMP_SS_CLEAN_DATABASE" "$MIRROR2_SS_CLEAN_DATABASE"
+fi
+
+## ss-clean-files ##
 ss_wget_fast -O "$TMP_SS_CLEAN_FILES" "$MIRROR_SS_CLEAN_FILES"
+VALIDATE_TMP_SS_CLEAN_FILES=$(grep 'SS_EOF' "${TMP_SS_CLEAN_FILES}")
+if [[ -z "$VALIDATE_TMP_SS_CLEAN_FILES" ]]; then
+    ss_wget_slow -O "$TMP_SS_CLEAN_FILES" "$MIRROR2_SS_CLEAN_FILES"
+fi
+
 ss_wget_fast -O "$TMP_SS_CONFIG_SAMPLE" "$MIRROR_SS_CONFIG_SAMPLE"
 ss_wget_fast -O "$TMP_SS_DELETE_DATABASE" "$MIRROR_SS_DELETE_DATABASE"
 ss_wget_fast -O "$TMP_SS_DELETE_FILES" "$MIRROR_SS_DELETE_FILES"
