@@ -197,6 +197,7 @@ title: SlickStack (Public Mirrors)
 * https://shkspr.mobi/blog/2021/01/the-unreasonable-effectiveness-of-simple-html/
 * https://jvns.ca/blog/2021/01/23/firecracker--start-a-vm-in-less-than-a-second/
 * https://unixsheikh.com/articles/sqlite-the-only-database-you-will-ever-need-in-most-cases.html
+* https://mxb.dev/blog/the-return-of-the-90s-web/
 
 ----
 
