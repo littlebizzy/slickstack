@@ -1163,16 +1163,16 @@ cp "$TMP_SS_UPDATE_MODULES" "$PATH_SS_UPDATE_MODULES"
 cp "$TMP_SS_WORKER" "$PATH_SS_WORKER"
 
 ####################################################################################################
-#### H. SS-Check: Reset Permissions (SlickStack Core) ##############################################
+#### H. SS-Check: Reset Permissions (SlickStack) ###################################################
 ####################################################################################################
+
+## we hardcode this permissions reset snippet into some core scripts for redundancy ##
+## this ensures permissions are regularly fixed without any dependencies ##
 
 ## THIS SNIPPET DOES NOT RELY ON SS-CONFIG OR SS-FUNCTIONS ##
 
 ## SNIPPET: ss-check, ss-worker, ss core cron jobs
-## UPDATED: 23SEP2021
-
-## we hardcode this permissions reset snippet into all ss core scripts for redundancy ##
-## this ensures permissions are regularly fixed without requiring dependencies ##
+## UPDATED: 05NOV2021
 
 ## make directories ##
 mkdir /var/www
@@ -1201,6 +1201,7 @@ touch /var/www/meta/.htpasswd
 
 ## if staging enabled
 if [[ "$STAGING_SITE" != "false" ]]; then 
+    mkdir /var/www/html/staging
     mkdir /var/www/html/staging/.well-known
     mkdir /var/www/html/staging/.well-known/acme-challenge
     chown -R "${SFTP_USER}":www-data /var/www/html/staging/.well-known ## accessed by server for e.g. Cerbot but also by SFTP user for things like Stripe ##
@@ -1209,6 +1210,7 @@ fi
 
 ## if dev enabled
 if [[ "$DEV_SITE" != "false" ]]; then 
+    mkdir /var/www/html/dev
     mkdir /var/www/html/dev/.well-known
     mkdir /var/www/html/dev/.well-known/acme-challenge
     chown -R "${SFTP_USER}":www-data /var/www/html/dev/.well-known ## accessed by server for e.g. Cerbot but also by SFTP user for things like Stripe ##
