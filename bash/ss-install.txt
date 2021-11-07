@@ -506,8 +506,44 @@ if [[ ! -f "/var/www/ss-config" ]]; then
     ## new line ##
     printf "\n"
     
+    
+####################################################################################################
+##### mkdirs
+####################################################################################################
+
+## SNIPPET: ss-check, ss-install, ss-worker, ss core cron jobs
+
+mkdir /var/www
+mkdir /var/www/auth
+mkdir /var/www/backups
+mkdir /var/www/backups/config
+mkdir /var/www/backups/html
+mkdir /var/www/backups/mysql
+mkdir /var/www/backups/mysql/data
+mkdir /var/www/cache
+mkdir /var/www/cache/nginx
+mkdir /var/www/cache/opcache
+mkdir /var/www/cache/system
+mkdir /var/www/certs
+mkdir /var/www/certs/keys
+mkdir /var/www/crons
+mkdir /var/www/crons/custom
+mkdir /var/www/html
+mkdir /var/www/html/.well-known
+mkdir /var/www/html/.well-known/acme-challenge
+mkdir /var/www/logs
+mkdir /var/www/meta
+mkdir /var/www/meta/timestamps
+mkdir /var/www/sites
+touch /var/www/meta/.htpasswd
+    
+    
+    
+ ####################################################################################################
+ ####
+ ####################################################################################################
+    
     ## copy files to their destinations ##
-    mkdir /var/www
     cp /tmp/ss-config /var/www/ss-config
     
 ####################################################################################################
@@ -616,6 +652,28 @@ source /var/www/ss-check
 
 
 source /var/www/ss-functions
+
+####################################################################################################
+####
+####################################################################################################
+
+## if staging enabled
+if [[ "$STAGING_SITE" != "false" ]]; then 
+    mkdir /var/www/html/staging
+    mkdir /var/www/html/staging/.well-known
+    mkdir /var/www/html/staging/.well-known/acme-challenge
+    chown -R "${SFTP_USER}":www-data /var/www/html/staging/.well-known ## accessed by server for e.g. Cerbot but also by SFTP user for things like Stripe ##
+    chown -R "${SFTP_USER}":www-data /var/www/html/staging/.well-known/acme-challenge ## accessed by server for e.g. Cerbot but also by SFTP user for things like Stripe ##
+fi
+
+## if dev enabled
+if [[ "$DEV_SITE" != "false" ]]; then 
+    mkdir /var/www/html/dev
+    mkdir /var/www/html/dev/.well-known
+    mkdir /var/www/html/dev/.well-known/acme-challenge
+    chown -R "${SFTP_USER}":www-data /var/www/html/dev/.well-known ## accessed by server for e.g. Cerbot but also by SFTP user for things like Stripe ##
+    chown -R "${SFTP_USER}":www-data /var/www/html/dev/.well-known/acme-challenge ## accessed by server for e.g. Cerbot but also by SFTP user for things like Stripe ##
+fi
 
 ####################################################################################################
 #### SS-Install: Set Confold As Ubuntu Dpkg Default ################################################
