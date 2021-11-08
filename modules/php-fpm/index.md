@@ -35,6 +35,8 @@ title: PHP-FPM (Public Mirrors)
 * [https://github.com/php/php-src/blob/php-7.2.24/sapi/fpm/php-fpm.conf.in](https://github.com/php/php-src/blob/php-7.2.24/sapi/fpm/php-fpm.conf.in)
 * [https://github.com/php/php-src/blob/php-7.2.24/sapi/fpm/www.conf.in](https://github.com/php/php-src/blob/php-7.2.24/sapi/fpm/www.conf.in)
 * [https://dev.to/robdwaller/how-php-type-declarations-actually-work-1mm5](https://dev.to/robdwaller/how-php-type-declarations-actually-work-1mm5)
+* [https://linuxiac.com/ubuntu-22-04-codename/](https://linuxiac.com/ubuntu-22-04-codename/)
+* [https://tecadmin.net/ubuntu-22-04-release-schedule-features/](https://tecadmin.net/ubuntu-22-04-release-schedule-features/)
 
 ----
 
