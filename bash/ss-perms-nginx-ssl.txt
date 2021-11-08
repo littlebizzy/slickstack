@@ -70,10 +70,15 @@ chown -R $SFTP_USER:www-data /var/www/html/.well-known ## must be $SFTP_USER:www
 chmod 0775 /var/www/html/.well-known ## must be 0775
 chmod 0755 /var/www/certs ## must be 0755
 chmod 0700 /var/www/certs/keys ## must be 0700
-chmod 0644 /var/www/certs/*.crt ## public certs/dhparam should be 0644
-chmod 0644 /var/www/certs/*.pem ## public certs/dhparam should be 0644
-chmod 0600 /var/www/certs/keys/*.key ## must be 0600
-chmod 0600 /var/www/certs/keys/*.pem ## must be 0600
+
+# chmod 0644 /var/www/certs/*.crt ## public certs/dhparam should be 0644
+# chmod 0644 /var/www/certs/*.pem ## public certs/dhparam should be 0644
+find /var/www/certs -type f -exec chmod 0600 {} \; ## must be 0644
+
+# chmod 0600 /var/www/certs/keys/*.key ## must be 0600
+# chmod 0600 /var/www/certs/keys/*.pem ## must be 0600
+find /var/www/certs/keys -type f -exec chmod 0600 {} \; ## must be 0600
+
 chmod 0775 /var/www/html/.well-known
 
 ####################################################################################################
@@ -83,5 +88,6 @@ chmod 0775 /var/www/html/.well-known
 ## Ref: https://unix.stackexchange.com/questions/87200/change-permissions-for-a-symbolic-link
 ## Ref: https://serverfault.com/questions/939682/lets-encrypt-certificate-permissions
 ## Ref: https://community.letsencrypt.org/t/recommended-permissions-on-files-distributed-by-lets-encrypt/104266
+## Ref: https://stackoverflow.com/questions/48868479/how-to-chmod-all-files-in-sub-directories-without-chmod-the-folders
 
 ## SS_EOF
