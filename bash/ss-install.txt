@@ -766,6 +766,8 @@ if [[ "$SS_APP" != "mysql" ]]; then
 
     ## run ss-install-php-config ##
     source "$PATH_SS_INSTALL_PHP_CONFIG"
+    
+chown www-data:www-data /var/www/meta/ss-constants.php ## must be www-data:www-data
 
 fi
 
@@ -780,10 +782,17 @@ if [[ "$SS_APP" != "mysql" ]]; then
 
     ## run ss-install-nginx-packages ##
     source "$PATH_SS_INSTALL_NGINX_PACKAGES"
+    
+chown -R "${SFTP_USER}":www-data /var/www/html/.well-known ## accessed by server for e.g. Cerbot but also by SFTP user for things like Stripe ##
+chown -R "${SFTP_USER}":www-data /var/www/html/.well-known/acme-challenge ## accessed by server for e.g. Cerbot but also by SFTP user for things like Stripe ##
+
+chown www-data:www-data /var/www/logs ## must be www-data:www-data
+chown www-data:www-data /var/www/meta ## must be www-data:www-data
+chown www-data:www-data /var/www/meta/.htpasswd ## must be www-data:www-data
 
     ## run ss-install-nginx-config ##
     source "$PATH_SS_INSTALL_NGINX_CONFIG"
-
+   
     ## run ss-install-nginx-ssl ##
     # source "$PATH_SS_INSTALL_NGINX_SSL"
 
