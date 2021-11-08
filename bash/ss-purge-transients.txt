@@ -41,14 +41,26 @@ sleep "$SLEEP_MESSAGE_BEGIN"
 ## manually deletes all transients (temporary query cache data) from WordPress database ##
 ## this is a more forceful approach than simply purging the Redis object cache ##
 
-## for MySQL 8.0 (Ubuntu 20.04) ##
+## mysql 8.0 (ubuntu 20.04) ##
 if [[ "${UBUNTU_VERSION}" = "20.04" || -z "${UBUNTU_VERSION}" ]]; then 
-    mysql --execute="DELETE FROM ${DB_NAME}.${DB_PREFIX}options WHERE option_name LIKE ('%\_transient\_%');"
+
+    if [[ $(mysql --execute "SHOW TABLES FROM ${DB_NAME} LIKE '${DB_PREFIX}options';") -gt 0 ]]; then
+    
+        mysql --execute="DELETE FROM ${DB_NAME}.${DB_PREFIX}options WHERE option_name LIKE ('%\_transient\_%');"
+    
+    fi
+    
 fi
 
-## for MySQL 5.7 (Ubuntu 18.04) ##
+## mysql 5.7 (ubuntu 18.04) ##
 if [[ "${UBUNTU_VERSION}" = "18.04" ]]; then
-     mysql_5.7 --execute="DELETE FROM ${DB_NAME}.${DB_PREFIX}options WHERE option_name LIKE ('%\_transient\_%');"
+
+    if [[ $(mysql_5.7 --execute "SHOW TABLES FROM ${DB_NAME} LIKE '${DB_PREFIX}options';") -gt 0 ]]; then
+    
+        mysql_5.7 --execute="DELETE FROM ${DB_NAME}.${DB_PREFIX}options WHERE option_name LIKE ('%\_transient\_%');"
+     
+    fi
+     
 fi
 
 ####################################################################################################
