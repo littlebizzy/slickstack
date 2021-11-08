@@ -29,10 +29,9 @@ source /var/www/ss-functions
 ## C. Cleanup Temporary Files
 ## D. Retrieve Cron Jobs
 ## E. Retrieve Custom Cron Job Boilerplates (If Not Exist)
-## E. Retrieve Bash Scripts (Except SS-Check)
-## F. Install Cron Jobs 
-## G. Install Bash Scripts (Except SS-Check)
-## H. Reset Permissions (SlickStack Core)
+## F. Retrieve Bash Scripts (Except SS-Check)
+## G. Install Cron Jobs 
+## H. Install Bash Scripts (Except SS-Check)
 ## I. Cleanup Temporary Files
 
 ####################################################################################################
@@ -245,7 +244,7 @@ if [[ ! -f "/var/www/crons/custom/13-cron-sometimes-custom" ]]; then
 fi
 
 ####################################################################################################
-#### E. SS-Check: Retrieve Bash Scripts (Except SS-Check) ##########################################
+#### F. SS-Check: Retrieve Bash Scripts (Except SS-Check) ##########################################
 ####################################################################################################
 
 ## here we retrieve all the latest ss core cron jobs and bash scripts to keep them updated ##
@@ -1085,7 +1084,7 @@ if [[ -z "$VALIDATE_TMP_SS_WORKER" ]]; then
 fi
 
 ####################################################################################################
-#### F. SS-Check: Install Cron Jobs ################################################################
+#### G. SS-Check: Install Cron Jobs ################################################################
 ####################################################################################################
 
 ## here we copy all the downloaded core files to the proper folders where they remain ##
@@ -1111,7 +1110,7 @@ if [[ -n "$VALIDATE2_TMP_13_CRON_SOMETIMES" ]]; then
 fi
 
 ####################################################################################################
-#### G. SS-Check: Install Bash Scripts (Except SS-Check) ###########################################
+#### H. SS-Check: Install Bash Scripts (Except SS-Check) ###########################################
 ####################################################################################################
 
 ## install ss core bash scripts ##
@@ -1234,106 +1233,6 @@ cp "$TMP_SS_SYNC_STAGING" "$PATH_SS_SYNC_STAGING"
 cp "$TMP_SS_UPDATE_CONFIG" "$PATH_SS_UPDATE_CONFIG"
 cp "$TMP_SS_UPDATE_MODULES" "$PATH_SS_UPDATE_MODULES"
 cp "$TMP_SS_WORKER" "$PATH_SS_WORKER"
-
-####################################################################################################
-#### H. SS-Check: Reset Permissions (SlickStack) ###################################################
-####################################################################################################
-
-## we hardcode this permissions reset snippet into some core scripts for redundancy ##
-## this ensures permissions are regularly fixed without any dependencies ##
-
-## THIS SNIPPET DOES NOT RELY ON SS-CONFIG OR SS-FUNCTIONS ##
-
-## SNIPPET: ss-check, ss-worker, ss core cron jobs
-## UPDATED: 05NOV2021
-
-## make directories ##
-mkdir /var/www
-mkdir /var/www/auth
-mkdir /var/www/backups
-mkdir /var/www/backups/config
-mkdir /var/www/backups/html
-mkdir /var/www/backups/mysql
-mkdir /var/www/backups/mysql/data
-mkdir /var/www/cache
-mkdir /var/www/cache/nginx
-mkdir /var/www/cache/opcache
-mkdir /var/www/cache/system
-mkdir /var/www/certs
-mkdir /var/www/certs/keys
-mkdir /var/www/crons
-mkdir /var/www/crons/custom
-mkdir /var/www/html
-mkdir /var/www/html/.well-known
-mkdir /var/www/html/.well-known/acme-challenge
-mkdir /var/www/logs
-mkdir /var/www/meta
-mkdir /var/www/meta/timestamps
-mkdir /var/www/sites
-touch /var/www/meta/.htpasswd
-
-## if staging enabled
-if [[ "$STAGING_SITE" != "false" ]]; then 
-    mkdir /var/www/html/staging
-    mkdir /var/www/html/staging/.well-known
-    mkdir /var/www/html/staging/.well-known/acme-challenge
-    chown -R "${SFTP_USER}":www-data /var/www/html/staging/.well-known ## accessed by server for e.g. Cerbot but also by SFTP user for things like Stripe ##
-    chown -R "${SFTP_USER}":www-data /var/www/html/staging/.well-known/acme-challenge ## accessed by server for e.g. Cerbot but also by SFTP user for things like Stripe ##
-fi
-
-## if dev enabled
-if [[ "$DEV_SITE" != "false" ]]; then 
-    mkdir /var/www/html/dev
-    mkdir /var/www/html/dev/.well-known
-    mkdir /var/www/html/dev/.well-known/acme-challenge
-    chown -R "${SFTP_USER}":www-data /var/www/html/dev/.well-known ## accessed by server for e.g. Cerbot but also by SFTP user for things like Stripe ##
-    chown -R "${SFTP_USER}":www-data /var/www/html/dev/.well-known/acme-challenge ## accessed by server for e.g. Cerbot but also by SFTP user for things like Stripe ##
-fi
-
-## user/group ownership ##
-chown root:root /var/www ## must be root:root
-chown root:root /var/www/backups ## must be root:root
-chown root:root /var/www/backups/config ## must be root:root
-chown root:root /var/www/backups/mysql ## must be root:root
-chown root:root /var/www/backups/mysql/data ## must be root:root
-chown www-data:www-data /var/www/cache ## must be www-data:www-data
-chown www-data:www-data /var/www/cache/nginx ## must be www-data:www-data
-chown www-data:www-data /var/www/cache/opcache ## must be www-data:www-data (PHP-FPM pool)
-chown root:root /var/www/cache/system ## must be root:root
-chown root:root /var/www/certs ## must be root:root
-chown root:root /var/www/certs/keys ## must be root:root
-chown root:root /var/www/crons ## must be root:root
-chown root:root /var/www/crons/*cron* ## must be root:root
-chown root:root /var/www/crons/custom ## must be root:root
-chown root:root /var/www/crons/custom/*cron* ## must be root:root
-chown -R "${SFTP_USER}":www-data /var/www/html/.well-known ## accessed by server for e.g. Cerbot but also by SFTP user for things like Stripe ##
-chown -R "${SFTP_USER}":www-data /var/www/html/.well-known/acme-challenge ## accessed by server for e.g. Cerbot but also by SFTP user for things like Stripe ##
-chown www-data:www-data /var/www/logs ## must be www-data:www-data
-chown www-data:www-data /var/www/meta ## must be www-data:www-data
-chown www-data:www-data /var/www/meta/.htpasswd ## must be www-data:www-data
-chown www-data:www-data /var/www/meta/ss-constants.php ## must be www-data:www-data
-chown root:root /var/www/ss* ## must be root:root
-
-## linux permissions ##
-chmod 0755 /var/www ## must be 0755
-chmod 0775 /var/www/cache ## 0755 should also work
-chmod 0755 /var/www/cache/opcache ## 0755 should work
-chmod 0755 /var/www/certs ## must be 0755
-chmod 0700 /var/www/certs/keys ## must be 0700
-chmod 0644 /var/www/certs/*.crt ## must be 0644
-chmod 0644 /var/www/certs/*.pem ## must be 0644
-chmod 0600 /var/www/certs/keys/*.key ## must be 0600
-chmod 0600 /var/www/certs/keys/*.pem ## must be 0600
-chmod 0755 /var/www/crons ## must be 0755
-chmod 0700 /var/www/crons/*cron* ## 0700 means only root can execute
-chmod 0755 /var/www/crons/custom ## must be 0755
-chmod 0700 /var/www/crons/custom/*cron* ## 0700 means only root can execute
-chmod 0755 /var/www/html/.well-known ## accessed by server for e.g. Cerbot but also by SFTP user for things like Stripe ##
-chmod 0775 /var/www/logs ## 6755 should also work
-chmod 0775 /var/www/meta ## 6755 should also work
-chmod 0644 /var/www/meta/.htpasswd ## 0644 seems enough
-chmod 0440 /var/www/meta/ss-constants.php
-chmod 0700 /var/www/ss* ## 0700 means only root can execute
 
 ####################################################################################################
 #### I. SS-Check: Cleanup Temporary Files ##########################################################
