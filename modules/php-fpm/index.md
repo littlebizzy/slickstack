@@ -13,7 +13,9 @@ title: PHP-FPM (Public Mirrors)
 * [ss-constants.php](ss-constants.txt)
 
 #### 8.1
-* coming soon
+* [php.ini](8.1/php-ini.txt)
+* [php-fpm.conf](8.1/php-fpm-conf.txt)
+* [www.conf](8.1/www-conf.txt)
 
 #### 7.4 
 * [php.ini](7.4/php-ini.txt)
@@ -36,4 +38,4 @@ title: PHP-FPM (Public Mirrors)
 
 ----
 
-*Last updated: Sep 28, 2021*
+*Last updated: Nov 08, 2021*
