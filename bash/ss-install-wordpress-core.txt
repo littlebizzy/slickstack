@@ -317,21 +317,21 @@ mysql --execute="UPDATE ${DB_NAME}.${DB_PREFIX}options SET option_value='0' WHER
 fi
 
 ####################################################################################################
-#### SS-Install-WordPress-Core: Fix Site Domains (Modify Database Options) #########################
+#### SS-Install-WordPress-Core: Modify Site Domains In Database ####################################
 ####################################################################################################
-
-## SNIPPET: ss-install-wordpress-config, ss-install-wordpress-core
-## UPDATED: 19SEP2021
 
 ## here we manually fix certain fields in the database to ensure proper functionality ##
 ## this fix required for WP Multisite (wp-config.php enough for single sites) ##
 
-if [[ "$SS_APP" == "wordpress" ]]; then 
+## SNIPPET: ss-install-wordpress-config, ss-install-wordpress-core
+## UPDATED: 08NOV2021
 
+if [[ $(mysql --execute "SHOW TABLES FROM ${DB_NAME} LIKE '${DB_PREFIX}options';") -gt 0 ]]; then
+    
     ## production ##
     mysql --execute="UPDATE ${DB_NAME}.${DB_PREFIX}options SET option_value='https://$SITE_DOMAIN' WHERE option_name='home'";
     mysql --execute="UPDATE ${DB_NAME}.${DB_PREFIX}options SET option_value='https://$SITE_DOMAIN' WHERE option_name='siteurl'";
-
+    
     ## staging ##
     if [[ "$STAGING_SITE" == "true" ]]; then 
         mysql --execute="UPDATE staging.${DB_PREFIX}options SET option_value='https://staging.$SITE_DOMAIN_EXCLUDING_WWW' WHERE option_name='home'";
