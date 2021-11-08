@@ -193,7 +193,7 @@ ENDSTAND=$(tput rmso) # end standout
 ## in case of emergencies the SlickStack team might purposefully mismatch builds ##
 
 ## ensure ss-config (if exists) build matches ss-install ##
-if [[ -f "/var/www/ss-config" ]] && [[ "$SS_BUILD" != "NOV2021K" ]]; then 
+if [[ -f "/var/www/ss-config" ]] && [[ "$SS_BUILD" != "NOV2021L" ]]; then 
     echo -e "${YELLOW}Exiting ss-install: Please run ss-update-config since your ss-config is outdated and try again... ${NOCOLOR}"
     exit 1
 fi
@@ -230,10 +230,12 @@ fi
 ## this way our team can be aware of bugs and avoid implementing unwanted options ##
 
 ## warn if placeholders exist ##
-SS_CONFIG_OPTION_PLACEHOLDER="$(grep -c '"@' /var/www/ss-config)"
-if [[ "$SS_CONFIG_OPTION_PLACEHOLDER" -gt 0 ]]; then
+if [[ -f "/var/www/ss-config" ]]; then
+    SS_CONFIG_OPTION_PLACEHOLDER="$(grep -c '"@' /var/www/ss-config)"
+    if [[ "$SS_CONFIG_OPTION_PLACEHOLDER" -gt 0 ]]; then
     echo -e "${LIGHTRED}Exiting ss-install: Your ss-config contains "@..." placeholders. Please input values and try again... ${NOCOLOR}"
     exit 1
+    fi
 fi
 
 ####################################################################################################
