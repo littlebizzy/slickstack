@@ -100,8 +100,7 @@ fi
 ## download Autoloader (required script) files ##
 wget -O /tmp/autoloader.php "$MIRROR_AUTOLOADER_PHP"
 
-## download Custom Functions + XXX Notices (required MU plugins) files  ##
-# wget -O /tmp/custom-functions.zip "$MIRROR_CUSTOM_FUNCTIONS_ZIP"
+## download XXX Notices (required MU plugins) files  ##
 wget -O /tmp/xxx-common.php "$MIRROR_XXX_COMMON_PHP"
 
 ## staging site ##
@@ -114,12 +113,10 @@ wget -O /tmp/disable-default-runner.zip "$MIRROR_DISABLE_DEFAULT_RUNNER_ZIP"
 wget -O /tmp/object-cache.php "$MIRROR_OBJECT_CACHE_PHP"
 
 ## unzip various files ##
-# unzip /tmp/custom-functions.zip -d /tmp
 unzip /tmp/disable-emails.zip -d /tmp
 unzip /tmp/disable-default-runner.zip -d /tmp
 
 ## delete potentially conflicting normal plugins (with required MU plugins) ##
-# rm /var/www/html/wp-content/plugins/custom-functions* ## don't delete others until ours is working 100% perfect
 rm /var/www/html/wp-content/plugins/xxx-common*
 rm /var/www/html/wp-content/plugins/xxx-notices*
 rm /var/www/html/wp-content/plugins/xxx-staging*
@@ -172,11 +169,9 @@ fi
         sed -i "s/@WHITELABEL_BRAND/${WHITELABEL_BRAND}/g" /tmp/xxx-common.php
     fi
     
-# cp /tmp/custom-functions /var/www/html/wp-content/mu-plugins/custom-functions
 cp /tmp/xxx-common.php /var/www/html/wp-content/mu-plugins/xxx-common.php
 
 ## and staging ##
-# cp /tmp/custom-functions /var/www/html/staging/wp-content/mu-plugins/custom-functions
 if [[ "${STAGING_SITE}" == "true" ]]; then
 cp /tmp/xxx-common.php /var/www/html/staging/wp-content/mu-plugins/xxx-common.php
 cp /tmp/disable-emails /var/www/html/staging/wp-content/mu-plugins/disable-emails
@@ -184,7 +179,6 @@ cp /tmp/disable-default-runner /var/www/html/staging/wp-content/mu-plugins/disab
 fi
 
 ## and dev ##
-# cp /tmp/custom-functions /var/www/html/dev/wp-content/mu-plugins/custom-functions
 if [[ "${DEV_SITE}" == "true" ]]; then
 cp /tmp/xxx-common.php /var/www/html/dev/wp-content/mu-plugins/xxx-common.php
 cp /tmp/disable-emails /var/www/html/dev/wp-content/mu-plugins/disable-emails
@@ -200,33 +194,6 @@ fi
 
 if [[ "${STAGING_SITE}" == "true" ]]; then
 cp /tmp/object-cache.php /var/www/html/staging/wp-content/object-cache.php
-fi
-
-####################################################################################################
-#### SS-Muplugs: Install Custom Functions (MU) Plugin Config File (Required) #######################
-####################################################################################################
-
-## downloads specified functions.php file (otherwise retrieves generic) if none exists ##
-## however if the functions.php file already exists it will never be overwritten ##
-
-## install functions.php file if none exists ##
-if [ ! -f /var/www/html/wp-content/functions.php ] && [ -z "$CUSTOM_FUNCTIONS_SOURCE" ]; then
-    wget -O /tmp/functions.php "$MIRROR_FUNCTIONS_PHP"
-    cp /tmp/functions.php /var/www/html/wp-content/functions.php
-    cp /tmp/functions.php /var/www/html/staging/wp-content/functions.php
-elif [ ! -f /var/www/html/wp-content/functions.php ] && [ -n "$CUSTOM_FUNCTIONS_SOURCE" ]; then
-    wget -O /tmp/functions.php "$CUSTOM_FUNCTIONS_SOURCE"
-    cp /tmp/functions.php /var/www/html/wp-content/functions.php
-    cp /tmp/functions.php /var/www/html/staging/wp-content/functions.php
-fi
-
-## install functions.php file to dev site if none exists ##
-if [ ! -f /var/www/html/dev/wp-content/functions.php ] && [ -z "$CUSTOM_FUNCTIONS_SOURCE" ]; then
-    wget -O /tmp/functions.php "$MIRROR_FUNCTIONS_PHP"
-    # cp /tmp/functions.php /var/www/html/dev/wp-content/functions.php
-elif [ ! -f /var/www/html/dev/wp-content/functions.php ] && [ -n "$CUSTOM_FUNCTIONS_SOURCE" ]; then
-    wget -O /tmp/functions.php "$CUSTOM_FUNCTIONS_SOURCE"
-    # cp /tmp/functions.php /var/www/html/dev/wp-content/functions.php
 fi
 
 ####################################################################################################
