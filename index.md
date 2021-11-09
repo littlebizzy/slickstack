@@ -198,6 +198,7 @@ title: SlickStack (Public Mirrors)
 * https://jvns.ca/blog/2021/01/23/firecracker--start-a-vm-in-less-than-a-second/
 * https://unixsheikh.com/articles/sqlite-the-only-database-you-will-ever-need-in-most-cases.html
 * https://mxb.dev/blog/the-return-of-the-90s-web/
+* https://www.gnu.org/philosophy/open-source-misses-the-point.html
 
 ----
 
