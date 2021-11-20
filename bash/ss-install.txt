@@ -193,7 +193,7 @@ ENDSTAND=$(tput rmso) # end standout
 ## in case of emergencies the SlickStack team might purposefully mismatch builds ##
 
 ## ensure ss-config (if exists) build matches ss-install ##
-if [[ -f "/var/www/ss-config" ]] && [[ "$SS_BUILD" != "NOV2021R" ]]; then 
+if [[ -f "/var/www/ss-config" ]] && [[ "$SS_BUILD" != "NOV2021S" ]]; then 
     echo -e "${YELLOW}Exiting ss-install: Please run ss-update-config since your ss-config is outdated and try again... ${NOCOLOR}"
     exit 1
 fi
@@ -362,6 +362,13 @@ if [[ ! -f "/var/www/ss-config" ]]; then
     ## PROMPT: enable plugin blacklist (default = true) ##
     read -t 300 -p "$(echo -e $LIGHTPURPLE"Enable the WordPress plugin blacklist: "$NORMAL)" -e -i 'true' ss_var_plugin_blacklist || ss_var_plugin_blacklist=true
     sed -i "s/@SS_WORDPRESS_PLUGIN_BLACKLIST/$ss_var_plugin_blacklist/g" /tmp/ss-config
+    
+    ## new line ##
+    printf "\n"
+    
+    ## PROMPT: enable SS dashboard in WP Admin (default = true) ##
+    read -t 300 -p "$(echo -e $LIGHTPURPLE"Enable the SlickStack dashboard in WP Admin: "$NORMAL)" -e -i 'true' ss_var_slickstack_dashboard || ss_var_slickstack_dashboard=true
+    sed -i "s/@SS_WORDPRESS_ADMIN_DASHBOARD/$ss_var_slickstack_dashboard/g" /tmp/ss-config
     
     ## new line ##
     printf "\n"
