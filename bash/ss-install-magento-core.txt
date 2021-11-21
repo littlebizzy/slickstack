@@ -7,7 +7,7 @@
 #### path: /var/www/ss-install-magento-core ########################################################
 #### destination: n/a (not a boilerplate) ##########################################################
 #### purpose: Reinstalls the Magento module (CMS) package and non-config files (idempotent) ########
-#### module version: Magento x.x.x #################################################################
+#### module version: Magento 2.3.x #################################################################
 #### sourced by: ss-install ########################################################################
 #### bash aliases: ss install magento core #########################################################
 ####################################################################################################
@@ -24,7 +24,27 @@ source /var/www/ss-functions
 ## BELOW THIS RELIES ON SS-CONFIG AND SS-FUNCTIONS
 
 ####################################################################################################
-#### SS-Install-Magento-Core: Message (Begin Script) ###############################################
+#### TABLE OF CONTENTS (SS-Install-Magento-Core) ###################################################
+####################################################################################################
+
+## A. Touch Timestamp File
+## B. Message (Begin Script)
+## C. Install Ubuntu Utils
+## D. Cleanup Temporary Files
+## E. Install WordPress Core
+
+####################################################################################################
+#### A. SS-Install-Magento-Core: Touch Timestamp File ##############################################
+####################################################################################################
+
+## this is a dummy timestamp file that will remember the last time this script was run ##
+## it can be useful for developer reference and is sometimes used by SlickStack ##
+
+## script timestamp ##
+touch "$TIMESTAMP_SS_INSTALL_MAGENTO_CORE"
+
+####################################################################################################
+#### B. SS-Install-Magento-Core: Message (Begin Script) ############################################
 ####################################################################################################
 
 ## this is a simple message that announces to the shell the purpose of this bash script ##
@@ -35,18 +55,42 @@ echo -e "${PURPLE}Running ss-install-magento-core: Reinstalls the Magento module
 sleep "$SLEEP_MESSAGE_BEGIN"
 
 ####################################################################################################
-#### SS-Install-Magento-Core: Cleanup Temporary Files ##############################################
-####################################################################################################
-
-## delete tmp files ##
-# n/a
-
-####################################################################################################
-#### SS-Install-Magento-Core: Install Ubuntu Utils #################################################
+#### C. SS-Install-Magento-Core: Install Ubuntu Utils ##############################################
 ####################################################################################################
 
 ## run ss-install-ubuntu-utils ##
-source /var/www/ss-install-ubuntu-utils
+source "$PATH_SS_INSTALL_UBUNTU_UTILS"
+
+####################################################################################################
+#### D. SS-Install-Magento-Core: Cleanup Temporary Files ###########################################
+####################################################################################################
+
+rm /tmp/wordpress.zip*
+rm /var/www/html/wordpress*
+rm /var/www/html/staging/wordpress*
+rm /var/www/html/dev/wordpress*
+
+####################################################################################################
+#### E. SS-Install-Magento-Core: Install Magento Core ##############################################
+####################################################################################################
+
+## CMS modules are installed by SlickStack via files from our public mirror servers ##
+## we always install the latest stable minor version (never major versions) ##
+
+## retrieve latest version ##
+wget -O "$TMP_MAGENTO_ZIP" https://github.com/magento/magento2/archive/refs/tags/2.3.7-p2.zip
+
+## try third party mirror if file not exists ##
+
+
+## copy zip to production ##
+cp "$TMP_WORDPRESS_ZIP" /var/www/html
+unzip /var/www/html/wordpress.zip -d /var/www/html
+chown -R www-data:wordpress /var/www/html/wordpress
+chmod 775 /var/www/html/wordpress
+
+## install wp core files ##
+rsync /var/www/html/wordpress/* /var/www/html
 
 ####################################################################################################
 #### SS-Install-Magento-Core: Reset Permissions (Magento Core) #####################################
@@ -63,19 +107,10 @@ source "$PATH_SS_PERMS_MAGENTO_CORE"
 # n/a
 
 ####################################################################################################
-#### SS-Install-Magento-Core: Touch Timestamp File (End Script) ####################################
-####################################################################################################
-
-## this is a dummy timestamp file that will remember the last time this script was run ##
-## it can be useful for developer reference and is sometimes used by SlickStack ##
-
-## script timestamp ##
-touch "$TIMESTAMP_SS_INSTALL_MAGENTO_CORE"
-
-####################################################################################################
 #### SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ###############
 ####################################################################################################
 
-## Ref: 
+## Ref: https://community.magento.com/t5/Installing-Magento-2-x/How-do-you-install-2-1-0-without-using-composer/td-p/41228
+## Ref: https://devdocs.magento.com/guides/v2.3/install-gde/composer.html
 
 ## SS_EOF
