@@ -7,7 +7,7 @@
 #### path: /var/www/ss-perms-magento-core ##########################################################
 #### destination: n/a (not a boilerplate) ##########################################################
 #### purpose: Resets all file and user permissions for the Magento core files and folders ##########
-#### module version: Magento x.x.x #################################################################
+#### module version: Magento 2.4.x #################################################################
 #### sourced by: ss-perms, ss-install-magento-core #################################################
 #### bash aliases: ss perms magento core ###########################################################
 ####################################################################################################
@@ -37,6 +37,20 @@ sleep "$SLEEP_MESSAGE_BEGIN"
 
 ## SOON
 
+## all environments ##
+chown -R $SFTP_USER:wordpress /var/www/html
+chmod 0775 /var/www/html ## 0775 (0755 not enough)
+find /var/www/html/ -type d -exec chmod 0775 {} \; ## 0775 (0755 not enough)
+find /var/www/html/ -type f -exec chmod 0664 {} \; ## 0664 (0644 not enough)
+
+
+cd /var/www/html/
+find var vendor pub/static pub/media app/etc -type f -exec chmod u+w {} \;
+find var vendor pub/static pub/media app/etc -type d -exec chmod u+w {} \;
+chmod u+x bin/magento
+
+# https://magento.stackexchange.com/questions/171870/magento-2-installation-setup-shows-blank
+
 ####################################################################################################
 #### SS-Perms-Magento-Core: Touch Timestamp File (End Script) ######################################
 ####################################################################################################
@@ -51,6 +65,7 @@ touch "$TIMESTAMP_SS_PERMS_MAGENTO_CORE"
 #### SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ###############
 ####################################################################################################
 
-## Ref: 
+## Ref: https://devdocs.magento.com/guides/v2.3/install-gde/prereq/file-sys-perms-over.html
+## Ref: https://magento.stackexchange.com/questions/171870/magento-2-installation-setup-shows-blank
 
 ## SS_EOF
