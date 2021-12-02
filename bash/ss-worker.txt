@@ -8,7 +8,7 @@
 #### destination: n/a (not a boilerplate) ##########################################################
 #### purpose: Performs SlickStack maintenance tasks and retrieves the latest ss-check file #########
 #### module version: Ubuntu 20.04 LTS ##############################################################
-#### sourced by: ss core cron jobs, ss-install, ss-update, ss update ###############################
+#### sourced by: ss-install, ss-update #############################################################
 #### bash aliases: ss worker #######################################################################
 ####################################################################################################
 
@@ -21,7 +21,7 @@ source /var/www/ss-functions
 ## BELOW THIS RELIES ON SS-CONFIG AND SS-FUNCTIONS
 
 ####################################################################################################
-#### TABLE OF CONTENTS #############################################################################
+#### TABLE OF CONTENTS (SS-Worker) #################################################################
 ####################################################################################################
 
 ## A. Touch Timestamp File
@@ -470,15 +470,15 @@ chmod 0700 /var/www/ss* ## 0700 means only root can execute
 
 ## download latest blacklist (or custom blacklist) ##
 if [[ -z "$PLUGIN_BLACKLIST_SOURCE" ]] && [[ -z "$SS_WORDPRESS_PLUGIN_BLACKLIST_SOURCE" ]]; then 
-    wget -O /tmp/blacklist.txt "$MIRROR_BLACKLIST_TXT"
+    wget -O "$TMP_BLACKLIST_TXT" "$MIRROR_BLACKLIST_TXT"
 elif [[ -n "$PLUGIN_BLACKLIST_SOURCE" ]]; then
-    wget -O /tmp/blacklist.txt "$PLUGIN_BLACKLIST_SOURCE"
+    wget -O "$TMP_BLACKLIST_TXT" "$PLUGIN_BLACKLIST_SOURCE"
 elif [[ -n "$SS_WORDPRESS_PLUGIN_BLACKLIST_SOURCE" ]]; then
-    wget -O /tmp/blacklist.txt "$SS_WORDPRESS_PLUGIN_BLACKLIST_SOURCE"
+    wget -O "$TMP_BLACKLIST_TXT" "$SS_WORDPRESS_PLUGIN_BLACKLIST_SOURCE"
 fi
 
 ## copy file to wp-content directory ##
-cp /tmp/blacklist.txt /var/www/html/wp-content/blacklist.txt
+cp "$TMP_BLACKLIST_TXT" /var/www/html/wp-content/blacklist.txt
 
 ## reset permissions ##
 chown www-data:wordpress /var/www/html/wp-content/blacklist.txt ## change to www-data:www-data when ss-perms fixed
