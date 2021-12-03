@@ -35,6 +35,8 @@ SlickStack is a free LEMP stack automation script written in Bash designed to en
 
 ## Changelog
 
+* **NEW!** Swapfile size has a new `auto` option in ss-config... we are still optimizing how swapfile is created based on community feedback, please test the latest updates to ss-install-ubuntu-swapfile and let us know your comments.
+
 * **NEW!** Several minor errors/warnings are now fixed -- some users have thought their install was broken, this is not the case. SlickStack is BETA (ongoing development) status so minor warnings will sometimes happen as we optimize our scripts. Regardless, many of these are now fixed. Also, if you were having trouble using Certbot in the past few weeks, this is now fixed too. The reason was a bug in our variables (which are now working)... `SITE_DOMAIN_EXCLUDING_WWW` and `SITE_DOMAIN_INCLUDING_WWW` which give us a more more flexibility now (before we had janky "www.SITE_TLD" which was not intuitive).
 
 * **NEW!** We have abandoned the "custom functions.php file" concept previously under /wp-content/functions.php because it created too much confusion. To align with standard WordPress behavior we will no longer install this file. For the time being our wp-config.php template will still call this file if exists to avoid breaking websites but you should stop using this file and use your theme's functions.php file instead.
