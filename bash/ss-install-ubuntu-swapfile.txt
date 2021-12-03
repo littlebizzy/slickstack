@@ -9,7 +9,7 @@
 #### purpose: Reinstalls the Ubuntu (OS) swap file as backup virtual memory (idempotent) ###########
 #### module version: Ubuntu 20.04 LTS ##############################################################
 #### sourced by: ss-install ########################################################################
-#### bash aliases: ss install ubuntu kernel, ss install kernel #####################################
+#### bash aliases: ss install swap, ss install swapfile, ss install ubuntu swapfile ################
 ####################################################################################################
 
 ## SS-CONFIG MUST BE PROPERLY CONFIGURED AND ON CURRENT BUILD BEFORE RUNNING SS-INSTALL ##
@@ -24,7 +24,26 @@ source /var/www/ss-functions
 ## BELOW THIS RELIES ON SS-CONFIG AND SS-FUNCTIONS
 
 ####################################################################################################
-#### SS-Install-Ubuntu-Swap: Message (Begin Script) ################################################
+#### TABLE OF CONTENTS (SS-Install-Ubuntu-Swapfile) ################################################
+####################################################################################################
+
+## A. Touch Timestamp File
+## B. Message (Begin Script)
+## C. Install Swapfile
+## D. Reset Permissions (Ubuntu Swapfile)
+
+####################################################################################################
+#### A. SS-Install-Ubuntu-Swapfile: Touch Timestamp File ###########################################
+####################################################################################################
+
+## this is a dummy timestamp file that will remember the last time this script was run ##
+## it can be useful for developer reference and is sometimes used by SlickStack ##
+
+## script timestamp ##
+touch "$TIMESTAMP_SS_INSTALL_UBUNTU_SWAPFILE"
+
+####################################################################################################
+#### B. SS-Install-Ubuntu-Swapfile: Message (Begin Script) #########################################
 ####################################################################################################
 
 ## this is a simple message that announces to the shell the purpose of this bash script ##
@@ -35,14 +54,7 @@ echo -e "${PURPLE}Running ss-install-ubuntu-swap: Reinstalls the Ubuntu (OS) swa
 sleep "$SLEEP_MESSAGE_BEGIN"
 
 ####################################################################################################
-#### SS-Install-Ubuntu-Swap: Cleanup Temporary Files ###############################################
-####################################################################################################
-
-## delete tmp files ##
-# n/a
-
-####################################################################################################
-#### SS-Install-Ubuntu-Swap: Install System Swap File ##########################
+#### C. SS-Install-Ubuntu-Swapfile: Install Swapfile ###############################################
 ####################################################################################################
 
 mkdir /var/www/cache/system
@@ -50,14 +62,27 @@ chown root:root /var/www/cache/system ## must be root:root
 chmod 0600 /var/www/cache/system ## must be 0600
 
 ## ensure at least 3GB free disk space remains ##
-if [[ "$SS_SWAPFILE" != "false" ]] && [[ ! $(grep "swapfile" /etc/fstab) ]] && [[ $DISK_FREE -lt 32212254 ]]; then ## 3GB free space needed to make new 2GB swapfile
+
+DISK_REMAINING_MB=$(df --output=avail -m "$PWD" | tail -n1 | tr -d ' ')
+
+if [[ "$SS_SWAPFILE" != "false" ]] && [[ ! $(grep "swapfile" /etc/fstab) ]] && [[ $DISK_REMAINING_MB -gt 5000 ]]; then ## 5GB free space needed
 
     ## create new swap file ##
-    if [[ -z "$SS_SWAPFILE_SIZE" ]]; then 
-        sudo fallocate -l 2G /var/www/cache/system/swapfile
+    TOTAL_RAM_MB=$(echo $(($(getconf _PHYS_PAGES) * $(getconf PAGE_SIZE) / (1024 * 1024))))
+
+    if [[ "$SS_SWAPFILE_SIZE" == "auto" ]]; then 
+    
+        if [[ "$TOTAL_RAM_MB" -lt 2000 ]]; then
+            sudo fallocate -l 2G /var/www/cache/system/swapfile
+        else 
+            sudo fallocate -l 4G /var/www/cache/system/swapfile
+        fi
+
     else 
         sudo fallocate -l "$SS_SWAPFILE_SIZE" /var/www/cache/system/swapfile
     fi
+    
+##################
 
     chown root:root /var/www/cache/system/swapfile ## must be root:root
     chmod 0600 /var/www/cache/system/swapfile ## must be 0600
@@ -73,30 +98,14 @@ if [[ "$SS_SWAPFILE" != "false" ]] && [[ ! $(grep "swapfile" /etc/fstab) ]] && [
     /var/www/cache/system/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab
 
 fi
+## endif
 
 ####################################################################################################
-#### SS-Install-Ubuntu-Swap: Reset Permissions (Ubuntu Swap) #######################################
+#### D. SS-Install-Ubuntu-Swap: Reset Permissions (Ubuntu Swapfile) ################################
 ####################################################################################################
 
 ## run ss-perms-ubuntu-swapfile ##
 source "$PATH_SS_PERMS_UBUNTU_SWAPFILE"
-
-####################################################################################################
-#### SS-Install-Ubuntu-Swap: Cleanup Temporary Files ###############################################
-####################################################################################################
-
-## delete tmp files ##
-# n/a
-
-####################################################################################################
-#### SS-Install-Ubuntu-Swapfile: Touch Timestamp File (End Script) #################################
-####################################################################################################
-
-## this is a dummy timestamp file that will remember the last time this script was run ##
-## it can be useful for developer reference and is sometimes used by SlickStack ##
-
-## script timestamp ##
-touch "$TIMESTAMP_SS_INSTALL_UBUNTU_SWAPFILE"
 
 ####################################################################################################
 #### SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ###############
@@ -122,5 +131,8 @@ touch "$TIMESTAMP_SS_INSTALL_UBUNTU_SWAPFILE"
 ## Ref: https://www.redhat.com/sysadmin/clear-swap-linux
 ## Ref: https://askubuntu.com/questions/1357/how-to-empty-swap-if-there-is-free-ram
 ## Ref: https://askubuntu.com/questions/1189240/swap-file-full-while-memory-is-half-empty
+## Ref: https://askubuntu.com/questions/898941/how-to-check-ram-size
+## Ref: https://kapeli.com/cheat_sheets/Bash_Test_Operators.docset/Contents/Resources/Documents/index
+## Ref: https://stackoverflow.com/questions/19703621/get-free-disk-space-with-df-to-just-display-free-space-in-kb
 
 ## SS_EOF
