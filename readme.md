@@ -35,7 +35,9 @@ SlickStack is a free LEMP stack automation script written in Bash designed to en
 
 ## Changelog
 
-* **NEW!** Swapfile size has a new `auto` option in ss-config... we are still optimizing how swapfile is created based on community feedback, please test the latest updates to ss-install-ubuntu-swapfile and let us know your comments.
+* **NEW!** `ss-clean-files` will no longer clean/delete/touch anything under /wp-content/ or /wp-content/plugins/ if WORDPRESS_PLUGIN_BLACKLIST is set to `false` in your ss-config file... this was causing a lot of confusion and annoyance to users who didn't realize certain "risky" plugins were being deleted behind the scenes even when they had already disabled the plugin blacklist feature. Should help alleviate a lot of pain for now, although admittedly `ss-clean-files` still needs more code cleanup and general feedback from the community.
+
+* **NEW!** Swapfile size has a new `auto` option in ss-config... we are still optimizing how swapfile is created based on community feedback, please test the latest updates to `ss-install-ubuntu-swapfile` and let us know your comments.
 
 * **NEW!** Several minor errors/warnings are now fixed -- some users have thought their install was broken, this is not the case. SlickStack is BETA (ongoing development) status so minor warnings will sometimes happen as we optimize our scripts. Regardless, many of these are now fixed. Also, if you were having trouble using Certbot in the past few weeks, this is now fixed too. The reason was a bug in our variables (which are now working)... `SITE_DOMAIN_EXCLUDING_WWW` and `SITE_DOMAIN_INCLUDING_WWW` which give us a more more flexibility now (before we had janky "www.SITE_TLD" which was not intuitive).
 
