@@ -15,34 +15,36 @@
 pid = /run/php/php8.1-fpm.pid
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;; PHP-FPM.conf: Error Handing + Logging Settings ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;; PHP-FPM.conf: Error Handling Settings ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; hardcoding error log settings reduces potential conflicts and server resource usage ;;
-;; temporarily enabling debug.log in WordPress (when needed) is best practice ;;
+;; temporarily enable debug mode in WordPress for more verbose error logging ;;
 
 error_log = /var/www/logs/error.log
-log_level = error
 syslog.facility = daemon
 syslog.ident = php-fpm
+log_level = error
+log_limit = 1024
+log_buffering = yes
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; PHP-FPM.conf: Various Settings ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; because SlickStack does not use any containers we can safely daemonize PHP-FPM ;;
-;; take extreme caution in modifying below settings in your ss-config ;;
+;; take extreme caution when modifying below settings in your ss-config ;;
 
-daemonize = yes
-events.mechanism = epoll
 emergency_restart_threshold = @FPM_EMERGENCY_RESTART_THRESHOLD
 emergency_restart_interval = @FPM_EMERGENCY_RESTART_INTERVAL
 process_control_timeout = @FPM_PROCESS_CONTROL_TIMEOUT
-systemd_interval = @FPM_SYSTEMD_INTERVAL
 process.max = @FPM_PROCESS_MAX
 process.priority = @FPM_PROCESS_PRIORITY
+daemonize = yes
 rlimit_files = @FPM_RLIMIT_FILES
 rlimit_core = @FPM_RLIMIT_CORE
+events.mechanism = epoll
+systemd_interval = @FPM_SYSTEMD_INTERVAL
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; PHP-FPM.conf: Pool Definitions ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
