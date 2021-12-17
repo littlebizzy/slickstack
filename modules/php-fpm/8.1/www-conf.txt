@@ -34,30 +34,22 @@ listen.allowed_clients = 127.0.0.1
 process.dumpable = no
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;; WWW.conf: Child Processes Settings ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;; WWW.conf: Child Processes ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;; ondemand is best for the majority of VPS servers (contrary to many online tutorials) ;;
-;; only incredibly high traffic servers should use dynamic after tuning settings ;;
+;; ondemand is best for the majority of servers (contrary to many online tutorials) ;;
+;; only super high traffic servers should use dynamic after tuning settings ;;
 
 pm = @WWW_PM_MODE
 pm.max_children = @WWW_PM_MAX_CHILDREN
 pm.start_servers = @WWW_PM_START_SERVERS
 pm.min_spare_servers = @WWW_PM_MIN_SPARE_SERVERS
 pm.max_spare_servers = @WWW_PM_MAX_SPARE_SERVERS
+; pm.max_spawn_rate = 32
 pm.process_idle_timeout = @WWW_PM_PROCESS_IDLE_TIMEOUT;
 pm.max_requests = @WWW_PM_MAX_REQUESTS
-request_terminate_timeout = @WWW_REQUEST_TERMINATE_TIMEOUT
-rlimit_files = @WWW_RLIMIT_FILES
-rlimit_core = @WWW_RLIMIT_CORE
-
-security.limit_extensions = .php
-catch_workers_output = yes
-decorate_workers_output = no ;; PHP 7.4+
-php_admin_value[error_log] = /var/www/logs/error.log
-php_admin_flag[log_errors] = on
-
 ;; pm.status_path = /status
+;pm.status_listen = 127.0.0.1:9001
 ;; ping.path = /ping
 ;; ping.response = pong
 ;; access.log = log/$pool.access.log
@@ -65,9 +57,16 @@ php_admin_flag[log_errors] = on
 ;; slowlog = log/$pool.log.slow
 ;; request_slowlog_timeout = 0
 ;; request_slowlog_trace_depth = 20
+request_terminate_timeout = @WWW_REQUEST_TERMINATE_TIMEOUT
+;request_terminate_timeout_track_finished = no
+rlimit_files = @WWW_RLIMIT_FILES
+rlimit_core = @WWW_RLIMIT_CORE
 ;; chroot =
 ;; chdir = /var/www
+catch_workers_output = yes
+decorate_workers_output = no ;; PHP 7.4+
 ;; clear_env = no
+security.limit_extensions = .php
 ;; env[HOSTNAME] = $HOSTNAME
 ;; env[PATH] = /usr/local/bin:/usr/bin:/bin
 ;; env[TMP] = /tmp
@@ -75,6 +74,8 @@ php_admin_flag[log_errors] = on
 ;; env[TEMP] = /tmp
 ;; php_admin_value[sendmail_path] = /usr/sbin/sendmail -t -i -f www@my.domain.com
 ;; php_flag[display_errors] = off
+php_admin_value[error_log] = /var/www/logs/error.log
+php_admin_flag[log_errors] = on
 ;; php_admin_value[memory_limit] = 32M
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
