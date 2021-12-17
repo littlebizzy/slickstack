@@ -17,22 +17,21 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; users, groups, and listen directives are hardcoded in SlickStack to avoid conflicts ;;
-;; www-data is the default user for Nginx and TCP/IP listening avoids disk I/O ;;
+;; www-data is default user for Nginx and TCP (IP) listening avoids disk I/O ;;
 
+;; prefix = /path/to/pools/$pool
 user = www-data
 group = www-data
 listen = 127.0.0.1:9000
-listen.allowed_clients = 127.0.0.1
 listen.backlog = @WWW_LISTEN_BACKLOG
-listen.owner = www-data
-listen.group = www-data
-
-;; prefix = /path/to/pools/$pool
-;; listen.mode = 0660
-;; listen.acl_users =
-;; listen.acl_groups =
-;; process.priority = -19
-;; process.dumpable = yes
+;; listen.owner = www-data ;; when using Unix sockets only
+;; listen.group = www-data ;; when using Unix sockets only
+;; listen.mode = 0660 ;; when using Unix sockets only
+;; listen.acl_users = ;; when using Unix sockets only
+;; listen.acl_groups = ;; when using Unix sockets only
+listen.allowed_clients = 127.0.0.1
+;; process.priority = -19 ;; for multi-website (shared hosting) servers only
+process.dumpable = no
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; WWW.conf: Child Processes Settings ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -100,5 +99,7 @@ php_admin_flag[log_errors] = on
 ;; Ref: https://dev.to/jake/configuring-php-fpm-for-high-network-traffic-47le
 ;; Ref: https://ypereirareis.github.io/blog/2019/07/30/php-fpm-truncated-log-workaround-solution-trick/
 ;; Ref: https://stackoverflow.com/questions/48863756/log-to-stdout-stderr-with-laravel-5-6-and-php-fpm
+;; Ref: https://rascaldev.io/2018/01/09/tuning-phps-fastcgi-process-manager-php-fpm/
+;; Ref: https://developpaper.com/understand-php-process-manager-php-fpm/
 
 ;; SS_EOF
