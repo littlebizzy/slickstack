@@ -41,15 +41,19 @@ sleep "$SLEEP_MESSAGE_BEGIN"
 ## here we first purge any existing PHP packages and then reinstall PHP-FPM from scratch ##
 ## this approach is safe and helps avoid any conflicts between package versions ##
 
-## purge packages ##
-apt purge ^php
+if [[ "$SS_INSTALL_PHP_PACKAGES_PURGE_FIRST" == "true" ]]; then
 
-## delete any leftover PHP files (disable for now because apt will not create these files if it notices the php directory exists already) ##
-# rm /etc/php*
+    ## purge packages ##
+    apt purge ^php
 
-## cleanup any outdated packages and system files ##
-apt autoremove
-apt autoclean
+    ## delete any leftover PHP files (disable for now because apt will not create these files if it notices the php directory exists already) ##
+    # rm /etc/php*
+
+    ## cleanup any outdated packages and system files ##
+    apt autoremove
+    apt autoclean
+
+fi
 
 ## update repo cache ##
 apt update
