@@ -1,0 +1,219 @@
+####################################################################################################
+#### author: SlickStack ############################################################################
+#### link: https://slickstack.io ###################################################################
+#### mirror: http://mirrors.slickstack.io/ubuntu/sysctl.txt ########################################
+#### path: /etc/sysctl.conf ########################################################################
+#### destination: n/a (not a boilerplate) ##########################################################
+#### purpose: Ubuntu kernel configuration file (symlink = /etc/sysctl.d/99-sysctl.conf) ############
+#### module version: Ubuntu 22.04 LTS ##############################################################
+#### bash aliases: n/a #############################################################################
+####################################################################################################
+
+## UBUNTU KERNEL OPTIMIZED FOR CLOUDFLARE + TRAFFIC SCALING (NON-CLUSTERED HIGH TRAFFIC) ##
+## THESE SETTINGS PRETTY MUCH UNCAP EVERYTHING THAT UBUNTU LIMITS BY DEFAULT ##
+
+####################################################################################################
+#### Ubuntu Kernel: Miscellaneous Settings #########################################################
+####################################################################################################
+
+# kernel.domainname = example.com
+# kernel.printk = 3 4 1 3
+
+## disable SysRq keyboard shortcuts (we are not a desktop computer) ##
+kernel.sysrq = 0
+
+## maximum open files in cache (set to upper limit) ##
+fs.file-max = 2097152
+
+## protect system hard/soft links ##
+fs.protected_hardlinks = 1
+fs.protected_symlinks = 1
+
+## big performance boost (published by PostgreSQL community) ##
+kernel.sched_migration_cost_ns = 5000000
+kernel.sched_autogroup_enabled = 0
+
+####################################################################################################
+#### Sysctl.conf: Virtual Machine (VM) Settings ####################################################
+####################################################################################################
+
+## these settings ensure Linux is aware that swap can be used in case RAM is exhausted ##
+## however we hardcode values here to avoid Linux over-relying on the swap file ##
+
+## minimize swapping ##
+vm.swappiness = 10
+
+## reduce filesystem lookups ##
+vm.vfs_cache_pressure=50
+
+## dirty ratios ##
+vm.dirty_ratio = 60
+vm.dirty_background_ratio = 5
+
+## avoid Redis warning messages ##
+vm.overcommit_memory = 1
+
+####################################################################################################
+#### Sysctl.conf: IPv4 + IPv6 Settings #############################################################
+####################################################################################################
+
+## enable spoof protection (reverse-path filters) ##
+net.ipv4.conf.default.rp_filter = 1
+net.ipv4.conf.all.rp_filter = 1
+net.ipv6.conf.default.rp_filter = 1
+net.ipv6.conf.all.rp_filter = 1
+
+## disable packet forwarding (retains SLAAC = Stateless Address Autoconfiguration) ##
+net.ipv4.ip_forward = 0
+net.ipv6.conf.all.forwarding = 0
+
+## do not accept any ICMP redirects (prevents MITM attacks) ##
+net.ipv4.conf.default.accept_redirects = 0
+net.ipv4.conf.all.accept_redirects = 0
+net.ipv6.conf.default.accept_redirects = 0
+net.ipv6.conf.all.accept_redirects = 0
+# net.ipv4.conf.all.secure_redirects = 0 ## repetitive
+# net.ipv6.conf.all.secure_redirects = 0 ## repetitive
+
+## accept RA redirects (supports IPv6 only) ##
+# net.ipv6.conf.all.accept_ra = 2 ## unsure
+
+## do not send ICMP redirects (we are not a router ... supports IPv4 only) ##
+net.ipv4.conf.default.send_redirects = 0
+net.ipv4.conf.all.send_redirects = 0
+
+## do not accept IP source route packets (we are not a router) ##
+net.ipv4.conf.default.accept_source_route = 0
+net.ipv4.conf.all.accept_source_route = 0
+net.ipv6.conf.default.accept_source_route = 0
+net.ipv6.conf.all.accept_source_route = 0
+
+## allowed local port range (set to maximum limit) ##
+net.ipv4.ip_local_port_range = 1024 65535
+net.ipv6.ip_local_port_range = 1024 65535
+
+## log Martian packets (supports IPv4 only) ##
+net.ipv4.conf.all.log_martians = 1
+
+####################################################################################################
+#### Ubuntu Kernel: TCP + UDP Settings #############################################################
+####################################################################################################
+
+## enable TCP/IP SYN cookies (SYN flood protection) ##
+net.ipv4.tcp_syncookies = 1
+net.ipv4.tcp_max_syn_backlog = 2048
+net.ipv4.tcp_synack_retries = 2
+
+## max number of TCP sockets not attached to any user file handle (held by system) ##
+net.ipv4.tcp_max_orphans = 60000
+
+## disable TCP slow start (we are not a variable speed WAN) ##
+net.ipv4.tcp_slow_start_after_idle = 0
+
+## protect against TCP Time-Wait (assasinate!) ##
+net.ipv4.tcp_rfc1337 = 1
+
+## decrease the time default value for tcp_fin_timeout connection (copied from EasyEngine) ##
+net.ipv4.tcp_fin_timeout = 15
+
+## decrease the keepalive connection timeouts (copied from EasyEngine) ##
+net.ipv4.tcp_keepalive_time = 300
+net.ipv4.tcp_keepalive_probes = 5
+net.ipv4.tcp_keepalive_intvl = 15
+
+## increase buffer-space allocatable measured in (4096 bytes) units of pages (copied from EasyEngine) ## 
+net.ipv4.tcp_mem = 65536 131072 262144
+net.ipv4.udp_mem = 65536 131072 262144
+
+## increase the read-buffer space allocatable (copied from EasyEngine) ##
+net.ipv4.tcp_rmem = 8192 87380 16777216
+net.ipv4.udp_rmem_min = 16384
+
+## increase the write-buffer-space allocatable (copied from EasyEngine) ##
+net.ipv4.tcp_wmem = 8192 65536 16777216
+net.ipv4.udp_wmem_min = 16384
+
+## increase the tcp-time-wait buckets pool size to prevent simple DOS attacks (copied from EasyEngine) ##
+net.ipv4.tcp_max_tw_buckets = 1440000
+net.ipv4.tcp_tw_recycle = 1
+net.ipv4.tcp_tw_reuse = 1
+
+####################################################################################################
+#### Ubuntu Kernel: Net Core Settings ##############################################################
+####################################################################################################
+
+## incoming connections backlog ##
+net.core.netdev_max_backlog = 65535
+
+## incoming connections ##
+net.core.somaxconn = 65535
+
+## wmem settings ##
+net.core.wmem_default = 31457280
+net.core.wmem_max = 16777216
+
+## rmem settings ##
+net.core.rmem_default = 31457280
+net.core.rmem_max = 16777216
+
+## option memory settings (copied from EasyEngine) ##
+net.core.optmem_max = 25165824
+
+## netdev budget settings ##
+net.core.netdev_budget = 50000
+net.core.netdev_budget_usecs = 5000
+
+## more custom configs ##
+## /etc/sysctl.d/
+
+####################################################################################################
+#### SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ###############
+####################################################################################################
+
+## Ref: https://cromwell-intl.com/open-source/performance-tuning/tcp.html
+## Ref: https://gist.github.com/magnetikonline/2760f98f6bf654d5ad79
+## Ref: https://www.ndchost.com/wiki/server-administration/hardening-tcpip-syn-flood
+## Ref: https://serverfault.com/questions/705504/better-alternative-for-tcp-syncookies-in-linux
+## Ref: https://www.litespeedtech.com/support/wiki/doku.php/litespeed_wiki:config:linux-kernel-tune
+## Ref: https://www.broadcom.com/support/knowledgebase/1211161457978/how-can-i-improve-performance-using-3ware-controllers-with-the-l
+## Ref: https://major.io/2008/08/07/reduce-disk-io-for-small-reads-using-memory/
+## Ref: https://gist.github.com/voyeg3r/368407/fd37cf6f75ae7203cd054d3a90c83ba3b6808ae6
+## Ref: https://linuxhint.com/understanding_vm_swappiness/
+## Ref: https://lists.gt.net/nsp/ipv6/20760
+## Ref: https://www.halolinux.us/ubuntu-server-administration-2/configure-forwarding.html
+## Ref: https://superuser.com/questions/33196/how-to-disable-autoconfiguration-on-ipv6-in-linux/33204
+## Ref: https://vk5tu.livejournal.com/37206.html
+## Ref: https://www.postgresql.org/message-id/50E4AAB1.9040902@optionshouse.com
+## Ref: https://askubuntu.com/questions/997888/sysctl-p-return-net-ipv6-conf-all-accept-ra-2
+## Ref: https://unix.stackexchange.com/questions/14056/what-is-kernel-ip-forwarding/478657#478657
+## Ref: https://unix.stackexchange.com/questions/348533/is-net-ipv6-conf-all-forwarding-1-equivalent-to-enabling-forwarding-for-all-indi/348534#348534
+## Ref: https://github.com/containernetworking/plugins/issues/21
+## Ref: https://www.eukhost.com/kb/how-to-enable-ip-forwarding-on-linux-ipv4-ipv6/
+## Ref: http://www.tweaked.io/guide/kernel/
+## Ref: https://gitlab.melroy.org/melroy/dotfiles/blob/85982f45db48d332b1d5715716e4ca34660f4ea2/etc/sysctl.d/99-sysctl.conf
+## Ref: https://easyengine.io/tutorials/linux/sysctl-conf/
+## Ref: https://www.howtoforge.com/tutorial/linux-swappiness/
+## Ref: https://linux.101hacks.com/monitoring-performance/sysctl-command-examples/
+## Ref: https://forum.manjaro.org/t/set-swappiness-no-etc-sysctl-d-99-sysctl-conf/77849
+## Ref: https://forum.manjaro.org/t/where-can-i-find-sysctl-conf/58200
+## Ref: https://wiki.parabola.nu/Sysctl
+## Ref: https://www.cyberciti.biz/faq/linux-kernel-etcsysctl-conf-security-hardening/
+## Ref: https://www.cyberciti.biz/faq/reload-sysctl-conf-on-linux-using-sysctl/
+## Ref: https://forums.opensuse.org/showthread.php/535456-sysctl-and-99-sysctl-problem-and-configuration
+## Ref: https://gist.github.com/voluntas/bc54c60aaa7ad6856e6f6a928b79ab6c
+## Ref: https://gist.github.com/magnetikonline/2760f98f6bf654d5ad79
+## Ref: https://klaver.it/linux/sysctl.conf
+## Ref: https://serverfault.com/questions/518862/will-increasing-net-core-somaxconn-make-a-difference
+## Ref: https://help.ubuntu.com/community/LinuxLogFiles#Kernel_Log
+## Ref: https://linuxize.com/post/how-to-add-swap-space-on-ubuntu-20-04/
+## Ref: https://serverfault.com/questions/1034181/mysqld-crashing-almost-every-hour-mysqld-invoked-oom-killer
+## Ref: https://www.cyberciti.biz/faq/ubuntu-linux-create-add-swap-file/
+## Ref: https://www.digitalocean.com/community/tutorials/how-to-add-swap-space-on-ubuntu-20-04
+## Ref: https://haydenjames.io/linux-performance-almost-always-add-swap-space/
+## Ref: https://sites.google.com/site/easytipsforlinux/speed-up-linux
+## Ref: https://wiki.debian.org/SSDOptimization
+## Ref: https://gist.github.com/marianposaceanu/5629740
+## Ref: https://bbs.archlinux.org/viewtopic.php?id=184655
+## Ref: https://sysctl-explorer.net/vm/vfs_cache_pressure/
+
+## SS_EOF
