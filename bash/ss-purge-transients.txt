@@ -67,8 +67,19 @@ if [[ "$SS_APP" == "wordpress" ]] || [[ -z "$SS_APP" ]]; then
 ## manually deletes all transients (temporary query cache data) from WordPress database ##
 ## this is a more forceful approach than simply purging the Redis object cache ##
 
+    ## mysql 8.0 (ubuntu 22.04) ##
+    if [[ "${UBUNTU_VERSION}" = "22.04" ]] || [[ -z "${UBUNTU_VERSION}" ]]; then 
+
+        if [[ -n $(mysql --execute "SHOW TABLES FROM ${DB_NAME} WHERE Tables_in_${DB_NAME} LIKE '${DB_PREFIX}options';") ]]; then
+    
+            mysql --execute="DELETE FROM ${DB_NAME}.${DB_PREFIX}options WHERE option_name LIKE ('%\_transient\_%');"
+    
+        fi
+    
+    fi
+
     ## mysql 8.0 (ubuntu 20.04) ##
-    if [[ "${UBUNTU_VERSION}" = "20.04" || -z "${UBUNTU_VERSION}" ]]; then 
+    if [[ "${UBUNTU_VERSION}" = "20.04" ]]; then 
 
         if [[ -n $(mysql --execute "SHOW TABLES FROM ${DB_NAME} WHERE Tables_in_${DB_NAME} LIKE '${DB_PREFIX}options';") ]]; then
     
