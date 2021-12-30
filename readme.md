@@ -35,6 +35,8 @@ SlickStack is a free LEMP stack automation script written in Bash designed to en
 
 ## Changelog
 
+* **NEW!** Dev/staging sites are now hardcode "noindexed" in the Nginx server blocks to prevent search engine indexing of those subdomains... a bug was fixed in the staging site block too, so now all staging media file links properly load from the production site instead (this avoids the need to sync/copy media files from production into the staging folders thus saving tons of space and making staging media files load automagically from production folders).
+
 * **NEW!** New variable `SS_OBJECT_CACHE` in ss-config now for an easy central location to disable object caching if desired... if you change the value to "false" then ss-install-wordpress-mu-plugins will skip adding object-cache.php to your production and staging sites (dev site is now ALWAYS disabled object-cache.php)
 
 * **NEW!** `ss-clean-files` will no longer clean/delete/touch anything under /wp-content/ or /wp-content/plugins/ if WORDPRESS_PLUGIN_BLACKLIST is set to `false` in your ss-config file... this was causing a lot of confusion and annoyance to users who didn't realize certain "risky" plugins were being deleted behind the scenes even when they had already disabled the plugin blacklist feature. Should help alleviate a lot of pain for now, although admittedly `ss-clean-files` still needs more code cleanup and general feedback from the community.
