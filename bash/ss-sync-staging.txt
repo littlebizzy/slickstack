@@ -51,7 +51,7 @@ touch "$TIMESTAMP_SS_SYNC_STAGING"
 ## it will only be noticed by sudo users who manually call ss core bash scripts ##
 
 ## echo message ##
-echo -e "${PURPLE}Running ss-sync-staging: Syncs relevant files and database from production site to the staging site... ${NOCOLOR}"
+echo -e "${COLOR_INFO}Running ss-sync-staging: Syncs relevant files and database from production site to the staging site... ${NOCOLOR}"
 sleep "$SLEEP_MESSAGE_BEGIN"
 
 ####################################################################################################
@@ -73,8 +73,14 @@ if [[ "$STAGING_SITE" == "true" ]]; then
     
     ## fix staging home and siteurl fields (no mass search/replace to avoid potential conflicts) ##
     if [[ "$SS_APP" == "wordpress" ]]; then
-        mysql --execute="UPDATE staging.${DB_PREFIX}options SET option_value='https://staging.$SITE_DOMAIN' WHERE option_name='home'";
-        mysql --execute="UPDATE staging.${DB_PREFIX}options SET option_value='https://staging.$SITE_DOMAIN' WHERE option_name='siteurl'";
+    
+        if [[ -n $(mysql --execute "SHOW TABLES FROM staging WHERE Tables_in_staging LIKE '${DB_PREFIX}options';") ]]; then
+        
+            mysql --execute="UPDATE staging.${DB_PREFIX}options SET option_value='https://staging.${SITE_DOMAIN}' WHERE option_name='home'";
+            mysql --execute="UPDATE staging.${DB_PREFIX}options SET option_value='https://staging.${SITE_DOMAIN}' WHERE option_name='siteurl'";
+    
+        fi
+        
     fi
     
 ####################################################################################################
