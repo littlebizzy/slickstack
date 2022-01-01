@@ -53,7 +53,7 @@ sleep "$SLEEP_MESSAGE_BEGIN"
 ## this ensures a recent backup exists in case any database corruption occurs ##
 
 ## run ss-dump-database ##
-source /var/www/ss-dump-database
+source "$PATH_SS_DUMP_DATABASE"
 
 ####################################################################################################
 #### SS-Update: Retrieve Latest SS-Check + SS-Worker (Core Bash Scripts) ###########################
@@ -82,7 +82,7 @@ source "$PATH_SS_INSTALL_UBUNTU_CRONTAB"
 ####################################################################################################
 
 ## uninstall expect (no longer used for ss-install-mysql) ##
-apt purge expect
+# apt purge expect
 
 ####################################################################################################
 #### SS-Update: Set Dpkg Basic Settings + Update Apt (Package) Cache ###############################
@@ -140,22 +140,22 @@ mysql --user=root --execute="FLUSH PRIVILEGES;"
 if [[ "$SS_APP" == "wordpress" || -z "$SS_APP"  ]]; then
 
     ## run ss-install-wordpress-core ##
-    source "$PATH_SS_INSTALL_WORDPRESS_CORE"
+    # source "$PATH_SS_INSTALL_WORDPRESS_CORE"
 
     ## here we retrieve latest wp-config.php boilerplate and customize per ss-config settings ##
     ## you should never make changes directly to wp-config.php in SlickStack servers ##
 
     ## run ss-install-wordpress-config ##
-    source "$PATH_SS_INSTALL_WORDPRESS_CONFIG"
+    # source "$PATH_SS_INSTALL_WORDPRESS_CONFIG"
 
     ## this will install the designated MU plugins and also Custom Functions and Object Cache ##
     ## with a few exceptions these can all be customized using ss-config settings ##
 
     ## run ss-install-wordpress-mu-plugins ##
-    source "$PATH_SS_INSTALL_WORDPRESS_MU_PLUGINS"
+    # source "$PATH_SS_INSTALL_WORDPRESS_MU_PLUGINS"
     
     ## run ss-install-wordpress-cli ##
-    source "$PATH_SS_INSTALL_WORDPRESS_CLI"
+    # source "$PATH_SS_INSTALL_WORDPRESS_CLI"
 
 fi
 
@@ -165,10 +165,10 @@ fi
 if [[ "$SS_APP" == "prestashop" ]]; then
 
     ## run ss-install-prestashop-core ##
-    source "$PATH_SS_INSTALL_PRESTASHOP_CORE"
+    # source "$PATH_SS_INSTALL_PRESTASHOP_CORE"
     
     ## run ss-install-prestashop-config ##
-    source "$PATH_SS_INSTALL_PRESTASHOP_CONFIG"
+    # source "$PATH_SS_INSTALL_PRESTASHOP_CONFIG"
     
 fi
 
@@ -178,10 +178,10 @@ fi
 if [[ "$SS_APP" == "mediawiki" ]]; then
 
     ## run ss-install-mediawiki-core ##
-    source "$PATH_SS_INSTALL_MEDIAWIKI_CORE"
+    # source "$PATH_SS_INSTALL_MEDIAWIKI_CORE"
     
     ## run ss-install-mediawiki-config ##
-    source "$PATH_SS_INSTALL_MEDIAWIKI_CONFIG"
+    # source "$PATH_SS_INSTALL_MEDIAWIKI_CONFIG"
     
 fi
 
@@ -217,62 +217,8 @@ apt autoremove
 ## at least one case reported where ss-update resulted in UFW config being overwritten ##
 ## therefore we include this reinstallation of UFW to ensure no port lockouts ##
 
-## delete tmp files ##
-rm /tmp/ufw*
-rm /tmp/user*
-
-## install UFW firewall ##
-apt install ufw
-
-## set UFW rules ##
-ufw default deny incoming
-ufw default allow outgoing
-ufw allow $SSH_PORT
-ufw allow 80
-ufw allow 443
-ufw allow 6379
-
-## re-enable UFW Firewall (prevously disabled above) ##
-ufw --force enable
-echo "y" | ufw enable
-
-# retrieve latest versions ##
-wget -O /tmp/ufw http://mirrors.slickstack.io/ufw-firewall/ufw.txt
-wget -O /tmp/ufw.conf http://mirrors.slickstack.io/ufw-firewall/ufw-conf.txt
-wget -O /tmp/user.rules http://mirrors.slickstack.io/ufw-firewall/user-rules.txt
-
-if [[ -z "$SSH_PORT" ]]; then 
-    sed -i "s/@SSH_PORT/6969/g" /tmp/user.rules
-else 
-    sed -i "s/@SSH_PORT/${SSH_PORT}/g" /tmp/user.rules
-fi
-
-## copy files to their destinations ##
-cp /tmp/ufw /etc/default/ufw
-cp /tmp/ufw.conf /etc/ufw/ufw.conf
-cp /tmp/user.rules /etc/ufw/user.rules
-
-## reset permissions ##
-chown root:root /etc/default/ufw
-chown root:root /etc/ufw/ufw.conf
-chown root:root /etc/ufw/user.rules
-chmod 0664 /etc/default/ufw
-chmod 0664 /etc/ufw/ufw.conf
-chmod 0664 /etc/ufw/user.rules
-
-## delete tmp files ##
-rm /tmp/ufw*
-rm /tmp/user*
-
-####################################################################################################
-#### SS-Update: Reset Permissions (All Permissions) ################################################
-####################################################################################################
-
-## intuitively resets all file and user permissions across the entire SlickStack server ##
-## depending on the CMS installed it will also reset those permissions as well ##
-
-## run ss-perms ##
-# source /var/www/ss-perms
+# source "$PATH_SS_INSTALL_UFW_PACKAGES"
+# source "$PATH_SS_INSTALL_UFW_CORE"
 
 ####################################################################################################
 #### SS-Update-Packages: Restart Modules (All Modules) #############################################
