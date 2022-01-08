@@ -23,16 +23,15 @@ source /var/www/ss-functions
 
 ## BELOW THIS RELIES ON SS-CONFIG AND SS-FUNCTIONS
 
-SS_UPDATE_BUILD="JAN2022C"
-
 ####################################################################################################
 #### TABLE OF CONTENTS (SS-Update-Config) ##########################################################
 ####################################################################################################
 
-## A. Touch Timestamp File
-## B. Message (Begin Script)
-## C. Cleanup Temporary Files
-## D. Backup Current SS-Config File
+## A. Build Version
+## B. Touch Timestamp File
+## C. Message (Begin Script)
+## D. Cleanup Temporary Files
+## E. Backup Active SS-Config File
 ## E. Validate Current SS-Confing Before Proceeding
 ## F. Ensure Undefined Options Do Not Exist Before Proceeding
 ## G. Retrieve Latest SS-Config Boilerplate
@@ -41,7 +40,16 @@ SS_UPDATE_BUILD="JAN2022C"
 ## J. Cleanup Temporary Files
 
 ####################################################################################################
-#### A. SS-Update-Config: Touch Timestamp File #####################################################
+#### A. SS-Update-Config: Build Version ############################################################
+####################################################################################################
+
+## this build version ensures compatibility with ss-config boilerplate (from mirrors) ##
+## it must match the latest ss-config boilerplate otherwise updating will fail ##
+
+SS_UPDATE_BUILD="JAN2022C"
+
+####################################################################################################
+#### B. SS-Update-Config: Touch Timestamp File #####################################################
 ####################################################################################################
 
 ## this is a dummy timestamp file that will remember the last time this script was run ##
@@ -51,7 +59,7 @@ SS_UPDATE_BUILD="JAN2022C"
 touch "$TIMESTAMP_SS_UPDATE_CONFIG"
 
 ####################################################################################################
-#### B. SS-Update-Config: Message (Begin Script) ###################################################
+#### C. SS-Update-Config: Message (Begin Script) ###################################################
 ####################################################################################################
 
 ## this is a simple message that announces to the shell the purpose of this bash script ##
@@ -62,25 +70,25 @@ echo -e "${COLOR_INFO}Running ss-update-config: Updates ss-config file to latest
 sleep "$SLEEP_MESSAGE_BEGIN"
 
 ####################################################################################################
-#### C. SS-Update-Config: Cleanup Temporary Files ##################################################
+#### D. SS-Update-Config: Cleanup Temporary Files ##################################################
 ####################################################################################################
 
 ## delete tmp files ##
 rm "$TMP_SS_CONFIG"
 
 ####################################################################################################
-#### D. SS-Update-Config: Backup Current SS-Config File ############################################
+#### E. SS-Update-Config: Backup Active SS-Config File #############################################
 ####################################################################################################
-
-## SNIPPET: ss-update-config, ss-worker
-## UPDATED: 11SEP2021
 
 ## this will replicate your current ss-config file (and settings) to the backups dir ##
 ## the older .bak files will be cleaned up periodically by ss-clean-files ##
 
+## SNIPPET: ss-update-config, ss-worker
+## UPDATED: 08JAN2022
+
 ## backup ss-config ##
 CURRENT_TIME=$(date "+%Y.%b.%d-%H:%M:%S")
-cp /var/www/ss-config /var/www/backups/config/ss-config.bak.$CURRENT_TIME
+cp /var/www/ss-config /var/www/backups/config/ss-config.bak.${CURRENT_TIME}
 
 ####################################################################################################
 #### E. SS-Update-Config: Validate Current SS-Confing Before Proceeding ############################
