@@ -32,12 +32,12 @@ source /var/www/ss-functions
 ## C. Message (Begin Script)
 ## D. Cleanup Temporary Files
 ## E. Backup Active SS-Config File
-## E. Validate Current SS-Confing Before Proceeding
-## F. Ensure Undefined Options Do Not Exist Before Proceeding
-## G. Retrieve Latest SS-Config Boilerplate
-## H. Install Latest SS-Config Boilerplate (Copies Existing Settings)
-## I. Validate Latest SS-Config Boilerplate
-## J. Cleanup Temporary Files
+## F. Validate Active SS-Config Before Proceeding
+## G. Ensure Undefined Options Do Not Exist Before Proceeding
+## H. Retrieve Latest SS-Config Boilerplate
+## I. Install Latest SS-Config Boilerplate (Copies Existing Settings)
+## J. Validate Latest SS-Config Boilerplate
+## K. Cleanup Temporary Files
 
 ####################################################################################################
 #### A. SS-Update-Config: Build Version ############################################################
@@ -91,19 +91,19 @@ CURRENT_TIME=$(date "+%Y.%b.%d-%H:%M:%S")
 cp /var/www/ss-config /var/www/backups/config/ss-config.bak.${CURRENT_TIME}
 
 ####################################################################################################
-#### E. SS-Update-Config: Validate Current SS-Confing Before Proceeding ############################
+#### F. SS-Update-Config: Validate Active SS-Config Before Proceeding ##############################
 ####################################################################################################
 
 VALIDATE_SS_CONFIG=$(grep 'EOF' "$PATH_SS_CONFIG") ## change to "$SS_EOF" later
 
 ## validate ss-config ##
-if [[ -z "$VALIDATE_SS_CONFIG" ]]; then
-    echo -e "${DARKRED}Exiting ss-update-config: Your current ss-config file is missing or corrupt so update was skipped... ${NOCOLOR}"
+if [[ -z "${VALIDATE_SS_CONFIG}" ]]; then
+    echo -e "${COLOR_ERROR}Exiting ss-update-config: Your current ss-config file is missing or corrupt so update was skipped... ${NOCOLOR}"
     exit 1
 fi
 
 ####################################################################################################
-#### F. SS-Update-Config: Ensure Undefined Options Do Not Exist Before Proceeding ##################
+#### G. SS-Update-Config: Ensure Undefined Options Do Not Exist Before Proceeding ##################
 ####################################################################################################
 
 ## below snippet will warn you and exit if undefined ss-config options are found to exist ##
@@ -112,12 +112,12 @@ fi
 ## warn if placeholders exist ##
 SS_CONFIG_OPTION_PLACEHOLDER="$(grep -c '"@' /var/www/ss-config)"
 if [[ "$SS_CONFIG_OPTION_PLACEHOLDER" -gt 0 ]]; then
-    echo -e "${DARKRED}Exiting ss-update-config: Please replace all \"@...\" placeholders in your ss-config and try again... ${NOCOLOR}"
+    echo -e "${COLOR_ERROR}Exiting ss-update-config: Please replace all \"@...\" placeholders in your ss-config and try again... ${NOCOLOR}"
     exit 1
 fi
 
 ####################################################################################################
-#### G. SS-Update-Config: Retrieve Latest SS-Config Boilerplate ####################################
+#### H. SS-Update-Config: Retrieve Latest SS-Config Boilerplate ####################################
 ####################################################################################################
 
 ## variables will only be copied over from the previous ss-config file if they are defined ##
@@ -135,7 +135,7 @@ if [[ "$SS_BUILD_LATEST" != "$SS_UPDATE_BUILD" ]]; then
 fi
 
 ####################################################################################################
-#### H. SS-Update-Config: Install Latest SS-Config Boilerplate (Copies Existing Settings) ##########
+#### I. SS-Update-Config: Install Latest SS-Config Boilerplate (Copies Existing Settings) ##########
 ####################################################################################################
 
 ## this will update the existing ss-config file to latest boilerplate from our mirrors ##
@@ -1998,7 +1998,7 @@ sed -i "s|\(^MU_PLUGIN_99_DIR=\).*|MU_PLUGIN_99_DIR=\"$MU_PLUGIN_99_DIR\"|g" "$T
 fi
 
 ####################################################################################################
-#### I. SS-Update-Config: Validate Latest SS-Config Boilerplate ####################################
+#### J. SS-Update-Config: Validate Latest SS-Config Boilerplate ####################################
 ####################################################################################################
 
 ## this snippet will ensure that the latest ss-config boilerplate appears intact ##
@@ -2012,11 +2012,11 @@ if [[ -n "$VALIDATE_TMP_SS_CONFIG" ]] && [[ -n "$DB_NAME_NOW" ]]; then
     chown root:root "$PATH_SS_CONFIG" ## must be root:root
     chmod 0700 "$PATH_SS_CONFIG" ## must be 0700
 else
-    echo -e "${DARKRED}Exiting ss-update-config: The retrieved ss-config boilerplate appears corrupt so update was skipped... ${NOCOLOR}"
+    echo -e "${COLOR_ERROR}Exiting ss-update-config: The retrieved ss-config boilerplate appears corrupt so update was skipped... ${NOCOLOR}"
 fi
 
 ####################################################################################################
-#### J. SS-Update-Config: Cleanup Temporary Files ##################################################
+#### K. SS-Update-Config: Cleanup Temporary Files ##################################################
 ####################################################################################################
 
 ## delete tmp files ##
