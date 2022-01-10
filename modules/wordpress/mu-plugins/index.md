@@ -65,14 +65,6 @@ title: MU (Must-Use) Plugins (Public Mirrors)
 
 ----
 
-#### object-cache.php
-
-* [object-cache-1.2.2.txt](object-cache-1.2.2.txt)
-* [object-cache-1.2.1.txt](object-cache-1.2.1.txt)
-* [object-cache-1.2.0.txt](object-cache-1.2.0.txt)
-
-----
-
 #### clear-caches.zip
 
 * (coming soon)
@@ -164,12 +156,6 @@ title: MU (Must-Use) Plugins (Public Mirrors)
 #### virtual-robotstxt.zip
 
 * (coming soon)
-
-----
-
-#### object-cache.php (Pressjitsu)
-
-* [pj-object-cache-1.0.txt](pj-object-cache-1.0.txt)
 
 ### Related Links
 
