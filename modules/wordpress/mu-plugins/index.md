@@ -16,10 +16,7 @@ title: MU (Must-Use) Plugins (Public Mirrors)
 * [custom-functions.zip](custom-functions.zip)
 * [xxx-notices.txt](xxx-notices.txt)
 * [xxx-staging.txt](xxx-staging.txt)
-
-#### Required Drop-In Plugins
-
-* [object-cache.txt](object-cache.txt)
+* [redis-cache](redis-cache.zip)
 
 #### Default MU (Must-Use) Plugins (Optional)
 
@@ -194,4 +191,4 @@ title: MU (Must-Use) Plugins (Public Mirrors)
 
 ----
 
-*Last updated: Nov 1, 2020*
+*Last updated: Jan 11, 2022*
