@@ -7,9 +7,9 @@
 #### path: /var/www/ss-install-wordpress-mu-plugins ################################################
 #### destination: n/a (not a boilerplate) ##########################################################
 #### purpose: Reinstalls all the WordPress MU plugins for SlickStack servers (idempotent) ##########
-#### module version: WordPress 5.5.x ###############################################################
-#### sourced by: ss-install, ss-install-wordpress ##################################################
-#### bash aliases: ss install wordpress [wp] mu plugins, ss install mu plugins #####################
+#### module version: WordPress 5.8.x ###############################################################
+#### sourced by: ss-install ########################################################################
+#### bash aliases: ss install wordpress|wp mu plugins, ss install mu plugins #######################
 ####################################################################################################
 
 ## SS-CONFIG MUST BE PROPERLY CONFIGURED AND ON CURRENT BUILD BEFORE RUNNING SS-INSTALL ##
@@ -22,6 +22,16 @@ source /var/www/ss-config
 source /var/www/ss-functions
 
 ## BELOW THIS RELIES ON SS-CONFIG AND SS-FUNCTIONS
+
+####################################################################################################
+#### SS-Install-WordPress-MU-Plugins: Touch Timestamp File (End Script) ############################
+####################################################################################################
+
+## this is a dummy timestamp file that will remember the last time this script was run ##
+## it can be useful for developer reference and is sometimes used by SlickStack ##
+
+## script timestamp ##
+touch "$TIMESTAMP_SS_INSTALL_WORDPRESS_MU_PLUGINS"
 
 ####################################################################################################
 #### SS-Install-WordPress-MU-Plugins: Message (Begin Script) #######################################
@@ -44,6 +54,7 @@ rm /tmp/custom-functions*
 rm /tmp/functions*
 rm /tmp/xxx-*
 rm /tmp/object-cache*
+rm /tmp/redis-cache*
 
 rm /tmp/clear-caches*
 rm /tmp/cloudflare*
@@ -111,6 +122,8 @@ wget -O /tmp/disable-default-runner.zip "$MIRROR_DISABLE_DEFAULT_RUNNER_ZIP"
 
 ## download Object Cache (required drop-in plugin) files ##
 wget -O /tmp/object-cache.php "$MIRROR_OBJECT_CACHE_PHP"
+# wget -O /tmp/redis-cache.zip "$MIRROR_REDIS_CACHE_ZIP"
+# unzip /tmp/redis-cache.zip -d /tmp
 
 ## unzip various files ##
 unzip /tmp/disable-emails.zip -d /tmp
@@ -191,9 +204,13 @@ if [[ "${SS_OBJECT_CACHE}" != "false" ]]; then
     cp /tmp/object-cache.php /var/www/html/wp-content/object-cache.php
 fi
 
+# cp /tmp/redis-cache /var/www/html/wp-content/mu-plugins/redis-cache
+
 if [[ "${SS_OBJECT_CACHE}" != "false" ]] && [[ "${STAGING_SITE}" == "true" ]]; then
 cp /tmp/object-cache.php /var/www/html/staging/wp-content/object-cache.php
 fi
+
+# cp /tmp/redis-cache /var/www/html/staging/wp-content/mu-plugins/redis-cache
 
 ####################################################################################################
 #### SS-Muplugs: Install Specified MU (Must-Use) Plugins (Optional) ################################
@@ -670,6 +687,7 @@ rm /tmp/custom-functions*
 rm /tmp/functions*
 rm /tmp/xxx-*
 rm /tmp/object-cache*
+rm /tmp/redis-cache*
 
 rm /tmp/clear-caches*
 rm /tmp/cloudflare*
@@ -707,16 +725,6 @@ rm /tmp/virtual-robotstxt*
 
 ## fix bug 
 rm /var/www/html/wp-content/mu-plugins/tmp/
-
-####################################################################################################
-#### SS-Install-WordPress-MU-Plugins: Touch Timestamp File (End Script) ############################
-####################################################################################################
-
-## this is a dummy timestamp file that will remember the last time this script was run ##
-## it can be useful for developer reference and is sometimes used by SlickStack ##
-
-## script timestamp ##
-touch "$TIMESTAMP_SS_INSTALL_WORDPRESS_MU_PLUGINS"
 
 ####################################################################################################
 #### SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ###############
