@@ -35,6 +35,8 @@ SlickStack is a free LEMP stack automation script written in Bash designed to en
 
 ## Changelog
 
+* **NEW!** We discovered that enabling object-cache.php on the staging subdomain was causing cross-conflicts with production on some actions, such as activating themes and sometimes login/logout due to Redis conflicts. Rather than complicating our Redis config to support staging, SlickStack will simply no longer install object-cache.php (or related future plugins) on the staging (nor dev) sites anymore.
+
 * **NEW!** A few more of our default MU plugins have been removed due to annoyance/confusion among some users. We continue to transition SlickStack away from being LittleBizzy-hosting-specific and into a more universal/standard environment. We have plans to continue our plugin development under new plugin names in a more streamlined (combined) codebase e.g. Speed Demon, Security Guard, and SEO Genius.. however for now (and getting ready for PHP 8.1) we continue to remove more of these default MU plugins from SlickStack for the time being. We might also expand the SlickStack dashboard to include some of these options natively perhaps. Feedback wanted!
 
 * **NEW!** bug fixed that was preventing the dev site (subdomain) HTTP auth user/pass feature from working properly.
