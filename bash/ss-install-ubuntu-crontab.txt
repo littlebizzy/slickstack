@@ -7,7 +7,7 @@
 #### path: /var/www/ss-install-ubuntu-crontab ######################################################
 #### destination: n/a (not a boilerplate) ##########################################################
 #### purpose: Reinstalls the Ubuntu (OS) root crontab for SlickStack servers (idempotent) ##########
-#### module version: Ubuntu 20.04 LTS ##############################################################
+#### module version: Ubuntu 22.04 LTS ##############################################################
 #### sourced by: ss-install ########################################################################
 #### bash aliases: ss install ubuntu crontab, ss install crontab ###################################
 ####################################################################################################
@@ -24,7 +24,30 @@ source /var/www/ss-functions
 ## BELOW THIS RELIES ON SS-CONFIG AND SS-FUNCTIONS
 
 ####################################################################################################
-#### SS-Install-Ubuntu-Crontab: Message (Begin Script) #############################################
+#### TABLE OF CONTENTS (SS-Install-Ubuntu-Crontab) #################################################
+####################################################################################################
+
+## A. Touch Timestamp File
+## B. Message (Begin Script)
+## C. Cleanup Temporary Files
+## D. Install Cron (If Not Exists)
+## E. Install SlickStack (Root) Crontab
+## F. Reset Permissions (Ubuntu Crontab)
+## G. Restart Services (Cron)
+## H. Cleanup Temporary Files
+
+####################################################################################################
+#### A. SS-Install-Ubuntu-Crontab: Touch Timestamp File ############################################
+####################################################################################################
+
+## this is a dummy timestamp file that will remember the last time this script was run ##
+## it can be useful for developer reference and is sometimes used by SlickStack ##
+
+## script timestamp ##
+touch "$TIMESTAMP_SS_INSTALL_UBUNTU_CRONTAB"
+
+####################################################################################################
+#### B. SS-Install-Ubuntu-Crontab: Message (Begin Script) ##########################################
 ####################################################################################################
 
 ## this is a simple message that announces to the shell the purpose of this bash script ##
@@ -35,24 +58,24 @@ echo -e "${COLOR_INFO}Running ss-install-ubuntu-crontab: Reinstalls the Ubuntu (
 sleep "$SLEEP_MESSAGE_BEGIN"
 
 ####################################################################################################
-#### SS-Install-Ubuntu-Crontab: Cleanup Temporary Files ############################################
+#### C. SS-Install-Ubuntu-Crontab: Cleanup Temporary Files #########################################
 ####################################################################################################
 
 ## delete tmp files ##
 rm "$TMP_00_CRONTAB"
 
 ####################################################################################################
-#### SS-Install-Ubuntu-Crontab: Install Cron (If Not Exists) #######################################
+#### D. SS-Install-Ubuntu-Crontab: Install Cron (If Not Exists) ####################################
 ####################################################################################################
 
 ## the cron package should already be installed by default if you are using Ubuntu Linux ##
 ## we include this here for extra surety to ensure cron exists before proceeding ##
 
-## install cron (if not exists) ##
+## install cron package ##
 apt install cron
 
 ####################################################################################################
-#### SS-Install-Ubuntu-Crontab: Install SlickStack (Root) Crontab ##################################
+#### E. SS-Install-Ubuntu-Crontab: Install SlickStack (Root) Crontab ###############################
 ####################################################################################################
 
 ## here we forcefully reinstall the crontab based on the SlickStack boilerplate file ##
@@ -64,35 +87,25 @@ sed -i "s/@RANDOM_STRING/$(openssl rand -hex 12)/g" "$TMP_00_CRONTAB"
 sudo crontab "$TMP_00_CRONTAB"
 
 ####################################################################################################
-#### SS-Install-Ubuntu-Crontab: Reset Permissions (Ubuntu Crontab) #################################
+#### F. SS-Install-Ubuntu-Crontab: Reset Permissions (Ubuntu Crontab) ##############################
 ####################################################################################################
 
 ## run ss-perms-ubuntu-crontab ##
 source "$PATH_SS_PERMS_UBUNTU_CRONTAB"
 
 ####################################################################################################
-#### SS-Install-Ubuntu-Crontab: Restart Services (Cron) ############################################
+#### G. SS-Install-Ubuntu-Crontab: Restart Services (Cron) #########################################
 ####################################################################################################
 
 ## reload cron ##
 /etc/init.d/cron reload ## reload better than restart
 
 ####################################################################################################
-#### SS-Install-Ubuntu-Crontab: Cleanup Temporary Files ############################################
+#### H. SS-Install-Ubuntu-Crontab: Cleanup Temporary Files #########################################
 ####################################################################################################
 
 ## delete tmp files ##
 rm "$TMP_00_CRONTAB"
-
-####################################################################################################
-#### SS-Install-Ubuntu-Crontab: Touch Timestamp File (End Script) ##################################
-####################################################################################################
-
-## this is a dummy timestamp file that will remember the last time this script was run ##
-## it can be useful for developer reference and is sometimes used by SlickStack ##
-
-## script timestamp ##
-touch "$TIMESTAMP_SS_INSTALL_UBUNTU_CRONTAB"
 
 ####################################################################################################
 #### SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ###############
