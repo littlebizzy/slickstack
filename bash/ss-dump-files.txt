@@ -58,14 +58,14 @@ sleep "$SLEEP_MESSAGE_BEGIN"
 ## this is to avoid exhausting disk space and crashing the server
 ## if free space is okay then dump TAR ball of /html/ to /var/www/backups/html/export.tar.gz (must overwrite each time to save space)
 
-ss_tar /var/www/backups/html/production.tar.gz --exclude="staging" --exclude="dev" -C /var/www html
+ss_tar "$PATH_DUMP_FILES_PRODUCTION" --exclude="staging" --exclude="dev" -C /var/www html
 
 if [[ "$SS_DUMP_FILES_STAGING" == "true" ]]; then
-    ss_tar /var/www/backups/html/staging.tar.gz /var/www/html/staging
+    ss_tar "$PATH_DUMP_FILES_STAGING" /var/www/html/staging
 fi
 
 if [[ "$SS_DUMP_FILES_DEVELOPMENT" == "true" ]]; then
-    ss_tar /var/www/backups/html/development.tar.gz /var/www/html/dev
+    ss_tar "$PATH_DUMP_FILES_DEVELOPMENT" /var/www/html/dev
 fi
 
 ####################################################################################################
@@ -75,7 +75,21 @@ fi
 ## here we do a quick permissions reset to ensure SFTP users can access the dump file ##
 ## keep in mind that root/sudo users will have access to this file regardless ##
 
-## reset permissions ##
+## reset permissions (production) ##
+chown -R $SFTP_USER:www-data "$PATH_DUMP_DATABASE_PRODUCTION"
+chmod 0440 "$PATH_DUMP_DATABASE_PRODUCTION"
+
+## reset permissions (staging) ##
+if [[ "$SS_DUMP_DATABASE_STAGING" == "true" ]]; then
+    chown -R $SFTP_USER:www-data "$PATH_DUMP_DATABASE_STAGING"
+    chmod 0440 "$PATH_DUMP_DATABASE_STAGING"
+fi
+
+## reset permissions (development) ##
+if [[ "$SS_DUMP_DATABASE_DEVELOPMENT" == "true" ]]; then
+    chown -R $SFTP_USER:www-data "$PATH_DUMP_DATABASE_DEVELOPMENT"
+    chmod 0440 "$PATH_DUMP_DATABASE_DEVELOPMENT"
+fi
 
 
 ####################################################################################################
