@@ -5,8 +5,6 @@ SlickStack is a free LEMP stack automation script written in Bash designed to en
 * [**Discord server**](https://discord.gg/nGskJdg)
 * [**Skype group chat**](https://join.skype.com/NdpqKrN2BHdN)
 * [**Matrix/Element room**](https://app.element.io/#/room/#general:matrix.slickstack.io)
-* 
-## What To Expect
 
 | PageSpeed | GTMetrix | Pingdom | SecHeaders | SSL Labs | WebPageTest | ImmuniWeb |
 | :--------------: | :------: | :-----: | :--------------: | :-------------: | :-------------: | :-------------: |
