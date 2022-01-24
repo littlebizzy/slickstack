@@ -2,11 +2,9 @@
 
 SlickStack is a free LEMP stack automation script written in Bash designed to enhance and simplify WordPress provisioning, performance, and security.
 
-* [**Matrix/Element room (public)**](https://app.element.io/#/room/#general:matrix.slickstack.io)
 * [**Discord server**](https://discord.gg/nGskJdg)
 * [**Skype group chat**](https://join.skype.com/NdpqKrN2BHdN)
-
-## What To Expect
+* [**Matrix/Element room**](https://app.element.io/#/room/#general:matrix.slickstack.io)
 
 | PageSpeed | GTMetrix | Pingdom | SecHeaders | SSL Labs | WebPageTest | ImmuniWeb |
 | :--------------: | :------: | :-----: | :--------------: | :-------------: | :-------------: | :-------------: |
@@ -31,7 +29,6 @@ SlickStack is a free LEMP stack automation script written in Bash designed to en
 | **Git** | [mirrors](https://mirrors.slickstack.io/modules/git/) | 2.25.x | default config |
 | **UFW Firewall** | [mirrors](https://mirrors.slickstack.io/modules/ufw-firewall/) | 0.36 | `ufw` + `ufw.conf` + `user-rules` |
 | **ClamAV** | [mirrors](https://mirrors.slickstack.io/modules/clamav/) | 0.102.x | `freshclam.conf` |
-| **Rclone** | [mirrors](https://mirrors.slickstack.io/modules/rclone/) | 1.50.x | `rclone.conf` |
 
 ## Changelog
 
