@@ -27,15 +27,25 @@ source /var/www/ss-functions
 #### TABLE OF CONTENTS (SS-Install-Ubuntu-Swapfile) ################################################
 ####################################################################################################
 
-## A. Touch Timestamp File
-## B. Message (Begin Script)
-## C. Check If Swapfile Exists Before Proceeding
-## D. Install Swapfile
-## E. Reset Permissions (Ubuntu Swapfile)
-## F. Display Active Swapfile
+## A. Query Settings
+## B. Touch Timestamp File
+## C. Message (Begin Script)
+## D. Check If Swapfile Exists Before Proceeding
+## E. Install Swapfile
+## F. Reset Permissions (Ubuntu Swapfile)
+## G. Display Active Swapfile
 
 ####################################################################################################
-#### A. SS-Install-Ubuntu-Swapfile: Touch Timestamp File ###########################################
+## A. SS-Install-Ubuntu-Swapfile: Query Settings ###################################################
+####################################################################################################
+
+if [[ "${SS_SWAPFILE}" == "false" ]]; then
+    echo -e "${COLOR_INFO}SS-Install-Ubuntu-Swapfile: Swapfile is disabled in ss-config so exiting the script now... ${NOCOLOR}"
+    # do it here
+fi
+
+####################################################################################################
+#### B. SS-Install-Ubuntu-Swapfile: Touch Timestamp File ###########################################
 ####################################################################################################
 
 ## this is a dummy timestamp file that will remember the last time this script was run ##
@@ -45,7 +55,7 @@ source /var/www/ss-functions
 touch "$TIMESTAMP_SS_INSTALL_UBUNTU_SWAPFILE"
 
 ####################################################################################################
-#### B. SS-Install-Ubuntu-Swapfile: Message (Begin Script) #########################################
+#### C. SS-Install-Ubuntu-Swapfile: Message (Begin Script) #########################################
 ####################################################################################################
 
 ## this is a simple message that announces to the shell the purpose of this bash script ##
@@ -56,7 +66,7 @@ echo -e "${COLOR_INFO}Running ss-install-ubuntu-swapfile: Reinstalls the Ubuntu 
 sleep "$SLEEP_MESSAGE_BEGIN"
 
 ####################################################################################################
-#### C. SS-Install-Ubuntu-Swapfile: Check If Swapfile Exists Before Proceeding #####################
+#### D. SS-Install-Ubuntu-Swapfile: Check If Swapfile Exists Before Proceeding #####################
 ####################################################################################################
 
 # if [[ -n $(grep "swapfile" /etc/fstab) ]]; then
@@ -66,7 +76,7 @@ sleep "$SLEEP_MESSAGE_BEGIN"
 # fi
 
 ####################################################################################################
-#### D. SS-Install-Ubuntu-Swapfile: Install Swapfile ###############################################
+#### E. SS-Install-Ubuntu-Swapfile: Install Swapfile ###############################################
 ####################################################################################################
 
 ## because of our new auto swapfile size feature we need a "walk back" function in case people downgrade their VMs
@@ -117,14 +127,14 @@ fi
 ## endif
 
 ####################################################################################################
-#### E. SS-Install-Ubuntu-Swapfile: Reset Permissions (Ubuntu Swapfile) ############################
+#### F. SS-Install-Ubuntu-Swapfile: Reset Permissions (Ubuntu Swapfile) ############################
 ####################################################################################################
 
 ## run ss-perms-ubuntu-swapfile ##
 source "$PATH_SS_PERMS_UBUNTU_SWAPFILE"
 
 ####################################################################################################
-#### F. SS-Install-Ubuntu-Swapfile: Display Active Swapfile ########################################
+#### G. SS-Install-Ubuntu-Swapfile: Display Active Swapfile ########################################
 ####################################################################################################
 
 swapon --show
