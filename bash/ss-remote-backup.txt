@@ -37,9 +37,11 @@ sleep "$SLEEP_MESSAGE_BEGIN"
 ## this will copy/sync the entire SlickStack directory structure to your remote cloud ##
 ## we hardcode the local path and cloud service nickname for stability reasons ##
 
-rclone "$RCLONE_MODE" --transfers 15 --retries 5 "/var/www/" "slickstack:${RCLONE_REMOTE_PATH}"
+# tell rclone to use slickstack rclone.conf
+RCLONE_CONFIG="/var/www/meta/rclone.conf"
+export RCLONE_CONFIG
 
-## consider changing to "slickstack:/websites/${SITE_DOMAIN}"
+rclone "${RCLONE_MODE}" "${RCLONE_BACKUP_PATH}" "slickstack:${RCLONE_REMOTE_PATH}" --transfers "${RCLONE_PARALLEL_TRANSFERS}" --retries 5 --fast-list
 
 ####################################################################################################
 #### SS-Remote-Backup: Touch Timestamp File (End Script) ###########################################
@@ -76,5 +78,7 @@ touch "$TIMESTAMP_SS_REMOTE_BACKUP"
 ## Ref: https://medium.com/@mormesher/building-your-own-linux-cloud-backup-system-75750f47d550
 ## Ref: https://www.reddit.com/r/DataHoarder/comments/bb259k/backups_with_borg_rclone_gdrive/
 ## Ref: https://www.reddit.com/r/unRAID/comments/e6l4x6/tutorial_borg_rclone_v2_the_best_method_to/
+## Ref: https://forum.rclone.org/t/rclone-config-different-path/4672/5
+## Ref: https://linuxpip.org/rclone-examples/#Use_rclone_to_copy_the_whole_directoryfolder_including_directory_structure_and_contents
 
 ## SS_EOF
