@@ -26,7 +26,8 @@ title: WP-CLI (Public Mirrors)
 * [https://make.wordpress.org/cli/handbook/config/](https://make.wordpress.org/cli/handbook/config/)
 * [https://developer.wordpress.org/cli/commands/](https://developer.wordpress.org/cli/commands/)
 * [https://make.wordpress.org/cli/handbook/commands-cookbook/](https://make.wordpress.org/cli/handbook/commands-cookbook/)
+* [https://make.wordpress.org/cli/2022/01/26/wp-cli-v2-6-0-release-notes/](https://make.wordpress.org/cli/2022/01/26/wp-cli-v2-6-0-release-notes/)
 
 ----
 
-*Last updated: May 12, 2021*
+*Last updated: Jan 27, 2022*
