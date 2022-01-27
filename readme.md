@@ -32,6 +32,8 @@ SlickStack is a free LEMP stack automation script written in Bash designed to en
 
 ## Changelog
 
+* **NEW!** `DISALLOW_UNFILTERED_HTML` is now set to `false` for all single site installs going forward (to stop stripping HTML from the WordPress post editor)... it will still be set to `true` for Multisite installations for stronger security.
+
 * **NEW!** With community help we have begun the super fun task of adding international language support, so that things like skip cache rules make more sense (for example, English users skip the FastCGI cache for /cart/ and /checkout/ pages but German users call this /warenkorb/ and /kasse/ ... pleae get involved to help us add support for more language in SlickStack while evangelizing "best" URL slugs.
 
 * **NEW!** It looks like some providers such as Vultr have taken our advice and started installing 2GB swapfiles by default on their cloud servers... this is cool but it started creating errors when SlickStack tried to install our own swapfile. We tried adding an if statement to the script, but it was a bit janky so we removed that if statement for now and will make it better later.
