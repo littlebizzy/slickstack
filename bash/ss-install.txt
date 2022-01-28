@@ -696,25 +696,6 @@ source /var/www/ss-functions
 ####################################################################################################
 ####
 ####################################################################################################
-
-## if staging enabled
-if [[ "$STAGING_SITE" != "false" ]]; then 
-    mkdir /var/www/html/staging
-    mkdir /var/www/html/staging/.well-known
-    mkdir /var/www/html/staging/.well-known/acme-challenge
-    chown -R "${SFTP_USER}":www-data /var/www/html/staging/.well-known ## accessed by server for e.g. Cerbot but also by SFTP user for things like Stripe ##
-    chown -R "${SFTP_USER}":www-data /var/www/html/staging/.well-known/acme-challenge ## accessed by server for e.g. Cerbot but also by SFTP user for things like Stripe ##
-fi
-
-## if dev enabled
-if [[ "$DEV_SITE" != "false" ]]; then 
-    mkdir /var/www/html/dev
-    mkdir /var/www/html/dev/.well-known
-    mkdir /var/www/html/dev/.well-known/acme-challenge
-    chown -R "${SFTP_USER}":www-data /var/www/html/dev/.well-known ## accessed by server for e.g. Cerbot but also by SFTP user for things like Stripe ##
-    chown -R "${SFTP_USER}":www-data /var/www/html/dev/.well-known/acme-challenge ## accessed by server for e.g. Cerbot but also by SFTP user for things like Stripe ##
-fi
-
 ####################################################################################################
 #### SS-Install: Set Confold As Ubuntu Dpkg Default ################################################
 ####################################################################################################
@@ -740,6 +721,25 @@ apt upgrade
 
 ## run ss-install-ubuntu-users ##
 source "$PATH_SS_INSTALL_UBUNTU_USERS"
+
+## we need to do the chown for SFTP_USER down here because this account does not exist before
+## if staging enabled
+if [[ "$STAGING_SITE" != "false" ]]; then 
+    mkdir /var/www/html/staging
+    mkdir /var/www/html/staging/.well-known
+    mkdir /var/www/html/staging/.well-known/acme-challenge
+    chown -R "${SFTP_USER}":www-data /var/www/html/staging/.well-known ## accessed by server for e.g. Cerbot but also by SFTP user for things like Stripe ##
+    chown -R "${SFTP_USER}":www-data /var/www/html/staging/.well-known/acme-challenge ## accessed by server for e.g. Cerbot but also by SFTP user for things like Stripe ##
+fi
+
+## if dev enabled
+if [[ "$DEV_SITE" != "false" ]]; then 
+    mkdir /var/www/html/dev
+    mkdir /var/www/html/dev/.well-known
+    mkdir /var/www/html/dev/.well-known/acme-challenge
+    chown -R "${SFTP_USER}":www-data /var/www/html/dev/.well-known ## accessed by server for e.g. Cerbot but also by SFTP user for things like Stripe ##
+    chown -R "${SFTP_USER}":www-data /var/www/html/dev/.well-known/acme-challenge ## accessed by server for e.g. Cerbot but also by SFTP user for things like Stripe ##
+fi
 
 ## SlickStack aims to emphasize traditional bash scripts but we still support aliases ##
 ## in most cases using aliases are not necessary but can help you save time ##
