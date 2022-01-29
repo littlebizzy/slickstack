@@ -32,6 +32,8 @@ SlickStack is a free LEMP stack automation script written in Bash designed to en
 
 ## Changelog
 
+* **NEW!** Rclone integration should be working now thanks to work by @backamblock ... however, we may remove it later (and avoid having integrated backup services) because of the huge array of services and user preferences... we need more community feedback on backups, thank you!
+
 * **NEW!** `DISALLOW_UNFILTERED_HTML` is now set to `false` for all single site installs going forward (to stop stripping HTML from the WordPress post editor)... it will still be set to `true` for Multisite installations for stronger security.
 
 * **NEW!** With community help we have begun the super fun task of adding international language support, so that things like skip cache rules make more sense (for example, English users skip the FastCGI cache for /cart/ and /checkout/ pages but German users call this /warenkorb/ and /kasse/ ... pleae get involved to help us add support for more language in SlickStack while evangelizing "best" URL slugs.
