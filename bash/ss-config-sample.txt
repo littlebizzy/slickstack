@@ -148,20 +148,30 @@ GUEST_PASSWORD="@GUEST_PASSWORD"
 ## RCLONE_TYPE = [b2|dropbox|etc] choose a supported rclone cloud storage provider ##
 ## RCLONE_MODE = [copy|sync] copy avoids data loss but complicates restores ##
 ## RCLONE_REMOTE_PATH = [*must be unique*] storage path on your remote service ##
-## RCLONE_CLIENT_ID = [*must be unique*] might be account ID or application ID ##
+## RCLONE_CLIENT_ID = [*must be unique*] might be account key ID or application key ID ##
 ## RCLONE_CLIENT_SECRET = [*must be unique*] might be master key or application key ##
 ## RCLONE_USER = [*must be unique*] some services want to know your username ##
 ## RCLONE_PASSWORD = [*must be unique*] some services want to know your password ##
 ## RCLONE_TOKEN = [*must be unique*] usually a one-time token you must generate ##
+## RCLONE_BACKUP_PATH = [/var/www/|/var/www/backups/] select backups subfolder when you enable SS_DUMP_FILES ##
+## RCLONE_PARALLEL_TRANSFERS = [15|100|...] number of parallel transfers - more is faster ##
+## about parallel transfers: 1000 on 2c VPS = 200% CPU, 500 = 120% CPU, 100 = 10% CPU ##
+## WARNING: when you set parallel transfers high and have files that are big, it could crash your VPS. ##
+## when you have files over 5GB, it will chunk that data to 96MB and stores them in RAM. 96MB*transfers=RAM Usage ##
+## WARNING: "/var/www/" will exceed the free limit of 2500 daily Class C Transactions! 1 file/chunk makes 2 API calls ##
+## "/var/www/backups/" and SS_DUMP_FILES recommended ##
+## b2 Application key must have read and write permissions ##
 
-RCLONE_TYPE="b2" ## only b2 will be supported at first (not yet)
-RCLONE_MODE="copy"
-RCLONE_REMOTE_PATH="/websites/example.com"
-RCLONE_CLIENT_ID=""
-RCLONE_CLIENT_SECRET=""
+RCLONE_TYPE="b2" ## only b2 supported for now
+RCLONE_MODE="copy" ## recommended to leave "copy" and use b2 lifecycle rules
+RCLONE_REMOTE_PATH="/bucketname/@SITE_DOMAIN"  ## for b2, use bucketname (and then subfolder)
+RCLONE_CLIENT_ID="" ## fill with b2 key ID
+RCLONE_CLIENT_SECRET="" ## fill with b2 key
 RCLONE_USER=""
 RCLONE_PASSWORD=""
 RCLONE_TOKEN=""
+RCLONE_BACKUP_PATH="/var/www/"
+RCLONE_PARALLEL_TRANSFERS="15" ## default 15 - recommended lower for big files
 
 ####################################################################################################
 ####################################################################################################
@@ -182,10 +192,18 @@ RCLONE_TOKEN=""
 
 ## SS_APP = [wordpress|mysql|magento] more options coming soon (send us your feedback) ##
 ## SS_LANGUAGE = [en_US|de_DE|etc] affects minor features like skip cache slugs ##
-## SS_PILOT_FILE = [*must be unique*] secret Gist file for multi-server management ##
 
 SS_APP="@SS_APP" ## only wordpress is stable
 SS_LANGUAGE="@SS_LANGUAGE" ## en_US best supported currently
+
+## SS_PILOT_FILE = [*must be unique*] secret Gist file for multi-server management ##
+## in the pilot file you can enter all variable of ss-config that you want to change ##
+## check the current version of ss-worker.txt on github to see what variables are already implemented ##
+## enter them VARIABLE_NAME="variable value" like seen here, one in each line ##
+## paste the full URL to your secret gist in this config or during the install ##
+## your ss-config will be updated on every ss-worker run (see the interval settings section below) ##
+## some updated settings may only be used when running ss-update or other specialized ss functions ##
+
 SS_PILOT_FILE="@SS_PILOT_FILE"
 
 ## SS_DATABASE_REMOTE = [false|true] skips MySQL install if true (remote database) ##
@@ -627,6 +645,7 @@ SS_INSTALL_WORDPRESS_CORE_CLEANUP_OPTIONS="true"
 ## disable any given task by setting interval to random string (e.g. never) ##
 
 ## [often|regular|quarter-hourly|half-hourly|hourly|quarter-daily|half-daily|daily|half-weekly|weekly|half-monthly|monthly|sometimes] ##
+## often = 2min, regular = 5min, sometimes = 2months
 
 ## INTERVAL_SS_CHECK = [often|regular|quarter-hourly|half-hourly|hourly] ##
 ## INTERVAL_SS_CLEAN_DATABASE = [hourly|quarter-daily|half-daily|daily|half-weekly|weekly] ##
@@ -715,7 +734,7 @@ INTERVAL_SS_PURGE_OPCACHE="never" ## default = never
 INTERVAL_SS_PURGE_REDIS="never" ## default = never
 INTERVAL_SS_PURGE_TRANSIENTS="never" ## default = never
 INTERVAL_SS_REBOOT_MACHINE="never" ## default = never
-INTERVAL_SS_REMOTE_BACKUP="never" ## default = never (not functional yet)
+INTERVAL_SS_REMOTE_BACKUP="never" ## default = never
 INTERVAL_SS_RESET_PASSWORD_SFTP="never" ## default = never
 INTERVAL_SS_RESTART_MYSQL="never" ## default = never
 INTERVAL_SS_RESTART_NGINX="never" ## default = never
