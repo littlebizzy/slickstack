@@ -25,7 +25,8 @@ title: MySQL (Public Mirrors)
 * https://www.sitepoint.com/optimize-mysql-indexes-slow-queries-configuration/
 * https://dzone.com/articles/how-to-optimize-mysql-queries-for-speed-and-perfor
 * https://stackoverflow.com/questions/2317650/setting-global-sql-mode-in-mysql
+* https://www.reddit.com/r/mysql/comments/owye5g/whats_the_status_of_mysql_8190/
 
 ----
 
-*Last updated: May 4, 2021*
+*Last updated: Jan 31, 2022*
