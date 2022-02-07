@@ -96,41 +96,31 @@ wget -O "$TMP_SS_CHECK" "$MIRROR_SS_CHECK"
 cp "$TMP_SS_CHECK" "$PATH_SS_CHECK"
 
 ####################################################################################################
-#### SS-Worker: Validate Current WP-Config.php ##################################################
-####################################################################################################
-
-## this snippet will check to ensure wp-config.php exists and contains SS_EOF string ##
-## if not found then it will call script to reinstall the wp-config.php file ##
-
-## ensure wp-config.php intact (production) ##
-# if [[ -z "$VALIDATE_WP_CONFIG_PHP" ]]; then
-#    source /var/www/ss-install-wordpress-config
-# fi
-
-####################################################################################################
 #### SS-Worker: Install Pilot File Variables #######################################################
 ####################################################################################################
 
+## this snippet retrieves the remote pilot file defined in ss-config and reads settings ##
+## it will replace old settings with pilot settings for multi-server management ##
+
 ## retrieve pilot file if defined ##
 if [[ -n "$SS_PILOT_FILE" ]]; then 
-rm /tmp/ss-pilot
-wget -O /tmp/ss-pilot "$SS_PILOT_FILE"
+    rm /tmp/ss-pilot
+    wget -O /tmp/ss-pilot "$SS_PILOT_FILE"
 
-PILOT_WHITELABEL_BRAND=$(source /tmp/ss-pilot; echo $WHITELABEL_BRAND)
-PILOT_WHITELABEL_HOMEPAGE=$(source /tmp/ss-pilot; echo $WHITELABEL_HOMEPAGE)
+    PILOT_WHITELABEL_BRAND=$(source /tmp/ss-pilot; echo $WHITELABEL_BRAND)
+    PILOT_WHITELABEL_HOMEPAGE=$(source /tmp/ss-pilot; echo $WHITELABEL_HOMEPAGE)
 
-## replace ss-config variables with pilot variables if exist ##
-if [[ -n "$PILOT_WHITELABEL_BRAND" ]]; then 
-sed -i "s|\(^WHITELABEL_BRAND=\).*|WHITELABEL_BRAND=\"$PILOT_WHITELABEL_BRAND\"|g" /var/www/ss-config
-fi
+    ## replace ss-config variables with pilot variables if exist ##
+    if [[ -n "$PILOT_WHITELABEL_BRAND" ]]; then 
+        sed -i "s|\(^WHITELABEL_BRAND=\).*|WHITELABEL_BRAND=\"$PILOT_WHITELABEL_BRAND\"|g" /var/www/ss-config
+    fi
 
-if [[ -n "$PILOT_WHITELABEL_HOMEPAGE" ]]; then 
-sed -i "s|\(^WHITELABEL_HOMEPAGE=\).*|WHITELABEL_HOMEPAGE=\"$PILOT_WHITELABEL_HOMEPAGE\"|g" /var/www/ss-config
-fi
+    if [[ -n "$PILOT_WHITELABEL_HOMEPAGE" ]]; then 
+        sed -i "s|\(^WHITELABEL_HOMEPAGE=\).*|WHITELABEL_HOMEPAGE=\"$PILOT_WHITELABEL_HOMEPAGE\"|g" /var/www/ss-config
+    fi
 
-rm /tmp/ss-pilot
+    rm /tmp/ss-pilot
 fi 
-
 
 ####################################################################################################
 #### SS-Worker: Install Latest SS-Constants.php Boilerplate ########################################
