@@ -7,7 +7,7 @@
 #### path: /var/www/ss-install-wordpress-core ######################################################
 #### destination: n/a (not a boilerplate) ##########################################################
 #### purpose: Reinstalls the WordPress module (CMS) package and non-config files (idempotent) ######
-#### module version: WordPress 5.8.x ###############################################################
+#### module version: WordPress 5.9.x ###############################################################
 #### sourced by: ss-install ########################################################################
 #### bash aliases: ss install wordpress core, ss install wp core ###################################
 ####################################################################################################
@@ -96,94 +96,96 @@ if [[ ! -f "$TMP_WORDPRESS_ZIP" ]]; then
 fi
 
 ####################################################################################################
-#### SS-Install-WordPress-Core: Cleanup Files + Install WordPress Core (Production) ################
+#### SS-Install-WordPress-Core: Install WordPress Core (Production) ################################
 ####################################################################################################
 
 ## this installation process removes outdated WordPress Core files or potential malware ##
-## it is not foolproof but it should address the majority of common problems ##
+## it is not foolproof but it should address several common infection targets ##
 
-## cleanup old files and potential malware unless disabled ##
-if [[ -f "/tmp/wordpress.zip" ]] && [[ "$SS_INSTALL_WORDPRESS_CORE_DELETE_WP_ADMIN" != "false" ]]; then
-    rm /var/www/html/wp-admin
+## cleanup old files ##
+if [[ -f "${TMP_WORDPRESS_ZIP}" ]] && [[ "${SS_INSTALL_WORDPRESS_CORE_DELETE_WP_ADMIN}" != "false" ]]; then
+    ss_rm /var/www/html/wp-admin
 fi
 
-if [[ -f "/tmp/wordpress.zip" ]] && [[ "$SS_INSTALL_WORDPRESS_CORE_DELETE_WP_INCLUDES" != "false" ]]; then
-    rm /var/www/html/wp-includes
+if [[ -f "${TMP_WORDPRESS_ZIP}" ]] && [[ "${SS_INSTALL_WORDPRESS_CORE_DELETE_WP_INCLUDES}" != "false" ]]; then
+    ss_rm /var/www/html/wp-includes
 fi
 
-if [[ -f "/tmp/wordpress.zip" ]] && [[ "$SS_INSTALL_WORDPRESS_CORE_DELETE_PHP_FILES_ROOT" != "false" ]]; then
+if [[ -f "${TMP_WORDPRESS_ZIP}" ]] && [[ "${SS_INSTALL_WORDPRESS_CORE_DELETE_PHP_FILES_ROOT}" != "false" ]]; then
     find /var/www/html/ -maxdepth 1 -type f ! -name "wp-config.php" -name "*.php" -delete 
-    # cd /var/www/html/ && find . -type f ! -name "wp-config.php" -name "*.php" -delete 
 fi
 
-## copy zip to production ##
-cp "$TMP_WORDPRESS_ZIP" /var/www/html
+## prepare new files ##
+cp "${TMP_WORDPRESS_ZIP}" /var/www/html
 unzip /var/www/html/wordpress.zip -d /var/www/html
 chown -R www-data:wordpress /var/www/html/wordpress
 chmod 775 /var/www/html/wordpress
 
-## install wp core files ##
+## install new files ##
 rsync /var/www/html/wordpress/* /var/www/html
 
 ####################################################################################################
-#### SS-Install-WordPress-Core: Cleanup Files + Install WordPress Core (Staging) ###################
+#### SS-Install-WordPress-Core: Install WordPress Core (Staging) ###################################
 ####################################################################################################
 
 ## this installation process removes outdated WordPress Core files or potential malware ##
-## it is not foolproof but it should address the majority of common problems ##
+## it is not foolproof but it should address several common infection targets ##
 
-## cleanup old files and potential malware unless disabled ##
-if [[ -f "/tmp/wordpress.zip" ]] && [[ "$SS_INSTALL_WORDPRESS_CORE_DELETE_WP_ADMIN" != "false" ]]; then
-    rm /var/www/html/staging/wp-admin
-fi
+if [[ "${STAGING_SITE}" == "true" ]]; then 
 
-if [[ -f "/tmp/wordpress.zip" ]] && [[ "$SS_INSTALL_WORDPRESS_CORE_DELETE_WP_INCLUDES" != "false" ]]; then
-    rm /var/www/html/staging/wp-includes
-fi
+    ## cleanup old files ##
+    if [[ -f "${TMP_WORDPRESS_ZIP}" ]] && [[ "${SS_INSTALL_WORDPRESS_CORE_DELETE_WP_ADMIN}" != "false" ]]; then
+        ss_rm /var/www/html/staging/wp-admin
+    fi
 
-if [[ -f "/tmp/wordpress.zip" ]] && [[ "$SS_INSTALL_WORDPRESS_CORE_DELETE_PHP_FILES_ROOT" != "false" ]]; then
-    find /var/www/html/staging/ -maxdepth 1 -type f ! -name "wp-config.php" -name "*.php" -delete 
-    # cd /var/www/html/staging/ && find . -type f ! -name "wp-config.php" -name "*.php" -delete 
-fi
+    if [[ -f "${TMP_WORDPRESS_ZIP}" ]] && [[ "${SS_INSTALL_WORDPRESS_CORE_DELETE_WP_INCLUDES}" != "false" ]]; then
+        ss_rm /var/www/html/staging/wp-includes
+    fi
 
-## copy zip to staging ##
-if [[ "$STAGING_SITE" == "true" ]]; then 
-    cp "$TMP_WORDPRESS_ZIP" /var/www/html/staging
+    if [[ -f "${TMP_WORDPRESS_ZIP}" ]] && [[ "${SS_INSTALL_WORDPRESS_CORE_DELETE_PHP_FILES_ROOT}" != "false" ]]; then
+        find /var/www/html/staging/ -maxdepth 1 -type f ! -name "wp-config.php" -name "*.php" -delete 
+    fi
+
+    ## prepare new files ##
+    cp "${TMP_WORDPRESS_ZIP}" /var/www/html/staging
     unzip /var/www/html/staging/wordpress.zip -d /var/www/html/staging
     chown -R www-data:wordpress /var/www/html/staging/wordpress
     chmod 775 /var/www/html/staging/wordpress
-    ## install wp core files ##
+    
+    ## install new files files ##
     rsync /var/www/html/staging/wordpress/* /var/www/html/staging
+    
 fi
 
 ####################################################################################################
-#### SS-Install-WordPress-Core: Cleanup Files + Install WordPress Core (Dev) #######################
+#### SS-Install-WordPress-Core: Install WordPress Core (Development) ###############################
 ####################################################################################################
 
 ## this installation process removes outdated WordPress Core files or potential malware ##
-## it is not foolproof but it should address the majority of common problems ##
+## it is not foolproof but it should address several common infection targets ##
 
-if [[ "$DEV_SITE" == "true" ]]; then 
+if [[ "${DEV_SITE}" == "true" ]]; then 
 
-    if [[ -f "/tmp/wordpress.zip" ]] && [[ "$SS_INSTALL_WORDPRESS_CORE_DELETE_WP_ADMIN" != "false" ]]; then
-        rm /var/www/html/dev/wp-admin
+    ## cleanup old files ##
+    if [[ -f "${TMP_WORDPRESS_ZIP}" ]] && [[ "${SS_INSTALL_WORDPRESS_CORE_DELETE_WP_ADMIN}" != "false" ]]; then
+        ss_rm /var/www/html/dev/wp-admin
     fi
 
-    if [[ -f "/tmp/wordpress.zip" ]] && [[ "$SS_INSTALL_WORDPRESS_CORE_DELETE_WP_INCLUDES" != "false" ]]; then
-        rm /var/www/html/dev/wp-includes
+    if [[ -f "${TMP_WORDPRESS_ZIP}" ]] && [[ "${SS_INSTALL_WORDPRESS_CORE_DELETE_WP_INCLUDES}" != "false" ]]; then
+        ss_rm /var/www/html/dev/wp-includes
     fi
 
-    if [[ -f "/tmp/wordpress.zip" ]] && [[ "$SS_INSTALL_WORDPRESS_CORE_DELETE_PHP_FILES_ROOT" != "false" ]]; then
+    if [[ -f "${TMP_WORDPRESS_ZIP}" ]] && [[ "${SS_INSTALL_WORDPRESS_CORE_DELETE_PHP_FILES_ROOT}" != "false" ]]; then
         find /var/www/html/dev/ -maxdepth 1 -type f ! -name "wp-config.php" -name "*.php" -delete 
-        # cd /var/www/html/dev/ && find . -type f ! -name "wp-config.php" -name "*.php" -delete 
     fi
 
-    ## copy zip to dev ##
-    cp "$TMP_WORDPRESS_ZIP" /var/www/html/dev
+    ## prepare new files ##
+    cp "${TMP_WORDPRESS_ZIP}" /var/www/html/dev
     unzip /var/www/html/dev/wordpress.zip -d /var/www/html/dev
     chown -R www-data:wordpress /var/www/html/dev/wordpress
     chmod 775 /var/www/html/dev/wordpress
-    ## install wp core files ##
+    
+    ## install new files ##
     rsync /var/www/html/dev/wordpress/* /var/www/html/dev
     
 fi
