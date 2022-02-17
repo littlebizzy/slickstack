@@ -268,39 +268,18 @@ server {
     }
     
 ####################################################################################################
-#### Server Block (Production): Staging Subdirectory Settings ######################################
+#### Server Block (Production): Dev/Staging Subdirectory Settings ##################################
 ####################################################################################################
     
-## staging subdirectory is noindexed, caching is disabled, and paths are hardcoded ## 
-## media files are aliased to load existing files from the production site ##
-
-## NEEDS IMPROVEMENT ##
+## for security reasons the dev and staging sudirectories are redirected to subdomains ##
+## therefore any staging WordPress plugins cannot use these reserved paths ##
     
     location /staging/ {
-        ## try files, then directories, otherwise query index ##
-        try_files $uri $uri/ /staging/index.php?$args;
-	
-        ## tweak fastcgi cache ##
-        include /etc/nginx/fastcgi.conf;
-        fastcgi_split_path_info ^(.+\.php)(/.+)$;
-	fastcgi_pass 127.0.0.1:9000;
-        fastcgi_read_timeout 300;
-        fastcgi_index index.php;
-        fastcgi_cache off;
-	
-	## tweak http headers ##
-	add_header X-Robots-Tag "noindex, nofollow, nosnippet, noarchive";
-        add_header Strict-Transport-Security "max-age=15552000" always; ## 180 days
-        add_header X-FastCGI-Cache $upstream_cache_status;
-        add_header X-Frame-Options SAMEORIGIN;
-        add_header X-Content-Type-Options nosniff;
-        add_header X-XSS-Protection "1; mode=block";
-        add_header Referrer-Policy "strict-origin-when-cross-origin";
-	add_header Permissions-Policy "accelerometer=(), ambient-light-sensor=(), autoplay=*, battery=(), camera=(), display-capture=*, document-domain=*, encrypted-media=*, fullscreen=*, geolocation=(self), gyroscope=(), layout-animations=*, legacy-image-formats=*, magnetometer=(), microphone=(self), midi=(), oversized-images=*, payment=*, picture-in-picture=*, publickey-credentials-get=*, sync-xhr=*, usb=(), vibrate=(), wake-lock=(), xr-spatial-tracking=()";
+        return 301	https://staging.@SITE_DOMAIN;
     }
     
-    location ^~ /staging/wp-content/uploads/ {
-        alias /var/www/html/wp-content/uploads/;
+    location /dev/ {
+        return 301	https://dev.@SITE_DOMAIN;
     }
 
 ####################################################################################################
