@@ -568,30 +568,32 @@ fi
 ## this fix required for WP Multisite (wp-config.php enough for single sites) ##
 
 ## SNIPPET: ss-install-wordpress-config, ss-install-wordpress-core
-## UPDATED: 10JAN2022
+## UPDATED: 17FEB2022
 
+## production ##
 if [[ -n $(mysql --execute "SHOW TABLES FROM ${DB_NAME} WHERE Tables_in_${DB_NAME} LIKE '${DB_PREFIX}options';") ]]; then
     
-    ## production ##
     mysql --execute="UPDATE ${DB_NAME}.${DB_PREFIX}options SET option_value='https://${SITE_DOMAIN}' WHERE option_name='home'";
     mysql --execute="UPDATE ${DB_NAME}.${DB_PREFIX}options SET option_value='https://${SITE_DOMAIN}' WHERE option_name='siteurl'";
     
 fi
 
-if [[ -n $(mysql --execute "SHOW TABLES FROM staging WHERE Tables_in_staging LIKE '${DB_PREFIX}options';") ]]; then
+## staging ##
+if [[ "$STAGING_SITE" == "true" ]]; then 
     
-    ## staging ##
-    if [[ "$STAGING_SITE" == "true" ]]; then 
+    if [[ -n $(mysql --execute "SHOW TABLES FROM staging WHERE Tables_in_staging LIKE '${DB_PREFIX}options';") ]]; then
+    
         mysql --execute="UPDATE staging.${DB_PREFIX}options SET option_value='https://staging.${SITE_DOMAIN_EXCLUDING_WWW}' WHERE option_name='home'";
         mysql --execute="UPDATE staging.${DB_PREFIX}options SET option_value='https://staging.${SITE_DOMAIN_EXCLUDING_WWW}' WHERE option_name='siteurl'";
     fi
     
 fi
 
-if [[ -n $(mysql --execute "SHOW TABLES FROM development WHERE Tables_in_development LIKE '${DB_PREFIX}options';") ]]; then
-
-    ## development ##
-    if [[ "$DEV_SITE" == "true" ]]; then 
+## development ##
+if [[ "$DEV_SITE" == "true" ]]; then 
+    
+    if [[ -n $(mysql --execute "SHOW TABLES FROM development WHERE Tables_in_development LIKE '${DB_PREFIX}options';") ]]; then
+    
         mysql --execute="UPDATE development.${DB_PREFIX}options SET option_value='https://dev.${SITE_DOMAIN_EXCLUDING_WWW}' WHERE option_name='home'";
         mysql --execute="UPDATE development.${DB_PREFIX}options SET option_value='https://dev.${SITE_DOMAIN_EXCLUDING_WWW}' WHERE option_name='siteurl'";
     fi
