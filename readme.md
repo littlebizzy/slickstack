@@ -32,6 +32,8 @@ SlickStack is a free LEMP stack automation script written in Bash designed to en
 
 ## Changelog
 
+* **NEW!** New option in ss-config `NGINX_ACCESS_LOG` for temporarily enabling the access log (not a good idea for long-term stability). Log file names have changed now for Nginx being `nginx-error.log` and `nginx-access.log` respectively.
+
 * **NEW!** Our wp-config.php boilerplates no longer include_once the (deprecated) /wp-content/functions.php file... if you were experiencing any slow loading times in WP Admin on new installations, please run ss-install-wp-config again now.
  
 * **NEW!** Rclone integration should be working now thanks to work by @backamblock ... however, we may remove it later (and avoid having integrated backup services) because of the huge array of services and user preferences... we need more community feedback on backups, thank you!
