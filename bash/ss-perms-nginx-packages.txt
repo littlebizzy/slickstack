@@ -8,8 +8,8 @@
 #### destination: n/a (not a boilerplate) ##########################################################
 #### purpose: Resets file and user permissions for Nginx module core files and folders #############
 #### module version: Nginx 1.18.x ##################################################################
-#### sourced by: ss-perms-nginx, ss-install-nginx-core #############################################
-#### bash aliases: ss perms nginx core #############################################################
+#### sourced by: ss-install-nginx-packages #########################################################
+#### bash aliases: ss perms nginx core, ss perms nginx packages ####################################
 ####################################################################################################
 
 ## source ss-config ##
@@ -19,6 +19,16 @@ source /var/www/ss-config
 source /var/www/ss-functions
 
 ## BELOW THIS RELIES ON SS-CONFIG AND SS-FUNCTIONS
+
+####################################################################################################
+#### SS-Perms-Nginx-Packages: Touch Timestamp File #################################################
+####################################################################################################
+
+## this is a dummy timestamp file that will remember the last time this script was run ##
+## it can be useful for developer reference and is sometimes used by SlickStack ##
+
+## script timestamp ##
+touch "$TIMESTAMP_SS_PERMS_NGINX_PACKAGES"
 
 ####################################################################################################
 #### SS-Perms-Nginx-Packages: Message ###################################################
@@ -41,8 +51,12 @@ sleep "$SLEEP_MESSAGE_BEGIN"
 ## ensure directories exists (will not overwrite) ##
 mkdir /var/www/cache
 
-## logs ##
+## touch logs ##
 if [ ! -f "/var/www/logs/nginx.log" ]; then touch "/var/www/logs/nginx.log"; fi
+if [ ! -f "/var/www/logs/nginx-error.log" ]; then touch "/var/www/logs/nginx-error.log"; fi
+if [ ! -f "/var/www/logs/nginx-access.log" ]; then touch "/var/www/logs/nginx-access.log"; fi
+
+## perms ##
 chown www-data:www-data /var/www/logs/nginx*.log*
 chmod 0644 /var/www/logs/nginx*.log ## 6755 should also work
 
@@ -52,21 +66,7 @@ chown www-data:www-data /var/www/cache
 
 
 # source /var/www/ss-perms-nginx-config
-# source /var/www/ss-perms-nginx-core
 # source /var/www/ss-perms-nginx-ssl
-
-
-
-
-####################################################################################################
-#### SS-Perms-Nginx-Packages: Touch Timestamp File (End Script) ####################################
-####################################################################################################
-
-## this is a dummy timestamp file that will remember the last time this script was run ##
-## it can be useful for developer reference and is sometimes used by SlickStack ##
-
-## script timestamp ##
-touch "$TIMESTAMP_SS_PERMS_NGINX_PACKAGES"
 
 ####################################################################################################
 #### SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ###############
