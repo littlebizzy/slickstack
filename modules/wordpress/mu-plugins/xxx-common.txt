@@ -21,11 +21,24 @@ Prefix: SSCOMM
 /** this is a simple login page welcome message that we use to announce important things */
 /** most of the time this feature will only be activated in case of emergencies */
 
-function ss_login_message() {
-	return '<p class="message">Having trouble logging in? Please clear your browser cache and/or cookies for this site and try again. Thanks, and apologies! &mdash; <em>SlickStack</em></p>';
+if(WP_ENVIRONMENT_TYPE == 'production') {
+
+	function ss_login_message_production() {
+		return '<p class="message">Having trouble logging in? Please clear your browser cache and/or cookies for this site and try again. Thanks, and apologies! &mdash; <em>SlickStack</em></p>';
+	}
+	
+	add_filter('login_message', 'ss_login_message_production');
+
 }
 
-add_filter('login_message', 'ss_login_message');
+if(WP_ENVIRONMENT_TYPE == 'development') {
+ 
+	function ss_login_message_development() {
+		return '<p class="message">First time logging in to this dev site? The default username/password is the same as your SFTP credentials. &mdash; <em>SlickStack</em></p>';
+	}
+
+	add_filter('login_message', 'ss_login_message_development');
+}
 
 /** ********************************************************************************************* */
 /** XXX Common: SlickStack WP Admin Notices (Production) **************************************** */
