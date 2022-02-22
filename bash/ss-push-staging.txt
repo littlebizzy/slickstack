@@ -7,8 +7,8 @@
 #### path: /var/www/ss-push-staging ################################################################
 #### destination: n/a (not a boilerplate) ##########################################################
 #### purpose: Pushes staging themes, plugins, and wp_options table to the production site ##########
-#### module version: WordPress 5.8.x + MySQL 8.0.x #################################################
-#### sourced by: ss core cron jobs #################################################################
+#### module version: WordPress 5.9.x + MySQL 8.0.x #################################################
+#### sourced by: n/a ###############################################################################
 #### bash aliases: ss push staging #################################################################
 ####################################################################################################
 
@@ -22,3 +22,117 @@ source /var/www/ss-config
 source /var/www/ss-functions
 
 ## BELOW THIS RELIES ON SS-CONFIG AND SS-FUNCTIONS
+
+####################################################################################################
+#### TABLE OF CONTENTS (SS-Push-Staging) ###########################################################
+####################################################################################################
+
+## A. Query Settings
+## A. Touch Timestamp File
+
+####################################################################################################
+#### A. SS-Push-Staging: Touch Timestamp File ######################################################
+####################################################################################################
+
+## this is a dummy timestamp file that will remember the last time this script was run ##
+## it can be useful for developer reference and is sometimes used by SlickStack ##
+
+## script timestamp ##
+touch "$TIMESTAMP_SS_PUSH_STAGING"
+
+####################################################################################################
+#### B. SS-Push-Staging: Message (Begin Script) ####################################################
+####################################################################################################
+
+## this is a simple message that announces to the shell the purpose of this bash script ##
+## it will only be noticed by sudo users who manually call ss core bash scripts ##
+
+## echo message ##
+echo -e "${COLOR_INFO}Running ss-push-staging: Pushes staging themes, plugins, and wp_options table to the production site... ${NOCOLOR}"
+sleep "$SLEEP_MESSAGE_BEGIN"
+
+####################################################################################################
+#### C. SS-Push-Staging: Dump Production Database ##################################################
+####################################################################################################
+
+source "${PATH_SS_DUMP_DATABASE}"
+
+####################################################################################################
+#### C. SS-Push-Staging: Push Staging To Production (Plugins, Themes, Options) #####################
+####################################################################################################
+
+##
+##
+
+## only if staging site is enabled ##
+if [[ "${STAGING_SITE}" == "true" ]]; then
+
+    ## import database ##
+   #  cp /var/www/backups/mysql/production.sql /tmp/staging.sql
+   # chown mysql:mysql /tmp/staging.sql ## does not matter if -L flag used below
+  #  chmod 0644 /tmp/staging.sql ## does not matter if -L flag used below
+#    sudo mysql -L -f staging < /tmp/staging.sql
+#    rm /tmp/staging.sql
+
+
+    if [[ "${SS_APP}" == "wordpress" ]]; then
+
+        ## production ##
+        if [[ -n $(mysql --execute "SHOW TABLES FROM ${DB_NAME} WHERE Tables_in_${DB_NAME} LIKE '${DB_PREFIX}options';") ]]; then
+    
+            mysql --execute="UPDATE ${DB_NAME}.${DB_PREFIX}options SET option_value='https://${SITE_DOMAIN}' WHERE option_name='home'";
+            mysql --execute="UPDATE ${DB_NAME}.${DB_PREFIX}options SET option_value='https://${SITE_DOMAIN}' WHERE option_name='siteurl'";
+    
+        fi
+
+    ## end parent if ##
+    fi
+
+
+## end parent if ##
+fi
+
+####################################################################################################
+#### D. SS-Push-Staging: Copy All Relevant Files From Staging To Production ########################
+####################################################################################################
+
+## here we copy over a limited array of files and folders from staging to production ##
+## keep in mind that both sites share the same uploads folder (so not copied) ##
+
+## only if staging site is enabled ##
+if [[ "${STAGING_SITE}" == "true" ]]; then
+
+    ## copy wp-content files over (skips media uploads) ##
+    ss_rsync --max-size=5mb --exclude="mu-plugins*" --exclude="uploads*" /var/www/html/staging/wp-content/ /var/www/html/wp-content
+    
+    ## remove potential run-on subdirectories ##
+    rm /var/www/html/wp-content/wp-content*
+    rm /var/www/html/staging/staging*
+    
+    ## do we need to copy post meta tables here in case media files were uploaded to staging?
+    
+## end parent if ##
+fi
+
+####################################################################################################
+#### E. SS-Sync-Staging: Fix Any Hardcoded Links In Production Theme Files #########################
+####################################################################################################
+
+## many themes (or custom-coded themes) often contain hardcoded HTML assets and links ##
+## here we forcefully fix these links to ensure production sites render properly ##
+
+## change staging hardlinks to production ##
+find /var/www/html/wp-content/themes/ -type f -exec sed -i "s#https://staging.$SITE_DOMAIN#https://${SITE_DOMAIN}#g" {} +
+find /var/www/html/wp-content/themes/ -type f -exec sed -i "s#http://staging.$SITE_DOMAIN#https://${SITE_DOMAIN}#g" {} +
+    
+## change dev hardlinks to production ##
+find /var/www/html/wp-content/themes/ -type f -exec sed -i "s#https://dev.$SITE_DOMAIN#https://${SITE_DOMAIN}#g" {} +
+find /var/www/html/wp-content/themes/ -type f -exec sed -i "s#http://dev.$SITE_DOMAIN#https://${SITE_DOMAIN}#g" {} +
+
+####################################################################################################
+#### SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ###############
+####################################################################################################
+
+## Ref: 
+
+## SS_EOF
