@@ -189,20 +189,18 @@ fi
 ## minimum wp_options required to avoid /wp-admin/install.php redirect are below: ##
 ## home/siteurl, blogname, admin_user, admin_email, admin_password ##
 
-# define('WP_SITEURL', 'https://dev."${SITE_DOMAIN}"');
 
-# INSTALLED_ALREADY_DEV=$(mysql --database=development --execute="SELECT * FROM ${DB_PREFIX}options WHERE option_name LIKE 'admin_email'";)
+INSTALLED_ALREADY_DEV=$(mysql --database=development --execute="SELECT * FROM ${DB_PREFIX}options WHERE option_name LIKE 'admin_password'";)
 
-# if [[ "$DEV_SITE" == "true" ]] && [[ -z "$INSTALLED_ALREADY_DEV" ]]; then
+if [[ "$DEV_SITE" == "true" ]] && [[ -z "$INSTALLED_ALREADY_DEV" ]]; then
 
     /usr/bin/php -q -r "
     include '/var/www/html/dev/wp-admin/install.php';
     wp_install('dev site', '"${SFTP_USER}"', '"${SFTP_USER}"@"${SITE_DOMAIN_EXCLUDING_WWW}"', 1, '', '"${SFTP_PASSWORD}"');
     "
     
-# fi
+fi
 
-# home/siteurl is done below so just these
 # mysql --execute="UPDATE ${DB_NAME}.${DB_PREFIX}options SET option_value='${SITE_DOMAIN}' WHERE option_name='blogname'";
 # mysql --execute="UPDATE ${DB_NAME}.${DB_PREFIX}options SET option_value='' WHERE option_name='admin_email'";
 ### mysql --execute="UPDATE ${DB_NAME}.${DB_PREFIX}options SET option_value='' WHERE option_name='admin_password'";
