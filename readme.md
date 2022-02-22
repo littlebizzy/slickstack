@@ -32,6 +32,8 @@ SlickStack is a free LEMP stack automation script written in Bash designed to en
 
 ## Changelog
 
+* **NEW!** After playing around with various approaches, we are moving forward with permanently blocking public access to /wp-admin/install.php on the dev/staging domains and embracing the approach that the staging database should only be populated by syncing from production via `ss-sync-staging` and the development database minimum required options  (admin_email, blogname, etc) will be populated by `ss-install-wordpress-core` if not exists. The default username/password for dev sites will be populated based on the SFTP username/password for fresh installations. These approaches should vastly improve security, and avoid the need for additional credentials (variables) management by SlickStack.
+
 * **NEW!** New option in ss-config `NGINX_ACCESS_LOG` for temporarily enabling the access log (not a good idea for long-term stability). Log file names have changed now for Nginx being `nginx-error.log` and `nginx-access.log` respectively.
 
 * **NEW!** Our wp-config.php boilerplates no longer include_once the (deprecated) /wp-content/functions.php file... if you were experiencing any slow loading times in WP Admin on new installations, please run ss-install-wp-config again now.
