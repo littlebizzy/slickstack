@@ -32,6 +32,8 @@ SlickStack is a free LEMP stack automation script written in Bash designed to en
 
 ## Changelog
 
+* **NEW!** We have moved back to using the `object-cache.php` maintained by Till Kruss since he is back in action again, and since Pressjitsu is not actively maintaining theirs anymore (which we forked from a few years ago). Please support Till, the guru of object caching, anyway you can!
+
 * **NEW!** A new default robots.txt boilerplate is now installed on servers that don't already have a physical robots.txt (since we no longer use the virtual robots.txt file that our MU plugin generated). If you don't want to use our default one, simply install your own and SlickStack will respect that going forward.
 
 * **NEW!** A few more of our default MU plugins have been removed, including Disable Embeds, and Virtual Robots.txt, among others. 
