@@ -8,7 +8,7 @@
 #### destination: n/a (not a boilerplate) ##########################################################
 #### purpose: Retrieves latest SlickStack cron jobs and bash scripts (except ss-check) #############
 #### module version: Ubuntu 22.04 LTS ##############################################################
-#### sourced by: ss-install, ss-update #############################################################
+#### sourced by: ss-install, ss-update-modules #####################################################
 #### bash aliases: ss check ########################################################################
 ####################################################################################################
 
@@ -42,7 +42,7 @@ source /var/www/ss-functions
 ## it can be useful for developer reference and is sometimes used by SlickStack ##
 
 ## script timestamp ##
-touch "$TIMESTAMP_SS_CHECK"
+touch "${TIMESTAMP_SS_CHECK}"
 
 ####################################################################################################
 #### B. SS-Check: Message (Begin Script) ###########################################################
@@ -74,10 +74,15 @@ rm /tmp/*cron*
 ## this process does not affect ss-config or LEMP modules, nor the ss-check file ##
 
 ## 00-crontab ##
-ss_wget_fast -O "$TMP_00_CRONTAB" "$MIRROR_00_CRONTAB"
 VALIDATE_TMP_00_CRONTAB=$(grep 'SS_EOF' "${TMP_00_CRONTAB}")
-if [[ -z "$VALIDATE_TMP_00_CRONTAB" ]]; then
-    ss_wget_slow -O "$TMP_00_CRONTAB" "$MIRROR2_00_CRONTAB"
+ss_wget_fast -O "${TMP_00_CRONTAB}" "${MIRROR_00_CRONTAB}"
+
+if [[ -z "${VALIDATE_TMP_00_CRONTAB}" ]]; then
+    ss_wget_slow -O "${TMP_00_CRONTAB}" "${MIRROR2_00_CRONTAB}"
+fi
+
+if [[ -z "${VALIDATE_TMP_00_CRONTAB}" ]]; then
+    ss_wget_slow -O "${TMP_00_CRONTAB}" "${MIRROR3_00_CRONTAB}"
 fi
 
 ## 01-cron-often ##
