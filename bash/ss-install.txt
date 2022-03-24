@@ -27,22 +27,22 @@
 ## we perform this check before ss-install runs and before any cron job tasks ##
 
 ## snippet variables ##
-VALIDATE_SS_FUNCTIONS=$(grep 'SS_EOF' /var/www/ss-functions > /dev/null 2>&1)
-OUTDATED_SS_FUNCTIONS=$(find "/var/www/ss-functions" -mtime +1 > /dev/null 2>&1)
-VALIDATE_TMP_SS_FUNCTIONS=$(grep 'SS_EOF' /tmp/ss-functions > /dev/null 2>&1)
+VALIDATE_SS_FUNCTIONS=$(grep 'SS_EOF' /var/www/ss-functions 2> /dev/null)
+OUTDATED_SS_FUNCTIONS=$(find "/var/www/ss-functions" -mtime 2> /dev/null)
+VALIDATE_TMP_SS_FUNCTIONS=$(grep 'SS_EOF' /tmp/ss-functions 2> /dev/null)
 
 ## validate ss-functions ##
-if [[ -z "$VALIDATE_SS_FUNCTIONS" ]] || [[ -n "$OUTDATED_SS_FUNCTIONS" ]]; then
+if [[ -z "${VALIDATE_SS_FUNCTIONS}" ]] || [[ -n "${OUTDATED_SS_FUNCTIONS}" ]]; then
     rm -rf /tmp/ss-functions
     wget --no-check-certificate -q -4 -t 1 -T 15 -O /tmp/ss-functions https://raw.githubusercontent.com/littlebizzy/slickstack/master/bash/ss-functions.txt
-    if [[ -n "$VALIDATE_TMP_SS_FUNCTIONS" ]]; then
+    if [[ -n "${VALIDATE_TMP_SS_FUNCTIONS}" ]]; then
         mkdir -p /var/www > /dev/null 2>&1
         mv -f /tmp/ss-functions /var/www/ss-functions
         chown root:root /var/www/ss-functions ## must be root:root
         chmod 0700 /var/www/ss-functions ## 0700 means only root can execute
     else
         wget --no-check-certificate -q -4 -t 3 -T 30 -O /tmp/ss-functions https://gitlab.com/littlebizzy/slickstack/-/raw/master/bash/ss-functions.txt
-        if [[ -n "$VALIDATE_TMP_SS_FUNCTIONS" ]]; then
+        if [[ -n "${VALIDATE_TMP_SS_FUNCTIONS}" ]]; then
             mkdir -p /var/www > /dev/null 2>&1
             mv -f /tmp/ss-functions /var/www/ss-functions
             chown root:root /var/www/ss-functions ## must be root:root
@@ -1120,5 +1120,7 @@ touch "$TIMESTAMP_SS_INSTALL"
 ## Ref: https://stackoverflow.com/questions/21157435/how-can-i-compare-a-string-to-multiple-correct-values-in-bash
 ## Ref: https://stackoverflow.com/questions/4792434/redis-on-web-server-front-end-or-database-server-back-end
 ## Ref: https://blog.danslimmon.com/2019/07/15/do-nothing-scripting-the-key-to-gradual-automation/
+## Ref: https://unix.stackexchange.com/questions/148761/how-do-i-suppress-stderr-warning-messages-from-a-command-inside-command-substitu
+## Ref: https://unix.stackexchange.com/questions/510614/how-can-i-store-output-in-bash-variable-and-suppress-output-to-stderr-and-stdout
 
 ## SS_EOF
