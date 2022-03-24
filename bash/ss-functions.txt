@@ -34,12 +34,10 @@
 #### A. SS-Functions: SlickStack Variables #########################################################
 ####################################################################################################
 
-## SNIPPET: ss-functions, ss-install
+## these are kind of like enviroment variables that are used within various scripts ##
+## we keep these variables here for easy reference and better organization ##
 
-## these are kind of like enviroment variables that are used within various ss scripts ##
-## we keep these variables together for easy reference and better organization ##
-
-## ss variables ##
+## system variables ##
 SYSTEM_VENDOR=$(sudo dmidecode -t system | sed -n 7p | sed 's#Manufacturer: ##' | sed 's/^[[:space:]]*//g')
 SYSTEM_VIRTUAL=$(systemd-detect-virt)
 SYSTEM_LINUX_KERNEL=$(uname -a)
@@ -55,10 +53,11 @@ SYSTEM_HOSTNAME=$(/bin/hostname -f) ## remove -f in future
 # SYSTEM_HOSTNAME_FQDN=`/bin/hostname -f`
 # SYSTEM_HOSTNAME_TLD=`hostname -d`
 # SYSTEM_NETWORK_INTERFACE=`ip route get 1.1.1.1 | head -n1 | awk '{print $5}'`
-
-## still used by some scripts ##
+SS_OS_VERSION=`lsb_release -ds`
+SS_TLD=`hostname -d`
 UBUNTU_VERSION=`lsb_release -rs`
 
+## script variables ##
 SS_EOF="SS_EOF"
 SLEEP_MESSAGE_BEGIN="0s"
 
@@ -66,32 +65,18 @@ SLEEP_MESSAGE_BEGIN="0s"
 ## https://stackoverflow.com/questions/2440947/how-to-build-a-conditional-assignment-in-bash
 ## myvar="default" && [[ <some_condition_is_true> ]]  && myvar="non-default"
 
-
-## temp moved from ss-install to here (cleanup and delete later) ##
-SS_OS_VERSION=`lsb_release -ds`
-# SS_PHP_VERSION=`php -v | grep ^PHP | cut -d' ' -f2`
-# SS_PHP_EXTENSIONS=`php -r "print_r(implode(', ', get_loaded_extensions()));"`
-SS_TLD=`hostname -d`
-# SS_MYSQL_VERSION=`mysqld --version`
-# SS_MYSQL_SIZE=`mysql --execute="SELECT table_schema AS "wordpress", SUM(data_length + index_length) / 1024 / 1024 / 1024 AS "Size (GB)" FROM information_schema.TABLES GROUP BY table_schema";`
-
 ## ss-install-wordpress-config variables ##
 TMP_WORDPRESS_CONFIG_PRODUCTION="/tmp/wp-config-production.txt"
 TMP_WORDPRESS_CONFIG_STAGING="/tmp/wp-config-staging.txt"
 TMP_WORDPRESS_CONFIG_DEV="/tmp/wp-config-dev.txt"
 
-
-#### DOMAINS ##
-
+## domains ##
 SITE_DOMAIN_EXCLUDING_WWW=$(echo "${SITE_DOMAIN/www./}")
-
 if [[ "$SITE_DOMAIN" == www.* ]]; then
     SITE_DOMAIN_INCLUDING_WWW="${SITE_DOMAIN}"
 else 
     SITE_DOMAIN_INCLUDING_WWW="www.${SITE_DOMAIN}"
 fi
-
-
 
 ## ubuntu packages ##
 PACKAGE_DOS2UNIX="dos2unix"
