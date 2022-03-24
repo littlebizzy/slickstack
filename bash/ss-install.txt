@@ -13,7 +13,7 @@
 ####################################################################################################
 
 ## SS-CONFIG MUST BE PROPERLY CONFIGURED AND ON CURRENT BUILD BEFORE RUNNING SS-INSTALL ##
-## ENSURE YOUR SS-CONFIG BUILD REMAINS CURRENT BY RUNNING SS-UPDATE OCCASIONALLY ##
+## ENSURE THAT YOUR SS-CONFIG BUILD REMAINS CURRENT BY RUNNING SS-UPDATE-CONFIG ##
 
 ####################################################################################################
 #### SS-Install: Validate (Restore) SS-Functions ###################################################
@@ -78,23 +78,27 @@ source /var/www/ss-functions
 #### SS-Install: Verify Environment Compatibility Before Proceeding ################################
 ####################################################################################################
 
-## never run ss-install unless the build version below matches current ss-config version ##
+## never run ss-install unless the build version below matches active ss-config version ##
 ## in case of emergencies the SlickStack team might purposefully mismatch builds ##
 
-## ensure ss-config (if exists) build matches ss-install ##
-if [[ -f "/var/www/ss-config" ]] && [[ "${SS_BUILD}" != "MAR2022K" ]]; then 
+## ensure ss-install build matches ss-config (if exists) ##
+if [[ -f "/var/www/ss-config" ]] && [[ "${SS_BUILD}" != "MAR2022M" ]]; then 
+    echo -e ""
     echo -e "${YELLOW}Exiting ss-install: Please run ss-update-config since your ss-config is outdated and try again... ${NOCOLOR}"
+    echo -e ""
     exit 1
 fi
 
 ## verify optimal Ubuntu version ##
 if [[ "${UBUNTU_VERSION}" != @(20.04|18.04) ]]; then
+    echo -e ""
     echo -e "${YELLOW}Exiting ss-install: SlickStack is designed for Ubuntu LTS (but this VPS is running ${UBUNTU_VERSION})... ${NOCOLOR}"
+    echo -e ""
     exit 1
 fi
 
 ## ensure at least 5GB free disk space remains ##
-if [[ "${SYSTEM_DISK_FREE}" -lt 5242880 ]]; then # 10G = 10485760 / 5GB = 5242880
+if [[ "${SYSTEM_DISK_FREE}" -lt 5242880 ]]; then ## 10G = 10485760 / 5GB = 5242880
     echo -e ""
     echo -e "${YELLOW}Exiting ss-install: It looks like your server has less than 5GB free space available, please upgrade your server and then run ss-install again. ${NOCOLOR}"
     echo -e ""
@@ -121,19 +125,37 @@ fi
 ## warn if placeholders exist ##
 if [[ -f "/var/www/ss-config" ]]; then
     SS_CONFIG_OPTION_PLACEHOLDER="$(grep -c '"@' /var/www/ss-config)"
-    if [[ "$SS_CONFIG_OPTION_PLACEHOLDER" -gt 0 ]]; then
-    echo -e "${LIGHTRED}Exiting ss-install: Your ss-config contains "@..." placeholders. Please input values and try again... ${NOCOLOR}"
-    exit 1
+    if [[ "${SS_CONFIG_OPTION_PLACEHOLDER}" -gt 0 ]]; then
+        echo -e ""
+        echo -e "${LIGHTRED}Exiting ss-install: Your ss-config contains "@..." placeholders. Please input values and try again... ${NOCOLOR}"
+        echo -e ""
+        exit 1
     fi
 fi
 
 ####################################################################################################
-#### SS-Install: Cleanup Temporary Files ###########################################################
+#### SS-Install: Retrieve SS-COnfig Boilerplate ####################################################
 ####################################################################################################
 
-## delete tmp files ##
-rm /tmp/ss-config*
-rm /tmp/config*
+## here we retrieve the ss-config boilerplate from our public mirrors to begin wizard ##
+## in case the first mirror fails to validate our backup mirrors will be tried ##
+
+## snippet variables ##
+VALIDATE_TMP_SS_CONFIG=$(grep 'SS_EOF' /tmp/ss-config)
+
+## retrieve ss-config boilerplate ##
+rm -rf /tmp/ss-config
+wget --no-check-certificate -q -4 -t 1 -T 15 -O /tmp/ss-config https://raw.githubusercontent.com/littlebizzy/slickstack/master/bash/ss-config-sample.txt
+
+if [[ -z "$VALIDATE_TMP_SS_CONFIG" ]]; then
+    rm -rf /tmp/ss-config
+    wget --no-check-certificate -q -4 -t 3 -T 30 -O /tmp/ss-config https://gitlab.com/littlebizzy/slickstack/-/raw/master/bash/ss-config-sample.txt
+fi
+
+if [[ -z "$VALIDATE_TMP_SS_CONFIG" ]]; then
+    rm -rf /tmp/ss-config
+    wget --no-check-certificate -q -4 -t 3 -T 30 -O /tmp/ss-config https://sourceforge.net/p/slickstack/code/ci/master/tree/bash/ss-config-sample.txt?format=raw
+fi
 
 ####################################################################################################
 #### SS-Install: Interactive Bash Setup Wizard (Generate SS-Config) ################################
@@ -142,30 +164,13 @@ rm /tmp/config*
 ## this basic wizard will allow you to interactively setup your ss-config file options ##
 ## advanced users can setup ss-config before running ss-install to avoid this ##
 
-## THIS SNIPPET DOES NOT RELY ON SS-CONFIG OR SS-FUNCTIONS
-
-## retrieve ss-config boilerplate ##
-wget --no-check-certificate -q -4 -t 1 -T 15 -O /tmp/ss-config https://raw.githubusercontent.com/littlebizzy/slickstack/master/bash/ss-config-sample.txt
-
-VALIDATE_TMP_SS_CONFIG=$(grep 'SS_EOF' /tmp/ss-config)
-
-if [[ -z "$VALIDATE_TMP_SS_CONFIG" ]]; then
-    rm -rf /tmp/ss-config
-    wget --no-check-certificate -q -4 -t 1 -T 15 -O /tmp/ss-config https://gitlab.com/littlebizzy/slickstack/-/raw/master/bash/ss-config-sample.txt
-fi
-
-if [[ -z "$VALIDATE_TMP_SS_CONFIG" ]]; then
-    rm -rf /tmp/ss-config
-    wget --no-check-certificate -q -4 -t 1 -T 15 -O /tmp/ss-config https://sourceforge.net/p/slickstack/code/ci/master/tree/bash/ss-config-sample.txt?format=raw
-fi
-
-## check build ver ##
+## check build version ##
 SS_BUILD_NOW=$(source /tmp/ss-config; echo $SS_BUILD)
 
 ## rainbow colors test ##
 WELCOME_RAINBOW="${DARKRED}welcome ${LIGHTRED}to ${ORANGE}the ${YELLOW}magical ${DARKGREEN}world ${LIGHTGREEN}of ${DARKCYAN}ss ${LIGHTCYAN}where ${DARKBLUE}all ${LIGHTBLUE}your ${DARKPURPLE}dreams ${LIGHTPURPLE}come ${LIGHTGRAY}true${NOCOLOR}"
 echo -e ""
-echo -e "$WELCOME_RAINBOW"
+echo -e "${WELCOME_RAINBOW}"
 
 ## f*ck containers (first things first) ##
 echo -e ""
@@ -487,7 +492,11 @@ chown root:root /var/www/crons/custom ## must be root:root
  ####################################################################################################
     
     ## copy files to their destinations ##
-    cp /tmp/ss-config /var/www/ss-config
+    mkdir -p /var/www > /dev/null 2>&1
+    mv -f /tmp/ss-config /var/www/ss-config
+    chown root:root /var/www/ss-config ## must be root:root
+    chmod 0700 /var/www/ss-config ## 0700 means only root can execute
+    rm -rf /tmp/ss-config
     
 ####################################################################################################
 #### SS-Install: Message (Last Chance To Exit) #####################################################
