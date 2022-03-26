@@ -15,6 +15,19 @@
 ## YOU CAN SAFELY RUN UPDATES WITH NO CHANGES TO YOUR LEMP MODULE CONFIGURATION FILES ##
 ## IN CASE YOU ACCIDENTALLY OVERWRITE CONFIG FILES SIMPLY RUN SS-INSTALL AGAIN ##
 
+####################################################################################################
+#### SS-Update-Config: Build Version ###############################################################
+####################################################################################################
+
+## this build version ensures compatibility with ss-config boilerplate (from mirrors) ##
+## it must match the latest ss-config boilerplate otherwise updating will fail ##
+
+SS_UPDATE_CONFIG_BUILD="MAR2022Q"
+
+####################################################################################################
+#### SS-Update-Config: Source SS-Config + SS-Functions #############################################
+####################################################################################################
+
 ## source ss-config ##
 source /var/www/ss-config
 
@@ -38,15 +51,6 @@ source /var/www/ss-functions
 ## I. Install Latest SS-Config Boilerplate (Copies Existing Settings)
 ## J. Validate Latest SS-Config Boilerplate
 ## K. Cleanup Temporary Files
-
-####################################################################################################
-#### A. SS-Update-Config: Build Version ############################################################
-####################################################################################################
-
-## this build version ensures compatibility with ss-config boilerplate (from mirrors) ##
-## it must match the latest ss-config boilerplate otherwise updating will fail ##
-
-SS_UPDATE_BUILD="MAR2022P"
 
 ####################################################################################################
 #### B. SS-Update-Config: Touch Timestamp File #####################################################
@@ -124,11 +128,13 @@ fi
 ## otherwise default (recommended) options will be used from the new boilerplate ##
 
 ## retrieve latest version of ss-config-sample ##
-wget -O "$TMP_SS_CONFIG" "$MIRROR_SS_CONFIG_SAMPLE"
+wget -O "${TMP_SS_CONFIG}" "${MIRROR_SS_CONFIG_SAMPLE}"
+
+## snippet variables ##
+SS_BUILD_LATEST=$(source /tmp/ss-config; echo "${SS_BUILD}" 2> /dev/null)
 
 ## ensure latest (retrieved) ss-config build matches current ss-update build ##
-SS_BUILD_LATEST=$(source /tmp/ss-config; echo $SS_BUILD)
-if [[ "$SS_BUILD_LATEST" != "$SS_UPDATE_BUILD" ]]; then
+if [[ "${SS_BUILD_LATEST}" != "${SS_UPDATE_CONFIG_BUILD}" ]]; then
     rm "$TMP_SS_CONFIG"
     echo -e "${LIGHTRED}Exiting ss-update-config: There is a version mismatch between this script and public mirrors... ${NOCOLOR}"
     exit 1
