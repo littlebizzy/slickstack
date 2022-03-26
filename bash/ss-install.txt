@@ -67,7 +67,7 @@ fi
 
 ## source ss-config (if exists) ##
 SS_CONFIG="/var/www/ss-config"
-test -f ${SS_CONFIG} && source ${SS_CONFIG}
+test -f "${SS_CONFIG}" && source "${SS_CONFIG}"
 
 ## source ss-functions ##
 source /var/www/ss-functions
@@ -81,60 +81,63 @@ source /var/www/ss-functions
 ## never run ss-install unless the build version below matches active ss-config version ##
 ## in case of emergencies the SlickStack team might purposefully mismatch builds ##
 
-## ensure ss-install build matches ss-config (if exists) ##
+## verify ss-install build matches ss-config (if exists) ##
 if [[ -f "/var/www/ss-config" ]] && [[ "${SS_BUILD}" != "MAR2022P" ]]; then 
     echo -e ""
-    echo -e "${YELLOW}Exiting ss-install: Please run ss-update-config since your ss-config is outdated and try again... ${NOCOLOR}"
+    echo -e "${COLOR_WARN}Exiting ss-install: Please run ss-update-config since your ss-config is outdated and try again... ${NOCOLOR}"
     echo -e ""
     exit 1
 fi
 
-## verify optimal Ubuntu version ##
+## verify supported ubuntu version ##
 if [[ "${UBUNTU_VERSION}" != @(20.04|18.04) ]]; then
     echo -e ""
-    echo -e "${YELLOW}Exiting ss-install: SlickStack is designed for Ubuntu LTS (but this VPS is running ${UBUNTU_VERSION})... ${NOCOLOR}"
+    echo -e "${COLOR_WARN}Exiting ss-install: SlickStack is designed for Ubuntu LTS (but this VPS is running ${UBUNTU_VERSION})... ${NOCOLOR}"
     echo -e ""
     exit 1
 fi
 
-## ensure at least 5GB free disk space remains ##
+## verify at least 5GB free disk space remains ##
 if [[ "${SYSTEM_DISK_FREE}" -lt 5242880 ]]; then ## 10G = 10485760 / 5GB = 5242880
     echo -e ""
-    echo -e "${YELLOW}Exiting ss-install: It looks like your server has less than 5GB free space available, please upgrade your server and then run ss-install again. ${NOCOLOR}"
+    echo -e "${COLOR_WARN}Exiting ss-install: It looks like your server has less than 5GB free space available, please upgrade your server and then run ss-install again. ${NOCOLOR}"
     echo -e ""
     exit 1
 fi
 
-## ensure not running in docker/lxc/container ##
-if [[ -f /.dockerenv ]] || grep -Eq '(lxc|docker)' /proc/1/cgroup; then 
+## very not in docker/lxc container ##
+if [[ -f "/.dockerenv" ]] || [[ grep -Eq '(lxc|docker)' /proc/1/cgroup ]]; then 
     echo -e ""
-    echo -e "${YELLOW}Exiting ss-install: It appears your server is running Docker or another container... but SlickStack requires normal Ubuntu LTS without containers. ${NOCOLOR}"
+    echo -e "${COLOR_WARN}Exiting ss-install: It appears your server is running Docker or another container... but SlickStack requires normal Ubuntu LTS without containers. ${NOCOLOR}"
     echo -e ""
     exit 1
 fi
 
 ####################################################################################################
-#### SS-Update: Ensure Undefined Options Do Not Exist Before Proceeding ############################
+#### SS-Update: Verify Undefined Options Do Not Exist Before Proceeding ############################
 ####################################################################################################
 
-## SNIPPET: ss-install, ss-update
+## SNIPPET: ss-install, ss-update-config
+## UPDATED: 26MAR2022
 
 ## below snippet will warn you and exit if undefined ss-config options are found to exist ##
 ## this way our team can be aware of bugs and avoid implementing unwanted options ##
 
-## warn if placeholders exist ##
+## snippet variables ##
+SS_CONFIG_OPTION_PLACEHOLDER=$(grep -c '"@' /var/www/ss-config 2> /dev/null)
+
+## verify no placeholders exist ##
 if [[ -f "/var/www/ss-config" ]]; then
-    SS_CONFIG_OPTION_PLACEHOLDER="$(grep -c '"@' /var/www/ss-config)"
     if [[ "${SS_CONFIG_OPTION_PLACEHOLDER}" -gt 0 ]]; then
         echo -e ""
-        echo -e "${LIGHTRED}Exiting ss-install: Your ss-config contains "@..." placeholders. Please input values and try again... ${NOCOLOR}"
+        echo -e "${COLOR_WARN}Exiting ss-install: Your ss-config contains "@..." placeholders. Please input values and try again... ${NOCOLOR}"
         echo -e ""
         exit 1
     fi
 fi
 
 ####################################################################################################
-#### SS-Install: Retrieve SS-COnfig Boilerplate ####################################################
+#### SS-Install: Retrieve SS-Config Boilerplate ####################################################
 ####################################################################################################
 
 ## here we retrieve the ss-config boilerplate from our public mirrors to begin wizard ##
@@ -144,16 +147,16 @@ fi
 VALIDATE_TMP_SS_CONFIG=$(grep 'SS_EOF' /tmp/ss-config 2> /dev/null)
 
 ## retrieve ss-config boilerplate ##
-rm -rf /tmp/ss-config
+ss_rm "${TMP_SS_CONFIG}"
 ss_wget_fast -O /tmp/ss-config https://raw.githubusercontent.com/littlebizzy/slickstack/master/bash/ss-config-sample.txt
 
 if [[ -z "$VALIDATE_TMP_SS_CONFIG" ]]; then
-    rm -rf /tmp/ss-config
+    ss_rm "${TMP_SS_CONFIG}"
     ss_wget_slow -O /tmp/ss-config https://gitlab.com/littlebizzy/slickstack/-/raw/master/bash/ss-config-sample.txt
 fi
 
 if [[ -z "$VALIDATE_TMP_SS_CONFIG" ]]; then
-    rm -rf /tmp/ss-config
+    ss_rm "${TMP_SS_CONFIG}"
     ss_wget_slow -O /tmp/ss-config https://sourceforge.net/p/slickstack/code/ci/master/tree/bash/ss-config-sample.txt?format=raw
 fi
 
