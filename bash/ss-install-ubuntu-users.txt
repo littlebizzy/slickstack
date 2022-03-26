@@ -24,6 +24,16 @@ source /var/www/ss-functions
 ## BELOW THIS RELIES ON SS-CONFIG AND SS-FUNCTIONS
 
 ####################################################################################################
+#### SS-Install-Ubuntu-Users: Touch Timestamp File #################################################
+####################################################################################################
+
+## this is a dummy timestamp file that will remember the last time this script was run ##
+## it can be useful for developer reference and is sometimes used by SlickStack ##
+
+## script timestamp ##
+touch "${TIMESTAMP_SS_INSTALL_UBUNTU_USERS}"
+
+####################################################################################################
 #### SS-Install-Ubuntu-Users: Message (Begin Script) ###############################################
 ####################################################################################################
 
@@ -46,7 +56,7 @@ sleep "$SLEEP_MESSAGE_BEGIN"
 ####################################################################################################
 
 ## set root password ##
-echo "root:$ROOT_PASSWORD" | sudo /usr/sbin/chpasswd
+echo "root:${ROOT_PASSWORD}" | sudo /usr/sbin/chpasswd
 
 ## ensure root password never expires ##
 # passwd -x -1 <username>
@@ -55,38 +65,33 @@ chage -E -1 -m 0 -M -1 -I -1 -W 99999 root
 # chage -E -1 -m 0 -M -1 -I -1 -W 99999 $SFTP_USER
 
 ## create sudo user ##
-adduser --disabled-password --quiet --shell /bin/bash --gecos "" $SUDO_USER
-# echo "$SUDO_USER:$SUDO_PASSWORD" | sudo /usr/sbin/chpasswd
-sudo echo "$SUDO_USER:$SUDO_PASSWORD" | sudo /usr/sbin/chpasswd
+adduser --disabled-password --quiet --shell /bin/bash --gecos "" ${SUDO_USER} 2> /dev/null
+sudo echo "${SUDO_USER}:${SUDO_PASSWORD}" | sudo /usr/sbin/chpasswd
 
 ## ensure home directory exists ##
-mkhomedir_helper $SUDO_USER
+mkhomedir_helper ${SUDO_USER}
 
 ## create sftp user ##
-adduser --disabled-password --quiet --shell /bin/bash --gecos "" $SFTP_USER
-# echo "$SFTP_USER:$SFTP_PASSWORD" | sudo /usr/sbin/chpasswd
-sudo echo "$SFTP_USER:$SFTP_PASSWORD" | sudo /usr/sbin/chpasswd
-
-###### useradd -p "$SFTP_PASSWORD" -s /bin/bash "$SFTP_USER"
+adduser --disabled-password --quiet --shell /bin/bash --gecos "" ${SFTP_USER} 2> /dev/null
+sudo echo "${SFTP_USER}:${SFTP_PASSWORD}" | sudo /usr/sbin/chpasswd
 
 ## ensure home directory exists ##
-mkhomedir_helper $SFTP_USER
-
+mkhomedir_helper ${SFTP_USER}
 
 ## ensure wordpress group exists ##
 groupadd -f wordpress
 
 ## add SFTP_USER and www-data to wordpress group + add SFTP_USER to www-data group ##
-usermod -a -G wordpress "$SFTP_USER"
+usermod -a -G wordpress "${SFTP_USER}"
 usermod -a -G wordpress www-data
-usermod -a -G www-data "$SFTP_USER"
+usermod -a -G www-data "${SFTP_USER}"
 
 ####################################################################################################
 #### SS-Install-Ubuntu-Users: Configure Sudo Permissions (Sudoers File) ############################
 ####################################################################################################
 
 ## download latest versions ##
-wget -O /tmp/sudoers "$MIRROR_SUDOERS"
+wget -O /tmp/sudoers "${MIRROR_SUDOERS}"
 
 ## replace variables ##
 sed -i "s/@SUDO_USER/${SUDO_USER}/g" /tmp/sudoers
@@ -99,7 +104,7 @@ cp /tmp/sudoers /etc/sudoers
 ####################################################################################################
 
 ## run ss-perms-ubuntu-users ##
-source "$PATH_SS_PERMS_UBUNTU_USERS"
+source "${PATH_SS_PERMS_UBUNTU_USERS}"
 
 ####################################################################################################
 #### SS-Install-Ubuntu-Users: Cleanup Temporary Files ##############################################
@@ -116,17 +121,7 @@ source "$PATH_SS_PERMS_UBUNTU_USERS"
 ## there is no drawback to running this repeatedly so we include it here casually ##
 
 ## run ss-install-ubuntu-bash ##
-source "$PATH_SS_INSTALL_UBUNTU_BASH"
-
-####################################################################################################
-#### SS-Install-Ubuntu-Users: Touch Timestamp File (End Script) ####################################
-####################################################################################################
-
-## this is a dummy timestamp file that will remember the last time this script was run ##
-## it can be useful for developer reference and is sometimes used by SlickStack ##
-
-## script timestamp ##
-touch "$TIMESTAMP_SS_INSTALL_UBUNTU_USERS"
+source "${PATH_SS_INSTALL_UBUNTU_BASH}"
 
 ####################################################################################################
 #### SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ###############
