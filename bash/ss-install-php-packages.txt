@@ -24,6 +24,16 @@ source /var/www/ss-functions
 ## BELOW THIS RELIES ON SS-CONFIG AND SS-FUNCTIONS
 
 ####################################################################################################
+#### SS-Install-PHP-Packages: Touch Timestamp File #################################################
+####################################################################################################
+
+## this is a dummy timestamp file that will remember the last time this script was run ##
+## it can be useful for developer reference and is sometimes used by SlickStack ##
+
+## script timestamp ##
+touch "${TIMESTAMP_SS_INSTALL_PHP_PACKAGES}"
+
+####################################################################################################
 #### SS-Install-PHP-Packages: Message (Begin Script) ###############################################
 ####################################################################################################
 
@@ -32,7 +42,7 @@ source /var/www/ss-functions
 
 ## echo message ##
 echo -e "${COLOR_INFO}Running ss-install-php-packages: Reinstalls the PHP-FPM module Ubuntu packages and extensions (idempotent)... ${NOCOLOR}"
-sleep "$SLEEP_MESSAGE_BEGIN"
+sleep "${SLEEP_MESSAGE_BEGIN}"
 
 ####################################################################################################
 #### SS-Install-PHP-Packages: Purge Any Existing PHP Packages (Ubuntu) #############################
@@ -56,7 +66,7 @@ if [[ "$SS_INSTALL_PHP_PACKAGES_PURGE_FIRST" == "true" ]]; then
 fi
 
 ## update repo cache ##
-apt update
+apt update > /dev/null 2>&1
 
 ####################################################################################################
 #### SS-Install-PHP-Packages: Install PHP-FPM + PHP Extensions #####################################
@@ -69,10 +79,10 @@ apt update
 if [[ "${UBUNTU_VERSION}" == "22.04" ]] && [[ -n "$PHP_EXTENSIONS" ]]; then
     PHP_EXTENSIONS_NOW=$(source /var/www/ss-config; echo $PHP_EXTENSIONS)
         if [[ "$PHP_EXTENSIONS_NOW" == *"php8.1"* ]]; then
-            apt install $PHP_EXTENSIONS_NOW
+            apt install $PHP_EXTENSIONS_NOW > /dev/null 2>&1
         else
             echo -e "${PURPLE}Running ss-install-php-packages: Mismatch with PHP extension versions in ss-config so installing 8.1 defaults... ${NOCOLOR}"
-            apt install php8.1-fpm php8.1-bcmath php8.1-curl php8.1-gd php8.1-imagick php8.1-json php8.1-mbstring php8.1-mysql php8.1-soap php8.1-sqlite3 php8.1-xml php8.1-zip
+            apt install php8.1-fpm php8.1-bcmath php8.1-curl php8.1-gd php8.1-imagick php8.1-json php8.1-mbstring php8.1-mysql php8.1-soap php8.1-sqlite3 php8.1-xml php8.1-zip > /dev/null 2>&1
         fi
 fi
 
@@ -80,11 +90,11 @@ fi
 if [[ "${UBUNTU_VERSION}" == "20.04" ]] && [[ -n "$PHP_EXTENSIONS" ]]; then
     PHP_EXTENSIONS_NOW=$(source /var/www/ss-config; echo $PHP_EXTENSIONS)
         if [[ "$PHP_EXTENSIONS_NOW" == *"php7.4"* ]]; then
-            apt install $PHP_EXTENSIONS_NOW
+            apt install $PHP_EXTENSIONS_NOW > /dev/null 2>&1
         else
             echo -e "${PURPLE}Running ss-install-php-packages: Mismatch with PHP extension versions in ss-config so installing 7.4 defaults... ${NOCOLOR}"
             ## cannot include these directly (part of other packages): hash,libxml,openssl,pcre,pdo_mysql,sodium ##
-            apt install php7.4-fpm php7.4-bcmath php7.4-ctype php7.4-curl php7.4-dom php7.4-fileinfo php7.4-gd php7.4-iconv php7.4-intl php7.4-imagick php7.4-json php7.4-mbstring php7.4-mysql php7.4-simplexml php7.4-soap php7.4-sockets php7.4-sqlite3 php7.4-xml php7.4-xmlwriter php7.4-xsl php7.4-zip
+            apt install php7.4-fpm php7.4-bcmath php7.4-ctype php7.4-curl php7.4-dom php7.4-fileinfo php7.4-gd php7.4-iconv php7.4-intl php7.4-imagick php7.4-json php7.4-mbstring php7.4-mysql php7.4-simplexml php7.4-soap php7.4-sockets php7.4-sqlite3 php7.4-xml php7.4-xmlwriter php7.4-xsl php7.4-zip > /dev/null 2>&1
         fi
 fi
 
@@ -92,10 +102,10 @@ fi
 if [[ "${UBUNTU_VERSION}" == "18.04" ]] && [[ -n "$PHP_EXTENSIONS" ]]; then
     PHP_EXTENSIONS_NOW=$(source /var/www/ss-config; echo $PHP_EXTENSIONS)
         if [[ "$PHP_EXTENSIONS_NOW" == *"php7.2"* ]]; then
-            apt install $PHP_EXTENSIONS_NOW
+            apt install $PHP_EXTENSIONS_NOW > /dev/null 2>&1
         else
             echo -e "${PURPLE}Running ss-install-php-packages: Mismatch with PHP extension versions in ss-config so installing 7.2 defaults... ${NOCOLOR}"
-            apt install php7.2-fpm php7.2-bcmath php7.2-curl php7.2-gd php7.2-imagick php7.2-json php7.2-mbstring php7.2-mysql php7.2-soap php7.2-sqlite3 php7.2-xml php7.2-zip
+            apt install php7.2-fpm php7.2-bcmath php7.2-curl php7.2-gd php7.2-imagick php7.2-json php7.2-mbstring php7.2-mysql php7.2-soap php7.2-sqlite3 php7.2-xml php7.2-zip > /dev/null 2>&1
         fi
 fi
 
@@ -108,17 +118,17 @@ fi
 
 ## php-redis (Ubuntu 22.04 LTS) ##
 if [[ "${UBUNTU_VERSION}" == "22.04" ]]; then
-    apt install php-redis
+    apt install php-redis > /dev/null 2>&1
 fi
 
 ## php-redis (Ubuntu 20.04 LTS) ##
 if [[ "${UBUNTU_VERSION}" == "20.04" ]]; then
-    apt install php-redis
+    apt install php-redis > /dev/null 2>&1
 fi
 
 ## php-redis (Ubuntu 18.04 LTS) ##
 if [[ "${UBUNTU_VERSION}" == "18.04" ]]; then
-    apt install php-redis
+    apt install php-redis > /dev/null 2>&1
 fi
 
 ####################################################################################################
@@ -163,16 +173,6 @@ source "$PATH_SS_PURGE_OPCACHE"
 
 ## run ss-restart-php ##
 source "$PATH_SS_RESTART_PHP"
-
-####################################################################################################
-#### SS-Install-PHP-Packages: Touch Timestamp File (End Script) ####################################
-####################################################################################################
-
-## this is a dummy timestamp file that will remember the last time this script was run ##
-## it can be useful for developer reference and is sometimes used by SlickStack ##
-
-## script timestamp ##
-touch "$TIMESTAMP_SS_INSTALL_PHP_PACKAGES"
 
 ####################################################################################################
 #### SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ###############
