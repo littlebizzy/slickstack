@@ -21,6 +21,16 @@ source /var/www/ss-functions
 ## BELOW THIS RELIES ON SS-CONFIG AND SS-FUNCTIONS
 
 ####################################################################################################
+#### SS-Perms-Ubuntu-Swapfile: Touch Timestamp File ################################################
+####################################################################################################
+
+## this is a dummy timestamp file that will remember the last time this script was run ##
+## it can be useful for developer reference and is sometimes used by SlickStack ##
+
+## script timestamp ##
+touch "${TIMESTAMP_SS_PERMS_UBUNTU_SWAPFILE}"
+
+####################################################################################################
 #### SS-Perms-Ubuntu-Swapfile: Message (Begin Script) ##############################################
 ####################################################################################################
 
@@ -31,12 +41,6 @@ source /var/www/ss-functions
 echo -e "${COLOR_INFO}Running ss-perms-ubuntu-swapfile: Resets all file and user permissions for the Ubuntu swapfile... ${NOCOLOR}"
 sleep "$SLEEP_MESSAGE_BEGIN"
 
-
-# if [[ ! -f "/var/www/cache/system/swapfile" ]]; then
-#    echo -e "${COLOR_WARN}Exiting ss-perms-ubuntu-swapfile: SlickStack swapfile does not exist so exiting script now... ${NOCOLOR}"
-#    exit 1
-# fi
-
 ####################################################################################################
 #### SS-Perms-Ubuntu-Swap: Reset Permissions (SSH) ##################################################
 ####################################################################################################
@@ -44,18 +48,11 @@ sleep "$SLEEP_MESSAGE_BEGIN"
 mkdir /var/www/cache/system
 chown root:root /var/www/cache/system ## must be root:root
 chmod 0600 /var/www/cache/system ## must be 0600
-chown root:root /var/www/cache/system/swapfile ## must be root:root
-chmod 0600 /var/www/cache/system/swapfile ## must be 0600
 
-####################################################################################################
-#### SS-Perms-Ubuntu-Swapfile: Touch Timestamp File (End Script) ###################################
-####################################################################################################
-
-## this is a dummy timestamp file that will remember the last time this script was run ##
-## it can be useful for developer reference and is sometimes used by SlickStack ##
-
-## script timestamp ##
-touch "$TIMESTAMP_SS_PERMS_UBUNTU_SWAPFILE"
+if [[ -f "/var/www/cache/system/swapfile" ]]; then
+    chown root:root /var/www/cache/system/swapfile ## must be root:root
+    chmod 0600 /var/www/cache/system/swapfile ## must be 0600
+fi
 
 ####################################################################################################
 #### SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ###############
