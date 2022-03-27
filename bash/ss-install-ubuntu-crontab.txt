@@ -62,7 +62,7 @@ sleep "$SLEEP_MESSAGE_BEGIN"
 ####################################################################################################
 
 ## delete tmp files ##
-rm "$TMP_00_CRONTAB"
+ss_rm "${TMP_00_CRONTAB}"
 
 ####################################################################################################
 #### D. SS-Install-Ubuntu-Crontab: Install Cron (If Not Exists) ####################################
@@ -72,7 +72,7 @@ rm "$TMP_00_CRONTAB"
 ## we include this here for extra surety to ensure cron exists before proceeding ##
 
 ## install cron package ##
-apt install cron
+apt install cron > /dev/null 2>&1
 
 ####################################################################################################
 #### E. SS-Install-Ubuntu-Crontab: Install SlickStack (Root) Crontab ###############################
@@ -82,16 +82,16 @@ apt install cron
 ## the random string generated helps Linux to realize the file has been modifed ##
 
 # reinstall root crontab ##
-cp "$PATH_00_CRONTAB" "$TMP_00_CRONTAB"
-sed -i "s/@RANDOM_STRING/$(openssl rand -hex 12)/g" "$TMP_00_CRONTAB"
-sudo crontab "$TMP_00_CRONTAB"
+cp "${PATH_00_CRONTAB}" "${TMP_00_CRONTAB}"
+sed -i "s/@RANDOM_STRING/$(openssl rand -hex 12)/g" "${TMP_00_CRONTAB}"
+sudo crontab "${TMP_00_CRONTAB}"
 
 ####################################################################################################
 #### F. SS-Install-Ubuntu-Crontab: Reset Permissions (Ubuntu Crontab) ##############################
 ####################################################################################################
 
 ## run ss-perms-ubuntu-crontab ##
-source "$PATH_SS_PERMS_UBUNTU_CRONTAB"
+source "${PATH_SS_PERMS_UBUNTU_CRONTAB}"
 
 ####################################################################################################
 #### G. SS-Install-Ubuntu-Crontab: Restart Services (Cron) #########################################
@@ -105,7 +105,7 @@ source "$PATH_SS_PERMS_UBUNTU_CRONTAB"
 ####################################################################################################
 
 ## delete tmp files ##
-rm "$TMP_00_CRONTAB"
+ss_rm "${TMP_00_CRONTAB}"
 
 ####################################################################################################
 #### SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ###############
