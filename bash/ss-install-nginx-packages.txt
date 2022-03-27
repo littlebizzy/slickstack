@@ -24,6 +24,16 @@ source /var/www/ss-functions
 ## BELOW THIS RELIES ON SS-CONFIG AND SS-FUNCTIONS
 
 ####################################################################################################
+#### SS-Install-Nginx-Packages: Touch Timestamp File ###############################################
+####################################################################################################
+
+## this is a dummy timestamp file that will remember the last time this script was run ##
+## it can be useful for developer reference and is sometimes used by SlickStack ##
+
+## script timestamp ##
+touch "${TIMESTAMP_SS_INSTALL_NGINX_PACKAGES}"
+
+####################################################################################################
 #### SS-Install-Nginx-Core: Message (Begin Script) #################################################
 ####################################################################################################
 
@@ -31,7 +41,7 @@ source /var/www/ss-functions
 ## it will only be noticed by sudo users who manually call ss core bash scripts ##
 
 ## echo message ##
-echo -e "${COLOR_INFO}Running ss-install-nginx-core: Reinstalls the Nginx module Ubuntu packages and extensions (idempotent)... ${NOCOLOR}"
+echo -e "${COLOR_INFO}Running ss-install-nginx-packages: Reinstalls the Nginx module Ubuntu packages and extensions (idempotent)... ${NOCOLOR}"
 sleep "$SLEEP_MESSAGE_BEGIN"
 
 ####################################################################################################
@@ -47,7 +57,7 @@ apt update
 
 ## required to install Certbot on Ubuntu 18.04 ##
 if [[ "${UBUNTU_VERSION}" = "18.04" ]]; then
-    apt install software-properties-common
+    apt install software-properties-common > /dev/null 2>&1
     add-apt-repository universe
     add-apt-repository ppa:certbot/certbot ## Ubuntu 20.04 includes Certbot
 fi
@@ -57,28 +67,14 @@ if [[ "${UBUNTU_VERSION}" = "20.04" || -z "${UBUNTU_VERSION}" ]]; then
     apt remove certbot 
     apt remove python3-certbot-nginx
     add-apt-repository --remove ppa:certbot/certbot ## just in case (shouldn't exist)
-    apt install certbot python3-certbot-nginx
+    apt install certbot python3-certbot-nginx > /dev/null 2>&1
 fi
 
 ## update package cache again (not needed in Ubuntu 18.04+ but just for fun) ##
 apt update
 
 ## install nginx-extras ##
-apt install nginx-extras
-
-####################################################################################################
-#### SS-Install-Nginx-Core: Install Custom Nginx Modules (If Exist) ################################
-####################################################################################################
-
-## install custom nginx modules ##
-#if [[ "${UBUNTU_VERSION}" = "20.04" ]] && [[ -n "$NGINX_MODULES" ]]; then
- #   NGINX_MODULES_NOW=$(source /var/www/ss-config; echo $NGINX_MODULES)
- #   apt install $NGINX_MODULES_NOW
-#else
- # here 
-#fi
-
-## probably needs support for custom repos too that Ubuntu does not include by default
+apt install nginx-extras > /dev/null 2>&1
 
 ####################################################################################################
 #### SS-Install-Nginx-Core: Reset Permissions (Nginx Core) #########################################
@@ -93,16 +89,6 @@ source "$PATH_SS_PERMS_NGINX_PACKAGES"
 
 ## run-ss-restart-nginx ##
 source "$PATH_SS_RESTART_NGINX"
-
-####################################################################################################
-#### SS-Install-Nginx-Packages: Touch Timestamp File (End Script) ##################################
-####################################################################################################
-
-## this is a dummy timestamp file that will remember the last time this script was run ##
-## it can be useful for developer reference and is sometimes used by SlickStack ##
-
-## script timestamp ##
-touch "$TIMESTAMP_SS_INSTALL_NGINX_PACKAGES"
 
 ####################################################################################################
 #### SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ###############
