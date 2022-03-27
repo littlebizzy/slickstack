@@ -24,6 +24,16 @@ source /var/www/ss-functions
 ## BELOW THIS RELIES ON SS-CONFIG AND SS-FUNCTIONS
 
 ####################################################################################################
+#### SS-Install-Ubuntu-Utils: Touch Timestamp File #################################################
+####################################################################################################
+
+## this is a dummy timestamp file that will remember the last time this script was run ##
+## it can be useful for developer reference and is sometimes used by SlickStack ##
+
+## script timestamp ##
+touch "${TIMESTAMP_SS_INSTALL_UBUNTU_UTILS}"
+
+####################################################################################################
 #### SS-Install-Ubuntu-Utils: Message (Begin Script) ###############################################
 ####################################################################################################
 
@@ -46,7 +56,7 @@ rm /tmp/custom-shell-prompt*
 ####################################################################################################
 
 ## download latest versions ##
-wget -O /tmp/custom-shell-prompt "$MIRROR_CUSTOM_SHELL_PROMPT"
+wget -O /tmp/custom-shell-prompt "${MIRROR_CUSTOM_SHELL_PROMPT}"
 
 ## delete old one ##
 rm /etc/profile.d/custom-shell-prompt
@@ -62,51 +72,51 @@ cp /tmp/custom-shell-prompt /etc/profile.d/custom-shell-prompt.sh
 update-alternatives --set editor /bin/nano
 
 ## set timezone ##
-if [[ -z "$SS_TIMEZONE" ]]; then 
+if [[ -z "${SS_TIMEZONE}" ]]; then 
     timedatectl set-timezone UTC
 else 
-    timedatectl set-timezone $SS_TIMEZONE
+    timedatectl set-timezone ${SS_TIMEZONE}
 fi
 
 ## install update-manager-core ##
-apt install update-manager-core
+apt install update-manager-core > /dev/null 2>&1
 
 ## install Linux utilities (Zip, Unzip, DOS2Unix) ##
-apt install zip unzip dos2unix
+apt install zip unzip dos2unix > /dev/null 2>&1
 
 ## install rsync (some cloud networks apparently remove it from Ubuntu ISO for some reason as per GitHub issues) ##
-apt install rsync
+apt install rsync > /dev/null 2>&1
 
 ## install Git ##
-apt install git
+apt install git > /dev/null 2>&1
 
 ## magento ##
-apt install bash
-apt install curl
-apt install software-properties-common
-apt install gzip
-apt install libxml2
-apt install lsof
-apt install nice
-apt install openssl
-apt install sed
-apt install tar
+apt install bash > /dev/null 2>&1
+apt install curl > /dev/null 2>&1
+apt install software-properties-common > /dev/null 2>&1
+apt install gzip > /dev/null 2>&1
+apt install libxml2 > /dev/null 2>&1
+apt install lsof > /dev/null 2>&1
+apt install nice > /dev/null 2>&1
+apt install openssl > /dev/null 2>&1
+apt install sed > /dev/null 2>&1
+apt install tar > /dev/null 2>&1
 
 ## install debconf-utils for some APT debug tools (move this to ss-install-misc) ##
-apt install debconf-utils
+apt install debconf-utils > /dev/null 2>&1
 
 ## virt-what ##
-apt install virt-what
+apt install virt-what > /dev/null 2>&1
 
 ## exiftool ##
-apt install "$PACKAGE_EXIFTOOL"
+apt install "${PACKAGE_EXIFTOOL}" > /dev/null 2>&1
 
 ####################################################################################################
 #### SS-Install-Ubuntu-Utils: Reset Permissions (Ubuntu Utils) #####################################
 ####################################################################################################
 
 ## run ss-perms-ubuntu-utils ##
-source "$PATH_SS_PERMS_UBUNTU_UTILS"
+source "${PATH_SS_PERMS_UBUNTU_UTILS}"
 
 ####################################################################################################
 #### SS-Install-Ubuntu-Utils: Cleanup Temporary Files ##############################################
@@ -114,16 +124,6 @@ source "$PATH_SS_PERMS_UBUNTU_UTILS"
 
 ## delete tmp files ##
 rm /tmp/custom-shell-prompt*
-
-####################################################################################################
-#### SS-Install-Ubuntu-Utils: Touch Timestamp File (End Script) ####################################
-####################################################################################################
-
-## this is a dummy timestamp file that will remember the last time this script was run ##
-## it can be useful for developer reference and is sometimes used by SlickStack ##
-
-## script timestamp ##
-touch "$TIMESTAMP_SS_INSTALL_UBUNTU_UTILS"
 
 ####################################################################################################
 #### SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ###############
