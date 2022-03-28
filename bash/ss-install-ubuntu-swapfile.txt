@@ -64,13 +64,15 @@ sleep "${SLEEP_MESSAGE_BEGIN}"
 DISK_REMAINING_MB=$(df --output=avail -m "$PWD" | tail -n1 | tr -d ' ' 2> /dev/null)
 TOTAL_RAM_MB=$(echo $(($(getconf _PHYS_PAGES) * $(getconf PAGE_SIZE) / (1024 * 1024))) 2> /dev/null)
 
-if [[ "${SS_SWAPFILE}" == "false" ]]; then
-    echo -e "${COLOR_WARN}SS-Install-Ubuntu-Swapfile: Swapfile is disabled in ss-config so exiting the script now... ${NOCOLOR}"
-elif [[ -n $(grep "swapfile" /etc/fstab 2> /dev/null) ]]; then
-    echo -e "${COLOR_WARN}Exiting ss-install-ubuntu-swapfile: Swapfile already exists and active so exiting the script now... ${NOCOLOR}"
-elif [[ $DISK_REMAINING_MB -lt 5000 ]]; then 
-    echo -e "${COLOR_WARN}Exiting ss-install-ubuntu-swapfile: Less than 5GB free disk space so exiting the script now... ${NOCOLOR}"
-else
+# if [[ "${SS_SWAPFILE}" == "false" ]]; then
+   # echo -e "${COLOR_WARN}SS-Install-Ubuntu-Swapfile: Swapfile is disabled in ss-config so exiting the script now... ${NOCOLOR}"
+# elif [[ -n $(grep "swapfile" /etc/fstab 2> /dev/null) ]]; then
+    # echo -e "${COLOR_WARN}Exiting ss-install-ubuntu-swapfile: Swapfile already exists and active so exiting the script now... ${NOCOLOR}"
+    
+    # echo -e "${COLOR_WARN}Exiting ss-install-ubuntu-swapfile: Less than 5GB free disk space so exiting the script now... ${NOCOLOR}"
+
+## install new swapfile ##
+if [[ "${SS_SWAPFILE}" != "false" ]] && [[ -z $(grep "swapfile" /etc/fstab 2> /dev/null) ]] && [[ $DISK_REMAINING_MB -gt 5000 ]]; then
     mkdir /var/www/cache/system
     chown root:root /var/www/cache/system ## must be root:root
     chmod 0600 /var/www/cache/system ## must be 0600
@@ -124,7 +126,7 @@ source "${PATH_SS_PERMS_UBUNTU_SWAPFILE}"
 ####################################################################################################
 
 ## show swapfile ##
-swapon --show
+# swapon --show ## move this to stack-overview
 
 ####################################################################################################
 #### SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ###############
