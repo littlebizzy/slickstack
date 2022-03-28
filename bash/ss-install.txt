@@ -145,21 +145,22 @@ fi
 ## here we retrieve the ss-config boilerplate from our public mirrors to begin wizard ##
 ## in case the first mirror fails to validate our backup mirrors will be tried ##
 
+ss_rm "${TMP_SS_CONFIG}"
+
 ## snippet variables ##
-VALIDATE_TMP_SS_CONFIG=$(grep 'SS_EOF' /tmp/ss-config 2> /dev/null)
+
 
 ## retrieve ss-config boilerplate ##
-ss_rm "${TMP_SS_CONFIG}"
-ss_wget_fast -O /tmp/ss-config https://raw.githubusercontent.com/littlebizzy/slickstack/master/bash/ss-config-sample.txt
+ss_wget_slow -O "${TMP_SS_CONFIG}" "${MIRROR_SS_CONFIG_SAMPLE}"
+
+VALIDATE_TMP_SS_CONFIG=$(grep 'SS_EOF' /tmp/ss-config 2> /dev/null)
 
 if [[ -z "$VALIDATE_TMP_SS_CONFIG" ]]; then
-    ss_rm "${TMP_SS_CONFIG}"
-    ss_wget_slow -O /tmp/ss-config https://gitlab.com/littlebizzy/slickstack/-/raw/master/bash/ss-config-sample.txt
+    ss_wget_slow -O "${TMP_SS_CONFIG}" "${MIRROR2_SS_CONFIG_SAMPLE}"
 fi
 
 if [[ -z "$VALIDATE_TMP_SS_CONFIG" ]]; then
-    ss_rm "${TMP_SS_CONFIG}"
-    ss_wget_slow -O /tmp/ss-config https://sourceforge.net/p/slickstack/code/ci/master/tree/bash/ss-config-sample.txt?format=raw
+    ss_wget_slow -O "${TMP_SS_CONFIG}" "${MIRROR3_SS_CONFIG_SAMPLE}"
 fi
 
 ####################################################################################################
@@ -173,16 +174,19 @@ fi
 SS_BUILD_CURRENT=$(source /tmp/ss-config; echo "${SS_BUILD}" 2> /dev/null)
 
 ## rainbow colors test ##
-WELCOME_RAINBOW="${DARKRED}welcome ${LIGHTRED}to ${ORANGE}the ${YELLOW}magical ${DARKGREEN}world ${LIGHTGREEN}of ${DARKCYAN}ss ${LIGHTCYAN}where ${DARKBLUE}all ${LIGHTBLUE}your ${DARKPURPLE}dreams ${LIGHTPURPLE}come ${LIGHTGRAY}true${NOCOLOR}"
-echo -e ""
-echo -e "${WELCOME_RAINBOW}"
+# WELCOME_RAINBOW="${DARKRED}welcome ${LIGHTRED}to ${ORANGE}the ${YELLOW}magical ${DARKGREEN}world ${LIGHTGREEN}of ${DARKCYAN}ss ${LIGHTCYAN}where ${DARKBLUE}all ${LIGHTBLUE}your ${DARKPURPLE}dreams ${LIGHTPURPLE}come ${LIGHTGRAY}true${NOCOLOR}"
+# echo -e ""
+# echo -e "${WELCOME_RAINBOW}"
 echo -e ""
 # echo -e "${LIGHTPURPLE} _____________________________ ${NOCOLOR}"
 # echo -e "${LIGHTPURPLE}< screw containers! excelsior > ${NOCOLOR}"
 # echo -e "${LIGHTPURPLE} ----------------------------- ${NOCOLOR}"
-echo -e "${LIGHTPURPLE} __________________________________ ${NOCOLOR}"
-echo -e "${LIGHTPURPLE}< kubernetes is a venereal disease > ${NOCOLOR}"
-echo -e "${LIGHTPURPLE} ---------------------------------- ${NOCOLOR}"
+# echo -e "${LIGHTPURPLE} __________________________________ ${NOCOLOR}"
+# echo -e "${LIGHTPURPLE}< kubernetes is a venereal disease > ${NOCOLOR}"
+# echo -e "${LIGHTPURPLE} ---------------------------------- ${NOCOLOR}"
+echo -e "${LIGHTPURPLE} __________________________________________________________ ${NOCOLOR}"
+echo -e "${LIGHTPURPLE}< "Hardcode the shit out of your stack." — Abraham Lincoln > ${NOCOLOR}"
+echo -e "${LIGHTPURPLE} ---------------------------------------------------------- ${NOCOLOR}"
 echo -e "${LIGHTPURPLE}        \   ^__^ ${NOCOLOR}"
 echo -e "${LIGHTPURPLE}         \  (${BLINK}oo${NORMAL}${LIGHTPURPLE})\_______ ${NOCOLOR}"
 echo -e "${LIGHTPURPLE}            (__)\       )\/\ ${NOCOLOR}"
