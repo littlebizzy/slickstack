@@ -51,7 +51,9 @@ sleep "${SLEEP_MESSAGE_BEGIN}"
 ## here we first purge any existing PHP packages and then reinstall PHP-FPM from scratch ##
 ## this approach is safe and helps avoid any conflicts between package versions ##
 
-if [[ "$SS_INSTALL_PHP_PACKAGES_PURGE_FIRST" == "true" ]]; then
+if [[ "${SS_APP}" != "mysql" ]]; then
+
+    if [[ "$SS_INSTALL_PHP_PACKAGES_PURGE_FIRST" == "true" ]]; then
 
     ## purge packages ##
     apt purge ^php
@@ -63,10 +65,12 @@ if [[ "$SS_INSTALL_PHP_PACKAGES_PURGE_FIRST" == "true" ]]; then
     apt autoremove
     apt autoclean
 
-fi
+    fi
 
-## update repo cache ##
-apt update > /dev/null 2>&1
+    ## update repo cache ##
+    apt update > /dev/null 2>&1
+
+fi
 
 ####################################################################################################
 #### SS-Install-PHP-Packages: Install PHP-FPM + PHP Extensions #####################################
@@ -74,6 +78,8 @@ apt update > /dev/null 2>&1
 
 ## here PHP-FPM will be installed along with any custom PHP extensions in your ss-config ##
 ## remember to check version compatibility of PHP extensions if you modify them ##
+
+if [[ "${SS_APP}" != "mysql" ]]; then
 
 ## php8.1 not needed for php8.1-fpm (Ubuntu 22.04 LTS) ##
 if [[ "${UBUNTU_VERSION}" == "22.04" ]] && [[ -n "$PHP_EXTENSIONS" ]]; then
@@ -109,12 +115,16 @@ if [[ "${UBUNTU_VERSION}" == "18.04" ]] && [[ -n "$PHP_EXTENSIONS" ]]; then
         fi
 fi
 
+fi 
+
 ####################################################################################################
 #### SS-Install-PHP-Packages: Install PHP-Redis Extension (Required) ###############################
 ####################################################################################################
 
 ## we force install the php-redis extension to ensure it exists on SlickStack servers ##
 ## this is because Redis is a core module and required for i.e. object caching ##
+
+if [[ "${SS_APP}" != "mysql" ]]; then
 
 ## php-redis (Ubuntu 22.04 LTS) ##
 if [[ "${UBUNTU_VERSION}" == "22.04" ]]; then
@@ -131,12 +141,16 @@ if [[ "${UBUNTU_VERSION}" == "18.04" ]]; then
     apt install php-redis > /dev/null 2>&1
 fi
 
+fi
+
 ####################################################################################################
 #### SS-Install-PHP-Packages: Set Default PHP Version (Ubuntu) #####################################
 ####################################################################################################
 
 ## here we set the default PHP version depending on the version of Ubuntu LTS detected ##
 ## in most cases this step is not necessary but we do it anyway for consistency ##
+
+if [[ "${SS_APP}" != "mysql" ]]; then
 
 ## php8.1 (Ubuntu 22.04 LTS) ##
 if [[ "${UBUNTU_VERSION}" == "22.04" ]]; then
@@ -152,6 +166,8 @@ fi
 if [[ "${UBUNTU_VERSION}" == "18.04" ]]; then
     update-alternatives --set php /usr/bin/php7.2
 fi
+
+fi 
 
 ####################################################################################################
 #### SS-Install-PHP-Packages: Reset Permissions (PHP Packages) #####################################
