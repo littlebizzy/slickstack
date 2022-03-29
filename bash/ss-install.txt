@@ -15,7 +15,7 @@
 ## SS-CONFIG MUST BE PROPERLY CONFIGURED AND ON CURRENT BUILD BEFORE RUNNING SS-INSTALL ##
 ## ENSURE THAT YOUR SS-CONFIG BUILD REMAINS CURRENT BY RUNNING SS-UPDATE-CONFIG ##
 
-SS_INSTALL_BUILD="MAR2022Q"
+SS_INSTALL_BUILD="MAR2022R"
 
 ####################################################################################################
 #### SS-Install: Validate (Restore) SS-Functions ###################################################
@@ -601,19 +601,18 @@ fi
 
 ## now that ss-config is ready we must retrieve the latest core cron jobs and scripts ##
 
-
 ## download latest versions ##
-wget -O /tmp/ss-check https://raw.githubusercontent.com/littlebizzy/slickstack/master/bash/ss-check.txt
+ss_wget_slow -O "${TMP_SS_CHECK}" "${MIRROR_SS_CHECK}"
 
 ## copy files to their destinations ##
-cp /tmp/ss-check /var/www/ss-check
+cp "${TMP_SS_CHECK}" "${PATH_SS_CHECK}"
 
 ## reset permissions ##
 chown root:root /var/www/ss* ## must be root:root
 chmod 0700 /var/www/ss* ## 0700 means root can execute
 
 ## run scripts ##
-source /var/www/ss-check
+source "${PATH_SS_CHECK}"
 
 ####################################################################################################
 ####
@@ -626,7 +625,7 @@ source /var/www/ss-check
 ## this helps to avoid overwriting module config files that SlickStack uses ##
 
 ## set confold as dpkg default (fail-safe in case apt upgrade called directly) ##
-DEBIAN_FRONTEND=noninteractive dpkg --configure -a --force-confold
+DEBIAN_FRONTEND="noninteractive dpkg --configure -a --force-confold"
 
 ## update Ubuntu repo cache ##
 apt update > /dev/null 2>&1
@@ -697,15 +696,11 @@ source "${PATH_SS_INSTALL_UBUNTU_KERNEL}"
 ## here we install the PHP-FPM module which includes OPcache for better performance ##
 ## FastCGI is configured to interface with Nginx using TCP (127.0.0.1:9000) ##
 
-if [[ "$SS_APP" != "mysql" ]]; then
+## run ss-install-php-packages ##
+source "$PATH_SS_INSTALL_PHP_PACKAGES"
 
-    ## run ss-install-php-packages ##
-    source "$PATH_SS_INSTALL_PHP_PACKAGES"
-
-    ## run ss-install-php-config ##
-    source "$PATH_SS_INSTALL_PHP_CONFIG"
-
-fi
+## run ss-install-php-config ##
+source "$PATH_SS_INSTALL_PHP_CONFIG"
 
 ####################################################################################################
 #### SS-Install: Install Nginx + SSL Certificates ##################################################
@@ -753,12 +748,8 @@ fi
 ## this is a nifty snippet that will put up a public maintenance page during install ##
 ## it helps prevent users from interacting with your website at this stage ##
 
-if [[ "$SS_APP" != "mysql" ]]; then
-
-    ## run ss-maintenance-enable ##
-    source "$PATH_SS_MAINTENANCE_ENABLE"
-
-fi
+## run ss-maintenance-enable ##
+source "$PATH_SS_MAINTENANCE_ENABLE"
 
 ####################################################################################################
 #### SS-Install: Install MySQL #####################################################################
@@ -783,15 +774,11 @@ source "$PATH_SS_INSTALL_MYSQL_CONFIG"
 ## Redis is only installed to enable object caching in WordPress (if plugin exists) ##
 ## full page caching is provided solely by Nginx FastCGI and not by Redis ##
 
-if [[ "$SS_APP" != "mysql" ]]; then
+## run ss-install-redis-packages ##
+source "$PATH_SS_INSTALL_REDIS_PACKAGES"
 
-    ## run ss-install-redis-packages ##
-    source "$PATH_SS_INSTALL_REDIS_PACKAGES"
-
-    ## run ss-install-redis-config ##
-    source "$PATH_SS_INSTALL_REDIS_CONFIG"
-
-fi
+## run ss-install-redis-config ##
+source "$PATH_SS_INSTALL_REDIS_CONFIG"
 
 ####################################################################################################
 #### SS-Install: Install Adminer ###################################################################
@@ -835,18 +822,6 @@ if [[ "$SS_APP" == "wordpress" || -z "$SS_APP"  ]]; then
 fi
 
 
-
-if [[ "$SS_APP" == "magento" ]]; then
-
-    ## run ss-install-magento-core ##
-    source "$PATH_SS_INSTALL_MAGENTO_CORE"
-    
-    ## run ss-install-magento-config ##
-    source "$PATH_SS_INSTALL_MAGENTO_CONFIG"
-    
-fi
-
-
 ## this snippet fetches the latest stable version of PrestaShop from SlickStack mirrors ##
 ## major CMS releases (unpatched) are never considered stable for our purposes ##
 
@@ -878,10 +853,10 @@ fi
 ####################################################################################################
 
 ## run ss-install-rclone-packages ##
-source "$PATH_SS_INSTALL_RCLONE_PACKAGES"
+source "${PATH_SS_INSTALL_RCLONE_PACKAGES}"
 
 ## run ss-install-rclone-config ##
-source "$PATH_SS_INSTALL_RCLONE_CONFIG"
+source "${PATH_SS_INSTALL_RCLONE_CONFIG}"
 
 ####################################################################################################
 #### SS-Install: Install ClamAV ####################################################################
@@ -891,7 +866,7 @@ source "$PATH_SS_INSTALL_RCLONE_CONFIG"
 ## keep in mind that infected files are not automatically cleaned or deleted ##
 
 ## run ss-install-clamav ##
-source "$PATH_SS_INSTALL_CLAMAV"
+source "${PATH_SS_INSTALL_CLAMAV}"
 
 ####################################################################################################
 #### SS-Install: Install UFW Firewall ##############################################################
@@ -901,17 +876,17 @@ source "$PATH_SS_INSTALL_CLAMAV"
 ## only ports 80, 443, and your designated SSH port (22) will be allowed ##
 
 ## run ss-install-ufw-packages ##
-source "$PATH_SS_INSTALL_UFW_PACKAGES"
+source "${PATH_SS_INSTALL_UFW_PACKAGES}"
 
 ## run ss-install-ufw-config ##
-source "$PATH_SS_INSTALL_UFW_CONFIG"
+source "${PATH_SS_INSTALL_UFW_CONFIG}"
 
 ####################################################################################################
 #### SS-Install: Reset All Logs To NULL ############################################################
 ####################################################################################################
 
 ## run ss-empty-logs ##
-source "$PATH_SS_EMPTY_LOGS"
+source "${PATH_SS_EMPTY_LOGS}"
 
 ####################################################################################################
 #### SS-Install: Reset Permissions (All Permissions) ###############################################
@@ -921,14 +896,14 @@ source "$PATH_SS_EMPTY_LOGS"
 ## depending on the CMS installed it will also reset those permissions as well ##
 
 ## run ss-perms ##
-source "$PATH_SS_PERMS"
+source "${PATH_SS_PERMS}"
 
 ####################################################################################################
 #### SS-Install: Disable Maintenance Mode ##########################################################
 ####################################################################################################
 
 ## run ss-maintenance-disable ##
-source "$PATH_SS_MAINTENANCE_DISABLE"
+source "${PATH_SS_MAINTENANCE_DISABLE}"
 
 ####################################################################################################
 #### SS-Install: Clear Caches (All Caches) #########################################################
@@ -937,21 +912,17 @@ source "$PATH_SS_MAINTENANCE_DISABLE"
 ## this clears all caches i.e. Nginx, OPcache, Redis object cache, and WP transients ##
 ## we run this after ss-perms and before ss-restart-modules to avoid conflicts ##
 
-if [[ "$SS_APP" != "mysql" ]]; then
+## run ss-purge-nginx ##
+source "$PATH_SS_PURGE_NGINX"
 
-    ## run ss-purge-nginx ##
-    source "$PATH_SS_PURGE_NGINX"
+## run ss-purge-opcache ##
+source "$PATH_SS_PURGE_OPCACHE"
 
-    ## run ss-purge-opcache ##
-    source "$PATH_SS_PURGE_OPCACHE"
+## run ss-purge-redis ##
+source "$PATH_SS_PURGE_REDIS"
 
-    ## run ss-purge-redis ##
-    source "$PATH_SS_PURGE_REDIS"
-
-    ## run ss-purge-transients ##
-    source "$PATH_SS_PURGE_TRANSIENTS"
-
-fi
+## run ss-purge-transients ##
+source "$PATH_SS_PURGE_TRANSIENTS"
 
 ####################################################################################################
 #### SS-Install: Restart Modules (All Modules) #####################################################
@@ -960,18 +931,14 @@ fi
 ## this script is using init.d instead of systemd shortcuts to allow for absolute paths ##
 ## we are looking into including other snippets here such as unmasking (etc) ##
 
-if [[ "$SS_APP" != "mysql" ]]; then
+## run ss-restart-php ##
+source "$PATH_SS_RESTART_PHP"
 
-    ## run ss-restart-php ##
-    source "$PATH_SS_RESTART_PHP"
+## run ss-restart-nginx ##
+source "$PATH_SS_RESTART_NGINX"
 
-    ## run ss-restart-nginx ##
-    source "$PATH_SS_RESTART_NGINX"
-
-    ## run ss-restart-redis ##
-    source "$PATH_SS_RESTART_REDIS"
-
-fi
+## run ss-restart-redis ##
+source "$PATH_SS_RESTART_REDIS"
 
 ## run ss-restart-mysql ##
 source "$PATH_SS_RESTART_MYSQL"
@@ -987,7 +954,6 @@ source "$PATH_SS_RESTART_UFW"
 
 ## run ss-worker ##
 source "$PATH_SS_WORKER"
-
 
 ####################################################################################################
 #### SS-Install: Validate Crontab ##################################################################
@@ -1050,7 +1016,7 @@ rm /tmp/ss
 ## it can be useful for developer reference and is sometimes used by SlickStack ##
 
 ## script timestamp ##
-touch "$TIMESTAMP_SS_INSTALL"
+touch "${TIMESTAMP_SS_INSTALL}"
 
 ####################################################################################################
 #### SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ###############
