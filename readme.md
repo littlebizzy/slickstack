@@ -32,6 +32,10 @@ SlickStack is a free LEMP stack automation script written in Bash designed to en
 
 ## Changelog
 
+* **NEW!** We are officially dropping support for Magento (we never got it fully supported anyways) and PHP Composer... they are just a totally different world than the simplicity and clear control we envision for SlickStack and WordPress. Any other CMS that requires Composer will not be supported either.
+
+* **NEW!** Lots of cleanup of ss-install is underway... since many "newbie" users get confused about the verbose messages, we are moving forward with an approach to suppress most verbose CLI feedback during installation by default. This means we need to improve `ss-stack-overview` since it displays output at the end of new installations, so it needs to be more helpful about re: any files or modules are broken or missing.
+ 
 * **NEW!** We have moved back to using the `object-cache.php` maintained by Till Kruss since he is back in action again, and since Pressjitsu is not actively maintaining theirs anymore (which we forked from a few years ago). Please support Till, the guru of object caching, anyway you can!
 
 * **NEW!** A new default robots.txt boilerplate is now installed on servers that don't already have a physical robots.txt (since we no longer use the virtual robots.txt file that our MU plugin generated). If you don't want to use our default one, simply install your own and SlickStack will respect that going forward.
