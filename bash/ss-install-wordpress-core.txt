@@ -189,18 +189,14 @@ fi
 ## minimum wp_options required to avoid /wp-admin/install.php redirect are below: ##
 ## home/siteurl, blogname, admin_user, admin_email, admin_password ##
 
-
-INSTALLED_ALREADY_DEV=$(mysql --database=development --execute="SELECT * FROM ${DB_PREFIX}options WHERE option_name LIKE 'admin_email'"; > /dev/null 2>&1)
-
-if [[ "$DEV_SITE" == "true" ]] && [[ -z "$INSTALLED_ALREADY_DEV" ]]; then
-
+if [[ "${DEV_SITE}" == "true" ]]; then
+    INSTALLED_ALREADY_DEV=$(mysql --database=development --execute="SELECT * FROM ${DB_PREFIX}options WHERE option_name LIKE 'admin_email'"; 2> /dev/null)
+    if [[ -z "${INSTALLED_ALREADY_DEV}" ]]; then 
     /usr/bin/php -q -r "
     include '/var/www/html/dev/wp-admin/install.php';
     wp_install('dev site', '"${SFTP_USER}"', '"${SFTP_USER}"@"${SITE_DOMAIN_EXCLUDING_WWW}"', 1, '', '"${SFTP_PASSWORD}"');
     "
-    
-else
-    # echo -e "${COLOR_WARN}Running ss-install-wordpress-core: Admin user already exists in development database so default population skipped... ${NOCOLOR}"
+    fi
 fi
 
 # mysql --execute="UPDATE ${DB_NAME}.${DB_PREFIX}options SET option_value='${SITE_DOMAIN}' WHERE option_name='blogname'";
