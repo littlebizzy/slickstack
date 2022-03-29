@@ -33,6 +33,16 @@ source /var/www/ss-functions
 ## D. Configure Root + Admin User
 
 ####################################################################################################
+#### SS-Install-MySQL-Packages: Touch Timestamp File ###############################################
+####################################################################################################
+
+## this is a dummy timestamp file that will remember the last time this script was run ##
+## it can be useful for developer reference and is sometimes used by SlickStack ##
+
+## script timestamp ##
+touch "${TIMESTAMP_SS_INSTALL_MYSQL_PACKAGES}"
+
+####################################################################################################
 #### A. SS-Install-MySQL-Packages: Message (Begin Script) ##########################################
 ####################################################################################################
 
@@ -43,13 +53,10 @@ source /var/www/ss-functions
 echo -e "${COLOR_INFO}Running ss-install-mysql-packages: Reinstalls the MySQL module Ubuntu packages and extensions (idempotent)... ${NOCOLOR}"
 sleep "$SLEEP_MESSAGE_BEGIN"
 
-
-
 if [[ "$SS_DATABASE_REMOTE" == "true" ]]; then
     echo -e "${COLOR_WARN}Exiting ss-install-mysql-packages: Your ss-config indicates a remote database so we will skip MySQL install... ${NOCOLOR}"
-    exit 1
+    # exit 1
 fi
-
 
 ####################################################################################################
 #### B. SS-Install-MySQL-Packages: Cleanup Any Existing MySQL Packages #############################
@@ -59,11 +66,8 @@ fi
 ## then we proceed with purge/cleanup of MySQL packages to pepare a clean install ##
 
 ## stop MySQL ##
-
-# /etc/init.d/mysql* stop
-
 if [[ -f "/etc/init.d/mysql" ]]; then
-sudo /etc/init.d/mysql* stop > /dev/null 2>&1
+    sudo /etc/init.d/mysql* stop > /dev/null 2>&1
 fi
 
 sleep 15s
@@ -72,19 +76,12 @@ sleep 15s
 killall mysql* > /dev/null 2>&1
 sleep 15s
 
-## purge all MySQL packages and remove any previous MySQL configuration files ##
-# apt purge ^mysql
-
-# rm /etc/mysql/*
-# rm /var/lib/mysql/*
-
 ####################################################################################################
 #### SS-Install-MySQL-Packages: Update Existing Packages ###########################################
 ####################################################################################################
 
-## cleanup potential conflicting files ##
-# apt autoremove
-# apt autoclean
+## we must include the standard apt update/upgrade in case script is called directly ##
+## 
 
 ## update repo cache ##
 apt update > /dev/null 2>&1
@@ -119,13 +116,13 @@ apt update > /dev/null 2>&1
 ## remote database environments should not require localhost MySQL installed ##
 
 ## for localhost databases ##
-if [[ "$SS_DATABASE_REMOTE" != "true" ]]; then 
+if [[ "${SS_DATABASE_REMOTE}" != "true" ]]; then 
 
     ## mysql-server-8.1 (Ubuntu 22.04 LTS) ##
     if [[ "${UBUNTU_VERSION}" == "22.04" ]]; then 
         # echo -e "${COLOR_INFO}Running ss-install-mysql-packages: Ubuntu LTS 22.04 detected so proceeding with MySQL 8.1 installation... ${NOCOLOR}"
         sleep "$SLEEP_MESSAGE_BEGIN"
-        apt install mysql-server-8.1 > /dev/null 2>&1
+        apt install mysql-server-8.0 > /dev/null 2>&1
     fi
 
     ## mysql-server-8.0 (Ubuntu 20.04 LTS) ##
@@ -148,12 +145,7 @@ fi
 #### D. SS-Install-MySQL-Database ###############
 ####################################################################################################
 
-
-
-
-source "$PATH_SS_INSTALL_MYSQL_DATABASE"
-
-
+source "${PATH_SS_INSTALL_MYSQL_DATABASE}"
 
 ####################################################################################################
 #### SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ###############
@@ -202,7 +194,7 @@ source "$PATH_SS_INSTALL_MYSQL_DATABASE"
 ####################################################################################################
 
 ## run ss-perms-mysql-packages ##
-source "$PATH_SS_PERMS_MYSQL_PACKAGES"
+source "${PATH_SS_PERMS_MYSQL_PACKAGES}"
 
 ####################################################################################################
 #### SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ###############
@@ -278,17 +270,6 @@ source "$PATH_SS_PERMS_MYSQL_PACKAGES"
 ## delete tmp files ##
 rm /tmp/init-mysql.txt*
 rm /var/run/mysqld.bak*
-
-
-####################################################################################################
-#### SS-Install-MySQL-Packages: Touch Timestamp File (End Script) ##################################
-####################################################################################################
-
-## this is a dummy timestamp file that will remember the last time this script was run ##
-## it can be useful for developer reference and is sometimes used by SlickStack ##
-
-## script timestamp ##
-touch "$TIMESTAMP_SS_INSTALL_MYSQL_PACKAGES"
 
 ####################################################################################################
 #### SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ###############
