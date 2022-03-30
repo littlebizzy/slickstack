@@ -9,7 +9,7 @@
 #### purpose: Reinstalls the MySQL module Ubuntu packages and extensions (idempotent) ##############
 #### module version: MySQL 8.0.x ###################################################################
 #### sourced by: ss-install ########################################################################
-#### bash aliases: ss install mysql packages #######################################################
+#### bash aliases: ss install mysql core, ss install mysql packages ################################
 ####################################################################################################
 
 ## SS-CONFIG MUST BE PROPERLY CONFIGURED AND ON CURRENT BUILD BEFORE RUNNING SS-INSTALL ##
@@ -27,7 +27,8 @@ source /var/www/ss-functions
 #### TABLE OF CONTENTS (SS-Install-MySQL-Packages) #################################################
 ####################################################################################################
 
-## A. Message (Begin Script)
+## A. Touch Timestamp File
+## B. Message (Begin Script)
 ## B. Cleanup Any Existing MySQL Packages
 ## C. Install MySQL (Localhost Only)
 ## D. Configure Root + Admin User
@@ -65,14 +66,13 @@ fi
 ## first we backup the live database (and /var/lib/mysql) and kill any leftover processes ##
 ## then we proceed with purge/cleanup of MySQL packages to pepare a clean install ##
 
-## stop MySQL ##
+## stop mysql service ##
 if [[ -f "/etc/init.d/mysql" ]]; then
     sudo /etc/init.d/mysql* stop > /dev/null 2>&1
+    sleep 15s
 fi
 
-sleep 15s
-
-## kill any remaining MySQL processes ##
+## kill any remaining mysql processes ##
 killall mysql* > /dev/null 2>&1
 sleep 15s
 
@@ -80,15 +80,20 @@ sleep 15s
 #### SS-Install-MySQL-Packages: Update Existing Packages ###########################################
 ####################################################################################################
 
+## SNIPPET: all ss-install* bash scripts
+## UPDATED: 30MAR2022
+
 ## we must include the standard apt update/upgrade in case script is called directly ##
-## 
+## this helps to avoid conflicts and outdated packages during installation ##
 
-## update repo cache ##
-apt update > /dev/null 2>&1
+## update packages ##
+apt update && upgrade > /dev/null 2>&1
 
 ####################################################################################################
-#### SS-Install-MySQL-Packages: Prepare Root User Authentication (Debconf) ##################################
+#### SS-Install-MySQL-Packages: Prepare Root User Authentication (Debconf) #########################
 ####################################################################################################
+
+## this might be needed for 18.04
 
 ## here we prepare the MySQL root password using the Debian/Ubuntu debconf utilities ##
 ## all SlickStack scripts connect to MySQL via root@localhost using sockets ##
@@ -115,82 +120,30 @@ apt update > /dev/null 2>&1
 ## this script will install the MySQL packages unless it is set to false in ss-config ##
 ## remote database environments should not require localhost MySQL installed ##
 
-## for localhost databases ##
+## install mysql packages ##
 if [[ "${SS_DATABASE_REMOTE}" != "true" ]]; then 
-
-    ## mysql-server-8.1 (Ubuntu 22.04 LTS) ##
+    ## ubuntu 22.04 ##
     if [[ "${UBUNTU_VERSION}" == "22.04" ]]; then 
-        # echo -e "${COLOR_INFO}Running ss-install-mysql-packages: Ubuntu LTS 22.04 detected so proceeding with MySQL 8.1 installation... ${NOCOLOR}"
-        sleep "$SLEEP_MESSAGE_BEGIN"
         apt install mysql-server-8.0 > /dev/null 2>&1
     fi
-
-    ## mysql-server-8.0 (Ubuntu 20.04 LTS) ##
+    ## ubuntu 20.04 ##
     if [[ "${UBUNTU_VERSION}" == "20.04" ]]; then 
-        # echo -e "${COLOR_INFO}Running ss-install-mysql-packages: Ubuntu LTS 20.04 detected so proceeding with MySQL 8.0 installation... ${NOCOLOR}"
-        sleep "$SLEEP_MESSAGE_BEGIN"
         apt install mysql-server-8.0 > /dev/null 2>&1
     fi
-
-    ## mysql-server-5.7 (Ubuntu 18.04 LTS) ##
+    ## ubuntu 18.04 ##
     if [[ "${UBUNTU_VERSION}" == "18.04" ]]; then
-        # echo -e "${COLOR_INFO}Running ss-install-mysql-packages: Ubuntu LTS 18.04 detected so proceeding with MySQL 5.7 installation... ${NOCOLOR}"
-        sleep "$SLEEP_MESSAGE_BEGIN"
         apt install mysql-server-5.7 > /dev/null 2>&1
     fi
-
 fi
 
 ####################################################################################################
-#### D. SS-Install-MySQL-Database ###############
+#### D. SS-Install-MySQL-Packages: Install Database(s) #############################################
 ####################################################################################################
 
 source "${PATH_SS_INSTALL_MYSQL_DATABASE}"
 
 ####################################################################################################
-#### SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ###############
-####################################################################################################
-
-## mysql alias flags ##
-    # command mysql --no-defaults --user=root --password=$DB_PASSWORD_ROOT --host=localhost --protocol=socket --socket=/var/run/mysqld/mysqld.sock --port=3306 --force "$@"
-
-## MYSQL IS PHASING OUT NATIVE PASSWORDS IN FAVOR OF UNIX SOCKETS AND/OR SHA2 HASHING ##
-## WE USE SOCKETS FOR CORE SCRIPTS AND AIM TO USE TCP/SSL/SHA2 FOR WORDPRESS ##
-
-## copy the default socket for keeps (might disappear during stop MySQL) ##
-# cp /var/run/mysqld /var/run/mysqld.bak
-
-## put back socket
-# if [ ! -f "/var/run/mysqld/*sock" ]; then 
- #   mv /var/run/mysqld.bak /var/run/mysqld;
-# fi
-
-## start the MySQL service again ##
-# systemctl unmask mysql.service
-# mysqld_safe --init-file=<path to init file>init-file.txt &
-# mysqld --init-file=<path to init file>init-file.txt &
-# /usr/sbin/mysqld --user=mysql --skip-grant-tables --init-file=/tmp/init-mysql.txt &
-# mysqld_safe --skip-grant-tables &
-
-## start MySQL without authentication (safe mode) ##
-# mysqld --skip-grant-tables --user=mysql &
-# bin/mysqld --initialize-insecure --user=mysql
-
-## start MySQL ##
-# mysql --skip-password
-## grep "A temporary password" /var/log/mysqld.log
-
-## reset admin (root alternative) password and make mysql_native_password the default ##
-#  -u root --skip-password --host="localhost" --protocol=socket --port=3306 
-# UPDATE mysql.user SET plugin = 'mysql_native_password' WHERE user = 'root' AND plugin = 'auth_socket';
-# mysql -e "UPDATE mysql.user SET plugin = 'mysql_native_password' WHERE user = 'admin';"
-
-## caching_sha2_password requires TLS, sockets, or shared memory ##
-
-# SELECT user,authentication_string,plugin,host FROM mysql.user;
-
-####################################################################################################
-#### SS-Install-MySQL-Core: Reset Permissions (MySQL Core) #########################################
+#### SS-Install-MySQL-Packages: Reset Permissions (MySQL Core) #####################################
 ####################################################################################################
 
 ## run ss-perms-mysql-packages ##
@@ -199,16 +152,6 @@ source "${PATH_SS_PERMS_MYSQL_PACKAGES}"
 ####################################################################################################
 #### SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ###############
 ####################################################################################################
-
-## mysql alias flags ##
-    # command mysql --no-defaults --user=root --password=$DB_PASSWORD_ROOT --host=localhost --protocol=socket --socket=/var/run/mysqld/mysqld.sock --port=3306 --force "$@"
-
-# sudo mysql -e "ALTER USER IF EXISTS 'root'@'127.0.0.1' IDENTIFIED WITH caching_sha2_password BY '${DB_PASSWORD_ROOT}';"
-# sudo mysql -e "ALTER USER IF EXISTS 'root'@'::1' IDENTIFIED WITH caching_sha2_password BY '${DB_PASSWORD_ROOT}';"
-# sudo mysql -e "CREATE USER IF NOT EXISTS 'root'@'127.0.0.1' IDENTIFIED WITH caching_sha2_password BY '${DB_PASSWORD_ROOT}';"
-# sudo mysql -e "CREATE USER IF NOT EXISTS 'root'@'::1' IDENTIFIED WITH caching_sha2_password BY '${DB_PASSWORD_ROOT}';"
-# sudo mysql -e "GRANT ALL ON *.* TO 'root'@'127.0.0.1' WITH GRANT OPTION;"
-# sudo mysql -e "GRANT ALL ON *.* TO 'root'@'::1' WITH GRANT OPTION;"
 
 ## MYSQL IS PHASING OUT NATIVE PASSWORDS IN FAVOR OF UNIX SOCKETS AND/OR SHA2 HASHING ##
 ## WE USE SOCKETS FOR CORE SCRIPTS AND AIM TO USE TCP/SSL/SHA2 FOR WORDPRESS ##
@@ -244,16 +187,6 @@ source "${PATH_SS_PERMS_MYSQL_PACKAGES}"
 # mysql --skip-password
 ## grep "A temporary password" /var/log/mysqld.log
 
-## ensure root@localhost uses mysql_native_password ##
-#####sudo mysql -e "ALTER USER IF EXISTS 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD_ROOT}';"
-#####sudo mysql -e "GRANT ALL ON *.* TO 'root'@'localhost' WITH GRANT OPTION;"
-#####sudo mysql -e "FLUSH PRIVILEGES;"
-
-## reset admin (root alternative) password and make mysql_native_password the default ##
-#  -u root --skip-password --host="localhost" --protocol=socket --port=3306 
-# UPDATE mysql.user SET plugin = 'mysql_native_password' WHERE user = 'root' AND plugin = 'auth_socket';
-# mysql -e "UPDATE mysql.user SET plugin = 'mysql_native_password' WHERE user = 'admin';"
-
 ## caching_sha2_password requires TLS, sockets, or shared memory ##
 
 # mysql --flush-privileges -e "ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY '${DB_PASSWORD_ROOT}';"
@@ -261,7 +194,7 @@ source "${PATH_SS_PERMS_MYSQL_PACKAGES}"
 # SELECT User,plugin from mysql.user where User='root';
 # SELECT user,authentication_string,plugin,host FROM mysql.user;
 
-
+# SELECT user,authentication_string,plugin,host FROM mysql.user;
 
 ####################################################################################################
 #### SS-Install-MySQL: Cleanup Temporary Files #####################################################
