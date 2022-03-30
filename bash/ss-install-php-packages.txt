@@ -45,6 +45,19 @@ echo -e "${COLOR_INFO}Running ss-install-php-packages: Reinstalls the PHP-FPM mo
 sleep "${SLEEP_MESSAGE_BEGIN}"
 
 ####################################################################################################
+#### SS-Install-PHP-Packages: Update Existing Packages #############################################
+####################################################################################################
+
+## SNIPPET: ss-install-*-packages bash scripts
+## UPDATED: 30MAR2022
+
+## we must include the standard apt update/upgrade in case script is called directly ##
+## this helps to avoid conflicts and outdated packages during installation ##
+
+## update packages ##
+apt update && upgrade > /dev/null 2>&1
+
+####################################################################################################
 #### SS-Install-PHP-Packages: Purge Any Existing PHP Packages (Ubuntu) #############################
 ####################################################################################################
 
@@ -60,15 +73,8 @@ if [[ "${SS_APP}" != "mysql" ]]; then
 
     ## delete any leftover PHP files (disable for now because apt will not create these files if it notices the php directory exists already) ##
     # rm /etc/php*
-
-    ## cleanup any outdated packages and system files ##
-    apt autoremove
-    apt autoclean
-
+    
     fi
-
-    ## update repo cache ##
-    apt update > /dev/null 2>&1
 
 fi
 
