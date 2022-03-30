@@ -45,29 +45,36 @@ echo -e "${COLOR_INFO}Running ss-install-nginx-packages: Reinstalls the Nginx mo
 sleep "${SLEEP_MESSAGE_BEGIN}"
 
 ####################################################################################################
-#### SS-Install-Nginx-Core: Install Nginx Packages (Includes FastCGI Cache + OpenSSL) ##############
+#### SS-Install-Nginx-Packages: Update Existing Packages ###########################################
 ####################################################################################################
 
-## update Ubuntu package cache ##
-apt update > /dev/null 2>&1
+## SNIPPET: ss-install-*-packages bash scripts
+## UPDATED: 30MAR2022
 
-## required to install Certbot on Ubuntu 18.04 ##
-if [[ "${UBUNTU_VERSION}" = "18.04" ]]; then
-    apt install software-properties-common > /dev/null 2>&1
-    add-apt-repository universe > /dev/null 2>&1
-    add-apt-repository ppa:certbot/certbot > /dev/null 2>&1 ## Ubuntu 20.04 includes Certbot
-fi
+## we must include the standard apt update/upgrade in case script is called directly ##
+## this helps to avoid conflicts and outdated packages during installation ##
+
+## update packages ##
+apt update && upgrade > /dev/null 2>&1
+
+####################################################################################################
+#### SS-Install-Nginx-Core: Install Nginx Packages (Includes FastCGI Cache + OpenSSL) ##############
+####################################################################################################
 
 ## clean reinstall for Ubuntu 20.04 ##
 if [[ "${UBUNTU_VERSION}" = "20.04" || -z "${UBUNTU_VERSION}" ]]; then 
     apt remove certbot > /dev/null 2>&1
     apt remove python3-certbot-nginx > /dev/null 2>&1
-    add-apt-repository --remove ppa:certbot/certbot > /dev/null 2>&1 ## just in case (shouldn't exist)
+    add-apt-repository --remove ppa:certbot/certbot > /dev/null 2>&1
     apt install certbot python3-certbot-nginx > /dev/null 2>&1
 fi
 
-## update package cache again (not needed in Ubuntu 18.04+ but just for fun) ##
-apt update > /dev/null 2>&1
+## required to install Certbot on Ubuntu 18.04 ##
+if [[ "${UBUNTU_VERSION}" = "18.04" ]]; then
+    apt install software-properties-common > /dev/null 2>&1
+    add-apt-repository universe > /dev/null 2>&1
+    add-apt-repository ppa:certbot/certbot > /dev/null 2>&1
+fi
 
 ## install nginx-extras ##
 apt install nginx-extras > /dev/null 2>&1
