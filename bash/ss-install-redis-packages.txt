@@ -38,7 +38,7 @@ source /var/www/ss-functions
 ## it can be useful for developer reference and is sometimes used by SlickStack ##
 
 ## script timestamp ##
-touch "$TIMESTAMP_SS_INSTALL_REDIS_PACKAGES"
+touch "${TIMESTAMP_SS_INSTALL_REDIS_PACKAGES}"
 
 ####################################################################################################
 #### SS-Install-Redis-Packages: Message (Begin Script) #############################################
@@ -49,7 +49,20 @@ touch "$TIMESTAMP_SS_INSTALL_REDIS_PACKAGES"
 
 ## echo message ##
 echo -e "${COLOR_INFO}Running ss-install-redis-packages: Reinstalls the Redis module Ubuntu packages and extensions (idempotent)... ${NOCOLOR}"
-sleep "$SLEEP_MESSAGE_BEGIN"
+sleep "${SLEEP_MESSAGE_BEGIN}"
+
+####################################################################################################
+#### SS-Install-Redis-Packages: Update Existing Packages ###########################################
+####################################################################################################
+
+## SNIPPET: ss-install-*-packages bash scripts
+## UPDATED: 30MAR2022
+
+## we must include the standard apt update/upgrade in case script is called directly ##
+## this helps to avoid conflicts and outdated packages during installation ##
+
+## update packages ##
+apt update && upgrade > /dev/null 2>&1
 
 ####################################################################################################
 #### SS-Install-Redis: Install Redis (Object Cache) ################################################
@@ -91,14 +104,14 @@ fi
 ####################################################################################################
 
 ## run ss-perms-redis-packages ##
-source "$PATH_SS_PERMS_REDIS_PACKAGES"
+source "${PATH_SS_PERMS_REDIS_PACKAGES}"
 
 ####################################################################################################
 #### SS-Install-Redis: Purge Cache (Redis) #########################################################
 ####################################################################################################
 
 ## run ss-purge-redis ##
-source "$PATH_SS_PURGE_REDIS"
+source "${PATH_SS_PURGE_REDIS}"
 
 ####################################################################################################
 #### SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ###############
