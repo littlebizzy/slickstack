@@ -45,6 +45,19 @@ echo -e "${COLOR_INFO}Running ss-install-ufw-packages: Reinstalls the entire UFW
 sleep "$SLEEP_MESSAGE_BEGIN"
 
 ####################################################################################################
+#### SS-Install-UFW-Packages: Update Existing Packages #############################################
+####################################################################################################
+
+## SNIPPET: ss-install-*-packages bash scripts
+## UPDATED: 30MAR2022
+
+## we must include the standard apt update/upgrade in case script is called directly ##
+## this helps to avoid conflicts and outdated packages during installation ##
+
+## update packages ##
+apt update && upgrade > /dev/null 2>&1
+
+####################################################################################################
 #### SS-Install-UFW: Cleanup Temporary Files #######################################################
 ####################################################################################################
 
@@ -67,21 +80,22 @@ sudo ufw --force disable
 # apt purge ^ufw
 # rm /etc/ufw/*
 
-## update repo cache ##
-# apt update > /dev/null 2>&1
-# apt upgrade > /dev/null 2>&1
-
 ## attempt fixing any broken package depencies ##
 # apt install --fix-broken > /dev/null 2>&1
 
+## ubuntu 22.04 ##
+if [[ "${UBUNTU_VERSION}" = "22.04" ]]; then
+    apt install ufw > /dev/null 2>&1
+fi
+
 ## ubuntu 20.04 ##
 if [[ "${UBUNTU_VERSION}" = "20.04" ]]; then
-    apt install ufw # > /dev/null 2>&1
+    apt install ufw > /dev/null 2>&1
 fi
 
 ## ubuntu 18.04 ##
 if [[ "${UBUNTU_VERSION}" = "18.04" ]]; then
-    apt install ufw # > /dev/null 2>&1
+    apt install ufw > /dev/null 2>&1
 fi
 
 ####################################################################################################
