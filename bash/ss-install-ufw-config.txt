@@ -24,6 +24,16 @@ source /var/www/ss-functions
 ## BELOW THIS RELIES ON SS-CONFIG AND SS-FUNCTIONS
 
 ####################################################################################################
+#### SS-Install-UFW-Config: Touch Timestamp File ###################################################
+####################################################################################################
+
+## this is a dummy timestamp file that will remember the last time this script was run ##
+## it can be useful for developer reference and is sometimes used by SlickStack ##
+
+## script timestamp ##
+touch "${TIMESTAMP_SS_INSTALL_UFW_CONFIG}"
+
+####################################################################################################
 #### SS-Install-UFW-Config: Message (Begin Script) ###################################################
 ####################################################################################################
 
@@ -31,8 +41,8 @@ source /var/www/ss-functions
 ## it will only be noticed by sudo users who manually call ss core bash scripts ##
 
 ## echo message ##
-echo -e "${COLOR_INFO}Running ss-install-ufw: Reinstalls the entire UFW firewall module for SlickStack servers (idempotent)... ${NOCOLOR}"
-sleep "$SLEEP_MESSAGE_BEGIN"
+echo -e "${COLOR_INFO}Running ss-install-ufw-config: Reinstalls the entire UFW firewall module for SlickStack servers (idempotent)... ${NOCOLOR}"
+sleep "${SLEEP_MESSAGE_BEGIN}"
 
 ####################################################################################################
 #### SS-Install-UFW: Cleanup Temporary Files #######################################################
@@ -54,8 +64,8 @@ sudo ufw --force disable
 ####################################################################################################
 
 # retrieve latest versions ##
-wget -O /tmp/ufw "$MIRROR_UFW_UFW"
-wget -O /tmp/ufw.conf "$MIRROR_UFW_CONF"
+wget -O /tmp/ufw "${MIRROR_UFW_UFW}"
+wget -O /tmp/ufw.conf "${MIRROR_UFW_CONF}"
 
 ## copy files to their destinations ##
 cp /tmp/ufw /etc/default/ufw
@@ -66,8 +76,8 @@ cp /tmp/ufw.conf /etc/ufw/ufw.conf
 ####################################################################################################
 
 # retrieve latest versions ##
-wget -O /tmp/user.rules "$MIRROR_USER_RULES"
-wget -O /tmp/user6.rules "$MIRROR_USER6_RULES"
+wget -O /tmp/user.rules "${MIRROR_USER_RULES}"
+wget -O /tmp/user6.rules "${MIRROR_USER6_RULES}"
 
 if [[ -z "$SSH_PORT" ]]; then 
     sed -i "s/@SSH_PORT/6969/g" /tmp/user.rules
@@ -86,7 +96,7 @@ cp /tmp/user6.rules /etc/ufw/user6.rules
 ####################################################################################################
 
 ## run ss-perms-ufw-config ##
-source "$PATH_SS_PERMS_UFW_CONFIG"
+source "${PATH_SS_PERMS_UFW_CONFIG}"
 
 ####################################################################################################
 #### SS-Install-UFW: Enable UFW ####################################################################
@@ -105,16 +115,6 @@ sudo ufw --force enable
 ## delete tmp files ##
 rm /tmp/ufw*
 rm /tmp/user*
-
-####################################################################################################
-#### SS-Install-UFW-Config: Touch Timestamp File (End Script) ######################################
-####################################################################################################
-
-## this is a dummy timestamp file that will remember the last time this script was run ##
-## it can be useful for developer reference and is sometimes used by SlickStack ##
-
-## script timestamp ##
-touch "$TIMESTAMP_SS_INSTALL_UFW_CONFIG"
 
 ####################################################################################################
 #### SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ###############
