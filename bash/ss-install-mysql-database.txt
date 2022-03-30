@@ -41,7 +41,7 @@ source /var/www/ss-functions
 ## it can be useful for developer reference and is sometimes used by SlickStack ##
 
 ## script timestamp ##
-touch "$TIMESTAMP_SS_INSTALL_MYSQL_DATABASE"
+touch "${TIMESTAMP_SS_INSTALL_MYSQL_DATABASE}"
 
 ####################################################################################################
 #### B. SS-Install-MySQL-Database: Message (Begin Script) ##########################################
@@ -52,11 +52,10 @@ touch "$TIMESTAMP_SS_INSTALL_MYSQL_DATABASE"
 
 ## echo message ##
 echo -e "${COLOR_INFO}Running ss-install-mysql-database: Reinstalls the MySQL database and required users to access the database... ${NOCOLOR}"
-sleep "$SLEEP_MESSAGE_BEGIN"
+sleep "${SLEEP_MESSAGE_BEGIN}"
 
 if [[ "$SS_DATABASE_REMOTE" == "true" ]]; then
     echo -e "${YELLOW}Exiting ss-install-mysql-database: Your ss-config indicates a remote database so we will skip MySQL install... ${NOCOLOR}"
-    exit 1
 fi
 
 ####################################################################################################
@@ -204,16 +203,16 @@ ss_mysql_5.7 -e "CREATE DATABASE IF NOT EXISTS ${DB_NAME};"
 
     if [[ "${DEV_SITE}" == "true" ]]; then
         ## grant limited user privileges on WordPress database only (localhost/IPv4/IPv6) ##
-        sudo mysql -e "GRANT ALL ON development.* TO '${DB_USER}'@'localhost';"
-        sudo mysql -e "GRANT ALL ON development.* TO '${DB_USER}'@'127.0.0.1';"
-        sudo mysql -e "GRANT ALL ON development.* TO '${DB_USER}'@'::1';"
+        ss_mysql_5.7 -e "GRANT ALL ON development.* TO '${DB_USER}'@'localhost';"
+        ss_mysql_5.7 -e "GRANT ALL ON development.* TO '${DB_USER}'@'127.0.0.1';"
+        ss_mysql_5.7 -e "GRANT ALL ON development.* TO '${DB_USER}'@'::1';"
     fi
 
     if [[ "${STAGING_SITE}" == "true" ]]; then
         ## grant limited user privileges on WordPress database only (localhost/IPv4/IPv6) ##
-        sudo mysql -e "GRANT ALL ON staging.* TO '${DB_USER}'@'localhost';"
-        sudo mysql -e "GRANT ALL ON staging.* TO '${DB_USER}'@'127.0.0.1';"
-        sudo mysql -e "GRANT ALL ON staging.* TO '${DB_USER}'@'::1';"
+        ss_mysql_5.7 -e "GRANT ALL ON staging.* TO '${DB_USER}'@'localhost';"
+        ss_mysql_5.7 -e "GRANT ALL ON staging.* TO '${DB_USER}'@'127.0.0.1';"
+        ss_mysql_5.7 -e "GRANT ALL ON staging.* TO '${DB_USER}'@'::1';"
     fi
 
     ## install auth_socket plugin ##
@@ -239,7 +238,7 @@ fi
 ####################################################################################################
 
 ## run ss-perms-mysql-database ##
-source "$PATH_SS_PERMS_MYSQL_DATABASE"
+source "${PATH_SS_PERMS_MYSQL_DATABASE}"
 
 ####################################################################################################
 #### SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ###############
