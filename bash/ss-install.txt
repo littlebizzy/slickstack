@@ -578,6 +578,8 @@ fi
     done
 
     echo -e ""
+    echo -e "${COLOR_INFO}Running ss-install: Your ss-config file has now been configured so proceeding with installation... ${NOCOLOR}"
+    sleep "${SLEEP_MESSAGE_BEGIN}"
     
 ####################################################################################################
 #### SS-Install: Welcome Back (If SS-Config Exists) ################################################
@@ -633,27 +635,36 @@ if [[ "${CALC_DOMAIN_SUB}" -gt 1 ]]; then
 fi
 
 ####################################################################################################
-#### SS-Install: Retrieve Latest SS Core Cron Jobs + SS Core Bash Scripts ##########################
+#### SS-Install: Run SS-Check ######################################################################
 ####################################################################################################
 
-## now that ss-config is ready we must retrieve the latest core cron jobs and scripts ##
+## now that ss-config is configured we must retrieve the current cron jobs and scripts ##
+## ss-check is a critical file at this stage so ss-install will exit if missing ##
 
-## download latest versions ##
+## snippet variables ##
+VALIDATE_TMP_SS_CHECK=$(grep 'SS_EOF' "${TMP_SS_CHECK}" 2> /dev/null)
+
+## download current versions ##
 ss_wget_slow -O "${TMP_SS_CHECK}" "${MIRROR_SS_CHECK}"
 
-## copy files to their destinations ##
-cp "${TMP_SS_CHECK}" "${PATH_SS_CHECK}"
+if [[ -z "${VALIDATE_TMP_SS_CHECK}" ]]; then
+    ss_wget_slow -O "${TMP_SS_CHECK}" "${MIRROR2_SS_CHECK}"
+fi
 
-## reset permissions ##
-chown root:root /var/www/ss* ## must be root:root
-chmod 0700 /var/www/ss* ## 0700 means root can execute
+if [[ -z "${VALIDATE_TMP_SS_CHECK}" ]]; then
+    ss_wget_slow -O "${TMP_SS_CHECK}" "${MIRROR3_SS_CHECK}"
+fi
 
-## run scripts ##
-source "${PATH_SS_CHECK}"
+## copy files to destination ##
+if [[ -n "${VALIDATE_TMP_SS_CHECK}" ]]; then
+    cp "${TMP_SS_CHECK}" "${PATH_SS_CHECK}"
+    chown root:root /var/www/ss* ## must be root:root
+    chmod 0700 /var/www/ss* ## 0700 means root can execute
+    source "${PATH_SS_CHECK}"
+else
+    echo -e "${COLOR_ERROR}ss-check file is missing or damaged, please try running ss-install again. ${NOCOLOR}"
+fi
 
-####################################################################################################
-####
-####################################################################################################
 ####################################################################################################
 #### SS-Install: Set Confold As Ubuntu Dpkg Default ################################################
 ####################################################################################################
