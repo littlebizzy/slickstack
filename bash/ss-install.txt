@@ -642,16 +642,18 @@ fi
 ## ss-check is a critical file at this stage so ss-install will exit if missing ##
 
 ## snippet variables ##
-VALIDATE_TMP_SS_CHECK=$(grep 'SS_EOF' "${TMP_SS_CHECK}" 2> /dev/null)
+
 
 ## download current versions ##
 ss_wget_slow -O "${TMP_SS_CHECK}" "${MIRROR_SS_CHECK}"
 
+VALIDATE_TMP_SS_CHECK=$(grep 'SS_EOF' "${TMP_SS_CHECK}" 2> /dev/null)
 if [[ -z "${VALIDATE_TMP_SS_CHECK}" ]]; then
     ss_wget_slow -O "${TMP_SS_CHECK}" "${MIRROR2_SS_CHECK}"
 fi
 
-if [[ -z "${VALIDATE_TMP_SS_CHECK}" ]]; then
+VALIDATE2_TMP_SS_CHECK=$(grep 'SS_EOF' "${TMP_SS_CHECK}" 2> /dev/null)
+if [[ -z "${VALIDATE2_TMP_SS_CHECK}" ]]; then
     ss_wget_slow -O "${TMP_SS_CHECK}" "${MIRROR3_SS_CHECK}"
 fi
 
@@ -662,7 +664,7 @@ if [[ -n "${VALIDATE_TMP_SS_CHECK}" ]]; then
     chmod 0700 /var/www/ss* ## 0700 means root can execute
     source "${PATH_SS_CHECK}"
 else
-    echo -e "${COLOR_ERROR}ss-check file is missing or damaged, please try running ss-install again. ${NOCOLOR}"
+    echo -e "${COLOR_ERROR}Exiting ss-install: ss-check file is missing or damaged, please try running ss-install again... ${NOCOLOR}"
 fi
 
 ####################################################################################################
