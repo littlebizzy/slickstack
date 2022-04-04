@@ -163,7 +163,7 @@ if [[ -z "$VALIDATE_TMP_SS_CONFIG" ]]; then
 fi
 
 ####################################################################################################
-#### SS-Install: Interactive Bash Setup Wizard (Generate SS-Config) ################################
+#### SS-Install: Interactive Bash Setup Wizard (SS-Config) #########################################
 ####################################################################################################
 
 ## this basic wizard will allow you to interactively setup your ss-config file options ##
@@ -171,6 +171,26 @@ fi
 
 ## clear screen ##
 clear -x
+
+## rainbow colors test ##
+# WELCOME_RAINBOW="${DARKRED}welcome ${LIGHTRED}to ${ORANGE}the ${YELLOW}magical ${DARKGREEN}world ${LIGHTGREEN}of ${DARKCYAN}ss ${LIGHTCYAN}where ${DARKBLUE}all ${LIGHTBLUE}your ${DARKPURPLE}dreams ${LIGHTPURPLE}come ${LIGHTGRAY}true${NOCOLOR}"
+# echo -e ""
+# echo -e "${WELCOME_RAINBOW}"
+# echo -e ""
+# echo -e "${LIGHTPURPLE} _____________________________ ${NOCOLOR}"
+# echo -e "${LIGHTPURPLE}< screw containers! excelsior > ${NOCOLOR}"
+# echo -e "${LIGHTPURPLE} ----------------------------- ${NOCOLOR}"
+# echo -e "${LIGHTPURPLE} __________________________________ ${NOCOLOR}"
+# echo -e "${LIGHTPURPLE}< kubernetes is a venereal disease > ${NOCOLOR}"
+# echo -e "${LIGHTPURPLE} ---------------------------------- ${NOCOLOR}"
+# echo -e "${LIGHTPURPLE} __________________________________________________________ ${NOCOLOR}"
+# echo -e "${LIGHTPURPLE}< \"Hardcode the shit out of your stack.\" — Abraham Lincoln > ${NOCOLOR}"
+# echo -e "${LIGHTPURPLE} ---------------------------------------------------------- ${NOCOLOR}"
+# echo -e "${LIGHTPURPLE}        \   ^__^ ${NOCOLOR}"
+# echo -e "${LIGHTPURPLE}         \  (${BLINK}oo${NORMAL}${LIGHTPURPLE})\_______ ${NOCOLOR}"
+# echo -e "${LIGHTPURPLE}            (__)\       )\/\ ${NOCOLOR}"
+# echo -e "${LIGHTPURPLE}                ||----w | ${NOCOLOR}"
+# echo -e "${LIGHTPURPLE}                ||     || ${NOCOLOR}"
 
 ## check build version ##
 SS_BUILD_CURRENT=$(source /tmp/ss-config; echo "${SS_BUILD}" 2> /dev/null)
@@ -197,25 +217,6 @@ EIGHT_LINE_TRIM=${EIGHT_LINE::120}
 NINE_LINE="${COLOR_INFO}#### ${LIGHTGRAY}IP Address (IPv6): ${LIGHTGREEN}${SYSTEM_IPV6_ADDRESS} ${COLOR_INFO}${FILLER}${NOCOLOR}"
 NINE_LINE_TRIM=${NINE_LINE::120}
 
-## rainbow colors test ##
-# WELCOME_RAINBOW="${DARKRED}welcome ${LIGHTRED}to ${ORANGE}the ${YELLOW}magical ${DARKGREEN}world ${LIGHTGREEN}of ${DARKCYAN}ss ${LIGHTCYAN}where ${DARKBLUE}all ${LIGHTBLUE}your ${DARKPURPLE}dreams ${LIGHTPURPLE}come ${LIGHTGRAY}true${NOCOLOR}"
-# echo -e ""
-# echo -e "${WELCOME_RAINBOW}"
-# echo -e ""
-# echo -e "${LIGHTPURPLE} _____________________________ ${NOCOLOR}"
-# echo -e "${LIGHTPURPLE}< screw containers! excelsior > ${NOCOLOR}"
-# echo -e "${LIGHTPURPLE} ----------------------------- ${NOCOLOR}"
-# echo -e "${LIGHTPURPLE} __________________________________ ${NOCOLOR}"
-# echo -e "${LIGHTPURPLE}< kubernetes is a venereal disease > ${NOCOLOR}"
-# echo -e "${LIGHTPURPLE} ---------------------------------- ${NOCOLOR}"
-# echo -e "${LIGHTPURPLE} __________________________________________________________ ${NOCOLOR}"
-# echo -e "${LIGHTPURPLE}< \"Hardcode the shit out of your stack.\" — Abraham Lincoln > ${NOCOLOR}"
-# echo -e "${LIGHTPURPLE} ---------------------------------------------------------- ${NOCOLOR}"
-# echo -e "${LIGHTPURPLE}        \   ^__^ ${NOCOLOR}"
-# echo -e "${LIGHTPURPLE}         \  (${BLINK}oo${NORMAL}${LIGHTPURPLE})\_______ ${NOCOLOR}"
-# echo -e "${LIGHTPURPLE}            (__)\       )\/\ ${NOCOLOR}"
-# echo -e "${LIGHTPURPLE}                ||----w | ${NOCOLOR}"
-# echo -e "${LIGHTPURPLE}                ||     || ${NOCOLOR}"
 echo -e "${COLOR_INFO}"
 cat << "EOF"
          ___      __        __             __  
@@ -476,7 +477,6 @@ if [[ ! -f "/var/www/ss-config" ]]; then
     ## new line ##
     printf "\n"
     
-    
 ####################################################################################################
 ##### mkdirs
 ####################################################################################################
@@ -508,14 +508,14 @@ mkdir /var/www/sites
 touch /var/www/meta/.htpasswd
     
 ## if staging enabled
-if [[ "$STAGING_SITE" != "false" ]]; then 
+if [[ "${STAGING_SITE}" != "false" ]]; then 
     mkdir /var/www/html/staging
     mkdir /var/www/html/staging/.well-known
     mkdir /var/www/html/staging/.well-known/acme-challenge
 fi
 
 ## if dev enabled
-if [[ "$DEV_SITE" != "false" ]]; then 
+if [[ "${DEV_SITE}" != "false" ]]; then 
     mkdir /var/www/html/dev
     mkdir /var/www/html/dev/.well-known
     mkdir /var/www/html/dev/.well-known/acme-challenge
@@ -552,20 +552,20 @@ chown root:root /var/www/crons/custom ## must be root:root
 ## it will only be noticed by sudo users who manually call ss core bash scripts ##
 
 ## force exit if SSH keys chosen ##
-SSHKEYS_CHOSEN=$(source /var/www/ss-config; echo $SSH_KEYS)
-if [[ "$SSHKEYS_CHOSEN" == "true" ]] && [[ ! -f "/var/www/auth/id_rsa.pub" ]]; then
+SSHKEYS_CHOSEN=$(source /var/www/ss-config; echo ${SSH_KEYS} 2> /dev/null)
+if [[ "${SSHKEYS_CHOSEN}" == "true" ]] && [[ ! -f "/var/www/auth/id_rsa.pub" ]]; then
     echo -e "${YELLOW}Exiting ss-install: Please upload your /var/www/auth/id_rsa.pub file before proceeding... ${NOCOLOR}"
     echo -e "${YELLOW}Alternatively SlickStack will create a new key pair for you (just run ss-install again now)... ${NOCOLOR}"
 fi
 
 ## force exit if thirdparty SSL chosen ##
-THIRDPARTY_CHOSEN=$(source /var/www/ss-config; echo $SSL_TYPE)
-if [[ "$THIRDPARTY_CHOSEN" == "thirdparty" ]] && [[ ! -f "/var/www/certs/thirdparty.pem" || ! -f "/var/www/certs/keys/thirdparty.key" ]]; then
+THIRDPARTY_CHOSEN=$(source /var/www/ss-config; echo ${SSL_TYPE})
+if [[ "${THIRDPARTY_CHOSEN}" == "thirdparty" ]] && [[ ! -f "/var/www/certs/thirdparty.pem" || ! -f "/var/www/certs/keys/thirdparty.key" ]]; then
     echo -e "${YELLOW}Exiting ss-install: Since you chose thirdparty SSL please upload your cert/key before proceeding... ${NOCOLOR}"
 fi
 
     ## echo message ##
-    echo -e "${COLOR_WARN}Your /var/www/ss-config file is now setup, yay! Ctrl+C to exit now if  ${NOCOLOR}"
+    echo -e "${COLOR_WARN}Your /var/www/ss-config file is now setup, yay! Ctrl+C to exit now to  ${NOCOLOR}"
 
     WAIT_TIME_LAST_CHANCE="15" # seconds
     WAIT_TIME_LAST_CHANCE_TMP="${WAIT_TIME_LAST_CHANCE}"
