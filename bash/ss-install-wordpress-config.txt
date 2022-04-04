@@ -74,9 +74,18 @@ rm "$TMP_WORDPRESS_CONFIG_DEV"
 ####################################################################################################
 
 ## SNIPPET: ss-worker, ss-install-wordpress-config
+## UPDATED: 04APR2022
 
-## retrieve latest ss-constants.php boilerplate ##
-wget -O "$TMP_SS_CONSTANTS_PHP" "$MIRROR_SS_CONSTANTS_PHP"
+## retrieve ss-constants.php boilerplate ##
+ss_wget_fast -O "${TMP_SS_CONSTANTS_PHP}" "${MIRROR_SS_CONSTANTS_PHP}"
+VALIDATE_TMP_SS_CONSTANTS_PHP=$(grep 'SS_EOF' "${TMP_SS_CONSTANTS_PHP}" 2> /dev/null)
+if [[ -z "${VALIDATE_TMP_SS_CONSTANTS_PHP}" ]]; then
+    ss_wget_slow -O "${TMP_SS_CONSTANTS_PHP}" "${MIRROR2_SS_CONSTANTS_PHP}"
+fi
+VALIDATE2_TMP_SS_CONSTANTS_PHP=$(grep 'SS_EOF' "${TMP_SS_CONSTANTS_PHP}" 2> /dev/null)
+if [[ -z "${VALIDATE2_TMP_SS_CONSTANTS_PHP}" ]]; then
+    ss_wget_slow -O "${TMP_SS_CONSTANTS_PHP}" "${MIRROR3_SS_CONSTANTS_PHP}"
+fi
 
     ## set SlickStack dashboard ##
     if [[ -z "$SS_WORDPRESS_ADMIN_DASHBOARD" ]]; then 
