@@ -9,7 +9,7 @@
 #### purpose: Regenerates free Lets Encrypt certs and adjusts Nginx config (idempotent) ############
 #### module version: Certbot 0.40.x ################################################################
 #### sourced by: ss-install-nginx-config ###########################################################
-#### bash aliases: ss encrypt certbot, ss generate letsencrypt #####################################
+#### bash aliases: ss certbot, ss encrypt certbot, ss encrypt letsencrypt, ss letsencrypt ##########
 ####################################################################################################
 
 ## SS-ENCRYPT PERFORMS BASIC NGINX CONFIG MODIFICATION REGARDLESS OF SS-INSTALL-NGINX ##
@@ -27,6 +27,9 @@ source /var/www/ss-functions
 #### TABLE OF CONTENTS (SS-Encrypt-Certbot) ########################################################
 ####################################################################################################
 
+## this is a brief summary of the different code snippets you will find in this script ##
+## each section should be commented so you understand what is being accomplished ##
+
 ## A. Touch Timestamp File
 ## B. Message (Begin Script)
 ## C. Reset Permissions (Nginx SSL)
@@ -40,7 +43,7 @@ source /var/www/ss-functions
 ## it can be useful for developer reference and is sometimes used by SlickStack ##
 
 ## script timestamp ##
-touch "$TIMESTAMP_SS_ENCRYPT_CERTBOT"
+touch "${TIMESTAMP_SS_ENCRYPT_CERTBOT}"
 
 ####################################################################################################
 #### B. SS-Encrypt-Certbot: Message (Begin Script) #################################################
@@ -51,14 +54,14 @@ touch "$TIMESTAMP_SS_ENCRYPT_CERTBOT"
 
 ## echo message ##
 echo -e "${COLOR_INFO}Running ss-encrypt-certbot: Regenerates free Lets Encrypt certs and adjusts Nginx config (idempotent)... ${NOCOLOR}"
-sleep "$SLEEP_MESSAGE_BEGIN"
+sleep "${SLEEP_MESSAGE_BEGIN}"
 
 ####################################################################################################
 #### C. SS-Encrypt-Certbot: Reset Permissions (Nginx SSL) ##########################################
 ####################################################################################################
 
 ## run ss-perms-nginx-ssl ##
-source "$PATH_SS_PERMS_NGINX_SSL"
+source "${PATH_SS_PERMS_NGINX_SSL}"
 
 ####################################################################################################
 #### D. SS-Encrypt-Certbot: Generate DH Parameters (If Lets Encrypt Enabled) #######################
@@ -67,7 +70,7 @@ source "$PATH_SS_PERMS_NGINX_SSL"
 ## this will generate DH parameters using OpenSSL for use by Lets Encrypt certificates ##
 ## by maintaining this file we are able to strengthen the security of the SSL ##
 
-if [[ "$SSL_TYPE" == "certbot" ]] && [[ ! -f "/var/www/certs/dhparam.pem" ]]; then 
+if [[ "${SSL_TYPE}" == "certbot" ]] && [[ ! -f "/var/www/certs/dhparam.pem" ]]; then 
     openssl dhparam -out /var/www/certs/dhparam.pem 2048
 fi
 
