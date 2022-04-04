@@ -86,6 +86,10 @@ sleep "${SLEEP_MESSAGE_BEGIN}"
 #### SS-Sync-Staging: Run SS-Dump-Database (Conditional) ###########################################
 ####################################################################################################
 
+## we must run ss-dump-database now if no database dump file is found under backups ##
+## this ensures that a dump file exists before atempting to sync it to staging ##
+
+## FIX: change this to be OUTDATED instead e.g. more than X hours old ##
 if [[ ! -f "/var/www/backups/mysql/production.sql" ]]; then
     source "${PATH_SS_DUMP_DATABASE}"
 fi
@@ -95,7 +99,7 @@ fi
 ####################################################################################################
 
 ## this snippet duplicates the dumped production database and imports it into MySQL ##
-## then it briefly replaces the home/siteurl options to match the subdomain ##
+## then it forecfully replaces the home/siteurl options to staging subdomain ##
 
 ## only if staging site is enabled ##
 if [[ "${STAGING_SITE}" == "true" ]]; then
@@ -104,19 +108,14 @@ if [[ "${STAGING_SITE}" == "true" ]]; then
     cp /var/www/backups/mysql/production.sql /tmp/staging.sql
     chown mysql:mysql /tmp/staging.sql ## does not matter if -L flag used below
     chmod 0644 /tmp/staging.sql ## does not matter if -L flag used below
-    sudo mysql -L -f staging < /tmp/staging.sql
-    rm /tmp/staging.sql
+    ss_mysql_8.0 staging < /tmp/staging.sql
     
     ## fix staging home and siteurl fields (no mass search/replace to avoid potential conflicts) ##
     if [[ "${SS_APP}" == "wordpress" ]]; then
-    
         if [[ -n $(mysql --execute "SHOW TABLES FROM staging WHERE Tables_in_staging LIKE '${DB_PREFIX}options';") ]]; then
-        
             mysql --execute="UPDATE staging.${DB_PREFIX}options SET option_value='https://staging.${SITE_DOMAIN_EXCLUDING_WWW}' WHERE option_name='home'";
             mysql --execute="UPDATE staging.${DB_PREFIX}options SET option_value='https://staging.${SITE_DOMAIN_EXCLUDING_WWW}' WHERE option_name='siteurl'";
-    
         fi
-        
     fi
     
 ####################################################################################################
@@ -153,6 +152,12 @@ if [[ "${STAGING_SITE}" == "true" ]]; then
 
 ## end parent if ##
 fi
+
+####################################################################################################
+## delete tmp files 
+####################################################################################################
+
+rm /tmp/staging.sql
 
 ####################################################################################################
 #### SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ###############
