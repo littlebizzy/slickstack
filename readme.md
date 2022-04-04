@@ -32,6 +32,8 @@ SlickStack is a free LEMP stack automation script written in Bash designed to en
 
 ## Changelog
 
+* **NEW!** bug fixed that prevented dev/staging sites loading on sites that used www in production... also, Certbot support for staging/dev/prod in the same single SSL certificate now works properly! (previously, was missing separate web root flags as required)
+
 * **NEW!** We are officially dropping support for Magento (we never got it fully supported anyways) and PHP Composer... they are just a totally different world than the simplicity and clear control we envision for SlickStack and WordPress. Any other CMS that requires Composer will not be supported either.
 
 * **NEW!** Lots of cleanup of ss-install is underway... since many "newbie" users get confused about the verbose messages, we are moving forward with an approach to suppress most verbose CLI feedback during installation by default. This means we need to improve `ss-stack-overview` since it displays output at the end of new installations, so it needs to be more helpful about re: any files or modules are broken or missing.
