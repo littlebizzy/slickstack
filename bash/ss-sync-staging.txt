@@ -108,12 +108,12 @@ if [[ "${STAGING_SITE}" == "true" ]]; then
     rm /tmp/staging.sql
     
     ## fix staging home and siteurl fields (no mass search/replace to avoid potential conflicts) ##
-    if [[ "$SS_APP" == "wordpress" ]]; then
+    if [[ "${SS_APP}" == "wordpress" ]]; then
     
         if [[ -n $(mysql --execute "SHOW TABLES FROM staging WHERE Tables_in_staging LIKE '${DB_PREFIX}options';") ]]; then
         
-            mysql --execute="UPDATE staging.${DB_PREFIX}options SET option_value='https://staging.${SITE_DOMAIN}' WHERE option_name='home'";
-            mysql --execute="UPDATE staging.${DB_PREFIX}options SET option_value='https://staging.${SITE_DOMAIN}' WHERE option_name='siteurl'";
+            mysql --execute="UPDATE staging.${DB_PREFIX}options SET option_value='https://staging.${SITE_DOMAIN_EXCLUDING_WWW}' WHERE option_name='home'";
+            mysql --execute="UPDATE staging.${DB_PREFIX}options SET option_value='https://staging.${SITE_DOMAIN_EXCLUDING_WWW}' WHERE option_name='siteurl'";
     
         fi
         
@@ -147,9 +147,9 @@ if [[ "${STAGING_SITE}" == "true" ]]; then
 ## many themes (or custom-coded themes) often contain hardcoded HTML assets and links ##
 ## here we forcefully fix these links to ensure staging sites render properly ##
 
-    ## change prod hardlinks to staging ##
-    find /var/www/html/staging/wp-content/themes/ -type f -exec sed -i "s#https://${SITE_DOMAIN}#https://staging.${SITE_DOMAIN}#g" {} +
-    find /var/www/html/staging/wp-content/themes/ -type f -exec sed -i "s#http://${SITE_DOMAIN}#https://staging.${SITE_DOMAIN}#g" {} +
+    ## fix hardcoded theme links ##
+    find /var/www/html/staging/wp-content/themes/ -type f -exec sed -i "s#https://${SITE_DOMAIN}#https://staging.${SITE_DOMAIN_EXCLUDING_WWW}#g" {} +
+    find /var/www/html/staging/wp-content/themes/ -type f -exec sed -i "s#http://${SITE_DOMAIN}#https://staging.${SITE_DOMAIN_EXCLUDING_WWW}#g" {} +
 
 ## end parent if ##
 fi
