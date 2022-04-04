@@ -112,30 +112,33 @@ http {
     reset_timedout_connection on;
     
 ####################################################################################################
-#### Nginx.conf: HTTP (Security) Headers Settings ##################################################
+#### Nginx.conf: HTTP Header Settings ##############################################################
 ####################################################################################################
     
 ## several HTTP security headers are well-known best practices and are thus hardcoded ##
 ## to noindex your entire website, set SITE_NOINDEX to true in your ss-config ##
     
+    ## powered by ##
     add_header X-Powered-By "@NGINX_HEADER_POWERED_BY";
+    
+    ## security headers ##
     add_header Strict-Transport-Security "max-age=31536000; includeSubDomains; preload" always;
-    add_header X-FastCGI-Cache $upstream_cache_status;
     add_header X-Frame-Options SAMEORIGIN;
     add_header X-Content-Type-Options nosniff;
     add_header X-XSS-Protection "1; mode=block";
     add_header Referrer-Policy "@NGINX_HEADER_REFERRER_POLICY";
     add_header Permissions-Policy "@NGINX_HEADER_PERMISSIONS_POLICY";
-    # add_header Feature-Policy "@NGINX_HEADER_FEATURE_POLICY";
-    # add_header Content-Security-Policy "default-src 'self'; font-src *;img-src * data:; script-src *; style-src *";
-    
+
     #@NOINDEX# ## noindex the entire site ##
     #@NOINDEX# add_header X-Robots-Tag "noindex, nofollow, nosnippet, noarchive";
     
-    ## hide Nginx version ##
+    ## fastcgi cache ##
+    add_header X-FastCGI-Cache $upstream_cache_status;
+    
+    ## hide nginx version ##
     server_tokens off;
     
-    ## enforce Unicode encoding ##
+    ## unicode encoding ##
     charset utf-8;
 
 ####################################################################################################
@@ -336,5 +339,6 @@ http {
 ## Ref: https://easyengine.io/blog/why-we-never-use-varnish-with-nginx/
 ## Ref: https://www.w3.org/TR/permissions-policy-1/
 ## Ref: https://serverfault.com/questions/874936/adding-hsts-to-nginx-config
+## Ref: https://developer.chrome.com/blog/referrer-policy-new-chrome-default/
 
 ## SS_EOF
