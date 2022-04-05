@@ -15,7 +15,7 @@
 ## SS-CONFIG MUST BE PROPERLY CONFIGURED AND ON CURRENT BUILD BEFORE RUNNING SS-INSTALL ##
 ## ENSURE THAT YOUR SS-CONFIG BUILD REMAINS CURRENT BY RUNNING SS-UPDATE-CONFIG ##
 
-SS_INSTALL_BUILD="APR2022H"
+SS_INSTALL_BUILD="APR2022J"
 
 ####################################################################################################
 #### SS-Install: Validate (Restore) SS-Functions ###################################################
@@ -91,7 +91,7 @@ if [[ -f "/var/www/ss-config" ]] && [[ "${SS_BUILD}" != "${SS_INSTALL_BUILD}" ]]
 fi
 
 ## verify supported ubuntu version ##
-if [[ "${UBUNTU_VERSION}" != @(20.04|18.04) ]]; then
+if [[ "${UBUNTU_VERSION}" != @(22.04|20.04|18.04) ]]; then
     echo -e ""
     echo -e "${COLOR_WARN}Exiting ss-install: SlickStack is designed for Ubuntu LTS (but this VPS is running ${UBUNTU_VERSION})... ${NOCOLOR}"
     echo -e ""
@@ -759,7 +759,7 @@ source "${PATH_SS_INSTALL_PHP_CONFIG}"
 ## the Nginx installer includes OpenSSL and Lets Encrypt generation to avoid conflicts ##
 ## default settings allow for very high-traffic so CloudFlare is recommended ##
 
-if [[ "$SS_APP" != "mysql" ]]; then
+if [[ "${SS_APP}" != "mysql" ]]; then
 
     ## run ss-install-nginx-packages ##
     source "$PATH_SS_INSTALL_NGINX_PACKAGES"
@@ -768,13 +768,13 @@ chown -R "${SFTP_USER}":www-data /var/www/html/.well-known ## accessed by server
 chown -R "${SFTP_USER}":www-data /var/www/html/.well-known/acme-challenge ## accessed by server for e.g. Cerbot but also by SFTP user for things like Stripe ##
 
 ## if staging enabled
-if [[ "$STAGING_SITE" != "false" ]]; then 
+if [[ "${STAGING_SITE}" != "false" ]]; then 
     chown -R "${SFTP_USER}":www-data /var/www/html/staging/.well-known ## accessed by server for e.g. Cerbot but also by SFTP user for things like Stripe ##
     chown -R "${SFTP_USER}":www-data /var/www/html/staging/.well-known/acme-challenge ## accessed by server for e.g. Cerbot but also by SFTP user for things like Stripe ##
 fi
 
 ## if dev enabled
-if [[ "$DEV_SITE" != "false" ]]; then 
+if [[ "${DEV_SITE}" != "false" ]]; then 
     chown -R "${SFTP_USER}":www-data /var/www/html/dev/.well-known ## accessed by server for e.g. Cerbot but also by SFTP user for things like Stripe ##
     chown -R "${SFTP_USER}":www-data /var/www/html/dev/.well-known/acme-challenge ## accessed by server for e.g. Cerbot but also by SFTP user for things like Stripe ##
 fi
@@ -784,10 +784,10 @@ chown www-data:www-data /var/www/meta ## must be www-data:www-data
 chown www-data:www-data /var/www/meta/.htpasswd ## must be www-data:www-data
 
     ## run ss-install-nginx-config ##
-    source "$PATH_SS_INSTALL_NGINX_CONFIG"
+    source "${PATH_SS_INSTALL_NGINX_CONFIG}"
    
     ## run ss-install-nginx-ssl ##
-    # source "$PATH_SS_INSTALL_NGINX_SSL"
+    # source "${PATH_SS_INSTALL_NGINX_SSL}"
 
 fi
 
@@ -1031,7 +1031,7 @@ if [[ -z "${VALIDATE_CRONTAB}" ]]; then
 fi
 
 ####################################################################################################
-#### SS-Install: Display SlickStack Configuration Overview #########################################
+#### SS-Install: Run SS-Stack-Overview #############################################################
 ####################################################################################################
 
 ## the shell will echo the most important ss-config settings (and beyond) currently used ##
