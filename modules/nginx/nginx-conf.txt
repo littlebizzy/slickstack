@@ -32,7 +32,7 @@ include /etc/nginx/modules-enabled/*.conf;
 #### Nginx.conf: Event Handling Settings ###########################################################
 ####################################################################################################
 
-## virtually no Linux server should not use epoll or multi_accept thus they are hardcoded ##
+## virtually all Linux servers should use epoll and multi_accept so they are hardcoded ##
 ## worker_connections should be tuned in relevance to worker_rlimit_nofile (etc) ##
 
 events {
@@ -55,7 +55,7 @@ http {
     types_hash_max_size @NGINX_TYPES_MAX_HASH_SIZE;
 
 ####################################################################################################
-#### Nginx.conf: FastCGI Cache (Page Cache) Settings ###############################################
+#### Nginx.conf: FastCGI Cache Settings ############################################################
 ####################################################################################################
     
 ## FastCGI Cache is arguably the most powerful Nginx feature for scaling high-traffic sites ##
@@ -70,6 +70,7 @@ http {
     fastcgi_read_timeout @FCGI_READ_TIMEOUT;
     fastcgi_send_timeout @FCGI_SEND_TIMEOUT;
     
+    ## buffers ##
     fastcgi_buffering on;
     # fastcgi_buffers @FCGI_BUFFERS;
     # fastcgi_buffer_size @FCGI_BUFFER_SIZE;
@@ -79,7 +80,7 @@ http {
 ####################################################################################################
 #### Nginx.conf: Open File Cache Settings ##########################################################
 ####################################################################################################
-    
+
 ## Open File Cache is one of the most effective (and underrated) features to scale Nginx ##
 ## tuning this well in conjunction with FastCGI Cache will provide robust results ##
     
@@ -89,7 +90,7 @@ http {
     open_file_cache_errors @OPEN_FILE_CACHE_ERRORS;
 	
 ####################################################################################################
-#### Nginx.conf: Various Buffer Settings ###########################################################
+#### Nginx.conf: Buffer Settings ###################################################################
 ####################################################################################################
     
     client_max_body_size @NGINX_CLIENT_MAX_BODY_SIZE;
@@ -129,7 +130,7 @@ http {
     add_header Referrer-Policy "strict-origin-when-cross-origin";
     add_header Permissions-Policy "camera=(), encrypted-media=(), geolocation=(), microphone=(), midi=()";
 
-    #@NOINDEX# ## noindex server ##
+    ## noindex ##
     #@NOINDEX# add_header X-Robots-Tag "noindex, nofollow, nosnippet, noarchive";
     
     ## fastcgi cache ##
@@ -142,7 +143,7 @@ http {
     charset utf-8;
 
 ####################################################################################################
-#### Nginx.conf: HTTP Caching Headers Settings (Browser Cache) #####################################
+#### Nginx.conf: Browser Cache Settings ############################################################
 ####################################################################################################
 
 ## Pragma and Expires are outdated cache headers that conflict with Cache-Control header ##
