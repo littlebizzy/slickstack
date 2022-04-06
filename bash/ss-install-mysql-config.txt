@@ -62,24 +62,21 @@ sleep 15s
 # killall mysql* > /dev/null 2>&1
 # sleep 15s
 
+if [[ "${UBUNTU_VERSION}" == "22.04" ]]; then 
+    wget -O "${TMP_MY_CNF}" "${MIRROR_MY_CNF_80}"
+fi
 
 if [[ "${UBUNTU_VERSION}" == "20.04" ]]; then 
-
-## install custom my.cnf config file ##
-wget -O "$TMP_MY_CNF" "$MIRROR_MY_CNF_80"
-
+    wget -O "${TMP_MY_CNF}" "${MIRROR_MY_CNF_80}"
 fi
 
 if [[ "${UBUNTU_VERSION}" == "18.04" ]]; then 
-
-## install custom my.cnf config file ##
-wget -O "$TMP_MY_CNF" "$MIRROR_MY_CNF_57"
-
+    wget -O "${TMP_MY_CNF}" "${MIRROR_MY_CNF_57}"
 fi
 
 #### MySQL Settings ####
 ## SQL mode ##
-if [[ -z "$SQL_MODE" ]]; then 
+if [[ -z "${SQL_MODE}" ]]; then 
     sed -i "s/@SQL_MODE/STRICT_TRANS_TABLES,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION/g" "$TMP_MY_CNF"
 else 
     sed -i "s/@SQL_MODE/${SQL_MODE}/g" "$TMP_MY_CNF"
