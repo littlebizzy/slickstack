@@ -6,7 +6,7 @@
 #### mirror: https://mirrors.slickstack.io/bash/ss-maintenance-enable.txt ##########################
 #### path: /var/www/ss-maintenance-enable ##########################################################
 #### destination: n/a (not a boilerplate) ##########################################################
-#### purpose: Generates maintenance.html that Nginx parses to temporarily disable frontend #########
+#### purpose: Activates maintenance.html that Nginx parses to temporarily disable frontend #########
 #### module version: Nginx 1.18.x ##################################################################
 #### sourced by: ss-install ########################################################################
 #### bash aliases: ss main [enable|on], ss maintenance [enable|on] #################################
@@ -24,9 +24,12 @@ source /var/www/ss-functions
 #### TABLE OF CONTENTS #############################################################################
 ####################################################################################################
 
+## this is a brief summary of the different code snippets you will find in this script ##
+## each section should be commented so you understand what is being accomplished ##
+
 ## A. Touch Timestamp File
 ## B. Message (Begin Script)
-## C. Purge Cache (Nginx)
+## C. Whitelabel Maintenance.html
 ## D. Enable Maintenance Mode (Via Nginx)
 ## E. Purge Cache (Nginx)
 
@@ -38,7 +41,7 @@ source /var/www/ss-functions
 ## it can be useful for developer reference and is sometimes used by SlickStack ##
 
 ## script timestamp ##
-touch "$TIMESTAMP_SS_MAINTENANCE_ENABLE"
+touch "${TIMESTAMP_SS_MAINTENANCE_ENABLE}"
 
 ####################################################################################################
 #### B. SS-Maintenance-Enable: Message (Begin Script) ##############################################
@@ -48,15 +51,21 @@ touch "$TIMESTAMP_SS_MAINTENANCE_ENABLE"
 ## it will only be noticed by sudo users who manually call ss core bash scripts ##
 
 ## echo message ##
-echo -e "${COLOR_INFO}Running ss-maintenance-enable: Generates maintenance.html that Nginx parses to temporarily disable frontend... ${NOCOLOR}"
-sleep "$SLEEP_MESSAGE_BEGIN"
+echo -e "${COLOR_INFO}Running ss-maintenance-enable: Activates maintenance.html that Nginx parses to temporarily disable frontend... ${NOCOLOR}"
+sleep "${SLEEP_MESSAGE_BEGIN}"
 
 ####################################################################################################
-### C. SS-Maintenance-Enable: Purge Cache (Nginx) ##################################################
+### C. SS-Maintenance-Enable: Whitelabel Maintenance.html ##########################################
 ####################################################################################################
 
-## run ss-purge-nginx ##
-source "$PATH_SS_PURGE_NGINX"
+## this will search/replace the SlickStack branding with whitelabel branding if exists ##
+## you need to edit these options in ss-config if you want this to do anything ##
+
+## whitelabel replace ##
+if [[ -n "${WHITELABEL_BRAND}" ]]; then
+sed -i "s|https://slickstack.io|${WHITELABEL_HOMEPAGE}|g" /var/www/meta/maintenance.html
+sed -i "s|SlickStack|${WHITELABEL_BRAND}|g" /var/www/meta/maintenance.html
+fi
 
 ####################################################################################################
 #### D. SS-Maintenance-Enable: Enable Maintenance Mode (Via Nginx) #################################
@@ -66,8 +75,8 @@ if [[ "${SS_APP}" != "mysql" ]]; then
 
 ## retrieve latest maintenance.html file (if not exists) ##
 if [[ ! -f "/var/www/meta/maintenance.html" ]]; then 
-  wget -O "$TMP_MAINTENANCE_HTML" "$MIRROR_MAINTENANCE_HTML"
-  cp "$TMP_MAINTENANCE_HTML" /var/www/meta/maintenance.html
+  ss_wget_slow -O "${TMP_MAINTENANCE_HTML}" "${MIRROR_MAINTENANCE_HTML}"
+  ss_mv "${TMP_MAINTENANCE_HTML}" /var/www/meta/maintenance.html
   chown www-data:www-data /var/www/meta/maintenance.html
   chmod 0644 /var/www/meta/maintenance.html ## 0644
 fi
@@ -76,7 +85,7 @@ fi
 rm /var/www/html/maintenance.html*
 
 ## copy (install) maintenance file to web root ##
-cp /var/www/meta/maintenance.html /var/www/html/maintenance.html
+ss_cp /var/www/meta/maintenance.html /var/www/html/maintenance.html
 
 ## reset perms ##
 chown www-data:www-data /var/www/html/maintenance.html
@@ -89,7 +98,7 @@ fi
 ####################################################################################################
 
 ## run ss-purge-nginx ##
-source "$PATH_SS_PURGE_NGINX"
+source "${PATH_SS_PURGE_NGINX}"
 
 ####################################################################################################
 #### SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ###############
