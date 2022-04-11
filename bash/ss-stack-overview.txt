@@ -69,27 +69,34 @@ SUMMARY_IPV6="${COLOR_INFO}#### ${LIGHTGRAY}IPv6: ${LIGHTGREEN}${SYSTEM_IPV6_ADD
 SUMMARY_IPV6_TRIM=${SUMMARY_IPV6::120}
 SUMMARY_SITE_TLD="${COLOR_INFO}#### ${LIGHTGRAY}Site TLD: ${LIGHTGREEN}${SITE_TLD} ${COLOR_INFO}${FILLER} ${NOCOLOR}"
 SUMMARY_SITE_TLD_TRIM=${SUMMARY_SITE_TLD::120}
+SUMMARY_SITE_DOMAIN="${COLOR_INFO}#### ${LIGHTGRAY}Site domain: ${LIGHTGREEN}https://${SITE_DOMAIN} ${COLOR_INFO}${FILLER} ${NOCOLOR}"
+SUMMARY_SITE_DOMAIN_TRIM=${SUMMARY_SITE_DOMAIN::120}
+SUMMARY_SITE_NOINDEX="${COLOR_INFO}#### ${LIGHTGRAY}Site noindex: ${LIGHTGREEN}${SITE_NOINDEX} ${COLOR_INFO}${FILLER} ${NOCOLOR}"
+SUMMARY_SITE_NOINDEX_TRIM=${SUMMARY_SITE_NOINDEX::120}
+SUMMARY_SUDO_USER="${COLOR_INFO}#### ${LIGHTGRAY}Sudo user: ${LIGHTGREEN}${SUDO_USER} ${COLOR_INFO}${FILLER} ${NOCOLOR}"
+SUMMARY_SUDO_USER_TRIM=${SUMMARY_SUDO_USER::120}
 
 ## display critical slickstack settings ##
 echo -e ""
-echo -e "${COLOR_INFO}################################################################################${NOCOLOR}"
-echo -e "${COLOR_INFO}#### ${LIGHTGRAY}Congrats! Here are your active SlickStack settings: ${COLOR_INFO}#######################${NOCOLOR}"
-echo -e "${COLOR_INFO}################################################################################${NOCOLOR}"
+echo -e "${COLOR_WARN}Congrats! Here are your active SlickStack settings: ${NOCOLOR}"
 echo -e ""
+echo -e "${COLOR_INFO}################################################################################${NOCOLOR}"
 echo -e "${SUMMARY_SS_BUILD_TRIM}"
 echo -e "${SUMMARY_IPV4_TRIM}"
 echo -e "${SUMMARY_IPV6_TRIM}"
 echo -e "${SUMMARY_SITE_TLD_TRIM}"
-echo -e "${LIGHTGRAY}Site domain: ${LIGHTGREEN}https://${SITE_DOMAIN} ${NOCOLOR}"
-echo -e "${LIGHTGRAY}Site noindex: ${LIGHTGREEN}${SITE_NOINDEX} ${NOCOLOR}"
-echo -e "${LIGHTGRAY}Staging site: ${LIGHTGREEN}${STAGING_SITE} ${NOCOLOR}"
-echo -e "${LIGHTGRAY}Dev site: ${LIGHTGREEN}${DEV_SITE} ${NOCOLOR}"
-echo -e "${LIGHTGRAY}Sudo user: ${LIGHTGREEN}${SUDO_USER} ${NOCOLOR}"
+echo -e "${SUMMARY_SITE_DOMAIN_TRIM}"
+echo -e "${SUMMARY_SITE_NOINDEX_TRIM}"
+echo -e "${SUMMARY_SUDO_USER_TRIM}"
 echo -e "${LIGHTGRAY}Sudo password: ${LIGHTGREEN}${SUDO_PASSWORD} ${NOCOLOR}"
 echo -e "${LIGHTGRAY}SFTP user: ${LIGHTGREEN}${SFTP_USER} ${NOCOLOR}"
 echo -e "${LIGHTGRAY}SFTP password: ${LIGHTGREEN}${SFTP_PASSWORD} ${NOCOLOR}"
 echo -e "${LIGHTGRAY}SSH/SFTP port: ${LIGHTGREEN}${SSH_PORT} ${NOCOLOR}"
 echo -e "${LIGHTGRAY}SSH keys: ${LIGHTGREEN}${SSH_KEYS} ${NOCOLOR}"
+echo -e "${LIGHTGRAY}Staging site: ${LIGHTGREEN}${STAGING_SITE} ${NOCOLOR}"
+echo -e "${LIGHTGRAY}Dev site: ${LIGHTGREEN}${DEV_SITE} ${NOCOLOR}"
+echo -e "${LIGHTGRAY}Guest user: ${LIGHTGREEN}${GUEST_USER} ${NOCOLOR}"
+echo -e "${LIGHTGRAY}Guest password: ${LIGHTGREEN}${GUEST_PASSWORD} ${NOCOLOR}"
 echo -e "${LIGHTGRAY}Database name: ${LIGHTGREEN}${DB_NAME} ${NOCOLOR}"
 echo -e "${LIGHTGRAY}Database user: ${LIGHTGREEN}${DB_USER} ${NOCOLOR}"
 echo -e "${LIGHTGRAY}Database user password: ${LIGHTGREEN}${DB_PASSWORD} ${NOCOLOR}"
@@ -116,7 +123,7 @@ echo -e "${COLOR_WARN}NOTE: The SFTP user/password is the default login for WP A
 echo -e "${COLOR_WARN}and production unless otherwise configured. Use the bash alias ss to save ${NOCOLOR}"
 echo -e "${COLOR_WARN}keystrokes (type ss help for a full list of commands). If this is the first ${NOCOLOR}"
 echo -e "${COLOR_WARN}time you installed SlickStack on this server, type the word bash below and ${NOCOLOR}"
-echo -e "${COLOR_WARN}then ENTER to reload the bash session and activate these shortcuts! ${NOCOLOR}"
+echo -e "${COLOR_WARN}hit ENTER to reload this bash session and activate these shortcuts! ${NOCOLOR}"
 echo -e ""
 
 ####################################################################################################
@@ -136,7 +143,7 @@ if [[ "${SSH_KEYS}" == "true" ]] && [[ -f "${PATH_SSH_PRIVATE_KEY_FILE}" ]]; the
 fi
 
 ####################################################################################################
-#### SS-Overview: Notify If Newer SlickStack Build Exists ##########################################
+#### SS-Stack-Overview: Notify If Newer SlickStack Build Exists ####################################
 ####################################################################################################
 
 ## below we briefly inspect the latest ss-config template from official SlickStack mirrors ##
@@ -146,16 +153,7 @@ fi
 # rm /tmp/ss-config*
 
 ## retrieve latest version of ss-config-sample ##
-# wget -qO /tmp/ss-config http://mirrors.slickstack.io/ss-config-sample.txt
-
-## warn if placeholders exist ##
-SS_CONFIG_OPTION_PLACEHOLDER="$(grep -c '"@' /var/www/ss-config 2> /dev/null)"
-if [[ "$SS_CONFIG_OPTION_PLACEHOLDER" -gt 0 ]]; then
-    echo -e ""
-    echo -e "${LIGHTRED}Your ss-config file contains \"@...\" placeholders. Please input values for ${NOCOLOR}"
-    echo -e "${LIGHTRED}all incomplete option fields, and then run ss-overview again.${NOCOLOR}"
-    echo -e ""
-fi
+# ss_wget_slow -O /tmp/ss-config http://mirrors.slickstack.io/ss-config-sample.txt
 
 ## fix this after fixing wget thing above ##
 ## ensure latest (retrieved) ss-config build matches current ss-update build ##
@@ -166,15 +164,6 @@ fi
  #   echo -e "${YELLOW}run ss-update to benefit from the latest features and patches.${NOCOLOR}"
  #   echo -e ""
 # fi
-
-## warning in case of sub-subdomains in use ##
-if [[ $SITE_DOMAIN = *.*.*.* ]]; then
-    echo -e ""
-    echo -e "${YELLOW}It appears your site is a sub-subdomain so CloudFlare's free SSL will not ${NOCOLOR}"
-    echo -e "${YELLOW}resolve (please either upgrade to Cloudflare's premium SSL options, or ${NOCOLOR}"
-    echo -e "${YELLOW}otherwise use Let's Encrypt SSL on this server).${NOCOLOR}"
-    echo -e ""
-fi
 
 ## delete leftover files ##
 rm /tmp/ss-config*
