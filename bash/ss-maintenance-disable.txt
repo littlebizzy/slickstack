@@ -6,10 +6,10 @@
 #### mirror: https://mirrors.slickstack.io/bash/ss-maintenance-disable.txt #########################
 #### path: /var/www/ss-maintenance-disable #########################################################
 #### destination: n/a (not a boilerplate) ##########################################################
-#### purpose: Deletes maintenance.html that Nginx parses to reenable access to the frontend ########
+#### purpose: Disables maintenance.html that Nginx parses to reallow access to the frontend ########
 #### module version: Nginx 1.18.x ##################################################################
 #### sourced by: n/a ###############################################################################
-#### bash aliases: ss maintenance disable, ss maintenance off, ss main disable [off] ###############
+#### bash aliases: ss main [disable|off], ss maintenance [disable|off] #############################
 ####################################################################################################
 
 ## SS-CONFIG MUST BE PROPERLY CONFIGURED AND ON CURRENT BUILD BEFORE RUNNING SS-INSTALL ##
@@ -24,6 +24,28 @@ source /var/www/ss-functions
 ## BELOW THIS RELIES ON SS-CONFIG AND SS-FUNCTIONS
 
 ####################################################################################################
+#### TABLE OF CONTENTS (SS-Maintenance-Disable) ####################################################
+####################################################################################################
+
+## this is a brief summary of the different code snippets you will find in this script ##
+## each section should be commented so you understand what is being accomplished ##
+
+## A. Touch Timestamp File
+## B. Message (Begin Script)
+## C. Disable Maintenance Mode (Via Nginx)
+## D. Purge Cache (Nginx)
+
+####################################################################################################
+#### SS-Maintenance-Disable: Touch Timestamp File ##################################################
+####################################################################################################
+
+## this is a dummy timestamp file that will remember the last time this script was run ##
+## it can be useful for developer reference and is sometimes used by SlickStack ##
+
+## script timestamp ##
+touch "${TIMESTAMP_SS_MAINTENANCE_DISABLE}"
+
+####################################################################################################
 #### SS-Maintenance-Disable: Message (Begin Script) ################################################
 ####################################################################################################
 
@@ -31,47 +53,22 @@ source /var/www/ss-functions
 ## it will only be noticed by sudo users who manually call ss core bash scripts ##
 
 ## echo message ##
-echo -e "${COLOR_INFO}Running ss-maintenance-disable: Deletes maintenance.html that Nginx parses to reenable access to the frontend... ${NOCOLOR}"
-sleep "$SLEEP_MESSAGE_BEGIN"
+echo -e "${COLOR_INFO}Running ss-maintenance-disable: Disables maintenance.html that Nginx parses to reallow access to the frontend... ${NOCOLOR}"
+sleep "${SLEEP_MESSAGE_BEGIN}"
+
+####################################################################################################
+#### SS-Maintenance-Disable: Disable Maintenance Mode (Via Nginx) ##################################
+####################################################################################################
+
+## delete maintenance.html ##
+ss_rm /var/www/html/maintenance.html*
 
 ####################################################################################################
 ### SS-Maintenance-Disable: Purge Cache (Nginx) ####################################################
 ####################################################################################################
 
 ## run ss-purge-nginx ##
-source "$PATH_SS_PURGE_NGINX"
-
-####################################################################################################
-#### SS-Maintenance-Disable: Disable Maintenance Mode (Nginx) ######################################
-####################################################################################################
-
-## retrieve latest maintenance.html file (if not exists) ##
-if [[ ! -f "/var/www/meta/maintenance.html" ]]; then 
-  wget -O /tmp/maintenance.html https://raw.githubusercontent.com/littlebizzy/slickstack/master/modules/nginx/maintenance.txt
-  cp /tmp/maintenance.html /var/www/meta/maintenance.html
-  chown www-data:www-data /var/www/meta/maintenance.html
-  chmod 0644 /var/www/meta/maintenance.html ## 0644
-fi
-
-## delete if exists ##
-rm /var/www/html/maintenance.html*
-
-####################################################################################################
-### SS-Maintenance-Disable: Purge Cache (Nginx) ####################################################
-####################################################################################################
-
-## run ss-purge-nginx ##
-source "$PATH_SS_PURGE_NGINX"
-
-####################################################################################################
-#### SS-Maintenance-Disable: Touch Timestamp File (End Script) #####################################
-####################################################################################################
-
-## this is a dummy timestamp file that will remember the last time this script was run ##
-## it can be useful for developer reference and is sometimes used by SlickStack ##
-
-## script timestamp ##
-touch "$TIMESTAMP_SS_MAINTENANCE_DISABLE"
+source "${PATH_SS_PURGE_NGINX}"
 
 ####################################################################################################
 #### SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ###############
