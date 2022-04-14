@@ -61,12 +61,6 @@ sleep "${SLEEP_MESSAGE_BEGIN}"
 ## this will search/replace the SlickStack branding with whitelabel branding if exists ##
 ## you need to edit these options in ss-config if you want this to do anything ##
 
-## whitelabel replace ##
-if [[ -n "${WHITELABEL_BRAND}" ]]; then
-sed -i "s|https://slickstack.io|${WHITELABEL_HOMEPAGE}|g" /var/www/meta/maintenance.html
-sed -i "s|SlickStack|${WHITELABEL_BRAND}|g" /var/www/meta/maintenance.html
-fi
-
 ####################################################################################################
 #### D. SS-Maintenance-Enable: Activate Maintenance Mode (Via Nginx) ###############################
 ####################################################################################################
@@ -79,20 +73,24 @@ if [[ "${SS_APP}" != "mysql" ]]; then
 ## retrieve latest maintenance.html file (if not exists) ##
 if [[ ! -f "/var/www/meta/maintenance.html" ]]; then 
   ss_wget_slow -O "${TMP_MAINTENANCE_HTML}" "${MIRROR_MAINTENANCE_HTML}"
-  ss_mv "${TMP_MAINTENANCE_HTML}" /var/www/meta/maintenance.html
-  chown www-data:www-data /var/www/meta/maintenance.html
-  chmod 0644 /var/www/meta/maintenance.html ## 0644
+  ss_mv "${TMP_MAINTENANCE_HTML}" "${PATH_MAINTENANCE_HTML}"
+  chown www-data:www-data "${PATH_MAINTENANCE_HTML}"
+  chmod 0644 "${PATH_MAINTENANCE_HTML}" ## 0644
 fi
 
-## delete maintenance.html ##
-ss_rm "${PATH_MAINTENANCE_HTML_LIVE}"
+## whitelabel maintenance.html ##
+if [[ -n "${WHITELABEL_BRAND}" ]]; then
+sed -i "s|https://slickstack.io|${WHITELABEL_HOMEPAGE}|g" "${PATH_MAINTENANCE_HTML}"
+sed -i "s|SlickStack|${WHITELABEL_BRAND}|g" "${PATH_MAINTENANCE_HTML}"
+fi
 
-## copy (install) maintenance file to web root ##
-ss_cp /var/www/meta/maintenance.html /var/www/html/maintenance.html
+## activate maintenance.html ##
+ss_rm "${PATH_MAINTENANCE_HTML_LIVE}"
+ss_cp "${PATH_MAINTENANCE_HTML}" "${PATH_MAINTENANCE_HTML_LIVE}"
 
 ## reset perms ##
-chown www-data:www-data /var/www/html/maintenance.html
-chmod 0644 /var/www/html/maintenance.html ## 0644
+chown www-data:www-data "${PATH_MAINTENANCE_HTML_LIVE}"
+chmod 0644 "${PATH_MAINTENANCE_HTML_LIVE}" ## 0644
 
 fi
 
