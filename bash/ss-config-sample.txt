@@ -21,7 +21,7 @@
 ## run ss-update-config if outdated (check the public mirror link for current build) ##
 ## or copy mirror boilerplate to /var/www/ss-config and customize settings ##
 
-SS_BUILD="APR2022M"
+SS_BUILD="APR2022N"
 
 ####################################################################################################
 #### SS-Config: User Settings (Root + Sudo + SFTP) #################################################
@@ -504,20 +504,20 @@ PHP_ALLOW_URL_FOPEN="true"
 PHP_DEFAULT_SOCKET_TIMEOUT="60"
 
 ####################################################################################################
-#### SS-Config: PHP FastCGI Process Manager Settings (php-fpm.conf) ################################
+#### SS-Config: FPM Settings #######################################################################
 ####################################################################################################
 
 ## the vast majority of SlickStack servers should not need to adjust any FPM settings ##
-## in most cases the php.ini settings and www.conf settings are more relevant ##
+## in most cases the general PHP settings or pool settings are more relevant ##
 
-## FPM_EMERGENCY_RESTART_THRESHOLD = [10|15|30|etc] keep enabled with reasonable value ##
-## FPM_EMERGENCY_RESTART_INTERVAL = [1m|etc] keep it at 1m if you don't know ##
-## FPM_PROCESS_CONTROL_TIMEOUT = [10|etc] keep it at 10 if you don't know ##
-## FPM_PROCESS_MAX = [128|etc] only experts should modify this value ##
-## FPM_PROCESS_PRIORITY = [-19|etc] only experts should modify this value ##
-## FPM_RLIMIT_FILES = [1024|etc] 1024 is good for most sites ##
-## FPM_RLIMIT_CORE = [0|etc] almost nobody should be changing this from 0 ##
-## FPM_SYSTEMD_INTERVAL = [0|10|etc] most sites 10 is good but set 0 for small boost ##
+## FPM_EMERGENCY_RESTART_THRESHOLD = [5|10|15|etc] how many failures per interval ##
+## FPM_EMERGENCY_RESTART_INTERVAL = [30s|1m|etc] time window for invalid signals threshold ##
+## FPM_PROCESS_CONTROL_TIMEOUT = [5s|10s|etc] how long child processes wait for signal ##
+## FPM_PROCESS_MAX = [128|etc] controls max PHP workers when using dynamic PM ##
+## FPM_PROCESS_PRIORITY = [-19|etc] only change this for multi-site server setups ##
+## FPM_RLIMIT_FILES = [65535|etc] we leave this uncapped by default (i.e. 65535) ##
+## FPM_RLIMIT_CORE = [0|etc] almost every site should keep this disabled (i.e. 0) ##
+## FPM_SYSTEMD_INTERVAL = [0|10s|etc] 10 is usually perfect but 0 gives a small boost ##
 
 FPM_EMERGENCY_RESTART_THRESHOLD="10"
 FPM_EMERGENCY_RESTART_INTERVAL="1m"
@@ -526,16 +526,16 @@ FPM_PROCESS_MAX="128"
 FPM_PROCESS_PRIORITY="-19"
 FPM_RLIMIT_FILES="65535"
 FPM_RLIMIT_CORE="0"
-FPM_SYSTEMD_INTERVAL="10"
+FPM_SYSTEMD_INTERVAL="10s"
 
 ####################################################################################################
-#### SS-Config: WWW Pool ###########################################################################
+#### SS-Config: Pool Settings ######################################################################
 ####################################################################################################
 
 ## modifying pool settings can have drastic effects on scaling LEMP for high-traffic ##
 ## ondemand is best for cheap cloud VMs (most sites should not change these) ##
 
-## WWW_LISTEN_BACKLOG = [65535|etc] most sites can leave this uncapped (e.g. 65535) ##
+## WWW_LISTEN_BACKLOG = [65535|etc] most sites can leave this uncapped (i.e. 65535) ##
 ## WWW_PM_MODE = [ondemand|dynamic] dynamic for extremely high traffic (upgrade your VM) ##
 ## WWW_PM_MAX_CHILDREN = [20|etc] really depends on the rest of the settings you choose ##
 ## WWW_PM_START_SERVERS = [2|etc] keeping this number small usually makes more sense ##
@@ -543,10 +543,10 @@ FPM_SYSTEMD_INTERVAL="10"
 ## WWW_PM_MAX_SPARE_SERVERS = [3|etc] should usually be greater than PM_START_SERVERS ##
 ## WWW_PM_MAX_SPAWN_RATE = [32|etc] play with dynamic spawn rate at your own risk ##
 ## WWW_PM_PROCESS_IDLE_TIMEOUT = [10s|etc] keep it small to avoid CPU resource abuse ##
-## WWW_PM_MAX_REQUESTS = [500|etc] usually can keep it big if other settings are sensible ##
-## WWW_REQUEST_TERMINATE_TIMEOUT = [300|etc] backup timeout if IDLE_TIMEOUT not applied ##
-## WWW_RLIMIT_FILES = [65535|etc] most sites can leave this uncapped (e.g. 65535) ##
-## WWW_RLIMIT_CORE = [0|etc] most sites can keep this disabled (i.e. 0) ##
+## WWW_PM_MAX_REQUESTS = [50|200|500|etc] usually can keep it big if other settings are safe ##
+## WWW_REQUEST_TERMINATE_TIMEOUT = [60s|etc] backup timeout if IDLE_TIMEOUT not applied ##
+## WWW_RLIMIT_FILES = [65535|etc] most sites can leave this uncapped (i.e. 65535) ##
+## WWW_RLIMIT_CORE = [0|etc] most sites should keep this disabled (i.e. 0) ##
 
 WWW_LISTEN_BACKLOG="65535"
 WWW_PM_MODE="ondemand"
@@ -557,7 +557,7 @@ WWW_PM_MAX_SPARE_SERVERS="3"
 WWW_PM_MAX_SPAWN_RATE="32"
 WWW_PM_PROCESS_IDLE_TIMEOUT="10s"
 WWW_PM_MAX_REQUESTS="500"
-WWW_REQUEST_TERMINATE_TIMEOUT="300"
+WWW_REQUEST_TERMINATE_TIMEOUT="60s"
 WWW_RLIMIT_FILES="65535"
 WWW_RLIMIT_CORE="0"
 
