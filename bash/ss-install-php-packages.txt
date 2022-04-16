@@ -7,7 +7,7 @@
 #### path: /var/www/ss-install-php-packages ########################################################
 #### destination: n/a (not a boilerplate) ##########################################################
 #### purpose: Reinstalls the PHP-FPM module Ubuntu packages and extensions (idempotent) ############
-#### module version: PHP-FPM 7.4.x #################################################################
+#### module version: PHP-FPM 8.1.x #################################################################
 #### sourced by: ss-install ########################################################################
 #### bash aliases: ss install php core, ss install php packages ####################################
 ####################################################################################################
@@ -24,7 +24,18 @@ source /var/www/ss-functions
 ## BELOW THIS RELIES ON SS-CONFIG AND SS-FUNCTIONS
 
 ####################################################################################################
-#### SS-Install-PHP-Packages: Touch Timestamp File #################################################
+#### TABLE OF CONTENTS (SS-Install-PHP-Packages) ###################################################
+####################################################################################################
+
+## this is a brief summary of the different code snippets you will find in this script ##
+## each section should be commented so you understand what is being accomplished ##
+
+## A. Touch Timestamp File
+## B. Message (Begin Script)
+## C. Update Existing Packages
+
+####################################################################################################
+#### A. SS-Install-PHP-Packages: Touch Timestamp File ##############################################
 ####################################################################################################
 
 ## this is a dummy timestamp file that will remember the last time this script was run ##
@@ -34,7 +45,7 @@ source /var/www/ss-functions
 touch "${TIMESTAMP_SS_INSTALL_PHP_PACKAGES}"
 
 ####################################################################################################
-#### SS-Install-PHP-Packages: Message (Begin Script) ###############################################
+#### B. SS-Install-PHP-Packages: Message (Begin Script) ############################################
 ####################################################################################################
 
 ## this is a simple message that announces to the shell the purpose of this bash script ##
@@ -45,7 +56,7 @@ echo -e "${COLOR_INFO}Running ss-install-php-packages: Reinstalls the PHP-FPM mo
 sleep "${SLEEP_MESSAGE_BEGIN}"
 
 ####################################################################################################
-#### SS-Install-PHP-Packages: Update Existing Packages #############################################
+#### C. SS-Install-PHP-Packages: Update Existing Packages ##########################################
 ####################################################################################################
 
 ## SNIPPET: ss-install-*-packages bash scripts
@@ -67,7 +78,7 @@ apt upgrade > /dev/null 2>&1
 
 if [[ "${SS_APP}" != "mysql" ]]; then
 
-    if [[ "$SS_INSTALL_PHP_PACKAGES_PURGE_FIRST" == "true" ]]; then
+    if [[ "${SS_INSTALL_PHP_PACKAGES_PURGE_FIRST}" == "true" ]]; then
 
     ## purge packages ##
     apt purge ^php
@@ -89,20 +100,20 @@ fi
 if [[ "${SS_APP}" != "mysql" ]]; then
 
 ## php8.1 not needed for php8.1-fpm (Ubuntu 22.04 LTS) ##
-if [[ "${UBUNTU_VERSION}" == "22.04" ]] && [[ -n "$PHP_EXTENSIONS" ]]; then
+if [[ "${UBUNTU_VERSION}" == "22.04" ]] && [[ -n "${PHP_EXTENSIONS}" ]]; then
     PHP_EXTENSIONS_NOW=$(source /var/www/ss-config; echo $PHP_EXTENSIONS)
-        if [[ "$PHP_EXTENSIONS_NOW" == *"php8.1"* ]]; then
+        if [[ "${PHP_EXTENSIONS_NOW}" == *"php8.1"* ]]; then
             apt install $PHP_EXTENSIONS_NOW > /dev/null 2>&1
         else
             echo -e "${PURPLE}Running ss-install-php-packages: Mismatch with PHP extension versions in ss-config so installing 8.1 defaults... ${NOCOLOR}"
-            apt install php8.1-fpm php8.1-bcmath php8.1-curl php8.1-gd php8.1-imagick php8.1-json php8.1-mbstring php8.1-mysql php8.1-soap php8.1-sqlite3 php8.1-xml php8.1-zip > /dev/null 2>&1
+            apt install php8.1-fpm php8.1-bcmath php8.1-curl php8.1-gd php8.1-imagick php8.1-mbstring php8.1-mysql php8.1-soap php8.1-sqlite3 php8.1-xml php8.1-zip > /dev/null 2>&1
         fi
 fi
 
 ## php7.4 not needed for php7.4-fpm (Ubuntu 20.04 LTS) ##
-if [[ "${UBUNTU_VERSION}" == "20.04" ]] && [[ -n "$PHP_EXTENSIONS" ]]; then
+if [[ "${UBUNTU_VERSION}" == "20.04" ]] && [[ -n "${PHP_EXTENSIONS}" ]]; then
     PHP_EXTENSIONS_NOW=$(source /var/www/ss-config; echo $PHP_EXTENSIONS)
-        if [[ "$PHP_EXTENSIONS_NOW" == *"php7.4"* ]]; then
+        if [[ "${PHP_EXTENSIONS_NOW}" == *"php7.4"* ]]; then
             apt install $PHP_EXTENSIONS_NOW > /dev/null 2>&1
         else
             echo -e "${PURPLE}Running ss-install-php-packages: Mismatch with PHP extension versions in ss-config so installing 7.4 defaults... ${NOCOLOR}"
@@ -112,9 +123,9 @@ if [[ "${UBUNTU_VERSION}" == "20.04" ]] && [[ -n "$PHP_EXTENSIONS" ]]; then
 fi
 
 ## php7.2 not needed for php7.2-fpm (Ubuntu 18.04 LTS) ##
-if [[ "${UBUNTU_VERSION}" == "18.04" ]] && [[ -n "$PHP_EXTENSIONS" ]]; then
+if [[ "${UBUNTU_VERSION}" == "18.04" ]] && [[ -n "${PHP_EXTENSIONS}" ]]; then
     PHP_EXTENSIONS_NOW=$(source /var/www/ss-config; echo $PHP_EXTENSIONS)
-        if [[ "$PHP_EXTENSIONS_NOW" == *"php7.2"* ]]; then
+        if [[ "${PHP_EXTENSIONS_NOW}" == *"php7.2"* ]]; then
             apt install $PHP_EXTENSIONS_NOW > /dev/null 2>&1
         else
             echo -e "${PURPLE}Running ss-install-php-packages: Mismatch with PHP extension versions in ss-config so installing 7.2 defaults... ${NOCOLOR}"
@@ -181,21 +192,21 @@ fi
 ####################################################################################################
 
 ## run ss-perms-php-packages ##
-source "$PATH_SS_PERMS_PHP_PACKAGES"
+source "${PATH_SS_PERMS_PHP_PACKAGES}"
 
 ####################################################################################################
 #### SS-Install-PHP-Packages: Purge Cache (PHP OPcache) ############################################
 ####################################################################################################
 
 ## run ss-purge-opcache ##
-source "$PATH_SS_PURGE_OPCACHE"
+source "${PATH_SS_PURGE_OPCACHE}"
 
 ####################################################################################################
 #### SS-Install-PHP-Packages: Restart Services (PHP-FPM) ###########################################
 ####################################################################################################
 
 ## run ss-restart-php ##
-source "$PATH_SS_RESTART_PHP"
+source "${PATH_SS_RESTART_PHP}"
 
 ####################################################################################################
 #### SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ###############
