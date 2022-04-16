@@ -16,30 +16,25 @@
 ;;;; WWW.conf: Pool Settings ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;; users, groups, and listen directives are hardcoded in SlickStack to avoid conflicts ;;
-;; www-data is default user for Nginx and TCP (IP) listening avoids disk I/O ;;
+;; users/groups and listen directives are hardcoded in SlickStack for better stability ;;
+;; only high-traffic sites or uncommon stacks should adjust these in ss-config ;;
 
 ;; prefix = /path/to/pools/$pool
 user = www-data
 group = www-data
-listen = 127.0.0.1:9000
-listen.backlog = @WWW_LISTEN_BACKLOG ;; ss = 511
-;; listen.owner = www-data ;; when using Unix sockets only
-;; listen.group = www-data ;; when using Unix sockets only
-;; listen.mode = 0660 ;; when using Unix sockets only
-;; listen.acl_users = ;; when using Unix sockets only
-;; listen.acl_groups = ;; when using Unix sockets only
+listen = 127.0.0.1:9000 ;; avoids disk I/O
+listen.backlog = @WWW_LISTEN_BACKLOG ;; ss = 65535
 listen.allowed_clients = 127.0.0.1
 ;; process.priority = -19 ;; for multi-website (shared hosting) servers only
 process.dumpable = no
-pm = @WWW_PM_MODE ;; ondemand best (dynamic for super high traffic)
-pm.max_children = @WWW_PM_MAX_CHILDREN
-pm.start_servers = @WWW_PM_START_SERVERS ;; used only for dynamic
-pm.min_spare_servers = @WWW_PM_MIN_SPARE_SERVERS ;; used only for dynamic
-pm.max_spare_servers = @WWW_PM_MAX_SPARE_SERVERS ;; used only for dynamic
-pm.max_spawn_rate = @WWW_PM_MAX_SPAWN_RATE ;; used only for dynamic
-pm.process_idle_timeout = @WWW_PM_PROCESS_IDLE_TIMEOUT; ;; used only for ondemand
-pm.max_requests = @WWW_PM_MAX_REQUESTS
+pm = @WWW_PM_MODE ;; ss = ondemand
+pm.max_children = @WWW_PM_MAX_CHILDREN ;; ss = 20
+pm.start_servers = @WWW_PM_START_SERVERS ;; ss = 2 (used only for dynamic)
+pm.min_spare_servers = @WWW_PM_MIN_SPARE_SERVERS ;; ss = 1 (used only for dynamic)
+pm.max_spare_servers = @WWW_PM_MAX_SPARE_SERVERS ;; ss = 3 (used only for dynamic)
+pm.max_spawn_rate = @WWW_PM_MAX_SPAWN_RATE ;; ss = 32 (used only for dynamic)
+pm.process_idle_timeout = @WWW_PM_PROCESS_IDLE_TIMEOUT; ;; ss = 10s (used only for ondemand)
+pm.max_requests = @WWW_PM_MAX_REQUESTS ;; ss = 500
 ;; pm.status_path = 
 ;; pm.status_listen = 127.0.0.1:9001
 ;; ping.path = /ping
@@ -49,10 +44,10 @@ pm.max_requests = @WWW_PM_MAX_REQUESTS
 ;; slowlog = log/$pool.log.slow
 ;; request_slowlog_timeout = 0
 ;; request_slowlog_trace_depth = 20
-request_terminate_timeout = @WWW_REQUEST_TERMINATE_TIMEOUT
-;request_terminate_timeout_track_finished = no
-rlimit_files = @WWW_RLIMIT_FILES
-rlimit_core = @WWW_RLIMIT_CORE
+request_terminate_timeout = @WWW_REQUEST_TERMINATE_TIMEOUT ;; ss = 300
+; request_terminate_timeout_track_finished = no
+rlimit_files = @WWW_RLIMIT_FILES ;; ss = 65535
+rlimit_core = @WWW_RLIMIT_CORE ;; ss = 0
 ;; chroot =
 ;; chdir = /var/www
 catch_workers_output = yes
