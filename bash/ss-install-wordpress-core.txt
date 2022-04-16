@@ -9,7 +9,7 @@
 #### purpose: Reinstalls the WordPress module (CMS) package and non-config files (idempotent) ######
 #### module version: WordPress 5.9.x ###############################################################
 #### sourced by: ss-install ########################################################################
-#### bash aliases: ss install wordpress core, ss install wp core ###################################
+#### bash aliases: ss install [wordpress|wp] core ##################################################
 ####################################################################################################
 
 ## SS-CONFIG MUST BE PROPERLY CONFIGURED AND ON CURRENT BUILD BEFORE RUNNING SS-INSTALL ##
@@ -27,6 +27,9 @@ source /var/www/ss-functions
 #### TABLE OF CONTENTS (SS-Install-WordPress-Core) #################################################
 ####################################################################################################
 
+## this is a brief summary of the different code snippets you will find in this script ##
+## each section should be commented so you understand what is being accomplished ##
+
 ## A. Touch Timestamp File
 ## B. Message (Begin Script)
 ## C. Install Ubuntu Utils
@@ -42,7 +45,7 @@ source /var/www/ss-functions
 ## it can be useful for developer reference and is sometimes used by SlickStack ##
 
 ## script timestamp ##
-touch "$TIMESTAMP_SS_INSTALL_WORDPRESS_CORE"
+touch "${TIMESTAMP_SS_INSTALL_WORDPRESS_CORE}"
 
 ####################################################################################################
 #### B. SS-Install-WordPress-Core: Message (Begin Script) ##########################################
@@ -53,14 +56,14 @@ touch "$TIMESTAMP_SS_INSTALL_WORDPRESS_CORE"
 
 ## echo message ##
 echo -e "${COLOR_INFO}Running ss-install-wordpress-core: Reinstalls the WordPress module (CMS) package and non-config files (idempotent)... ${NOCOLOR}"
-sleep "$SLEEP_MESSAGE_BEGIN"
+sleep "${SLEEP_MESSAGE_BEGIN}"
 
 ####################################################################################################
 #### C. SS-Install-WordPress-Core: Install Ubuntu Utils ############################################
 ####################################################################################################
 
 ## run ss-install-ubuntu-utils ##
-source "$PATH_SS_INSTALL_UBUNTU_UTILS"
+source "${PATH_SS_INSTALL_UBUNTU_UTILS}"
 
 ####################################################################################################
 #### D. SS-Install-WordPress-Core: Cleanup Temporary Files #########################################
@@ -80,11 +83,11 @@ rm /var/www/html/dev/wordpress*
 ## we always install the latest stable minor version (never major versions) ##
 
 ## retrieve latest version ##
-wget -O "$TMP_WORDPRESS_ZIP" "$MIRROR_WORDPRESS_ZIP"
+wget -O "${TMP_WORDPRESS_ZIP}" "${MIRROR_THIRDPARTY_WORDPRESS_ZIP}"
 
-## try third party mirror if file not exists ##
-if [[ ! -f "$TMP_WORDPRESS_ZIP" ]]; then
-    wget -O "$TMP_WORDPRESS_ZIP" "$MIRROR_THIRDPARTY_WORDPRESS_ZIP"
+## otherwise try slickstack repo ##
+if [[ ! -f "${TMP_WORDPRESS_ZIP}" ]]; then
+    wget -O "${TMP_WORDPRESS_ZIP}" "${MIRROR_WORDPRESS_ZIP}"
 fi
 
 ####################################################################################################
@@ -108,7 +111,7 @@ if [[ -f "${TMP_WORDPRESS_ZIP}" ]] && [[ "${SS_INSTALL_WORDPRESS_CORE_DELETE_PHP
 fi
 
 ## prepare new files ##
-cp "${TMP_WORDPRESS_ZIP}" /var/www/html
+ss_cp "${TMP_WORDPRESS_ZIP}" /var/www/html
 unzip /var/www/html/wordpress.zip -d /var/www/html
 chown -R www-data:wordpress /var/www/html/wordpress
 chmod 775 /var/www/html/wordpress
@@ -180,6 +183,23 @@ if [[ "${DEV_SITE}" == "true" ]]; then
     ## install new files ##
     rsync /var/www/html/dev/wordpress/* /var/www/html/dev
     
+fi
+
+####################################################################################################
+#### SS-Install-WordPress-Core: Populate Database Options (Production) #############################
+####################################################################################################
+
+## minimum wp_options required to avoid /wp-admin/install.php redirect are below: ##
+## home/siteurl, blogname, admin_user, admin_email, admin_password ##
+
+INSTALLED_ALREADY_EMAIL=$(mysql --database=${DB_NAME} --execute="SELECT * FROM ${DB_PREFIX}options WHERE option_name LIKE 'admin_email'"; 2> /dev/null)
+INSTALLED_ALREADY_BLOGNAME=$(mysql --database=${DB_NAME} --execute="SELECT * FROM ${DB_PREFIX}options WHERE option_name LIKE 'blogname'"; 2> /dev/null)
+
+if [[ -z "${INSTALLED_ALREADY_EMAIL}" ]] && [[ -z "${INSTALLED_ALREADY_BLOGNAME}" ]]; then 
+    /usr/bin/php -q -r "
+    include '/var/www/html/wp-admin/install.php';
+    wp_install('prod site', '"${SFTP_USER}"', '"${SFTP_USER}"@"${SITE_DOMAIN_EXCLUDING_WWW}"', 1, '', '"${SFTP_PASSWORD}"');
+    "
 fi
 
 ####################################################################################################
@@ -349,21 +369,21 @@ fi
 ## otherwise the staging site files/database would potentially display broken ##
 
 ## run ss-sync-staging ##
-source "$PATH_SS_SYNC_STAGING"
+source "${PATH_SS_SYNC_STAGING}"
 
 ####################################################################################################
 #### SS-Install-WordPress-Core: Purge Cache (PHP OPcache) ##########################################
 ####################################################################################################
 
 ## run ss-purge-opcache ##
-source "$PATH_SS_PURGE_OPCACHE"
+source "${PATH_SS_PURGE_OPCACHE}"
 
 ####################################################################################################
 #### SS-Install-WordPress-Core: Reset Permissions (WordPress Core) #################################
 ####################################################################################################
 
 ## run ss-perms-wordpress-core ##
-source "$PATH_SS_PERMS_WORDPRESS_CORE"
+source "${PATH_SS_PERMS_WORDPRESS_CORE}"
 
 ####################################################################################################
 #### SS-Install-WordPress-Core: Cleanup Temporary Files ############################################
