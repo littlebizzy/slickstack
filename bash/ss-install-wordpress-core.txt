@@ -70,10 +70,10 @@ source "${PATH_SS_INSTALL_UBUNTU_UTILS}"
 ####################################################################################################
 
 ## delete tmp files ##
-rm "$TMP_WORDPRESS_ZIP"
-rm /var/www/html/wordpress*
-rm /var/www/html/staging/wordpress*
-rm /var/www/html/dev/wordpress*
+ss_rm "${TMP_WORDPRESS_ZIP}"
+ss_rm /var/www/html/wordpress*
+ss_rm /var/www/html/staging/wordpress*
+ss_rm /var/www/html/dev/wordpress*
 
 ####################################################################################################
 #### E. SS-Install-WordPress-Core: Retrieve WordPress Core ZIP #####################################
@@ -83,11 +83,11 @@ rm /var/www/html/dev/wordpress*
 ## we always install the latest stable minor version (never major versions) ##
 
 ## retrieve latest version ##
-wget -O "${TMP_WORDPRESS_ZIP}" "${MIRROR_THIRDPARTY_WORDPRESS_ZIP}"
+ss_wget_slow -O "${TMP_WORDPRESS_ZIP}" "${MIRROR_THIRDPARTY_WORDPRESS_ZIP}"
 
 ## otherwise try slickstack repo ##
 if [[ ! -f "${TMP_WORDPRESS_ZIP}" ]]; then
-    wget -O "${TMP_WORDPRESS_ZIP}" "${MIRROR_WORDPRESS_ZIP}"
+    ss_wget_slow -O "${TMP_WORDPRESS_ZIP}" "${MIRROR_WORDPRESS_ZIP}"
 fi
 
 ####################################################################################################
@@ -192,14 +192,14 @@ fi
 ## minimum wp_options required to avoid /wp-admin/install.php redirect are below: ##
 ## home/siteurl, blogname, admin_user, admin_email, admin_password ##
 
-INSTALLED_ALREADY_EMAIL=$(mysql --database=${DB_NAME} --execute="SELECT * FROM ${DB_PREFIX}options WHERE option_name LIKE 'admin_email'"; 2> /dev/null)
-INSTALLED_ALREADY_BLOGNAME=$(mysql --database=${DB_NAME} --execute="SELECT * FROM ${DB_PREFIX}options WHERE option_name LIKE 'blogname'"; 2> /dev/null)
+INSTALLED_ALREADY_EMAIL=$(mysql --database=${DB_NAME} --execute="SELECT * FROM ${DB_PREFIX}options WHERE option_name LIKE 'admin_email'"; > /dev/null 2>&1)
+INSTALLED_ALREADY_BLOGNAME=$(mysql --database=${DB_NAME} --execute="SELECT * FROM ${DB_PREFIX}options WHERE option_name LIKE 'blogname'"; > /dev/null 2>&1)
 
 if [[ -z "${INSTALLED_ALREADY_EMAIL}" ]] && [[ -z "${INSTALLED_ALREADY_BLOGNAME}" ]]; then 
     /usr/bin/php -q -r "
     include '/var/www/html/wp-admin/install.php';
     wp_install('prod site', '"${SFTP_USER}"', '"${SFTP_USER}"@"${SITE_DOMAIN_EXCLUDING_WWW}"', 1, '', '"${SFTP_PASSWORD}"');
-    "
+    " > /dev/null 2>&1
 fi
 
 ####################################################################################################
@@ -390,10 +390,10 @@ source "${PATH_SS_PERMS_WORDPRESS_CORE}"
 ####################################################################################################
 
 ## delete tmp files ##
-rm "$TMP_WORDPRESS_ZIP"
-rm /var/www/html/wordpress*
-rm /var/www/html/staging/wordpress*
-rm /var/www/html/dev/wordpress*
+ss_rm "${TMP_WORDPRESS_ZIP}"
+ss_rm /var/www/html/wordpress*
+ss_rm /var/www/html/staging/wordpress*
+ss_rm /var/www/html/dev/wordpress*
 
 ####################################################################################################
 #### SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ###############
