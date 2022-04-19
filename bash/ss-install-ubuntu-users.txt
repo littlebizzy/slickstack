@@ -33,6 +33,7 @@ source /var/www/ss-functions
 ## A. Touch Timestamp File
 ## B. Message (Begin Script)
 ## C. Cleanup Temporary Files
+## D. Configure Users + Passwords + Groups
 
 ####################################################################################################
 #### A. SS-Install-Ubuntu-Users: Touch Timestamp File ##############################################
@@ -63,7 +64,7 @@ sleep "${SLEEP_MESSAGE_BEGIN}"
 ss_rm "${TMP_SUDOERS}"
 
 ####################################################################################################
-#### SS-Install-Ubuntu-Users: Configure Root Password + Setup Ubuntu Users #########################
+#### D. SS-Install-Ubuntu-Users: Configure Users + Passwords + Groups ##############################
 ####################################################################################################
 
 ## set root password ##
@@ -75,15 +76,15 @@ chage -E -1 -m 0 -M -1 -I -1 -W 99999 root
 # chage -E -1 -m 0 -M -1 -I -1 -W 99999 $SUDO_USER
 # chage -E -1 -m 0 -M -1 -I -1 -W 99999 $SFTP_USER
 
-## create sudo user ##
+## add sudo user ##
 adduser --disabled-password --quiet --shell /bin/bash --gecos "" ${SUDO_USER} 2> /dev/null
 echo "${SUDO_USER}:${SUDO_PASSWORD}" | /usr/sbin/chpasswd
 
 ## ensure home directory exists ##
 mkhomedir_helper ${SUDO_USER}
 
-## create sftp user ##
-adduser --disabled-password --quiet --shell /bin/bash --gecos "" ${SFTP_USER} 2> /dev/null
+## add sftp user ##
+ss_adduser ${SFTP_USER}
 echo "${SFTP_USER}:${SFTP_PASSWORD}" | /usr/sbin/chpasswd
 
 ## ensure home directory exists ##
