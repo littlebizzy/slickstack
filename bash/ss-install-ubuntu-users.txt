@@ -24,7 +24,17 @@ source /var/www/ss-functions
 ## BELOW THIS RELIES ON SS-CONFIG AND SS-FUNCTIONS
 
 ####################################################################################################
-#### SS-Install-Ubuntu-Users: Touch Timestamp File #################################################
+#### TABLE OF CONTENTS (SS-Install-Ubuntu-Users) ###################################################
+####################################################################################################
+
+## this is a brief summary of the different code snippets you will find in this script ##
+## each section should be commented so you understand what is being accomplished ##
+
+## A. Touch Timestamp File
+## B. Message (Begin Script)
+
+####################################################################################################
+#### A. SS-Install-Ubuntu-Users: Touch Timestamp File ##############################################
 ####################################################################################################
 
 ## this is a dummy timestamp file that will remember the last time this script was run ##
@@ -34,7 +44,7 @@ source /var/www/ss-functions
 touch "${TIMESTAMP_SS_INSTALL_UBUNTU_USERS}"
 
 ####################################################################################################
-#### SS-Install-Ubuntu-Users: Message (Begin Script) ###############################################
+#### B. SS-Install-Ubuntu-Users: Message (Begin Script) ############################################
 ####################################################################################################
 
 ## this is a simple message that announces to the shell the purpose of this bash script ##
@@ -42,21 +52,21 @@ touch "${TIMESTAMP_SS_INSTALL_UBUNTU_USERS}"
 
 ## echo message ##
 echo -e "${COLOR_INFO}Running ss-install-ubuntu-users: Reinstalls the Ubuntu (OS) users (sudo/sftp) based on ss-config (idempotent)... ${NOCOLOR}"
-sleep "$SLEEP_MESSAGE_BEGIN"
+sleep "${SLEEP_MESSAGE_BEGIN}"
 
 ####################################################################################################
 #### SS-Install-Ubuntu-Users: Cleanup Temporary Files ##############################################
 ####################################################################################################
 
 ## delete tmp files ##
-# n/a
+ss_rm "${TMP_SUDOERS}"
 
 ####################################################################################################
 #### SS-Install-Ubuntu-Users: Configure Root Password + Setup Ubuntu Users #########################
 ####################################################################################################
 
 ## set root password ##
-echo "root:${ROOT_PASSWORD}" | sudo /usr/sbin/chpasswd
+echo "root:${ROOT_PASSWORD}" | /usr/sbin/chpasswd
 
 ## ensure root password never expires ##
 # passwd -x -1 <username>
@@ -66,14 +76,14 @@ chage -E -1 -m 0 -M -1 -I -1 -W 99999 root
 
 ## create sudo user ##
 adduser --disabled-password --quiet --shell /bin/bash --gecos "" ${SUDO_USER} 2> /dev/null
-sudo echo "${SUDO_USER}:${SUDO_PASSWORD}" | sudo /usr/sbin/chpasswd
+echo "${SUDO_USER}:${SUDO_PASSWORD}" | /usr/sbin/chpasswd
 
 ## ensure home directory exists ##
 mkhomedir_helper ${SUDO_USER}
 
 ## create sftp user ##
 adduser --disabled-password --quiet --shell /bin/bash --gecos "" ${SFTP_USER} 2> /dev/null
-sudo echo "${SFTP_USER}:${SFTP_PASSWORD}" | sudo /usr/sbin/chpasswd
+echo "${SFTP_USER}:${SFTP_PASSWORD}" | /usr/sbin/chpasswd
 
 ## ensure home directory exists ##
 mkhomedir_helper ${SFTP_USER}
@@ -91,13 +101,13 @@ usermod -a -G www-data "${SFTP_USER}"
 ####################################################################################################
 
 ## download latest versions ##
-wget -O /tmp/sudoers "${MIRROR_SUDOERS}"
+wget -O "${TMP_SUDOERS}" "${MIRROR_SUDOERS}"
 
 ## replace variables ##
-sed -i "s/@SUDO_USER/${SUDO_USER}/g" /tmp/sudoers
+sed -i "s/@SUDO_USER/${SUDO_USER}/g" "${TMP_SUDOERS}"
 
 ## copy files to their destinations ##
-cp /tmp/sudoers /etc/sudoers
+ss_mv "${TMP_SUDOERS}" /etc/sudoers
 
 ####################################################################################################
 #### SS-Install-Ubuntu-Users: Reset Permissions (Ubuntu Users) #####################################
@@ -111,7 +121,7 @@ source "${PATH_SS_PERMS_UBUNTU_USERS}"
 ####################################################################################################
 
 ## delete tmp files ##
-# n/a
+ss_rm "${TMP_SUDOERS}"
 
 ####################################################################################################
 #### SS-Install-Ubuntu-Users: Install (Optimize) Ubuntu Bash #######################################
@@ -136,5 +146,6 @@ source "${PATH_SS_INSTALL_UBUNTU_BASH}"
 ## Ref: https://serverfault.com/questions/167416/how-can-i-automatically-change-directory-on-ssh-login
 ## Ref: https://unix.stackexchange.com/questions/140602/how-do-i-start-all-shell-sessions-in-a-directory-other-than-home
 ## Ref: https://askubuntu.com/questions/335961/create-default-home-directory-for-existing-user-in-terminal
+## Ref: https://unix.stackexchange.com/questions/121087/why-is-this-random-password-flagged-saying-it-is-too-simplistic-systematic
 
 ## SS_EOF
