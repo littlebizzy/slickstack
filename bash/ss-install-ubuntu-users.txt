@@ -9,7 +9,7 @@
 #### purpose: Reinstalls the Ubuntu (OS) users (sudo/sftp) based on ss-config (idempotent) #########
 #### module version: Ubuntu 20.04 LTS ##############################################################
 #### sourced by: ss-install ########################################################################
-#### bash aliases: ss install ubuntu users #########################################################
+#### bash aliases: ss install ubuntu users, ss install users #######################################
 ####################################################################################################
 
 ## SS-CONFIG MUST BE PROPERLY CONFIGURED AND ON CURRENT BUILD BEFORE RUNNING SS-INSTALL ##
@@ -32,6 +32,7 @@ source /var/www/ss-functions
 
 ## A. Touch Timestamp File
 ## B. Message (Begin Script)
+## C. Cleanup Temporary Files
 
 ####################################################################################################
 #### A. SS-Install-Ubuntu-Users: Touch Timestamp File ##############################################
@@ -55,7 +56,7 @@ echo -e "${COLOR_INFO}Running ss-install-ubuntu-users: Reinstalls the Ubuntu (OS
 sleep "${SLEEP_MESSAGE_BEGIN}"
 
 ####################################################################################################
-#### SS-Install-Ubuntu-Users: Cleanup Temporary Files ##############################################
+#### C. SS-Install-Ubuntu-Users: Cleanup Temporary Files ###########################################
 ####################################################################################################
 
 ## delete tmp files ##
@@ -101,7 +102,7 @@ usermod -a -G www-data "${SFTP_USER}"
 ####################################################################################################
 
 ## download latest versions ##
-wget -O "${TMP_SUDOERS}" "${MIRROR_SUDOERS}"
+ss_wget_slow -O "${TMP_SUDOERS}" "${MIRROR_SUDOERS}"
 
 ## replace variables ##
 sed -i "s/@SUDO_USER/${SUDO_USER}/g" "${TMP_SUDOERS}"
