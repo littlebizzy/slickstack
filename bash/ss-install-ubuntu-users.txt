@@ -34,6 +34,10 @@ source /var/www/ss-functions
 ## B. Message (Begin Script)
 ## C. Cleanup Temporary Files
 ## D. Configure Users + Passwords + Groups
+## E. Configure Sudo Permissions
+## F. Reset Permissions (Ubuntu Users)
+## G. Cleanup Temporary Files
+## H. Configure Ubuntu Bash Shortcuts
 
 ####################################################################################################
 #### A. SS-Install-Ubuntu-Users: Touch Timestamp File ##############################################
@@ -77,7 +81,7 @@ chage -E -1 -m 0 -M -1 -I -1 -W 99999 root
 # chage -E -1 -m 0 -M -1 -I -1 -W 99999 $SFTP_USER
 
 ## add sudo user ##
-adduser --disabled-password --quiet --shell /bin/bash --gecos "" ${SUDO_USER} 2> /dev/null
+ss_adduser ${SUDO_USER}
 echo "${SUDO_USER}:${SUDO_PASSWORD}" | /usr/sbin/chpasswd
 
 ## ensure home directory exists ##
@@ -99,7 +103,7 @@ usermod -a -G wordpress www-data
 usermod -a -G www-data "${SFTP_USER}"
 
 ####################################################################################################
-#### SS-Install-Ubuntu-Users: Configure Sudo Permissions (Sudoers File) ############################
+#### E. SS-Install-Ubuntu-Users: Configure Sudo Permissions ########################################
 ####################################################################################################
 
 ## download latest versions ##
@@ -112,21 +116,21 @@ sed -i "s/@SUDO_USER/${SUDO_USER}/g" "${TMP_SUDOERS}"
 ss_mv "${TMP_SUDOERS}" /etc/sudoers
 
 ####################################################################################################
-#### SS-Install-Ubuntu-Users: Reset Permissions (Ubuntu Users) #####################################
+#### F. SS-Install-Ubuntu-Users: Reset Permissions (Ubuntu Users) ##################################
 ####################################################################################################
 
 ## run ss-perms-ubuntu-users ##
 source "${PATH_SS_PERMS_UBUNTU_USERS}"
 
 ####################################################################################################
-#### SS-Install-Ubuntu-Users: Cleanup Temporary Files ##############################################
+#### G. SS-Install-Ubuntu-Users: Cleanup Temporary Files ###########################################
 ####################################################################################################
 
 ## delete tmp files ##
 ss_rm "${TMP_SUDOERS}"
 
 ####################################################################################################
-#### SS-Install-Ubuntu-Users: Install (Optimize) Ubuntu Bash #######################################
+#### H. SS-Install-Ubuntu-Users: Configure Ubuntu Bash Shortcuts ###################################
 ####################################################################################################
 
 ## here we reinstall bash run commands which requires the users to be installed already ##
