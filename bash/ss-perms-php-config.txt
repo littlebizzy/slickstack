@@ -7,9 +7,9 @@
 #### path: /var/www/ss-perms-php-config ############################################################
 #### destination: n/a (not a boilerplate) ##########################################################
 #### purpose: Resets file and user permissions for PHP-FPM module configuration files ##############
-#### module version: PHP-FPM 7.4.x #################################################################
+#### module version: PHP-FPM 8.1.x #################################################################
 #### sourced by: ss-install-php-config, ss-perms ###################################################
-#### bash aliases: ss perms php config, ss perms php-fpm config ####################################
+#### bash aliases: ss perms [php|php-fpm] config ###################################################
 ####################################################################################################
 
 ## source ss-config ##
@@ -21,7 +21,28 @@ source /var/www/ss-functions
 ## BELOW THIS RELIES ON SS-CONFIG AND SS-FUNCTIONS
 
 ####################################################################################################
-#### SS-Clean-Files: Message (Begin Script) ########################################################
+#### TABLE OF CONTENTS (SS-Perms-PHP-Config) #######################################################
+####################################################################################################
+
+## this is a brief summary of the different code snippets you will find in this script ##
+## each section should be commented so you understand what is being accomplished ##
+
+## A. Touch Timestamp File
+## B. Message (Begin Script)
+## C. Reset Permissions (PHP-FPM)
+
+####################################################################################################
+#### SS-Perms-PHP-Config: Touch Timestamp File #####################################################
+####################################################################################################
+
+## this is a dummy timestamp file that will remember the last time this script was run ##
+## it can be useful for developer reference and is sometimes used by SlickStack ##
+
+## script timestamp ##
+touch "${TIMESTAMP_SS_PERMS_PHP_CONFIG}"
+
+####################################################################################################
+#### SS-Perms-PHP-Config: Message (Begin Script) ###################################################
 ####################################################################################################
 
 ## this is a simple message that announces to the shell the purpose of this bash script ##
@@ -29,13 +50,14 @@ source /var/www/ss-functions
 
 ## echo message ##
 echo -e "${COLOR_INFO}Running ss-perms-php-config: Resets file and user permissions for PHP-FPM module configuration files... ${NOCOLOR}"
-sleep "$SLEEP_MESSAGE_BEGIN"
+sleep "${SLEEP_MESSAGE_BEGIN}"
 
 ####################################################################################################
-#### SS-Perms-PHP: Reset Permissions (PHP-FPM) #####################################################
+#### SS-Perms-PHP-Config: Reset Permissions (PHP-FPM) ##############################################
 ####################################################################################################
 
-mkdir /var/run/php
+## ensure directories exist ##
+ss_mkdir /var/run/php
 
 # chown www-data:www-data /var/run/php
 
@@ -55,16 +77,6 @@ fi
 if [ ! -f "/var/www/logs/error.log" ]; then touch "/var/www/logs/error.log"; fi
 chown www-data:www-data /var/www/logs/error*.log*
 chmod 0644 /var/www/logs/*.log ## 6755 should also work
-
-####################################################################################################
-#### SS-Perms-PHP-Config: Touch Timestamp File (End Script) ########################################
-####################################################################################################
-
-## this is a dummy timestamp file that will remember the last time this script was run ##
-## it can be useful for developer reference and is sometimes used by SlickStack ##
-
-## script timestamp ##
-touch "$TIMESTAMP_SS_PERMS_PHP_CONFIG"
 
 ####################################################################################################
 #### SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ###############
