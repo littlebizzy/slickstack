@@ -8,7 +8,7 @@
 #### destination: n/a (not a boilerplate) ##########################################################
 #### purpose: Performs SlickStack maintenance tasks and retrieves the latest ss-check file #########
 #### module version: Ubuntu 22.04 LTS ##############################################################
-#### sourced by: ss-install, ss-update #############################################################
+#### sourced by: ss-install, ss-update-config ######################################################
 #### bash aliases: ss worker #######################################################################
 ####################################################################################################
 
@@ -23,6 +23,9 @@ source /var/www/ss-functions
 ####################################################################################################
 #### TABLE OF CONTENTS (SS-Worker) #################################################################
 ####################################################################################################
+
+## this is a brief summary of the different code snippets you will find in this script ##
+## each section should be commented so you understand what is being accomplished ##
 
 ## A. Touch Timestamp File
 ## B. Message (Begin Script)
@@ -42,7 +45,7 @@ source /var/www/ss-functions
 ## it can be useful for developer reference and is sometimes used by SlickStack ##
 
 ## script timestamp ##
-touch "$TIMESTAMP_SS_WORKER"
+touch "${TIMESTAMP_SS_WORKER}"
 
 ####################################################################################################
 #### B. SS-Worker: Message (Begin Script) ##########################################################
@@ -53,7 +56,7 @@ touch "$TIMESTAMP_SS_WORKER"
 
 ## echo message ##
 echo -e "${COLOR_INFO}Running ss-worker: Performs SlickStack maintenance tasks and retrieves the latest ss-check file... ${NOCOLOR}"
-sleep "$SLEEP_MESSAGE_BEGIN"
+sleep "${SLEEP_MESSAGE_BEGIN}"
 
 ####################################################################################################
 #### C. SS-Worker: Cleanup Temporary Files #########################################################
@@ -349,27 +352,27 @@ chmod 0700 /var/www/ss* ## 0700 means only root can execute
 
 ## download latest blacklist (or custom blacklist) ##
 if [[ -z "$PLUGIN_BLACKLIST_SOURCE" ]] && [[ -z "$SS_WORDPRESS_PLUGIN_BLACKLIST_SOURCE" ]]; then 
-    wget -O "$TMP_BLACKLIST_TXT" "$MIRROR_BLACKLIST_TXT"
+    ss_wget_slow -O "${TMP_BLACKLIST_TXT}" "${MIRROR_BLACKLIST_TXT}"
 elif [[ -n "$PLUGIN_BLACKLIST_SOURCE" ]]; then
-    wget -O "$TMP_BLACKLIST_TXT" "$PLUGIN_BLACKLIST_SOURCE"
+    ss_wget_slow -O "${TMP_BLACKLIST_TXT}" "${PLUGIN_BLACKLIST_SOURCE}"
 elif [[ -n "$SS_WORDPRESS_PLUGIN_BLACKLIST_SOURCE" ]]; then
-    wget -O "$TMP_BLACKLIST_TXT" "$SS_WORDPRESS_PLUGIN_BLACKLIST_SOURCE"
+    ss_wget_slow -O "${TMP_BLACKLIST_TXT}" "${SS_WORDPRESS_PLUGIN_BLACKLIST_SOURCE}"
 fi
 
 ## copy file to wp-content directory ##
-cp "$TMP_BLACKLIST_TXT" /var/www/html/wp-content/blacklist.txt
+ss_cp "${TMP_BLACKLIST_TXT}" /var/www/html/wp-content/blacklist.txt
 
 ## reset permissions ##
 chown www-data:wordpress /var/www/html/wp-content/blacklist.txt ## change to www-data:www-data when ss-perms fixed
 chmod 0440 /var/www/html/wp-content/blacklist.txt
 
 ## NULL blacklist.txt if ss-config false (allows default SS MU plugin to be installed while still being able to disable plugin blacklist) ##
-if [[ "$SS_PLUGIN_BLACKLIST" == "false" || "$SS_WORDPRESS_PLUGIN_BLACKLIST" == "false" ]]; then 
+if [[ "${SS_PLUGIN_BLACKLIST}" == "false" || "${SS_WORDPRESS_PLUGIN_BLACKLIST}" == "false" ]]; then 
 cat /dev/null > /var/www/html/wp-content/blacklist.txt
-    if [[ "$DEV_SITE" != "false" ]]; then 
+    if [[ "${DEV_SITE}" != "false" ]]; then 
         cat /dev/null > /var/www/html/dev/wp-content/blacklist.txt
     fi
-    if [[ "$STAGING_SITE" != "false" ]]; then 
+    if [[ "${STAGING_SITE}" != "false" ]]; then 
         cat /dev/null > /var/www/html/staging/wp-content/blacklist.txt
     fi
 fi
