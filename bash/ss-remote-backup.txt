@@ -7,7 +7,7 @@
 #### path: /var/www/ss-remote-backup ###############################################################
 #### destination: n/a (not a boilerplate) ##########################################################
 #### purpose: Syncs local production server data to preferred remote cloud storage service #########
-#### module version: Rclone 1.55.x #################################################################
+#### module version: Rsync 3.2.x, Rclone 1.55.x ####################################################
 #### bash aliases: ss backup, ss remote backup #####################################################
 ####################################################################################################
 
@@ -28,9 +28,11 @@ source /var/www/ss-functions
 
 ## A. Touch Timestamp File
 ## B. Message (Begin Script)
+## C. Run Rclone Backup (If Preferred)
+## D. Run Rsync Backup (If Preferred)
 
 ####################################################################################################
-#### SS-Remote-Backup: Touch Timestamp File ########################################################
+#### A. SS-Remote-Backup: Touch Timestamp File #####################################################
 ####################################################################################################
 
 ## this is a dummy timestamp file that will remember the last time this script was run ##
@@ -40,7 +42,7 @@ source /var/www/ss-functions
 touch "${TIMESTAMP_SS_REMOTE_BACKUP}"
 
 ####################################################################################################
-#### SS-Remote-Backup: Message (Begin Script) ######################################################
+#### B. SS-Remote-Backup: Message (Begin Script) ###################################################
 ####################################################################################################
 
 ## this is a simple message that announces to the shell the purpose of this bash script ##
@@ -48,10 +50,10 @@ touch "${TIMESTAMP_SS_REMOTE_BACKUP}"
 
 ## echo message ##
 echo -e "${COLOR_INFO}Running ss-remote-backup: Syncs local production server data to preferred remote cloud storage service... ${NOCOLOR}"
-sleep "$SLEEP_MESSAGE_BEGIN"
+sleep "${SLEEP_MESSAGE_BEGIN}"
 
 ####################################################################################################
-#### SS-Remote-Backup: Send Local Files To Remote Rclone Destination ###############################
+#### C. SS-Remote-Backup: Run Rclone Backup (If Preferred) #########################################
 ####################################################################################################
 
 ## this will copy/sync the entire SlickStack directory structure to your remote cloud ##
@@ -66,7 +68,7 @@ if [[ -n "${RCLONE_USER}"  ]]; then
 fi
 
 ####################################################################################################
-#### SS-Remote-Backup: Rsync
+#### D. SS-Remote-Backup: Run Rsync Backup (If Preferred) ##########################################
 ####################################################################################################
 
 ## https://www.rsync.net/resources/howto/rsync.html
