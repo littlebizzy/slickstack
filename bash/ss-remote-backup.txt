@@ -6,9 +6,9 @@
 #### mirror: https://mirrors.slickstack.io/bash/ss-remote-backup.txt ###############################
 #### path: /var/www/ss-remote-backup ###############################################################
 #### destination: n/a (not a boilerplate) ##########################################################
-#### purpose: Syncs local production server data to supported Rclone cloud storage services ########
+#### purpose: Syncs local production server data to preferred remote cloud storage service #########
 #### module version: Rclone 1.55.x #################################################################
-#### bash aliases: ss rclone, ss remote backup #####################################################
+#### bash aliases: ss backup, ss remote backup #####################################################
 ####################################################################################################
 
 ## source ss-config ##
@@ -20,6 +20,26 @@ source /var/www/ss-functions
 ## BELOW THIS RELIES ON SS-CONFIG AND SS-FUNCTIONS
 
 ####################################################################################################
+#### TABLE OF CONTENTS (SS-Remote-Backup) ##########################################################
+####################################################################################################
+
+## this is a brief summary of the different code snippets you will find in this script ##
+## each section should be commented so you understand what is being accomplished ##
+
+## A. Touch Timestamp File
+## B. Message (Begin Script)
+
+####################################################################################################
+#### SS-Remote-Backup: Touch Timestamp File ########################################################
+####################################################################################################
+
+## this is a dummy timestamp file that will remember the last time this script was run ##
+## it can be useful for developer reference and is sometimes used by SlickStack ##
+
+## script timestamp ##
+touch "${TIMESTAMP_SS_REMOTE_BACKUP}"
+
+####################################################################################################
 #### SS-Remote-Backup: Message (Begin Script) ######################################################
 ####################################################################################################
 
@@ -27,7 +47,7 @@ source /var/www/ss-functions
 ## it will only be noticed by sudo users who manually call ss core bash scripts ##
 
 ## echo message ##
-echo -e "${COLOR_INFO}Running ss-remote-backup: Syncs local production server data to supported Rclone cloud storage services... ${NOCOLOR}"
+echo -e "${COLOR_INFO}Running ss-remote-backup: Syncs local production server data to preferred remote cloud storage service... ${NOCOLOR}"
 sleep "$SLEEP_MESSAGE_BEGIN"
 
 ####################################################################################################
@@ -41,12 +61,12 @@ sleep "$SLEEP_MESSAGE_BEGIN"
 RCLONE_CONFIG="/var/www/meta/rclone.conf"
 export RCLONE_CONFIG
 
-rclone "${RCLONE_MODE}" "${RCLONE_BACKUP_PATH}" "slickstack:${RCLONE_REMOTE_PATH}" --transfers "${RCLONE_PARALLEL_TRANSFERS}" --retries 5 --fast-list
-
-
+if [[ -n "${RCLONE_USER}"  ]]; then
+    rclone "${RCLONE_MODE}" "${RCLONE_BACKUP_PATH}" "slickstack:${RCLONE_REMOTE_PATH}" --transfers "${RCLONE_PARALLEL_TRANSFERS}" --retries 5 --fast-list
+fi
 
 ####################################################################################################
-#### RSYNC
+#### SS-Remote-Backup: Rsync
 ####################################################################################################
 
 ## https://www.rsync.net/resources/howto/rsync.html
@@ -55,16 +75,6 @@ rclone "${RCLONE_MODE}" "${RCLONE_BACKUP_PATH}" "slickstack:${RCLONE_REMOTE_PATH
 if [[ -n "${RSYNC_USER}"  ]]; then
     rsync -avH "${RSYNC_BACKUP_PATH}" "${RSYNC_USER}"@"${RSYNC_REMOTE_HOST}":slickstack/"${SITE_DOMAIN}"
 fi
-
-####################################################################################################
-#### SS-Remote-Backup: Touch Timestamp File (End Script) ###########################################
-####################################################################################################
-
-## this is a dummy timestamp file that will remember the last time this script was run ##
-## it can be useful for developer reference and is sometimes used by SlickStack ##
-
-## script timestamp ##
-touch "$TIMESTAMP_SS_REMOTE_BACKUP"
 
 ####################################################################################################
 #### SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ###############
