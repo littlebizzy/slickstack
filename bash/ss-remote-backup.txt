@@ -56,8 +56,11 @@ sleep "${SLEEP_MESSAGE_BEGIN}"
 #### B. SS-Remote-Backup: Message (Begin Script) ###################################################
 ####################################################################################################
 
+## since this script uses rsync over ssh (not daemonized) we use sshpass to automate it ##
+## sshpass will provide the password for the remote rsync server to the shell ##
+
 ## install sshpass ##
-# apt install sshpass > /dev/null 2>&1
+apt install sshpass > /dev/null 2>&1
 
 ####################################################################################################
 #### C. SS-Remote-Backup: Run Rclone Backup (If Preferred) #########################################
@@ -82,8 +85,7 @@ fi
 ## https://stackoverflow.com/questions/3299951/how-to-pass-password-automatically-for-rsync-ssh-command
 
 if [[ -n "${RSYNC_USER}" ]]; then
-    export RSYNC_PASSWORD="${RSYNC_PASSWORD}"
-    ss_rsync_backup "${RSYNC_BACKUP_PATH}" "${RSYNC_USER}"@"${RSYNC_REMOTE_HOST}":slickstack/"${SITE_DOMAIN}"
+     sshpass -p "${RSYNC_PASSWORD}" ss_rsync_backup "${RSYNC_BACKUP_PATH}" "${RSYNC_USER}"@"${RSYNC_REMOTE_HOST}":slickstack/"${SITE_DOMAIN}"
 fi
 
 ####################################################################################################
@@ -116,5 +118,9 @@ fi
 ## Ref: https://stackoverflow.com/questions/11829022/bypass-rsync-prompt-are-you-sure-you-want-to-continue-connecting
 ## Ref: https://www.unix.com/shell-programming-and-scripting/277256-how-avoid-rsync-authenticity-host-prompt.html
 ## Ref: https://unix.stackexchange.com/questions/111526/how-can-i-rsync-without-prompt-for-password-without-using-public-key-authentica
+## Ref: https://www.upguard.com/blog/secure-rsync
+## Ref: https://serverfault.com/questions/127209/username-and-password-for-rsync-in-script
+## Ref: https://unix.stackexchange.com/questions/33271/how-to-avoid-ssh-asking-permission
+## Ref: https://stackoverflow.com/questions/13510229/giving-the-password-of-the-server-within-the-command
 
 ## SS_EOF
