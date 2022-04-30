@@ -4,7 +4,6 @@ SlickStack is a free LEMP stack automation script written in Bash designed to en
 
 * [**Discord server**](https://discord.gg/nGskJdg)
 * [**Skype group chat**](https://join.skype.com/NdpqKrN2BHdN)
-* [**Matrix/Element room**](https://app.element.io/#/room/#general:matrix.slickstack.io)
 
 | PageSpeed | GTMetrix | Pingdom | SecHeaders | SSL Labs | WebPageTest | ImmuniWeb |
 | :--------------: | :------: | :-----: | :--------------: | :-------------: | :-------------: | :-------------: |
@@ -14,7 +13,7 @@ SlickStack is a free LEMP stack automation script written in Bash designed to en
 
 *Last updated: Apr 30, 2022*
 
-| LEMP Module | Mirrors | Version | What does SlickStack [ss] customize? |
+| LEMP Module | Mirrors | Version | What does SlickStack optimize? |
 | :------------- | :----------: | :----------: | :----------: |
 | **Ubuntu LTS** | [mirrors](https://mirrors.slickstack.io/modules/ubuntu/) | 22.04 | `crontab` + `gai.conf` + `sshd_config` + `sudoers` + `sysctl.conf` |
 | **Nginx** | [mirrors](https://mirrors.slickstack.io/modules/nginx/) | 1.18.x | `nginx.conf` + server blocks |
