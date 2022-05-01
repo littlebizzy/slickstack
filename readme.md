@@ -31,6 +31,10 @@ SlickStack is a free LEMP stack automation script written in Bash designed to en
 
 ## Changelog
 
+* **NEW!** Remote rsync backups are now working properly (experimental, just like rclone)... we recommend trying rsync.net paid service for remote backups, it can integrate with S3 (etc) for those who insist on that. We are hoping to prioritize standard protocols like rsync since portability is a big goal for SlickStack, instead of just giving up and integrating proprietary AWS API.
+
+* **NEW!** SlickStack has been tested successfully with Ubuntu 22.04 and PHP 8.1 with great results, let us know if any feedback.
+
 * **NEW!** swapfile is now required for all servers and can't be disabled in ss-config anymore... a few best practice security headers are also now hardcoded in nginx.conf and can't be edited in ss-config anymore.
 
 * **NEW!** bug fixed that prevented dev/staging sites loading on sites that used www in production... also, Certbot support for staging/dev/prod in the same single SSL certificate now works properly! (previously, was missing separate web root flags as required)
