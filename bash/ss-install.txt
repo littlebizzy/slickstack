@@ -15,7 +15,7 @@
 ## SS-CONFIG MUST BE PROPERLY CONFIGURED AND ON CURRENT BUILD BEFORE RUNNING SS-INSTALL ##
 ## ENSURE THAT YOUR SS-CONFIG BUILD REMAINS CURRENT BY RUNNING SS-UPDATE-CONFIG ##
 
-SS_INSTALL_BUILD="MAY2022C"
+SS_INSTALL_BUILD="MAY2022D"
 
 ####################################################################################################
 #### TABLE OF CONTENTS (SS-Install) ################################################################
@@ -490,6 +490,13 @@ if [[ ! -f "/var/www/ss-config" ]]; then
     guest_pass_random=$(openssl rand -hex 12)
     read -t 300 -p "$(echo -e ${LIGHTGRAY}"Choose guest password (easy is fine): "${LIGHTGREEN})" -e -i ${guest_pass_random} ss_var_guest_password || ss_var_guest_password=${guest_pass_random} "${NOCOLOR}"
     sed -i "s/@GUEST_PASSWORD/$ss_var_guest_password/g" /tmp/ss-config
+    
+    ## new line ##
+    printf "\n"
+    
+    ## PROMPT: which remote backups do you want ##
+    read -t 300 -p "$(echo -e ${LIGHTGRAY}"Which remote backups do you want? (none|rsync|rclone): "${LIGHTGREEN})" -e -i 'none' ss_var_remote_backups || ss_var_remote_backups=none "${NOCOLOR}"
+    sed -i "s/@SS_REMOTE_BACKUPS/$ss_var_remote_backups/g" /tmp/ss-config
     
     ## new line ##
     printf "\n"
