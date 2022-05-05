@@ -192,10 +192,8 @@ fi
 ## minimum wp_options required to avoid /wp-admin/install.php redirect are below: ##
 ## home/siteurl, blogname, admin_user, admin_email, admin_password ##
 
-INSTALLED_ALREADY_EMAIL=$(mysql --database=${DB_NAME} --execute="SELECT * FROM ${DB_PREFIX}options WHERE option_name LIKE 'admin_email'"; 2> /dev/null)
-INSTALLED_ALREADY_BLOGNAME=$(mysql --database=${DB_NAME} --execute="SELECT * FROM ${DB_PREFIX}options WHERE option_name LIKE 'blogname'"; 2> /dev/null)
-
-if [[ -z "${INSTALLED_ALREADY_EMAIL}" ]] && [[ -z "${INSTALLED_ALREADY_BLOGNAME}" ]]; then 
+## populate wp_options if not exists ##
+if [[ -z $(mysql --execute "SHOW TABLES FROM ${DB_NAME} WHERE Tables_in_${DB_NAME} LIKE '${DB_PREFIX}options';" 2> /dev/null) ]]; then
     /usr/bin/php -q -r "
     include '/var/www/html/wp-admin/install.php';
     wp_install('prod site', '"${SFTP_USER}"', '"${SFTP_USER}"@"${SITE_DOMAIN_EXCLUDING_WWW}"', 1, '', '"${SFTP_PASSWORD}"');
