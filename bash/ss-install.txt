@@ -7,7 +7,7 @@
 #### path: /var/www/ss-install #####################################################################
 #### destination: n/a (not a boilerplate) ##########################################################
 #### purpose: Reinstalls the entire SlickStack LEMP environment and all modules (idempotent) #######
-#### module version: Ubuntu 20.04 LTS ##############################################################
+#### module version: Ubuntu 22.04 LTS ##############################################################
 #### sourced by: n/a (wget -O ss slick.fyi && bash ss) #############################################
 #### bash aliases: ss install ######################################################################
 ####################################################################################################
@@ -635,7 +635,7 @@ fi
 ## here we must source ss-config again after the setup wizard has completed generation ##
 ## this is different than the conditional sourcing at the top of this script ##
 
-## include SlickStack configuration ##
+## source ss-config ##
 source /var/www/ss-config
 
 ####################################################################################################
@@ -665,9 +665,6 @@ fi
 ## now that ss-config is configured we must retrieve the current cron jobs and scripts ##
 ## ss-check is a critical file at this stage so ss-install will exit if missing ##
 
-## snippet variables ##
-
-
 ## download current versions ##
 ss_wget_slow -O "${TMP_SS_CHECK}" "${MIRROR_SS_CHECK}"
 
@@ -692,19 +689,19 @@ else
 fi
 
 ####################################################################################################
-#### SS-Install: Set Confold As Ubuntu Dpkg Default ################################################
+#### SS-Install: Set Ubuntu Dpkg Default (Confold) #################################################
 ####################################################################################################
 
 ## the first time you run ss-install we want to ensure that confold is dpkg default ##
 ## this helps to avoid overwriting module config files that SlickStack uses ##
 
-## set confold as dpkg default (fail-safe in case apt upgrade called directly) ##
+## set confold as dpkg default ##
 DEBIAN_FRONTEND="noninteractive dpkg --configure -a --force-confold"
 
-## update Ubuntu repo cache ##
+## update apt cache ##
 apt update > /dev/null 2>&1
 
-## upgrade installed Ubuntu packages (LEMP modules) + but now Linux kernel (full-upgrade) ##
+## upgrade packages ##
 apt upgrade > /dev/null 2>&1
 
 ####################################################################################################
@@ -785,8 +782,8 @@ source "${PATH_SS_INSTALL_PHP_CONFIG}"
 
 if [[ "${SS_APP}" != "mysql" ]]; then
 
-    ## run ss-install-nginx-packages ##
-    source "$PATH_SS_INSTALL_NGINX_PACKAGES"
+## run ss-install-nginx-packages ##
+source "${PATH_SS_INSTALL_NGINX_PACKAGES}"
     
 chown -R "${SFTP_USER}":www-data /var/www/html/.well-known ## accessed by server for e.g. Cerbot but also by SFTP user for things like Stripe ##
 chown -R "${SFTP_USER}":www-data /var/www/html/.well-known/acme-challenge ## accessed by server for e.g. Cerbot but also by SFTP user for things like Stripe ##
@@ -807,11 +804,8 @@ chown www-data:www-data /var/www/logs ## must be www-data:www-data
 chown www-data:www-data /var/www/meta ## must be www-data:www-data
 chown www-data:www-data /var/www/meta/.htpasswd ## must be www-data:www-data
 
-    ## run ss-install-nginx-config ##
-    source "${PATH_SS_INSTALL_NGINX_CONFIG}"
-   
-    ## run ss-install-nginx-ssl ##
-    # source "${PATH_SS_INSTALL_NGINX_SSL}"
+## run ss-install-nginx-config ##
+source "${PATH_SS_INSTALL_NGINX_CONFIG}"
 
 fi
 
@@ -1092,7 +1086,7 @@ echo -e "${COLOR_WARN}avoid redirect loops (HSTS can also be activated if you li
 echo -e "${COLOR_WARN}boost, use Cloudflare Page Rules to [cache all] for /wp-content/* requests ${NOCOLOR}"
 echo -e "${COLOR_WARN}and to force-redirect (non)www requests too. Lastly, be sure to set TLS ${NOCOLOR}"
 echo -e "${COLOR_WARN}version to 1.2+ in Cloudflare for top SSL security scores. If you notice ${NOCOLOR}"
-echo -e "${COLOR_WARN}any errors on your frontend, try running ss-install again. Cheers! ${NOCOLOR}"
+echo -e "${COLOR_WARN}any errors on your frontend, simply run ss-install again. Cheers! ${NOCOLOR}"
 echo -e ""
 
 ####################################################################################################
