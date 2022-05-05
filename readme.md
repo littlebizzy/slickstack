@@ -31,6 +31,8 @@ SlickStack is a free LEMP stack automation script written in Bash designed to en
 
 ## Changelog
 
+* **NEW!** Bug fix to ensure WordPress installs automatically on brand new SlickStack servers more reliably (force wp_options population if table not detected and using SFTP user/password for default admin credentials).
+
 * **NEW!** Remote rsync backups are now working properly (experimental, just like rclone)... we recommend trying rsync.net paid service for remote backups, it can integrate with S3 (etc) for those who insist on that. We are hoping to prioritize standard protocols like rsync since portability is a big goal for SlickStack, instead of just giving up and integrating proprietary AWS API.
 
 * **NEW!** SlickStack has been tested successfully with Ubuntu 22.04 and PHP 8.1 with great results, let us know if any feedback.
