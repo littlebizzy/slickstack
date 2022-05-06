@@ -27,15 +27,17 @@ source /var/www/ss-functions
 #### TABLE OF CONTENTS (SS-Install-Nginx-Config) ###################################################
 ####################################################################################################
 
+## this is a brief summary of the different code snippets you will find in this script ##
+## each section should be commented so you understand what is being accomplished ##
+
 ## A. Touch Timestamp File
 ## B. Message (Begin Script)
 ## C. Cleanup Temporary Files
-## C. Retrieve Latest Maintenance.html
-## D. Generate OpenSSL Certificate
-## E. Generate Htpasswd File
-## F. Install Nginx.conf
-## G. Delete Old Server Blocks
-## H.
+## D. Retrieve Current Maintenance.html
+## E. Run SS-Encrypt-OpenSSL
+## F. Generate Htpasswd File
+## G. Install Nginx.conf
+## H. Delete Old Server Blocks
 
 ####################################################################################################
 #### A. SS-Install-Nginx-Config: Touch Timestamp File ##############################################
@@ -71,9 +73,10 @@ rm /tmp/server-block*
 rm /tmp/default*
 rm /tmp/letsencrypt.conf*
 rm /tmp/openssl.conf*
+rm /tmp/maintenance.html
 
 ####################################################################################################
-#### C. SS-Install-Nginx-Config: Retrieve Latest Maintenance.html ##################################
+#### D. SS-Install-Nginx-Config: Retrieve Current Maintenance.html #################################
 ####################################################################################################
 
 ## here we retrieve the latest default maintenance.html file (or use your own design) ##
@@ -90,7 +93,7 @@ chown www-data:www-data "${PATH_MAINTENANCE_HTML}"
 chmod 0444 "${PATH_MAINTENANCE_HTML}" ## 0444 is enough
 
 ####################################################################################################
-#### D. SS-Install-Nginx-Config: Generate OpenSSL Certificate ######################################
+#### E. SS-Install-Nginx-Config: Run SS-Encrypt-OpenSSL ############################################
 ####################################################################################################
 
 ## here we generate slickstack.crt and slickstack.key as the default SSL for Nginx ##
@@ -100,7 +103,7 @@ chmod 0444 "${PATH_MAINTENANCE_HTML}" ## 0444 is enough
 source "${PATH_SS_ENCRYPT_OPENSSL}"
 
 ####################################################################################################
-#### E. SS-Install-Nginx-Config: Generate Htpasswd File ############################################
+#### F. SS-Install-Nginx-Config: Generate Htpasswd File ############################################
 ####################################################################################################
 
 ## null file contents ##
@@ -111,7 +114,7 @@ ENCRYPTED_GUEST_PASSWORD=$(openssl passwd -apr1 "${GUEST_PASSWORD}")
 printf "${GUEST_USER}:${ENCRYPTED_GUEST_PASSWORD}\n" >> /var/www/meta/.htpasswd
 
 ####################################################################################################
-#### F. SS-Install-Nginx-Config: Install Nginx.conf ################################################
+#### G. SS-Install-Nginx-Config: Install Nginx.conf ################################################
 ####################################################################################################
 
 ## here we install an optimized Nginx config designed for high traffic and CloudFlare ##
@@ -383,7 +386,7 @@ fi
 cp "${TMP_NGINX_CONF}" "${PATH_NGINX_CONF}"
 
 ####################################################################################################
-#### G. SS-Install-Nginx-Config: Delete Old Server Blocks ##########################################
+#### H. SS-Install-Nginx-Config: Delete Old Server Blocks ##########################################
 ####################################################################################################
 
 ## here we delete any existing previous server blocks to avoid conflicts with Nginx ##
@@ -394,7 +397,7 @@ cp "${TMP_NGINX_CONF}" "${PATH_NGINX_CONF}"
 rm /var/www/sites/*
 
 ####################################################################################################
-#### SS-Install-Nginx-Config: Install Nginx Server Block (Dev Subdomain) ###########################
+#### SS-Install-Nginx-Config: Install Nginx Server Block (Dev Site) ################################
 ####################################################################################################
 
 ## here we install the Nginx server block for dev subdomain if enabled in ss-config ##
@@ -501,7 +504,7 @@ if [[ "$STAGING_SITE" == "true" ]]; then
 fi
 
 ####################################################################################################
-#### SS-Install-Nginx-Config: Install Nginx Server Block (Production) ##################
+#### SS-Install-Nginx-Config: Install Nginx Server Block (Production) ##############################
 ####################################################################################################
 
 ## here we install the Nginx server block for production (default) site no matter what ##
@@ -552,7 +555,7 @@ fi
     fi
 
 ####################################################################################################
-#### SS-Install-Nginx-Config: Temporarily Activate OpenSSL ####################
+#### SS-Install-Nginx-Config: Temporarily Activate OpenSSL #########################################
 ####################################################################################################
 
 ## here we must temporarily activate OpenSSL in order to avoid fatal errors in Nginx ##
