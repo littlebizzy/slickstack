@@ -124,6 +124,27 @@ fi
 
 # fi
 
+
+####################################################################################################
+####################################################################################################
+
+## copy paste from ss-install to see if this helps avoid errors on brand new SS servers ## 
+
+chown -R "${SFTP_USER}":www-data /var/www/html/.well-known ## accessed by server for e.g. Cerbot but also by SFTP user for things like Stripe ##
+chown -R "${SFTP_USER}":www-data /var/www/html/.well-known/acme-challenge ## accessed by server for e.g. Cerbot but also by SFTP user for things like Stripe ##
+
+## if staging enabled
+if [[ "${STAGING_SITE}" != "false" ]]; then 
+    chown -R "${SFTP_USER}":www-data /var/www/html/staging/.well-known ## accessed by server for e.g. Cerbot but also by SFTP user for things like Stripe ##
+    chown -R "${SFTP_USER}":www-data /var/www/html/staging/.well-known/acme-challenge ## accessed by server for e.g. Cerbot but also by SFTP user for things like Stripe ##
+fi
+
+## if dev enabled
+if [[ "${DEV_SITE}" != "false" ]]; then 
+    chown -R "${SFTP_USER}":www-data /var/www/html/dev/.well-known ## accessed by server for e.g. Cerbot but also by SFTP user for things like Stripe ##
+    chown -R "${SFTP_USER}":www-data /var/www/html/dev/.well-known/acme-challenge ## accessed by server for e.g. Cerbot but also by SFTP user for things like Stripe ##
+fi
+
 ####################################################################################################
 #### SS-Encrypt-Certbot: Request Certificates From Lets Encrypt Servers (Rate-Limited) #############
 ####################################################################################################
