@@ -15,7 +15,7 @@
 ## SS-CONFIG MUST BE PROPERLY CONFIGURED AND ON CURRENT BUILD BEFORE RUNNING SS-INSTALL ##
 ## ENSURE THAT YOUR SS-CONFIG BUILD REMAINS CURRENT BY RUNNING SS-UPDATE-CONFIG ##
 
-SS_INSTALL_BUILD="MAY2022E"
+SS_INSTALL_BUILD="MAY2022G"
 
 ####################################################################################################
 #### TABLE OF CONTENTS (SS-Install) ################################################################
@@ -914,7 +914,7 @@ if [[ "${SS_APP}" == "mediawiki" ]]; then
 fi
 
 ####################################################################################################
-#### SS-Install: Install Rclone ########################################################
+#### SS-Install: Install Rclone ####################################################################
 ####################################################################################################
 
 ## run ss-install-rclone-packages ##
@@ -964,23 +964,24 @@ source "${PATH_SS_EMPTY_LOGS}"
 source "${PATH_SS_PERMS}"
 
 ####################################################################################################
-#### SS-Install: Disable Maintenance Mode ##########################################################
-####################################################################################################
-
-## run ss-maintenance-disable ##
-source "${PATH_SS_MAINTENANCE_DISABLE}"
-
-####################################################################################################
 #### SS-Install: Sync Staging Site #################################################################
 ####################################################################################################
 
 ## now that everything is setup and permissions fixed we sync production to staging ##
 ## it will only sync files/database if staging site is enabled in ss-config ##
 
-## FIX THIS: first we must support non-interactive prod database setup
-
 ## run ss-sync-staging ##
-# source "${PATH_SS_SYNC_STAGING}"
+source "${PATH_SS_SYNC_STAGING}"
+
+####################################################################################################
+#### SS-Install: Disable Maintenance Mode ##########################################################
+####################################################################################################
+
+## since everything is now setup including perms and staging we disable maintenance ##
+## for good measure we also purge all caches immediately after this snippet ##
+
+## run ss-maintenance-disable ##
+source "${PATH_SS_MAINTENANCE_DISABLE}"
 
 ####################################################################################################
 #### SS-Install: Clear Caches (All Caches) #########################################################
@@ -1027,7 +1028,8 @@ source "${PATH_SS_RESTART_UFW}"
 #### SS-Install: Run SS-Worker #####################################################################
 ####################################################################################################
 
-## just in case any random things need to be done ##
+## just in case any random things need to be done we run ss-worker at the very end ##
+## ss-worker takes care of various tasks that lack a specific bash script ##
 
 ## run ss-worker ##
 source "${PATH_SS_WORKER}"
