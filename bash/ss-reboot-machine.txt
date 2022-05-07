@@ -21,6 +21,16 @@ source /var/www/ss-functions
 ## BELOW THIS RELIES ON SS-CONFIG AND SS-FUNCTIONS
 
 ####################################################################################################
+#### SS-Reboot-Machine: Touch Timestamp File #######################################################
+####################################################################################################
+
+## this is a dummy timestamp file that will remember the last time this script was run ##
+## it can be useful for developer reference and is sometimes used by SlickStack ##
+
+## script timestamp ##
+ss_touch "${TIMESTAMP_SS_REBOOT_MACHINE}"
+
+####################################################################################################
 #### SS-Reboot-Machine: MESSAGE (Begin) ############################################################
 ####################################################################################################
 
@@ -38,7 +48,6 @@ sleep "$SLEEP_MESSAGE_BEGIN"
 ## FUTURE: customize via ss-config options ##
 ## reboot only if ss-reboot was not run in past 60 minutes ##
 if [[ ! -f "${TIMESTAMP_SS_REBOOT_MACHINE}" ]] || [[ -n $(find "${TIMESTAMP_SS_REBOOT_MACHINE}" -amin +60) ]]; then
-    ss_touch "${TIMESTAMP_SS_REBOOT_MACHINE}"
     /bin/bash -c "/sbin/reboot"
 else 
     echo -e ""
@@ -46,18 +55,6 @@ else
     echo -e "${YELLOW}therefore ss-reboot has exited without rebooting at this time. ${NOCOLOR}"
     echo -e ""
 fi
-
-####################################################################################################
-#### SS-Reboot-Machine: Touch Timestamp File (End Script) ##########################################
-####################################################################################################
-
-## THIS SNIPPET USES IRREGULAR CODING
-
-## this is a dummy timestamp file that will remember the last time this script was run ##
-## it can be useful for developer reference and is sometimes used by SlickStack ##
-
-## script timestamp ##
-# touch "$TIMESTAMP_SS_REBOOT_MACHINE" ## DO NOT ENABLE HERE
 
 ####################################################################################################
 #### SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ###############
