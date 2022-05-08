@@ -26,14 +26,12 @@
 ## B. Touch Timestamp File
 ## C. Message (Begin Script)
 ## D. Run SS-Dump-Database (Conditional)
-
 ## E. Import Production Database To Staging Database
-## E. Copy All Relevant Files From Production To Staging
-## E. Fix Any Hardcoded Links In Staging Theme Files
-
-
-### this script should probably also run ss-install-wp-config and ss-install-mu-plugins 
-## if not yet exists under staging folder and ss-install-mysql-database if not yet exists "staging"
+## F. Copy All Relevant Files From Production To Staging
+## G. Run SS-Install-WordPress-Config (Conditional)
+## H. Run SS-Install-WordPress-MU-Plugins (Conditional)
+## I. Fix Any Hardcoded Links In Staging Theme Files
+## J. Cleanup Temporary Files
 
 ####################################################################################################
 #### A. Source SS-Config + SS-Functions ############################################################
@@ -101,7 +99,7 @@ if [[ ! -f "/var/www/backups/mysql/production.sql" ]]; then
 fi
 
 ####################################################################################################
-#### C. SS-Sync-Staging: Import Production Database To Staging Database ############################
+#### E. SS-Sync-Staging: Import Production Database To Staging Database ############################
 ####################################################################################################
 
 ## this snippet duplicates the dumped production database and imports it into MySQL ##
@@ -125,7 +123,7 @@ if [[ "${STAGING_SITE}" == "true" ]]; then
     fi
     
 ####################################################################################################
-#### D. SS-Sync-Staging: Copy All Relevant Files From Production To Staging ########################
+#### F. SS-Sync-Staging: Copy All Relevant Files From Production To Staging ########################
 ####################################################################################################
 
 ## here we copy over everything from production to staging besides uploads (media files) ##
@@ -146,7 +144,7 @@ if [[ "${STAGING_SITE}" == "true" ]]; then
     ss_rm /var/www/html/staging/staging*
     
 ####################################################################################################
-#### D. SS-Sync-Staging: Run SS-Install-WordPress-Config (Conditional) #############################
+#### G. SS-Sync-Staging: Run SS-Install-WordPress-Config (Conditional) #############################
 ####################################################################################################
 
 ## below snippet will install wp-config.php in case does not exist already in staging ##
@@ -158,7 +156,7 @@ if [[ ! -f "/var/www/html/staging/wp-config.php" ]]; then
 fi
 
 ####################################################################################################
-#### D. SS-Sync-Staging: Run SS-Install-WordPress-MU-Plugins (Conditional) #########################
+#### H. SS-Sync-Staging: Run SS-Install-WordPress-MU-Plugins (Conditional) #########################
 ####################################################################################################
 
 ## below snippet will install MU plugins in case they do not exist already in staging ##
@@ -170,7 +168,7 @@ if [[ ! -f "/var/www/html/staging/wp-content/mu-plugins/xxx-common.php" ]]; then
 fi
 
 ####################################################################################################
-#### E. SS-Sync-Staging: Fix Any Hardcoded Links In Staging Theme Files ############################
+#### I. SS-Sync-Staging: Fix Any Hardcoded Links In Staging Theme Files ############################
 ####################################################################################################
 
 ## many themes (or custom-coded themes) often contain hardcoded HTML assets and links ##
@@ -184,7 +182,7 @@ fi
 fi
 
 ####################################################################################################
-## delete tmp files 
+## J. SS-Sync-Staging: Cleanup Temporary Files #####################################################
 ####################################################################################################
 
 ## delete tmp files ##
