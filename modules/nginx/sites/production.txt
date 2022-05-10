@@ -11,6 +11,7 @@
 ####################################################################################################
 
 ## SLICKSTACK SUPPORTS HTTPS-ONLY NGINX SERVER BLOCKS WITH HSTS ENABLED BY DEFAULT ##
+## PRODUCTION, STAGING, AND DEV SITES EACH HAVE SEPARATE NGINX SERVER BLOCKS ##
 
 ####################################################################################################
 #### Server Block (Production): Catch-All Redirect To Canonical Domain #############################
@@ -70,8 +71,12 @@ server {
 
 	## force trailing slash on */wp-admin requests ##
 	rewrite /wp-admin$ https://$host$uri/ permanent;
+	
 		
     	location / {
+		## first try files, then directories, otherwise query index.php ##
+        	try_files $uri $uri/ /index.php?$args;
+	
     		## redirect index.php to root ##
     		if ($request_uri ~* "^(.*/)index\.php$") {
         		return 301 $1;
@@ -81,22 +86,29 @@ server {
 		if (-f /var/www/html/maintenance.html) {
 			return 503;
 		}
-  
-  
-  
-        ## first try files, then directories, otherwise query index
-        try_files $uri $uri/ /index.php?$args;
 	
-		## force trailing slashes on urls (do not enable for bbPress/BuddyPress sites)
-        # rewrite ^([^.]*[^/])$ $1/ permanent;
+		## force trailing slashes on urls (do not enable for bbPress/BuddyPress sites) ##
+        	# rewrite ^([^.]*[^/])$ $1/ permanent;
 	
-		## block user enumeration
-    	if ( $query_string ~ "author=([0-9]*)" ) { 
+		## block user enumeration ##
+    		if ( $query_string ~ "author=([0-9]*)" ) { 
 			return 403;
 		}
 		
     }
 
+####################################################################################################
+#### Server Block (Production): Noindex Thin Content Regex #########################################
+####################################################################################################
+
+		## noindex pagination ##
+		location ~ ^(.*)/page/(.*)/$ {
+			try_files $uri $uri/ /index.php?$args;
+			set $robots "noindex, nofollow, nosnippet, noarchive";
+		}
+		
+		## noindex tags/feed/etc ? ##
+		
 ####################################################################################################
 
 ####################################################################################################
@@ -213,6 +225,9 @@ server {
         fastcgi_cache_valid 200 301 404 @CACHEVALID;
         fastcgi_cache_bypass $skip_cache;
         fastcgi_no_cache $skip_cache;
+	
+	more_set_headers "X-Robots-Tag $robots";
+
     }
     
 ####################################################################################################
@@ -452,33 +467,6 @@ server {
     }
     
 ####################################################################################################
-
-####################################################################################################
-
-# https://serverfault.com/questions/977825/setting-noindex-some-pages-on-nginx
-
-## noindex pagination ##
- #   location ~ ^/page/(.*)$ {
- #   location ~ ^(.*)/page/$ {
- #   location ~ ^/?(.*?)/page/?$ {
- # location ~ ^(\/.*)/page/$ {
- 		#include /etc/nginx/fastcgi.conf;
-        	#try_files $uri =404;
-        	#fastcgi_split_path_info ^(.+\.php)(/.+)$;
-		#fastcgi_pass 127.0.0.1:9000;
-		#fastcgi_read_timeout 300;
-        	#fastcgi_index index.php;
-        	#fastcgi_cache WORDPRESS;
-        	#fastcgi_cache_valid 200 301 404 @CACHEVALID;
-        	#fastcgi_cache_bypass $skip_cache;
-        	#fastcgi_no_cache $skip_cache;
-		## noindex ##
-		#add_header X-Robots-Tag "noindex, nofollow, nosnippet, noarchive";
-     # }
-     
-     ## do for /feed/ too
-    
-####################################################################################################
 #### Server Block: Custom Settings For Popular Third-Party WordPress Plugins #######################
 ####################################################################################################
     
@@ -581,5 +569,11 @@ server {
 ## Ref: https://community.letsencrypt.org/t/how-to-nginx-configuration-to-enable-acme-challenge-support-on-all-http-virtual-hosts/5622/27
 ## Ref: https://www.cloudsigma.com/nginx-server-and-location-block-selection-algorithms-overview/
 ## Ref: https://www.claudiokuenzler.com/blog/1104/define-optional-sub-uri-paths-nginx-location-using-pcre-regex
+## Ref: https://stackoverflow.com/questions/32964572/nginx-location-try-files-with-add-header-redirect-and-cors
+## Ref: https://stackoverflow.com/questions/39129575/nginx-add-header-on-specific-uri-to-php-app-with-front-controller
+## Ref: https://serverfault.com/questions/496371/how-to-use-nested-nginx-location-blocks-prefixes-vs-regex-directives
+## Ref: https://github.com/openresty/headers-more-nginx-module/issues/11
+## Ref: https://laracasts.com/discuss/channels/servers/having-trouble-adding-headers-to-specific-path-in-nginx
+## Ref: https://www.peterbe.com/plog/be-very-careful-with-your-add_header-in-nginx
 
 ## SS_EOF
