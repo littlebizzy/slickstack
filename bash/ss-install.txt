@@ -111,33 +111,25 @@ ss_touch "${TIMESTAMP_SS_INSTALL}"
 
 ## verify ss-install build matches ss-config (if exists) ##
 if [[ -f "/var/www/ss-config" ]] && [[ "${SS_BUILD}" != "${SS_INSTALL_BUILD}" ]]; then 
-    echo -e ""
-    echo -e "${COLOR_WARN}Exiting ss-install: Please run ss-update-config since your ss-config is outdated and try again... ${NOCOLOR}"
-    echo -e ""
+    echo -e "${COLOR_WARN}ss-install: Please run ss-update-config and then run ss-install again... ${NOCOLOR}"
     exit 1
 fi
 
 ## verify supported ubuntu version ##
 if [[ "${UBUNTU_VERSION}" != @(22.04|20.04|18.04) ]]; then
-    echo -e ""
     echo -e "${COLOR_WARN}Exiting ss-install: SlickStack is designed for Ubuntu LTS (but this VPS is running ${UBUNTU_VERSION})... ${NOCOLOR}"
-    echo -e ""
     exit 1
 fi
 
 ## verify at least 5GB free disk space remains ##
 if [[ "${SYSTEM_DISK_FREE}" -lt 5242880 ]]; then ## 10G = 10485760 / 5GB = 5242880
-    echo -e ""
     echo -e "${COLOR_WARN}Exiting ss-install: It looks like your server has less than 5GB free space available, please upgrade your server and then run ss-install again. ${NOCOLOR}"
-    echo -e ""
     exit 1
 fi
 
 ## very not in docker/lxc container ##
 if [[ -f "/.dockerenv" ]] || grep -Eq '(lxc|docker)' /proc/1/cgroup; then 
-    echo -e ""
     echo -e "${COLOR_WARN}Exiting ss-install: It appears your server is running Docker or another container... but SlickStack requires normal Ubuntu LTS without containers. ${NOCOLOR}"
-    echo -e ""
     exit 1
 fi
 
@@ -964,16 +956,6 @@ source "${PATH_SS_INSTALL_UFW_CONFIG}"
 source "${PATH_SS_EMPTY_LOGS}"
 
 ####################################################################################################
-#### SS-Install: Reset Permissions (All Permissions) ###############################################
-####################################################################################################
-
-## intuitively resets all file and user permissions across the entire SlickStack server ##
-## depending on the CMS installed it will also reset those permissions as well ##
-
-## run ss-perms ##
-source "${PATH_SS_PERMS}"
-
-####################################################################################################
 #### SS-Install: Sync Staging Site #################################################################
 ####################################################################################################
 
@@ -982,6 +964,16 @@ source "${PATH_SS_PERMS}"
 
 ## run ss-sync-staging ##
 source "${PATH_SS_SYNC_STAGING}"
+
+####################################################################################################
+#### SS-Install: Reset Permissions (All Permissions) ###############################################
+####################################################################################################
+
+## intuitively resets all file and user permissions across the entire SlickStack server ##
+## depending on the CMS installed it will also reset those permissions as well ##
+
+## run ss-perms ##
+source "${PATH_SS_PERMS}"
 
 ####################################################################################################
 #### SS-Install: Disable Maintenance Mode ##########################################################
@@ -1085,7 +1077,7 @@ echo -e "${COLOR_INFO}#### Congrats! SlickStack installation is now complete. ##
 echo -e "${COLOR_INFO}################################################################################${NOCOLOR}"
 echo -e ""
 echo -e "${COLOR_WARN}NOTE: The SFTP user/password is the default login for WP Admin on all sites ${NOCOLOR}"
-echo -e "${COLOR_WARN}until otherwise configured by your team. Use the bash alias ss to save on ${NOCOLOR}"
+echo -e "${COLOR_WARN}until otherwise configured by your team. Use the bash alias ${BGG_YELLOW}ss${COLOR_RESET} to save on ${NOCOLOR}"
 echo -e "${COLOR_WARN}keystrokes (type ss help for a full list of commands). If this is the first ${NOCOLOR}"
 echo -e "${COLOR_WARN}time you installed SlickStack on this server, type the word bash below and ${NOCOLOR}"
 echo -e "${COLOR_WARN}hit ENTER to reload this shell session and activate these shortcuts. Also ${NOCOLOR}"
