@@ -608,6 +608,7 @@ fi
     done
 
     echo -e ""
+    echo -e ""
     echo -e "${COLOR_INFO}################################################################################${NOCOLOR}"
     echo -e "${COLOR_INFO}#### SlickStack Automated Installation (SS-Install) ############################${NOCOLOR}"
     echo -e "${COLOR_INFO}################################################################################${NOCOLOR}"
@@ -676,21 +677,21 @@ fi
 ## ss-check is a critical file at this stage so ss-install will exit if missing ##
 
 ## download current versions ##
-ss_wget_slow -O "${TMP_SS_CHECK}" "${MIRROR_SS_CHECK}"
+ss_wget_slowest "${TMP_SS_CHECK}" "${MIRROR_SS_CHECK}"
 
 VALIDATE_TMP_SS_CHECK=$(grep 'SS_EOF' "${TMP_SS_CHECK}" 2> /dev/null)
 if [[ -z "${VALIDATE_TMP_SS_CHECK}" ]]; then
-    ss_wget_slow -O "${TMP_SS_CHECK}" "${MIRROR2_SS_CHECK}"
+    ss_wget_slowest "${TMP_SS_CHECK}" "${MIRROR2_SS_CHECK}"
 fi
 
 VALIDATE2_TMP_SS_CHECK=$(grep 'SS_EOF' "${TMP_SS_CHECK}" 2> /dev/null)
 if [[ -z "${VALIDATE2_TMP_SS_CHECK}" ]]; then
-    ss_wget_slow -O "${TMP_SS_CHECK}" "${MIRROR3_SS_CHECK}"
+    ss_wget_slowest "${TMP_SS_CHECK}" "${MIRROR3_SS_CHECK}"
 fi
 
 ## copy files to destination ##
 if [[ -n "${VALIDATE_TMP_SS_CHECK}" ]]; then
-    cp "${TMP_SS_CHECK}" "${PATH_SS_CHECK}"
+    ss_cp "${TMP_SS_CHECK}" "${PATH_SS_CHECK}"
     chown root:root /var/www/ss* ## must be root:root
     chmod 0700 /var/www/ss* ## 0700 means root can execute
     source "${PATH_SS_CHECK}"
@@ -771,6 +772,16 @@ source "${PATH_SS_INSTALL_UBUNTU_UTILS}"
 source "${PATH_SS_INSTALL_UBUNTU_KERNEL}"
 
 ####################################################################################################
+#### SS-Install: Enable Maintenance Mode ###########################################################
+####################################################################################################
+
+## this is a nifty snippet that will put up a public maintenance page during install ##
+## it helps prevent users from interacting with your website at this stage ##
+
+## run ss-maintenance-enable ##
+source "${PATH_SS_MAINTENANCE_ENABLE}"
+
+####################################################################################################
 #### SS-Install: Install PHP-FPM ###################################################################
 ####################################################################################################
 
@@ -795,16 +806,6 @@ source "${PATH_SS_INSTALL_NGINX_PACKAGES}"
 
 ## run ss-install-nginx-config ##
 source "${PATH_SS_INSTALL_NGINX_CONFIG}"
-
-####################################################################################################
-#### SS-Install: Enable Maintenance Mode ###########################################################
-####################################################################################################
-
-## this is a nifty snippet that will put up a public maintenance page during install ##
-## it helps prevent users from interacting with your website at this stage ##
-
-## run ss-maintenance-enable ##
-source "${PATH_SS_MAINTENANCE_ENABLE}"
 
 ####################################################################################################
 #### SS-Install: Install MySQL #####################################################################
