@@ -15,8 +15,6 @@
 ## SS-CONFIG MUST BE PROPERLY CONFIGURED AND ON CURRENT BUILD BEFORE RUNNING SS-INSTALL ##
 ## ENSURE THAT YOUR SS-CONFIG BUILD REMAINS CURRENT BY RUNNING SS-UPDATE-CONFIG ##
 
-SS_INSTALL_BUILD="MAY2022N"
-
 ####################################################################################################
 #### TABLE OF CONTENTS (SS-Install) ################################################################
 ####################################################################################################
@@ -24,6 +22,7 @@ SS_INSTALL_BUILD="MAY2022N"
 ## this is a brief summary of the different code snippets you will find in this script ##
 ## each section should be commented so you understand what is being accomplished ##
 
+## A. Script Build Version
 ## A. Validate (Restore) SS-Functions
 ## B. Source SS-Config + SS-Functions (After Validated)
 ## C. Verify Environment Compatibility
@@ -33,6 +32,15 @@ SS_INSTALL_BUILD="MAY2022N"
 
 ## Touch Timestamp File
 ## Message (Begin Script)
+
+####################################################################################################
+#### A. SS-Install: Build Version ##################################################################
+####################################################################################################
+
+## this build version ensures compatibility with ss-config boilerplate (on localhost) ##
+## it must match the active ss-config build otherwise installing will fail ##
+
+SS_INSTALL_BUILD="MAY2022P"
 
 ####################################################################################################
 #### A. SS-Install: Validate (Restore) SS-Functions ################################################
@@ -779,40 +787,17 @@ source "${PATH_SS_INSTALL_PHP_PACKAGES}"
 source "${PATH_SS_INSTALL_PHP_CONFIG}"
 
 ####################################################################################################
-#### SS-Install: Install Nginx + SSL Certificates ##################################################
+#### SS-Install: Install Nginx (Includes SSL Certs) ################################################
 ####################################################################################################
 
 ## the Nginx installer includes OpenSSL and Lets Encrypt generation to avoid conflicts ##
 ## default settings allow for very high-traffic so CloudFlare is recommended ##
 
-if [[ "${SS_APP}" != "mysql" ]]; then
-
 ## run ss-install-nginx-packages ##
 source "${PATH_SS_INSTALL_NGINX_PACKAGES}"
-    
-chown -R "${SFTP_USER}":www-data /var/www/html/.well-known ## accessed by server for e.g. Cerbot but also by SFTP user for things like Stripe ##
-chown -R "${SFTP_USER}":www-data /var/www/html/.well-known/acme-challenge ## accessed by server for e.g. Cerbot but also by SFTP user for things like Stripe ##
-
-## if staging enabled
-if [[ "${STAGING_SITE}" != "false" ]]; then 
-    chown -R "${SFTP_USER}":www-data /var/www/html/staging/.well-known ## accessed by server for e.g. Cerbot but also by SFTP user for things like Stripe ##
-    chown -R "${SFTP_USER}":www-data /var/www/html/staging/.well-known/acme-challenge ## accessed by server for e.g. Cerbot but also by SFTP user for things like Stripe ##
-fi
-
-## if dev enabled
-if [[ "${DEV_SITE}" != "false" ]]; then 
-    chown -R "${SFTP_USER}":www-data /var/www/html/dev/.well-known ## accessed by server for e.g. Cerbot but also by SFTP user for things like Stripe ##
-    chown -R "${SFTP_USER}":www-data /var/www/html/dev/.well-known/acme-challenge ## accessed by server for e.g. Cerbot but also by SFTP user for things like Stripe ##
-fi
-
-chown www-data:www-data /var/www/logs ## must be www-data:www-data
-chown www-data:www-data /var/www/meta ## must be www-data:www-data
-chown www-data:www-data /var/www/meta/.htpasswd ## must be www-data:www-data
 
 ## run ss-install-nginx-config ##
 source "${PATH_SS_INSTALL_NGINX_CONFIG}"
-
-fi
 
 ####################################################################################################
 #### SS-Install: Enable Maintenance Mode ###########################################################
