@@ -387,37 +387,11 @@ fi
 
 ## download robots.txt ##
 if [[ ! -f "/var/www/html/robots.txt" ]]; then 
-    wget -O "$TMP_ROBOTS_TXT" "$MIRROR_ROBOTS_TXT"
-    cp "$TMP_ROBOTS_TXT" /var/www/html/robots.txt
+    ss_wget_slowest "${TMP_ROBOTS_TXT}" "${MIRROR_ROBOTS_TXT}"
+    ss_cp "${TMP_ROBOTS_TXT}" /var/www/html/robots.txt
     chown www-data:www-data /var/www/html/robots.txt
     chmod 0644 /var/www/html/wp-content/blacklist.txt
 fi
-
-####################################################################################################
-#### H. SS-Worker: Install Ubuntu Swapfile (If Not Exists) #########################################
-####################################################################################################
-
-## CONVERT TO INTERVAL_SS probably better
-
-## this snippet will check if the Linux swapfile exists yet and install if not found ##
-## we include here because the swapfile is so helpful in maintaining stability ##
-
-## run ss-install-ubuntu-swapfile ##
-# if [[ ! -f "/var/www/cache/system/swapfile" ]]; then 
-#    source "$PATH_SS_INSTALL_UBUNTU_SWAPFILE"
-# fi
-
-####################################################################################################
-#### I. SS-Worker: Generate Lets Encrypt Certificate (If Not Exists) ###############################
-####################################################################################################
-
-## here we test if Lets Encrypt certificate symlinks exist and target files exist ##
-## if anything appears broken then Certbot will regenerate the certs files ##
-
-## run ss-encrypt-certbot ##
-# if [[ ! -e "/var/www/certs/fullchain.pem;" ]] || [[ ! -e "/var/www/certs/keys/privkey.pem" ]]; then
-#    source "$PATH_SS_ENCRYPT_CERTBOT"
-# fi
 
 ####################################################################################################
 #### SS-Worker: Calculate Largest Directories On Server + Update Meta Records ######################
@@ -447,17 +421,6 @@ fi
 # source /var/www/ss-update-config
 # source /var/www/ss-install-ufw
 # source /var/www/ss-clean-files
-
-# OUTDATED_NGINX_CONF=$(grep 'slickstack.crt' /etc/nginx/nginx.conf)
-# if [[ -n "$OUTDATED_NGINX_CONF" ]]; then
-#    source /var/www/ss-install-nginx-config
-# fi
-
-## temp fix to prevent staging/dev malware installs while we settle the ss-install-mysql-database new script
-rm /var/www/html/dev/wp-config-sample*
-rm /var/www/html/dev/wp-admin/install.php
-rm /var/www/html/staging/wp-config-sample*
-rm /var/www/html/staging/wp-admin/install.php
 
 ## for older servers ##
 sed -i "s|@SS_PILOT_FILE||g" /var/www/ss-config
