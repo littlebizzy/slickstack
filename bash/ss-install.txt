@@ -626,6 +626,10 @@ if [[ "${THIRDPARTY_CHOSEN}" == "thirdparty" ]] && [[ ! -f "/var/www/certs/third
     echo -e "${YELLOW}Exiting ss-install: Since you chose thirdparty SSL please upload your cert/key before proceeding... ${NOCOLOR}"
 fi
 
+####################################################################################################
+#### SS-Install: Message (Last Chance To Exit) #####################################################
+####################################################################################################
+
     ## echo message ##
     echo -e "${COLOR_WARN}Your /var/www/ss-config file is now ready! Ctrl+C to exit now if you  ${NOCOLOR}"
 
@@ -638,6 +642,7 @@ fi
         ((WAIT_TIME_LAST_CHANCE_TMP--))
     done
 
+    ## begin install message ##
     echo -e ""
     echo -e ""
     echo -e "${COLOR_INFO}################################################################################${NOCOLOR}"
@@ -650,6 +655,9 @@ fi
 ####################################################################################################
 #### SS-Install: Welcome Back (If SS-Config Exists) ################################################
 ####################################################################################################
+
+## in case ss-config file already exists in the proper location we skip to installation ##
+## you can run the ss-install script as many times as you want without conflicts ##
 
 else
 
@@ -741,10 +749,10 @@ fi
 DEBIAN_FRONTEND="noninteractive dpkg --configure -a --force-confold"
 
 ## update apt cache ##
-apt update > /dev/null 2>&1
+ss_apt_update
 
 ## upgrade packages ##
-apt upgrade > /dev/null 2>&1
+ss_apt_upgrade
 
 ####################################################################################################
 #### SS-Install: Configure Ubuntu ##################################################################
