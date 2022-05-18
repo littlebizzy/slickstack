@@ -539,72 +539,16 @@ if [[ ! -f "/var/www/ss-config" ]]; then
     ## new line ##
     printf "\n"
     
-####################################################################################################
-##### mkdirs
-####################################################################################################
-
-## SNIPPET: ss-check, ss-install, ss-worker, ss core cron jobs
-
-ss_mkdir /var/www
-ss_mkdir /var/www/auth
-ss_mkdir /var/www/backups
-ss_mkdir /var/www/backups/config
-ss_mkdir /var/www/backups/html
-ss_mkdir /var/www/backups/mysql
-ss_mkdir /var/www/backups/mysql/data
-ss_mkdir /var/www/cache
-ss_mkdir /var/www/cache/nginx
-ss_mkdir /var/www/cache/opcache
-ss_mkdir /var/www/cache/system
-ss_mkdir /var/www/certs
-ss_mkdir /var/www/certs/keys
-ss_mkdir /var/www/crons
-ss_mkdir /var/www/crons/custom
-ss_mkdir /var/www/html
-ss_mkdir /var/www/html/.well-known
-ss_mkdir /var/www/html/.well-known/acme-challenge
-ss_mkdir /var/www/logs
-ss_mkdir /var/www/meta
-ss_mkdir /var/www/meta/timestamps
-ss_mkdir /var/www/sites
-ss_touch /var/www/meta/.htpasswd
-    
-## if staging enabled
-if [[ "${STAGING_SITE}" != "false" ]]; then 
-    mkdir /var/www/html/staging
-    mkdir /var/www/html/staging/.well-known
-    mkdir /var/www/html/staging/.well-known/acme-challenge
-fi
-
-## if dev enabled
-if [[ "${DEV_SITE}" != "false" ]]; then 
-    mkdir /var/www/html/dev
-    mkdir /var/www/html/dev/.well-known
-    mkdir /var/www/html/dev/.well-known/acme-challenge
-fi
-
-## user/group ownership ##
-chown root:root /var/www ## must be root:root
-chown root:root /var/www/backups ## must be root:root
-chown root:root /var/www/backups/config ## must be root:root
-chown root:root /var/www/backups/mysql ## must be root:root
-chown root:root /var/www/backups/mysql/data ## must be root:root
-chown root:root /var/www/cache/system ## must be root:root
-chown root:root /var/www/certs ## must be root:root
-chown root:root /var/www/certs/keys ## must be root:root
-chown root:root /var/www/crons ## must be root:root
-chown root:root /var/www/crons/custom ## must be root:root
-    
  ####################################################################################################
  ####
  ####################################################################################################
     
     ## copy files to their destinations ##
-    mkdir -p /var/www > /dev/null 2>&1
-    mv -f /tmp/ss-config-wizard /var/www/ss-config
+    ss_mkdir /var/www
+    ss_mv /tmp/ss-config-wizard /var/www/ss-config
     chown root:root /var/www/ss-config ## must be root:root
     chmod 0700 /var/www/ss-config ## 0700 means only root can execute
-    rm -rf /tmp/ss-config-wizard
+    ss_rm /tmp/ss-config-wizard
     
 ####################################################################################################
 #### SS-Install: Message (Last Chance To Exit) #####################################################
@@ -707,6 +651,62 @@ if [[ "${CALC_DOMAIN_SUB}" -gt 1 ]]; then
     echo -e ""
     exit 1
 fi
+
+####################################################################################################
+##### SS-Install: Reset Permissions (SlickStack) ###################################################
+####################################################################################################
+
+## SNIPPET: ss-check, ss-install, ss-worker, ss core cron jobs
+
+ss_mkdir /var/www
+ss_mkdir /var/www/auth
+ss_mkdir /var/www/backups
+ss_mkdir /var/www/backups/config
+ss_mkdir /var/www/backups/html
+ss_mkdir /var/www/backups/mysql
+ss_mkdir /var/www/backups/mysql/data
+ss_mkdir /var/www/cache
+ss_mkdir /var/www/cache/nginx
+ss_mkdir /var/www/cache/opcache
+ss_mkdir /var/www/cache/system
+ss_mkdir /var/www/certs
+ss_mkdir /var/www/certs/keys
+ss_mkdir /var/www/crons
+ss_mkdir /var/www/crons/custom
+ss_mkdir /var/www/html
+ss_mkdir /var/www/html/.well-known
+ss_mkdir /var/www/html/.well-known/acme-challenge
+ss_mkdir /var/www/logs
+ss_mkdir /var/www/meta
+ss_mkdir /var/www/meta/timestamps
+ss_mkdir /var/www/sites
+ss_touch /var/www/meta/.htpasswd
+    
+## if staging enabled
+if [[ "${STAGING_SITE}" != "false" ]]; then 
+    mkdir /var/www/html/staging
+    mkdir /var/www/html/staging/.well-known
+    mkdir /var/www/html/staging/.well-known/acme-challenge
+fi
+
+## if dev enabled
+if [[ "${DEV_SITE}" != "false" ]]; then 
+    mkdir /var/www/html/dev
+    mkdir /var/www/html/dev/.well-known
+    mkdir /var/www/html/dev/.well-known/acme-challenge
+fi
+
+## user/group ownership ##
+chown root:root /var/www ## must be root:root
+chown root:root /var/www/backups ## must be root:root
+chown root:root /var/www/backups/config ## must be root:root
+chown root:root /var/www/backups/mysql ## must be root:root
+chown root:root /var/www/backups/mysql/data ## must be root:root
+chown root:root /var/www/cache/system ## must be root:root
+chown root:root /var/www/certs ## must be root:root
+chown root:root /var/www/certs/keys ## must be root:root
+chown root:root /var/www/crons ## must be root:root
+chown root:root /var/www/crons/custom ## must be root:root
 
 ####################################################################################################
 #### SS-Install: Run SS-Check ######################################################################
