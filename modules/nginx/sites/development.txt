@@ -28,6 +28,12 @@ server {
 	auth_basic_user_file	/var/www/meta/.htpasswd;
 	add_header X-Robots-Tag "noindex, nofollow, nosnippet, noarchive";
 	
+	## well-known ##
+	location ^~ /.well-known/ {
+        	allow all;
+		alias /var/www/html/.well-known/;
+    }
+    
 ####################################################################################################
 #### Server Block (Development): Redirect Any AMP Requests #########################################
 ####################################################################################################
@@ -67,12 +73,6 @@ server {
     location ~ /\. {
         ## do not enable if using Certbot, Git, etc ##
 	# deny all;
-    }
-    
-    ## Certbot domain verification ##
-    location = /.well-known* {
-        # default_type "text/plain";
-        allow all;
     }
     
     ## fixes potential 403 denied issues with WP-JSON ##
