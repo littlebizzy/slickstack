@@ -6,10 +6,10 @@
 #### mirror: https://mirrors.slickstack.io/bash/ss-install-nginx-letsencrypt.txt ###################
 #### path: /var/www/ss-install-nginx-letsencrypt ###################################################
 #### destination: n/a (not a boilerplate) ##########################################################
-#### purpose: Reinstalls Lets Encrypt SSL to Nginx (idempotent) ##########
+#### purpose: Reinstalls Lets Encrypt SSL to Nginx (idempotent) ####################################
 #### module version: Nginx 1.18.x ##################################################################
 #### sourced by: ss-install-nginx ##################################################################
-#### bash aliases: ss install nginx letsencrypt ####################################################
+#### bash aliases: ss install letsencrypt, ss install nginx letsencrypt ############################
 ####################################################################################################
 
 ## SS-CONFIG MUST BE PROPERLY CONFIGURED AND ON CURRENT BUILD BEFORE RUNNING SS-INSTALL ##
@@ -54,7 +54,6 @@ ss_touch "${TIMESTAMP_SS_INSTALL_NGINX_LETSENCRYPT}"
 
 ## echo message ##
 echo -e "${COLOR_INFO}Running ss-install-nginx-letsencrypt: Reinstalls Lets Encrypt SSL to Nginx (idempotent)... ${NOCOLOR}"
-sleep "$SLEEP_MESSAGE_BEGIN"
 
 ####################################################################################################
 #### C. SS-Install-Nginx-Letsencrypt: Install Letsencrypt Certificate ##############################
@@ -106,11 +105,9 @@ fi
 ## here we modify the live Nginx configuration files to activate Lets Encrypt certificates ##
 ## this snippet will only be executed if Lets Encrypt certs appear to be successful ##
 
-## copy SSL sub-config file to /etc/nginx/conf.d/ and delete conflicting files ##
-    cp /tmp/letsencrypt.conf /etc/nginx/conf.d/letsencrypt.conf
-    rm /etc/nginx/conf.d/openssl.conf*
-    echo -e "${GREEN}Lets Encrypt installation appears to have been successful. ${NOCOLOR}"
-
+## install LE config and cleanup ##
+ss_cp /tmp/letsencrypt.conf /etc/nginx/conf.d/letsencrypt.conf
+ss_rm /etc/nginx/conf.d/openssl.conf*
 
 ####################################################################################################
 #### D. SS-Install-Nginx-Letsencrypt: Reset Permissions (Nginx SSL) ################################
