@@ -55,8 +55,7 @@ ss_touch "${TIMESTAMP_SS_INSTALL_WORDPRESS_CORE}"
 ## it will only be noticed by sudo users who manually call ss core bash scripts ##
 
 ## echo message ##
-echo -e "${COLOR_INFO}Running ss-install-wordpress-core: Reinstalls the WordPress module (CMS) package and non-config files (idempotent)... ${NOCOLOR}"
-sleep "${SLEEP_MESSAGE_BEGIN}"
+echo -e "${COLOR_INFO}ss-install-wordpress-core: Reinstalls the WordPress module CMS package... ${NOCOLOR}"
 
 ####################################################################################################
 #### C. SS-Install-WordPress-Core: Install Ubuntu Utils ############################################
@@ -83,11 +82,11 @@ ss_rm /var/www/html/dev/wordpress*
 ## we always install the latest stable minor version (never major versions) ##
 
 ## retrieve latest version ##
-ss_wget_slow -O "${TMP_WORDPRESS_ZIP}" "${MIRROR_THIRDPARTY_WORDPRESS_ZIP}"
+ss_wget_slowest "${TMP_WORDPRESS_ZIP}" "${MIRROR_THIRDPARTY_WORDPRESS_ZIP}"
 
 ## otherwise try slickstack repo ##
 if [[ ! -f "${TMP_WORDPRESS_ZIP}" ]]; then
-    ss_wget_slow -O "${TMP_WORDPRESS_ZIP}" "${MIRROR_WORDPRESS_ZIP}"
+    ss_wget_slowest "${TMP_WORDPRESS_ZIP}" "${MIRROR_WORDPRESS_ZIP}"
 fi
 
 ####################################################################################################
@@ -142,7 +141,7 @@ if [[ "${STAGING_SITE}" == "true" ]]; then
     fi
 
     ## prepare new files ##
-    cp "${TMP_WORDPRESS_ZIP}" /var/www/html/staging
+    ss_cp "${TMP_WORDPRESS_ZIP}" /var/www/html/staging
     unzip /var/www/html/staging/wordpress.zip -d /var/www/html/staging
     chown -R www-data:wordpress /var/www/html/staging/wordpress
     chmod 775 /var/www/html/staging/wordpress
@@ -175,7 +174,7 @@ if [[ "${DEV_SITE}" == "true" ]]; then
     fi
 
     ## prepare new files ##
-    cp "${TMP_WORDPRESS_ZIP}" /var/www/html/dev
+    ss_cp "${TMP_WORDPRESS_ZIP}" /var/www/html/dev
     unzip /var/www/html/dev/wordpress.zip -d /var/www/html/dev
     chown -R www-data:wordpress /var/www/html/dev/wordpress
     chmod 775 /var/www/html/dev/wordpress
@@ -200,7 +199,7 @@ if [[ -z "${GREP_WP_OPTIONS_STRING_PRODUCTION}" ]]; then
     /usr/bin/php -q -r "
     include '/var/www/html/wp-admin/install.php';
     wp_install('prod site', '"${SFTP_USER}"', '"${SFTP_USER}"@"${SITE_DOMAIN_EXCLUDING_WWW}"', 1, '', '"${SFTP_PASSWORD}"');
-    " > /dev/null 2>&1
+    "
 fi
 
 ####################################################################################################
