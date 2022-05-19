@@ -30,10 +30,13 @@ source /var/www/ss-functions
 ## this is a brief summary of the different code snippets you will find in this script ##
 ## each section should be commented so you understand what is being accomplished ##
 
-
+## A. Touch Timestamp File
+## B. Message (Begin Script)
+## C. Install Letsencrypt Certificate
+## D. Reset Permissions (Nginx SSL)
 
 ####################################################################################################
-#### SS-Install-Nginx-Letsencrypt: Touch Timestamp File ############################################
+#### A. SS-Install-Nginx-Letsencrypt: Touch Timestamp File #########################################
 ####################################################################################################
 
 ## this is a dummy timestamp file that will remember the last time this script was run ##
@@ -43,7 +46,7 @@ source /var/www/ss-functions
 ss_touch "${TIMESTAMP_SS_INSTALL_NGINX_LETSENCRYPT}"
 
 ####################################################################################################
-#### SS-Install-Nginx-Letsencrypt: Message (Begin Script) ##########################################
+#### B. SS-Install-Nginx-Letsencrypt: Message (Begin Script) #######################################
 ####################################################################################################
 
 ## this is a simple message that announces to the shell the purpose of this bash script ##
@@ -54,14 +57,14 @@ echo -e "${COLOR_INFO}Running ss-install-nginx-letsencrypt: Reinstalls Lets Encr
 sleep "$SLEEP_MESSAGE_BEGIN"
 
 ####################################################################################################
-#### SS-Install-Nginx-SSL: Install Preferred SSL Certificate (Per SS-Config) #######################
+#### C. SS-Install-Nginx-Letsencrypt: Install Letsencrypt Certificate ##############################
 ####################################################################################################
 
 ## here we update the Nginx config files to activate either OpenSSL or Lets Encrypt SSL ##
 ## this depends on your ss-config settings (both certs should exist regardless) ##
 
 ## retrieve Lets Encrypt and OpenSSL sub-config file ##
-wget -O /tmp/letsencrypt.conf "$MIRROR_LETSENCRYPT_CONF"
+ss_wget_slowest /tmp/letsencrypt.conf "${MIRROR_LETSENCRYPT_CONF}"
 
 ## SEARCH AND REPLACE SSL SETTINGS ## 
 
@@ -110,11 +113,11 @@ fi
 
 
 ####################################################################################################
-#### SS-Install-Nginx-SSL: Reset Permissions (Nginx SSL) ###########################################
+#### D. SS-Install-Nginx-Letsencrypt: Reset Permissions (Nginx SSL) ################################
 ####################################################################################################
 
 ## run ss-perms-nginx-ssl ##
-source "$PATH_SS_PERMS_NGINX_SSL"
+source "${PATH_SS_PERMS_NGINX_SSL}"
 
 ####################################################################################################
 #### SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ###############
