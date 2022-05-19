@@ -57,8 +57,7 @@ ss_touch "${TIMESTAMP_SS_INSTALL_NGINX_CONFIG}"
 ## it will only be noticed by sudo users who manually call ss core bash scripts ##
 
 ## echo message ##
-echo -e "${COLOR_INFO}Running ss-install-nginx-config: Reinstalls the Nginx module config files based on ss-config (idempotent)... ${NOCOLOR}"
-sleep "$SLEEP_MESSAGE_BEGIN"
+echo -e "${COLOR_INFO}ss-install-nginx-config: Reinstalls the Nginx module config files... ${NOCOLOR}"
 
 ####################################################################################################
 #### C. SS-Install-Nginx-Config: Cleanup Temporary Files ###########################################
@@ -98,14 +97,9 @@ chown www-data:www-data /var/www/meta/.htpasswd ## must be www-data:www-data
 
 ## DOES THIS BELONG HERE?? ##
 ## retrieve latest maintenance.html ##
-ss_wget_slow -O "${TMP_MAINTENANCE_HTML}" "${MIRROR_MAINTENANCE_HTML}"
+ss_wget_slow "${TMP_MAINTENANCE_HTML}" "${MIRROR_MAINTENANCE_HTML}"
 
-## install maintenance.html ##
-# cp "${TMP_MAINTENANCE_HTML}" "${PATH_MAINTENANCE_HTML}"
 
-## reset permissions ##
-# chown www-data:www-data "${PATH_MAINTENANCE_HTML}"
-# chmod 0444 "${PATH_MAINTENANCE_HTML}" ## 0444 is enough
 
 ####################################################################################################
 #### E. SS-Install-Nginx-Config: Run SS-Encrypt-OpenSSL ############################################
@@ -641,7 +635,7 @@ source "${PATH_SS_RESTART_NGINX}"
 
 ## ensures that concatenate is disabled in wp-config to support latest nginx server block ##
 
-if [[ "$SS_APP" == "wordpress" || -z "$SS_APP"  ]]; then
+if [[ "${SS_APP}" == "wordpress" || -z "${SS_APP}"  ]]; then
     source "${PATH_SS_INSTALL_WORDPRESS_CONFIG}"
 fi
 
