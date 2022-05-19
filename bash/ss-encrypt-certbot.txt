@@ -53,7 +53,7 @@ ss_touch "${TIMESTAMP_SS_ENCRYPT_CERTBOT}"
 ## it will only be noticed by sudo users who manually call ss core bash scripts ##
 
 ## echo message ##
-echo -e "${COLOR_INFO}Running ss-encrypt-certbot: Regenerates free Lets Encrypt certs and adjusts Nginx config (idempotent)... ${NOCOLOR}"
+echo -e "${COLOR_INFO}ss-encrypt-certbot: Regenerates Lets Encrypt certs and relevant symlinks... ${NOCOLOR}"
 sleep "${SLEEP_MESSAGE_BEGIN}"
 
 ####################################################################################################
@@ -110,40 +110,16 @@ fi
 ## in either case we should temp activate OpenSSL cert instead so that Certbot can verify domain ##
 
 if [[ ! -f "/etc/letsencrypt/live/slickstack/fullchain.pem" ]]; then 
-    source "$PATH_SS_INSTALL_NGINX_OPENSSL"
-    source "$PATH_SS_RESTART_NGINX"
+    source "${PATH_SS_INSTALL_NGINX_OPENSSL}"
+    source "${PATH_SS_RESTART_NGINX}"
 fi
 
-
 ####################################################################################################
-#### SS-Encrypt: Only Perform Certbot Tasks If SS-Encrypt Not Run In The Last 15 Mins ##############
-####################################################################################################
-
-## Certbot rate limit is 5 fails per hour... if timestamp is less than 30min old and LE cert already exists then do not request another one ##
-# if [[ ! -f "/var/www/meta/.timestamp-ss-encrypt" ]] || [[ -n $(find "/var/www/meta/.timestamp-ss-encrypt" -amin +15) ]]; then
-
-# fi
-
-
-####################################################################################################
+#### C. SS-Encrypt-Certbot: Reset Permissions (Nginx SSL) ##########################################
 ####################################################################################################
 
-## copy paste from ss-install to see if this helps avoid errors on brand new SS servers ## 
-
-chown -R "${SFTP_USER}":www-data /var/www/html/.well-known ## accessed by server for e.g. Cerbot but also by SFTP user for things like Stripe ##
-chown -R "${SFTP_USER}":www-data /var/www/html/.well-known/acme-challenge ## accessed by server for e.g. Cerbot but also by SFTP user for things like Stripe ##
-
-## if staging enabled
-if [[ "${STAGING_SITE}" != "false" ]]; then 
-    chown -R "${SFTP_USER}":www-data /var/www/html/staging/.well-known ## accessed by server for e.g. Cerbot but also by SFTP user for things like Stripe ##
-    chown -R "${SFTP_USER}":www-data /var/www/html/staging/.well-known/acme-challenge ## accessed by server for e.g. Cerbot but also by SFTP user for things like Stripe ##
-fi
-
-## if dev enabled
-if [[ "${DEV_SITE}" != "false" ]]; then 
-    chown -R "${SFTP_USER}":www-data /var/www/html/dev/.well-known ## accessed by server for e.g. Cerbot but also by SFTP user for things like Stripe ##
-    chown -R "${SFTP_USER}":www-data /var/www/html/dev/.well-known/acme-challenge ## accessed by server for e.g. Cerbot but also by SFTP user for things like Stripe ##
-fi
+## run ss-perms-nginx-ssl ##
+source "${PATH_SS_PERMS_NGINX_SSL}"
 
 ####################################################################################################
 #### SS-Encrypt-Certbot: Request Certificates From Lets Encrypt Servers (Rate-Limited) #############
@@ -158,45 +134,45 @@ fi
 
 ## if site domain contains www (and is therefore a subdomain) e.g. www.example.com or www.example.co.uk ##
 if [[ "${WP_MULTISITE}" != "true" ]] && [[ "${SITE_DOMAIN}" == www.* ]] && [[ "${STAGING_SITE}" != "false" ]] && [[ "${DEV_SITE}" != "false" ]]; then
-    ss_certbot certonly --noninteractive --agree-tos --register-unsafely-without-email --cert-name slickstack --webroot -w /var/www/html/dev/ -d dev.${SITE_DOMAIN_EXCLUDING_WWW} -w /var/www/html/staging/ -d staging.${SITE_DOMAIN_EXCLUDING_WWW} -w /var/www/html/ -d ${SITE_DOMAIN_EXCLUDING_WWW} -d ${SITE_DOMAIN_INCLUDING_WWW}
+    ss_certbot certonly --noninteractive --agree-tos --register-unsafely-without-email --cert-name slickstack --webroot -w /var/www/html/ -d dev.${SITE_DOMAIN_EXCLUDING_WWW} -w /var/www/html/ -d staging.${SITE_DOMAIN_EXCLUDING_WWW} -w /var/www/html/ -d ${SITE_DOMAIN_EXCLUDING_WWW} -d ${SITE_DOMAIN_INCLUDING_WWW}
 
 ## if site domain does not contain www (and is not any other type of subdomain) e.g. example.com or example.co.uk ##
 elif [[ "${WP_MULTISITE}" != "true" ]] && [[ "${SITE_DOMAIN}" != www.* ]] && [[ "${SITE_TLD}" == "${SITE_DOMAIN}" ]] && [[ "${STAGING_SITE}" != "false" ]] && [[ "${DEV_SITE}" != "false" ]]; then
-    ss_certbot certonly --noninteractive --agree-tos --register-unsafely-without-email --cert-name slickstack --webroot -w /var/www/html/dev/ -d dev.${SITE_DOMAIN_EXCLUDING_WWW} -w /var/www/html/staging/ -d staging.${SITE_DOMAIN_EXCLUDING_WWW} -w /var/www/html/ -d ${SITE_DOMAIN_EXCLUDING_WWW} -d ${SITE_DOMAIN_INCLUDING_WWW}
+    ss_certbot certonly --noninteractive --agree-tos --register-unsafely-without-email --cert-name slickstack --webroot -w /var/www/html/ -d dev.${SITE_DOMAIN_EXCLUDING_WWW} -w /var/www/html/ -d staging.${SITE_DOMAIN_EXCLUDING_WWW} -w /var/www/html/ -d ${SITE_DOMAIN_EXCLUDING_WWW} -d ${SITE_DOMAIN_INCLUDING_WWW}
 
 ## if site domain is a non-www type of subdomain e.g. blog.example.com or blog.example.co.uk ##
 elif [[ "${WP_MULTISITE}" != "true" ]] && [[ "${SITE_DOMAIN}" != www.* ]] && [[ "${SITE_TLD}" != "${SITE_DOMAIN}" ]] && [[ "${STAGING_SITE}" != "false" ]] && [[ "${DEV_SITE}" != "false" ]]; then
-    ss_certbot certonly --noninteractive --agree-tos --register-unsafely-without-email --cert-name slickstack --webroot -w /var/www/html/dev/ -d dev.${SITE_DOMAIN_EXCLUDING_WWW} -w /var/www/html/staging/ -d staging.${SITE_DOMAIN_EXCLUDING_WWW} -w /var/www/html/ -d ${SITE_DOMAIN}
+    ss_certbot certonly --noninteractive --agree-tos --register-unsafely-without-email --cert-name slickstack --webroot -w /var/www/html/ -d dev.${SITE_DOMAIN_EXCLUDING_WWW} -w /var/www/html/ -d staging.${SITE_DOMAIN_EXCLUDING_WWW} -w /var/www/html/ -d ${SITE_DOMAIN}
 
 
 ## SINGLE SITE CERTS + STAGING ENABLED / DEV DISABLED ##
 
 ## if site domain contains www (and is therefore a subdomain) e.g. www.example.com or www.example.co.uk ##
 elif [[ "${WP_MULTISITE}" != "true" ]] && [[ "${SITE_DOMAIN}" == www.* ]] && [[ "${STAGING_SITE}" != "false" ]] && [[ "${DEV_SITE}" == "false" ]]; then
-    ss_certbot certonly --noninteractive --agree-tos --register-unsafely-without-email --cert-name slickstack --webroot -w /var/www/html/staging/ -d staging.${SITE_DOMAIN_EXCLUDING_WWW} -w /var/www/html/ -d ${SITE_DOMAIN_EXCLUDING_WWW} -d ${SITE_DOMAIN_INCLUDING_WWW}
+    ss_certbot certonly --noninteractive --agree-tos --register-unsafely-without-email --cert-name slickstack --webroot -w /var/www/html/ -d staging.${SITE_DOMAIN_EXCLUDING_WWW} -w /var/www/html/ -d ${SITE_DOMAIN_EXCLUDING_WWW} -d ${SITE_DOMAIN_INCLUDING_WWW}
 
 ## if site domain does not contain www (and is not any other type of subdomain) e.g. example.com or example.co.uk ##
 elif [[ "${WP_MULTISITE}" != "true" ]] && [[ "${SITE_DOMAIN}" != www.* ]] && [[ "${SITE_TLD}" == "${SITE_DOMAIN}" ]] && [[ "${STAGING_SITE}" != "false" ]] && [[ "${DEV_SITE}" == "false" ]]; then
-    ss_certbot certonly --noninteractive --agree-tos --register-unsafely-without-email --cert-name slickstack --webroot -w /var/www/html/staging/ -d staging.${SITE_DOMAIN_EXCLUDING_WWW} -w /var/www/html/ -d ${SITE_DOMAIN_EXCLUDING_WWW} -d ${SITE_DOMAIN_INCLUDING_WWW}
+    ss_certbot certonly --noninteractive --agree-tos --register-unsafely-without-email --cert-name slickstack --webroot -w /var/www/html/ -d staging.${SITE_DOMAIN_EXCLUDING_WWW} -w /var/www/html/ -d ${SITE_DOMAIN_EXCLUDING_WWW} -d ${SITE_DOMAIN_INCLUDING_WWW}
 
 ## if site domain is a non-www type of subdomain e.g. blog.example.com or blog.example.co.uk ##
 elif [[ "${WP_MULTISITE}" != "true" ]] && [[ "${SITE_DOMAIN}" != www.* ]] && [[ "${SITE_TLD}" != "${SITE_DOMAIN}" ]] && [[ "${STAGING_SITE}" != "false" ]] && [[ "${DEV_SITE}" == "false" ]]; then
-    ss_certbot certonly --noninteractive --agree-tos --register-unsafely-without-email --cert-name slickstack --webroot -w /var/www/html/staging/ -d staging.${SITE_DOMAIN_EXCLUDING_WWW} -w /var/www/html/ -d ${SITE_DOMAIN}
+    ss_certbot certonly --noninteractive --agree-tos --register-unsafely-without-email --cert-name slickstack --webroot -w /var/www/html/ -d staging.${SITE_DOMAIN_EXCLUDING_WWW} -w /var/www/html/ -d ${SITE_DOMAIN}
 
 
 ## SINGLE SITE CERTS + STAGING DISABLED / DEV ENABLED ##
 
 ## if site domain contains www (and is therefore a subdomain) e.g. www.example.com or www.example.co.uk ##
 elif [[ "${WP_MULTISITE}" != "true" ]] && [[ "${SITE_DOMAIN}" == www.* ]] && [[ "${STAGING_SITE}" == "false" ]] && [[ "${DEV_SITE}" != "false" ]]; then
-    ss_certbot certonly --noninteractive --agree-tos --register-unsafely-without-email --cert-name slickstack --webroot -w /var/www/html/dev/ -d dev.${SITE_DOMAIN_EXCLUDING_WWW} -w /var/www/html/ -d ${SITE_DOMAIN_EXCLUDING_WWW} -d ${SITE_DOMAIN_INCLUDING_WWW}
+    ss_certbot certonly --noninteractive --agree-tos --register-unsafely-without-email --cert-name slickstack --webroot -w /var/www/html/ -d dev.${SITE_DOMAIN_EXCLUDING_WWW} -w /var/www/html/ -d ${SITE_DOMAIN_EXCLUDING_WWW} -d ${SITE_DOMAIN_INCLUDING_WWW}
 
 ## if site domain does not contain www (and is not any other type of subdomain) e.g. example.com or example.co.uk ##
 elif [[ "${WP_MULTISITE}" != "true" ]] && [[ "${SITE_DOMAIN}" != www.* ]] && [[ "${SITE_TLD}" == "${SITE_DOMAIN}" ]] && [[ "${STAGING_SITE}" == "false" ]] && [[ "${DEV_SITE}" != "false" ]]; then
-    ss_certbot certonly --noninteractive --agree-tos --register-unsafely-without-email --cert-name slickstack --webroot -w /var/www/html/dev/ -d dev.${SITE_DOMAIN_EXCLUDING_WWW} -w /var/www/html/ -d ${SITE_DOMAIN_EXCLUDING_WWW} -d ${SITE_DOMAIN_INCLUDING_WWW}
+    ss_certbot certonly --noninteractive --agree-tos --register-unsafely-without-email --cert-name slickstack --webroot -w /var/www/html/ -d dev.${SITE_DOMAIN_EXCLUDING_WWW} -w /var/www/html/ -d ${SITE_DOMAIN_EXCLUDING_WWW} -d ${SITE_DOMAIN_INCLUDING_WWW}
 
 ## if site domain is a non-www type of subdomain e.g. blog.example.com or blog.example.co.uk ##
 elif [[ "${WP_MULTISITE}" != "true" ]] && [[ "${SITE_DOMAIN}" != www.* ]] && [[ "${SITE_TLD}" != "${SITE_DOMAIN}" ]] && [[ "${STAGING_SITE}" == "false" ]] && [[ "${DEV_SITE}" != "false" ]]; then
-    ss_certbot certonly --noninteractive --agree-tos --register-unsafely-without-email --cert-name slickstack --webroot -w /var/www/html/dev/ -d dev.${SITE_DOMAIN_EXCLUDING_WWW} -w /var/www/html/ -d ${SITE_DOMAIN}
+    ss_certbot certonly --noninteractive --agree-tos --register-unsafely-without-email --cert-name slickstack --webroot -w /var/www/html/ -d dev.${SITE_DOMAIN_EXCLUDING_WWW} -w /var/www/html/ -d ${SITE_DOMAIN}
 
 
 ## SINGLE SITE CERTS + STAGING DISABLED / DEV DISABLED ##
