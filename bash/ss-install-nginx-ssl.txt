@@ -30,10 +30,12 @@ source /var/www/ss-functions
 ## this is a brief summary of the different code snippets you will find in this script ##
 ## each section should be commented so you understand what is being accomplished ##
 
-
+## A. Touch Timestamp File
+## B. Message (Begin Script)
+## C. Install Lets Encrypt (Per SS-Config)
 
 ####################################################################################################
-#### SS-Install-Nginx-SSL: Touch Timestamp File ####################################################
+#### A. SS-Install-Nginx-SSL: Touch Timestamp File #################################################
 ####################################################################################################
 
 ## this is a dummy timestamp file that will remember the last time this script was run ##
@@ -43,7 +45,7 @@ source /var/www/ss-functions
 ss_touch "${TIMESTAMP_SS_INSTALL_NGINX_SSL}"
 
 ####################################################################################################
-#### SS-Install-Nginx-SSL: Message (Begin Script) ##################################################
+#### B. SS-Install-Nginx-SSL: Message (Begin Script) ###############################################
 ####################################################################################################
 
 ## this is a simple message that announces to the shell the purpose of this bash script ##
@@ -54,17 +56,17 @@ echo -e "${COLOR_INFO}Running ss-install-nginx-ssl: Reinstalls desired SSL cert 
 sleep "$SLEEP_MESSAGE_BEGIN"
 
 ####################################################################################################
-#### SS-Install-Nginx-SSL: Install Lets Encrypt (Per SS-Config) ####################################
+#### C. SS-Install-Nginx-SSL: Install Lets Encrypt (Per SS-Config) #################################
 ####################################################################################################
 
 ## here we update the Nginx config files to activate either OpenSSL or Lets Encrypt SSL ##
 ## this depends on your ss-config settings (both certs should exist regardless) ##
 
 ## install letsencrypt.conf (if preferred) ##
-if [[ "$SSL_TYPE" == "letsencrypt" ]] || [[ "$SSL_TYPE" == "certbot" ]]; then 
+if [[ "${SSL_TYPE}" == "letsencrypt" ]] || [[ "${SSL_TYPE}" == "certbot" ]]; then 
 
     ## retrieve boilerplate ##
-    wget -O "$TMP_LETSENCRYPT_CONF" "$MIRROR_LETSENCRYPT_CONF"
+    ss_wget_slowest "${TMP_LETSENCRYPT_CONF}" "${MIRROR_LETSENCRYPT_CONF}"
 
     ## protocols ##
     if [[ -z "$SSL_PROTOCOLS" ]]; then 
@@ -102,9 +104,9 @@ if [[ "$SSL_TYPE" == "letsencrypt" ]] || [[ "$SSL_TYPE" == "certbot" ]]; then
     fi
     
     ## move file ##
-    cp "$TMP_LETSENCRYPT_CONF" "$PATH_LETSENCRYPT_CONF"
-    rm /etc/nginx/conf.d/openssl.conf*
-    rm /etc/nginx/conf.d/thirdparty.conf*
+    ss_cp "${TMP_LETSENCRYPT_CONF}" "${PATH_LETSENCRYPT_CONF}"
+    ss_rm /etc/nginx/conf.d/openssl.conf*
+    ss_rm /etc/nginx/conf.d/thirdparty.conf*
 
 fi
 
@@ -116,10 +118,10 @@ fi
 ####################################################################################################
 
 ## install letsencrypt.conf (if preferred) ##
-if [[ "$SSL_TYPE" == "openssl" ]] || [[ -z "$SSL_TYPE" ]]; then 
+if [[ "${SSL_TYPE}" == "openssl" ]] || [[ -z "${SSL_TYPE}" ]]; then 
 
     ## retrieve Lets Encrypt and OpenSSL sub-config file ##
-    wget -O "$TMP_OPENSSL_CONF" "$MIRROR_OPENSSL_CONF"
+    ss_wget_slowest "${TMP_OPENSSL_CONF}" "${MIRROR_OPENSSL_CONF}"
 
     ## protocols ##
     if [[ -z "$SSL_PROTOCOLS" ]]; then 
@@ -160,9 +162,9 @@ if [[ "$SSL_TYPE" == "openssl" ]] || [[ -z "$SSL_TYPE" ]]; then
 ## this snippet will only be executed if Lets Encrypt certs appear to be successful ##
 
     ## copy SSL sub-config file to /etc/nginx/conf.d/ and delete conflicting files ##
-    cp "$TMP_OPENSSL_CONF" /etc/nginx/conf.d/openssl.conf
-    rm /etc/nginx/conf.d/letsencrypt.conf*
-    rm /etc/nginx/conf.d/thirdparty.conf*
+    ss_cp "${TMP_OPENSSL_CONF}" /etc/nginx/conf.d/openssl.conf
+    ss_rm /etc/nginx/conf.d/letsencrypt.conf*
+    ss_rm /etc/nginx/conf.d/thirdparty.conf*
     
 fi
 
@@ -173,10 +175,10 @@ fi
 
 
 ## install thirdparty.conf ##
-if [[ "$SSL_TYPE" == "thirdparty" ]]; then 
+if [[ "${SSL_TYPE}" == "thirdparty" ]]; then 
 
     ## retrieve boilerplate ##
-    wget -O "$TMP_THIRDPARTY_CONF" "$MIRROR_THIRDPARTY_CONF"
+    ss_wget_slowest "${TMP_THIRDPARTY_CONF}" "${MIRROR_THIRDPARTY_CONF}"
 
     ## protocols ##
     if [[ -z "$SSL_PROTOCOLS" ]]; then 
@@ -214,9 +216,9 @@ if [[ "$SSL_TYPE" == "thirdparty" ]]; then
     fi
     
     ## move file ##
-    cp "$TMP_THIRDPARTY_CONF" "$PATH_THIRDPARTY_CONF"
-    rm /etc/nginx/conf.d/letsencrypt.conf*
-    rm /etc/nginx/conf.d/openssl.conf*
+    ss_cp "${TMP_THIRDPARTY_CONF}" "${PATH_THIRDPARTY_CONF}"
+    ss_rm /etc/nginx/conf.d/letsencrypt.conf*
+    ss_rm /etc/nginx/conf.d/openssl.conf*
 
 fi
 
