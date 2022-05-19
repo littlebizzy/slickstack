@@ -59,10 +59,6 @@ sleep "${SLEEP_MESSAGE_BEGIN}"
 ## here we must reset permissions for all SSL certificates and keys and related files ##
 ## this includes related Nginx files and other folders with sensitive perms ##
 
-
-
-
-
 ## make dirs ##
 mkdir /var/www/certs
 mkdir /var/www/certs/keys
@@ -70,34 +66,17 @@ mkdir /var/www/html/.well-known ## certbot
 mkdir /var/www/html/.well-known/acme-challenge ## certbot
 
 ## reset permissions ##
-chown -R $SFTP_USER:www-data /var/www/html/.well-known ## must be $SFTP_USER:www-data
+chown -R "${SFTP_USER}":www-data /var/www/html/.well-known ## must be SFTP_USER:www-data
+chown -R "${SFTP_USER}":www-data /var/www/html/.well-known/acme-challenge ## must be SFTP_USER:www-data
 chown root:root /var/www/certs ## must be root:root
 chown root:root /var/www/certs/keys ## must be root:root
-chown -R $SFTP_USER:www-data /var/www/html/.well-known ## must be $SFTP_USER:www-data
 chmod 0775 /var/www/html/.well-known ## must be 0775
+chmod 0775 /var/www/html/.well-known/acme-challenge ## must be 0775
 chmod 0755 /var/www/certs ## must be 0755
 chmod 0700 /var/www/certs/keys ## must be 0700
 
 find /var/www/certs -type f -exec chmod 0644 {} \; ## public certs/dhparam should be 0644
 find /var/www/certs/keys -type f -exec chmod 0600 {} \; ## must be 0600
-
-## moved from ss-install ##
-chown -R "${SFTP_USER}":www-data /var/www/html/.well-known ## accessed by server for e.g. Cerbot but also by SFTP user for things like Stripe ##
-chown -R "${SFTP_USER}":www-data /var/www/html/.well-known/acme-challenge ## accessed by server for e.g. Cerbot but also by SFTP user for things like Stripe ##
-
-## if staging enabled
-if [[ "${STAGING_SITE}" != "false" ]]; then 
-    chown -R "${SFTP_USER}":www-data /var/www/html/staging/.well-known ## accessed by server for e.g. Cerbot but also by SFTP user for things like Stripe ##
-    chown -R "${SFTP_USER}":www-data /var/www/html/staging/.well-known/acme-challenge ## accessed by server for e.g. Cerbot but also by SFTP user for things like Stripe ##
-fi
-
-## if dev enabled
-if [[ "${DEV_SITE}" != "false" ]]; then 
-    chown -R "${SFTP_USER}":www-data /var/www/html/dev/.well-known ## accessed by server for e.g. Cerbot but also by SFTP user for things like Stripe ##
-    chown -R "${SFTP_USER}":www-data /var/www/html/dev/.well-known/acme-challenge ## accessed by server for e.g. Cerbot but also by SFTP user for things like Stripe ##
-fi
-
-
 
 ####################################################################################################
 #### SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ###############
