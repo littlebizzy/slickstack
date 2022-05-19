@@ -81,22 +81,9 @@ if [[ "${SS_APP}" != "mysql" ]]; then
 
 
 
-## FIX THIS LATER SO ALL SITES USE ALIAS SAME WELL-KNOWN DIRECTORY IN PROD
-## ensure perms correct ##
-chown -R "${SFTP_USER}":www-data /var/www/html/.well-known ## accessed by server for e.g. Cerbot but also by SFTP user for things like Stripe ##
-chown -R "${SFTP_USER}":www-data /var/www/html/.well-known/acme-challenge ## accessed by server for e.g. Cerbot but also by SFTP user for things like Stripe ##
+## run ss-perms-nginx-ssl ##
+source "${PATH_SS_PERMS_NGINX_SSL}"
 
-## if staging enabled
-if [[ "${STAGING_SITE}" != "false" ]]; then 
-    chown -R "${SFTP_USER}":www-data /var/www/html/staging/.well-known ## accessed by server for e.g. Cerbot but also by SFTP user for things like Stripe ##
-    chown -R "${SFTP_USER}":www-data /var/www/html/staging/.well-known/acme-challenge ## accessed by server for e.g. Cerbot but also by SFTP user for things like Stripe ##
-fi
-
-## if dev enabled
-if [[ "${DEV_SITE}" != "false" ]]; then 
-    chown -R "${SFTP_USER}":www-data /var/www/html/dev/.well-known ## accessed by server for e.g. Cerbot but also by SFTP user for things like Stripe ##
-    chown -R "${SFTP_USER}":www-data /var/www/html/dev/.well-known/acme-challenge ## accessed by server for e.g. Cerbot but also by SFTP user for things like Stripe ##
-fi
 
 chown www-data:www-data /var/www/logs ## must be www-data:www-data
 chown www-data:www-data /var/www/meta ## must be www-data:www-data
@@ -109,15 +96,16 @@ chown www-data:www-data /var/www/meta/.htpasswd ## must be www-data:www-data
 ## here we retrieve the latest default maintenance.html file (or use your own design) ##
 ## this file is parsed by Nginx to enable maintenance mode via SlickStack ##
 
+## DOES THIS BELONG HERE?? ##
 ## retrieve latest maintenance.html ##
 ss_wget_slow -O "${TMP_MAINTENANCE_HTML}" "${MIRROR_MAINTENANCE_HTML}"
 
 ## install maintenance.html ##
-cp "${TMP_MAINTENANCE_HTML}" "${PATH_MAINTENANCE_HTML}"
+# cp "${TMP_MAINTENANCE_HTML}" "${PATH_MAINTENANCE_HTML}"
 
 ## reset permissions ##
-chown www-data:www-data "${PATH_MAINTENANCE_HTML}"
-chmod 0444 "${PATH_MAINTENANCE_HTML}" ## 0444 is enough
+# chown www-data:www-data "${PATH_MAINTENANCE_HTML}"
+# chmod 0444 "${PATH_MAINTENANCE_HTML}" ## 0444 is enough
 
 ####################################################################################################
 #### E. SS-Install-Nginx-Config: Run SS-Encrypt-OpenSSL ############################################
@@ -410,7 +398,7 @@ else
 fi
 
 ## copy files to their destinations ##
-cp "${TMP_NGINX_CONF}" "${PATH_NGINX_CONF}"
+ss_cp "${TMP_NGINX_CONF}" "${PATH_NGINX_CONF}"
 
 ####################################################################################################
 #### H. SS-Install-Nginx-Config: Delete Old Server Blocks ##########################################
@@ -421,7 +409,7 @@ cp "${TMP_NGINX_CONF}" "${PATH_NGINX_CONF}"
 
 ## ADD CHECK FIRST THAT TEMP BLOCK FILES VALID ##
 ## delete server blocks ##
-rm /var/www/sites/*
+ss_rm /var/www/sites/*
 
 ####################################################################################################
 #### SS-Install-Nginx-Config: Install Nginx Server Block (Dev Site) ################################
@@ -433,7 +421,7 @@ rm /var/www/sites/*
 if [[ "$DEV_SITE" == "true" ]]; then 
 
     ## download latest server block (staging site) ##
-    wget -O "$TMP_NGINX_BLOCK_DEVELOPMENT" "$MIRROR_NGINX_BLOCK_DEVELOPMENT"
+    ss_wget_slowest "$TMP_NGINX_BLOCK_DEVELOPMENT" "$MIRROR_NGINX_BLOCK_DEVELOPMENT"
 
     ## replace site variables ##
 
@@ -472,7 +460,7 @@ if [[ "$DEV_SITE" == "true" ]]; then
 
     ## copy files to destinations ##
     if [[ "$SS_INSTALL_NGINX_CONFIG_OVERWRITE_BLOCKS" != "false" ]]; then 
-    cp "$TMP_NGINX_BLOCK_DEVELOPMENT" "$PATH_NGINX_BLOCK_DEVELOPMENT"
+    ss_cp "$TMP_NGINX_BLOCK_DEVELOPMENT" "$PATH_NGINX_BLOCK_DEVELOPMENT"
     fi
 
 fi
@@ -487,7 +475,7 @@ fi
 if [[ "$STAGING_SITE" == "true" ]]; then 
 
     ## download latest server block (staging site) ##
-    wget -O "$TMP_NGINX_BLOCK_STAGING" "$MIRROR_NGINX_BLOCK_STAGING"
+    ss_wget_slowest "$TMP_NGINX_BLOCK_STAGING" "$MIRROR_NGINX_BLOCK_STAGING"
 
     ## replace site variables ##
     SITE_DOMAIN_EXCLUDING_WWW=$(echo "${SITE_DOMAIN/www./}")
@@ -525,7 +513,7 @@ if [[ "$STAGING_SITE" == "true" ]]; then
     
     ## copy files to destinations ##
     if [[ "$SS_INSTALL_NGINX_CONFIG_OVERWRITE_BLOCKS" != "false" ]]; then 
-    cp "$TMP_NGINX_BLOCK_STAGING" "$PATH_NGINX_BLOCK_STAGING"
+    ss_cp "$TMP_NGINX_BLOCK_STAGING" "$PATH_NGINX_BLOCK_STAGING"
     fi
 
 fi
@@ -539,11 +527,11 @@ fi
 
 ## download latest server block boilerplate (single site / Multisite) ##
 if [[ "$WP_MULTISITE" == "true" ]]; then 
-    wget -O /tmp/default "$MIRROR_NGINX_BLOCK_PRODUCTION_MULTISITE"
+    ss_wget_slowest /tmp/default "$MIRROR_NGINX_BLOCK_PRODUCTION_MULTISITE"
 elif [[ "$WP_MULTISITE" == "true" ]] && [[ "$WP_MULTISITE_SUBDOMAINS" == "false" ]]; then 
-    wget -O /tmp/default "$MIRROR_NGINX_BLOCK_PRODUCTION_MULTISITE_SUBDIRECTORIES"
+    ss_wget_slowest /tmp/default "$MIRROR_NGINX_BLOCK_PRODUCTION_MULTISITE_SUBDIRECTORIES"
 else 
-    wget -O /tmp/default "$MIRROR_NGINX_BLOCK_PRODUCTION"
+    ss_wget_slowest /tmp/default "$MIRROR_NGINX_BLOCK_PRODUCTION"
 fi
 
 ## replace site variables ##
@@ -578,7 +566,7 @@ fi
 
     ## copy files to destinations ##
     if [[ "$SS_INSTALL_NGINX_CONFIG_OVERWRITE_BLOCKS" != "false" ]]; then 
-        cp /tmp/default "$PATH_NGINX_BLOCK_PRODUCTION"
+        ss_cp /tmp/default "${PATH_NGINX_BLOCK_PRODUCTION}"
     fi
 
 ####################################################################################################
