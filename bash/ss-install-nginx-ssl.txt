@@ -52,8 +52,7 @@ ss_touch "${TIMESTAMP_SS_INSTALL_NGINX_SSL}"
 ## it will only be noticed by sudo users who manually call ss core bash scripts ##
 
 ## echo message ##
-echo -e "${COLOR_INFO}Running ss-install-nginx-ssl: Reinstalls desired SSL cert (OpenSSL vs Lets Encrypt) to Nginx (idempotent)... ${NOCOLOR}"
-sleep "$SLEEP_MESSAGE_BEGIN"
+echo -e "${COLOR_INFO}ss-install-nginx-ssl: Reinstalls desired SSL cert using Nginx submodules... ${NOCOLOR}"
 
 ####################################################################################################
 #### C. SS-Install-Nginx-SSL: Install Lets Encrypt (Per SS-Config) #################################
@@ -223,34 +222,11 @@ if [[ "${SSL_TYPE}" == "thirdparty" ]]; then
 fi
 
 ####################################################################################################
-#### SS-Install-Nginx-SSL: XXXXXX ###########################################
-####################################################################################################
-
-## here we modify the live Nginx configuration files to activate Lets Encrypt certificates ##
-## this snippet will only be executed if Lets Encrypt certs appear to be successful ##
-
-## copy SSL sub-config file to /etc/nginx/conf.d/ and delete conflicting files ##
-# if [[ "$SSL_TYPE" == "certbot" ]] && [[ -f "/var/www/certs/fullchain.pem" ]] && [[ -f "/var/www/certs/keys/privkey.pem" ]]; then
-#    cp /tmp/letsencrypt.conf /etc/nginx/conf.d/letsencrypt.conf
-#    rm /etc/nginx/conf.d/openssl.conf*
-#    echo -e "${PURPLE}Lets Encrypt installation appears to have been successful. ${NOCOLOR}"
-# elif [[ "$SSL_TYPE" == "certbot" ]] && [[ ! -f "/etc/letsencrypt/live/slickstack/fullchain.pem" || ! -f "/etc/letsencrypt/live/slickstack/privkey.pem" ]]; then
-#    cp /tmp/openssl.conf /etc/nginx/conf.d/openssl.conf
-#    rm /etc/nginx/conf.d/letsencrypt.conf*
-    # sed -i "s#SSL_TYPE="certbot"#SSL_TYPE="openssl"#g" /var/www/ss-config
-#    echo -e "${PURPLE}Lets Encrypt installation was not successful, reverting to OpenSSL instead. ${NOCOLOR}"
-#else
-#    cp /tmp/openssl.conf /etc/nginx/conf.d/openssl.conf
-#    rm /etc/nginx/conf.d/letsencrypt.conf*
-#    echo -e "${YELLOW}OpenSSL installation appears to have been successful. ${NOCOLOR}"
-# fi
-
-####################################################################################################
 #### SS-Install-Nginx-SSL: Reset Permissions (Nginx SSL) ###########################################
 ####################################################################################################
 
 ## run ss-perms-nginx-ssl ##
-source "$PATH_SS_PERMS_NGINX_SSL"
+source "${PATH_SS_PERMS_NGINX_SSL}"
 
 ####################################################################################################
 #### SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ###############
