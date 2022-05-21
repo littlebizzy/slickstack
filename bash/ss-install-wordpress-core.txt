@@ -194,19 +194,23 @@ fi
 QUERY_PRODUCTION_WP_OPTIONS_EXIST=$(mysql --execute "SHOW TABLES FROM ${DB_NAME} WHERE Tables_in_${DB_NAME} LIKE '${DB_PREFIX}options';")
 GREP_WP_OPTIONS_STRING_PRODUCTION=$(echo "${QUERY_PRODUCTION_WP_OPTIONS_EXIST}" | ss_grep_boolean "${DB_PREFIX}"options)
 
+if [[ ! -f "/usr/bin/php" ]]; then
+    echo -e "debug: seems the user bin php file is missing whyyy"
+fi
+
 if [[ ! -f "/var/www/html/wp-admin/install.php" ]]; then
-    echo -e "seems the wp-admin install file is missing whyyy"
+    echo -e "debug: seems the wp-admin install file is missing whyyy"
 fi
 
 ## populate wp_options if not exists ##
 if [[ -z "${GREP_WP_OPTIONS_STRING_PRODUCTION}" ]]; then
     echo -e "debug message: GREP_WP_OPTIONS_STRING_PRODUCTION zero value so gonna populate wp_options"
-    /usr/bin/php -q -r "
+    /usr/bin/php -qCr "
     include '/var/www/html/wp-admin/install.php';
-    wp_install('prod site', '"${SFTP_USER}"', '"${SFTP_USER}"@"${SITE_DOMAIN_EXCLUDING_WWW}"', 1, '', '"${SFTP_PASSWORD}"');
+    wp_install('prod site', '${SFTP_USER}', '${SFTP_USER}@${SITE_DOMAIN_EXCLUDING_WWW}', 1, '', '${SFTP_PASSWORD}');
     "
 else 
-        echo -e "debug message: GREP_WP_OPTIONS_STRING_PRODUCTION apparently had a value sooo"
+        echo -e "debug: GREP_WP_OPTIONS_STRING_PRODUCTION apparently had a value sooo"
 fi
 
 ####################################################################################################
@@ -221,7 +225,7 @@ if [[ "${DEV_SITE}" == "true" ]]; then
     QUERY_DEVELOPMENT_WP_OPTIONS_EXIST=$(mysql --execute "SHOW TABLES FROM development WHERE Tables_in_development LIKE '${DB_PREFIX}options';" 2> /dev/null)
     GREP_WP_OPTIONS_STRING_DEVELOPMENT=$(echo "${QUERY_DEVELOPMENT_WP_OPTIONS_EXIST}" | ss_grep_boolean "${DB_PREFIX}"options)
     if [[ -z "${GREP_WP_OPTIONS_STRING_DEVELOPMENT}" ]]; then
-        /usr/bin/php -q -r "
+        /usr/bin/php -qCr "
         include '/var/www/html/dev/wp-admin/install.php';
         wp_install('dev site', '"${SFTP_USER}"', '"${SFTP_USER}"@"${SITE_DOMAIN_EXCLUDING_WWW}"', 1, '', '"${SFTP_PASSWORD}"');
         " > /dev/null 2>&1
