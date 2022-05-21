@@ -31,6 +31,8 @@ SlickStack is a free LEMP stack automation script written in Bash designed to en
 
 ## Changelog
 
+* **NEW!** More improvement to the new auto-installation of WordPress on new SlickStack servers...
+
 * **NEW!** Known thin content regex patterns are now force-noindexed in SlickStack Nginx blocks including pagination (/page/), tags (/tag/), feeds (/feed/), and date-based archives (e.g. /2022/05/) as we begin juicing up the automated SEO features!
 
 * **NEW!** Bug fix to ensure WordPress installs automatically on brand new SlickStack servers more reliably (force wp_options population if table not detected and using SFTP user/password for default admin credentials).
