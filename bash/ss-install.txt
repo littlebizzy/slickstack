@@ -24,13 +24,13 @@
 
 ## A. Script Build Version
 ## A. Validate (Restore) SS-Functions
-## B. Source SS-Config + SS-Functions (After Validated)
+## C. Source SS-Config + SS-Functions (After Validated)
+## D. Touch Timestamp File
 ## C. Verify Environment Compatibility
 ## D. Check For Any Undefined Options
 ## E. Retrieve SS-Config Boilerplate
 ## F. Interactive Bash Setup Wizard (SS-Config)
 
-## Touch Timestamp File
 ## Message (Begin Script)
 
 ####################################################################################################
@@ -43,7 +43,7 @@
 SS_INSTALL_BUILD="MAY2022X"
 
 ####################################################################################################
-#### A. SS-Install: Validate (Restore) SS-Functions ################################################
+#### B. SS-Install: Validate (Restore) SS-Functions ################################################
 ####################################################################################################
 
 ## THIS SNIPPET DOES NOT RELY ON SS-CONFIG OR SS-FUNCTIONS
@@ -85,7 +85,7 @@ if [[ -z "${VALIDATE_SS_FUNCTIONS}" ]] || [[ -n "${OUTDATED_SS_FUNCTIONS}" ]]; t
 fi
 
 ####################################################################################################
-#### B. SS-Install: Source SS-Config + SS-Functions (After Validated) ##############################
+#### C. SS-Install: Source SS-Config + SS-Functions (After Validated) ##############################
 ####################################################################################################
 
 ## at this point we have restored ss-functions and ss-config may or may not exist yet ##
@@ -101,7 +101,7 @@ source /var/www/ss-functions
 ## BELOW THIS RELIES ON SS-CONFIG AND SS-FUNCTIONS
 
 ####################################################################################################
-#### SS-Install: Touch Timestamp File ##############################################################
+#### D. SS-Install: Touch Timestamp File ###########################################################
 ####################################################################################################
 
 ## this is a dummy timestamp file that will remember the last time this script was run ##
@@ -158,7 +158,7 @@ SS_CONFIG_OPTION_PLACEHOLDER=$(grep -c '"@' /var/www/ss-config 2> /dev/null)
 if [[ -f "/var/www/ss-config" ]]; then
     if [[ "${SS_CONFIG_OPTION_PLACEHOLDER}" -gt 0 ]]; then
         echo -e ""
-        echo -e "${COLOR_WARN}Exiting ss-install: Your ss-config contains "@..." placeholders. Please input values and try again... ${NOCOLOR}"
+        echo -e "${COLOR_WARN}ss-install: Replace all "@..." placeholders in ss-config and try again... ${NOCOLOR}"
         echo -e ""
         exit 1
     fi
@@ -178,11 +178,11 @@ ss_wget_slowest /tmp/ss-config-wizard "${MIRROR_SS_CONFIG_SAMPLE}"
 
 VALIDATE_TMP_SS_CONFIG=$(grep 'SS_EOF' /tmp/ss-config-wizard 2> /dev/null)
 
-if [[ -z "$VALIDATE_TMP_SS_CONFIG" ]]; then
+if [[ -z "${VALIDATE_TMP_SS_CONFIG}" ]]; then
     ss_wget_slowest /tmp/ss-config-wizard "${MIRROR2_SS_CONFIG_SAMPLE}"
 fi
 
-if [[ -z "$VALIDATE_TMP_SS_CONFIG" ]]; then
+if [[ -z "${VALIDATE_TMP_SS_CONFIG}" ]]; then
     ss_wget_slowest /tmp/ss-config-wizard "${MIRROR3_SS_CONFIG_SAMPLE}"
 fi
 
@@ -195,26 +195,6 @@ fi
 
 ## clear screen ##
 clear -x
-
-## rainbow colors test ##
-# WELCOME_RAINBOW="${DARKRED}welcome ${LIGHTRED}to ${ORANGE}the ${YELLOW}magical ${DARKGREEN}world ${LIGHTGREEN}of ${DARKCYAN}ss ${LIGHTCYAN}where ${DARKBLUE}all ${LIGHTBLUE}your ${DARKPURPLE}dreams ${LIGHTPURPLE}come ${LIGHTGRAY}true${NOCOLOR}"
-# echo -e ""
-# echo -e "${WELCOME_RAINBOW}"
-# echo -e ""
-# echo -e "${LIGHTPURPLE} _____________________________ ${NOCOLOR}"
-# echo -e "${LIGHTPURPLE}< screw containers! excelsior > ${NOCOLOR}"
-# echo -e "${LIGHTPURPLE} ----------------------------- ${NOCOLOR}"
-# echo -e "${LIGHTPURPLE} __________________________________ ${NOCOLOR}"
-# echo -e "${LIGHTPURPLE}< kubernetes is a venereal disease > ${NOCOLOR}"
-# echo -e "${LIGHTPURPLE} ---------------------------------- ${NOCOLOR}"
-# echo -e "${LIGHTPURPLE} __________________________________________________________ ${NOCOLOR}"
-# echo -e "${LIGHTPURPLE}< \"Hardcode the shit out of your stack.\" — Abraham Lincoln > ${NOCOLOR}"
-# echo -e "${LIGHTPURPLE} ---------------------------------------------------------- ${NOCOLOR}"
-# echo -e "${LIGHTPURPLE}        \   ^__^ ${NOCOLOR}"
-# echo -e "${LIGHTPURPLE}         \  (${BLINK}oo${NORMAL}${LIGHTPURPLE})\_______ ${NOCOLOR}"
-# echo -e "${LIGHTPURPLE}            (__)\       )\/\ ${NOCOLOR}"
-# echo -e "${LIGHTPURPLE}                ||----w | ${NOCOLOR}"
-# echo -e "${LIGHTPURPLE}                ||     || ${NOCOLOR}"
 
 ## check build version ##
 SS_BUILD_CURRENT=$(source /tmp/ss-config-wizard; echo "${SS_BUILD}" 2> /dev/null)
@@ -289,36 +269,32 @@ if [[ ! -f "/var/www/ss-config" ]]; then
     
     ## PROMPT: choose sudo username (default = batman) ##
     read -t 300 -p "$(echo -e ${LIGHTGRAY}"Choose sudo username (for SSH):" ${LIGHTGREEN})" -e -i 'batman' ss_var_sudo_user || ss_var_sudo_user=batman
-    echo -e "${COLOR_RESET}"
     sed -i "s|@SUDO_USER|${ss_var_sudo_user}|g" /tmp/ss-config-wizard
     
     ## new line ##
-    printf "\n"
+    printf "${COLOR_RESET}\n"
     
     ## PROMPT: choose sudo password (default = random) ##
     sudopass_random=$(openssl rand -hex 12)
     read -t 300 -p "$(echo -e ${LIGHTGRAY}"Choose sudo password (should be strong): "${LIGHTGREEN})" -e -i ${sudopass_random} ss_var_sudo_password || ss_var_sudo_password=${sudopass_random}
-    echo -e "${COLOR_RESET}"
     sed -i "s|@SUDO_PASSWORD|${ss_var_sudo_password}|g" /tmp/ss-config-wizard
     
     ## new line ##
-    printf "\n"
+    printf "${COLOR_RESET}\n"
     
     ## PROMPT: choose SSH port number (default = 22) ##
     read -t 300 -p "$(echo -e ${LIGHTGRAY}"Choose SSH port (use 22 for best compatibility): "${LIGHTGREEN})" -e -i '22' ss_var_ssh_port || ss_var_ssh_port=22
-    echo -e "${COLOR_RESET}"
     sed -i "s|@SSH_PORT|${ss_var_ssh_port}|g" /tmp/ss-config-wizard
     
     ## new line ##
-    printf "\n"
+    printf "${COLOR_RESET}\n"
     
     ## PROMPT: enable SSH keys (default = false) ##
     read -t 300 -p "$(echo -e ${LIGHTGRAY}"Enable SSH keys (advanced users only): "${LIGHTGREEN})" -e -i 'false' ss_var_ssh_keys || ss_var_ssh_keys=false
-    echo -e "${COLOR_RESET}"
     sed -i "s|@SSH_KEYS|${ss_var_ssh_keys}|g" /tmp/ss-config-wizard
     
     ## new line ##
-    printf "\n"
+    printf "${COLOR_RESET}\n"
     
     ## PROMPT: choose SFTP username (default = robin) ##
     read -t 300 -p "$(echo -e ${LIGHTGRAY}"Choose SFTP username (limited access): "${LIGHTGREEN})" -e -i 'robin' ss_var_sftp_user || ss_var_sftp_user=robin
@@ -540,7 +516,7 @@ if [[ ! -f "/var/www/ss-config" ]]; then
     printf "\n"
     
  ####################################################################################################
- ####
+ #### SS-Install: Activate SS-Config File Generated By Wizard #######################################
  ####################################################################################################
     
     ## copy files to their destinations ##
@@ -594,7 +570,6 @@ fi
     echo -e "${COLOR_INFO}################################################################################${NOCOLOR}"
     echo -e ""
     echo -e "${COLOR_INFO}ss-install: Your ss-config file was succesfully configured so proceeding... ${NOCOLOR}"
-    sleep "${SLEEP_MESSAGE_BEGIN}"
     
 ####################################################################################################
 #### SS-Install: Welcome Back (If SS-Config Exists) ################################################
@@ -619,7 +594,6 @@ else
     echo -e "${COLOR_INFO}################################################################################${NOCOLOR}"
     echo -e ""
     echo -e "${COLOR_INFO}ss-install: An ss-config file already exists so we will proceed using it... ${NOCOLOR}"
-    sleep "${SLEEP_MESSAGE_BEGIN}"
 fi
 
 ####################################################################################################
@@ -684,16 +658,16 @@ ss_touch /var/www/meta/.htpasswd
     
 ## if staging enabled
 if [[ "${STAGING_SITE}" != "false" ]]; then 
-    mkdir /var/www/html/staging
-    mkdir /var/www/html/staging/.well-known
-    mkdir /var/www/html/staging/.well-known/acme-challenge
+    ss_mkdir /var/www/html/staging
+    ss_mkdir /var/www/html/staging/.well-known
+    ss_mkdir /var/www/html/staging/.well-known/acme-challenge
 fi
 
 ## if dev enabled
 if [[ "${DEV_SITE}" != "false" ]]; then 
-    mkdir /var/www/html/dev
-    mkdir /var/www/html/dev/.well-known
-    mkdir /var/www/html/dev/.well-known/acme-challenge
+    ss_mkdir /var/www/html/dev
+    ss_mkdir /var/www/html/dev/.well-known
+    ss_mkdir /var/www/html/dev/.well-known/acme-challenge
 fi
 
 ## user/group ownership ##
@@ -792,7 +766,20 @@ source "${PATH_SS_INSTALL_UBUNTU_UTILS}"
 source "${PATH_SS_INSTALL_UBUNTU_KERNEL}"
 
 ####################################################################################################
-#### SS-Install: Enable Maintenance Mode ###########################################################
+#### SS-Install: Install Nginx (Includes SSL Certs) ################################################
+####################################################################################################
+
+## the Nginx installer includes OpenSSL and Lets Encrypt generation to avoid conflicts ##
+## default settings allow for very high-traffic so CloudFlare is recommended ##
+
+## run ss-install-nginx-packages ##
+source "${PATH_SS_INSTALL_NGINX_PACKAGES}"
+
+## run ss-install-nginx-config ##
+source "${PATH_SS_INSTALL_NGINX_CONFIG}"
+
+####################################################################################################
+#### SS-Install: Enable Maintenance Mode (After SSL Certs Installed) ###############################
 ####################################################################################################
 
 ## this is a nifty snippet that will put up a public maintenance page during install ##
@@ -813,19 +800,6 @@ source "${PATH_SS_INSTALL_PHP_PACKAGES}"
 
 ## run ss-install-php-config ##
 source "${PATH_SS_INSTALL_PHP_CONFIG}"
-
-####################################################################################################
-#### SS-Install: Install Nginx (Includes SSL Certs) ################################################
-####################################################################################################
-
-## the Nginx installer includes OpenSSL and Lets Encrypt generation to avoid conflicts ##
-## default settings allow for very high-traffic so CloudFlare is recommended ##
-
-## run ss-install-nginx-packages ##
-source "${PATH_SS_INSTALL_NGINX_PACKAGES}"
-
-## run ss-install-nginx-config ##
-source "${PATH_SS_INSTALL_NGINX_CONFIG}"
 
 ####################################################################################################
 #### SS-Install: Install MySQL #####################################################################
