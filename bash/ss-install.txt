@@ -40,7 +40,7 @@
 ## this build version ensures compatibility with ss-config boilerplate (on localhost) ##
 ## it must match the active ss-config build otherwise installing will fail ##
 
-SS_INSTALL_BUILD="MAY2022X"
+SS_INSTALL_BUILD="MAY2022Y"
 
 ####################################################################################################
 #### B. SS-Install: Validate (Restore) SS-Functions ################################################
@@ -298,20 +298,18 @@ if [[ ! -f "/var/www/ss-config" ]]; then
     
     ## PROMPT: choose SFTP username (default = robin) ##
     read -t 300 -p "$(echo -e ${LIGHTGRAY}"Choose SFTP username (limited access): "${LIGHTGREEN})" -e -i 'robin' ss_var_sftp_user || ss_var_sftp_user=robin
-    echo -e "${COLOR_RESET}"
     sed -i "s|@SFTP_USER|${ss_var_sftp_user}|g" /tmp/ss-config-wizard
     
     ## new line ##
-    printf "\n"
+    printf "${COLOR_RESET}\n"
     
     ## PROMPT: choose SFTP password (default = random) ##
     sftp_pass_random=$(openssl rand -hex 12)
     read -t 300 -p "$(echo -e ${LIGHTGRAY}"Choose SFTP password (should be strong): "${LIGHTGREEN})" -e -i ${sftp_pass_random} ss_var_sftp_password || ss_var_sftp_password=${sftp_pass_random}
-    echo -e "${COLOR_RESET}"
     sed -i "s|@SFTP_PASSWORD|${ss_var_sftp_password}|g" /tmp/ss-config-wizard
     
     ## new line ##
-    printf "\n"
+    printf "${COLOR_RESET}\n"
     
     ## PROMPT: choose app (default = wordpress) ##
     read -t 300 -p "$(echo -e ${LIGHTGRAY}"Choose app (only wordpress supported currently): "${LIGHTGREEN})" -e -i 'wordpress' ss_var_app_name || ss_var_app_name=wordpress
@@ -766,6 +764,19 @@ source "${PATH_SS_INSTALL_UBUNTU_UTILS}"
 source "${PATH_SS_INSTALL_UBUNTU_KERNEL}"
 
 ####################################################################################################
+#### SS-Install: Install PHP-FPM (Before Nginx) ####################################################
+####################################################################################################
+
+## here we install the PHP-FPM module which includes OPcache for better performance ##
+## FastCGI is configured to interface with Nginx using TCP (127.0.0.1:9000) ##
+
+## run ss-install-php-packages ##
+source "${PATH_SS_INSTALL_PHP_PACKAGES}"
+
+## run ss-install-php-config ##
+source "${PATH_SS_INSTALL_PHP_CONFIG}"
+
+####################################################################################################
 #### SS-Install: Install Nginx (Includes SSL Certs) ################################################
 ####################################################################################################
 
@@ -787,19 +798,6 @@ source "${PATH_SS_INSTALL_NGINX_CONFIG}"
 
 ## run ss-maintenance-enable ##
 source "${PATH_SS_MAINTENANCE_ENABLE}"
-
-####################################################################################################
-#### SS-Install: Install PHP-FPM ###################################################################
-####################################################################################################
-
-## here we install the PHP-FPM module which includes OPcache for better performance ##
-## FastCGI is configured to interface with Nginx using TCP (127.0.0.1:9000) ##
-
-## run ss-install-php-packages ##
-source "${PATH_SS_INSTALL_PHP_PACKAGES}"
-
-## run ss-install-php-config ##
-source "${PATH_SS_INSTALL_PHP_CONFIG}"
 
 ####################################################################################################
 #### SS-Install: Install MySQL #####################################################################
