@@ -56,7 +56,6 @@ ss_touch "${TIMESTAMP_SS_WORKER}"
 
 ## echo message ##
 echo -e "${COLOR_INFO}Running ss-worker: Performs SlickStack maintenance tasks and retrieves the latest ss-check file... ${NOCOLOR}"
-sleep "${SLEEP_MESSAGE_BEGIN}"
 
 ####################################################################################################
 #### C. SS-Worker: Cleanup Temporary Files #########################################################
@@ -104,13 +103,15 @@ ss_cp "${TMP_SS_CHECK}" "${PATH_SS_CHECK}"
 #### SS-Worker: Install Pilot File Variables #######################################################
 ####################################################################################################
 
+## THIS SHOULD NOT RUN SO OFTEN in ss-worker... find another place ##
+
 ## this snippet retrieves the remote pilot file defined in ss-config and reads settings ##
 ## it will replace old settings with pilot settings for multi-server management ##
 
 ## retrieve pilot file if defined ##
 if [[ -n "$SS_PILOT_FILE" ]]; then 
-    rm /tmp/ss-pilot
-    wget -O /tmp/ss-pilot "$SS_PILOT_FILE"
+    ss_rm /tmp/ss-pilot
+    ss_wget_slowest /tmp/ss-pilot "${SS_PILOT_FILE}"
 
     PILOT_WHITELABEL_BRAND=$(source /tmp/ss-pilot; echo $WHITELABEL_BRAND)
     PILOT_WHITELABEL_HOMEPAGE=$(source /tmp/ss-pilot; echo $WHITELABEL_HOMEPAGE)
@@ -124,7 +125,7 @@ if [[ -n "$SS_PILOT_FILE" ]]; then
         sed -i "s|\(^WHITELABEL_HOMEPAGE=\).*|WHITELABEL_HOMEPAGE=\"$PILOT_WHITELABEL_HOMEPAGE\"|g" /var/www/ss-config
     fi
 
-    rm /tmp/ss-pilot
+    ss_rm /tmp/ss-pilot
 fi 
 
 ####################################################################################################
@@ -237,6 +238,8 @@ fi
 ####################################################################################################
 #### SS-Worker:  #####################################################
 ####################################################################################################
+
+## MOVE THIS TO ss-main-enable ##
 
 ## whitelabel the maintenance page ##
 if [[ -n "${WHITELABEL_BRAND}" ]]; then
