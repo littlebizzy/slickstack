@@ -28,7 +28,7 @@ source /var/www/ss-functions
 
 ## A. Touch Timestamp File
 ## B. Message (Begin Script)
-## C. Reset Permissions (Nginx)
+## C. Reset Permissions (Nginx Config)
 
 ####################################################################################################
 #### A. SS-Perms-Nginx-Config: Touch Timestamp File ################################################
@@ -51,20 +51,52 @@ ss_touch "${TIMESTAMP_SS_PERMS_NGINX_CONFIG}"
 ss_echo "${COLOR_INFO}Running ss-perms-nginx-config: Resets file and user permissions for Nginx module configuration files... ${COLOR_RESET}"
 
 ####################################################################################################
-#### SS-Perms-Nginx-Config: Reset Permissions (Nginx) ##############################################
+#### C. SS-Perms-Nginx-Config: Reset Permissions (Nginx Config) ####################################
 ####################################################################################################
 
-## although most permissions for Nginx files are okay by default we also reset them here ##
-## in general everything should be owned by root and chmod should be set to 0700 ##
+## although all permissions are reset in ss-perms we do it on per-module basis as well ##
+## this ensures correct permissions in case this script is run individually etc ##
 
-## nginx.conf ##
-chown root:root /etc/nginx/nginx.conf
+## create directories if not exist ##
+ss_mkdir /var/www/cache
+ss_mkdir /var/www/cache/nginx
+ss_mkdir /var/www/html
+ss_mkdir /var/www/logs
+ss_mkdir /var/www/meta
 
-## fastcgi.conf ##
+## create htpasswd file if not exists ##
+ss_touch /var/www/meta/.htpasswd
+
+## chown dirs ##
+chown www-data:www-data /var/www/cache ## must be www-data:www-data
+chown www-data:www-data /var/www/cache/nginx ## must be www-data:www-data
+chown ${SFTP_USER}:wordpress /var/www/html ## must be SFTP_USER:wordpress
+chown www-data:www-data /var/www/logs ## must be www-data:www-data
+chown www-data:www-data /var/www/meta ## must be www-data:www-data
+
+## chown files ##
 chown root:root /etc/nginx/fastcgi.conf
-
-## server blocks ##
+chown root:root /etc/nginx/nginx.conf
 chown root:root /var/www/sites/*
+chown www-data:www-data /var/www/meta/.htpasswd ## must be www-data:www-data
+
+## chmod dirs ##
+chmod 0775 /var/www/cache ## 0755 should also work
+chmod 0755 /var/www/cache/nginx ## 0755 seems enough
+chmod 0775 /var/www/html ## must be 0775 (0755 not enough)
+chmod 0775 /var/www/logs ## 0755 should also work
+chmod 0775 /var/www/meta ## 0755 should also work
+
+## chmod files ##
+chmod 0644 /var/www/meta/.htpasswd ## 0644 seems enough
+
+## create log files if not exist ##
+if [ ! -f "/var/www/logs/nginx-error.log" ]; then touch "/var/www/logs/nginx-error.log"; fi
+if [ ! -f "/var/www/logs/nginx-access.log" ]; then touch "/var/www/logs/nginx-access.log"; fi
+
+## reset permissions ##
+chown www-data:www-data /var/www/logs/nginx*.log
+chmod 0644 /var/www/logs/nginx*.log ## 0755 should also work
 
 ####################################################################################################
 #### SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ###############
