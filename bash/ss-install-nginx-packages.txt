@@ -8,8 +8,8 @@
 #### destination: n/a (not a boilerplate) ##########################################################
 #### purpose: Reinstalls the Nginx module Ubuntu packages and extensions (idempotent) ##############
 #### module version: Nginx 1.18.x ##################################################################
-#### sourced by: ss-install-nginx ##################################################################
-#### bash aliases: ss install nginx core ###########################################################
+#### sourced by: ss-install ########################################################################
+#### bash aliases: ss install nginx core, ss install nginx packages ################################
 ####################################################################################################
 
 ## SS-CONFIG MUST BE PROPERLY CONFIGURED AND ON CURRENT BUILD BEFORE RUNNING SS-INSTALL ##
@@ -32,6 +32,10 @@ source /var/www/ss-functions
 
 ## A. Touch Timestamp File
 ## B. Message (Begin Script)
+## C. Update Existing Packages
+## D. Install Nginx-Extras
+## E. Reset Permissions (Nginx Packages)
+## F. Restart Services (Nginx)
 
 ####################################################################################################
 #### A. SS-Install-Nginx-Packages: Touch Timestamp File ############################################
@@ -44,7 +48,7 @@ source /var/www/ss-functions
 ss_touch "${TIMESTAMP_SS_INSTALL_NGINX_PACKAGES}"
 
 ####################################################################################################
-#### B. SS-Install-Nginx-Core: Message (Begin Script) ##############################################
+#### B. SS-Install-Nginx-Packages: Message (Begin Script) ##########################################
 ####################################################################################################
 
 ## this is a simple message that announces to the shell the purpose of this bash script ##
@@ -54,11 +58,11 @@ ss_touch "${TIMESTAMP_SS_INSTALL_NGINX_PACKAGES}"
 ss_echo "${COLOR_INFO}Running ss-install-nginx-packages: Reinstalls the Nginx module Ubuntu packages and extensions (idempotent)... ${COLOR_RESET}"
 
 ####################################################################################################
-#### SS-Install-Nginx-Packages: Update Existing Packages ###########################################
+#### C. SS-Install-Nginx-Packages: Update Existing Packages ########################################
 ####################################################################################################
 
-## SNIPPET: ss-install-*-packages bash scripts
-## UPDATED: 30MAR2022
+## SNIPPET: ss-install-[module]-packages bash scripts
+## UPDATED: 25MAY2022
 
 ## we must include the standard apt update/upgrade in case script is called directly ##
 ## this helps to avoid conflicts and outdated packages during installation ##
@@ -70,7 +74,7 @@ ss_apt_update
 ss_apt_upgrade
 
 ####################################################################################################
-#### SS-Install-Nginx-Core: Install Nginx Packages (Includes FastCGI Cache + OpenSSL) ##############
+#### D. SS-Install-Nginx-Packages: Install Nginx-Extras ############################################
 ####################################################################################################
 
 if [[ "${SS_APP}" != "mysql" ]]; then
@@ -96,17 +100,17 @@ if [[ "${UBUNTU_VERSION}" = "18.04" ]]; then
 fi
 
 ## install nginx-extras ##
-apt install nginx-extras > /dev/null 2>&1
+ss_apt_install nginx-extras
 
 ####################################################################################################
-#### SS-Install-Nginx-Core: Reset Permissions (Nginx Core) #########################################
+#### E. SS-Install-Nginx-Packages: Reset Permissions (Nginx Packages) ##############################
 ####################################################################################################
 
 ## run ss-perms-nginx-packages ##
 source "${PATH_SS_PERMS_NGINX_PACKAGES}"
 
 ####################################################################################################
-#### SS-Install-Nginx-Core: Restart Services (Nginx) ###############################################
+#### F. SS-Install-Nginx-Packages: Restart Services (Nginx) ########################################
 ####################################################################################################
 
 ## run-ss-restart-nginx ##
