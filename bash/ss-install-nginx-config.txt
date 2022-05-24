@@ -78,28 +78,12 @@ rm /tmp/maintenance.html
 
 if [[ "${SS_APP}" != "mysql" ]]; then
 
-
-
 ## run ss-perms-nginx-ssl ##
 source "${PATH_SS_PERMS_NGINX_SSL}"
-
 
 chown www-data:www-data /var/www/logs ## must be www-data:www-data
 chown www-data:www-data /var/www/meta ## must be www-data:www-data
 chown www-data:www-data /var/www/meta/.htpasswd ## must be www-data:www-data
-
-####################################################################################################
-#### D. SS-Install-Nginx-Config: Retrieve Current Maintenance.html #################################
-####################################################################################################
-
-## here we retrieve the latest default maintenance.html file (or use your own design) ##
-## this file is parsed by Nginx to enable maintenance mode via SlickStack ##
-
-## DOES THIS BELONG HERE?? ##
-## retrieve latest maintenance.html ##
-ss_wget_slow "${TMP_MAINTENANCE_HTML}" "${MIRROR_MAINTENANCE_HTML}"
-
-
 
 ####################################################################################################
 #### E. SS-Install-Nginx-Config: Run SS-Encrypt-OpenSSL ############################################
@@ -130,7 +114,7 @@ printf "${GUEST_USER}:${ENCRYPTED_GUEST_PASSWORD}\n" >> /var/www/meta/.htpasswd
 ## this step is critical to setting up caching, SSL certs, and HTTP headers ##
 
 ## download latest Nginx config boilerplate ##
-ss_wget_slow -O "${TMP_NGINX_CONF}" "${MIRROR_NGINX_CONF}"
+ss_wget_slowest "${TMP_NGINX_CONF}" "${MIRROR_NGINX_CONF}"
 
 ## noindex entire site using HTTP headers (if enabled) ##
 if [[ "$SITE_NOINDEX" == "true" ]]; then 
