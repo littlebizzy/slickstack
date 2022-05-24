@@ -29,7 +29,7 @@ source /var/www/ss-functions
 
 ## A. Touch Timestamp File
 ## B. Message (Begin Script)
-## C. Reset Permissions (SSL Certs + Related Files)
+## C. Reset Permissions (SSL Certificates)
 
 ####################################################################################################
 #### A. SS-Perms-Nginx-SSL: Touch Timestamp File ###################################################
@@ -52,7 +52,7 @@ ss_touch "${TIMESTAMP_SS_PERMS_NGINX_SSL}"
 ss_echo "${COLOR_INFO}Running ss-perms-nginx-ssl: Resets all file and user permissions for SSL certs and related Nginx files... ${COLOR_RESET}"
 
 ####################################################################################################
-#### C. SS-Perms-Nginx-SSL: Reset Permissions (SSL Certs + Related Files) ##########################
+#### C. SS-Perms-Nginx-SSL: Reset Permissions (SSL Certificates) ###################################
 ####################################################################################################
 
 ## here we must reset permissions for all SSL certificates and keys and related files ##
@@ -64,11 +64,17 @@ mkdir /var/www/certs/keys
 mkdir /var/www/html/.well-known ## certbot
 mkdir /var/www/html/.well-known/acme-challenge ## certbot
 
+
+chown www-data:www-data /var/www/logs ## must be www-data:www-data
+chown www-data:www-data /var/www/meta ## must be www-data:www-data
+chown www-data:www-data /var/www/meta/.htpasswd ## must be www-data:www-data
+
 ## reset permissions ##
-chown -R "${SFTP_USER}":www-data /var/www/html/.well-known ## must be SFTP_USER:www-data
-chown -R "${SFTP_USER}":www-data /var/www/html/.well-known/acme-challenge ## must be SFTP_USER:www-data
-chown root:root /var/www/certs ## must be root:root
-chown root:root /var/www/certs/keys ## must be root:root
+ss_chown "${SFTP_USER}":www-data /var/www/html/.well-known ## must be SFTP_USER:www-data
+ss_chown "${SFTP_USER}":www-data /var/www/html/.well-known/acme-challenge ## must be SFTP_USER:www-data
+ss_chown root:root /var/www/certs ## must be root:root
+ss_chown root:root /var/www/certs/keys ## must be root:root
+
 chmod 0775 /var/www/html/.well-known ## must be 0775
 chmod 0775 /var/www/html/.well-known/acme-challenge ## must be 0775
 chmod 0755 /var/www/certs ## must be 0755
