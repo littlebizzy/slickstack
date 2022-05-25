@@ -69,8 +69,8 @@ source "${PATH_SS_PERMS_NGINX_SSL}"
 ## this will generate DH parameters using OpenSSL for use by Lets Encrypt certificates ##
 ## by maintaining this file we are able to strengthen the security of the SSL ##
 
-if [[ "${SSL_TYPE}" == "certbot" ]] && [[ ! -f "/var/www/certs/dhparam.pem" ]]; then 
-    openssl dhparam -out /var/www/certs/dhparam.pem 2048 2> /dev/null
+if [[ "${SSL_TYPE}" == "certbot" ]] && [[ ! -f "${PATH_DHPARAM_PEM}" ]]; then 
+    openssl dhparam -out "${PATH_DHPARAM_PEM}" 2048
 fi
 
 ####################################################################################################
@@ -108,7 +108,7 @@ fi
 ## if LE cert not exists then something is broken or it is the first time running on this server ##
 ## in either case we should temp activate OpenSSL cert instead so that Certbot can verify domain ##
 
-if [[ ! -f "/etc/letsencrypt/live/slickstack/fullchain.pem" ]]; then 
+if [[ ! -f "${PATH_LETSENCRYPT_CERT_FULLCHAIN}" ]]; then 
     source "${PATH_SS_INSTALL_NGINX_OPENSSL}"
     source "${PATH_SS_RESTART_NGINX}"
 fi
@@ -278,10 +278,10 @@ fi
 ## this hardcode method simplifies our Nginx settings and makes it more stable ##
 
 ## create symlinks ##
-ln /etc/letsencrypt/live/slickstack/cert.pem /var/www/certs/cert.pem
-ln /etc/letsencrypt/live/slickstack/chain.pem /var/www/certs/chain.pem
-ln /etc/letsencrypt/live/slickstack/fullchain.pem /var/www/certs/fullchain.pem
-ln /etc/letsencrypt/live/slickstack/privkey.pem /var/www/certs/keys/privkey.pem
+ln "${PATH_LETSENCRYPT_CERT_CERT}" /var/www/certs/cert.pem
+ln "${PATH_LETSENCRYPT_CERT_CHAIN}" /var/www/certs/chain.pem
+ln "${PATH_LETSENCRYPT_CERT_FULLCHAIN}" /var/www/certs/fullchain.pem
+ln "${PATH_LETSENCRYPT_CERT_PRIVKEY}" /var/www/certs/keys/privkey.pem
 
 ####################################################################################################
 #### SS-Install-Nginx-SSL: Reset Permissions (Nginx SSL) ###########################################
