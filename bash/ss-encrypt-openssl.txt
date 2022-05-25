@@ -62,8 +62,8 @@ ss_echo "${COLOR_INFO}Running ss-encrypt-openssl: Regenerates free self-signed O
 ####################################################################################################
 
 ## hide error message (workaround) ##
-touch /home/${SUDO_USER}/.rnd
-touch /home/${SFTP_USER}/.rnd
+ss_touch /home/${SUDO_USER}/.rnd
+ss_touch /home/${SFTP_USER}/.rnd
 
 ####################################################################################################
 #### D. SS-Encrypt-OpenSSL: Regenerate OpenSSL Certificate #########################################
@@ -73,12 +73,12 @@ touch /home/${SFTP_USER}/.rnd
 ## there are no rate-limits and it pairs perfectly with CloudFlare SSL proxy ##
 
 ## make dirs ##
-mkdir /var/www/certs
-mkdir /var/www/certs/keys
+ss_mkdir /var/www/certs
+ss_mkdir /var/www/certs/keys
 
 ## delete previous files ##
-rm "$PATH_OPENSSL_CERTIFICATE"
-rm "$PATH_OPENSSL_KEY"
+ss_rm "${PATH_OPENSSL_CERTIFICATE}"
+ss_rm "${PATH_OPENSSL_KEY}"
 
 ## generate self-signed certificate (valid 10 years) ##
 if [[ "$WP_MULTISITE" == "false" ]]; then 
@@ -102,22 +102,16 @@ fi
 #### E. SS-Encrypt-OpenSSL: Validate OpenSSL Certificate ###########################################
 ####################################################################################################
 
+# Move to ss-stack-overview ?
 ## validate openssl cert ##
-# openssl x509 -noout -text -in "$PATH_OPENSSL_CERTIFICATE"
+# openssl x509 -noout -text -in "${PATH_OPENSSL_CERTIFICATE}"
 
 ####################################################################################################
 #### E. SS-Encrypt-OpenSSL: Reset Permissions (Nginx SSL) ##########################################
 ####################################################################################################
 
 ## run ss-perms-nginx-ssl ##
-source "$PATH_SS_PERMS_NGINX_SSL"
-
-####################################################################################################	
-#### F. SS-Encrypt-OpenSSL: Restart Modules (Nginx) ################################################	
-####################################################################################################	
-
-## run ss-restart-nginx ##	
-source "$PATH_SS_RESTART_NGINX"
+source "${PATH_SS_PERMS_NGINX_SSL}"
 
 ####################################################################################################
 #### SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ###############
