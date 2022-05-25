@@ -55,31 +55,30 @@ ss_echo "${COLOR_INFO}Running ss-perms-nginx-ssl: Resets all file and user permi
 #### C. SS-Perms-Nginx-SSL: Reset Permissions (SSL Certificates) ###################################
 ####################################################################################################
 
-## here we must reset permissions for all SSL certificates and keys and related files ##
-## this includes related Nginx files and other folders with sensitive perms ##
+## although all permissions are reset in ss-perms we do it on per-module basis as well ##
+## this ensures correct permissions in case this script is run individually etc ##
 
-## make dirs ##
-mkdir /var/www/certs
-mkdir /var/www/certs/keys
-mkdir /var/www/html/.well-known ## certbot
-mkdir /var/www/html/.well-known/acme-challenge ## certbot
+## create directories if not exist ##
+ss_mkdir /var/www/certs
+ss_mkdir /var/www/certs/keys
+ss_mkdir /var/www/html/.well-known ## certbot
+ss_mkdir /var/www/html/.well-known/acme-challenge ## certbot
 
-
-chown www-data:www-data /var/www/logs ## must be www-data:www-data
-chown www-data:www-data /var/www/meta ## must be www-data:www-data
-chown www-data:www-data /var/www/meta/.htpasswd ## must be www-data:www-data
-
-## reset permissions ##
-ss_chown "${SFTP_USER}":www-data /var/www/html/.well-known ## must be SFTP_USER:www-data
-ss_chown "${SFTP_USER}":www-data /var/www/html/.well-known/acme-challenge ## must be SFTP_USER:www-data
+## chown dirs ##
 ss_chown root:root /var/www/certs ## must be root:root
 ss_chown root:root /var/www/certs/keys ## must be root:root
+chown www-data:www-data /var/www/logs ## must be www-data:www-data
+chown www-data:www-data /var/www/meta ## must be www-data:www-data
+ss_chown "${SFTP_USER}":www-data /var/www/html/.well-known ## must be SFTP_USER:www-data
+ss_chown "${SFTP_USER}":www-data /var/www/html/.well-known/acme-challenge ## must be SFTP_USER:www-data
 
-chmod 0775 /var/www/html/.well-known ## must be 0775
-chmod 0775 /var/www/html/.well-known/acme-challenge ## must be 0775
+## chmod dirs ##
 chmod 0755 /var/www/certs ## must be 0755
 chmod 0700 /var/www/certs/keys ## must be 0700
+chmod 0775 /var/www/html/.well-known ## must be 0775
+chmod 0775 /var/www/html/.well-known/acme-challenge ## must be 0775
 
+## chmod files ##
 find /var/www/certs -type f -exec chmod 0644 {} \; ## public certs/dhparam should be 0644
 find /var/www/certs/keys -type f -exec chmod 0600 {} \; ## must be 0600
 
