@@ -96,11 +96,11 @@ source "${PATH_SS_ENCRYPT_OPENSSL}"
 ####################################################################################################
 
 ## null file contents ##
-cat /dev/null > /var/www/meta/.htpasswd
+cat /dev/null > "${PATH_HTPASSWD}"
 
 ## copy guest user credentials ##
 ENCRYPTED_GUEST_PASSWORD=$(openssl passwd -apr1 "${GUEST_PASSWORD}")
-printf "${GUEST_USER}:${ENCRYPTED_GUEST_PASSWORD}\n" >> /var/www/meta/.htpasswd
+printf "${GUEST_USER}:${ENCRYPTED_GUEST_PASSWORD}\n" >> "${PATH_HTPASSWD}"
 
 ####################################################################################################
 #### G. SS-Install-Nginx-Config: Install Nginx.conf ################################################
@@ -125,10 +125,6 @@ if [[ -z "$NGINX_ACCESS_LOG" ]]; then
 else 
     sed -i "s|@NGINX_ACCESS_LOG|/var/www/logs/nginx-access.log|g" "$TMP_NGINX_CONF"
 fi
-
-
-
-## FastCGI (FCGI) Cache Settings
 
 ## FCGI Cache memory ##
 if [[ -z "$FCGI_CACHE_MEMORY" ]]; then 
@@ -199,10 +195,6 @@ if [[ -z "$FCGI_TEMP_FILE_WRITE_SIZE" ]]; then
 else 
     sed -i "s/@FCGI_TEMP_FILE_WRITE_SIZE/${FCGI_TEMP_FILE_WRITE_SIZE}/g" "$TMP_NGINX_CONF"
 fi
-
-
-
-## Various Nginx Settings
 
 ## Nginx worker rlimit nofile ##
 if [[ -z "$NGINX_WORKER_RLIMIT_NOFILE" ]]; then 
@@ -302,8 +294,6 @@ else
     sed -i "s/@NGINX_SEND_TIMEOUT/${NGINX_SEND_TIMEOUT}/g" "$TMP_NGINX_CONF"
 fi
 
-## Open File Cache Settings
-
 ## Open File Cache max files ##
 if [[ -z "$OPEN_FILE_CACHE_MAX" ]]; then 
     sed -i "s/@OPEN_FILE_CACHE_MAX/200000/g" "$TMP_NGINX_CONF"
@@ -339,8 +329,6 @@ else
     sed -i "s/@OPEN_FILE_CACHE_ERRORS/${OPEN_FILE_CACHE_ERRORS}/g" "$TMP_NGINX_CONF"
 fi
 
-
-## headers ##
 if [[ -z "$NGINX_HEADER_POWERED_BY" ]]; then 
     sed -i "s/@NGINX_HEADER_POWERED_BY/SlickStack/g" "$TMP_NGINX_CONF"
 else 
@@ -381,7 +369,7 @@ ss_cp "${TMP_NGINX_CONF}" "${PATH_NGINX_CONF}"
 ## here we delete any existing previous server blocks to avoid conflicts with Nginx ##
 ## if this step is not performed then Nginx could result in fatal errors ##
 
-## ADD CHECK FIRST THAT TEMP BLOCK FILES VALID ##
+## ADD CHECK FIRST THAT TMP BLOCK FILES VALID? ##
 ## delete server blocks ##
 ss_rm /var/www/sites/*
 
