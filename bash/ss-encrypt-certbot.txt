@@ -33,7 +33,8 @@ source /var/www/ss-functions
 ## A. Touch Timestamp File
 ## B. Message (Begin Script)
 ## C. Reset Permissions (Nginx SSL)
-## D. Generate DH Parameters (If Lets Encrypt Enabled)
+## D. Generate DH Parameters
+## E. Temporarily Activate OpenSSL
 
 ####################################################################################################
 #### A. SS-Encrypt-Certbot: Touch Timestamp File ###################################################
@@ -63,40 +64,18 @@ ss_echo "${COLOR_INFO}ss-encrypt-certbot: Regenerates Lets Encrypt certs and rel
 source "${PATH_SS_PERMS_NGINX_SSL}"
 
 ####################################################################################################
-#### D. SS-Encrypt-Certbot: Generate DH Parameters (If Lets Encrypt Enabled) #######################
+#### D. SS-Encrypt-Certbot: Generate DH Parameters #################################################
 ####################################################################################################
 
 ## this will generate DH parameters using OpenSSL for use by Lets Encrypt certificates ##
 ## by maintaining this file we are able to strengthen the security of the SSL ##
 
-if [[ "${SSL_TYPE}" == "certbot" ]] && [[ ! -f "${PATH_DHPARAM_PEM}" ]]; then 
+if [[ ! -f "${PATH_DHPARAM_PEM}" ]]; then 
     openssl dhparam -out "${PATH_DHPARAM_PEM}" 2048
 fi
 
 ####################################################################################################
-#### SS-Encrypt-Certbot: Staging/dev directory missing ##################################
-####################################################################################################
-
-## dev site warnings ##
-if [[ "$SSL_TYPE" == "certbot" ]] && [[ "$DEV_SITE" == "true" ]] && [[ ! -d "/var/www/html/dev" ]]; then 
-echo -e "${RED}You have chosen Certbot and enabled the dev site but the dev directory is missing... ${NOCOLOR}"
-fi
-
-if [[ "$SSL_TYPE" == "certbot" ]] && [[ "$DEV_SITE" == "true" ]] && [[ ! -f "/var/www/sites/development" ]]; then 
-echo -e "${RED}You have chosen Certbot and enabled the dev site but the development server block is missing... ${NOCOLOR}"
-fi
-
-## staging site warnings ##
-if [[ "$SSL_TYPE" == "certbot" ]] && [[ "$STAGING_SITE" == "true" ]] && [[ ! -d "/var/www/html/staging" ]]; then 
-echo -e "${RED}You have chosen Certbot and enabled the staging site but the staging directory is missing... ${NOCOLOR}"
-fi
-
-if [[ "$SSL_TYPE" == "certbot" ]] && [[ "$STAGING_SITE" == "true" ]] && [[ ! -f "/var/www/sites/staging" ]]; then 
-echo -e "${RED}You have chosen Certbot and enabled the staging site but the staging server block is missing... ${NOCOLOR}"
-fi
-
-####################################################################################################
-#### SS-Install-Nginx-Config: Temporarily Activate OpenSSL ####################
+#### E. SS-Install-Nginx-Config: Temporarily Activate OpenSSL ######################################
 ####################################################################################################
 
 ## here we must temporarily activate OpenSSL in order to avoid fatal errors in Nginx ##
@@ -107,14 +86,6 @@ source "${PATH_SS_INSTALL_NGINX_OPENSSL}"
 
 ## run ss-restart-nginx ##
 source "${PATH_SS_RESTART_NGINX}"
-
-## if LE cert not exists then something is broken or it is the first time running on this server ##
-## in either case we should temp activate OpenSSL cert instead so that Certbot can verify domain ##
-
-# if [[ ! -f "${PATH_LETSENCRYPT_CERT_FULLCHAIN}" ]]; then 
-#    source "${PATH_SS_INSTALL_NGINX_OPENSSL}"
-#    source "${PATH_SS_RESTART_NGINX}"
-# fi
 
 ####################################################################################################
 #### C. SS-Encrypt-Certbot: Reset Permissions (Nginx SSL) ##########################################
