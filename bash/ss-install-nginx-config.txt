@@ -488,47 +488,47 @@ fi
 ## this block is independent and distinct from other Nginx server blocks ##
 
 ## download latest server block boilerplate (single site / Multisite) ##
-if [[ "$WP_MULTISITE" == "true" ]]; then 
-    ss_wget_slowest /tmp/default "$MIRROR_NGINX_BLOCK_PRODUCTION_MULTISITE"
-elif [[ "$WP_MULTISITE" == "true" ]] && [[ "$WP_MULTISITE_SUBDOMAINS" == "false" ]]; then 
-    ss_wget_slowest /tmp/default "$MIRROR_NGINX_BLOCK_PRODUCTION_MULTISITE_SUBDIRECTORIES"
+if [[ "{$WP_MULTISITE}" == "true" ]]; then 
+    ss_wget_slowest "${TMP_NGINX_BLOCK_PRODUCTION}" "${MIRROR_NGINX_BLOCK_PRODUCTION_MULTISITE}"
+elif [[ "${WP_MULTISITE}" == "true" ]] && [[ "${WP_MULTISITE_SUBDOMAINS}" == "false" ]]; then 
+    ss_wget_slowest "${TMP_NGINX_BLOCK_PRODUCTION}" "${MIRROR_NGINX_BLOCK_PRODUCTION_MULTISITE_SUBDIRECTORIES}"
 else 
-    ss_wget_slowest /tmp/default "$MIRROR_NGINX_BLOCK_PRODUCTION"
+    ss_wget_slowest "${TMP_NGINX_BLOCK_PRODUCTION}" "${MIRROR_NGINX_BLOCK_PRODUCTION}"
 fi
 
 ## replace site variables ##
 
 SITE_DOMAIN_EXCLUDING_WWW=$(echo "${SITE_DOMAIN/www./}")
     
-sed -i "s/@SITE_DOMAIN_EXCLUDING_WWW/${SITE_DOMAIN_EXCLUDING_WWW}/g" /tmp/default
-sed -i "s/@SITE_DOMAIN_INCLUDING_WWW/${SITE_DOMAIN_INCLUDING_WWW}/g" /tmp/default
-sed -i "s/@SITE_DOMAIN/${SITE_DOMAIN}/g" /tmp/default
-sed -i "s/@SITE_TLD/${SITE_TLD}/g" /tmp/default
-sed -i "s/@DOMAIN/${SITE_DOMAIN}/g" /tmp/default
-sed -i "s/@CACHEVALID/${FCGI_CACHE_VALID}/g" /tmp/default
+sed -i "s/@SITE_DOMAIN_EXCLUDING_WWW/${SITE_DOMAIN_EXCLUDING_WWW}/g" "${TMP_NGINX_BLOCK_PRODUCTION}"
+sed -i "s/@SITE_DOMAIN_INCLUDING_WWW/${SITE_DOMAIN_INCLUDING_WWW}/g" "${TMP_NGINX_BLOCK_PRODUCTION}"
+sed -i "s/@SITE_DOMAIN/${SITE_DOMAIN}/g" "${TMP_NGINX_BLOCK_PRODUCTION}"
+sed -i "s/@SITE_TLD/${SITE_TLD}/g" "${TMP_NGINX_BLOCK_PRODUCTION}"
+sed -i "s/@DOMAIN/${SITE_DOMAIN}/g" "${TMP_NGINX_BLOCK_PRODUCTION}"
+sed -i "s/@CACHEVALID/${FCGI_CACHE_VALID}/g" "${TMP_NGINX_BLOCK_PRODUCTION}"
 
 ## Multisite domain mapping (optional) ##
-if [[ "$WP_MULTISITE_DOMAIN_MAPPING" == "true" ]]; then 
-   sed -i "s/#@WP_MULTISITE_DOMAIN_MAPPING# //g" /tmp/default
+if [[ "${WP_MULTISITE_DOMAIN_MAPPING}" == "true" ]]; then 
+   sed -i "s/#@WP_MULTISITE_DOMAIN_MAPPING# //g" "${TMP_NGINX_BLOCK_PRODUCTION}"
 else
-    sed -i "s/#@WP_MULTISITE_DOMAIN_MAPPING_FALSE# //g" /tmp/default
+    sed -i "s/#@WP_MULTISITE_DOMAIN_MAPPING_FALSE# //g" "${TMP_NGINX_BLOCK_PRODUCTION}"
 fi
 
 ## Multisite subdomains (optional) ##
-if [[ "$WP_MULTISITE_SUBDOMAINS" == "true" ]]; then 
-    sed -i "s/#@WP_MULTISITE_SUBDOMAINS# //g" /tmp/default
+if [[ "${WP_MULTISITE_SUBDOMAINS}" == "true" ]]; then 
+    sed -i "s/#@WP_MULTISITE_SUBDOMAINS# //g" "${TMP_NGINX_BLOCK_PRODUCTION}"
 fi
 
 ## FastCGI Cache ##
-if [[ "$FCGI_CACHE" == "false" ]]; then 
-    sed -i "s/@FCGI_CACHE/1/g" /tmp/default
+if [[ "${FCGI_CACHE}" == "false" ]]; then 
+    sed -i "s/@FCGI_CACHE/1/g" "${TMP_NGINX_BLOCK_PRODUCTION}"
 else 
-    sed -i "s/@FCGI_CACHE/0/g" /tmp/default
+    sed -i "s/@FCGI_CACHE/0/g" "${TMP_NGINX_BLOCK_PRODUCTION}"
 fi
 
     ## copy files to destinations ##
-    if [[ "$SS_INSTALL_NGINX_CONFIG_OVERWRITE_BLOCKS" != "false" ]]; then 
-        ss_cp /tmp/default "${PATH_NGINX_BLOCK_PRODUCTION}"
+    if [[ "${SS_INSTALL_NGINX_CONFIG_OVERWRITE_BLOCKS}" != "false" ]]; then 
+        ss_cp "${TMP_NGINX_BLOCK_PRODUCTION}" "${PATH_NGINX_BLOCK_PRODUCTION}"
     fi
 
 ####################################################################################################
