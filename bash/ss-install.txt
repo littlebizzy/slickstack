@@ -711,25 +711,33 @@ else
 fi
 
 ####################################################################################################
-#### SS-Install: Set Ubuntu Dpkg Default (Confold) #################################################
+#### SS-Update: Set Dpkg Basic Settings + Update Apt (Package) Cache ###############################
 ####################################################################################################
 
-## the first time you run ss-install we want to ensure that confold is dpkg default ##
-## this helps to avoid overwriting module config files that SlickStack uses ##
+## for smoother execution and to avoid conflicts we set dpkg to noninteractive/confold ##
+## it is much better to run ss-update instead of calling apt get upgrade manually ##
 
-## set confold as dpkg default ##
-DEBIAN_FRONTEND="noninteractive dpkg --configure -a --force-confold"
+## set confold as dpkg default (fail-safe in case apt upgrade called directly) ##
+DEBIAN_FRONTEND=noninteractive dpkg --configure -a --force-confold
 
+####################################################################################################
+#### SS-Update-Packages: Upgrade Ubuntu Packages + Linux Kernel ####################################
+####################################################################################################
+
+## the main purpose of ss-update is to upgrade all currently installed Ubuntu packages ##
+## we use apt full-upgrade (not apt-get) in order to upgrade the Linux kernel ##
+
+## clean apt cache ##
 apt clean
 
 ## update apt cache ##
-ss_apt_update
+apt update
 
-## upgrade packages ##
-# ss_apt_upgrade
-
-## see if this avoids [Newer kernel available] issues and thus SSL failures ##
+## upgrade apt packages (including linux kernel) ##
 apt full-upgrade
+
+## remove unused dependencies ##
+apt autoremove
 
 ####################################################################################################
 #### SS-Install: Configure Ubuntu ##################################################################
