@@ -32,7 +32,8 @@ source /var/www/ss-functions
 
 ## A. Touch Timestamp File
 ## B. Message (Begin Script)
-## B. Cleanup Any Existing MySQL Packages
+## C.Update Existing Packages
+
 ## C. Install MySQL (Localhost Only)
 ## D. Configure Root + Admin User
 
@@ -64,31 +65,14 @@ if [[ "${SS_DATABASE_REMOTE}" == "true" ]]; then
 fi
 
 ####################################################################################################
-#### B. SS-Install-MySQL-Packages: Cleanup Any Existing MySQL Packages #############################
+#### C. SS-Install-MySQL-Packages: Update Existing Packages ########################################
 ####################################################################################################
-
-## first we backup the live database (and /var/lib/mysql) and kill any leftover processes ##
-## then we proceed with purge/cleanup of MySQL packages to pepare a clean install ##
-
-## stop mysql service ##
-# if [[ -f "/etc/init.d/mysql" ]]; then
-#     sudo /etc/init.d/mysql* stop > /dev/null 2>&1
-#     sleep 15s
-# fi
-
-## kill any remaining mysql processes ##
-# killall mysql* > /dev/null 2>&1
-# sleep 15s
-
-####################################################################################################
-#### SS-Install-MySQL-Packages: Update Existing Packages ###########################################
-####################################################################################################
-
-## SNIPPET: ss-install-*-packages bash scripts
-## UPDATED: 30MAR2022
 
 ## we must include the standard apt update/upgrade in case script is called directly ##
 ## this helps to avoid conflicts and outdated packages during installation ##
+
+## SNIPPET: ss-install-[module]-packages (bash scripts)
+## UPDATED: 25MAY2022
 
 ## update apt cache ##
 ss_apt_update
@@ -132,17 +116,17 @@ if [[ "${SS_DATABASE_REMOTE}" != "true" ]]; then
 
     ## ubuntu 22.04 ##
     if [[ "${UBUNTU_VERSION}" == "22.04" ]]; then 
-        apt install mysql-server-8.0 > /dev/null 2>&1
+        ss_apt_install mysql-server-8.0
     fi
     
     ## ubuntu 20.04 ##
     if [[ "${UBUNTU_VERSION}" == "20.04" ]]; then 
-        apt install mysql-server-8.0 > /dev/null 2>&1
+        ss_apt_install mysql-server-8.0
     fi
     
     ## ubuntu 18.04 ##
     if [[ "${UBUNTU_VERSION}" == "18.04" ]]; then
-        apt install mysql-server-5.7 > /dev/null 2>&1
+        ss_apt_install mysql-server-5.7
     fi
     
 fi
