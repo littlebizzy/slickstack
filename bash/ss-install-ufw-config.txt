@@ -32,6 +32,10 @@ source /var/www/ss-functions
 
 ## A. Touch Timestamp File
 ## B. Message (Begin Script)
+## C. Force Disable UFW
+## D. Configure UFW Settings
+## E. Configure UFW User Rules
+## F. Reset Permissions (UFW)
 
 ####################################################################################################
 #### A. SS-Install-UFW-Config: Touch Timestamp File ################################################
@@ -54,54 +58,41 @@ ss_touch "${TIMESTAMP_SS_INSTALL_UFW_CONFIG}"
 ss_echo "${COLOR_INFO}Running ss-install-ufw-config: Reinstalls the entire UFW firewall module for SlickStack servers (idempotent)... ${COLOR_RESET}"
 
 ####################################################################################################
-#### SS-Install-UFW: Cleanup Temporary Files #######################################################
-####################################################################################################
-
-## delete tmp files ##
-rm /tmp/ufw*
-rm /tmp/user*
-
-####################################################################################################
-#### SS-Install-UFW: Install UFW (Firewall) ########################################################
+#### C. SS-Install-UFW-Config: Force Disable UFW ###################################################
 ####################################################################################################
 
 ## disable UFW before proceeding with new install ##
 sudo ufw --force disable > /dev/null 2>&1
 
 ####################################################################################################
-#### SS-Install-UFW: Configure UFW General Settings ################################################
+#### D. SS-Install-UFW-Config: Configure UFW Settings ##############################################
 ####################################################################################################
 
 # retrieve latest versions ##
-wget -O /tmp/ufw "${MIRROR_UFW_UFW}"
-wget -O /tmp/ufw.conf "${MIRROR_UFW_CONF}"
+ss_wget_slowest /tmp/ufw "${MIRROR_UFW_UFW}"
+ss_wget_slowest /tmp/ufw.conf "${MIRROR_UFW_CONF}"
 
 ## copy files to their destinations ##
-cp /tmp/ufw /etc/default/ufw
-cp /tmp/ufw.conf /etc/ufw/ufw.conf
+ss_cp /tmp/ufw /etc/default/ufw
+ss_cp /tmp/ufw.conf /etc/ufw/ufw.conf
 
 ####################################################################################################
-#### SS-Install-UFW: Configure User Rules (Default Rules For SlickStack) ###########################
+#### E. SS-Install-UFW-Config: Configure UFW User Rules ############################################
 ####################################################################################################
 
 # retrieve latest versions ##
-wget -O /tmp/user.rules "${MIRROR_USER_RULES}"
-wget -O /tmp/user6.rules "${MIRROR_USER6_RULES}"
+ss_wget_slowest /tmp/user.rules "${MIRROR_USER_RULES}"
+ss_wget_slowest /tmp/user6.rules "${MIRROR_USER6_RULES}"
 
-if [[ -z "$SSH_PORT" ]]; then 
-    sed -i "s/@SSH_PORT/6969/g" /tmp/user.rules
-    sed -i "s/@SSH_PORT/6969/g" /tmp/user6.rules
-else 
-    sed -i "s/@SSH_PORT/${SSH_PORT}/g" /tmp/user.rules
-    sed -i "s/@SSH_PORT/${SSH_PORT}/g" /tmp/user6.rules
-fi
+  #  sed -i "s/@SSH_PORT/${SSH_PORT}/g" /tmp/user.rules ## future maybe support custom port whitelist
+  #  sed -i "s/@SSH_PORT/${SSH_PORT}/g" /tmp/user6.rules ## future maybe support custom port whitelist
 
 ## copy files to their destinations ##
-cp /tmp/user.rules /etc/ufw/user.rules
-cp /tmp/user6.rules /etc/ufw/user6.rules
+ss_cp /tmp/user.rules /etc/ufw/user.rules
+ss_cp /tmp/user6.rules /etc/ufw/user6.rules
 
 ####################################################################################################
-#### SS-Install-UFW: Reset Permissions (UFW) #######################################################
+#### F. SS-Install-UFW-Config: Reset Permissions (UFW) #############################################
 ####################################################################################################
 
 ## run ss-perms-ufw-config ##
@@ -111,19 +102,12 @@ source "${PATH_SS_PERMS_UFW_CONFIG}"
 #### SS-Install-UFW: Enable UFW ####################################################################
 ####################################################################################################
 
+## MOVE THIS somewhere else ##
 ## CONSIDER not enabling ufw in this script and letting ss-worker do it or something cuz 
 ## many times during re-installation of ss-install the shell session gets kicked off right after this step ##
 
 ## enable UFW because we are done configuring settings ##
-sudo ufw --force enable > /dev/null 2>&1
-
-####################################################################################################
-#### SS-Install-UFW: Cleanup Temporary Files #######################################################
-####################################################################################################
-
-## delete tmp files ##
-rm /tmp/ufw*
-rm /tmp/user*
+# sudo ufw --force enable > /dev/null 2>&1
 
 ####################################################################################################
 #### SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ###############
