@@ -32,6 +32,7 @@ source /var/www/ss-functions
 
 ## A. Touch Timestamp File
 ## B. Message (Begin Script)
+## C. Backup MySQL Database Before Proceeding
 
 ####################################################################################################
 #### A. SS-Update-Modules: Touch Timestamp File ####################################################
@@ -54,14 +55,14 @@ ss_touch "${TIMESTAMP_SS_UPDATE_MODULES}"
 ss_echo "${COLOR_INFO}Running ss-update-modules: Updates and cleans up required Ubuntu packages including the Linux kernel... ${COLOR_RESET}"
 
 ####################################################################################################
-#### SS-Update: Backup MySQL Database Before Proceeding ############################################
+#### C. SS-Update-Modules: Backup MySQL Database Before Proceeding #################################
 ####################################################################################################
 
 ## here we first dump the live production database to /var/www/meta/ before proceeding ##
 ## this ensures a recent backup exists in case any database corruption occurs ##
 
 ## run ss-dump-database ##
-source "$PATH_SS_DUMP_DATABASE"
+source "${PATH_SS_DUMP_DATABASE}"
 
 ####################################################################################################
 #### SS-Update: Retrieve Latest SS-Check + SS-Worker (Core Bash Scripts) ###########################
@@ -74,18 +75,6 @@ source "$PATH_SS_DUMP_DATABASE"
 source /var/www/ss-check
 source /var/www/ss-worker
 source /var/www/ss-check
-
-####################################################################################################
-#### SS-Update: Install SlickStack (Root) Crontab ##################################################
-####################################################################################################
-
-## DELETE THIS? to avoid reinstall crontab and thus never reaching sometimes interval ##
-
-## because the crontab is so critical we reinstall it anytime that ss-update is executed ##
-## ss-install is the only other time that the crontab is automatically installed ##
-
-## run ss-install-ubuntu-crontab ##
-source "$PATH_SS_INSTALL_UBUNTU_CRONTAB"
 
 ####################################################################################################
 #### SS-Update-Packages: Purge Irrelevant Ubuntu Packages ##########################################
@@ -103,46 +92,6 @@ source "$PATH_SS_INSTALL_UBUNTU_CRONTAB"
 
 ## set confold as dpkg default (fail-safe in case apt upgrade called directly) ##
 DEBIAN_FRONTEND=noninteractive dpkg --configure -a --force-confold
-
-####################################################################################################
-#### SS-Update: Install CMS (WordPress, PrestaShop, MediaWiki, Etc) ################################
-####################################################################################################
-
-## CHANGE THIS ...  ss-update-modules should no longer update/touch the CMS / CMS config files ... but perhaps 
-## related modules such as WP-CLI since no other way to update those
-
-## SNIPPET: ss-install, ss-update
-
-## this snippet fetches the latest stable version of WordPress from SlickStack mirrors ##
-## major CMS releases (unpatched) are never considered stable for our purposes ##
-    
-# if [[ "$SS_APP" == "wordpress" || -z "$SS_APP"  ]]; then
-    
-    ## run ss-install-wordpress-cli ##
-    # source "$PATH_SS_INSTALL_WORDPRESS_CLI"
-    
-    # https://developer.wordpress.org/cli/commands/cli/update/ 
-    # wp cli update
-
-# fi
-
-## this snippet fetches the latest stable version of PrestaShop from SlickStack mirrors ##
-## major CMS releases (unpatched) are never considered stable for our purposes ##
-
-# if [[ "$SS_APP" == "prestashop" ]]; then
-
-
-    
-# fi
-
-## this snippet fetches the latest stable version of MediaWiki from SlickStack mirrors ##
-## major CMS releases (unpatched) are never considered stable for our purposes ##
-
-# if [[ "$SS_APP" == "mediawiki" ]]; then
-
-
-    
-# fi
 
 ####################################################################################################
 #### SS-Update-Packages: Upgrade Ubuntu Packages + Linux Kernel ####################################
