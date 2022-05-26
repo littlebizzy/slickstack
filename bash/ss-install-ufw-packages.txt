@@ -32,6 +32,9 @@ source /var/www/ss-functions
 
 ## A. Touch Timestamp File
 ## B. Message (Begin Script)
+## C. Update Existing Packages
+## D. Install UFW Firewall
+## E. Reset Permissions (UFW)
 
 ####################################################################################################
 #### A. SS-Install-UFW-Packages: Touch Timestamp File ##############################################
@@ -44,7 +47,7 @@ source /var/www/ss-functions
 ss_touch "${TIMESTAMP_SS_INSTALL_UFW_PACKAGES}"
 
 ####################################################################################################
-#### B. SS-Install-UFW-Core: Message (Begin Script) ################################################
+#### B. SS-Install-UFW-Packages: Message (Begin Script) ############################################
 ####################################################################################################
 
 ## this is a simple message that announces to the shell the purpose of this bash script ##
@@ -54,7 +57,7 @@ ss_touch "${TIMESTAMP_SS_INSTALL_UFW_PACKAGES}"
 ss_echo "${COLOR_INFO}Running ss-install-ufw-packages: Reinstalls the entire UFW firewall module for SlickStack servers (idempotent)... ${COLOR_RESET}"
 
 ####################################################################################################
-#### SS-Install-UFW-Packages: Update Existing Packages #############################################
+#### C. SS-Install-UFW-Packages: Update Existing Packages ##########################################
 ####################################################################################################
 
 ## we must include the standard apt update/upgrade in case script is called directly ##
@@ -70,22 +73,7 @@ ss_apt_update
 ss_apt_upgrade
 
 ####################################################################################################
-#### SS-Install-UFW: Cleanup Temporary Files #######################################################
-####################################################################################################
-
-## delete tmp files ##
-rm /tmp/ufw*
-rm /tmp/user*
-
-####################################################################################################
-#### SS-Install-UFW: Install UFW (Firewall) ########################################################
-####################################################################################################
-
-## disable UFW before proceeding with new install ##
-sudo ufw --force disable > /dev/null 2>&1
-
-####################################################################################################
-#### SS-Install-UFW: Install UFW (Firewall) ########################################################
+#### D. SS-Install-UFW-Packages: Install UFW Firewall ##############################################
 ####################################################################################################
 
 ## ubuntu 22.04 ##
@@ -104,29 +92,11 @@ if [[ "${UBUNTU_VERSION}" = "18.04" ]]; then
 fi
 
 ####################################################################################################
-#### SS-Install-UFW: Reset Permissions (UFW) #######################################################
+#### E. SS-Install-UFW-Packages: Reset Permissions (UFW) ###########################################
 ####################################################################################################
 
 ## run ss-perms-ufw-packages ##
 source "${PATH_SS_PERMS_UFW_PACKAGES}"
-
-####################################################################################################
-#### SS-Install-UFW: Enable UFW ####################################################################
-####################################################################################################
-
-## CONSIDER not enabling ufw in this script and letting ss-worker do it or something cuz 
-## many times during re-installation of ss-install the shell session gets kicked off right after this step ##
-
-## enable UFW because we are done configuring settings ##
-sudo ufw --force enable > /dev/null 2>&1
-
-####################################################################################################
-#### SS-Install-UFW: Cleanup Temporary Files #######################################################
-####################################################################################################
-
-## delete tmp files ##
-rm /tmp/ufw*
-rm /tmp/user*
 
 ####################################################################################################
 #### SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ###############
