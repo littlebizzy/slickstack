@@ -58,21 +58,6 @@ ss_touch "${TIMESTAMP_SS_WORKER}"
 ss_echo "${COLOR_INFO}Running ss-worker: Performs SlickStack maintenance tasks and retrieves the latest ss-check file... ${COLOR_RESET}"
 
 ####################################################################################################
-#### C. SS-Worker: Cleanup Temporary Files #########################################################
-####################################################################################################
-
-## we briefly cleanup any leftover temporarily files that are relevant to this script ##
-## this is performed before and after associated code runs to avoid conflicts ##
-
-## KEEPS DELETING /tmp/ss-config when reinstalling ss
-
-## delete tmp files ##
-# rm /tmp/ss*
-# rm /tmp/*cron*
-rm /tmp/blacklist*
-rm /tmp/maintenance.html*
-
-####################################################################################################
 #### D. SS-Worker: Backup Active SS-Config File ####################################################
 ####################################################################################################
 
@@ -419,41 +404,11 @@ sed -i "s|@SS_WORDPRESS_ADMIN_DASHBOARD|true|g" /var/www/ss-config
 sed -i "s|@SS_SWAPFILE_SIZE|2G|g" /var/www/ss-config
 sed -i "s|@SS_LANGUAGE|en_US|g" /var/www/ss-config
 sed -i "s|@SS_REMOTE_BACKUPS|none|g" /var/www/ss-config
+sed -i "s|@SSH_PORT|22|g" /var/www/ss-config
 
-
-
-
-## SLICKSTACK NOW REQUIRES SSH TO BE ON PORT 22 ##
-## TEMP FIX TO ENSURE 22 WHITELISTED IN UFW AND SSH DAEMON USING PORT 22 ##
-
-sudo ufw --force disable > /dev/null 2>&1
-
-if [[ "${UBUNTU_VERSION}" == "22.04" ]]; then 
-    ## run ss-install-ufw-config ##
-    source "${PATH_SS_INSTALL_UFW_CONFIG}"
-    source "${PATH_SS_INSTALL_UBUNTU_SSH}"
-fi
-
-if [[ "${UBUNTU_VERSION}" == "20.04" ]]; then 
-    ## run ss-install-ufw-config ##
-    source "${PATH_SS_INSTALL_UFW_CONFIG}"
-    source "${PATH_SS_INSTALL_UBUNTU_SSH}"
-fi
-
-sudo ufw --force disable > /dev/null 2>&1
-
-
-####################################################################################################
-#### SS-Worker: Cleanup Temporary Files ############################################################
-####################################################################################################
-
-## KEEPS DELETING /tmp/ss-config when reinstalling ss
-
-## delete tmp files ##
-# rm /tmp/ss*
-# rm /tmp/*cron*
-rm /tmp/blacklist*
-rm /tmp/maintenance.html*
+## port 22 patch finished we wil no longer disable UFW ##
+## to avoid potential lockouts we will not force-enable UFW until possibly later ##
+# sudo ufw --force disable > /dev/null 2>&1
 
 ####################################################################################################
 #### SS-Worker: Reset Permissions (SS Core Bash Scripts + SS Core Cron Jobs) #######################
