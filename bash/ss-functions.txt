@@ -1420,13 +1420,30 @@ function ss_cp_if_not_exists {
     # command cp -R -f -d --no-preserve=mode,ownership "$@"
 }
 
-## ss_mv alias flags ##
-function ss_mv {
-    command mv -f "$@"
+## touch ##
+function touch {
+    command touch -am "$@"
 }
 
-## ln alias flags ##
+## ln ##
 function ln {
+    command ln -s -f "$@"
+}
+
+## ss_mv ##
+function ss_mv {
+    mkdir -p $(dirname "$2") && mv -f "$@"
+    # command mv -f "$@"
+}
+
+## ss_touch ##
+function ss_touch {
+    mkdir -p $(dirname "$1") && touch -am "$@"
+    # command touch -am "$@"
+}
+
+## ss_ln ##
+function ss_ln {
     command ln -s -f "$@"
 }
 
@@ -1536,17 +1553,6 @@ function ss_rsync {
 function ss_rsync_backup {
     command rsync -acz --mkpath --rsh="sshpass -p ${RSYNC_PASSWORD} ssh -o StrictHostKeyChecking=no -l ${RSYNC_USER}" "$@"
     # command rsync -acze "ssh -o StrictHostKeyChecking=no" --mkpath --rsh='sshpass -p "${RSYNC_PASSWORD}" -e ssh -l test' "$@"
-}
-
-## touch alias flags ##
-function touch {
-    command touch -am "$@"
-}
-
-## ss_touch ##
-function ss_touch {
-    mkdir -p $(dirname "$1") && touch -am "$1"
-    # command touch -am "$@"
 }
 
 ## unzip alias flags ##
@@ -1732,5 +1738,8 @@ ENDSTAND=$(tput rmso) # end standout
 ## Ref: https://stackoverflow.com/questions/28296411/how-to-touch-a-file-and-mkdir-if-needed-in-one-line
 ## Ref: https://unix.stackexchange.com/questions/305844/how-to-create-a-file-and-parent-directories-in-one-command
 ## Ref: https://askubuntu.com/questions/800845/create-file-and-its-parent-directory
+## Ref: https://unix.stackexchange.com/questions/277412/cp-vs-mv-which-operation-is-more-efficient
+## Ref: https://stackoverflow.com/questions/547719/is-there-a-way-to-make-mv-create-the-directory-to-be-moved-to-if-it-doesnt-exis
+## Ref: https://unix.stackexchange.com/questions/41571/what-is-the-difference-between-and
 
 ## SS_EOF
