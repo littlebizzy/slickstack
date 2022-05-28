@@ -4,7 +4,7 @@
 #### mirror: https://mirrors.slickstack.io/ufw-firewall/user-rules.txt #############################
 #### path: n/a (boilerplate) #######################################################################
 #### destination: /etc/ufw/user.rules (after install) ##############################################
-#### purpose: UFW user rules IPv4 configuration file boilerplate (supports custom SSH port) ########
+#### purpose: UFW user rules IPv4 configuration file boilerplate (hardcoded SSH port 22) ###########
 #### module version: UFW 0.36.x ####################################################################
 #### sourced by: n/a ###############################################################################
 #### bash aliases: n/a (ss-install-ufw-config) #####################################################
@@ -29,21 +29,24 @@
 :ufw-user-limit-accept - [0:0]
 
 ####################################################################################################
-#### User Rules IPv4: Port Settings ################################################################
+#### User Rules (IPv4): Port Settings ##############################################################
 ####################################################################################################
 
-## here we manually allow TCP connections for both HTTP (80) and HTTPS (443) frontend ##
-## SSH (custom port) connections are also allowed based on ss-config settings ##
+## UFW allows ports 80 and 443 by default so we retain that rule and their formatting ##
+## we also add a separate rule for port 22 (SSH) using their required syntax ##
 
 ### RULES ###
 
 ### tuple ### allow tcp 80,443 0.0.0.0/0 any 0.0.0.0/0 in
--A ufw-user-input -p tcp -m multiport --dports 80,443,22 -j ACCEPT
+-A ufw-user-input -p tcp -m multiport --dports 80,443 -j ACCEPT
+
+### tuple ### allow tcp 22 0.0.0.0/0 any 0.0.0.0/0 in
+-A ufw-user-input -p tcp --dport 22 -j ACCEPT
 
 ### END RULES ###
 
 ####################################################################################################
-#### User Rules IPv4: Logging Settings #############################################################
+#### User Rules (IPv4): Logging ####################################################################
 ####################################################################################################
 
 ### LOGGING ###
@@ -55,7 +58,7 @@
 ### END LOGGING ###
 
 ####################################################################################################
-#### User Rules IPv4: Rate Limiting Settings #######################################################
+#### User Rules (IPv4): Rate Limiting ##############################################################
 ####################################################################################################
 
 ### RATE LIMITING ###
@@ -65,7 +68,7 @@
 ### END RATE LIMITING ###
 
 ####################################################################################################
-#### User Rules IPv4: Commit Rules #################################################################
+#### User Rules (IPv4): Commit Rules ###############################################################
 ####################################################################################################
 
 COMMIT
