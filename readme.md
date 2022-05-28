@@ -31,6 +31,10 @@ SlickStack is a free LEMP stack automation script written in Bash designed to en
 
 ## Changelog
 
+* **NEW!** Lots of code cleanup continues as we expand `ss-functions` and convert remaining non-function commands into functions...
+
+* **NEW!** Custom SSH ports are no longer supported and port 22 is now hardcoded for SSH going forward, this will provide better stability and compatiblity with certain cloud providers such as AWS/Lightsail.
+
 * **NEW!** More improvement to the new auto-installation of WordPress on new SlickStack servers...
 
 * **NEW!** Known thin content regex patterns are now force-noindexed in SlickStack Nginx blocks including pagination (/page/), tags (/tag/), feeds (/feed/), and date-based archives (e.g. /2022/05/) as we begin juicing up the automated SEO features!
