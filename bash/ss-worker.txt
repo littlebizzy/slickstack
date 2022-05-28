@@ -420,8 +420,28 @@ sed -i "s|@SS_SWAPFILE_SIZE|2G|g" /var/www/ss-config
 sed -i "s|@SS_LANGUAGE|en_US|g" /var/www/ss-config
 sed -i "s|@SS_REMOTE_BACKUPS|none|g" /var/www/ss-config
 
-## disable UFW because we will no longer support custom (non-22) SSH ports ##
+
+
+
+## SLICKSTACK NOW REQUIRES SSH TO BE ON PORT 22 ##
+## TEMP FIX TO ENSURE 22 WHITELISTED IN UFW AND SSH DAEMON USING PORT 22 ##
+
 sudo ufw --force disable > /dev/null 2>&1
+
+if [[ "${UBUNTU_VERSION}" == "22.04" ]]; then 
+    ## run ss-install-ufw-config ##
+    source "${PATH_SS_INSTALL_UFW_CONFIG}"
+    source "${PATH_SS_INSTALL_UBUNTU_SSH}"
+fi
+
+if [[ "${UBUNTU_VERSION}" == "20.04" ]]; then 
+    ## run ss-install-ufw-config ##
+    source "${PATH_SS_INSTALL_UFW_CONFIG}"
+    source "${PATH_SS_INSTALL_UBUNTU_SSH}"
+fi
+
+sudo ufw --force disable > /dev/null 2>&1
+
 
 ####################################################################################################
 #### SS-Worker: Cleanup Temporary Files ############################################################
