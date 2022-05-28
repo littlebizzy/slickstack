@@ -32,13 +32,16 @@
 #### User Rules IPv6: Port Settings ################################################################
 ####################################################################################################
 
-## here we manually allow TCP connections for both HTTP (80) and HTTPS (443) frontend ##
-## SSH (custom port) connections are also allowed based on ss-config settings ##
+## UFW allows ports 80 and 443 by default so we retain that rule and their formatting ##
+## we also add a separate rule for port 22 (SSH) using their required syntax ##
 
 ### RULES ###
 
-### tuple ### allow tcp 80,443 ::/0 any ::/0 in
--A ufw6-user-input -p tcp -m multiport --dports 80,443,22 -j ACCEPT
+### tuple ### allow tcp 80,443 0.0.0.0/0 any 0.0.0.0/0 in
+-A ufw-user-input -p tcp -m multiport --dports 80,443 -j ACCEPT
+
+### tuple ### allow tcp 22 0.0.0.0/0 any 0.0.0.0/0 in
+-A ufw-user-input -p tcp --dport 22 -j ACCEPT
 
 ### END RULES ###
 
