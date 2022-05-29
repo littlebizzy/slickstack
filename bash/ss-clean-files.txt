@@ -54,7 +54,7 @@ ss_touch "${TIMESTAMP_SS_CLEAN_FILES}"
 ## it will only be noticed by sudo users who manually call ss core bash scripts ##
 
 ## echo message ##
-ss_echo "${COLOR_INFO}Running ss-clean-files: Cleans up various unsafe and unnecessary files on the SlickStack server... ${COLOR_RESET}"
+ss_echo "${COLOR_INFO}ss-clean-files: Cleans up various unsafe and/or junk type of files... ${COLOR_RESET}"
 
 ####################################################################################################
 #### C. SS-Clean-Files: Delete SSH Private Key (If Exists) #########################################
@@ -65,7 +65,7 @@ ss_echo "${COLOR_INFO}Running ss-clean-files: Cleans up various unsafe and unnec
 
 ## delete private key if more than 360 mins (6 hours) old ##
 if [[ -n $(find "$PATH_SSH_PRIVATE_KEY_FILE" -amin +360) ]]; then
-    rm "$PATH_SSH_PRIVATE_KEY_FILE"
+    ss_rm "${PATH_SSH_PRIVATE_KEY_FILE}"
 fi
 
 ####################################################################################################
@@ -79,7 +79,6 @@ fi
 cat /dev/null > /root/.bash_history
 cat /dev/null > /home/${SUDO_USER}/.bash_history
 cat /dev/null > /home/${SFTP_USER}/.bash_history
-
 
 ## delete non-critical system logs ##
 ss_rm /var/log/journal/*
@@ -100,35 +99,31 @@ ss_rm /var/lib/mysql/binlog.*
 ## never keep any important data only in those sites on a SlickStack server ##
 
 ## delete staging site files ##
-if [[ "$STAGING_SITE" == "false" ]]; then
+if [[ "${STAGING_SITE}" == "false" ]]; then
     ss_rm /var/www/html/staging
     ss_rm /var/www/sites/staging
 fi
 
+## avoids data loss for now ##
 ## delete dev site files ##
-if [[ "$DEV_SITE" == "false" ]]; then
-    ss_rm /var/www/html/dev
-    ss_rm /var/www/sites/development
-fi
+# if [[ "${DEV_SITE}" == "false" ]]; then
+    # ss_rm /var/www/html/dev
+    # ss_rm /var/www/sites/development
+# fi
 
 ####################################################################################################
 #### SS-Clean-Files: Delete MySQL Directory Backup If Not Explicity Enabled ########################
 ####################################################################################################
 
 if [[ "$SS_DUMP_DATABASE_FILES" != "true" ]]; then 
-    ss_ss_rm /var/www/backups/mysql/data/
+    ss_rm /var/www/backups/mysql/data/
 fi
-
-
-
 
 
 if [[ "$SS_OBJECT_CACHE" == "false" ]]; then
     ss_rm /var/www/html/wp-content/object-cache.php
     ss_rm /var/www/html/staging/wp-content/object-cache.php
 fi
-
-
 
 ####################################################################################################
 #### SS-Clean-Files: Delete Old SS-Config Backup Files #############################################
