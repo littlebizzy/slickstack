@@ -38,6 +38,8 @@ source /var/www/ss-functions
 ## E. Delete Staging Site + Dev Site Files (Conditional)
 ## F. Delete Unused SlickStack Backup Files
 ## G. Delete Object Cache Files (Conditional)
+## H. Delete Outdated SlickStack Files
+## I. Delete Unused WordPress Core Files
 
 ####################################################################################################
 #### A. SS-Clean-Files: Touch Timestamp File #######################################################
@@ -130,7 +132,7 @@ if [[ "$SS_OBJECT_CACHE" == "false" ]]; then
 fi
 
 ####################################################################################################
-#### SS-Clean-Files: Delete Outdated + Unnecessary SlickStack Files ################################
+#### H. SS-Clean-Files: Delete Outdated SlickStack Files ###########################################
 ####################################################################################################
 
 ## as both SlickStack and WordPress evolve there are certain files that become irrelevant ##
@@ -142,142 +144,40 @@ ss_rm /var/www/html/dev/wp-admin/install.php
 ss_rm /var/www/html/staging/wp-config-sample*
 ss_rm /var/www/html/staging/wp-admin/install.php
 
-## delete throwaway theme ##
-ss_rm /var/www/html/wp-content/themes/throwaway*
-ss_rm /var/www/html/staging/wp-content/themes/throwaway*
-
 ## temp fix to delete files generated from empty variables in ss-config MU plugins ##
 ss_rm /var/www/html/wp-content/mu-plugins/tmp* ## junk folder from before
 
-## outdated MU plugins (no longer used) ##
+## log files ##
+ss_rm /var/www/logs/cron.log
+
+## old cache dir ##
+ss_rm /etc/nginx/cache*
+
+## themes (production) ##
+ss_rm /var/www/html/wp-content/themes/throwaway*
+
+## themes (staging) ##
+ss_rm /var/www/html/staging/wp-content/themes/throwaway*
+
+## mu-plugins (production) ##
 ss_rm /var/www/html/wp-content/mu-plugins/index-autoload* ## included in WP 5.3+
 ss_rm /var/www/html/wp-content/mu-plugins/server-status* ## outdated
 ss_rm /var/www/html/wp-content/mu-plugins/error-log-monitor* ## outdated
-ss_rm /var/www/html/staging/wp-content/mu-plugins/index-autoload* ## included in WP 5.3+
 ss_rm /var/www/html/wp-content/mu-plugins/remove-query-strings* ## no longer recommended
-ss_rm /var/www/html/staging/wp-content/mu-plugins/remove-query-strings* ## no longer recommended
 # ss_rm /var/www/html/wp-content/mu-plugins/xxx-notices*
-ss_rm /var/www/html/staging/wp-content/mu-plugins/xxx-staging*
-ss_rm /var/www/html/dev/wp-content/mu-plugins/xxx-dev*
-
 ss_rm /var/www/html/wp-content/mu-plugins/sftp-details*
+
+## mu-plugins (staging) ##
+ss_rm /var/www/html/staging/wp-content/mu-plugins/index-autoload* ## included in WP 5.3+
+ss_rm /var/www/html/staging/wp-content/mu-plugins/remove-query-strings* ## no longer recommended
+ss_rm /var/www/html/staging/wp-content/mu-plugins/xxx-staging*
 ss_rm /var/www/html/staging/wp-content/mu-plugins/sftp-details*
+
+## mu-plugins (developement) ##
+ss_rm /var/www/html/dev/wp-content/mu-plugins/xxx-dev*
 ss_rm /var/www/html/dev/wp-content/mu-plugins/sftp-details*
 
-####################################################################################################
-#### SS-Clean-Files: Delete Unsafe + Unnecessary WordPress Core Files ##############################
-####################################################################################################
-
-## partly for backwards compatibility (but also stubborness) WP Core retains these files ##
-## none are critical yet they greatly hurt security thus SlickStack deletes them ##
-
-## delete old + exploitable WordPress Core files ##
-ss_rm /var/www/html/readme*.html ## wordpresss junk files
-ss_rm /var/www/html/license*.txt ## wordpresss junk files
-ss_rm /var/www/html/licence*.txt ## wordpresss junk files
-ss_rm /var/www/html/wp-links-opml*.php*
-ss_rm /var/www/html/wp-mail*.php*
-ss_rm /var/www/html/wp-trackback*.php*
-ss_rm /var/www/html/xmlrpc*.php*
-# ss_rm /wp-admin/install.php* ## if not virgin install anymore
-
-ss_rm /var/www/html/staging/readme*.html ## wordpresss junk files
-ss_rm /var/www/html/staging/license*.txt ## wordpresss junk files
-ss_rm /var/www/html/staging/licence*.txt ## wordpresss junk files
-ss_rm /var/www/html/staging/wp-links-opml*.php*
-ss_rm /var/www/html/staging/wp-mail*.php*
-ss_rm /var/www/html/staging/wp-trackback*.php*
-ss_rm /var/www/html/staging/xmlrpc*.php*
-
-####################################################################################################
-#### SS-Clean-Files: Empty Out (Null) Log Files To Prevent Large Files #############################
-####################################################################################################
-
-cat /dev/null > /var/www/logs/cron.log
-
-####################################################################################################
-#### SS-Clean-Files: Delete Any PHP Error Handling Hacks In WordPress Plugins + Themes #############
-####################################################################################################
-
-## an unfortunate feature of PHP is that scripts can override WP or server-level settings ##
-## this set of commands safely removes any PHP error handling hacks from scripts ##
-
-## replace this with WP Admin warning message if files found ##
-# find /var/www/html/wp-content/mu-plugins -type f -name "*.php" -exec sed -i '/ini_set/d' {} \;
-# find /var/www/html/wp-content/plugins -type f -name "*.php" -exec sed -i '/ini_set/d' {} \;
-# find /var/www/html/wp-content/themes -type f -name "*.php" -exec sed -i '/ini_set/d' {} \;
-# find /var/www/html/wp-content/mu-plugins -type f -name "*.php" -exec sed -i '/error_reporting/d' {} \;
-# find /var/www/html/wp-content/plugins -type f -name "*.php" -exec sed -i '/error_reporting/d' {} \;
-# find /var/www/html/wp-content/themes -type f -name "*.php" -exec sed -i '/error_reporting/d' {} \;
-
-####################################################################################################
-#### SS-Clean-Files: Delete Various Junk Files From Ubuntu (Etc) Outside Public Directory ##########
-####################################################################################################
-
-## delete Ubuntu junk files ##
-# ss_rm /tmp/systemd-*
-# ss_rm /var/tmp/systemd-*
-# find /var/backups/ -name "*.gz" -type f -delete
-find /var/www/html/ -name "wget-log*" -type f -delete
-# ss_rm /media*
-
-## cleanup all log files ##
-find /var/log/ -name "*.gz" -type f -delete
-find /var/log/ -name "*.log.*" -type f -delete
-ss_rm /var/log/fpm-php.www.log*
-ss_rm /var/log/php7.0-fpm.log*
-ss_rm /var/log/php7.1-fpm.log*
-ss_rm /var/log/php7.2-fpm.log*
-ss_rm /var/log/php-fpm/*
-ss_rm /var/log/monit.log*
-
-find /var/www/html/ -name "wget-log*" -type f -delete
-
-## delete old SlickStack cache ##
-ss_rm /etc/nginx/cache*
-
-####################################################################################################
-#### SS-Clean-Files: Cleanup SlickStack Core Files Under /var/www/ #################################
-####################################################################################################
-
-if [[ "$SS_CLEAN_FILES_ROOT_PRIVATE" != "false" ]]; then
-
-## delete mistake during playing with bash shell prompt ## /home/user/'s'$'\033\033'
-ss_rm /home/${SUDO_USER}/*033*
-ss_rm /home/${SFTP_USER}/*033*
-ss_rm /home/${SUDO_USER}/'s'$'\033\033'
-ss_rm /home/${SFTP_USER}/'s'$'\033\033'
-
-## delete SlickStack leftovers ##
-ss_rm /var/www/maintenance.txt
-ss_rm /var/www/backups/html/export.tar.gz 
-# ss_rm /var/www/meta/.bash-aliases ## activate this soon
-ss_rm /var/www/auth/shell
-ss_rm /var/www/shell
-ss_rm /var/www/meta/shell
-ss_rm /var/www/meta/.ssh/authorized_keys
-ss_rm /var/www/meta/.ssh
-ss_rm /var/www/backups/mysql/wp.sql
-ss_rm /etc/nginx/sites-available/*
-ss_rm /etc/nginx/sites-enabled/*
-ss_rm /home/${SUDO_USER}/.wp-cli/config.yml
-ss_rm /root/.wp-cli/config.yml
-ss_rm /var/www/meta/timestamps/ss-dos2unix-files.timestamp 
-ss_rm /var/www/meta/.ss ## folder from testing
-ss_rm /var/www/meta/.timestamp*
-ss_rm /var/www/meta/timestamps/.timestamp*
-ss_rm /var/www/meta/archive
-ss_rm /var/www/meta/archive/config
-ss_rm /var/www/meta/archive/mysql
-ss_rm /var/www/meta/archive/mysql/data
-ss_rm /var/www/meta/wp.sql
-ss_rm /var/www/meta/mysql.bak
-ss_rm /var/www/meta/mysql-files.bak
-ss_rm /var/www/meta/mysql-keyring.bak
-ss_rm /var/www/meta/ss-config.bak*
-ss_rm /var/www/sites/block-dev
-ss_rm /var/www/sites/block-production
-ss_rm /var/www/sites/block-staging
+## bash scripts ##
 ss_rm /var/www/ss-install-postfix
 ss_rm /var/www/ss-install-redis
 ss_rm /var/www/ss-install-php-core
@@ -319,6 +219,106 @@ ss_rm /var/www/ss-perms-php
 ss_rm /var/www/ss-perms-nginx
 ss_rm /var/www/ss-perms-ubuntu-swap
 ss_rm /var/www/ss-purge
+
+####################################################################################################
+#### I. SS-Clean-Files: Delete Unused WordPress Core Files #########################################
+####################################################################################################
+
+## partly for backwards compatibility (but also stubborness) WP Core retains these files ##
+## none are critical yet they greatly hurt security thus SlickStack deletes them ##
+
+## delete old + exploitable WordPress Core files ##
+ss_rm /var/www/html/readme*.html ## wordpresss junk files
+ss_rm /var/www/html/license*.txt ## wordpresss junk files
+ss_rm /var/www/html/licence*.txt ## wordpresss junk files
+ss_rm /var/www/html/wp-links-opml*.php*
+ss_rm /var/www/html/wp-mail*.php*
+ss_rm /var/www/html/wp-trackback*.php*
+ss_rm /var/www/html/xmlrpc*.php*
+# ss_rm /wp-admin/install.php* ## if not virgin install anymore
+
+ss_rm /var/www/html/staging/readme*.html ## wordpresss junk files
+ss_rm /var/www/html/staging/license*.txt ## wordpresss junk files
+ss_rm /var/www/html/staging/licence*.txt ## wordpresss junk files
+ss_rm /var/www/html/staging/wp-links-opml*.php*
+ss_rm /var/www/html/staging/wp-mail*.php*
+ss_rm /var/www/html/staging/wp-trackback*.php*
+ss_rm /var/www/html/staging/xmlrpc*.php*
+
+####################################################################################################
+#### SS-Clean-Files: Delete Any PHP Error Handling Hacks In WordPress Plugins + Themes #############
+####################################################################################################
+
+## an unfortunate feature of PHP is that scripts can override WP or server-level settings ##
+## this set of commands safely removes any PHP error handling hacks from scripts ##
+
+## replace this with WP Admin warning message if files found ##
+# find /var/www/html/wp-content/mu-plugins -type f -name "*.php" -exec sed -i '/ini_set/d' {} \;
+# find /var/www/html/wp-content/plugins -type f -name "*.php" -exec sed -i '/ini_set/d' {} \;
+# find /var/www/html/wp-content/themes -type f -name "*.php" -exec sed -i '/ini_set/d' {} \;
+# find /var/www/html/wp-content/mu-plugins -type f -name "*.php" -exec sed -i '/error_reporting/d' {} \;
+# find /var/www/html/wp-content/plugins -type f -name "*.php" -exec sed -i '/error_reporting/d' {} \;
+# find /var/www/html/wp-content/themes -type f -name "*.php" -exec sed -i '/error_reporting/d' {} \;
+
+####################################################################################################
+#### SS-Clean-Files: Delete Various Junk Files From Ubuntu (Etc) Outside Public Directory ##########
+####################################################################################################
+
+## delete Ubuntu junk files ##
+# ss_rm /tmp/systemd-*
+# ss_rm /var/tmp/systemd-*
+# find /var/backups/ -name "*.gz" -type f -delete
+find /var/www/html/ -name "wget-log*" -type f -delete
+# ss_rm /media*
+
+## cleanup all log files ##
+find /var/log/ -name "*.gz" -type f -delete
+find /var/log/ -name "*.log.*" -type f -delete
+ss_rm /var/log/fpm-php.www.log*
+ss_rm /var/log/php7.0-fpm.log*
+ss_rm /var/log/php7.1-fpm.log*
+ss_rm /var/log/php7.2-fpm.log*
+ss_rm /var/log/php-fpm/*
+ss_rm /var/log/monit.log*
+
+find /var/www/html/ -name "wget-log*" -type f -delete
+
+####################################################################################################
+#### SS-Clean-Files: Cleanup SlickStack Core Files Under /var/www/ #################################
+####################################################################################################
+
+if [[ "$SS_CLEAN_FILES_ROOT_PRIVATE" != "false" ]]; then
+
+## delete SlickStack leftovers ##
+ss_rm /var/www/maintenance.txt
+ss_rm /var/www/backups/html/export.tar.gz 
+# ss_rm /var/www/meta/.bash-aliases ## activate this soon
+ss_rm /var/www/auth/shell
+ss_rm /var/www/shell
+ss_rm /var/www/meta/shell
+ss_rm /var/www/meta/.ssh/authorized_keys
+ss_rm /var/www/meta/.ssh
+ss_rm /var/www/backups/mysql/wp.sql
+ss_rm /etc/nginx/sites-available/*
+ss_rm /etc/nginx/sites-enabled/*
+ss_rm /home/${SUDO_USER}/.wp-cli/config.yml
+ss_rm /root/.wp-cli/config.yml
+ss_rm /var/www/meta/timestamps/ss-dos2unix-files.timestamp 
+ss_rm /var/www/meta/.ss ## folder from testing
+ss_rm /var/www/meta/.timestamp*
+ss_rm /var/www/meta/timestamps/.timestamp*
+ss_rm /var/www/meta/archive
+ss_rm /var/www/meta/archive/config
+ss_rm /var/www/meta/archive/mysql
+ss_rm /var/www/meta/archive/mysql/data
+ss_rm /var/www/meta/wp.sql
+ss_rm /var/www/meta/mysql.bak
+ss_rm /var/www/meta/mysql-files.bak
+ss_rm /var/www/meta/mysql-keyring.bak
+ss_rm /var/www/meta/ss-config.bak*
+ss_rm /var/www/sites/block-dev
+ss_rm /var/www/sites/block-production
+ss_rm /var/www/sites/block-staging
 ss_rm /home/${SUDO_USER}/.bash-aliases
 ss_rm /var/www/00-crontab
 ss_rm /var/www/01-cron-often
