@@ -30,10 +30,10 @@ source /var/www/ss-functions
 ## A. Touch Timestamp File
 ## B. Message (Begin Script)
 ## C. Backup Active SS-Config File
-## E. Retrieve Latest SS-Check (Bash Script)
+## D. Retrieve Current SS-Check (Bash Script)
+## E. Install Pilot File Variables
 
 ## E. Reset SlickStack Core Permissions
-
 ## H. Install Ubuntu Swapfile (If Not Exists)
 
 ####################################################################################################
@@ -71,45 +71,42 @@ CURRENT_TIME=$(date "+%Y.%b.%d-%H:%M:%S")
 ss_cp /var/www/ss-config /var/www/backups/config/ss-config.bak.${CURRENT_TIME}
 
 ####################################################################################################
-#### E. SS-Worker: Retrieve Latest SS-Check (Bash Script) ##########################################
+#### D. SS-Worker: Retrieve Current SS-Check (Bash Script) #########################################
 ####################################################################################################
 
 ## here we retrieve the latest ss-check core bash script to improve overall redundancy ##
 ## thus ss-check avoids installing itself and no single point of failure (SPOF) ##
 
-## retrieve latest ss-check ##
+## retrieve current ss-check ##
 ss_wget_slowest "${TMP_SS_CHECK}" "${MIRROR_SS_CHECK}"
 
 ## install ss-check ##
-ss_cp "${TMP_SS_CHECK}" "${PATH_SS_CHECK}"
+ss_mv "${TMP_SS_CHECK}" "${PATH_SS_CHECK}"
 
 ####################################################################################################
-#### SS-Worker: Install Pilot File Variables #######################################################
+#### E. SS-Worker: Install Pilot File Variables ####################################################
 ####################################################################################################
-
-## THIS SHOULD NOT RUN SO OFTEN in ss-worker... find another place ##
 
 ## this snippet retrieves the remote pilot file defined in ss-config and reads settings ##
 ## it will replace old settings with pilot settings for multi-server management ##
 
 ## retrieve pilot file if defined ##
 if [[ -n "${SS_PILOT_FILE}" ]]; then 
-    ss_rm /tmp/ss-pilot
+
     ss_wget_slowest /tmp/ss-pilot "${SS_PILOT_FILE}"
 
-    PILOT_WHITELABEL_BRAND=$(source /tmp/ss-pilot; echo $WHITELABEL_BRAND)
-    PILOT_WHITELABEL_HOMEPAGE=$(source /tmp/ss-pilot; echo $WHITELABEL_HOMEPAGE)
+    PILOT_WHITELABEL_BRAND=$(source /tmp/ss-pilot; echo "${WHITELABEL_BRAND}")
+    PILOT_WHITELABEL_HOMEPAGE=$(source /tmp/ss-pilot; echo "${WHITELABEL_HOMEPAGE}")
 
     ## replace ss-config variables with pilot variables if exist ##
-    if [[ -n "$PILOT_WHITELABEL_BRAND" ]]; then 
+    if [[ -n "${PILOT_WHITELABEL_BRAND}" ]]; then 
         sed -i "s|\(^WHITELABEL_BRAND=\).*|WHITELABEL_BRAND=\"$PILOT_WHITELABEL_BRAND\"|g" /var/www/ss-config
     fi
 
-    if [[ -n "$PILOT_WHITELABEL_HOMEPAGE" ]]; then 
+    if [[ -n "${PILOT_WHITELABEL_HOMEPAGE}" ]]; then 
         sed -i "s|\(^WHITELABEL_HOMEPAGE=\).*|WHITELABEL_HOMEPAGE=\"$PILOT_WHITELABEL_HOMEPAGE\"|g" /var/www/ss-config
     fi
 
-    ss_rm /tmp/ss-pilot
 fi 
 
 ####################################################################################################
