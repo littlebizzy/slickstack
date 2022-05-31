@@ -22,8 +22,8 @@
 ## this is a brief summary of the different code snippets you will find in this script ##
 ## each section should be commented so you understand what is being accomplished ##
 
-## A. Script Build Version
-## A. Validate (Restore) SS-Functions
+## A. Build Version
+## A. Validate SS-Functions
 ## C. Source SS-Config + SS-Functions (After Validated)
 ## D. Touch Timestamp File
 ## C. Verify Environment Compatibility
@@ -40,10 +40,10 @@
 ## this build version ensures compatibility with ss-config boilerplate (on localhost) ##
 ## it must match the active ss-config build otherwise installing will fail ##
 
-SS_INSTALL_BUILD="MAY2022DD"
+SS_INSTALL_BUILD="MAY2022EE"
 
 ####################################################################################################
-#### B. SS-Install: Validate (Restore) SS-Functions ################################################
+#### B. SS-Install: Validate SS-Functions ##########################################################
 ####################################################################################################
 
 ## THIS SNIPPET DOES NOT RELY ON SS-CONFIG OR SS-FUNCTIONS
@@ -289,6 +289,22 @@ if [[ ! -f "/var/www/ss-config" ]]; then
     ## new line ##
     printf "${COLOR_RESET}\n"
     
+    ## PROMPT: restrict SSH logins to specific IP address ##
+    read -t 300 -p "$(echo -e ${LIGHTGRAY}"Restrict SSH access to specific IP address?: "${LIGHTGREEN})" -e -i 'false' ss_restrict_ssh_ip || ss_restrict_ssh_ip=false
+    echo -e "${COLOR_RESET}"
+    sed -i "s|@SSH_RESTRICT_IP|${ss_restrict_ssh_ip}|g" /tmp/ss-config-wizard
+    
+    ## new line ##
+    printf "\n"
+    
+    ## PROMPT: specify the IP address for SSH login ##
+    read -t 300 -p "$(echo -e ${LIGHTGRAY}"Which IP address for SSH logins (ignore if disabled above)?: "${LIGHTGREEN})" -e -i '192.0.2.1' ss_ipv4_ssh_allow || ss_ipv4_ssh_allow=192.0.2.1
+    echo -e "${COLOR_RESET}"
+    sed -i "s|@SSH_IPV4|${ss_ipv4_ssh_allow}|g" /tmp/ss-config-wizard
+    
+    ## new line ##
+    printf "\n"
+    
     ## PROMPT: choose SFTP username (default = robin) ##
     read -t 300 -p "$(echo -e ${LIGHTGRAY}"Choose SFTP username (limited access): "${LIGHTGREEN})" -e -i 'robin' ss_var_sftp_user || ss_var_sftp_user=robin
     sed -i "s|@SFTP_USER|${ss_var_sftp_user}|g" /tmp/ss-config-wizard
@@ -353,7 +369,12 @@ if [[ ! -f "/var/www/ss-config" ]]; then
     printf "\n"
     
     ## PROMPT: enable public adminer link ##
-    ## coming soon...
+    read -t 300 -p "$(echo -e ${LIGHTGRAY}"Make the adminer (phpmyadmin) link public?: "${LIGHTGREEN})" -e -i 'true' ss_var_adminer_public || ss_var_adminer_public=true
+    echo -e "${COLOR_RESET}"
+    sed -i "s|@SS_ADMINER_PUBLIC|${ss_var_adminer_public}|g" /tmp/ss-config-wizard
+    
+    ## new line ##
+    printf "\n"
     
     ## PROMPT: choose database name (default = production) ##
     read -t 300 -p "$(echo -e ${LIGHTGRAY}"Choose database name (single database): "${LIGHTGREEN})" -e -i 'production' ss_var_db_name || ss_var_db_name=production
