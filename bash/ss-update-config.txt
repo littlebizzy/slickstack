@@ -22,7 +22,7 @@
 ## this is a brief summary of the different code snippets you will find in this script ##
 ## each section should be commented so you understand what is being accomplished ##
 
-## A. Script Build Version
+## A. Build Version
 ## B. Source SS-Config + SS-Functions
 ## C. Touch Timestamp File
 ## D. Message (Begin Script)
@@ -42,7 +42,7 @@
 ## this build version ensures compatibility with ss-config boilerplate (from mirrors) ##
 ## it must match the latest ss-config boilerplate otherwise updating will fail ##
 
-SS_UPDATE_CONFIG_BUILD="MAY2022DD"
+SS_UPDATE_CONFIG_BUILD="MAY2022EE"
 
 ####################################################################################################
 #### B. SS-Update-Config: Source SS-Config + SS-Functions ##########################################
@@ -150,21 +150,22 @@ fi
 ## this will update the existing ss-config file to latest boilerplate from our mirrors ##
 ## all existing options will be safely transferred to the new boilerplate ##
 
-## copy over shell settings ##
+## access settings ##
 sed -i "s|\(^ROOT_PASSWORD=\).*|ROOT_PASSWORD=\"$ROOT_PASSWORD\"|g" "$TMP_SS_CONFIG"
 sed -i "s|\(^SUDO_USER=\).*|SUDO_USER=\"$SUDO_USER\"|g" "$TMP_SS_CONFIG"
 sed -i "s|\(^SUDO_PASSWORD=\).*|SUDO_PASSWORD=\"$SUDO_PASSWORD\"|g" "$TMP_SS_CONFIG"
+sed -i "s|\(^SSH_KEYS=\).*|SSH_KEYS=\"$SSH_KEYS\"|g" "$TMP_SS_CONFIG"
+sed -i "s|\(^SSH_RESTRICT_IP=\).*|SSH_RESTRICT_IP=\"$SSH_RESTRICT_IP\"|g" "$TMP_SS_CONFIG"
+sed -i "s|\(^SSH_IPV4=\).*|SSH_IPV4=\"$SSH_IPV4\"|g" "$TMP_SS_CONFIG"
 sed -i "s|\(^SFTP_USER=\).*|SFTP_USER=\"$SFTP_USER\"|g" "$TMP_SS_CONFIG"
 sed -i "s|\(^SFTP_PASSWORD=\).*|SFTP_PASSWORD=\"$SFTP_PASSWORD\"|g" "$TMP_SS_CONFIG"
-sed -i "s|\(^SSH_PORT=\).*|SSH_PORT=\"22\"|g" "$TMP_SS_CONFIG" ## deprecated (now hardcoded 22)
-sed -i "s|\(^SSH_KEYS=\).*|SSH_KEYS=\"$SSH_KEYS\"|g" "$TMP_SS_CONFIG"
 
-## copy over site settings ##
+## domain settings ##
 sed -i "s|\(^SITE_TLD=\).*|SITE_TLD=\"$SITE_TLD\"|g" "$TMP_SS_CONFIG"
 sed -i "s|\(^SITE_DOMAIN=\).*|SITE_DOMAIN=\"$SITE_DOMAIN\"|g" "$TMP_SS_CONFIG"
 sed -i "s|\(^SITE_NOINDEX=\).*|SITE_NOINDEX=\"$SITE_NOINDEX\"|g" "$TMP_SS_CONFIG"
 
-## copy over initial database settings ##
+## database settings ##
 sed -i "s|\(^DB_NAME=\).*|DB_NAME=\"$DB_NAME\"|g" "$TMP_SS_CONFIG"
 sed -i "s|\(^DB_USER=\).*|DB_USER=\"$DB_USER\"|g" "$TMP_SS_CONFIG"
 sed -i "s|\(^DB_PASSWORD=\).*|DB_PASSWORD=\"$DB_PASSWORD\"|g" "$TMP_SS_CONFIG"
@@ -180,21 +181,15 @@ if [[ -n "$DB_HOST" ]]; then
     sed -i "s#@DB_HOST#127.0.0.1#g" "$TMP_SS_CONFIG"
 fi
 
-## copy over remaining database settings ##
 sed -i "s|\(^DB_PREFIX=\).*|DB_PREFIX=\"$DB_PREFIX\"|g" "$TMP_SS_CONFIG"
 sed -i "s|\(^DB_CHARSET=\).*|DB_CHARSET=\"$DB_CHARSET\"|g" "$TMP_SS_CONFIG"
 sed -i "s|\(^DB_COLLATE=\).*|DB_COLLATE=\"$DB_COLLATE\"|g" "$TMP_SS_CONFIG"
 
-
-## copy over CloudFlare settings ##
+## cloudflare settings ##
 sed -i "s|\(^CLOUDFLARE_API_KEY=\).*|CLOUDFLARE_API_KEY=\"$CLOUDFLARE_API_KEY\"|g" "$TMP_SS_CONFIG"
 sed -i "s|\(^CLOUDFLARE_API_EMAIL=\).*|CLOUDFLARE_API_EMAIL=\"$CLOUDFLARE_API_EMAIL\"|g" "$TMP_SS_CONFIG"
 
-if [[ -n "$CLOUDFLARE_RECOMMENDED_SETTINGS" ]]; then 
-sed -i "s|\(^CLOUDFLARE_RECOMMENDED_SETTINGS=\).*|CLOUDFLARE_RECOMMENDED_SETTINGS=\"$CLOUDFLARE_RECOMMENDED_SETTINGS\"|g" "$TMP_SS_CONFIG"
-fi
-
-## copy dev site settings ##
+## staging/dev settings ##
 if [[ -n "$DEV_SITE" ]]; then 
 sed -i "s|\(^DEV_SITE=\).*|DEV_SITE=\"$DEV_SITE\"|g" "$TMP_SS_CONFIG"
 fi
@@ -203,8 +198,6 @@ if [[ -n "$DEV_SITE_PROTECT" ]]; then
 sed -i "s|\(^DEV_SITE_PROTECT=\).*|DEV_SITE_PROTECT=\"$DEV_SITE_PROTECT\"|g" "$TMP_SS_CONFIG"
 fi
 
-
-## copy staging site settings ##
 if [[ -n "$STAGING_SITE" ]]; then 
 sed -i "s|\(^STAGING_SITE=\).*|STAGING_SITE=\"$STAGING_SITE\"|g" "$TMP_SS_CONFIG"
 fi
@@ -213,7 +206,6 @@ if [[ -n "$STAGING_SITE_PROTECT" ]]; then
 sed -i "s|\(^STAGING_SITE_PROTECT=\).*|STAGING_SITE_PROTECT=\"$STAGING_SITE_PROTECT\"|g" "$TMP_SS_CONFIG"
 fi
 
-## guest user login ##
 if [[ -n "$GUEST_USER" ]]; then 
 sed -i "s|\(^GUEST_USER=\).*|GUEST_USER=\"$GUEST_USER\"|g" "$TMP_SS_CONFIG"
 fi
@@ -222,9 +214,7 @@ if [[ -n "$GUEST_PASSWORD" ]]; then
 sed -i "s|\(^GUEST_PASSWORD=\).*|GUEST_PASSWORD=\"$GUEST_PASSWORD\"|g" "$TMP_SS_CONFIG"
 fi
 
-
-
-## rclone ##
+## remote backup settings ##
 if [[ -n "$RCLONE_TYPE" ]]; then 
 sed -i "s|\(^RCLONE_TYPE=\).*|RCLONE_TYPE=\"$RCLONE_TYPE\"|g" "$TMP_SS_CONFIG"
 fi
@@ -265,9 +255,6 @@ if [[ -n "$RCLONE_PARALLEL_TRANSFERS" ]]; then
 sed -i "s|\(^RCLONE_PARALLEL_TRANSFERS=\).*|RCLONE_PARALLEL_TRANSFERS=\"$RCLONE_PARALLEL_TRANSFERS\"|g" "$TMP_SS_CONFIG"
 fi
 
-
-## rsync settings ##
-
 if [[ -n "$RSYNC_REMOTE_HOST" ]]; then 
     sed -i "s|\(^RSYNC_REMOTE_HOST=\).*|RSYNC_REMOTE_HOST=\"$RSYNC_REMOTE_HOST\"|g" "$TMP_SS_CONFIG"
 fi
@@ -276,23 +263,15 @@ if [[ -n "$RSYNC_BACKUP_PATH" ]]; then
     sed -i "s|\(^RSYNC_BACKUP_PATH=\).*|RSYNC_BACKUP_PATH=\"$RSYNC_BACKUP_PATH\"|g" "$TMP_SS_CONFIG"
 fi
 
-
 if [[ -n "$RSYNC_USER" ]]; then 
     sed -i "s|\(^RSYNC_USER=\).*|RSYNC_USER=\"$RSYNC_USER\"|g" "$TMP_SS_CONFIG"
 fi
-
 
 if [[ -n "$RSYNC_PASSWORD" ]]; then 
     sed -i "s|\(^RSYNC_PASSWORD=\).*|RSYNC_PASSWORD=\"$RSYNC_PASSWORD\"|g" "$TMP_SS_CONFIG"
 fi
 
-
-
-
-
-## copy over general slickstack settings ##
-
-
+## general settings ##
 if [[ -n "$SS_APP" ]]; then
     sed -i "s|\(^SS_APP=\).*|SS_APP=\"$SS_APP\"|g" "$TMP_SS_CONFIG"
 fi
@@ -305,9 +284,9 @@ if [[ -n "$SS_PILOT_FILE" ]]; then
     sed -i "s|\(^SS_PILOT_FILE=\).*|SS_PILOT_FILE=\"$SS_PILOT_FILE\"|g" "$TMP_SS_CONFIG"
 fi
 
-
-
-
+if [[ -n "$SS_ADMINER_PUBLIC" ]]; then
+sed -i "s|\(^SS_ADMINER_PUBLIC=\).*|SS_ADMINER_PUBLIC=\"$SS_ADMINER_PUBLIC\"|g" "$TMP_SS_CONFIG"
+fi
 
 if [[ -n "$SS_DATABASE_REMOTE" ]]; then
 sed -i "s|\(^SS_DATABASE_REMOTE=\).*|SS_DATABASE_REMOTE=\"$SS_DATABASE_REMOTE\"|g" "$TMP_SS_CONFIG"
@@ -319,11 +298,6 @@ fi
 
 if [[ -n "$SS_SYNC_STAGING" ]]; then
 sed -i "s|\(^SS_SYNC_STAGING=\).*|SS_SYNC_STAGING=\"$SS_SYNC_STAGING\"|g" "$TMP_SS_CONFIG"
-fi
-
-## DELETE THIS NOW REQUIRED FOR ALL SERVERS ##
-if [[ -n "$SS_SWAPFILE" ]]; then
-sed -i "s|\(^SS_SWAPFILE=\).*|SS_SWAPFILE=\"$SWAPFILE\"|g" "$TMP_SS_CONFIG"
 fi
 
 if [[ -n "$SS_SWAPFILE_SIZE" ]]; then
@@ -338,13 +312,9 @@ if [[ -n "$SS_REMOTE_BACKUPS" ]]; then
 sed -i "s|\(^SS_REMOTE_BACKUPS=\).*|SS_REMOTE_BACKUPS=\"$SS_REMOTE_BACKUPS\"|g" "$TMP_SS_CONFIG"
 fi
 
-
-
-## ss wordpress stuff ##
 if [[ -n "$SS_WORDPRESS_ADMIN_DASHBOARD" ]]; then
 sed -i "s|\(^SS_WORDPRESS_ADMIN_DASHBOARD=\).*|SS_WORDPRESS_ADMIN_DASHBOARD=\"$SS_WORDPRESS_ADMIN_DASHBOARD\"|g" "$TMP_SS_CONFIG" ## deprecated
 fi
-
 
 if [[ -n "$SS_WORDPRESS_MU_PLUGINS" ]]; then
 sed -i "s|\(^SS_WORDPRESS_MU_PLUGINS=\).*|SS_WORDPRESS_MU_PLUGINS=\"$SS_WORDPRESS_MU_PLUGINS\"|g" "$TMP_SS_CONFIG"
@@ -379,8 +349,7 @@ fi
 
 
 
-## whitelabel ##
-
+## whitelabel settings ##
 if [[ -n "$WHITELABEL_BRAND" ]]; then
 sed -i "s|\(^WHITELABEL_BRAND=\).*|WHITELABEL_BRAND=\"$WHITELABEL_BRAND\"|g" "$TMP_SS_CONFIG"
 fi
@@ -398,9 +367,38 @@ sed -i "s|\(^WHITELABEL_SUPPORT_EMAIL=\).*|WHITELABEL_SUPPORT_EMAIL=\"$WHITELABE
 fi
 
 
+## ssl settings ##
+if [[ -n "$SSL_TYPE" ]]; then 
+sed -i "s|\(^SSL_TYPE=\).*|SSL_TYPE=\"$SSL_TYPE\"|g" "$TMP_SS_CONFIG"
+fi
 
+if [[ -n "$SSL_PROTOCOLS" ]]; then 
+sed -i "s|\(^SSL_PROTOCOLS=\).*|SSL_PROTOCOLS=\"$SSL_PROTOCOLS\"|g" "$TMP_SS_CONFIG"
+fi
 
-## WP CRON WP-CRON ##
+if [[ -n "$SSL_CIPHERS" ]]; then 
+sed -i "s|\(^SSL_CIPHERS=\).*|SSL_CIPHERS=\"$SSL_CIPHERS\"|g" "$TMP_SS_CONFIG"
+fi
+
+if [[ -n "$SSL_SESSION_TIMEOUT" ]]; then
+sed -i "s|\(^SSL_SESSION_TIMEOUT=\).*|SSL_SESSION_TIMEOUT=\"$SSL_SESSION_TIMEOUT\"|g" "$TMP_SS_CONFIG"
+fi
+
+if [[ -n "$SSL_SESSION_CACHE" ]]; then
+sed -i "s|\(^SSL_SESSION_CACHE=\).*|SSL_SESSION_CACHE=\"$SSL_SESSION_CACHE\"|g" "$TMP_SS_CONFIG"
+fi
+
+if [[ -n "$SSL_BUFFER_SIZE" ]]; then
+sed -i "s|\(^SSL_BUFFER_SIZE=\).*|SSL_BUFFER_SIZE=\"$SSL_BUFFER_SIZE\"|g" "$TMP_SS_CONFIG"
+fi
+
+sed -i "s|\(^CSR_COUNTRY=\).*|CSR_COUNTRY=\"$CSR_COUNTRY\"|g" "$TMP_SS_CONFIG"
+sed -i "s|\(^CSR_STATE=\).*|CSR_STATE=\"$CSR_STATE\"|g" "$TMP_SS_CONFIG"
+sed -i "s|\(^CSR_CITY=\).*|CSR_CITY=\"$CSR_CITY\"|g" "$TMP_SS_CONFIG"
+sed -i "s|\(^CSR_COMPANY=\).*|CSR_COMPANY=\"$CSR_COMPANY\"|g" "$TMP_SS_CONFIG"
+sed -i "s|\(^CSR_DEPT=\).*|CSR_DEPT=\"$CSR_DEPT\"|g" "$TMP_SS_CONFIG"
+
+## wordpress settings ##
 if [[ -n "$WP_CRON_METHOD" ]]; then 
 sed -i "s|\(^WP_CRON_METHOD=\).*|WP_CRON_METHOD=\"$WP_CRON_METHOD\"|g" "$TMP_SS_CONFIG"
 fi
@@ -409,8 +407,6 @@ if [[ -n "$WP_CRON_INTERVAL" ]]; then
 sed -i "s|\(^WP_CRON_INTERVAL=\).*|WP_CRON_INTERVAL=\"$WP_CRON_INTERVAL\"|g" "$TMP_SS_CONFIG"
 fi
 
-
-## copy over Multisite settings ##
 if [[ -n "$WP_MULTISITE" ]]; then 
 sed -i "s|\(^WP_MULTISITE=\).*|WP_MULTISITE=\"$WP_MULTISITE\"|g" "$TMP_SS_CONFIG"
 fi
@@ -423,18 +419,6 @@ if [[ -n "$WP_MULTISITE_DOMAIN_MAPPING" ]]; then
 sed -i "s|\(^WP_MULTISITE_DOMAIN_MAPPING=\).*|WP_MULTISITE_DOMAIN_MAPPING=\"$WP_MULTISITE_DOMAIN_MAPPING\"|g" "$TMP_SS_CONFIG"
 fi
 
-
-
-
-################################## ADVANCED SETTINGS ###############################
-
-
-
-
-
-
-
-## copy over WP config settings ##
 if [[ -n "$WP_POST_REVISIONS" ]]; then 
 sed -i "s|\(^WP_POST_REVISIONS=\).*|WP_POST_REVISIONS=\"$WP_POST_REVISIONS\"|g" "$TMP_SS_CONFIG"
 fi
@@ -463,78 +447,15 @@ if [[ -n "$WP_ALLOW_UNFILTERED_UPLOADS" ]]; then
 sed -i "s|\(^WP_ALLOW_UNFILTERED_UPLOADS=\).*|WP_ALLOW_UNFILTERED_UPLOADS=\"$WP_ALLOW_UNFILTERED_UPLOADS\"|g" "$TMP_SS_CONFIG"
 fi
 
-
-
-
-## copy over ssl settings ##
-if [[ -n "$SSL_TYPE" ]]; then 
-sed -i "s|\(^SSL_TYPE=\).*|SSL_TYPE=\"$SSL_TYPE\"|g" "$TMP_SS_CONFIG"
-fi
-
-if [[ -n "$SSL_PROTOCOLS" ]]; then 
-sed -i "s|\(^SSL_PROTOCOLS=\).*|SSL_PROTOCOLS=\"$SSL_PROTOCOLS\"|g" "$TMP_SS_CONFIG"
-fi
-
-if [[ -n "$SSL_CIPHERS" ]]; then 
-sed -i "s|\(^SSL_CIPHERS=\).*|SSL_CIPHERS=\"$SSL_CIPHERS\"|g" "$TMP_SS_CONFIG"
-fi
-
-if [[ -n "$SSL_SESSION_TIMEOUT" ]]; then
-sed -i "s|\(^SSL_SESSION_TIMEOUT=\).*|SSL_SESSION_TIMEOUT=\"$SSL_SESSION_TIMEOUT\"|g" "$TMP_SS_CONFIG"
-fi
-
-if [[ -n "$SSL_SESSION_CACHE" ]]; then
-sed -i "s|\(^SSL_SESSION_CACHE=\).*|SSL_SESSION_CACHE=\"$SSL_SESSION_CACHE\"|g" "$TMP_SS_CONFIG"
-fi
-
-if [[ -n "$SSL_BUFFER_SIZE" ]]; then
-sed -i "s|\(^SSL_BUFFER_SIZE=\).*|SSL_BUFFER_SIZE=\"$SSL_BUFFER_SIZE\"|g" "$TMP_SS_CONFIG"
-fi
-
-
-
-
-## copy over csr settings ##
-sed -i "s|\(^CSR_COUNTRY=\).*|CSR_COUNTRY=\"$CSR_COUNTRY\"|g" "$TMP_SS_CONFIG"
-sed -i "s|\(^CSR_STATE=\).*|CSR_STATE=\"$CSR_STATE\"|g" "$TMP_SS_CONFIG"
-sed -i "s|\(^CSR_CITY=\).*|CSR_CITY=\"$CSR_CITY\"|g" "$TMP_SS_CONFIG"
-sed -i "s|\(^CSR_COMPANY=\).*|CSR_COMPANY=\"$CSR_COMPANY\"|g" "$TMP_SS_CONFIG"
-sed -i "s|\(^CSR_DEPT=\).*|CSR_DEPT=\"$CSR_DEPT\"|g" "$TMP_SS_CONFIG"
-
-
-
-
-## Nginx ##
-
+## nginx settings ##
 if [[ -n "$NGINX_ACCESS_LOG" ]]; then
 sed -i "s|\(^NGINX_ACCESS_LOG=\).*|NGINX_ACCESS_LOG=\"$NGINX_ACCESS_LOG\"|g" "$TMP_SS_CONFIG"
 fi
-
-
-## nginx headers ##
 
 if [[ -n "$NGINX_HEADER_POWERED_BY" ]]; then
 sed -i "s|\(^NGINX_HEADER_POWERED_BY=\).*|NGINX_HEADER_POWERED_BY=\"$NGINX_HEADER_POWERED_BY\"|g" "$TMP_SS_CONFIG"
 fi
 
-## DELETE HSTS HEADER SOON (NOW HARDCODED) ##
-if [[ -n "$NGINX_HEADER_STRICT_TRANSPORT_SECURITY" ]]; then
-sed -i "s|\(^NGINX_HEADER_STRICT_TRANSPORT_SECURITY=\).*|NGINX_HEADER_STRICT_TRANSPORT_SECURITY=\"$NGINX_HEADER_STRICT_TRANSPORT_SECURITY\"|g" "$TMP_SS_CONFIG"
-fi
-
-## DELETE THIS SOON NOW HARDCODED ##
-if [[ -n "$NGINX_HEADER_REFERRER_POLICY" ]]; then
-sed -i "s|\(^NGINX_HEADER_REFERRER_POLICY=\).*|NGINX_HEADER_REFERRER_POLICY=\"$NGINX_HEADER_REFERRER_POLICY\"|g" "$TMP_SS_CONFIG"
-fi
-
-## DELETE... NOW HARDCODED FOR NOW MAYBE RECONSIDER LATER AFTER SETTLED MORE ##
-if [[ -n "$NGINX_HEADER_PERMISSIONS_POLICY" ]]; then
-sed -i "s|\(^NGINX_HEADER_PERMISSIONS_POLICY=\).*|NGINX_HEADER_PERMISSIONS_POLICY=\"$NGINX_HEADER_PERMISSIONS_POLICY\"|g" "$TMP_SS_CONFIG"
-fi
-
-
-
-## copy over nginx settings ##
 if [[ -n "$NGINX_WORKER_RLIMIT_NOFILE" ]]; then
 sed -i "s|\(^NGINX_WORKER_RLIMIT_NOFILE=\).*|NGINX_WORKER_RLIMIT_NOFILE=\"$NGINX_WORKER_RLIMIT_NOFILE\"|g" "$TMP_SS_CONFIG"
 fi
@@ -591,12 +512,6 @@ if [[ -n "$NGINX_SEND_TIMEOUT" ]]; then
 sed -i "s|\(^NGINX_SEND_TIMEOUT=\).*|NGINX_SEND_TIMEOUT=\"$NGINX_SEND_TIMEOUT\"|g" "$TMP_SS_CONFIG"
 fi
 
-
-
-
-
-
-## copy over open file cache settings ##
 if [[ -n "$OPEN_FILE_CACHE_MAX" ]]; then
 sed -i "s|\(^OPEN_FILE_CACHE_MAX=\).*|OPEN_FILE_CACHE_MAX=\"$OPEN_FILE_CACHE_MAX\"|g" "$TMP_SS_CONFIG"
 fi
@@ -604,7 +519,6 @@ fi
 if [[ -n "$OPEN_FILE_CACHE_INACTIVE" ]]; then
 sed -i "s|\(^OPEN_FILE_CACHE_INACTIVE=\).*|OPEN_FILE_CACHE_INACTIVE=\"$OPEN_FILE_CACHE_INACTIVE\"|g" "$TMP_SS_CONFIG"
 fi
-
 
 if [[ -n "$OPEN_FILE_CACHE_MIN_USES" ]]; then
 sed -i "s|\(^OPEN_FILE_CACHE_MIN_USES=\).*|OPEN_FILE_CACHE_MIN_USES=\"$OPEN_FILE_CACHE_MIN_USES\"|g" "$TMP_SS_CONFIG"
@@ -618,10 +532,7 @@ if [[ -n "$OPEN_FILE_CACHE_ERRORS" ]]; then
 sed -i "s|\(^OPEN_FILE_CACHE_ERRORS=\).*|OPEN_FILE_CACHE_ERRORS=\"$OPEN_FILE_CACHE_ERRORS\"|g" "$TMP_SS_CONFIG"
 fi
 
-
-
-
-## copy over fastcgi cache settings ##
+## fastcgi cache settings ##
 if [[ -n "$FCGI_CACHE" ]]; then
 sed -i "s|\(^FCGI_CACHE=\).*|FCGI_CACHE=\"$FCGI_CACHE\"|g" "$TMP_SS_CONFIG"
 fi
@@ -645,7 +556,6 @@ fi
 if [[ -n "$FCGI_CACHE_TMPFS" ]]; then
 sed -i "s|\(^FCGI_CACHE_TMPFS=\).*|FCGI_CACHE_TMPFS=\"$FCGI_CACHE_TMPFS\"|g" "$TMP_SS_CONFIG"
 fi
-
 
 if [[ -n "$FCGI_CONNECT_TIMEOUT" ]]; then
 sed -i "s|\(^FCGI_CONNECT_TIMEOUT=\).*|FCGI_CONNECT_TIMEOUT=\"$FCGI_CONNECT_TIMEOUT\"|g" "$TMP_SS_CONFIG"
@@ -675,10 +585,7 @@ if [[ -n "$FCGI_TEMP_FILE_WRITE_SIZE" ]]; then
 sed -i "s|\(^FCGI_TEMP_FILE_WRITE_SIZE=\).*|FCGI_TEMP_FILE_WRITE_SIZE=\"$FCGI_TEMP_FILE_WRITE_SIZE\"|g" "$TMP_SS_CONFIG"
 fi
 
-
-
-
-## copy over mysql settings ##
+## mysql settings ##
 if [[ -n "$SQL_MODE" ]]; then
 sed -i "s|\(^SQL_MODE=\).*|SQL_MODE=\"$SQL_MODE\"|g" "$TMP_SS_CONFIG"
 fi
@@ -707,10 +614,6 @@ if [[ -n "$SQL_NET_WRITE_TIMEOUT" ]]; then
 sed -i "s|\(^SQL_NET_WRITE_TIMEOUT=\).*|SQL_NET_WRITE_TIMEOUT=\"$SQL_NET_WRITE_TIMEOUT\"|g" "$TMP_SS_CONFIG"
 fi
 
-
-
-## InnoDB (MySQL) settings ##
-
 if [[ -n "$INNODB_BUFFER_POOL_SIZE" ]]; then
 sed -i "s|\(^INNODB_BUFFER_POOL_SIZE=\).*|INNODB_BUFFER_POOL_SIZE=\"$INNODB_BUFFER_POOL_SIZE\"|g" "$TMP_SS_CONFIG"
 fi
@@ -727,8 +630,6 @@ if [[ -n "$INNODB_FLUSH_LOG_AT_TRX_COMMIT" ]]; then
 sed -i "s|\(^INNODB_FLUSH_LOG_AT_TRX_COMMIT=\).*|INNODB_FLUSH_LOG_AT_TRX_COMMIT=\"$INNODB_FLUSH_LOG_AT_TRX_COMMIT\"|g" "$TMP_SS_CONFIG"
 fi
 
-
-## innodb flush method ##
 if [[ -n "$INNODB_FLUSH_METHOD" ]]; then
 sed -i "s|\(^INNODB_FLUSH_METHOD=\).*|INNODB_FLUSH_METHOD=\"$INNODB_FLUSH_METHOD\"|g" "$TMP_SS_CONFIG"
 fi
@@ -737,17 +638,11 @@ fi
 sed -i "s#INNODB_FLUSH_METHOD="O_DIRECT"#INNODB_FLUSH_METHOD="O_DIRECT_NO_FSYNC"#g" "$TMP_SS_CONFIG"
 
 
-
-
-
-## php extensions ##
+## php settings ##
 if [[ -n "$PHP_EXTENSIONS" ]]; then
 sed -i "s|\(^PHP_EXTENSIONS=\).*|PHP_EXTENSIONS=\"$PHP_EXTENSIONS\"|g" "$TMP_SS_CONFIG"
 fi
 
-
-
-## copy over php settings ##
 if [[ -n "$PHP_PRECISION" ]]; then
 sed -i "s|\(^PHP_PRECISION=\).*|PHP_PRECISION=\"$PHP_PRECISION\"|g" "$TMP_SS_CONFIG"
 fi
@@ -812,12 +707,7 @@ if [[ -n "$PHP_DEFAULT_SOCKET_TIMEOUT" ]]; then
 sed -i "s|\(^PHP_DEFAULT_SOCKET_TIMEOUT=\).*|PHP_DEFAULT_SOCKET_TIMEOUT=\"$PHP_DEFAULT_SOCKET_TIMEOUT\"|g" "$TMP_SS_CONFIG"
 fi
 
-
-
-
-
-
-## copy over fpm settings ##
+## fpm settings ##
 if [[ -n "$FPM_EMERGENCY_RESTART_THRESHOLD" ]]; then
 sed -i "s|\(^FPM_EMERGENCY_RESTART_THRESHOLD=\).*|FPM_EMERGENCY_RESTART_THRESHOLD=\"$FPM_EMERGENCY_RESTART_THRESHOLD\"|g" "$TMP_SS_CONFIG"
 fi
@@ -838,7 +728,6 @@ if [[ -n "$FPM_PROCESS_PRIORITY" ]]; then
 sed -i "s|\(^FPM_PROCESS_PRIORITY=\).*|FPM_PROCESS_PRIORITY=\"$FPM_PROCESS_PRIORITY\"|g" "$TMP_SS_CONFIG"
 fi
 
-
 if [[ -n "$FPM_RLIMIT_FILES" ]]; then
 sed -i "s|\(^FPM_RLIMIT_FILES=\).*|FPM_RLIMIT_FILES=\"$FPM_RLIMIT_FILES\"|g" "$TMP_SS_CONFIG"
 fi
@@ -851,11 +740,7 @@ if [[ -n "$FPM_SYSTEMD_INTERVAL" ]]; then
 sed -i "s|\(^FPM_SYSTEMD_INTERVAL=\).*|FPM_SYSTEMD_INTERVAL=\"$FPM_SYSTEMD_INTERVAL\"|g" "$TMP_SS_CONFIG"
 fi
 
-
-
-
-
-## copy over www pool settings ##
+## pool settings ##
 if [[ -n "$WWW_LISTEN_BACKLOG" ]]; then
 sed -i "s|\(^WWW_LISTEN_BACKLOG=\).*|WWW_LISTEN_BACKLOG=\"$WWW_LISTEN_BACKLOG\"|g" "$TMP_SS_CONFIG"
 fi
@@ -904,10 +789,7 @@ if [[ -n "$WWW_RLIMIT_CORE" ]]; then
 sed -i "s|\(^WWW_RLIMIT_CORE=\).*|WWW_RLIMIT_CORE=\"$WWW_RLIMIT_CORE\"|g" "$TMP_SS_CONFIG"
 fi
 
-
-
-
-## copy over opcache settings ##
+## opcache settings ##
 if [[ -n "$OPCACHE_MEMORY_CONSUMPTION" ]]; then
 sed -i "s|\(^OPCACHE_MEMORY_CONSUMPTION=\).*|OPCACHE_MEMORY_CONSUMPTION=\"$OPCACHE_MEMORY_CONSUMPTION\"|g" "$TMP_SS_CONFIG"
 fi
@@ -932,9 +814,6 @@ if [[ -n "$OPCACHE_HUGE_CODE_PAGES" ]]; then
 sed -i "s|\(^OPCACHE_HUGE_CODE_PAGES=\).*|OPCACHE_HUGE_CODE_PAGES=\"$OPCACHE_HUGE_CODE_PAGES\"|g" "$TMP_SS_CONFIG"
 fi
 
-
-## new opcache stuff ##
-
 if [[ -n "$OPCACHE_PRELOAD" ]]; then
 sed -i "s|\(^OPCACHE_PRELOAD=\).*|OPCACHE_PRELOAD=\"$OPCACHE_PRELOAD\"|g" "$TMP_SS_CONFIG"
 fi
@@ -944,11 +823,7 @@ sed -i "s|\(^OPCACHE_BLACKLIST_FILENAME=\).*|OPCACHE_BLACKLIST_FILENAME=\"$OPCAC
 fi
 
 
-
-## SS CORE SCRIPTS SETTINGS ##
-
-
-## ss-clean-files ##
+## bash script settings ##
 if [[ -n "$SS_CLEAN_FILES_WORDPRESS_PLUGINS" ]]; then
 sed -i "s|\(^SS_CLEAN_FILES_WORDPRESS_PLUGINS=\).*|SS_CLEAN_FILES_WORDPRESS_PLUGINS=\"$SS_CLEAN_FILES_WORDPRESS_PLUGINS\"|g" "$TMP_SS_CONFIG"
 fi
@@ -969,17 +844,6 @@ if [[ -n "$SS_CLEAN_FILES_ROOT_PRIVATE" ]]; then
 sed -i "s|\(^SS_CLEAN_FILES_ROOT_PRIVATE=\).*|SS_CLEAN_FILES_ROOT_PRIVATE=\"$SS_CLEAN_FILES_ROOT_PRIVATE\"|g" "$TMP_SS_CONFIG"
 fi
 
-
-## ss-dump-database ##
-if [[ -n "$SS_DUMP_MYSQL_DB" ]]; then
-sed -i "s|\(^SS_DUMP_MYSQL_DB=\).*|SS_DUMP_MYSQL_DB=\"$SS_DUMP_MYSQL_DB\"|g" "$TMP_SS_CONFIG" ## deprecated
-fi
-
-if [[ -n "$SS_DUMP_MYSQL_FILES" ]]; then
-sed -i "s|\(^SS_DUMP_MYSQL_FILES=\).*|SS_DUMP_MYSQL_FILES=\"$SS_DUMP_MYSQL_FILES\"|g" "$TMP_SS_CONFIG" ## deprecated
-fi
-
-
 if [[ -n "$SS_DUMP_DATABASE_PRODUCTION" ]]; then
 sed -i "s|\(^SS_DUMP_DATABASE_PRODUCTION=\).*|SS_DUMP_DATABASE_PRODUCTION=\"$SS_DUMP_DATABASE_PRODUCTION\"|g" "$TMP_SS_CONFIG" ## deprecated
 fi
@@ -996,9 +860,6 @@ if [[ -n "$SS_DUMP_DATABASE_FILES" ]]; then
 sed -i "s|\(^SS_DUMP_DATABASE_FILES=\).*|SS_DUMP_DATABASE_FILES=\"$SS_DUMP_DATABASE_FILES\"|g" "$TMP_SS_CONFIG" ## deprecated
 fi
 
-
-
-## ss dump files ##
 if [[ -n "$SS_DUMP_FILES_PRODUCTION" ]]; then
 sed -i "s|\(^SS_DUMP_FILES_PRODUCTION=\).*|SS_DUMP_FILES_PRODUCTION=\"$SS_DUMP_FILES_PRODUCTION\"|g" "$TMP_SS_CONFIG" ## deprecated
 fi
@@ -1011,35 +872,25 @@ if [[ -n "$SS_DUMP_FILES_DEVELOPMENT" ]]; then
 sed -i "s|\(^SS_DUMP_FILES_DEVELOPMENT=\).*|SS_DUMP_FILES_DEVELOPMENT=\"$SS_DUMP_FILES_DEVELOPMENT\"|g" "$TMP_SS_CONFIG" ## deprecated
 fi
 
-
-## ss-install-nginx-config ##
 if [[ -n "$SS_INSTALL_NGINX_CONFIG_OVERWRITE_BLOCKS" ]]; then
 sed -i "s|\(^SS_INSTALL_NGINX_CONFIG_OVERWRITE_BLOCKS=\).*|SS_INSTALL_NGINX_CONFIG_OVERWRITE_BLOCKS=\"$SS_INSTALL_NGINX_CONFIG_OVERWRITE_BLOCKS\"|g" "$TMP_SS_CONFIG"
 fi
 
-
-## ss-install-php-packages ##
 if [[ -n "$SS_INSTALL_PHP_PACKAGES_PURGE_FIRST" ]]; then
 sed -i "s|\(^SS_INSTALL_PHP_PACKAGES_PURGE_FIRST=\).*|SS_INSTALL_PHP_PACKAGES_PURGE_FIRST=\"$SS_INSTALL_PHP_PACKAGES_PURGE_FIRST\"|g" "$TMP_SS_CONFIG"
 fi
 
-
-## ss-install-wordpress-core ##
 if [[ -n "$SS_INSTALL_WORDPRESS_CORE_DELETE_BUNDLED_PLUGINS" ]]; then
 sed -i "s|\(^SS_INSTALL_WORDPRESS_CORE_DELETE_BUNDLED_PLUGINS=\).*|SS_INSTALL_WORDPRESS_CORE_DELETE_BUNDLED_PLUGINS=\"$SS_INSTALL_WORDPRESS_CORE_DELETE_BUNDLED_PLUGINS\"|g" "$TMP_SS_CONFIG"
 fi
 
-## ss-install-wordpress-core ##
 if [[ -n "$SS_INSTALL_WORDPRESS_CORE_DELETE_BUNDLED_THEMES" ]]; then
 sed -i "s|\(^SS_INSTALL_WORDPRESS_CORE_DELETE_BUNDLED_THEMES=\).*|SS_INSTALL_WORDPRESS_CORE_DELETE_BUNDLED_THEMES=\"$SS_INSTALL_WORDPRESS_CORE_DELETE_BUNDLED_THEMES\"|g" "$TMP_SS_CONFIG"
 fi
 
-
 if [[ -n "$SS_INSTALL_WORDPRESS_CORE_DELETE_PHP_FILES_ROOT" ]]; then
 sed -i "s|\(^SS_INSTALL_WORDPRESS_CORE_DELETE_PHP_FILES_ROOT=\).*|SS_INSTALL_WORDPRESS_CORE_DELETE_PHP_FILES_ROOT=\"$SS_INSTALL_WORDPRESS_CORE_DELETE_PHP_FILES_ROOT\"|g" "$TMP_SS_CONFIG"
 fi
-
-# SS_INSTALL_WORDPRESS_CORE_DELETE_PHP_FILES_WP_CONTENT="true"
 
 if [[ -n "$SS_INSTALL_WORDPRESS_CORE_DELETE_WP_ADMIN" ]]; then
 sed -i "s|\(^SS_INSTALL_WORDPRESS_CORE_DELETE_WP_ADMIN=\).*|SS_INSTALL_WORDPRESS_CORE_DELETE_WP_ADMIN=\"$SS_INSTALL_WORDPRESS_CORE_DELETE_WP_ADMIN\"|g" "$TMP_SS_CONFIG"
@@ -1054,13 +905,7 @@ sed -i "s|\(^SS_INSTALL_WORDPRESS_CORE_CLEANUP_OPTIONS=\).*|SS_INSTALL_WORDPRESS
 fi
 
 
-
-
-
-
-## INTERVAL SETTINGS ##
-
-## copy over ss interval settings ##
+## interval settings ##
 if [[ -n "$INTERVAL_SS_CHECK" ]]; then
 sed -i "s|\(^INTERVAL_SS_CHECK=\).*|INTERVAL_SS_CHECK=\"$INTERVAL_SS_CHECK\"|g" "$TMP_SS_CONFIG"
 fi
@@ -1097,9 +942,6 @@ if [[ -n "$INTERVAL_SS_ENCRYPT_OPENSSL" ]]; then
 sed -i "s|\(^INTERVAL_SS_ENCRYPT_OPENSSL=\).*|INTERVAL_SS_ENCRYPT_OPENSSL=\"$INTERVAL_SS_ENCRYPT_OPENSSL\"|g" "$TMP_SS_CONFIG"
 fi
 
-
-## ss-install subscripts intervals ##
-
 if [[ -n "$INTERVAL_SS_INSTALL_ADMINER" ]]; then
 sed -i "s|\(^INTERVAL_SS_INSTALL_ADMINER=\).*|INTERVAL_SS_INSTALL_ADMINER=\"$INTERVAL_SS_INSTALL_ADMINER\"|g" "$TMP_SS_CONFIG"
 fi
@@ -1107,7 +949,6 @@ fi
 if [[ -n "$INTERVAL_SS_INSTALL_CLAMAV" ]]; then
 sed -i "s|\(^INTERVAL_SS_INSTALL_CLAMAV=\).*|INTERVAL_SS_INSTALL_CLAMAV=\"$INTERVAL_SS_INSTALL_CLAMAV\"|g" "$TMP_SS_CONFIG"
 fi
-
 
 if [[ -n "$INTERVAL_SS_INSTALL_UBUNTU_BASH" ]]; then
 sed -i "s|\(^INTERVAL_SS_INSTALL_UBUNTU_BASH=\).*|INTERVAL_SS_INSTALL_UBUNTU_BASH=\"$INTERVAL_SS_INSTALL_UBUNTU_BASH\"|g" "$TMP_SS_CONFIG"
@@ -1137,7 +978,6 @@ if [[ -n "$INTERVAL_SS_INSTALL_UBUNTU_UTILS" ]]; then
 sed -i "s|\(^INTERVAL_SS_INSTALL_UBUNTU_UTILS=\).*|INTERVAL_SS_INSTALL_UBUNTU_UTILS=\"$INTERVAL_SS_INSTALL_UBUNTU_UTILS\"|g" "$TMP_SS_CONFIG"
 fi
 
-
 if [[ -n "$INTERVAL_SS_INSTALL_UFW_CONFIG" ]]; then
 sed -i "s|\(^INTERVAL_SS_INSTALL_UFW_CONFIG=\).*|INTERVAL_SS_INSTALL_UFW_CONFIG=\"$INTERVAL_SS_INSTALL_UFW_CONFIG\"|g" "$TMP_SS_CONFIG"
 fi
@@ -1162,8 +1002,6 @@ if [[ -n "$INTERVAL_SS_INSTALL_WORDPRESS_MU_PLUGINS" ]]; then
 sed -i "s|\(^INTERVAL_SS_INSTALL_WORDPRESS_MU_PLUGINS=\).*|INTERVAL_SS_INSTALL_WORDPRESS_MU_PLUGINS=\"$INTERVAL_SS_INSTALL_WORDPRESS_MU_PLUGINS\"|g" "$TMP_SS_CONFIG"
 fi
 
-
-
 if [[ -n "$INTERVAL_SS_OPTIMIZE_DATABASE" ]]; then
 sed -i "s|\(^INTERVAL_SS_OPTIMIZE_DATABASE=\).*|INTERVAL_SS_OPTIMIZE_DATABASE=\"$INTERVAL_SS_OPTIMIZE_DATABASE\"|g" "$TMP_SS_CONFIG"
 fi
@@ -1172,14 +1010,9 @@ if [[ -n "$INTERVAL_SS_OPTIMIZE_FILES" ]]; then
 sed -i "s|\(^INTERVAL_SS_OPTIMIZE_FILES=\).*|INTERVAL_SS_OPTIMIZE_FILES=\"$INTERVAL_SS_OPTIMIZE_FILES\"|g" "$TMP_SS_CONFIG"
 fi
 
-
-## perms intervals ##
 if [[ -n "$INTERVAL_SS_PERMS" ]]; then
 sed -i "s|\(^INTERVAL_SS_PERMS=\).*|INTERVAL_SS_PERMS=\"$INTERVAL_SS_PERMS\"|g" "$TMP_SS_CONFIG"
 fi
-
-
-
 
 if [[ -n "$INTERVAL_SS_PURGE_NGINX" ]]; then
 sed -i "s|\(^INTERVAL_SS_PURGE_NGINX=\).*|INTERVAL_SS_PURGE_NGINX=\"$INTERVAL_SS_PURGE_NGINX\"|g" "$TMP_SS_CONFIG"
@@ -1197,23 +1030,17 @@ if [[ -n "$INTERVAL_SS_PURGE_TRANSIENTS" ]]; then
 sed -i "s|\(^INTERVAL_SS_PURGE_TRANSIENTS=\).*|INTERVAL_SS_PURGE_TRANSIENTS=\"$INTERVAL_SS_PURGE_TRANSIENTS\"|g" "$TMP_SS_CONFIG"
 fi
 
-
-
 if [[ -n "$INTERVAL_SS_REBOOT_MACHINE" ]]; then
 sed -i "s|\(^INTERVAL_SS_REBOOT_MACHINE=\).*|INTERVAL_SS_REBOOT_MACHINE=\"$INTERVAL_SS_REBOOT_MACHINE\"|g" "$TMP_SS_CONFIG"
 fi
-
 
 if [[ -n "$INTERVAL_SS_REMOTE_BACKUP" ]]; then
 sed -i "s|\(^INTERVAL_SS_REMOTE_BACKUP=\).*|INTERVAL_SS_REMOTE_BACKUP=\"$INTERVAL_SS_REMOTE_BACKUP\"|g" "$TMP_SS_CONFIG"
 fi
 
-
 if [[ -n "$INTERVAL_SS_RESET_PASSWORD_SFTP" ]]; then
 sed -i "s|\(^INTERVAL_SS_RESET_PASSWORD_SFTP=\).*|INTERVAL_SS_RESET_PASSWORD_SFTP=\"$INTERVAL_SS_RESET_PASSWORD_SFTP\"|g" "$TMP_SS_CONFIG"
 fi
-
-
 
 if [[ -n "$INTERVAL_SS_RESTART_MYSQL" ]]; then
 sed -i "s|\(^INTERVAL_SS_RESTART_MYSQL=\).*|INTERVAL_SS_RESTART_MYSQL=\"$INTERVAL_SS_RESTART_MYSQL\"|g" "$TMP_SS_CONFIG"
@@ -1235,8 +1062,6 @@ if [[ -n "$INTERVAL_SS_RESTART_UFW" ]]; then
 sed -i "s|\(^INTERVAL_SS_RESTART_UFW=\).*|INTERVAL_SS_RESTART_UFW=\"$INTERVAL_SS_RESTART_UFW\"|g" "$TMP_SS_CONFIG"
 fi
 
-
-
 if [[ -n "$INTERVAL_SS_SCAN_MALWARE" ]]; then
 sed -i "s|\(^INTERVAL_SS_SCAN_MALWARE=\).*|INTERVAL_SS_SCAN_MALWARE=\"$INTERVAL_SS_SCAN_MALWARE\"|g" "$TMP_SS_CONFIG"
 fi
@@ -1244,8 +1069,6 @@ fi
 if [[ -n "$INTERVAL_SS_SYNC_STAGING" ]]; then
 sed -i "s|\(^INTERVAL_SS_SYNC_STAGING=\).*|INTERVAL_SS_SYNC_STAGING=\"$INTERVAL_SS_SYNC_STAGING\"|g" "$TMP_SS_CONFIG"
 fi
-
-
 
 if [[ -n "$INTERVAL_SS_UPDATE_CONFIG" ]]; then
 sed -i "s|\(^INTERVAL_SS_UPDATE_CONFIG=\).*|INTERVAL_SS_UPDATE_CONFIG=\"$INTERVAL_SS_UPDATE_CONFIG\"|g" "$TMP_SS_CONFIG"
@@ -1255,21 +1078,12 @@ if [[ -n "$INTERVAL_SS_UPDATE_MODULES" ]]; then
 sed -i "s|\(^INTERVAL_SS_UPDATE_MODULES=\).*|INTERVAL_SS_UPDATE_MODULES=\"$INTERVAL_SS_UPDATE_MODULES\"|g" "$TMP_SS_CONFIG"
 fi
 
-
 if [[ -n "$SS_INTERVAL_WORKER" ]]; then
 sed -i "s|\(^SS_INTERVAL_WORKER=\).*|SS_INTERVAL_WORKER=\"$SS_INTERVAL_WORKER\"|g" "$TMP_SS_CONFIG"
 fi
 
 
-
-
-
-
-
-
-
-## copy over all MU plugins sources ##
-
+## mu plugins ##
 if [[ "$SS_WORDPRESS_MU_PLUGINS" == "custom" || "$SS_MU_PLUGINS" == "custom" ]] && [[ -n "$MU_PLUGIN_01_SOURCE" ]]; then
 sed -i "s|\(^MU_PLUGIN_01_SOURCE=\).*|MU_PLUGIN_01_SOURCE=\"$MU_PLUGIN_01_SOURCE\"|g" "$TMP_SS_CONFIG"
 fi
@@ -1478,14 +1292,14 @@ fi
 ## then it will proceed to overwrite the current ss-config with the new one ##
 
 ## validate/install ss-config boilerplate ##
-VALIDATE_TMP_SS_CONFIG=$(grep "$SS_EOF" "$TMP_SS_CONFIG")
-DB_NAME_NOW=$(source "$TMP_SS_CONFIG"; echo $DB_NAME)
-if [[ -n "$VALIDATE_TMP_SS_CONFIG" ]] && [[ -n "$DB_NAME_NOW" ]]; then
-    cp "$TMP_SS_CONFIG" "$PATH_SS_CONFIG"
-    chown root:root "$PATH_SS_CONFIG" ## must be root:root
-    chmod 0700 "$PATH_SS_CONFIG" ## must be 0700
+VALIDATE_TMP_SS_CONFIG=$(grep "${SS_EOF}" "${TMP_SS_CONFIG}")
+DB_NAME_NOW=$(source "${TMP_SS_CONFIG}"; echo "${DB_NAME}")
+if [[ -n "${VALIDATE_TMP_SS_CONFIG}" ]] && [[ -n "${DB_NAME_NOW}" ]]; then
+    ss_mv "${TMP_SS_CONFIG}" "${PATH_SS_CONFIG}"
+    chown root:root "${PATH_SS_CONFIG}" ## must be root:root
+    chmod 0700 "${PATH_SS_CONFIG}" ## must be 0700
 else
-    echo -e "${COLOR_ERROR}Exiting ss-update-config: The retrieved ss-config boilerplate appears corrupt so update was skipped... ${NOCOLOR}"
+    echo -e "${COLOR_ERROR}ss-update-config: The boilerplate appears corrupt so update was skipped... ${COLOR_RESET}"
 fi
 
 
@@ -1493,6 +1307,7 @@ fi
 
 ####################################################################################################
 
+## MOVE THIS SNIPPET FROM ss-worker to here is better ##
 ## run this because ss-worker has some temp fixes to replaced @placeholders ##
 
 ## run ss-worker ##
