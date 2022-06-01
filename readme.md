@@ -31,6 +31,8 @@ SlickStack is a free LEMP stack automation script written in Bash designed to en
 
 ## Changelog
 
+* **NEW!** New ss-config options `SSH_RESTRICT_IP` and `SSH_IPV4` allow you restrict SSH logins from a certain IP address (it should not affect SFTP logins, which can still access from anywhere)
+
 * **NEW!** Lots of code cleanup continues as we expand `ss-functions` and convert remaining non-function commands into functions...
 
 * **NEW!** Custom SSH ports are no longer supported and port 22 is now hardcoded for SSH going forward, this will provide better stability and compatiblity with certain cloud providers such as AWS/Lightsail.
