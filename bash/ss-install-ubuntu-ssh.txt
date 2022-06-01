@@ -61,13 +61,6 @@ ss_touch "${TIMESTAMP_SS_INSTALL_UBUNTU_SSH}"
 ss_echo "${COLOR_INFO}ss-install-ubuntu-ssh: Reinstalls the Linux OS SSH daemon for sudo access... ${COLOR_RESET}"
 
 ####################################################################################################
-#### B. SS-Install-Ubuntu-SSH: Cleanup Temporary Files #############################################
-####################################################################################################
-
-## delete tmp files ##
-rm "$TMP_SSHD_CONFIG"
-
-####################################################################################################
 #### C. SS-Install-Ubuntu-SSH: Install (Configure) SSH Daemon ######################################
 ####################################################################################################
 
@@ -75,7 +68,7 @@ rm "$TMP_SSHD_CONFIG"
 ## keep in mind that the port number will change (and root disabled) after this ##
 
 ## download latest versions ##
-ss_wget_slowest "$TMP_SSHD_CONFIG" "$MIRROR_SSHD_CONFIG"
+ss_wget_slowest "${TMP_SSHD_CONFIG}" "${MIRROR_SSHD_CONFIG}"
 
 ## replace variables ##
 sed -i "s/@SUDO_USER/${SUDO_USER}/g" "$TMP_SSHD_CONFIG"
@@ -85,6 +78,13 @@ sed -i "s/@SFTP_USER/${SFTP_USER}/g" "$TMP_SSHD_CONFIG"
 sed -i "s/@SSH_PORT/22/g" "$TMP_SSHD_CONFIG"
 
 sed -i "s|@PATH_SSH_AUTHORIZED_KEYS_FILE|${PATH_SSH_AUTHORIZED_KEYS_FILE}|g" "$TMP_SSHD_CONFIG"
+
+## restrict sudo ip address if desired (we do not use hosts.allow file in case SFTP user wants to login from anywhere) ##
+if [[ "${SSH_RESTRICT_IP}" == "true" ]]; then
+    sed -i "s|@SSH_IPV4|@${SSH_IPV4}|g" "${TMP_SSHD_CONFIG}"
+else
+    sed -i "s|@SSH_IPV4||g" "${TMP_SSHD_CONFIG}"
+fi
 
 ## enable/disable password authentication (depending on if SSH_KEYS is enabled) ##
 if [[ "$SSH_KEYS" == "true" ]]; then 
@@ -109,7 +109,7 @@ fi
 ## Ref: https://www.cyberciti.biz/faq/bash-shell-command-to-find-get-ip-address/
 
 ## copy files to their destinations ##
-cp "$TMP_SSHD_CONFIG" "$PATH_SSHD_CONFIG"
+ss_mv "${TMP_SSHD_CONFIG}" "${PATH_SSHD_CONFIG}"
 
 ####################################################################################################
 #### D. SS-Install-Ubuntu-SSH: Generate Key Pair (If Not Exists) ###################################
@@ -133,7 +133,7 @@ fi
 ####################################################################################################
 
 ## run ss-perms-ubuntu-ssh ##
-source "$PATH_SS_PERMS_UBUNTU_SSH"
+source "${PATH_SS_PERMS_UBUNTU_SSH}"
 
 ####################################################################################################
 #### F. SS-Install-Ubuntu-SSH: Restart Modules (SSH) ###############################################
@@ -141,13 +141,6 @@ source "$PATH_SS_PERMS_UBUNTU_SSH"
 
 ## run ss-restart-services-ssh ##
 /etc/init.d/ssh restart > /dev/null 2>&1
-
-####################################################################################################
-#### G. SS-Install-Ubuntu-SSH: Cleanup Temporary Files #############################################
-####################################################################################################
-
-## delete tmp files ##
-rm "$TMP_SSHD_CONFIG"
 
 ####################################################################################################
 #### SS-Install-Ubuntu-SSH: Message ######################################
@@ -181,5 +174,7 @@ rm "$TMP_SSHD_CONFIG"
 ## Ref: http://manpages.ubuntu.com/manpages/bionic/man1/ssh-keygen.1.html
 ## Ref: https://serverfault.com/questions/854208/ssh-suddenly-returning-invalid-format/960647
 ## Ref: https://jonmccune.wordpress.com/2017/07/09/setting-up-ssh-keys-with-the-chrome-os-secure-shell-extension/
+## Ref: https://unix.stackexchange.com/questions/406245/limit-ssh-access-to-specific-clients-by-ip-address
+## Ref: https://www.linuxquestions.org/questions/linux-security-4/can-i-allow-sftp-for-any-but-ssh-for-some-ip-address-820900/
 
 ## SS_EOF
