@@ -59,10 +59,7 @@ ss_echo "${COLOR_INFO}Running ss-install-mysql-packages: Reinstalls the MySQL mo
 
 
 
-
-if [[ "${SS_DATABASE_REMOTE}" == "true" ]]; then
-    ss_echo "${COLOR_WARN}Exiting ss-install-mysql-packages: Your ss-config indicates a remote database so we will skip MySQL install... ${COLOR_RESET}"
-fi
+if [[ "$SS_DATABASE_REMOTE" != "true" ]]; then
 
 ####################################################################################################
 #### C. SS-Install-MySQL-Packages: Update Existing Packages ########################################
@@ -111,9 +108,6 @@ ss_apt_upgrade
 ## this script will install the MySQL packages unless it is set to false in ss-config ##
 ## remote database environments should not require localhost MySQL installed ##
 
-## install mysql packages ##
-if [[ "${SS_DATABASE_REMOTE}" != "true" ]]; then 
-
     ## ubuntu 22.04 ##
     if [[ "${UBUNTU_VERSION}" == "22.04" ]]; then 
         ss_apt_install mysql-server-8.0
@@ -128,8 +122,6 @@ if [[ "${SS_DATABASE_REMOTE}" != "true" ]]; then
     if [[ "${UBUNTU_VERSION}" == "18.04" ]]; then
         ss_apt_install mysql-server-5.7
     fi
-    
-fi
 
 ####################################################################################################
 #### D. SS-Install-MySQL-Packages: Install Database(s) #############################################
@@ -143,6 +135,9 @@ source "${PATH_SS_INSTALL_MYSQL_DATABASE}"
 
 ## run ss-perms-mysql-packages ##
 source "${PATH_SS_PERMS_MYSQL_PACKAGES}"
+
+
+fi
 
 ####################################################################################################
 #### SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ###############
@@ -190,14 +185,6 @@ source "${PATH_SS_PERMS_MYSQL_PACKAGES}"
 # SELECT user,authentication_string,plugin,host FROM mysql.user;
 
 # SELECT user,authentication_string,plugin,host FROM mysql.user;
-
-####################################################################################################
-#### SS-Install-MySQL: Cleanup Temporary Files #####################################################
-####################################################################################################
-
-## delete tmp files ##
-rm /tmp/init-mysql.txt*
-rm /var/run/mysqld.bak*
 
 ####################################################################################################
 #### SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ###############
