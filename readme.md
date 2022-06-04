@@ -31,6 +31,8 @@ SlickStack is a free LEMP stack automation script written in Bash designed to en
 
 ## Changelog
 
+* **NEW!** New ss-config option `DB_PORT` allows for better remote database support (3306 should be used if using localhost MySQL, check with your remote database provider to confirm required port number)...
+
 * **NEW!** New ss-config options `SSH_RESTRICT_IP` and `SSH_IPV4` allow you restrict SSH logins from a certain IP address (it should not affect SFTP logins, which can still access from anywhere)
 
 * **NEW!** Lots of code cleanup continues as we expand `ss-functions` and convert remaining non-function commands into functions...
