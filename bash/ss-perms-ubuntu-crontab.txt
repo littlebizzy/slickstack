@@ -7,9 +7,9 @@
 #### path: /var/www/ss-perms-ubuntu-crontab ########################################################
 #### destination: n/a (not a boilerplate) ##########################################################
 #### purpose: Resets file and user permissions for the root crontab and related files ##############
-#### module version: WordPress 5.5.x ###############################################################
-#### sourced by: ss-perms, ss-install-wordpress-core ###############################################
-#### bash aliases: ss perms ubuntu crontab, ss perms crontab #######################################
+#### module version: Ubuntu 22.04 LTS ##############################################################
+#### sourced by: ss-install-ubuntu-crontab, ss-perms ###############################################
+#### bash aliases: ss perms crontab, ss perms ubuntu crontab #######################################
 ####################################################################################################
 
 ## source ss-config ##
@@ -29,6 +29,7 @@ source /var/www/ss-functions
 
 ## A. Touch Timestamp File
 ## B. Message (Begin Script)
+## C. Reset Permissions (Ubuntu Crontab)
 
 ####################################################################################################
 #### A. SS-Perms-Ubuntu-Crontab: Touch Timestamp File ##############################################
@@ -51,17 +52,12 @@ ss_touch "${TIMESTAMP_SS_PERMS_UBUNTU_CRONTAB}"
 ss_echo "${COLOR_INFO}ss-perms-ubuntu-crontab: Resets file/user perms for the root crontab... ${COLOR_RESET}"
 
 ####################################################################################################
-#### SS-Perms: Reset Permissions (ClamAV) ##########################################################
+#### C. SS-Perms: Reset Permissions (Ubuntu Crontab) ###############################################
 ####################################################################################################
 
 ## reset permissions ##
-chown root:root "$PATH_CRONTAB_ROOT" ## must be root:root
-chmod 0600 "$PATH_CRONTAB_ROOT" ## must be exactly 0600 or crontab will fail
-
-if [ ! -f "/var/www/logs/cron.log" ]; then touch "/var/www/logs/cron.log"; fi
-
-chown root:root /var/www/logs/cron*.log*
-chmod 0644 /var/www/logs/*.log ## 6755 should also work
+chown root:root "${PATH_CRONTAB_ROOT}" ## must be root:root
+chmod 0600 "${PATH_CRONTAB_ROOT}" ## must be 0600 (or crontab will fail)
 
 ####################################################################################################
 #### SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ###############
