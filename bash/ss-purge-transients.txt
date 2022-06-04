@@ -54,13 +54,13 @@ ss_touch "${TIMESTAMP_SS_PURGE_TRANSIENTS}"
 ## it will only be noticed by sudo users who manually call ss core bash scripts ##
 
 ## echo message ##
-ss_echo "${COLOR_INFO}Running ss-purge-transients: Manually deletes all transients data from the WordPress wp_options table... ${COLOR_RESET}"
+ss_echo "${COLOR_INFO}ss-purge-transients: Manually deletes transients in wp_options table... ${COLOR_RESET}"
 
 ####################################################################################################
 #### C. Validate Proper Environment 
 ####################################################################################################
 
-if [[ "$SS_APP" == "wordpress" ]] || [[ "$SS_APP" != "mysql" ]] || [[ -z "$SS_APP" ]]; then
+if [[ "${SS_APP}" == "wordpress" ]]; then
 
 ####################################################################################################
 #### D. SS-Purge-Transients: Delete All Transients From MySQL Database #############################
@@ -69,7 +69,7 @@ if [[ "$SS_APP" == "wordpress" ]] || [[ "$SS_APP" != "mysql" ]] || [[ -z "$SS_AP
 ## manually deletes all transients (temporary query cache data) from WordPress database ##
 ## this is a more forceful approach than simply purging the Redis object cache ##
 
-    ## mysql 8.0 (ubuntu 22.04) ##
+    ## ubuntu 22.04 ##
     if [[ "${UBUNTU_VERSION}" = "22.04" ]] || [[ -z "${UBUNTU_VERSION}" ]]; then 
 
         if [[ -n $(mysql --execute "SHOW TABLES FROM ${DB_NAME} WHERE Tables_in_${DB_NAME} LIKE '${DB_PREFIX}options';") ]]; then
@@ -80,7 +80,7 @@ if [[ "$SS_APP" == "wordpress" ]] || [[ "$SS_APP" != "mysql" ]] || [[ -z "$SS_AP
     
     fi
 
-    ## mysql 8.0 (ubuntu 20.04) ##
+    ## ubuntu 20.04 ##
     if [[ "${UBUNTU_VERSION}" = "20.04" ]]; then 
 
         if [[ -n $(mysql --execute "SHOW TABLES FROM ${DB_NAME} WHERE Tables_in_${DB_NAME} LIKE '${DB_PREFIX}options';") ]]; then
@@ -91,7 +91,7 @@ if [[ "$SS_APP" == "wordpress" ]] || [[ "$SS_APP" != "mysql" ]] || [[ -z "$SS_AP
     
     fi
 
-    ## mysql 5.7 (ubuntu 18.04) ##
+    ## ubuntu 18.04 ##
     if [[ "${UBUNTU_VERSION}" = "18.04" ]]; then
 
         if [[ -n $(mysql_5.7 --execute "SHOW TABLES FROM ${DB_NAME} WHERE Tables_in_${DB_NAME} LIKE '${DB_PREFIX}options';") ]]; then
@@ -103,7 +103,7 @@ if [[ "$SS_APP" == "wordpress" ]] || [[ "$SS_APP" != "mysql" ]] || [[ -z "$SS_AP
     fi
 
 ####################################################################################################
-#### E. SS-Purge-Transients #################################################
+#### E. end if #################################################
 ####################################################################################################
 
 fi
