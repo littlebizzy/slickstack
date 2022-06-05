@@ -90,13 +90,18 @@ ss_mv "${TMP_SS_CHECK}" "${PATH_SS_CHECK}"
 ## this snippet retrieves the remote pilot file defined in ss-config and reads settings ##
 ## it will replace old settings with pilot settings for multi-server management ##
 
-## retrieve pilot file if defined ##
+## retrieve pilot file if exists ##
 if [[ -n "${SS_PILOT_FILE}" ]]; then 
 
     ss_wget_slowest /tmp/ss-pilot "${SS_PILOT_FILE}"
 
     PILOT_WHITELABEL_BRAND=$(source /tmp/ss-pilot; echo "${WHITELABEL_BRAND}")
     PILOT_WHITELABEL_HOMEPAGE=$(source /tmp/ss-pilot; echo "${WHITELABEL_HOMEPAGE}")
+    PILOT_WHITELABEL_SUPPORT_URL=$(source /tmp/ss-pilot; echo "${WHITELABEL_SUPPORT_URL}")
+    PILOT_WHITELABEL_SUPPORT_EMAIL=$(source /tmp/ss-pilot; echo "${WHITELABEL_SUPPORT_EMAIL}")
+    PILOT_NGINX_HEADER_POWERED_BY=$(source /tmp/ss-pilot; echo "${NGINX_HEADER_POWERED_BY}")
+    PILOT_CLOUDFLARE_API_KEY=$(source /tmp/ss-pilot; echo "${CLOUDFLARE_API_KEY}")
+    PILOT_CLOUDFLARE_API_EMAIL=$(source /tmp/ss-pilot; echo "${CLOUDFLARE_API_EMAIL}")
 
     ## replace ss-config variables with pilot variables if exist ##
     if [[ -n "${PILOT_WHITELABEL_BRAND}" ]]; then 
@@ -105,6 +110,26 @@ if [[ -n "${SS_PILOT_FILE}" ]]; then
 
     if [[ -n "${PILOT_WHITELABEL_HOMEPAGE}" ]]; then 
         sed -i "s|\(^WHITELABEL_HOMEPAGE=\).*|WHITELABEL_HOMEPAGE=\"$PILOT_WHITELABEL_HOMEPAGE\"|g" /var/www/ss-config
+    fi
+    
+    if [[ -n "${PILOT_WHITELABEL_SUPPORT_URL}" ]]; then 
+        sed -i "s|\(^WHITELABEL_SUPPORT_URL=\).*|WHITELABEL_SUPPORT_URL=\"$PILOT_WHITELABEL_SUPPORT_URL\"|g" /var/www/ss-config
+    fi
+    
+    if [[ -n "${PILOT_WHITELABEL_SUPPORT_EMAIL}" ]]; then 
+        sed -i "s|\(^WHITELABEL_SUPPORT_EMAIL=\).*|WHITELABEL_SUPPORT_EMAIL=\"$PILOT_WHITELABEL_SUPPORT_EMAIL\"|g" /var/www/ss-config
+    fi
+    
+    if [[ -n "${PILOT_NGINX_HEADER_POWERED_BY}" ]]; then 
+        sed -i "s|\(^NGINX_HEADER_POWERED_BY=\).*|NGINX_HEADER_POWERED_BY=\"$PILOT_NGINX_HEADER_POWERED_BY\"|g" /var/www/ss-config
+    fi
+    
+    if [[ -n "${PILOT_CLOUDFLARE_API_KEY}" ]]; then 
+        sed -i "s|\(^CLOUDFLARE_API_KEY=\).*|CLOUDFLARE_API_KEY=\"$PILOT_CLOUDFLARE_API_KEY\"|g" /var/www/ss-config
+    fi
+    
+    if [[ -n "${PILOT_CLOUDFLARE_API_EMAIL}" ]]; then 
+        sed -i "s|\(^CLOUDFLARE_API_EMAIL=\).*|CLOUDFLARE_API_EMAIL=\"$PILOT_CLOUDFLARE_API_EMAIL\"|g" /var/www/ss-config
     fi
 
 fi 
