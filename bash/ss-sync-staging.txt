@@ -69,21 +69,16 @@ ss_echo "${COLOR_INFO}Running ss-sync-staging: Syncs relevant files and database
 #### Query Settings
 ####################################################################################################
 
+## EXPAND SS DASHBOARD USING MYSQL???
 ## check if SlickStack dashboard staging.wp_options has paused this script before proceeding
 
 # select EmployeeName from DemoTable where isMarried=true;
 # ss_options_staging_sync_status=$(mysql -BNe "USE staging; SELECT EmployeeName FROM DemoTable WHERE id=1")
 # $sql = "SELECT 'id' FROM Users WHERE username='$name'";
 
-# if [[ $ss_options_staging_sync_status == "false" ]]; then
-#    echo -e "${COLOR_WARN}Exiting ss-sync-staging: Staging site sync is disabled in the SS dashboard so exiting now... ${NOCOLOR}"
-#    exit 1
-# fi
 
-if [[ "${SS_SYNC_STAGING}" == "false" ]]; then
-    echo -e "${COLOR_INFO}Exiting ss-sync-staging: Staging sync is disabled in ss-config so exiting the script now... ${NOCOLOR}"
-    exit 1
-fi
+
+if [[ "${SS_SYNC_STAGING}" != "false" ]]; then
 
 ####################################################################################################
 #### D. SS-Sync-Staging: Run SS-Dump-Database (Conditional) ########################################
@@ -173,11 +168,16 @@ fi
 ## many themes (or custom-coded themes) often contain hardcoded HTML assets and links ##
 ## here we forcefully fix these links to ensure staging sites render properly ##
 
-    ## fix hardcoded theme links ##
-    find /var/www/html/staging/wp-content/themes/ -type f -exec sed -i "s#https://${SITE_DOMAIN}#https://staging.${SITE_DOMAIN_EXCLUDING_WWW}#g" {} +
-    find /var/www/html/staging/wp-content/themes/ -type f -exec sed -i "s#http://${SITE_DOMAIN}#https://staging.${SITE_DOMAIN_EXCLUDING_WWW}#g" {} +
+## fix hardcoded theme links ##
+find /var/www/html/staging/wp-content/themes/ -type f -exec sed -i "s#https://${SITE_DOMAIN_INCLUDING_WWW}#https://staging.${SITE_DOMAIN_EXCLUDING_WWW}#g" {} +
+find /var/www/html/staging/wp-content/themes/ -type f -exec sed -i "s#http://${SITE_DOMAIN_INCLUDING_WWW}#https://staging.${SITE_DOMAIN_EXCLUDING_WWW}#g" {} +
+find /var/www/html/staging/wp-content/themes/ -type f -exec sed -i "s#https://${SITE_DOMAIN_EXCLUDING_WWW}#https://staging.${SITE_DOMAIN_EXCLUDING_WWW}#g" {} +
+find /var/www/html/staging/wp-content/themes/ -type f -exec sed -i "s#http://${SITE_DOMAIN_EXCLUDING_WWW}#https://staging.${SITE_DOMAIN_EXCLUDING_WWW}#g" {} +
 
 ## end parent if ##
+fi
+
+## end parent parent if ##
 fi
 
 ####################################################################################################
