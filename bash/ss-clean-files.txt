@@ -827,24 +827,50 @@ ss_rm /var/www/html/wp-content/mu-plugins/SupportCenterMUAutoloader.php* ## Eleg
 ## even if you disable the Plugin Blacklist certain problematic plugins are still deleted ##
 ## this is to ensure stability of SlickStack and to establish some best practices ##
 
-if [[ "$SS_CLEAN_FILES_WORDPRESS_PLUGINS" != "false" ]] && [[ "$SS_WORDPRESS_PLUGIN_BLACKLIST" != "false" ]]; then
+## wp core junk plugins ##
+ss_rm /var/www/html/wp-content/plugins/hello.php* ## pointless
+ss_rm /var/www/html/staging/wp-content/plugins/hello.php* ## pointless
+ss_rm /var/www/html/dev/wp-content/plugins/hello.php* ## pointless
+
+## hide wp-admin plugins (breaks WAF) ##
+ss_rm /var/www/html/wp-content/plugins/wps-hide-login* ## ss conflicts
+ss_rm /var/www/html/staging/wp-content/plugins/wps-hide-login* ## ss conflicts
+ss_rm /var/www/html/dev/wp-content/plugins/wps-hide-login* ## ss conflicts
+
+## apache/litespeed plugins ##
+ss_rm /var/www/html/wp-content/plugins/askapache-debug-viewer* ## ss conflicts
+ss_rm /var/www/html/staging/wp-content/plugins/askapache-debug-viewer* ## ss conflicts
+ss_rm /var/www/html/dev/wp-content/plugins/askapache-debug-viewer* ## ss conflicts
+ss_rm /var/www/html/wp-content/plugins/htaccess* ## ss conflicts
+ss_rm /var/www/html/staging/wp-content/plugins/htaccess* ## ss conflicts
+ss_rm /var/www/html/dev/wp-content/plugins/htaccess* ## ss conflicts
+ss_rm /var/www/html/wp-content/plugins/litespeed* ## ss conflicts
+ss_rm /var/www/html/staging/wp-content/plugins/litespeed* ## ss conflicts
+ss_rm /var/www/html/dev/wp-content/plugins/litespeed* ## ss conflicts
+
+## cryptocurrency mining ##
+ss_rm /var/www/html/wp-content/plugins/bitcoin-plus-miner* ## cryptomining
+ss_rm /var/www/html/staging/wp-content/plugins/bitcoin-plus-miner* ## cryptomining
+ss_rm /var/www/html/dev/wp-content/plugins/bitcoin-plus-miner* ## cryptomining
+ss_rm /var/www/html/wp-content/plugins/jsecoin* ## cryptomining
+ss_rm /var/www/html/staging/wp-content/plugins/jsecoin* ## cryptomining
+ss_rm /var/www/html/dev/wp-content/plugins/jsecoin* ## cryptomining
+
+if [[ "${SS_CLEAN_FILES_WORDPRESS_PLUGINS}" != "false" ]] && [[ "${SS_WORDPRESS_PLUGIN_BLACKLIST}" != "false" ]]; then
 
 ## cleanup file types ##
 find /var/www/html/wp-content/plugins/ -name "*.gz" -type f -delete
 find /var/www/html/wp-content/plugins/ -name "*.tar" -type f -delete
 find /var/www/html/wp-content/plugins/ -name "*.zip" -type f -delete
 
-## DELETE VARIOUS CONFLICTING PLUGINS ##
+## vendor-specific plugins ##
+ss_rm /var/www/html/wp-content/plugins/dreamhost* ## vendor-specific
+ss_rm /var/www/html/staging/wp-content/plugins/dreamhost* ## vendor-specific
+ss_rm /var/www/html/dev/wp-content/plugins/dreamhost* ## vendor-specific
+ss_rm /var/www/html/wp-content/plugins/dreamobjects* ## vendor-specific
+ss_rm /var/www/html/staging/wp-content/plugins/dreamobjects* ## vendor-specific
+ss_rm /var/www/html/dev/wp-content/plugins/dreamobjects* ## vendor-specific
 
-## delete junk WP Core plugins ##
-ss_rm /var/www/html/wp-content/plugins/hello.php* ## pointless
-
-## delete Apache/LiteSpeed plugins ##
-ss_rm /var/www/html/wp-content/plugins/askapache-debug-viewer* ## ss conflicts
-ss_rm /var/www/html/wp-content/plugins/htaccess* ## ss conflicts (apache)
-ss_rm /var/www/html/wp-content/plugins/htaccess-login-block* ## ss conflicts (apache)
-ss_rm /var/www/html/wp-content/plugins/htaccess-site-access-control* ## ss conflicts (apache)
-ss_rm /var/www/html/wp-content/plugins/litespeed-cache* ## ss conflicts
 
 ss_rm /var/www/html/wp-content/plugins/Licensing ## junk folder
 
@@ -855,20 +881,12 @@ ss_rm /var/www/html/wp-content/plugins/backwpup* ## ss conflicts, resource inten
 ss_rm /var/www/html/wp-content/plugins/my-wp-backup* ## by MyThemeShop
 ss_rm /var/www/html/wp-content/plugins/my-wp-backup-pro-master* ## by MyThemeShop
 
-## delete cryptocurrency miners ##
-ss_rm /var/www/html/wp-content/plugins/bitcoin-plus-miner* ## cryptomining
-ss_rm /var/www/html/wp-content/plugins/jsecoin* ## cryptomining
-
 ## delete security / anti-brute force plugins ##
 ss_rm /var/www/html/wp-content/plugins/all-in-one-wp-security-and-firewall*
 ss_rm /var/www/html/wp-content/plugins/bad-behavior* ## ss conflicts, bloated
 ss_rm /var/www/html/wp-content/plugins/better-wp-security* ## ss conflicts, bloated
 ss_rm /var/www/html/wp-content/plugins/hide_my_wp* ## ss conflicts, breaks firewalls
 ss_rm /var/www/html/wp-content/plugins/login-lockdown* ## excessive logging
-
-## delete vendor-specific plugins ##
-ss_rm /var/www/html/wp-content/plugins/dreamhost-panel-login* ## vendor-specific
-ss_rm /var/www/html/wp-content/plugins/dreamobjects* ## vendor-specific
 
 ## delete exploitable plugins ##
 ss_rm /var/www/html/wp-content/plugins/fast-user-switching* ## not maintained, exploitable (By Tikweb)
@@ -1070,7 +1088,6 @@ ss_rm /var/www/html/wp-content/plugins/wpframework* ## malware (reported by Sucu
 ss_rm /var/www/html/wp-content/plugins/wpide ## exists in wp core (syntax editor)
 ss_rm /var/www/html/wp-content/plugins/wpmudev-updates* ## ss conflicts, vendor specific (WPMUDev Dashboard)
 ss_rm /var/www/html/wp-content/plugins/wpremote*
-ss_rm /var/www/html/wp-content/plugins/wps-hide-login* ## ss conflicts
 # ss_rm /var/www/html/wp-content/plugins/woocommerce-digital-download-free-shipping*
 ss_rm /var/www/html/wp-content/plugins/yet-another-related-posts-plugin*
 ss_rm /var/www/html/wp-content/plugins/yith-woocommerce-wishlist* ## exploitable, poor code, resource intensive, better options exist
