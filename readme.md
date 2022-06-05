@@ -31,6 +31,10 @@ SlickStack is a free LEMP stack automation script written in Bash designed to en
 
 ## Changelog
 
+* **NEW!** More variables added to our experimental pilot file concept including Cloudflare API creds and "powered by" Nginx header, this means you can rapidly update dozens or hundreds of SlickStack servers using a single private Gist file.
+
+* **NEW!** New option `WP_DEFAULT_THEME` lets you hardcode a default WP theme in your wp-config.php per-server for better stability, and also lets you use SlickStack for special scenarios like sharing 2 sites with different themes from the same remote database!
+
 * **NEW!** New ss-config option `DB_PORT` allows for better remote database support (3306 should be used if using localhost MySQL, check with your remote database provider to confirm required port number)...
 
 * **NEW!** New ss-config options `SSH_RESTRICT_IP` and `SSH_IPV4` allow you restrict SSH logins from a certain IP address (it should not affect SFTP logins, which can still access from anywhere)
