@@ -37,10 +37,10 @@ source /var/www/ss-functions
 ## D. Delete Bash Command History
 ## E. Delete Staging Site (Conditional)
 ## F. Delete MySQL Data Folder Backups
-## F. Delete Old SS-Config File Backups
-## G. Delete Object Cache Files (Conditional)
-## H. Delete Outdated SlickStack Files
+## G. Delete Oldest SS-Config Backups
+## H. Delete Deprecated SlickStack Files
 ## I. Delete Unused WordPress Core Files
+## J. Delete Junk Linux System Files
 
 ####################################################################################################
 #### A. SS-Clean-Files: Touch Timestamp File #######################################################
@@ -86,11 +86,6 @@ cat /dev/null > /root/.bash_history
 cat /dev/null > /home/${SUDO_USER}/.bash_history
 cat /dev/null > /home/${SFTP_USER}/.bash_history
 
-## move this
-## delete non-critical system logs ##
-ss_rm /var/log/journal/*
-ss_rm /var/lib/mysql/binlog.*
-
 ####################################################################################################
 #### E. SS-Clean-Files: Delete Staging Site (Conditional) ##########################################
 ####################################################################################################
@@ -116,7 +111,7 @@ if [[ "${SS_DUMP_DATABASE_FILES}" != "true" ]]; then
 fi
 
 ####################################################################################################
-#### F. SS-Clean-Files: Delete Old SS-Config File Backups ##########################################
+#### G. SS-Clean-Files: Delete Oldest SS-Config Backups ############################################
 ####################################################################################################
 
 ## in order to rotate ss-config file backups we delete the oldest versions to clear space ##
@@ -126,7 +121,7 @@ fi
 find /var/www/backups/config -maxdepth 1 -name "ss-config.bak*" -type f -mtime +3 -delete
 
 ####################################################################################################
-#### G. SS-Clean-Files: Delete Object Cache Files (Conditional) ####################################
+#### SS-Clean-Files: Delete Object Cache Files (Conditional) ####################################
 ####################################################################################################
 
 ## SINCE THIS IS STACK CONFIGURATION PROBABLY SHOULD NOT EXIST IN ss-clean ##
@@ -139,7 +134,7 @@ if [[ "${SS_OBJECT_CACHE}" == "false" ]]; then
 fi
 
 ####################################################################################################
-#### H. SS-Clean-Files: Delete Outdated SlickStack Files ###########################################
+#### H. SS-Clean-Files: Delete Deprecated SlickStack Files #########################################
 ####################################################################################################
 
 ## as both SlickStack and WordPress evolve there are certain files that become irrelevant ##
@@ -195,6 +190,37 @@ ss_rm /var/www/html/dev/wp-content/mu-plugins/xxx-dev*
 ss_rm /var/www/html/dev/wp-content/mu-plugins/sftp-details*
 
 ## bash scripts ##
+ss_rm /var/www/0-crontab
+ss_rm /var/www/1-cron-often
+ss_rm /var/www/2-cron-regular
+ss_rm /var/www/3-cron-hourly
+ss_rm /var/www/3-cron-quarter-hourly
+ss_rm /var/www/4-cron-half-hourly
+ss_rm /var/www/4-cron-quarter-daily
+ss_rm /var/www/5-cron-half-daily
+ss_rm /var/www/5-cron-hourly
+ss_rm /var/www/6-cron-daily
+ss_rm /var/www/6-cron-quarter-daily
+ss_rm /var/www/7-cron-half-daily
+ss_rm /var/www/7-cron-weekly
+ss_rm /var/www/8-cron-daily
+ss_rm /var/www/8-cron-monthly
+ss_rm /var/www/9-cron-half-weekly
+ss_rm /var/www/9-cron-sometimes
+ss_rm /var/www/00-crontab
+ss_rm /var/www/01-cron-often
+ss_rm /var/www/02-cron-regular
+ss_rm /var/www/03-cron-quarter-hourly
+ss_rm /var/www/04-cron-half-hourly
+ss_rm /var/www/05-cron-hourly
+ss_rm /var/www/06-cron-quarter-daily
+ss_rm /var/www/07-cron-half-daily
+ss_rm /var/www/08-cron-daily
+ss_rm /var/www/09-cron-half-weekly
+ss_rm /var/www/10-cron-weekly
+ss_rm /var/www/11-cron-half-monthly
+ss_rm /var/www/12-cron-monthly
+ss_rm /var/www/13-cron-sometimes
 ss_rm /var/www/ss-install-postfix
 ss_rm /var/www/ss-install-redis
 ss_rm /var/www/ss-install-php-core
@@ -237,6 +263,14 @@ ss_rm /var/www/ss-perms-nginx
 ss_rm /var/www/ss-perms-ubuntu-swap
 ss_rm /var/www/ss-purge
 
+## cleanup conflicting log files (SlickStack uses unique log paths) ##
+ss_rm /var/log/fpm-php.www.log*
+ss_rm /var/log/php7.0-fpm.log*
+ss_rm /var/log/php7.1-fpm.log*
+ss_rm /var/log/php7.2-fpm.log*
+ss_rm /var/log/php-fpm/*
+ss_rm /var/log/monit.log*
+
 ####################################################################################################
 #### I. SS-Clean-Files: Delete Unused WordPress Core Files #########################################
 ####################################################################################################
@@ -263,22 +297,7 @@ ss_rm /var/www/html/staging/wp-trackback*.php*
 ss_rm /var/www/html/staging/xmlrpc*.php*
 
 ####################################################################################################
-#### SS-Clean-Files: Delete Any PHP Error Handling Hacks In WordPress Plugins + Themes #############
-####################################################################################################
-
-## an unfortunate feature of PHP is that scripts can override WP or server-level settings ##
-## this set of commands safely removes any PHP error handling hacks from scripts ##
-
-## replace this with WP Admin warning message if files found ##
-# find /var/www/html/wp-content/mu-plugins -type f -name "*.php" -exec sed -i '/ini_set/d' {} \;
-# find /var/www/html/wp-content/plugins -type f -name "*.php" -exec sed -i '/ini_set/d' {} \;
-# find /var/www/html/wp-content/themes -type f -name "*.php" -exec sed -i '/ini_set/d' {} \;
-# find /var/www/html/wp-content/mu-plugins -type f -name "*.php" -exec sed -i '/error_reporting/d' {} \;
-# find /var/www/html/wp-content/plugins -type f -name "*.php" -exec sed -i '/error_reporting/d' {} \;
-# find /var/www/html/wp-content/themes -type f -name "*.php" -exec sed -i '/error_reporting/d' {} \;
-
-####################################################################################################
-#### SS-Clean-Files: Delete Various Junk Files From Ubuntu (Etc) Outside Public Directory ##########
+#### J. SS-Clean-Files: Delete Junk Linux System Files #############################################
 ####################################################################################################
 
 ## delete Ubuntu junk files ##
@@ -288,17 +307,34 @@ ss_rm /var/www/html/staging/xmlrpc*.php*
 find /var/www/html/ -name "wget-log*" -type f -delete
 # ss_rm /media*
 
-## cleanup all log files ##
+## delete non-critical system logs ##
+ss_rm /var/log/journal/*
+
+## wget junk ##
+find /var/www/html/ -name "wget-log*" -type f -delete
+
+## linux logs ##
 find /var/log/ -name "*.gz" -type f -delete
 find /var/log/ -name "*.log.*" -type f -delete
-ss_rm /var/log/fpm-php.www.log*
-ss_rm /var/log/php7.0-fpm.log*
-ss_rm /var/log/php7.1-fpm.log*
-ss_rm /var/log/php7.2-fpm.log*
-ss_rm /var/log/php-fpm/*
-ss_rm /var/log/monit.log*
 
-find /var/www/html/ -name "wget-log*" -type f -delete
+## not linux move this ##
+ss_rm /var/lib/mysql/binlog.*
+
+####################################################################################################
+#### SS-Clean-Files: Delete Any PHP Error Handling Hacks In WordPress Plugins + Themes #############
+####################################################################################################
+
+## an unfortunate feature of PHP is that scripts can override WP or server-level settings ##
+## this set of commands safely removes any PHP error handling hacks from scripts ##
+
+## CRASHES SOME PLUGINS 
+## replace this with WP Admin warning message if files found ##
+# find /var/www/html/wp-content/mu-plugins -type f -name "*.php" -exec sed -i '/ini_set/d' {} \;
+# find /var/www/html/wp-content/plugins -type f -name "*.php" -exec sed -i '/ini_set/d' {} \;
+# find /var/www/html/wp-content/themes -type f -name "*.php" -exec sed -i '/ini_set/d' {} \;
+# find /var/www/html/wp-content/mu-plugins -type f -name "*.php" -exec sed -i '/error_reporting/d' {} \;
+# find /var/www/html/wp-content/plugins -type f -name "*.php" -exec sed -i '/error_reporting/d' {} \;
+# find /var/www/html/wp-content/themes -type f -name "*.php" -exec sed -i '/error_reporting/d' {} \;
 
 ####################################################################################################
 #### SS-Clean-Files: Cleanup SlickStack Core Files Under /var/www/ #################################
@@ -337,20 +373,6 @@ ss_rm /var/www/sites/block-dev
 ss_rm /var/www/sites/block-production
 ss_rm /var/www/sites/block-staging
 ss_rm /home/${SUDO_USER}/.bash-aliases
-ss_rm /var/www/00-crontab
-ss_rm /var/www/01-cron-often
-ss_rm /var/www/02-cron-regular
-ss_rm /var/www/03-cron-quarter-hourly
-ss_rm /var/www/04-cron-half-hourly
-ss_rm /var/www/05-cron-hourly
-ss_rm /var/www/06-cron-quarter-daily
-ss_rm /var/www/07-cron-half-daily
-ss_rm /var/www/08-cron-daily
-ss_rm /var/www/09-cron-half-weekly
-ss_rm /var/www/10-cron-weekly
-ss_rm /var/www/11-cron-half-monthly
-ss_rm /var/www/12-cron-monthly
-ss_rm /var/www/13-cron-sometimes
 ss_rm /var/www/ss-perms-ad
 ss_rm /tmp/dos2unix*
 ss_rm /var/www/meta/.cherry*
@@ -376,23 +398,6 @@ ss_rm /var/www/meta/.timestamp-ss-dump
 ss_rm /var/www/meta/.timestamp-ss-install-ubuntu-aliases
 ss_rm /var/www/meta/.timestamp-ss-perms-ubuntu-aliases
 ss_rm /var/www/meta/.timestamp-ss-clean
-ss_rm /var/www/0-crontab
-ss_rm /var/www/1-cron-often
-ss_rm /var/www/2-cron-regular
-ss_rm /var/www/3-cron-hourly
-ss_rm /var/www/3-cron-quarter-hourly
-ss_rm /var/www/4-cron-half-hourly
-ss_rm /var/www/4-cron-quarter-daily
-ss_rm /var/www/5-cron-half-daily
-ss_rm /var/www/5-cron-hourly
-ss_rm /var/www/6-cron-daily
-ss_rm /var/www/6-cron-quarter-daily
-ss_rm /var/www/7-cron-half-daily
-ss_rm /var/www/7-cron-weekly
-ss_rm /var/www/8-cron-daily
-ss_rm /var/www/8-cron-monthly
-ss_rm /var/www/9-cron-half-weekly
-ss_rm /var/www/9-cron-sometimes
 ss_rm /var/www/ss-install-aliases
 ss_rm /var/www/ss-install-bash
 ss_rm /var/www/ss-install-cron
@@ -836,6 +841,9 @@ ss_rm /var/www/html/dev/wp-content/plugins/hello.php* ## pointless
 ss_rm /var/www/html/wp-content/plugins/wps-hide-login* ## ss conflicts
 ss_rm /var/www/html/staging/wp-content/plugins/wps-hide-login* ## ss conflicts
 ss_rm /var/www/html/dev/wp-content/plugins/wps-hide-login* ## ss conflicts
+ss_rm /var/www/html/wp-content/plugins/hide_my_wp* ## ss conflicts
+ss_rm /var/www/html/staging/wp-content/plugins/hide_my_wp* ## ss conflicts
+ss_rm /var/www/html/dev/wp-content/plugins/hide_my_wp* ## ss conflicts
 
 ## apache/litespeed plugins ##
 ss_rm /var/www/html/wp-content/plugins/askapache-debug-viewer* ## ss conflicts
@@ -885,7 +893,6 @@ ss_rm /var/www/html/wp-content/plugins/my-wp-backup-pro-master* ## by MyThemeSho
 ss_rm /var/www/html/wp-content/plugins/all-in-one-wp-security-and-firewall*
 ss_rm /var/www/html/wp-content/plugins/bad-behavior* ## ss conflicts, bloated
 ss_rm /var/www/html/wp-content/plugins/better-wp-security* ## ss conflicts, bloated
-ss_rm /var/www/html/wp-content/plugins/hide_my_wp* ## ss conflicts, breaks firewalls
 ss_rm /var/www/html/wp-content/plugins/login-lockdown* ## excessive logging
 
 ## delete exploitable plugins ##
