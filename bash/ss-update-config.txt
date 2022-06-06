@@ -33,7 +33,7 @@
 ## H. Retrieve Latest SS-Config Boilerplate
 ## I. Install Latest SS-Config Boilerplate (Copies Existing Settings)
 ## J. Validate Latest SS-Config Boilerplate
-## K. Cleanup Temporary Files
+## K. Replace SS-Config Placeholders (If Exist)
 
 ####################################################################################################
 #### A. SS-Update-Config: Build Version ############################################################
@@ -1312,23 +1312,26 @@ else
     echo -e "${COLOR_ERROR}ss-update-config: The boilerplate appears corrupt so update was skipped... ${COLOR_RESET}"
 fi
 
-
+####################################################################################################
+#### K. SS-Update-Config: Replace SS-Config Placeholders (If Exist) ################################
 ####################################################################################################
 
-####################################################################################################
+## here we manually replace any remaining placeholders in ss-config to avoid conflicts ##
+## this ensures a default value exists in case none has ever been specified ##
 
-## MOVE THIS SNIPPET FROM ss-worker to here is better ##
-## run this because ss-worker has some temp fixes to replaced @placeholders ##
-
-## run ss-worker ##
-source "${PATH_SS_WORKER}"
-
-####################################################################################################
-#### K. SS-Update-Config: Cleanup Temporary Files ##################################################
-####################################################################################################
-
-## delete tmp files ##
-ss_rm "${TMP_SS_CONFIG}"
+sed -i "s|@SS_PILOT_FILE||g" /var/www/ss-config
+sed -i "s|@SS_WORDPRESS_PLUGIN_BLACKLIST|true|g" /var/www/ss-config
+sed -i "s|@WP_MULTISITE_STATUS|false|g" /var/www/ss-config
+sed -i "s|@SS_WORDPRESS_ADMIN_DASHBOARD|true|g" /var/www/ss-config
+sed -i "s|@SS_SWAPFILE_SIZE|2G|g" /var/www/ss-config
+sed -i "s|@SS_LANGUAGE|en_US|g" /var/www/ss-config
+sed -i "s|@SS_REMOTE_BACKUPS|none|g" /var/www/ss-config
+sed -i "s|@SSH_PORT|22|g" /var/www/ss-config
+sed -i "s|@GUEST_USER|guest|g" /var/www/ss-config
+sed -i "s|@GUEST_PASSWORD|$(openssl rand -hex 12)|g" /var/www/ss-config
+sed -i "s|@DB_PORT|3306|g" /var/www/ss-config
+sed -i "s|@WP_DEFAULT_THEME|twentytwenty|g" /var/www/ss-config
+sed -i "s|@SS_ADMINER_PUBLIC|true|g" /var/www/ss-config
 
 ####################################################################################################
 #### SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ###############
