@@ -81,10 +81,10 @@ fi
 ## many sensitive data items like passwords are often saved indefinitely in Bash history ##
 ## this command will erase the Bash history file contents for better security ##
 
-## NULL shell history ##
-cat /dev/null > /root/.bash_history
-cat /dev/null > /home/${SUDO_USER}/.bash_history
-cat /dev/null > /home/${SFTP_USER}/.bash_history
+## null bash history ##
+ss_null /home/${SFTP_USER}/.bash_history
+ss_null /home/${SUDO_USER}/.bash_history
+ss_null /root/.bash_history
 
 ####################################################################################################
 #### E. SS-Clean-Files: Delete Staging Site (Conditional) ##########################################
@@ -856,13 +856,26 @@ ss_rm /var/www/html/wp-content/plugins/litespeed* ## ss conflicts
 ss_rm /var/www/html/staging/wp-content/plugins/litespeed* ## ss conflicts
 ss_rm /var/www/html/dev/wp-content/plugins/litespeed* ## ss conflicts
 
-## cryptocurrency mining ##
+## cryptocurrency mining plugins ##
 ss_rm /var/www/html/wp-content/plugins/bitcoin-plus-miner* ## cryptomining
 ss_rm /var/www/html/staging/wp-content/plugins/bitcoin-plus-miner* ## cryptomining
 ss_rm /var/www/html/dev/wp-content/plugins/bitcoin-plus-miner* ## cryptomining
 ss_rm /var/www/html/wp-content/plugins/jsecoin* ## cryptomining
 ss_rm /var/www/html/staging/wp-content/plugins/jsecoin* ## cryptomining
 ss_rm /var/www/html/dev/wp-content/plugins/jsecoin* ## cryptomining
+
+## adminer/phpmyadmin plugins ##
+ss_rm /var/www/html/wp-content/plugins/adminer* ## creates instability
+ss_rm /var/www/html/staging/wp-content/plugins/adminer* ## creates instability
+ss_rm /var/www/html/dev/wp-content/plugins/adminer* ## creates instability
+ss_rm /var/www/html/wp-content/plugins/phpmyadmin* ## creates instability
+ss_rm /var/www/html/staging/wp-content/plugins/phpmyadmin* ## creates instability
+ss_rm /var/www/html/dev/wp-content/plugins/phpmyadmin* ## creates instability
+
+## ftp/shell plugins ##
+ss_rm /var/www/html/wp-content/plugins/miwoftp* ## exploitable
+ss_rm /var/www/html/staging/wp-content/plugins/miwoftp* ## exploitable
+ss_rm /var/www/html/dev/wp-content/plugins/miwoftp* ## exploitable
 
 if [[ "${SS_CLEAN_FILES_WORDPRESS_PLUGINS}" != "false" ]] && [[ "${SS_WORDPRESS_PLUGIN_BLACKLIST}" != "false" ]]; then
 
@@ -907,7 +920,6 @@ ss_rm /var/www/html/wp-content/plugins/404-to-301* ## excessive logging
 ss_rm /var/www/html/wp-content/plugins/add-category-to-pages* ## serious conflicts, bad practice
 ss_rm /var/www/html/wp-content/plugins/add-index-to-autoload* ## ss conflicts, feature exists in WP Core 5.3+
 ss_rm /var/www/html/wp-content/plugins/admin-menu-editor* ## creates instability
-ss_rm /var/www/html/wp-content/plugins/adminer* ## serious errors, creates instability
 # ss_rm /var/www/html/wp-content/plugins/ajax-load-more* ## resource intensive (by Darren Cooney)
 ss_rm /var/www/html/wp-content/plugins/ajax-thumbnail-rebuild* ## database thrashing
 ss_rm /var/www/html/wp-content/plugins/akeebabackupwp* ## unsafe local backups (stored in this dir)
@@ -975,7 +987,6 @@ ss_rm /var/www/html/wp-content/plugins/maintenance-mode-litlebizzy* ## ss confli
 ss_rm /var/www/html/wp-content/plugins/mainwp* ## ss conflicts, creates instability (MainWP)
 ss_rm /var/www/html/wp-content/plugins/mainwp-child* ## ss conflicts, creates instability (MainWP)
 ss_rm /var/www/html/wp-content/plugins/manual-image-crop*
-ss_rm /var/www/html/wp-content/plugins/miwoftp* ## exploitable, not maintained
 ss_rm /var/www/html/wp-content/plugins/mobius-conversion-tracker* ## deprecated (by Mobius Media)
 ss_rm /var/www/html/wp-content/plugins/my-custom-css ## serious errors, poor coding (by Esther Tyler)
 ss_rm /var/www/html/wp-content/plugins/myrp* ## database thrashing
