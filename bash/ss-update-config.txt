@@ -29,7 +29,6 @@
 ## E. Cleanup Temporary Files
 ## F. Backup Active SS-Config File
 ## G. Validate Active SS-Config Before Proceeding
-## G. Ensure Undefined Options Do Not Exist Before Proceeding
 ## H. Retrieve Latest SS-Config Boilerplate
 ## I. Install Latest SS-Config Boilerplate (Copies Existing Settings)
 ## J. Validate Latest SS-Config Boilerplate
@@ -106,20 +105,6 @@ VALIDATE_SS_CONFIG=$(grep 'EOF' "$PATH_SS_CONFIG") ## change to "$SS_EOF" later
 ## validate ss-config ##
 if [[ -z "${VALIDATE_SS_CONFIG}" ]]; then
     echo -e "${COLOR_ERROR}Exiting ss-update-config: Your current ss-config file is missing or corrupt so update was skipped... ${NOCOLOR}"
-    exit 1
-fi
-
-####################################################################################################
-#### G. SS-Update-Config: Ensure Undefined Options Do Not Exist Before Proceeding ##################
-####################################################################################################
-
-## below snippet will warn you and exit if undefined ss-config options are found to exist ##
-## this way our team can be aware of bugs and avoid implementing unwanted options ##
-
-## warn if placeholders exist ##
-SS_CONFIG_OPTION_PLACEHOLDER="$(grep -c '"@' /var/www/ss-config)"
-if [[ "$SS_CONFIG_OPTION_PLACEHOLDER" -gt 0 ]]; then
-    echo -e "${COLOR_ERROR}Exiting ss-update-config: Please replace all \"@...\" placeholders in your ss-config and try again... ${NOCOLOR}"
     exit 1
 fi
 
