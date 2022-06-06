@@ -1,0 +1,252 @@
+#!/bin/bash
+
+####################################################################################################
+#### author: SlickStack ############################################################################
+#### link: https://slickstack.io ###################################################################
+#### mirror: https://mirrors.slickstack.io/bash/ss-sync-development.txt ############################
+#### path: /var/www/ss-sync-development ############################################################
+#### destination: n/a (not a boilerplate) ##########################################################
+#### purpose: Syncs relevant files and database from production site to the dev site ###############
+#### module version: MySQL 8.0.x + WordPress 6.0.x #################################################
+#### sourced by: n/a ###############################################################################
+#### bash aliases: ss sync [dev|development] #######################################################
+####################################################################################################
+
+## SS-SYNC-STAGING DUPLICATES RELEVANT FILES FROM PRODUCTION TO STAGING (NOT UPLOADS) ##
+## STAGING SITES WILL AUTOMAGICALLY LOAD ALL MEDIA UPLOADS FROM PRODUCTION ##
+
+####################################################################################################
+#### TABLE OF CONTENTS (SS-Sync-Development) #######################################################
+####################################################################################################
+
+## this is a brief summary of the different code snippets you will find in this script ##
+## each section should be commented so you understand what is being accomplished ##
+
+## A. Source SS-Config + SS-Functions
+## B. Touch Timestamp File
+## C. Message (Begin Script)
+## D. Run SS-Dump-Database (Conditional)
+## E. Import Production Database To Staging Database
+## F. Copy All Relevant Files From Production To Staging
+## G. Run SS-Install-WordPress-Config (Conditional)
+## H. Run SS-Install-WordPress-MU-Plugins (Conditional)
+## I. Fix Any Hardcoded Links In Staging Theme Files
+## J. Cleanup Temporary Files
+
+####################################################################################################
+#### A. SS-Sync-Development: Source SS-Config + SS-Functions #######################################
+####################################################################################################
+
+## source ss-config ##
+source /var/www/ss-config
+
+## source ss-functions ##
+source /var/www/ss-functions
+
+## BELOW THIS RELIES ON SS-CONFIG AND SS-FUNCTIONS
+
+####################################################################################################
+#### B. SS-Sync-Development: Touch Timestamp File ##################################################
+####################################################################################################
+
+## this is a dummy timestamp file that will remember the last time this script was run ##
+## it can be useful for developer reference and is sometimes used by SlickStack ##
+
+## script timestamp ##
+ss_touch "${TIMESTAMP_SS_SYNC_DEVELOPMENT}"
+
+####################################################################################################
+#### C. SS-Sync-Development: Message (Begin Script) ################################################
+####################################################################################################
+
+## this is a simple message that announces to the shell the purpose of this bash script ##
+## it will only be noticed by sudo users who manually call ss core bash scripts ##
+
+## echo message ##
+ss_echo "${COLOR_INFO}Running ss-sync-development: Syncs relevant files and database from production site to the dev site... ${COLOR_RESET}"
+
+####################################################################################################
+#### Query Settings
+####################################################################################################
+
+## EXPAND SS DASHBOARD USING MYSQL???
+## check if SlickStack dashboard staging.wp_options has paused this script before proceeding
+
+# select EmployeeName from DemoTable where isMarried=true;
+# ss_options_staging_sync_status=$(mysql -BNe "USE staging; SELECT EmployeeName FROM DemoTable WHERE id=1")
+# $sql = "SELECT 'id' FROM Users WHERE username='$name'";
+
+
+if [[ "${SS_SYNC_DEVELOPMENT}" != "false" ]]; then
+
+####################################################################################################
+#### D. SS-Sync-Development: Backup Production Database (Conditional) ##############################
+####################################################################################################
+
+## we must run ss-dump-database now if no database dump file is found under backups ##
+## this ensures that a dump file exists before atempting to sync it to staging ##
+
+## FIX: change this to be OUTDATED instead e.g. more than X hours old ##
+if [[ ! -f "/var/www/backups/mysql/production.sql" ]]; then
+    source "${PATH_SS_DUMP_DATABASE}"
+fi
+
+####################################################################################################
+#### E. SS-Sync-Development: Import Production Database To Development Database ####################
+####################################################################################################
+
+## this snippet duplicates the dumped production database and imports it into MySQL ##
+## then it forecfully replaces the home/siteurl options to staging subdomain ##
+
+## only if dev site is enabled ##
+if [[ "${DEV_SITE}" == "true" ]]; then
+
+    ## import database ##
+    ss_cp /var/www/backups/mysql/production.sql /tmp/sync-development.sql
+    chown mysql:mysql /tmp/sync-development.sql ## does not matter if -L flag used below
+    chmod 0644 /tmp/sync-development.sql ## does not matter if -L flag used below
+    ss_mysql_8.0 development < /tmp/sync-development.sql
+    
+    ## fix staging home and siteurl fields (no mass search/replace to avoid potential conflicts) ##
+    if [[ "${SS_APP}" == "wordpress" ]]; then
+        if [[ -n $(mysql --execute "SHOW TABLES FROM staging WHERE Tables_in_staging LIKE '${DB_PREFIX}options';" 2> /dev/null) ]]; then
+            mysql --execute="UPDATE development.${DB_PREFIX}options SET option_value='https://dev.${SITE_DOMAIN_EXCLUDING_WWW}' WHERE option_name='home'";
+            mysql --execute="UPDATE development.${DB_PREFIX}options SET option_value='https://dev.${SITE_DOMAIN_EXCLUDING_WWW}' WHERE option_name='siteurl'";
+        fi
+    fi
+    
+####################################################################################################
+#### F. SS-Sync-Staging: Copy All Relevant Files From Production To Staging ########################
+####################################################################################################
+
+## here we copy over everything from production to staging besides uploads (media files) ##
+## schedule ss-clean beforehand in order to remove various (large) junk files ##
+
+    ## copy wp core directories ##
+    # ss_rsync /var/www/html/wp-admin/ /var/www/html/dev/wp-admin
+    # ss_rsync /var/www/html/wp-includes/ /var/www/html/dev/wp-includes
+
+    ## copy wp core root php files (only) ##
+    # --exclude-from="/var/www/meta/exclude.txt" 
+    # ss_rsync --exclude="wp-config*.php*" --include="index.php" --include="wp-*.php" --exclude="*" /var/www/html/ /var/www/html/dev
+
+    ## copy wp-content files over (skips media uploads) ##
+    ss_rsync --max-size=5mb --exclude="mu-plugins*" --exclude="uploads*" /var/www/html/wp-content/ /var/www/html/dev/wp-content
+    
+    ## remove potential run-on subdirectories ##
+    ss_rm /var/www/html/dev/dev*
+    
+####################################################################################################
+#### G. SS-Sync-Staging: Run SS-Install-WordPress-Config (Conditional) #############################
+####################################################################################################
+
+## below snippet will install wp-config.php in case does not exist already in staging ##
+## this is a failsafe in case staging enabled in ss-config post-installation ##
+
+## run ss-install-wordpress-config ##
+if [[ ! -f "/var/www/html/dev/wp-config.php" ]]; then
+    source "${PATH_SS_INSTALL_WORDPRESS_CONFIG}"
+fi
+
+####################################################################################################
+#### H. SS-Sync-Staging: Run SS-Install-WordPress-MU-Plugins (Conditional) #########################
+####################################################################################################
+
+## below snippet will install MU plugins in case they do not exist already in staging ##
+## this is a failsafe in case staging enabled in ss-config post-installation ##
+
+## run ss-install-wordpress-mu-plugins ##
+if [[ ! -f "/var/www/html/dev/wp-content/mu-plugins/xxx-common.php" ]]; then
+    source "${PATH_SS_INSTALL_WORDPRESS_MU_PLUGINS}"
+fi
+
+####################################################################################################
+#### I. SS-Sync-Staging: Fix Any Hardcoded Links In Staging Theme Files ############################
+####################################################################################################
+
+## many themes (or custom-coded themes) often contain hardcoded HTML assets and links ##
+## here we forcefully fix these links to ensure staging sites render properly ##
+
+## fix hardcoded theme links ##
+find /var/www/html/dev/wp-content/themes/ -type f -exec sed -i "s#https://${SITE_DOMAIN_INCLUDING_WWW}#https://dev.${SITE_DOMAIN_EXCLUDING_WWW}#g" {} +
+find /var/www/html/dev/wp-content/themes/ -type f -exec sed -i "s#http://${SITE_DOMAIN_INCLUDING_WWW}#https://dev.${SITE_DOMAIN_EXCLUDING_WWW}#g" {} +
+find /var/www/html/dev/wp-content/themes/ -type f -exec sed -i "s#https://${SITE_DOMAIN_EXCLUDING_WWW}#https://dev.${SITE_DOMAIN_EXCLUDING_WWW}#g" {} +
+find /var/www/html/dev/wp-content/themes/ -type f -exec sed -i "s#http://${SITE_DOMAIN_EXCLUDING_WWW}#https://dev.${SITE_DOMAIN_EXCLUDING_WWW}#g" {} +
+
+## end parent if ##
+fi
+
+## end parent parent if ##
+fi
+
+####################################################################################################
+## J. SS-Sync-Staging: Cleanup Temporary Files #####################################################
+####################################################################################################
+
+## delete tmp files ##
+rm /tmp/sync-development.sql
+
+####################################################################################################
+#### SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ###############
+####################################################################################################
+
+## Ref: https://community.centminmod.com/threads/wp-engine-type-production-staging-file-and-db-sync.19720/
+## Ref: https://softwareengineering.stackexchange.com/questions/117945/staging-environment-vs-production-environment
+## Ref: https://www.thegeekstuff.com/2011/01/rsync-exclude-files-and-folders/
+## Ref: https://stackoverflow.com/questions/2466101/how-i-can-change-prefixes-in-all-tables-in-my-mysql-db
+## Ref: https://stackoverflow.com/questions/55055130/mysql-copy-tables-with-specific-prefix-between-databases
+## Ref: https://stackoverflow.com/questions/3280006/duplicating-a-mysql-table-indices-and-data
+## Ref: https://tableplus.com/blog/2018/11/how-to-duplicate-a-table-in-mysql.html
+## Ref: https://electrictoolbox.com/copy-table-mysql-create-table-like/
+## Ref: https://guides.wp-bullet.com/advanced-wordpress-search-replace-database-with-linux-using-sed/
+## Ref: https://stackoverflow.com/questions/1917021/mysqldump-table-names-prefix
+## Ref: https://dba.stackexchange.com/questions/8869/restore-mysql-database-with-different-name
+## Ref: https://linuxize.com/post/how-to-back-up-and-restore-mysql-databases-with-mysqldump/
+## Ref: https://stackoverflow.com/questions/12677037/how-to-import-a-mysql-dump-from-command-line-with-overwrite
+## Ref: https://dba.stackexchange.com/questions/35847/mysqldump-flush-privileges-option
+## Ref: https://stackoverflow.com/questions/11263018/mysql-ignore-errors-when-importing
+## Ref: https://askubuntu.com/questions/76808/how-do-i-use-variables-in-a-sed-command
+## Ref: https://stackoverflow.com/questions/54460445/sed-permission-denied-on-temporary-file
+## Ref: https://www.unix.com/shell-programming-and-scripting/31583-wildcards-sed.html
+## Ref: https://stackoverflow.com/questions/9189120/using-sed-with-wildcard
+## Ref: http://helpdoco.com/Linux-Unix/sed-cannot-rename-permission-denied.htm
+## Ref: https://precisionsec.com/changing-the-wordpress-site-url-using-the-mysql-command-line/
+## Ref: https://stackoverflow.com/questions/20033648/how-to-run-mysql-command-on-bash
+## Ref: https://polevaultweb.com/2014/03/5-ways-synchronise-wordpress-uploads-across-environments/
+## Ref: https://blog.room34.com/archives/5091/wheres-the-option-to-change-the-uploads-path-in-wordpress-3-5/
+## Ref: https://premium.wpmudev.org/blog/sync-staging-live-sites-wordpress/
+## Ref: https://poststatus.com/functions-constants-referencing-wordpress-content-uploads-plugin-directories/
+## Ref: https://phoenixnap.com/kb/rsync-exclude-files-and-directories
+## Ref: http://qdosmsq.dunbar-it.co.uk/blog/2013/02/rsync-to-slash-or-not-to-slash/
+## Ref: http://lucasb.eyer.be/snips/rsync-skipping-directory.html
+## Ref: https://stackoverflow.com/questions/1583219/how-to-do-a-recursive-find-replace-of-a-string-with-awk-or-sed
+## Ref: https://www.jamesnimmo.co.nz/2020/04/16/create-a-dev-copy-of-your-wordpress-site-with-wordops/
+## Ref: https://serverfault.com/questions/105206/rsync-exclude-files-that-are-over-a-certain-size
+## Ref: https://man7.org/linux/man-pages/man1/rsync.1.html
+## Ref: https://stackoverflow.com/questions/9952000/using-rsync-include-and-exclude-options-to-include-directory-and-file-by-pattern
+## Ref: https://askubuntu.com/questions/476041/how-do-i-make-rsync-delete-files-that-have-been-deleted-from-the-source-folder
+## Ref: https://www.cyberciti.biz/faq/linux-bash-delete-all-files-in-directory-except-few/
+## Ref: https://superuser.com/questions/783622/how-to-make-grep-command-return-entire-matching-line
+## Ref: https://stackoverflow.com/questions/22319345/copy-lines-containing-word-from-one-file-to-another-file-in-linux
+## Ref: https://stackoverflow.com/questions/6749128/store-output-of-sed-into-a-variable
+## Ref: https://wordpress.org/support/topic/fatal-error-call-to-undefined-function-wp-in-home-content-06-9767406-html-wp/
+## Ref: https://stackoverflow.com/questions/11245144/replace-whole-line-containing-a-string-using-sed/36195381#36195381
+## Ref: https://www.gnu.org/software/sed/manual/html_node/sed-commands-list.html
+## Ref: https://www.geeksforgeeks.org/sed-command-in-linux-unix-with-examples/
+## Ref: https://docs.woocommerce.com/document/subscriptions-handles-staging-sites/
+## Ref: https://linuxize.com/post/bash-if-else-statement/
+## Ref: https://wpengine.com/support/wordpress-serialized-data/
+## Ref: https://wp-staging.com/serialized-data-wordpress-important/
+## Ref: https://stackoverflow.com/questions/15138893/fix-serialized-data-broken-due-to-editing-mysql-database-in-a-text-editor
+## Ref: https://interconnectit.com/products/search-and-replace-for-wordpress-databases/
+## Ref: https://wordpress.stackexchange.com/questions/9076/why-is-my-database-import-losing-text-widget-data
+## Ref: https://gist.github.com/gmartellino/4692252
+## Ref: https://stackoverflow.com/questions/6837061/mysqlimport-error-1045-access-denied
+## Ref: https://community.localwp.com/t/database-empty-after-import-help/2820
+## Ref: https://swiftheadline.com/check-a-value-in-a-mysql-database-from-a-linux-bash-script-cloudsavvy-it/
+## Ref: https://www.cloudsavvyit.com/1081/check-a-value-in-a-mysql-database-from-a-linux-bash-script/
+## Ref: https://explainshell.com/explain?cmd=mysql+-BNe
+## Ref: https://www.tutorialspoint.com/mysql-query-to-fetch-only-a-single-field-on-the-basis-of-boolean-value-in-another-field
+## Ref: https://stackoverflow.com/questions/20878089/php-and-mysql-select-a-single-value
+
+## SS_EOF
