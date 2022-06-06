@@ -7,7 +7,7 @@
 #### path: /var/www/ss-install-wordpress-config ####################################################
 #### destination: n/a (not a boilerplate) ##########################################################
 #### purpose: Reinstalls WordPress module (CMS) config files based on ss-config (idempotent) #######
-#### module version: WordPress 5.9.x ###############################################################
+#### module version: WordPress 6.0.x ###############################################################
 #### sourced by: ss-install, ss-install-nginx-config ###############################################
 #### bash aliases: ss install [wordpress|wp] config ################################################
 ####################################################################################################
@@ -221,15 +221,8 @@ ss_sed "s/@SECUREAUTHSALT/$(openssl rand -hex 48)/g" "${TMP_WP_CONFIG_PHP}"
 ss_sed "s/@LOGGEDINSALT/$(openssl rand -hex 48)/g" "${TMP_WP_CONFIG_PHP}"
 ss_sed "s/@NONCESALT/$(openssl rand -hex 48)/g" "${TMP_WP_CONFIG_PHP}"
 
-## Replace Placeholders: Debug and Dev/staging server ##
-if [[ "${SS_TYPE}" != "production" ]]; then 
-    ss_sed "s/@WP_DEBUG/true/g" "${TMP_WP_CONFIG_PHP}"
-    ss_sed "s/@WP_LOCAL_DEV/true/g" "${TMP_WP_CONFIG_PHP}"
-else 
-    ss_sed "s/@WP_DEBUG/false/g" "${TMP_WP_CONFIG_PHP}"
-    ss_sed "s/@WP_LOCAL_DEV/false/g" "${TMP_WP_CONFIG_PHP}"
-fi
-
+## environment ##
+ss_sed "s/@WP_LOCAL_DEV/false/g" "${TMP_WP_CONFIG_PHP}"
 
 ## core auto updates ##
 if [[ -z "$WP_AUTO_UPDATE_CORE" ]]; then 
@@ -381,11 +374,8 @@ ss_sed "s/@SECUREAUTHSALT/$(openssl rand -hex 48)/g" "${TMP_WORDPRESS_CONFIG_STA
 ss_sed "s/@LOGGEDINSALT/$(openssl rand -hex 48)/g" "${TMP_WORDPRESS_CONFIG_STAGING}"
 ss_sed "s/@NONCESALT/$(openssl rand -hex 48)/g" "${TMP_WORDPRESS_CONFIG_STAGING}"
 
-## Replace Placeholders: Debug and Dev/staging server ##
-ss_sed "s/@WP_DEBUG/true/g" "${TMP_WORDPRESS_CONFIG_STAGING}"
+## environment ##
 ss_sed "s/@WP_LOCAL_DEV/false/g" "${TMP_WORDPRESS_CONFIG_STAGING}"
-
-
 
 ## core auto updates ##
 if [[ -z "$WP_AUTO_UPDATE_CORE" ]]; then 
@@ -523,11 +513,8 @@ ss_sed "s/@SECUREAUTHSALT/$(openssl rand -hex 48)/g" "${TMP_WORDPRESS_CONFIG_DEV
 ss_sed "s/@LOGGEDINSALT/$(openssl rand -hex 48)/g" "${TMP_WORDPRESS_CONFIG_DEV}"
 ss_sed "s/@NONCESALT/$(openssl rand -hex 48)/g" "${TMP_WORDPRESS_CONFIG_DEV}"
 
-## Replace Placeholders: Debug and Dev/staging server ##
-ss_sed "s/@WP_DEBUG/true/g" "${TMP_WORDPRESS_CONFIG_DEV}"
+## environment ##
 ss_sed "s/@WP_LOCAL_DEV/false/g" "${TMP_WORDPRESS_CONFIG_DEV}"
-
-
 
 ## core auto updates ##
 if [[ -z "$WP_AUTO_UPDATE_CORE" ]]; then 
