@@ -24,6 +24,7 @@
 ## B. Canonical Domain (Single Website)
 ## C. Well-Known (Domain Verification)
 ## D. Redirect Any AMP Requests
+## E. Noindex Thin Content (Regex)
 
 ####################################################################################################
 #### A. Server Block (Production): Catch-All Redirect To Canonical Domain ##########################
@@ -98,69 +99,62 @@ server {
 
 	## force trailing slash on */wp-admin requests ##
 	rewrite /wp-admin$ https://$host$uri/ permanent;
-	
 		
-    	location / {
-		## first try files, then directories, otherwise query index.php ##
-        	try_files $uri $uri/ /index.php?$args;
-	
-    		## redirect index.php to root ##
-    		if ($request_uri ~* "^(.*/)index\.php$") {
-        		return 301 $1;
-    		}
+	location / {
 
-		## 503 error if maintenance file found in web root ##
-		if (-f /var/www/html/maintenance.html) {
-			return 503;
-		}
+	## first try files, then directories, otherwise query index.php ##
+	try_files $uri $uri/ /index.php?$args;
 	
-		## force trailing slashes on urls (do not enable for bbPress/BuddyPress sites) ##
-        	# rewrite ^([^.]*[^/])$ $1/ permanent;
+	## redirect index.php to root ##
+	if ($request_uri ~* "^(.*/)index\.php$") {
+		return 301 $1;
+	}
+
+	## 503 error if maintenance file found in web root ##
+	if (-f /var/www/html/maintenance.html) {
+		return 503;
+	}
 	
-		## block user enumeration ##
-    		if ( $query_string ~ "author=([0-9]*)" ) { 
-			return 403;
-		}
+	## force trailing slashes on urls (do not enable for bbPress/BuddyPress sites) ##
+	# rewrite ^([^.]*[^/])$ $1/ permanent;
+	
+	## block user enumeration ##
+	if ( $query_string ~ "author=([0-9]*)" ) { 
+		return 403;
+	}
 		
     }
 
 ####################################################################################################
-#### Server Block (Production): Noindex Thin Content Regex #########################################
+#### E. Server Block (Production): Noindex Thin Content (Regex) ####################################
 ####################################################################################################
 
-		## noindex pagination ##
-		location ~ ^(.*)/page/(.*)/$ {
-			try_files $uri $uri/ /index.php?$args;
-			set $robots "noindex, nofollow, nosnippet, noarchive";
-		}
-		
-		## noindex tags ##
-		location ~ ^(.*)/tag/(.*)/$ {
-			try_files $uri $uri/ /index.php?$args;
-			set $robots "noindex, nofollow, nosnippet, noarchive";
-		}
-		
-		## noindex feeds ##
-		location ~ ^(.*)/feed/$ {
-			try_files $uri $uri/ /index.php?$args;
-			set $robots "noindex, nofollow, nosnippet, noarchive";
-		}
-		
-		## noindex date archives ##
-		location ~ "^(.*)/[0-9]{4}" {
-			try_files $uri $uri/ /index.php?$args;
-			set $robots "noindex, nofollow, nosnippet, noarchive";
-		}
-		
-####################################################################################################
+## these are very powerful rules that force-noindex thin content for huge SEO results ##
+## in this way your clients, plugins, or WP themes cannot mess up your indexing ##
 
-####################################################################################################
-
-    ## hidden files (block access) ##
-   # location ~ /\. {
-        ## do not enable if using Certbot, Git, etc ##
-	# deny all;
-   # }
+	## pagination ##
+	location ~ ^(.*)/page/(.*)/$ {
+		try_files $uri $uri/ /index.php?$args;
+		set $robots "noindex, nofollow, nosnippet, noarchive";
+	}
+	
+	## tags ##
+	location ~ ^(.*)/tag/(.*)/$ {
+		try_files $uri $uri/ /index.php?$args;
+		set $robots "noindex, nofollow, nosnippet, noarchive";
+	}
+	
+	## rss feeds ##
+	location ~ ^(.*)/feed/$ {
+		try_files $uri $uri/ /index.php?$args;
+		set $robots "noindex, nofollow, nosnippet, noarchive";
+	}
+	
+	## date archives ##
+	location ~ "^(.*)/[0-9]{4}" {
+		try_files $uri $uri/ /index.php?$args;
+		set $robots "noindex, nofollow, nosnippet, noarchive";
+	}
 
 ####################################################################################################
 
@@ -171,13 +165,7 @@ server {
         ## if permalinks not enabled or not loaded properly in the browser ##
         rewrite ^/wp-json/(.*?)$ /?rest_route=/$1 last;
     }
-    
-####################################################################################################
-#### Server Block (Production): .Well-Known Settings ###############################################
-####################################################################################################
-
-
-
+	
 ####################################################################################################
 #### Server Block (Production): FastCGI Cache Settings #############################################
 ####################################################################################################
