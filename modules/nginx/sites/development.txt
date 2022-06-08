@@ -21,7 +21,8 @@
 ## each section should be commented so you understand what is being accomplished ##
 
 ## A. Canonical Subdomain (Single Website)
-## B. Redirect Any AMP Requests
+## B. Well-Known (Domain Verification)
+## C. Redirect Any AMP Requests
 
 ####################################################################################################
 #### A. Server Block (Development): Canonical Subdomain (Single Website) ###########################
@@ -38,17 +39,25 @@ server {
 	auth_basic                  "Restricted Content";
 	auth_basic_user_file        /var/www/meta/.htpasswd;
 	more_set_headers            "X-Robots-Tag noindex, nofollow, nosnippet, noarchive";
-	
+
+####################################################################################################
+#### B. Server Block (Development): Well-Known (Domain Verification) ###############################
+####################################################################################################
+
+## the well-known hidden directory is becoming more important for domain verification ##
+## we implement an abundance of rules to improve functionality and stability ##
+
 	## well-known ##
 	location ^~ /.well-known/ {
-    	allow               all;
+		allow all;
+		auth_basic off;
 		default_type        "text/plain";
 		try_files           $uri =404;
-		alias               /var/www/html/.well-known/;
+		alias               /var/www/html/.well-known/; ## staging/dev use prod
 	}
     
 ####################################################################################################
-#### B. Server Block (Development): Redirect Any AMP Requests ######################################
+#### C. Server Block (Development): Redirect Any AMP Requests ######################################
 ####################################################################################################
 
 ## this powerful snippet will redirect all the messy URLs created by AMP software ##
