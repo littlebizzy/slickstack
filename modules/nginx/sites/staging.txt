@@ -21,7 +21,8 @@
 ## each section should be commented so you understand what is being accomplished ##
 
 ## A. Canonical Subdomain (Single Website)
-## B. Redirect Any AMP Requests
+## B. Well-Known (Domain Verification)
+## C. Redirect Any AMP Requests
 
 ####################################################################################################
 #### A. Server Block (Staging): Canonical Subdomain (Single Website) ###############################
@@ -43,17 +44,25 @@ server {
 	location ^~ /wp-content/uploads/ {
 		alias        /var/www/html/wp-content/uploads/;
     	}
-		
-	## well-known ##
-	location ^~ /.well-known/ {
-    	allow               all;
-		default_type        "text/plain";
-		try_files           $uri =404;
-		alias               /var/www/html/.well-known/;
-    }
 
 ####################################################################################################
-#### B. Server Block (Staging): Redirect Any AMP Requests ##########################################
+#### B. Server Block (Production): Well-Known (Domain Verification) ################################
+####################################################################################################
+
+## the well-known hidden directory is becoming more important for domain verification ##
+## we implement an abundance of rules to improve functionality and stability ##
+
+	## well-known ##
+	location ^~ /.well-known/ {
+		allow all;
+		auth_basic off;
+		default_type        "text/plain";
+		try_files           $uri =404;
+		alias               /var/www/html/.well-known/; ## staging/dev use prod
+	}
+	
+####################################################################################################
+#### C. Server Block (Staging): Redirect Any AMP Requests ##########################################
 ####################################################################################################
 
 ## this powerful snippet will redirect all the messy URLs created by AMP software ##
