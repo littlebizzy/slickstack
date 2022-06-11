@@ -60,14 +60,13 @@ ss_echo "${COLOR_INFO}Running ss-reboot-machine: Force reboots the server but is
 
 ## variables ##
 SYSTEM_UPTIME=$(date -d "$(uptime -s)" +%s)
-REBOOT_MIN_UPTIME=$(date -d '1 hour ago' +%s)
+REBOOT_MIN_UPTIME_NOW=$(date -d "${SS_REBOOT_MIN_UPTIME} ago" +%s)
 
-## reboot if uptime at least 1 hour ##
-if [[ "${SYSTEM_UPTIME}" < "${REBOOT_MIN_UPTIME}" ]]; then 
-    echo "System up for at least 1 hour"
+## reboot if uptime at least minimum or not defined ##
+if [[ -z "${SS_REBOOT_MIN_UPTIME}" ]] || [[ "${SYSTEM_UPTIME}" < "${REBOOT_MIN_UPTIME_NOW}" ]]; then 
     /bin/bash -c "/sbin/reboot"
 else
-     echo -e "${COLOR_WARN}system up for less than 1 hour so not rebooting${COLOR_RESET}"
+     echo -e "${COLOR_WARN}System uptime less than minimum defined in ss-config so not rebooting... try sudo reboot instead if you wish!${COLOR_RESET}"
 fi
 
 ####################################################################################################
