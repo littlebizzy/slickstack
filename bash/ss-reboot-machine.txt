@@ -58,12 +58,16 @@ ss_echo "${COLOR_INFO}Running ss-reboot-machine: Force reboots the server but is
 ## here we check to see if ss-reboot was run in the past 60 minutes or not before running ##
 ## this protects you from consecutive (abusive) reboots e.g. if run via ss-worker ##
 
-## reboot only if ss-reboot was not run in past 60 minutes ##
-if [[ ! -f "${TIMESTAMP_SS_REBOOT_MACHINE}" ]] || [[ -n $(find "${TIMESTAMP_SS_REBOOT_MACHINE}" -amin +60) ]]; then
+## variables ##
+SYSTEM_UPTIME=$(date -d "$(uptime -s)" +%s)
+REBOOT_MIN_UPTIME=$(date -d '1 hour ago' +%s)
+
+## reboot if uptime at least 1 hour ##
+if [[ "${SYSTEM_UPTIME}" < "${REBOOT_MIN_UPTIME}" ]]; then 
+    echo "System up for at least 1 hour"
     /bin/bash -c "/sbin/reboot"
-else 
-    echo -e "${YELLOW}It appears your server has rebooted already within the last 60 minutes, ${NOCOLOR}"
-    echo -e "${YELLOW}therefore ss-reboot has exited without rebooting at this time. ${NOCOLOR}"
+else
+     echo -e "${COLOR_WARN}system up for less than 1 hour so not rebooting${COLOR_RESET}"
 fi
 
 ####################################################################################################
@@ -82,5 +86,6 @@ fi
 ## Ref: https://askubuntu.com/questions/442575/how-to-check-when-the-ubuntu-server-was-rebooted
 ## Ref: https://www.cyberciti.biz/tips/linux-last-reboot-time-and-date-find-out.html
 ## Ref: https://serverfault.com/questions/255911/detecting-restart-since-last-run-in-a-shell-script-on-linux
+## Ref: https://unix.stackexchange.com/questions/668902/how-to-check-if-uptime-is-greater-than-72h
 
 ## SS_EOF
