@@ -7,8 +7,8 @@
 #### path: /var/www/ss-reboot-machine ##############################################################
 #### destination: n/a (not a boilerplate) ##########################################################
 #### purpose: Force reboots the server but is rate-limited so it can be used within scripts ########
-#### module version: Ubuntu 20.04 LTS ##############################################################
-#### sourced by: ss core cron jobs, ss core bash scripts ###########################################
+#### module version: Ubuntu 22.04 LTS ##############################################################
+#### sourced by: n/a ###############################################################################
 #### bash aliases: ss reboot #######################################################################
 ####################################################################################################
 
@@ -29,6 +29,7 @@ source /var/www/ss-functions
 
 ## A. Touch Timestamp File
 ## B. Message (Begin Script)
+## C. Force Reboot Server
 
 ####################################################################################################
 #### A. SS-Reboot-Machine: Touch Timestamp File ####################################################
@@ -51,21 +52,18 @@ ss_touch "${TIMESTAMP_SS_REBOOT_MACHINE}"
 ss_echo "${COLOR_INFO}Running ss-reboot-machine: Force reboots the server but is rate-limited so it can be used within scripts... ${COLOR_RESET}"
 
 ####################################################################################################
-#### SS-Reboot-Machine: Force Reboot The Server ####################################################
+#### C. SS-Reboot-Machine: Force Reboot Server #####################################################
 ####################################################################################################
 
 ## here we check to see if ss-reboot was run in the past 60 minutes or not before running ##
 ## this protects you from consecutive (abusive) reboots e.g. if run via ss-worker ##
 
-## FUTURE: customize via ss-config options ##
 ## reboot only if ss-reboot was not run in past 60 minutes ##
 if [[ ! -f "${TIMESTAMP_SS_REBOOT_MACHINE}" ]] || [[ -n $(find "${TIMESTAMP_SS_REBOOT_MACHINE}" -amin +60) ]]; then
     /bin/bash -c "/sbin/reboot"
 else 
-    echo -e ""
     echo -e "${YELLOW}It appears your server has rebooted already within the last 60 minutes, ${NOCOLOR}"
     echo -e "${YELLOW}therefore ss-reboot has exited without rebooting at this time. ${NOCOLOR}"
-    echo -e ""
 fi
 
 ####################################################################################################
