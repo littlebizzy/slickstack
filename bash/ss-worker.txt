@@ -143,37 +143,19 @@ fi
 #### F. SS-Worker: Install Current SS-Constants.php Boilerplate ####################################
 ####################################################################################################
 
-## SNIPPET: ss-install-wordpress-config, ss-worker
-
 ## here we use some janky magic to convert various system settings into PHP constants ##
 ## this allows us to use these handy PHP constants inside PHP scripts etc ##
 
-## retrieve latest ss-constants.php boilerplate ##
-ss_wget_slowest "$TMP_SS_CONSTANTS_PHP" "$MIRROR_SS_CONSTANTS_PHP"
+## SNIPPET: ss-install-wordpress-config, ss-worker
 
-VALIDATE_TMP_SS_CONSTANTS_PHP=$(grep 'SS_EOF' "$TMP_SS_CONSTANTS_PHP")
-if [[ -z "$VALIDATE_TMP_SS_CONSTANTS_PHP" ]]; then
-    rm "$TMP_SS_CONSTANTS_PHP"
-    ss_wget_slowest "$TMP_SS_CONSTANTS_PHP" "$MIRROR2_SS_CONSTANTS_PHP"
-fi
-
-VALIDATE2_TMP_SS_CONSTANTS_PHP=$(grep 'SS_EOF' "$TMP_SS_CONSTANTS_PHP")
-if [[ -z "$VALIDATE2_TMP_SS_CONSTANTS_PHP" ]]; then
-    rm "$TMP_SS_CONSTANTS_PHP"
-    ss_wget_slowest "$TMP_SS_CONSTANTS_PHP" "$MIRROR_SS_CONSTANTS_PHP"
-fi
-
-VALIDATE3_TMP_SS_CONSTANTS_PHP=$(grep 'SS_EOF' "$TMP_SS_CONSTANTS_PHP")
-if [[ -z "$VALIDATE3_TMP_SS_CONSTANTS_PHP" ]]; then
-    rm "$TMP_SS_CONSTANTS_PHP"
-    ss_wget_slowest "$TMP_SS_CONSTANTS_PHP" "$MIRROR2_SS_CONSTANTS_PHP"
-fi
+## retrieve current boilerplate ##
+ss_wget_slowest "${TMP_SS_CONSTANTS_PHP}" "${MIRROR_SS_CONSTANTS_PHP}"
 
     ## set SlickStack dashboard ##
     if [[ -z "$SS_WORDPRESS_ADMIN_DASHBOARD" ]]; then 
-        sed -i "s/@SS_WORDPRESS_ADMIN_DASHBOARD/true/g" "$TMP_SS_CONSTANTS_PHP"
+        sed -i "s/@SS_WORDPRESS_ADMIN_DASHBOARD/true/g" "${TMP_SS_CONSTANTS_PHP}"
     else 
-        sed -i "s/@SS_WORDPRESS_ADMIN_DASHBOARD/${SS_WORDPRESS_ADMIN_DASHBOARD}/g" "$TMP_SS_CONSTANTS_PHP"
+        sed -i "s/@SS_WORDPRESS_ADMIN_DASHBOARD/${SS_WORDPRESS_ADMIN_DASHBOARD}/g" "${TMP_SS_CONSTANTS_PHP}"
     fi
     
 SYSTEM_SERVER_SOFTWARE=$(nginx -v |& sed 's#nginx version: nginx/##')
@@ -187,74 +169,80 @@ if [[ "${UBUNTU_VERSION}" == "20.04" ]]; then
 SYSTEM_MYSQL_VERSION=$(mysql --version |& awk '{print $3}' | sed 's/,//g')
 fi
 
-####################################################################################################
+sed -i "s|@SS_BUILD|${SS_BUILD}|g" "${TMP_SS_CONSTANTS_PHP}"
+sed -i "s|@SS_WORDPRESS_PLUGIN_BLACKLIST_SOURCE|${SS_WORDPRESS_PLUGIN_BLACKLIST_SOURCE}|g" "${TMP_SS_CONSTANTS_PHP}"
+sed -i "s|@SS_WORDPRESS_PLUGIN_BLACKLIST_STATUS|${SS_WORDPRESS_PLUGIN_BLACKLIST}|g" "${TMP_SS_CONSTANTS_PHP}"
+sed -i "s|@WP_CRON_METHOD|${WP_CRON_METHOD}|g" "${TMP_SS_CONSTANTS_PHP}"
+sed -i "s|@WP_CRON_INTERVAL|${WP_CRON_INTERVAL}|g" "${TMP_SS_CONSTANTS_PHP}"
+sed -i "s|@SYSTEM_VENDOR|${SYSTEM_VENDOR}|g" "${TMP_SS_CONSTANTS_PHP}"
+sed -i "s|@SYSTEM_VIRTUAL|${SYSTEM_VIRTUAL}|g" "${TMP_SS_CONSTANTS_PHP}"
+sed -i "s|@SYSTEM_LINUX_KERNEL|${SYSTEM_LINUX_KERNEL}|g" "${TMP_SS_CONSTANTS_PHP}"
+sed -i "s|@SYSTEM_CPU_CORES|${SYSTEM_CPU_CORES}|g" "${TMP_SS_CONSTANTS_PHP}"
+sed -i "s|@SYSTEM_OS_PRETTY_NAME|${SYSTEM_OS_PRETTY_NAME}|g" "${TMP_SS_CONSTANTS_PHP}"
 
-sed -i "s|@SS_BUILD|${SS_BUILD}|g" "$TMP_SS_CONSTANTS_PHP"
-
-## potential name/replace conflict fix these later ##
-sed -i "s|@SS_WORDPRESS_PLUGIN_BLACKLIST_SOURCE|${SS_WORDPRESS_PLUGIN_BLACKLIST_SOURCE}|g" "$TMP_SS_CONSTANTS_PHP"
-sed -i "s|@SS_WORDPRESS_PLUGIN_BLACKLIST|${SS_WORDPRESS_PLUGIN_BLACKLIST}|g" "$TMP_SS_CONSTANTS_PHP"
-
-sed -i "s|@WP_CRON_METHOD|${WP_CRON_METHOD}|g" "$TMP_SS_CONSTANTS_PHP"
-sed -i "s|@WP_CRON_INTERVAL|${WP_CRON_INTERVAL}|g" "$TMP_SS_CONSTANTS_PHP"
-
-
-
-sed -i "s|@SYSTEM_VENDOR|${SYSTEM_VENDOR}|g" "$TMP_SS_CONSTANTS_PHP"
-sed -i "s|@SYSTEM_VIRTUAL|${SYSTEM_VIRTUAL}|g" "$TMP_SS_CONSTANTS_PHP"
-sed -i "s|@SYSTEM_LINUX_KERNEL|${SYSTEM_LINUX_KERNEL}|g" "$TMP_SS_CONSTANTS_PHP"
-sed -i "s|@SYSTEM_CPU_CORES|${SYSTEM_CPU_CORES}|g" "$TMP_SS_CONSTANTS_PHP"
-sed -i "s|@SYSTEM_OS_PRETTY_NAME|${SYSTEM_OS_PRETTY_NAME}|g" "$TMP_SS_CONSTANTS_PHP"
-
+## mysql version ##
 if [[ "${SS_DATABASE_REMOTE}" != "false" ]]; then
     sed -i "/MYSQL_VERSION/d" "${TMP_SS_CONSTANTS_PHP}"
 else
     sed -i "s|@SYSTEM_MYSQL_VERSION|${SYSTEM_MYSQL_VERSION}|g" "${TMP_SS_CONSTANTS_PHP}"
 fi
 
+## mysql database size ##
 if [[ "${SS_DATABASE_REMOTE}" != "false" ]]; then
     sed -i "/MYSQL_SIZE/d" "${TMP_SS_CONSTANTS_PHP}"
 else
     sed -i "s|@SYSTEM_MYSQL_SIZE|${SYSTEM_MYSQL_SIZE}|g" "${TMP_SS_CONSTANTS_PHP}"
 fi
 
+## disk free space ##
+sed -i "s|@SYSTEM_DISK_FREE|${SYSTEM_DISK_FREE}|g" "${TMP_SS_CONSTANTS_PHP}"
 
-sed -i "s|@SYSTEM_DISK_FREE|${SYSTEM_DISK_FREE}|g" "$TMP_SS_CONSTANTS_PHP"
-sed -i "s|@SYSTEM_DISK_TOTAL|${SYSTEM_DISK_TOTAL}|g" "$TMP_SS_CONSTANTS_PHP"
-sed -i "s|@SYSTEM_IPV4_ADDRESS|${SYSTEM_IPV4_ADDRESS}|g" "$TMP_SS_CONSTANTS_PHP"
-sed -i "s|@SYSTEM_IPV6_ADDRESS|${SYSTEM_IPV6_ADDRESS}|g" "$TMP_SS_CONSTANTS_PHP"
-sed -i "s|@SYSTEM_HOSTNAME|${SYSTEM_HOSTNAME}|g" "$TMP_SS_CONSTANTS_PHP"
-sed -i "s|@SYSTEM_SERVER_SOFTWARE|${SYSTEM_SERVER_SOFTWARE}|g" "$TMP_SS_CONSTANTS_PHP"
+## disk total space ##
+sed -i "s|@SYSTEM_DISK_TOTAL|${SYSTEM_DISK_TOTAL}|g" "${TMP_SS_CONSTANTS_PHP}"
+
+## ipv4 address ##
+sed -i "s|@SYSTEM_IPV4_ADDRESS|${SYSTEM_IPV4_ADDRESS}|g" "${TMP_SS_CONSTANTS_PHP}"
+
+## ipv6 address ##
+sed -i "s|@SYSTEM_IPV6_ADDRESS|${SYSTEM_IPV6_ADDRESS}|g" "${TMP_SS_CONSTANTS_PHP}"
+
+## server hostname ##
+sed -i "s|@SYSTEM_HOSTNAME|${SYSTEM_HOSTNAME}|g" "${TMP_SS_CONSTANTS_PHP}"
+
+## nginx version ##
+sed -i "s|@SYSTEM_SERVER_SOFTWARE|${SYSTEM_SERVER_SOFTWARE}|g" "${TMP_SS_CONSTANTS_PHP}"
 
 SYSTEM_PHP_VERSION=$(php -v | awk '/^PHP/{print $2}' | awk -F '\\-*' '{print $1""}')
 
 SYSTEM_PHP_EXTENSIONS=$(php -m | paste -s -d , | sed -e 's/,/, /g' | awk -F 'zlib' '{print $1"zlib"}' | sed -e 's#\[PHP Modules\], ##g')
 
-sed -i "s|@SYSTEM_PHP_VERSION|${SYSTEM_PHP_VERSION}|g" "$TMP_SS_CONSTANTS_PHP"
-sed -i "s|@SYSTEM_PHP_EXTENSIONS|${SYSTEM_PHP_EXTENSIONS}|g" "$TMP_SS_CONSTANTS_PHP"
+## php version ##
+sed -i "s|@SYSTEM_PHP_VERSION|${SYSTEM_PHP_VERSION}|g" "${TMP_SS_CONSTANTS_PHP}"
+
+## php extensions ##
+sed -i "s|@SYSTEM_PHP_EXTENSIONS|${SYSTEM_PHP_EXTENSIONS}|g" "${TMP_SS_CONSTANTS_PHP}"
 
 ## sftp details ##
-sed -i "s|@SFTP_USER|${SFTP_USER}|g" "$TMP_SS_CONSTANTS_PHP"
-sed -i "s|@SFTP_PASSWORD|${SFTP_PASSWORD}|g" "$TMP_SS_CONSTANTS_PHP"
-sed -i "s|@SFTP_PORT|${SSH_PORT}|g" "$TMP_SS_CONSTANTS_PHP"
+sed -i "s|@SFTP_USER|${SFTP_USER}|g" "${TMP_SS_CONSTANTS_PHP}"
+sed -i "s|@SFTP_PASSWORD|${SFTP_PASSWORD}|g" "${TMP_SS_CONSTANTS_PHP}"
+sed -i "s|@SFTP_PORT|${SSH_PORT}|g" "${TMP_SS_CONSTANTS_PHP}"
 
 ## cloudflare api ##
-sed -i "s|@CLOUDFLARE_API_KEY|${CLOUDFLARE_API_KEY}|g" "$TMP_SS_CONSTANTS_PHP"
-sed -i "s|@CLOUDFLARE_API_EMAIL|${CLOUDFLARE_API_EMAIL}|g" "$TMP_SS_CONSTANTS_PHP"
+sed -i "s|@CLOUDFLARE_API_KEY|${CLOUDFLARE_API_KEY}|g" "${TMP_SS_CONSTANTS_PHP}"
+sed -i "s|@CLOUDFLARE_API_EMAIL|${CLOUDFLARE_API_EMAIL}|g" "${TMP_SS_CONSTANTS_PHP}"
 
 ## whitelabel ##
-sed -i "s|@WHITELABEL_BRAND|${WHITELABEL_BRAND}|g" "$TMP_SS_CONSTANTS_PHP"
-sed -i "s|@WHITELABEL_HOMEPAGE|${WHITELABEL_HOMEPAGE}|g" "$TMP_SS_CONSTANTS_PHP"
-sed -i "s|@WHITELABEL_SUPPORT_URL|${WHITELABEL_SUPPORT_URL}|g" "$TMP_SS_CONSTANTS_PHP"
-sed -i "s|@WHITELABEL_SUPPORT_EMAIL|${WHITELABEL_SUPPORT_EMAIL}|g" "$TMP_SS_CONSTANTS_PHP"
-
+sed -i "s|@WHITELABEL_BRAND|${WHITELABEL_BRAND}|g" "${TMP_SS_CONSTANTS_PHP}"
+sed -i "s|@WHITELABEL_HOMEPAGE|${WHITELABEL_HOMEPAGE}|g" "${TMP_SS_CONSTANTS_PHP}"
+sed -i "s|@WHITELABEL_SUPPORT_URL|${WHITELABEL_SUPPORT_URL}|g" "${TMP_SS_CONSTANTS_PHP}"
+sed -i "s|@WHITELABEL_SUPPORT_EMAIL|${WHITELABEL_SUPPORT_EMAIL}|g" "${TMP_SS_CONSTANTS_PHP}"
 
 ## validate and reinstall ##
 VALIDATE_TMP_SS_CONSTANTS_PHP=$(grep 'SS_EOF' "$TMP_SS_CONSTANTS_PHP")
 if [[ -n "$VALIDATE_TMP_SS_CONSTANTS_PHP" ]]; then
-    cp "$TMP_SS_CONSTANTS_PHP" "$PATH_SS_CONSTANTS_PHP"
-    chown www-data:www-data "$PATH_SS_CONSTANTS_PHP"
-    chmod 0440 "$PATH_SS_CONSTANTS_PHP" ## 0440 (read-only)
+    ss_mv "${TMP_SS_CONSTANTS_PHP}" "${PATH_SS_CONSTANTS_PHP}"
+    chown www-data:www-data "${PATH_SS_CONSTANTS_PHP}"
+    chmod 0440 "${PATH_SS_CONSTANTS_PHP}" ## 0440 (read-only)
 fi 
 
 ####################################################################################################
