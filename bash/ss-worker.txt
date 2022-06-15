@@ -96,6 +96,7 @@ if [[ -n "${SS_PILOT_FILE}" ]]; then
 
     ss_wget_slowest "${TMP_SS_PILOT_FILE}" "${SS_PILOT_FILE}"
 
+    ## read variables from pilot file ##
     PILOT_WHITELABEL_BRAND=$(source /tmp/ss-pilot; echo "${WHITELABEL_BRAND}")
     PILOT_WHITELABEL_HOMEPAGE=$(source /tmp/ss-pilot; echo "${WHITELABEL_HOMEPAGE}")
     PILOT_WHITELABEL_SUPPORT_URL=$(source /tmp/ss-pilot; echo "${WHITELABEL_SUPPORT_URL}")
@@ -103,32 +104,40 @@ if [[ -n "${SS_PILOT_FILE}" ]]; then
     PILOT_NGINX_HEADER_POWERED_BY=$(source /tmp/ss-pilot; echo "${NGINX_HEADER_POWERED_BY}")
     PILOT_CLOUDFLARE_API_KEY=$(source /tmp/ss-pilot; echo "${CLOUDFLARE_API_KEY}")
     PILOT_CLOUDFLARE_API_EMAIL=$(source /tmp/ss-pilot; echo "${CLOUDFLARE_API_EMAIL}")
+    PILOT_PHP_EXTENSIONS=$(source /tmp/ss-pilot; echo "${PHP_EXTENSIONS}")
+    PILOT_PHP_EXTENSIONS=$(source /tmp/ss-pilot; echo "${WP_PLUGIN_BLACKLIST_SOURCE}")
 
-    ## replace ss-config variables with pilot variables if exist ##
+    ## whitelabel brand ##
     if [[ -n "${PILOT_WHITELABEL_BRAND}" ]]; then 
         ss_sed "s|\(^WHITELABEL_BRAND=\).*|WHITELABEL_BRAND=\"$PILOT_WHITELABEL_BRAND\"|g" "${PATH_SS_CONFIG}"
     fi
 
+    ## whitelabel homepage ##
     if [[ -n "${PILOT_WHITELABEL_HOMEPAGE}" ]]; then 
         ss_sed "s|\(^WHITELABEL_HOMEPAGE=\).*|WHITELABEL_HOMEPAGE=\"$PILOT_WHITELABEL_HOMEPAGE\"|g" "${PATH_SS_CONFIG}"
     fi
     
+    ## whitelabel support url ##
     if [[ -n "${PILOT_WHITELABEL_SUPPORT_URL}" ]]; then 
         ss_sed "s|\(^WHITELABEL_SUPPORT_URL=\).*|WHITELABEL_SUPPORT_URL=\"$PILOT_WHITELABEL_SUPPORT_URL\"|g" "${PATH_SS_CONFIG}"
     fi
     
+    ## whitelabel support email ##
     if [[ -n "${PILOT_WHITELABEL_SUPPORT_EMAIL}" ]]; then 
         ss_sed "s|\(^WHITELABEL_SUPPORT_EMAIL=\).*|WHITELABEL_SUPPORT_EMAIL=\"$PILOT_WHITELABEL_SUPPORT_EMAIL\"|g" "${PATH_SS_CONFIG}"
     fi
     
+    ## nginx header powered by ##
     if [[ -n "${PILOT_NGINX_HEADER_POWERED_BY}" ]]; then 
         ss_sed "s|\(^NGINX_HEADER_POWERED_BY=\).*|NGINX_HEADER_POWERED_BY=\"$PILOT_NGINX_HEADER_POWERED_BY\"|g" "${PATH_SS_CONFIG}"
     fi
     
+    ## cloudflare api key ##
     if [[ -n "${PILOT_CLOUDFLARE_API_KEY}" ]]; then 
         ss_sed "s|\(^CLOUDFLARE_API_KEY=\).*|CLOUDFLARE_API_KEY=\"$PILOT_CLOUDFLARE_API_KEY\"|g" "${PATH_SS_CONFIG}"
     fi
     
+    ## cloudflare api email ##
     if [[ -n "${PILOT_CLOUDFLARE_API_EMAIL}" ]]; then 
         ss_sed "s|\(^CLOUDFLARE_API_EMAIL=\).*|CLOUDFLARE_API_EMAIL=\"$PILOT_CLOUDFLARE_API_EMAIL\"|g" "${PATH_SS_CONFIG}"
     fi
@@ -136,6 +145,16 @@ if [[ -n "${SS_PILOT_FILE}" ]]; then
     ## php extensions ##
     if [[ -n "${PILOT_PHP_EXTENSIONS}" ]]; then 
         ss_sed "s|\(^PHP_EXTENSIONS=\).*|PHP_EXTENSIONS=\"$PILOT_PHP_EXTENSIONS\"|g" "${PATH_SS_CONFIG}"
+    fi
+    
+    ## plugin blacklist source 1 ##
+    if [[ -n "${PILOT_WP_PLUGIN_BLACKLIST_SOURCE}" ]]; then 
+        ss_sed "s|\(^SS_WORDPRESS_PLUGIN_BLACKLIST_SOURCE=\).*|SS_WORDPRESS_PLUGIN_BLACKLIST_SOURCE=\"$PILOT_WP_PLUGIN_BLACKLIST_SOURCE\"|g" "${PATH_SS_CONFIG}"
+    fi
+    
+    ## plugin blacklist source 2 ##
+    if [[ -n "${PILOT_WP_PLUGIN_BLACKLIST_SOURCE}" ]]; then 
+        ss_sed "s|\(^WP_PLUGIN_BLACKLIST_SOURCE=\).*|WP_PLUGIN_BLACKLIST_SOURCE=\"$PILOT_WP_PLUGIN_BLACKLIST_SOURCE\"|g" "${PATH_SS_CONFIG}"
     fi
 
 fi 
