@@ -69,7 +69,7 @@ ss_echo "${COLOR_INFO}ss-worker: Performs maintenance tasks and retrieves the ss
 ## UPDATED: 31MAY2022
 
 ## backup ss-config ##
-ss_cp /var/www/ss-config /var/www/backups/config/ss-config.bak.${SYSTEM_CURRENT_TIME}
+ss_cp "${PATH_SS_CONFIG}" /var/www/backups/config/ss-config.bak.${SYSTEM_CURRENT_TIME}
 
 ####################################################################################################
 #### D. SS-Worker: Retrieve Current SS-Check (Bash Script) #########################################
@@ -106,36 +106,36 @@ if [[ -n "${SS_PILOT_FILE}" ]]; then
 
     ## replace ss-config variables with pilot variables if exist ##
     if [[ -n "${PILOT_WHITELABEL_BRAND}" ]]; then 
-        sed -i "s|\(^WHITELABEL_BRAND=\).*|WHITELABEL_BRAND=\"$PILOT_WHITELABEL_BRAND\"|g" /var/www/ss-config
+        sed -i "s|\(^WHITELABEL_BRAND=\).*|WHITELABEL_BRAND=\"$PILOT_WHITELABEL_BRAND\"|g" "${PATH_SS_CONFIG}"
     fi
 
     if [[ -n "${PILOT_WHITELABEL_HOMEPAGE}" ]]; then 
-        sed -i "s|\(^WHITELABEL_HOMEPAGE=\).*|WHITELABEL_HOMEPAGE=\"$PILOT_WHITELABEL_HOMEPAGE\"|g" /var/www/ss-config
+        sed -i "s|\(^WHITELABEL_HOMEPAGE=\).*|WHITELABEL_HOMEPAGE=\"$PILOT_WHITELABEL_HOMEPAGE\"|g" "${PATH_SS_CONFIG}"
     fi
     
     if [[ -n "${PILOT_WHITELABEL_SUPPORT_URL}" ]]; then 
-        sed -i "s|\(^WHITELABEL_SUPPORT_URL=\).*|WHITELABEL_SUPPORT_URL=\"$PILOT_WHITELABEL_SUPPORT_URL\"|g" /var/www/ss-config
+        sed -i "s|\(^WHITELABEL_SUPPORT_URL=\).*|WHITELABEL_SUPPORT_URL=\"$PILOT_WHITELABEL_SUPPORT_URL\"|g" "${PATH_SS_CONFIG}"
     fi
     
     if [[ -n "${PILOT_WHITELABEL_SUPPORT_EMAIL}" ]]; then 
-        sed -i "s|\(^WHITELABEL_SUPPORT_EMAIL=\).*|WHITELABEL_SUPPORT_EMAIL=\"$PILOT_WHITELABEL_SUPPORT_EMAIL\"|g" /var/www/ss-config
+        sed -i "s|\(^WHITELABEL_SUPPORT_EMAIL=\).*|WHITELABEL_SUPPORT_EMAIL=\"$PILOT_WHITELABEL_SUPPORT_EMAIL\"|g" "${PATH_SS_CONFIG}"
     fi
     
     if [[ -n "${PILOT_NGINX_HEADER_POWERED_BY}" ]]; then 
-        sed -i "s|\(^NGINX_HEADER_POWERED_BY=\).*|NGINX_HEADER_POWERED_BY=\"$PILOT_NGINX_HEADER_POWERED_BY\"|g" /var/www/ss-config
+        sed -i "s|\(^NGINX_HEADER_POWERED_BY=\).*|NGINX_HEADER_POWERED_BY=\"$PILOT_NGINX_HEADER_POWERED_BY\"|g" "${PATH_SS_CONFIG}"
     fi
     
     if [[ -n "${PILOT_CLOUDFLARE_API_KEY}" ]]; then 
-        sed -i "s|\(^CLOUDFLARE_API_KEY=\).*|CLOUDFLARE_API_KEY=\"$PILOT_CLOUDFLARE_API_KEY\"|g" /var/www/ss-config
+        sed -i "s|\(^CLOUDFLARE_API_KEY=\).*|CLOUDFLARE_API_KEY=\"$PILOT_CLOUDFLARE_API_KEY\"|g" "${PATH_SS_CONFIG}"
     fi
     
     if [[ -n "${PILOT_CLOUDFLARE_API_EMAIL}" ]]; then 
-        sed -i "s|\(^CLOUDFLARE_API_EMAIL=\).*|CLOUDFLARE_API_EMAIL=\"$PILOT_CLOUDFLARE_API_EMAIL\"|g" /var/www/ss-config
+        sed -i "s|\(^CLOUDFLARE_API_EMAIL=\).*|CLOUDFLARE_API_EMAIL=\"$PILOT_CLOUDFLARE_API_EMAIL\"|g" "${PATH_SS_CONFIG}"
     fi
     
     ## php extensions ##
     if [[ -n "${PILOT_PHP_EXTENSIONS}" ]]; then 
-        sed -i "s|\(^PHP_EXTENSIONS=\).*|PHP_EXTENSIONS=\"$PILOT_PHP_EXTENSIONS\"|g" /var/www/ss-config
+        sed -i "s|\(^PHP_EXTENSIONS=\).*|PHP_EXTENSIONS=\"$PILOT_PHP_EXTENSIONS\"|g" "${PATH_SS_CONFIG}"
     fi
 
 fi 
@@ -170,11 +170,18 @@ if [[ "${UBUNTU_VERSION}" == "20.04" ]]; then
 SYSTEM_MYSQL_VERSION=$(mysql --version |& awk '{print $3}' | sed 's/,//g')
 fi
 
+## ss build ##
 sed -i "s|@SS_BUILD|${SS_BUILD}|g" "${TMP_SS_CONSTANTS_PHP}"
+
+## wp plugin blacklist ##
 sed -i "s|@SS_WORDPRESS_PLUGIN_BLACKLIST_SOURCE|${SS_WORDPRESS_PLUGIN_BLACKLIST_SOURCE}|g" "${TMP_SS_CONSTANTS_PHP}"
 sed -i "s|@SS_WORDPRESS_PLUGIN_BLACKLIST_STATUS|${SS_WORDPRESS_PLUGIN_BLACKLIST}|g" "${TMP_SS_CONSTANTS_PHP}"
+
+## wp cron ##
 sed -i "s|@WP_CRON_METHOD|${WP_CRON_METHOD}|g" "${TMP_SS_CONSTANTS_PHP}"
 sed -i "s|@WP_CRON_INTERVAL|${WP_CRON_INTERVAL}|g" "${TMP_SS_CONSTANTS_PHP}"
+
+## server info ##
 sed -i "s|@SYSTEM_VENDOR|${SYSTEM_VENDOR}|g" "${TMP_SS_CONSTANTS_PHP}"
 sed -i "s|@SYSTEM_VIRTUAL|${SYSTEM_VIRTUAL}|g" "${TMP_SS_CONSTANTS_PHP}"
 sed -i "s|@SYSTEM_LINUX_KERNEL|${SYSTEM_LINUX_KERNEL}|g" "${TMP_SS_CONSTANTS_PHP}"
