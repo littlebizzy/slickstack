@@ -25,6 +25,24 @@
 include_once('/var/www/meta/ss-constants.php');
 
 /** ********************************************************************************************* */
+/** WP-Config (Multisite): Multisite Settings *************************************************** */
+/** ********************************************************************************************* */
+
+/** for stability reasons SlickStack requires Multisite domain to match SITE_DOMAIN */
+/** domain mapping (e.g. for your clients) requires the subdomains approach */
+
+define('WP_ALLOW_MULTISITE', true); // ss = true
+
+/** comment these on new installs */
+define('MULTISITE', true); // ss = true
+define('SUBDOMAIN_INSTALL', @WP_MULTISITE_SUBDOMAINS); // ss = true
+define('DOMAIN_CURRENT_SITE', '@SITE_DOMAIN'); // ss = *must be unique*
+define('NOBLOGREDIRECT', 'https://@SITE_DOMAIN'); // ss = *must be unique*
+define('PATH_CURRENT_SITE', '/'); // ss = /
+define('SITE_ID_CURRENT_SITE', 1); // ss = 1
+define('BLOG_ID_CURRENT_SITE', 1); // ss = 1
+
+/** ********************************************************************************************* */
 /** WP-Config (Multisite): Database Settings **************************************************** */
 /** ********************************************************************************************* */
 
@@ -47,7 +65,7 @@ define('WP_ENVIRONMENT_TYPE', 'production'); // ss = production
 define('WP_LOCAL_DEV', false); // ss = false
 
 /** ********************************************************************************************* */
-/** WP-Config (Multisite): URL Path Settings **************************************************** */
+/** WP-Config (Multisite): Domain Settings ****************************************************** */
 /** ********************************************************************************************* */
 
 /** domain/path settings are hardcoded to avoid conflicts and maintain best practices */
@@ -67,6 +85,9 @@ define('UPLOADS', 'wp-content/uploads'); // ss = wp-content/uploads
 /** WP-Config (Multisite): SSL Settings ********************************************************* */
 /** ********************************************************************************************* */
 
+/** as SlickStack is HTTPS-only we hardcode SSL admin and login for WordPress here */
+/** our Force HTTPS plugin is also included as a default WordPress MU plugin */
+
 define('FORCE_SSL_ADMIN', true); // ss = true
 define('FORCE_SSL_LOGIN', true); // ss = true
 
@@ -81,7 +102,6 @@ define('COOKIE_DOMAIN', $_SERVER['HTTP_HOST']);
 define('COOKIEPATH', '');
 define('SITECOOKIEPATH', '');
 define('ADMIN_COOKIE_PATH', '/');
-
 
 /** ********************************************************************************************* */
 /** WP-Config (Multisite): Debug Settings ******************************************************* */
@@ -99,31 +119,7 @@ define('WP_DEBUG_LOG', false);
 define('WP_DEBUG_DISPLAY', false);
 
 /** ********************************************************************************************* */
-/** WP-Config (Multisite): Multisite Settings *************************************************** */
-/** ********************************************************************************************* */
-
-/** for stability reasons SlickStack requires Multisite domain to match SITE_DOMAIN */
-/** domain mapping (e.g. for your clients) requires the subdomains approach */
-
-define('WP_ALLOW_MULTISITE', true); // ss = true
-
-/** comment these on new installs */
-define('MULTISITE', true); // ss = true
-define('SUBDOMAIN_INSTALL', @WP_MULTISITE_SUBDOMAINS); // ss = true
-define('DOMAIN_CURRENT_SITE', '@SITE_DOMAIN'); // ss = *must be unique*
-define('NOBLOGREDIRECT', 'https://@SITE_DOMAIN'); // ss = *must be unique*
-define('PATH_CURRENT_SITE', '/'); // ss = /
-define('SITE_ID_CURRENT_SITE', 1); // ss = 1
-define('BLOG_ID_CURRENT_SITE', 1); // ss = 1
-
-/** ********************************************************************************************* */
-/** WordPress Core: Cache Settings (Page Caching Done By Nginx FastCGI Cache) ******************* */
-/** ********************************************************************************************* */
-
-define('WP_CACHE', false); // ss = false
-
-/** ********************************************************************************************* */
-/** WP-Config (Production): Core Update Settings ************************************************ */
+/** WP-Config (Multisite): Core Update Settings ************************************************* */
 /** ********************************************************************************************* */
 
 /** for security and stability reasons SlickStack does not prevent WP Core from updating */
@@ -134,8 +130,11 @@ define('WP_AUTO_UPDATE_CORE', 'minor'); // ss = minor
 define('CORE_UPGRADE_SKIP_NEW_BUNDLED', true); // ss = true
 
 /** ********************************************************************************************* */
-/** WP-Config: Security Salts Settings (No-Conflict Hashes Generated By OpenSSL) **************** */
+/** WP-Config (Multisite): Salt Settings ******************************************************** */
 /** ********************************************************************************************* */
+
+/** the salt strings are used by WordPress to secure and randomize login sessions etc */
+/** to avoid conflicts we do not mix complex symbols in the generated strings */
 
 define('AUTH_KEY', '@AUTHKEY'); // ss = *must be unique*
 define('SECURE_AUTH_KEY', '@SECUREAUTHKEY'); // ss = *must be unique*
@@ -145,6 +144,32 @@ define('AUTH_SALT', '@AUTHSALT'); // ss = *must be unique*
 define('SECURE_AUTH_SALT', '@SECUREAUTHSALT'); // ss = *must be unique*
 define('LOGGED_IN_SALT', '@LOGGEDINSALT'); // ss = *must be unique*
 define('NONCE_SALT', '@NONCESALT'); // ss = *must be unique*
+
+/** ********************************************************************************************* */
+/** WP-Config (Multisite): WP Cron Settings ***************************************************** */
+/** ********************************************************************************************* */
+
+/** if you set WP_CRON_METHOD to server in ss-config then WP Cron will be disabled here */
+/** the ALTERNATE_WP_CRON feature should never be required on SlickStack servers */
+
+define('DISABLE_WP_CRON', @DISABLE_WP_CRON); // ss = false
+define('ALTERNATE_WP_CRON', false); // ss = false
+define('WP_CRON_LOCK_TIMEOUT', 30); // ss = 30 seconds
+
+/** ********************************************************************************************* */
+/** WP-Config (Multisite): Default Theme ******************************************************** */
+/** ********************************************************************************************* */
+
+/** this is a nifty way to force using a theme in case of SQL issues or broken themes */
+/** it can also allow you to share a database between 2 sites using diff themes */
+
+define('WP_DEFAULT_THEME', '@WP_DEFAULT_THEME'); // ss = twentytwenty
+
+/** ********************************************************************************************* */
+/** WP-Config (Multisite): Cache Settings ******************************************************* */
+/** ********************************************************************************************* */
+
+define('WP_CACHE', false); // ss = false
 
 /** ********************************************************************************************* */
 /** WP-Config: File + Upload + API Permissions Settings ***************************************** */
@@ -165,17 +190,6 @@ define('DISALLOW_FILE_MODS', @WP_DISALLOW_FILE_MODS); // ss = false
 
 /** restrict file (media) uploads */
 define('ALLOW_UNFILTERED_UPLOADS', @WP_ALLOW_UNFILTERED_UPLOADS); // ss = true
-
-/** ********************************************************************************************* */
-/** WP-Config (Production): WP Cron Settings **************************************************** */
-/** ********************************************************************************************* */
-
-/** if you set WP_CRON_METHOD to server in ss-config then WP Cron will be disabled here */
-/** the ALTERNATE_WP_CRON feature should never be required on SlickStack servers */
-
-define('DISABLE_WP_CRON', @DISABLE_WP_CRON); // ss = false
-define('ALTERNATE_WP_CRON', false); // ss = false
-define('WP_CRON_LOCK_TIMEOUT', 30); // ss = 30 seconds
 
 /** ********************************************************************************************* */
 /** WP-Config: Various Performance Settings ***************************************************** */
@@ -217,9 +231,6 @@ define('DISABLE_NAG_NOTICES', true); // ss = true
 
 /** Contact Form 7 Temp Directory */
 define('WPCF7_UPLOADS_TMP_DIR', '/var/www/html/wp-content/temp'); // ss = /var/www/html/wp-content/temp
-
-/** Default Theme */
-define('WP_DEFAULT_THEME', 'twentytwenty');
 
 /** ********************************************************************************************* */
 /** SlickStack: Clear Caches (MU Plugin) Settings *********************************************** */
