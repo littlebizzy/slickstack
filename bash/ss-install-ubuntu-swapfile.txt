@@ -32,12 +32,8 @@ source /var/www/ss-functions
 
 ## A. Touch Timestamp File
 ## B. Message (Begin Script)
-
-## C. Check Environment Compatibility Before Proceeding
+## C. Install Swapfile (Conditional)
 ## D. Reset Permissions (Ubuntu Swapfile)
-## E. Display Active Swapfile
-
-## A. Query Settings
 
 ####################################################################################################
 #### A. SS-Install-Ubuntu-Swapfile: Touch Timestamp File ###########################################
@@ -60,8 +56,10 @@ ss_touch "${TIMESTAMP_SS_INSTALL_UBUNTU_SWAPFILE}"
 ss_echo "${COLOR_INFO}ss-install-ubuntu-swapfile: Reinstalls the Linux OS swapfile (required)... ${COLOR_RESET}"
 
 ####################################################################################################
-## C. Check Environment Compatibility Before Proceeding ############################################
+## C. SS-Install-Ubuntu-Swapfile: Install Swapfile (Conditional) ###################################
 ####################################################################################################
+
+## FUTURE HARDCODE TO 2GB FOR ALL SERVERS SHOULD BE FINE... 
 
 ## ensure at least 3GB free disk space remains ##
 DISK_REMAINING_MB=$(df --output=avail -m "$PWD" | tail -n1 | tr -d ' ' 2> /dev/null)
@@ -79,24 +77,25 @@ if [[ -z $(grep "swapfile" /etc/fstab 2> /dev/null) ]] && [[ $DISK_REMAINING_MB 
     ## if auto size ##
     if [[ "${SS_SWAPFILE_SIZE}" == "auto" ]]; then 
         if [[ "${TOTAL_RAM_MB}" -lt 2000 ]]; then
-            sudo fallocate -l 2G /var/www/cache/system/swapfile
+            ss_fallocate 2G /var/www/cache/system/swapfile
         else 
-            sudo fallocate -l 4G /var/www/cache/system/swapfile
+            ss_fallocate 4G /var/www/cache/system/swapfile
         fi
     else 
         ## if manual size ##
-        sudo fallocate -l "${SS_SWAPFILE_SIZE}" /var/www/cache/system/swapfile
+        ss_fallocate "${SS_SWAPFILE_SIZE}" /var/www/cache/system/swapfile
+        
     ## endif auto size ##
     fi
     
     chown root:root /var/www/cache/system/swapfile ## must be root:root
     chmod 0600 /var/www/cache/system/swapfile ## must be 0600
     
-    ## tell Ubuntu about the swap file ##
-    sudo mkswap /var/www/cache/system/swapfile
+    ## tell Ubuntu about swapfile ##
+    ss_mkswap /var/www/cache/system/swapfile
     
-    ## enable the new swap file ##
-    sudo swapon /var/www/cache/system/swapfile
+    ## enable swapfile ##
+    ss_swapon /var/www/cache/system/swapfile
     
     ## permanently add swapfile to /etc/fstab ##
     echo '
