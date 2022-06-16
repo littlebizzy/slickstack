@@ -2,20 +2,20 @@
 /** ********************************************************************************************* */
 /** author: SlickStack ************************************************************************** */
 /** link: https://slickstack.io ***************************************************************** */
-/** mirror: https://mirrors.slickstack.io/modules/wordpress/wp-config-production-multisite.txt ** */
+/** mirror: https://mirrors.slickstack.io/modules/wordpress/wp-config-multisite.txt ************* */
 /** path: n/a (boilerplate) ********************************************************************* */
 /** destination: /var/www/html/wp-config.php (after install) ************************************ */
-/** purpose: WordPress configuration file boilerplate optimized for SlickStack servers ********** */
-/** module version: WordPress 5.9.x ************************************************************* */
+/** purpose: WordPress configuration file boilerplate for Multisite installs (prod only) ******** */
+/** module version: WordPress 6.0.x ************************************************************* */
 /** sourced by: wp-settings.php ***************************************************************** */
 /** bash aliases: n/a (ss-install-wordpress-config) ********************************************* */
 /** ********************************************************************************************* */
 
 /** DO NOT MODIFY WP-CONFIG DIRECTLY AS CHANGES WILL BE OVERWRITTEN BY SLICKSTACK */
-/** THIS BOILERLATE FOR MULTISITES ONLY (USE THE OTHER FOR SINGLE SITES) */
+/** THIS BOILERPLATE FOR MULTISITES ONLY (ANOTHER EXISTS FOR SINGLE SITES) */
 
 /** ********************************************************************************************* */
-/** WP-Config (Production): Include SlickStack Constants **************************************** */
+/** WP-Config (Multisite): Include SlickStack Constants ***************************************** */
 /** ********************************************************************************************* */
 
 /** below are some general constants that control SlickStack settings and basic features */
@@ -25,30 +25,33 @@
 include_once('/var/www/meta/ss-constants.php');
 
 /** ********************************************************************************************* */
-/** WP-Config (Production): Database Settings *************************************************** */
+/** WP-Config (Multisite): Database Settings **************************************************** */
 /** ********************************************************************************************* */
 
-/** database connection settings are stored in ss-config and used when ss-install runs */
+/** database connection settings stored in ss-config and filled when ss-install runs */
 /** if chosen database/user does not exist yet then ss-install will create it */
 
 define('DB_NAME', '@DB_NAME'); // ss = production
 define('DB_USER', '@DB_USER'); // ss = *must be unique*
 define('DB_PASSWORD', '@DB_PASSWORD'); // ss = *must be unique*
-define('DB_HOST', '@DB_HOST'); // ss = 127.0.0.1
+define('DB_HOST', '@DB_HOST:@DB_PORT'); // ss = 127.0.0.1:3306
 define('DB_CHARSET', '@DB_CHARSET'); // ss = utf8mb4
 define('DB_COLLATE', '@DB_COLLATE'); // ss = (blank)
 $table_prefix = '@DB_PREFIX'; // ss = wp_
 
 /** ********************************************************************************************* */
-/** WP-Config (Production): Environment Settings ************************************************ */
+/** WP-Config (Multisite): Environment Settings ************************************************* */
 /** ********************************************************************************************* */
 
 define('WP_ENVIRONMENT_TYPE', 'production'); // ss = production
 define('WP_LOCAL_DEV', false); // ss = false
 
 /** ********************************************************************************************* */
-/** WP-Config (Production): Domain + Path Settings ********************************************** */
+/** WP-Config (Multisite): URL Path Settings **************************************************** */
 /** ********************************************************************************************* */
+
+/** domain/path settings are hardcoded to avoid conflicts and maintain best practices */
+/** there should never be any reason to change these settings no matter what */
 
 // define('WP_HOME', 'https://@SITE_DOMAIN'); // ss = *must be unique*
 // define('WP_SITEURL', 'https://@SITE_DOMAIN'); // ss = *must be unique*
@@ -61,26 +64,42 @@ define('WP_TEMP_DIR', '/var/www/html/wp-content/temp'); // ss = /var/www/html/wp
 define('UPLOADS', 'wp-content/uploads'); // ss = wp-content/uploads
 
 /** ********************************************************************************************* */
-/** WP-Config (Production): SSL Settings ******************************************************** */
+/** WP-Config (Multisite): SSL Settings ********************************************************* */
 /** ********************************************************************************************* */
 
 define('FORCE_SSL_ADMIN', true); // ss = true
 define('FORCE_SSL_LOGIN', true); // ss = true
 
 /** ********************************************************************************************* */
-/** WP-Config (Production): Cookie Settings ***************************************************** */
+/** WP-Config (Multisite): Cookie Settings ****************************************************** */
 /** ********************************************************************************************* */
 
-/** for single sites with a staging/dev subdomain the main domain controls cookies */
-/** but for Multisite networks an empty value is best for COOKIE_DOMAIN */
+/** for single sites prod/staging/dev use distinct cookies to avoid login conflicts */
+/** but for Multisite networks each site in COOKIE_DOMAIN is auto-detected */
 
-define('ADMIN_COOKIE_PATH', '/');
 define('COOKIE_DOMAIN', $_SERVER['HTTP_HOST']);
 define('COOKIEPATH', '');
 define('SITECOOKIEPATH', '');
+define('ADMIN_COOKIE_PATH', '/');
+
 
 /** ********************************************************************************************* */
-/** WP-Config (Production): Multisite Settings ************************************************** */
+/** WP-Config (Multisite): Debug Settings ******************************************************* */
+/** ********************************************************************************************* */
+
+/** many debugging and error settings are hardcoded in SlickStack (in PHP + WP-Config) */
+/** for more verbose debugging use the staging/dev sites and not production */
+
+/** WP_DEBUG = [false|true] sets PHP error_reporting to E_ALL and enables child options */
+/** WP_DEBUG_LOG = [false|true] creates debug.log (unnecessary on SlickStack) */
+/** WP_DEBUG_DISPLAY = [true|false] displays PHP errors in HTML (unsafe in production) */
+
+define('WP_DEBUG', false);
+define('WP_DEBUG_LOG', false);
+define('WP_DEBUG_DISPLAY', false);
+
+/** ********************************************************************************************* */
+/** WP-Config (Multisite): Multisite Settings *************************************************** */
 /** ********************************************************************************************* */
 
 /** for stability reasons SlickStack requires Multisite domain to match SITE_DOMAIN */
@@ -96,21 +115,6 @@ define('NOBLOGREDIRECT', 'https://@SITE_DOMAIN'); // ss = *must be unique*
 define('PATH_CURRENT_SITE', '/'); // ss = /
 define('SITE_ID_CURRENT_SITE', 1); // ss = 1
 define('BLOG_ID_CURRENT_SITE', 1); // ss = 1
-
-/** ********************************************************************************************* */
-/** WP-Config: Debugging + Error Handling + Error Log Settings ********************************** */
-/** ********************************************************************************************* */
-
-/** many debugging and error settings are hardcoded in SlickStack (in PHP + WP-Config) */
-/** for more verbose debugging set SS_TYPE when configuring the ss-config file */
-
-/** WP_DEBUG = [false|true] sets PHP error_reporting to E_ALL and enables child options */
-/** WP_DEBUG_LOG = [false|true] creates debug.log (unnecessary on SlickStack) */
-/** WP_DEBUG_DISPLAY = [true|false] displays PHP errors in HTML (unsafe, hardcode disabled) */
-
-define('WP_DEBUG', @WP_DEBUG);
-define('WP_DEBUG_LOG', false);
-define('WP_DEBUG_DISPLAY', false);
 
 /** ********************************************************************************************* */
 /** WordPress Core: Cache Settings (Page Caching Done By Nginx FastCGI Cache) ******************* */
