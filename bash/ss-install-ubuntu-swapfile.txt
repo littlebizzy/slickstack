@@ -68,25 +68,13 @@ TOTAL_RAM_MB=$(echo $(($(getconf _PHYS_PAGES) * $(getconf PAGE_SIZE) / (1024 * 1
     # echo -e "${COLOR_WARN}Exiting ss-install-ubuntu-swapfile: Swapfile already exists and active so exiting the script now... ${NOCOLOR}"
     # echo -e "${COLOR_WARN}Exiting ss-install-ubuntu-swapfile: Less than 5GB free disk space so exiting the script now... ${NOCOLOR}"
 
-## install new swapfile ##
+## install swapfile if not exists ##
 if [[ -z $(grep "swapfile" /etc/fstab 2> /dev/null) ]] && [[ $DISK_REMAINING_MB -gt 5000 ]]; then
     mkdir /var/www/cache/system
     chown root:root /var/www/cache/system ## must be root:root
     chmod 0600 /var/www/cache/system ## must be 0600
     
-    ## if auto size ##
-    if [[ "${SS_SWAPFILE_SIZE}" == "auto" ]]; then 
-        if [[ "${TOTAL_RAM_MB}" -lt 2000 ]]; then
-            ss_fallocate 2G /var/www/cache/system/swapfile
-        else 
-            ss_fallocate 4G /var/www/cache/system/swapfile
-        fi
-    else 
-        ## if manual size ##
-        ss_fallocate "${SS_SWAPFILE_SIZE}" /var/www/cache/system/swapfile
-        
-    ## endif auto size ##
-    fi
+    ss_fallocate 2G /var/www/cache/system/swapfile
     
     chown root:root /var/www/cache/system/swapfile ## must be root:root
     chmod 0600 /var/www/cache/system/swapfile ## must be 0600
