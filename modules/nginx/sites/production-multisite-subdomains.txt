@@ -1,0 +1,472 @@
+####################################################################################################
+#### author: SlickStack ############################################################################
+#### link: https://slickstack.io ###################################################################
+#### mirror: https://mirrors.slickstack.io/nginx/production-multisite-subdomains.txt ###############
+#### path: n/a (boilerplate) #######################################################################
+#### destination: /var/www/sites/production (after install) ########################################
+#### purpose: Nginx server block boilerplate optimized for SlickStack production sites #############
+#### module version: Nginx 1.18.x ##################################################################
+#### sourced by: nginx.conf ########################################################################
+#### bash aliases: n/a (ss-install-nginx-config) ###################################################
+####################################################################################################
+
+## TEMP CREATED THIS FILE TO AVOID 404 ERRORS
+
+## SLICKSTACK SUPPORTS HTTPS-ONLY NGINX SERVER BLOCKS WITH HSTS ENABLED BY DEFAULT ##
+
+####################################################################################################
+#### Server Block (Production): Multisite Network (Subdomains) #####################################
+####################################################################################################
+
+## CloudFlare ignores HTTP/2 from origin server but we enable in case of Lets Encrypt ##
+## because SlickStack is HTTPS-only the canonical block is port 443 (SSL) only ##
+
+server {
+	listen		443 ssl http2;
+        listen		[::]:443 ssl http2;
+	server_name	*.@SITE_DOMAIN_EXCLUDING_WWW @SITE_DOMAIN;
+	root		/var/www/html;
+
+	## domain mapping ##
+	server_name_in_redirect off;
+	
+####################################################################################################
+#### Server Block (Production): Redirect Any AMP Requests ##########################################
+####################################################################################################
+
+## this powerful snippet will redirect all the messy URLs created by AMP software ##
+## SlickStack does not support AMP for both stability and political reasons ##
+
+	## redirect /amp queries ##
+	rewrite ^(.*/)amp(.*)$ $1 permanent;
+	
+	## redirect ?amp queries ##
+	if ($query_string ~ "^(.*)amp(.*)$") {
+        	rewrite ^(.*)$ $uri? permanent;
+	}
+
+####################################################################################################
+#### Server Block: WordPress Multisite Various Settings ############################################
+####################################################################################################
+
+## Multisite has some unique security and performance concerns that are addressed below ##
+## lots of outdated code snippets floating around online but should be current ##
+
+## NOTE: need to review the blogid map that rtCamp popularized ##
+    
+    ## location ^~ /files/ {
+    ##    rewrite ^.*/files/(.+)$ /wp-includes/ms-files.php?file=$1 last;
+    ## }
+    ## location ~ ^/files/(.*)$ {
+    ##     try_files /wp-content/blogs.dir/$blogid/$uri /wp-includes/ms-files.php?file=$1 ;
+    ## }
+    
+    ## pass uploaded files to ms-files.php ##
+    rewrite /files/$ /index.php last;
+    
+    if ($uri !~ wp-content/plugins) {
+        rewrite /files/(.+)$ /wp-includes/ms-files.php?file=$1 last;
+    }
+    
+    ## Rewrite multisite '.../wp-.*' and '.../*.php' ##
+    if (!-e $request_filename) {
+        rewrite ^/[_0-9a-zA-Z-]+(/wp-.*) $1 last;
+        rewrite ^/[_0-9a-zA-Z-]+(/.*\.php)$ $1 last;
+	## not required if wp-admin trailing slash rule already implemented ##
+	# rewrite ^/[_0-9a-zA-Z-]+.*(/wp-admin/.*\.php)$ $1 last;
+	# rewrite /wp-admin$ $scheme://$host$uri/ permanent;
+    }
+    
+    ## avoid php readfile() using x-sendfile ##
+    location ^~ /blogs.dir {
+        internal;
+        alias /var/www/html/wp-content/blogs.dir;
+    }
+ 
+####################################################################################################
+#### Server Block: File Uploads Settings ###########################################################
+####################################################################################################
+
+    # Deny access to any files with a .php extension in the uploads directory
+    # Works in sub-directory installs and also in multisite network
+    location ~* /(?:uploads|files)/.*\.php$ {
+        deny all;
+    }
+    
+    # deny running scripts inside writable directories
+    # location ~* /(images|cache|media|logs|tmp)/.*\.(php|pl|py|jsp|asp|sh|cgi)$ {
+    #     deny all;
+    # }
+
+####################################################################################################
+#### Server Block: Indexing + Try Files Settings ###################################################
+####################################################################################################
+    
+    ## redirect index.php requests ##
+    if ($request_uri ~* "^(.*/)index\.php$") {
+        return 301 $1;
+    }
+    
+    ## force trailing slash on */wp-admin requests ##
+    rewrite /wp-admin$ $scheme://$host$uri/ permanent;
+    
+    ## try files order ##
+    location / {
+        ## first try files, then directories, otherwise query index
+        try_files $uri $uri/ /index.php?$args;
+	## force trailing slashes on urls (do not enable for bbPress/BuddyPress sites)
+        # rewrite ^([^.]*[^/])$ $1/ permanent;
+    }
+    
+    ## hidden files (block access) ##
+    location ~ /\. {
+        ## do not enable if using Certbot, Git, etc ##
+	# deny all;
+    }
+    
+    ## Certbot domain verification ##
+    location = /.well-known* {
+        # default_type "text/plain";
+        allow all;
+    }
+
+####################################################################################################
+#### Server Block (Production): FastCGI Cache Settings #############################################
+####################################################################################################
+
+## several common patterns are configured to skip FastCGI caching to avoid conflicts ##
+## ensure your site uses correct URL spellings e.g. /cart and /checkout (etc) ##
+
+    ## set to either 1/0 to skip fastcgi cache by default ##
+    set $skip_cache @FCGI_CACHE;
+    
+    ## post requests should always skip the cache
+    if ($request_method = POST) {
+        set $skip_cache 1;
+    }
+    
+    ## query strings should always skip the cache
+    if ($query_string != "") {
+        set $skip_cache 1;
+    }
+    
+    ## ENGLISH - sensitive wordpress urls should always skip the cache
+    if ($request_uri ~* "index.php|/account.*|/cart.*|/checkout.*|/contact.*|/dashboard.*|/login.*|/my-.*|/order.*|/profile.*|/register.*|/settings.*|/view.*|/wc-api.*|/wp-admin.*|wp-.*.php") {
+        set $skip_cache 1;
+    }
+
+    ## GERMAN - sensitive wordpress urls should always skip the cache
+    if ($request_uri ~* "index.php|/konto.*|/warenkorb.*|/kasse.*|/kontakt.*|/dashboard.*|/anmelden.*|/mein-.*|/bestellung.*|/profil.*|/registrieren.*|/einstellungen.*|/view.*|/wc-api.*|/wp-admin.*|wp-.*.php") {
+        set $skip_cache 1;
+    }
+    
+    ## POLISH - sensitive wordpress urls should always skip the cache
+    if ($request_uri ~* "index.php|/konto.*|/koszyk.*|/zamowienie.*|/kontakt.*|/dashboard.*|/login.*|/moje-.*|/zamowienie.*|/profil.*|/register.*|/ustawienia.*|/view.*|/wc-api.*|/wp-admin.*|wp-.*.php") {
+    	set $skip_cache 1;
+    }
+    
+    ## do not cache RSS feeds or sitemaps (special 5 minute cache rule or something would be better in the future) ##
+    if ($request_uri ~* "/feed/|sitemap(_index)?.xml") {
+        set $skip_cache 1;
+    }
+    
+    ## certain cookies (logged in users or recent commenters etc) should always skip the cache
+    if ($http_cookie ~* "wordpress_logged_in|wp-postpass|woocommerce_items_in_cart|woocommerce_cart_hash|comment_author") {
+        set $skip_cache 1;
+    }
+    
+    ## woocommerce cart actions should always skip the cache
+    # if ($arg_add-to-cart != "") {
+    #    set $skip_cache 1;
+    # }
+    
+    ## woocommerce shoppers should always skip the cache
+    # if ($http_cookie ~* "cookie_woocommerce_items_in_cart") {
+    #    set $skip_cache 1;
+    # }
+    
+    ## woocommerce shoppers should always skip the cache
+    # if ($cookie_woocommerce_items_in_cart != "0") {
+    #    set $skip_cache 1;
+    # }
+
+####################################################################################################
+#### Server Block (Production): PHP-FPM Routing Settings ###########################################
+####################################################################################################
+
+## here are the infamous settings that allow Nginx and PHP to work together via FCGI ##
+## we also have to optimize cookies here too since working with WordPress ##
+
+    location ~ \.php$ {
+        set $rt_session "";
+        if ($http_cookie ~* "wp_woocommerce_session_[^=]*=([^%]+)%7C") {
+                set $rt_session wp_woocommerce_session_$1;
+        }	
+        if ($skip_cache = 0 ) {
+                more_clear_headers "Set-Cookie*";
+                set $rt_session "";
+        }
+
+        include /etc/nginx/fastcgi.conf;
+        try_files $uri =404;
+        fastcgi_split_path_info ^(.+\.php)(/.+)$;
+	fastcgi_pass 127.0.0.1:9000;
+	fastcgi_read_timeout 300;
+        fastcgi_index index.php;
+        fastcgi_cache WORDPRESS;
+        fastcgi_cache_valid 200 301 404 @CACHEVALID;
+        fastcgi_cache_bypass $skip_cache;
+        fastcgi_no_cache $skip_cache;
+    }
+    
+####################################################################################################
+#### Server Block (Production): WP-Login Settings (Rate Limiting) ##################################
+####################################################################################################
+
+## because of goofy Nginx we must reinclude all PHP directives here as they exist above ##
+## next we enable rate-limiting to prevent automated brute force hack attempts ##
+
+	location = /wp-login.php {
+		include /etc/nginx/fastcgi.conf;
+        	try_files $uri =404;
+        	fastcgi_split_path_info ^(.+\.php)(/.+)$;
+		fastcgi_pass 127.0.0.1:9000;
+		fastcgi_read_timeout 300;
+        	fastcgi_index index.php;
+        	fastcgi_cache WORDPRESS;
+        	fastcgi_cache_valid 200 301 404 @CACHEVALID;
+        	fastcgi_cache_bypass $skip_cache;
+        	fastcgi_no_cache $skip_cache;
+	
+		## rate limit zone
+        	limit_req zone=wplogin burst=1 nodelay;
+    	}
+    
+####################################################################################################
+#### Server Block (Production): Adminer Settings ###################################################
+####################################################################################################
+
+## this snippet lets you load Adminer via the frontend (requires more repeat rules) ##
+## we include some basic rate limiting rules to avoid attacks on these URLs ##
+
+## NEEDS IMPROVEMENT ##
+
+    location ^~ /adminer {
+        ## limit access to one request per second per IP address
+        limit_req zone=adminer burst=1 nodelay;
+        alias /var/www/meta/adminer.php;
+        ## PHP-FPM routing must be re-included here to ensure processing ##
+        include /etc/nginx/fastcgi.conf;
+        try_files $uri =404;
+        fastcgi_split_path_info ^(.+\.php)(/.+)$;
+        fastcgi_pass 127.0.0.1:9000;
+        fastcgi_read_timeout 300;
+        fastcgi_index index.php;
+        fastcgi_cache off;
+    }
+    
+    location ^~ /phpmyadmin {
+        ## limit access to one request per 30 second per IP address
+        limit_req zone=phpmyadmin burst=1 nodelay;
+        alias /var/www/meta/adminer.php;
+        ## PHP-FPM routing must be re-included here to ensure processing ##
+        include /etc/nginx/fastcgi.conf;
+        try_files $uri =404;
+        fastcgi_split_path_info ^(.+\.php)(/.+)$;
+        fastcgi_pass 127.0.0.1:9000;
+        fastcgi_read_timeout 300;
+        fastcgi_index index.php;
+        fastcgi_cache off;
+    }
+    
+####################################################################################################
+#### Server Block (Production): Dev/Staging Subdirectory Settings ##################################
+####################################################################################################
+    
+## for security reasons the dev and staging sudirectories are redirected to subdomains ##
+## therefore any staging WordPress plugins cannot use these reserved paths ##
+    
+    location /staging/ {
+        return 301	https://@SITE_DOMAIN;
+    }
+    
+    location /dev/ {
+        return 301	https://@SITE_DOMAIN;
+    }
+
+####################################################################################################
+#### Server Block (Production): Static Resource Settings ###########################################
+####################################################################################################
+
+## this snippet controls expiration headers and any other settings for static assets ##
+## keep in mind that CloudFlare or CDNs will likely overwrite these settings ##
+    
+    location ~* .(atom|bmp|bz2|css|doc|docx|eot|gif|gz|ico|jpeg|jpg|js|mid|midi|mp4|ogg|ogv|otf|png|ppt|rar|rss|rtf|svg|svgz|tar|tgz|ttf|wav|webp|woff|xls|zip)$ {
+        expires max;
+    }
+
+####################################################################################################
+#### Server Block (Production): Browser Rendering Settings #########################################
+####################################################################################################
+
+## avoids render security errors for cross-origin in certain browsers e.g. Firefox/IE ##
+## this pretty much tells browsers to stop being paranoid and load your fonts ##
+
+    location ~* .(eot|ttf|ttc|otf|woff|woff2|svg|css|js)$ {
+        add_header Access-Control-Allow-Origin "*";
+	expires max;
+    }
+    
+####################################################################################################
+#### Server Block (Production): Favicon Settings ###################################################
+####################################################################################################
+
+## the favicon file is annoying and old-fashioned but still something we must optimize ##
+## issuing a 204 error is better (and faster) than a 404 error if not found ##
+
+    location = /favicon.ico {
+        try_files $uri =204;
+    }
+    
+####################################################################################################
+#### Server Block (Production): Robots.txt Settings ################################################
+####################################################################################################
+
+## messing up robots.txt rules is one of the most common issues with WordPress sites ##
+## if possible use a virtual one to avoid data loss and ridiculous rulesets ##
+
+    location = /robots.txt {
+        ## try files, then directories, otherwise query index ##
+        try_files $uri $uri/ /index.php?$args;
+	allow all;
+    }
+    
+####################################################################################################
+#### Server Block (Production): Ads.txt Settings ###################################################
+####################################################################################################
+
+## just like robots.txt the ads.txt file can be generated within WordPress itself ##
+## if possible use a virtual one to avoid data loss and ridiculous rulesets ##
+
+    location = /ads.txt {
+        ## try files, then directories, otherwise query index ##
+        try_files $uri $uri/ /index.php?$args;
+	allow all;
+    }
+    
+####################################################################################################
+#### Server Block: Git Configuration Settings ######################################################
+####################################################################################################
+
+    location = /.git/config {
+        deny all;
+    }
+    
+####################################################################################################
+#### Server Block: Deny Access To Various (Unsafe + Unused) WordPress Core Files ###################
+####################################################################################################
+
+
+
+
+####################################################################################################
+#### Server Block: Deny Access To Various (Unsafe + Unused) WordPress Core Files ###################
+####################################################################################################
+
+    ## WP directories ##
+    location ~* /(?:wp-includes|wp-content|mu-plugins|uploads)/.*\.php$ {
+        deny all;
+    }
+    
+    ## WP meta files ##
+    location ~* (license|licence|readme)\.(htm|html|txt) {
+	deny all;
+    }
+    
+    ## wp-config ##
+    location = /wp-config*.php {
+	deny all;
+    }
+    
+    ## XML-RPC ##
+    location = /xmlrpc.php {
+	deny all;
+    }
+    
+    ## wp-mail ##
+    location = /wp-mail.php {
+	deny all;
+    }
+    
+    ## wp-links-opml ##
+    location = /wp-links-opml.php {
+	deny all;
+    }
+    
+    ## wp-trackback ##
+    location = /wp-trackback.php {
+	deny all;
+    }
+    
+    ## WP debug logs ##
+    location ~ /wp-content/debug\.log {
+	deny all;
+    }
+
+####################################################################################################
+#### Server Block: Custom Settings For Popular Third-Party WordPress Plugins #######################
+####################################################################################################
+    
+    ## Easy Digital Downloads ##
+    location ~ ^/wp-content/uploads/edd/(.*?)\.zip$ {
+        rewrite / permanent;
+    }
+    
+####################################################################################################
+#### Server Block (Production): Maintenance File (Named Location) ##################################
+####################################################################################################
+
+  ## activate named @maintenance location for any 503 errors ##
+  error_page 503 @maintenance;
+  
+  ## location rules for maintenance.html ##
+  location @maintenance {
+       rewrite ^(.*)$ /maintenance.html break;
+  }
+    
+    
+## DO NOT REMOVE THIS CURLY BRACKET ᕦ⊙෴⊙ᕤ ##
+}
+
+####################################################################################################
+#### SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ###############
+####################################################################################################
+
+## Ref: https://wordpress.org/support/article/nginx/
+## Ref: https://computingforgeeks.com/how-to-setup-wordpress-multisite-network-nginx-letsencrypt/
+## Ref: https://easyengine.io/wordpress-nginx/tutorials/multisite/subdomains/minimal/
+## Ref: https://easyengine.io/wordpress-nginx/tutorials/multisite/subdomains/minimal/#comment-42709
+## Ref: https://easyengine.io/wordpress-nginx/tutorials/multisite/subdirectories/minimal/
+## Ref: https://premium.wpmudev.org/blog/wordpress-multisite-wordpress-nginx/
+## Ref: https://stackoverflow.com/questions/21687288/nginx-redirect-loop-remove-index-php-from-url/21813759#21813759
+## Ref: https://wordpress.org/plugins/wordpress-mu-domain-mapping/
+## Ref: https://stackoverflow.com/questions/4833238/nginx-conf-redirect-multiple-conditions/45504231#45504231
+## Ref: https://gist.github.com/evansolomon/2274120
+## Ref: https://premium.wpmudev.org/blog/wordpress-multisite-wordpress-nginx/
+## Ref: https://serverfault.com/questions/578648/properly-setting-up-a-default-nginx-server-for-https
+## Ref: https://stackoverflow.com/questions/6246490/wordpress-subdomain-multisite-nginx-media-library
+## Ref: https://gist.github.com/centminmod/9034414
+## Ref: https://stackoverflow.com/questions/29123222/wordpress-multisite-directory-nginx-config
+## Ref: https://premium.wpmudev.org/forums/topic/ssl-on-domain-mapping-with-wp-multisite/
+## Ref: https://core.trac.wordpress.org/ticket/18852
+## Ref: https://github.com/bradp/vv/issues/355
+## Ref: https://github.com/roots/wordpress-nginx/blob/master/templates/default/wordpress-common.erb
+## Ref: https://snippets.cacher.io/snippet/797464509dbb045262f4
+## Ref: https://forum.nginx.org/read.php?9,219980
+## Ref: https://wordpress.org/support/topic/wp-multisite-404-not-found-error/
+## Ref: https://wpmudev.com/blog/wordpress-multisite-wordpress-nginx/
+## Ref: https://easyengine.io/wordpress-nginx/tutorials/multisite/subdomains/minimal/
+## Ref: https://www.ruby-forum.com/t/question-on-server-name-in-redirect/193836
+## Ref: https://w10schools.com/posts/237736_server_name_in_redirect
+
+## SS_EOF
