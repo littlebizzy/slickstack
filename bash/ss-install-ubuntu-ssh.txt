@@ -71,38 +71,38 @@ ss_echo "${COLOR_INFO}ss-install-ubuntu-ssh: Reinstalls the Linux OS SSH daemon 
 ss_wget_slowest "${TMP_SSHD_CONFIG}" "${MIRROR_SSHD_CONFIG}"
 
 ## replace variables ##
-sed -i "s/@SUDO_USER/${SUDO_USER}/g" "$TMP_SSHD_CONFIG"
-sed -i "s/@SFTP_USER/${SFTP_USER}/g" "$TMP_SSHD_CONFIG"
+ss_sed "s/@SUDO_USER/${SUDO_USER}/g" "$TMP_SSHD_CONFIG"
+ss_sed "s/@SFTP_USER/${SFTP_USER}/g" "$TMP_SSHD_CONFIG"
 
 ## set SSH port number (optional) ##
-sed -i "s/@SSH_PORT/22/g" "$TMP_SSHD_CONFIG"
+ss_sed "s/@SSH_PORT/22/g" "$TMP_SSHD_CONFIG"
 
-sed -i "s|@PATH_SSH_AUTHORIZED_KEYS_FILE|${PATH_SSH_AUTHORIZED_KEYS_FILE}|g" "$TMP_SSHD_CONFIG"
+ss_sed "s|@PATH_SSH_AUTHORIZED_KEYS_FILE|${PATH_SSH_AUTHORIZED_KEYS_FILE}|g" "$TMP_SSHD_CONFIG"
 
 ## restrict sudo ip address if desired (we do not use hosts.allow file in case SFTP user wants to login from anywhere) ##
 if [[ "${SSH_RESTRICT_IP}" == "true" ]]; then
-    sed -i "s|@SSH_IPV4|@${SSH_IPV4}|g" "${TMP_SSHD_CONFIG}"
+    ss_sed "s|@SSH_IPV4|@${SSH_IPV4}|g" "${TMP_SSHD_CONFIG}"
 else
-    sed -i "s|@SSH_IPV4||g" "${TMP_SSHD_CONFIG}"
+    ss_sed "s|@SSH_IPV4||g" "${TMP_SSHD_CONFIG}"
 fi
 
 ## enable/disable password authentication (depending on if SSH_KEYS is enabled) ##
 if [[ "$SSH_KEYS" == "true" ]]; then 
-    sed -i "s/@SSH_PASSWORD_AUTHENTICATION/no/g" "$TMP_SSHD_CONFIG"
+    ss_sed "s/@SSH_PASSWORD_AUTHENTICATION/no/g" "$TMP_SSHD_CONFIG"
 else 
-    sed -i "s/@SSH_PASSWORD_AUTHENTICATION/yes/g" "$TMP_SSHD_CONFIG"
+    ss_sed "s/@SSH_PASSWORD_AUTHENTICATION/yes/g" "$TMP_SSHD_CONFIG"
 fi
 
 ## enable/disable public key authentication (depending on if SSH_KEYS is enabled) ##
 if [[ "$SSH_KEYS" == "true" ]]; then 
-    sed -i "s/@SSH_PUBKEY_AUTHENTICATION/yes/g" "$TMP_SSHD_CONFIG"
+    ss_sed "s/@SSH_PUBKEY_AUTHENTICATION/yes/g" "$TMP_SSHD_CONFIG"
 else 
-    sed -i "s/@SSH_PUBKEY_AUTHENTICATION/no/g" "$TMP_SSHD_CONFIG"
+    ss_sed "s/@SSH_PUBKEY_AUTHENTICATION/no/g" "$TMP_SSHD_CONFIG"
 fi
 
 ## allow IPv6 SSH sessions (any) if no IPv4 address is detected on the server ##
 # if [[ CURRENT IP ADDRESS IS IPV6 ONLY ]]; then 
-#    sed -i "s/AddressFamily inet/AddressFamily any/g" /tmp/sshd_config
+#    ss_sed "s/AddressFamily inet/AddressFamily any/g" /tmp/sshd_config
 # fi
 ## Ref: https://stackoverflow.com/questions/5281341/get-local-network-interface-addresses-using-only-proc
 ## Ref: https://stackoverflow.com/questions/39983121/how-to-detect-if-system-has-ipv6-enabled-in-a-unix-shell-script
