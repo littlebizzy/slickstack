@@ -32,9 +32,8 @@ source /var/www/ss-functions
 
 ## A. Touch Timestamp File
 ## B. Message (Begin Script)
+## C. Install SSH Daemon
 
-## B. Cleanup Temporary Files
-## C. Install (Configure) SSH Daemon
 ## D. Generate Key Pair (If Not Exists)
 ## E. Reset Permissions (SSH)
 ## F. Restart Modules (SSH)
@@ -61,14 +60,28 @@ ss_touch "${TIMESTAMP_SS_INSTALL_UBUNTU_SSH}"
 ss_echo "${COLOR_INFO}ss-install-ubuntu-ssh: Reinstalls the Linux OS SSH daemon for sudo access... ${COLOR_RESET}"
 
 ####################################################################################################
-#### C. SS-Install-Ubuntu-SSH: Install (Configure) SSH Daemon ######################################
+#### C. SS-Install-Ubuntu-SSH: Install SSH Daemon ##################################################
 ####################################################################################################
 
 ## here we use an optimized boilerplate to reinstall the SSH/SFTP daemon to your server ##
 ## keep in mind that the port number will change (and root disabled) after this ##
 
 ## download latest versions ##
-ss_wget_slowest "${TMP_SSHD_CONFIG}" "${MIRROR_SSHD_CONFIG}"
+
+    ## ubuntu 22.04 ##
+    if [[ "${UBUNTU_VERSION}" == "22.04" ]]; then 
+        ss_wget_slowest "${TMP_SSHD_CONFIG}" "${MIRROR_SSHD_CONFIG}"
+    fi
+    
+    ## ubuntu 20.04 ##
+    if [[ "${UBUNTU_VERSION}" == "20.04" ]]; then 
+        ss_wget_slowest "${TMP_SSHD_CONFIG}" "${MIRROR_SSHD_CONFIG}"
+    fi
+    
+    ## ubuntu 18.04 ##
+    if [[ "${UBUNTU_VERSION}" == "18.04" ]]; then
+        ss_wget_slowest "${TMP_SSHD_CONFIG}" "${MIRROR_SSHD_CONFIG_1804}"
+    fi
 
 ## replace variables ##
 ss_sed "s/@SUDO_USER/${SUDO_USER}/g" "$TMP_SSHD_CONFIG"
