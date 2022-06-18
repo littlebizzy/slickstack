@@ -51,42 +51,30 @@ SyslogFacility AUTH
 LogLevel INFO
 
 ####################################################################################################
-#### SSHD_Config: Authentication Settings ##########################################################
+#### SSHD Config: Authentication Settings ##########################################################
 ####################################################################################################
 
 ## the root user cannot access SSH after the first ss-install setup process is completed ##
 ## ensure that you remember your sudo user and password (set in your ss-config) ##
 
 AllowUsers @SUDO_USER @SFTP_USER
-PasswordAuthentication @SSH_PASSWORD_AUTHENTICATION
-PubkeyAuthentication yes
-ChallengeResponseAuthentication no ## only for stuff like OTP systems
+
+LoginGraceTime 1m
 PermitRootLogin no ## never
-PermitEmptyPasswords no ## never
-AuthorizedKeysFile @PATH_SSH_AUTHORIZED_KEYS_FILE
 StrictModes no
-# HostbasedAuthentication no ## never
-# IgnoreRhosts yes
-# IgnoreUserKnownHosts yes
+MaxAuthTries 6
+MaxSessions 10
+PubkeyAuthentication yes
+AuthorizedKeysFile @PATH_SSH_AUTHORIZED_KEYS_FILE
 # AuthorizedPrincipalsFile none
 # AuthorizedKeysCommand none
 # AuthorizedKeysCommandUser nobody
-
-####################################################################################################
-#### SSHD_Config: User Session Settings ############################################################
-####################################################################################################
-
-## these are general settings in regard to how user login sessions should be managed ##
-## we hardcode enable PAM because it works fine in nearly all configurations ##
-
-UsePAM yes
-LoginGraceTime 1m
-MaxAuthTries 6
-MaxSessions 10
-ClientAliveInterval 0
-ClientAliveCountMax 3
-UseDNS no
-TCPKeepAlive yes
+# HostbasedAuthentication no ## never
+# IgnoreUserKnownHosts yes
+# IgnoreRhosts yes
+PasswordAuthentication @SSH_PASSWORD_AUTHENTICATION
+PermitEmptyPasswords no ## never
+ChallengeResponseAuthentication no ## only for stuff like OTP systems
 
 ####################################################################################################
 #### SSHD Config: Kerberos/GSSAPI Settings #########################################################
@@ -102,27 +90,29 @@ TCPKeepAlive yes
 # GSSAPIStrictAcceptorCheck yes
 # GSSAPIKeyExchange no
 
-
 ####################################################################################################
 #### SSHD Config: Misc Settings ####################################################################
 ####################################################################################################
 
-AllowTcpForwarding yes ## unfortunately required by CodeGuard (and maybe other apps)
+UsePAM yes
 # AllowAgentForwarding yes
+AllowTcpForwarding yes ## unfortunately required by CodeGuard (and maybe other apps)
 # GatewayPorts no
-# PermitTunnel no
-# PermitTTY yes
-
 X11Forwarding yes
 # X11DisplayOffset 10
 # X11UseLocalhost yes
-
+# PermitTTY yes
 # PrintMotd no
 # PrintLastLog yes
 # PermitUserEnvironment no
+TCPKeepAlive yes
 # Compression delayed
+ClientAliveInterval 0
+ClientAliveCountMax 3
+UseDNS no
 # PidFile /var/run/sshd.pid
 # MaxStartups 10:30:100
+# PermitTunnel no
 # ChrootDirectory none
 # VersionAddendum none
 # Banner none
