@@ -9,7 +9,7 @@
 #### purpose: Manually deletes all transients data from the WordPress wp_options table #############
 #### module version: MySQL 8.0.x ###################################################################
 #### sourced by: ss-install ########################################################################
-#### bash aliases: ss clear transients, ss purge transients ########################################
+#### bash aliases: ss clear transients, ss delete transients, ss purge transients ##################
 ####################################################################################################
 
 ## RUNNING SS-PURGE DURING TRAFFIC SPIKES MIGHT CAUSE SUDDEN STRESS TO SERVER RESOURCES ##
@@ -72,7 +72,7 @@ if [[ "${SS_APP}" == "wordpress" ]]; then
     ## ubuntu 22.04 ##
     if [[ "${UBUNTU_VERSION}" = "22.04" ]] || [[ -z "${UBUNTU_VERSION}" ]]; then 
 
-        if [[ -n $(mysql --execute "SHOW TABLES FROM ${DB_NAME} WHERE Tables_in_${DB_NAME} LIKE '${DB_PREFIX}options';") ]]; then
+        if [[ -n $(mysql_8.0_tcp --execute "SHOW TABLES FROM ${DB_NAME} WHERE Tables_in_${DB_NAME} LIKE '${DB_PREFIX}options';") ]]; then
     
             mysql_8.0_tcp --execute="DELETE FROM ${DB_NAME}.${DB_PREFIX}options WHERE option_name LIKE ('%\_transient\_%');"
     
@@ -83,7 +83,7 @@ if [[ "${SS_APP}" == "wordpress" ]]; then
     ## ubuntu 20.04 ##
     if [[ "${UBUNTU_VERSION}" = "20.04" ]]; then 
 
-        if [[ -n $(mysql --execute "SHOW TABLES FROM ${DB_NAME} WHERE Tables_in_${DB_NAME} LIKE '${DB_PREFIX}options';") ]]; then
+        if [[ -n $(mysql_8.0_tcp --execute "SHOW TABLES FROM ${DB_NAME} WHERE Tables_in_${DB_NAME} LIKE '${DB_PREFIX}options';") ]]; then
     
             mysql_8.0_tcp --execute="DELETE FROM ${DB_NAME}.${DB_PREFIX}options WHERE option_name LIKE ('%\_transient\_%');"
     
@@ -94,9 +94,9 @@ if [[ "${SS_APP}" == "wordpress" ]]; then
     ## ubuntu 18.04 ##
     if [[ "${UBUNTU_VERSION}" = "18.04" ]]; then
 
-        if [[ -n $(mysql_5.7 --execute "SHOW TABLES FROM ${DB_NAME} WHERE Tables_in_${DB_NAME} LIKE '${DB_PREFIX}options';") ]]; then
+        if [[ -n $(mysql_5.7_tcp --execute "SHOW TABLES FROM ${DB_NAME} WHERE Tables_in_${DB_NAME} LIKE '${DB_PREFIX}options';") ]]; then
     
-            mysql_5.7 --execute="DELETE FROM ${DB_NAME}.${DB_PREFIX}options WHERE option_name LIKE ('%\_transient\_%');"
+            mysql_5.7_tcp --execute="DELETE FROM ${DB_NAME}.${DB_PREFIX}options WHERE option_name LIKE ('%\_transient\_%');"
      
         fi
      
