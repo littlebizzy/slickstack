@@ -26,8 +26,6 @@ AddressFamily inet
 ListenAddress 0.0.0.0
 # ListenAddress ::
 
-UseDNS no
-
 ####################################################################################################
 #### SSHD Config: Fingerprint Settings #############################################################
 ####################################################################################################
@@ -53,7 +51,7 @@ SyslogFacility AUTH
 LogLevel INFO
 
 ####################################################################################################
-#### SSHD_Config: Authentication Settings ##########################################################
+#### SSHD Config: Authentication Settings ##########################################################
 ####################################################################################################
 
 ## the root user cannot access SSH after the first ss-install setup process is completed ##
@@ -61,28 +59,22 @@ LogLevel INFO
 
 AllowUsers @SUDO_USER@SSH_IPV4 @SFTP_USER
 
-PasswordAuthentication @SSH_PASSWORD_AUTHENTICATION
-PubkeyAuthentication yes
-ChallengeResponseAuthentication no ## only for stuff like OTP systems
+LoginGraceTime 1m
 PermitRootLogin no ## never
-PermitEmptyPasswords no ## never
-AuthorizedKeysFile @PATH_SSH_AUTHORIZED_KEYS_FILE
 StrictModes no
-# HostbasedAuthentication no ## never
-# IgnoreRhosts yes
-# IgnoreUserKnownHosts yes
+MaxAuthTries 6
+MaxSessions 10
+PubkeyAuthentication yes
+AuthorizedKeysFile @PATH_SSH_AUTHORIZED_KEYS_FILE
 # AuthorizedPrincipalsFile none
 # AuthorizedKeysCommand none
 # AuthorizedKeysCommandUser nobody
-
-
-UsePAM yes
-LoginGraceTime 1m
-MaxAuthTries 6
-MaxSessions 10
-ClientAliveInterval 0
-ClientAliveCountMax 3
-TCPKeepAlive yes
+# HostbasedAuthentication no ## never
+# IgnoreUserKnownHosts yes
+# IgnoreRhosts yes
+PasswordAuthentication @SSH_PASSWORD_AUTHENTICATION
+PermitEmptyPasswords no ## never
+ChallengeResponseAuthentication no ## only for stuff like OTP systems
 
 ####################################################################################################
 #### SSHD_Config: Kerberos + GSSAPI Settings #######################################################
@@ -101,29 +93,28 @@ TCPKeepAlive yes
 # GSSAPIEnablek5users no
 
 ####################################################################################################
-#### SSHD_Config: Networking Settings ##############################################################
-####################################################################################################
-
-AllowTcpForwarding yes ## unfortunately required by CodeGuard (and maybe other apps)
-# AllowAgentForwarding yes
-# GatewayPorts no
-# PermitTunnel no
-# PermitTTY yes
-
-X11Forwarding yes
-# X11DisplayOffset 10
-# X11UseLocalhost yes
-
-####################################################################################################
 #### SSHD_Config: Misc Settings ####################################################################
 ####################################################################################################
 
+UsePAM yes
+# AllowAgentForwarding yes
+AllowTcpForwarding yes ## unfortunately required by CodeGuard (and maybe other apps)
+# GatewayPorts no
+X11Forwarding yes
+# X11DisplayOffset 10
+# X11UseLocalhost yes
+# PermitTTY yes
 # PrintMotd no
 # PrintLastLog yes
 # PermitUserEnvironment no
+TCPKeepAlive yes
 # Compression delayed
+ClientAliveInterval 0
+ClientAliveCountMax 3
+UseDNS no
 # PidFile /var/run/sshd.pid
 # MaxStartups 10:30:100
+# PermitTunnel no
 # ChrootDirectory none
 # VersionAddendum none
 # Banner none
