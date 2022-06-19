@@ -15,7 +15,23 @@
 ## Include /etc/ssh/sshd_config.d/*.conf
 
 ####################################################################################################
-#### SSHD Config: Port/Listen Settings #############################################################
+#### TABLE OF CONTENTS (SSHD_Config) ###############################################################
+####################################################################################################
+
+## this is a brief summary of the different code snippets you will find in this script ##
+## each section should be commented so you understand what is being accomplished ##
+
+## A. Port/Listen Settings
+## B. Fingerprint Settings
+## C. Ciphers/Keying Settings
+## D. Logging Settings
+## E. Authentication Settings
+## F. Kerberos/GSSAPI Settings
+## G. Misc Settings
+## H. SFTP User Settings
+
+####################################################################################################
+#### A. SSHD_Config: Port/Listen Settings ##########################################################
 ####################################################################################################
 
 ## we only allow IPv4 connections and disable DNS lookups to speed up SSH connections ##
@@ -27,7 +43,7 @@ ListenAddress 0.0.0.0
 # ListenAddress ::
 
 ####################################################################################################
-#### SSHD Config: Fingerprint Settings #############################################################
+#### B. SSHD_Config: Fingerprint Settings ##########################################################
 ####################################################################################################
 
 ## these are the default fingerprint keys that modern OpenSSH servers recommend using ##
@@ -38,27 +54,26 @@ HostKey /etc/ssh/ssh_host_ecdsa_key
 HostKey /etc/ssh/ssh_host_ed25519_key
 
 ####################################################################################################
-#### SSHD Config: Ciphers/Keying Settings ##########################################################
+#### C. SSHD_Config: Ciphers/Keying Settings #######################################################
 ####################################################################################################
 
 # RekeyLimit default none
 
 ####################################################################################################
-#### SSHD Config: Logging Settings #################################################################
+#### D. SSHD_Config: Logging Settings ##############################################################
 ####################################################################################################
 
 SyslogFacility AUTH
 LogLevel INFO
 
 ####################################################################################################
-#### SSHD Config: Authentication Settings ##########################################################
+#### E. SSHD_Config: Authentication Settings #######################################################
 ####################################################################################################
 
 ## the root user cannot access SSH after the first ss-install setup process is completed ##
 ## ensure that you remember your sudo user and password (set in your ss-config) ##
 
 AllowUsers @SUDO_USER@SSH_IPV4 @SFTP_USER
-
 LoginGraceTime 1m
 PermitRootLogin no ## never
 StrictModes no
@@ -74,27 +89,28 @@ AuthorizedKeysFile @PATH_SSH_AUTHORIZED_KEYS_FILE
 # IgnoreRhosts yes
 PasswordAuthentication @SSH_PASSWORD_AUTHENTICATION
 PermitEmptyPasswords no ## never
-ChallengeResponseAuthentication no ## only for stuff like OTP systems
+KbdInteractiveAuthentication no ## Ubuntu 22.04+ (replaced ChallengeResponseAuthentication)
 
 ####################################################################################################
-#### SSHD_Config: Kerberos + GSSAPI Settings #######################################################
+#### F. SSHD_Config: Kerberos/GSSAPI Settings ######################################################
 ####################################################################################################
 
 # KerberosAuthentication no
 # KerberosOrLocalPasswd yes
 # KerberosTicketCleanup yes
 # KerberosGetAFSToken no
-# KerberosUseKuserok yes
 
 # GSSAPIAuthentication yes
 # GSSAPICleanupCredentials no
 # GSSAPIStrictAcceptorCheck yes
 # GSSAPIKeyExchange no
-# GSSAPIEnablek5users no
 
 ####################################################################################################
-#### SSHD_Config: Misc Settings ####################################################################
+#### G. SSHD_Config: Misc Settings #################################################################
 ####################################################################################################
+
+## below are a bunch of other SSH settings in the same order they are found by default ##
+## some of these affect authentication above and change a bit between versions ##
 
 UsePAM yes
 # AllowAgentForwarding yes
@@ -104,10 +120,10 @@ X11Forwarding yes
 # X11DisplayOffset 10
 # X11UseLocalhost yes
 # PermitTTY yes
-# PrintMotd no
+PrintMotd no
 # PrintLastLog yes
-# PermitUserEnvironment no
 TCPKeepAlive yes
+# PermitUserEnvironment no
 # Compression delayed
 ClientAliveInterval 0
 ClientAliveCountMax 3
@@ -120,16 +136,12 @@ UseDNS no
 # Banner none
 
 # AcceptEnv LANG LC_*
-# AcceptEnv LANG LC_CTYPE LC_NUMERIC LC_TIME LC_COLLATE LC_MONETARY LC_MESSAGES
-# AcceptEnv LC_PAPER LC_NAME LC_ADDRESS LC_TELEPHONE LC_MEASUREMENT
-# AcceptEnv LC_IDENTIFICATION LC_ALL LANGUAGE
-# AcceptEnv XMODIFIERS
 
 ####################################################################################################
-#### SSHD_Config: Jailed (Chroot) SFTP User Settings ###############################################
+#### H. SSHD_Config: SFTP User Settings ############################################################
 ####################################################################################################
 
-## the SFTP user must be different than your sudo user and has limited server access ##
+## the SFTP user must be different than your sudo user and has limited (jailed) access ##
 ## you can share this login with trusted developers or remote backup services ##
 
 Subsystem sftp internal-sftp
@@ -169,5 +181,6 @@ X11Forwarding no
 ## Ref: https://gist.github.com/HacKanCuBa/fe3653d4fe4eed35e41dcc9a380499c2
 ## Ref: https://www.linuxquestions.org/questions/linux-security-4/can-i-allow-sftp-for-any-but-ssh-for-some-ip-address-820900/
 ## Ref: https://unix.stackexchange.com/questions/406245/limit-ssh-access-to-specific-clients-by-ip-address
+## Ref: https://bugs.archlinux.org/task/71941
 
 ## SS_EOF
