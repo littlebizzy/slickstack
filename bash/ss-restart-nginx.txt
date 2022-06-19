@@ -7,8 +7,8 @@
 #### path: /var/www/ss-restart-nginx ###############################################################
 #### destination: n/a (not a boilerplate) ##########################################################
 #### purpose: Forcefully restarts the Nginx service by using init.d absolute path ##################
-#### module version: Nginx ##############################################################
-#### bash aliases: ss restart nginx, ss reload nginx ###############################################
+#### module version: Nginx 1.18.x ##################################################################
+#### bash aliases: ss restart nginx ################################################################
 ####################################################################################################
 
 ## YOU CAN RUN SS-RESTART FOR AN EASY WAY TO RESTART ALL CORE SLICKSTACK (LEMP) MODULES ##
@@ -31,6 +31,7 @@ source /var/www/ss-functions
 
 ## A. Touch Timestamp File
 ## B. Message (Begin Script)
+## C. Forcefully Restart Nginx Service
 
 ####################################################################################################
 #### A. SS-Restart-Nginx: Touch Timestamp File #####################################################
@@ -53,7 +54,7 @@ ss_touch "${TIMESTAMP_SS_RESTART_NGINX}"
 ss_echo "${COLOR_INFO}Running ss-restart-nginx: Forcefully restarts the Nginx service by using init.d absolute path... ${COLOR_RESET}"
 
 ####################################################################################################
-#### SS-Restart-Services-Nginx: Forcefully Restart Nginx ###########################################
+#### C. SS-Restart-Nginx: Forcefully Restart Nginx Service #########################################
 ####################################################################################################
 
 ## this script is using init.d instead of systemd shortcuts to allow for absolute paths ##
@@ -61,8 +62,8 @@ ss_echo "${COLOR_INFO}Running ss-restart-nginx: Forcefully restarts the Nginx se
 
 if [[ "${SS_APP}" != "mysql" ]]; then
 
-## restart nginx ##
-/etc/init.d/nginx restart > /dev/null 2>&1
+## restart nginx service ##
+ss_restart nginx
 
 fi
 
@@ -76,23 +77,10 @@ fi
 ## unmask services ##
 # systemctl unmask mysql.service
 
-
 ## reload .bashrc settings ##
 # source /root/.bashrc
 # source /home/${SUDO_USER}/.bashrc
 
-## restart all LEMP modules (Ubuntu services) ##
-# /etc/init.d/clamav-freshclam restart
-# /etc/init.d/redis-server restart
-# /etc/init.d/php*-fpm restart
-# /etc/init.d/nginx restart
-# /etc/init.d/mysql restart
-# /etc/init.d/ufw force-reload
-# /etc/init.d/ufw restart
-# /etc/init.d/cron reload
-
-# source /var/www/ss-restart-services-nginx
-# source /var/www/ss-restart-services-php
 
 ####################################################################################################
 #### SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ###############
