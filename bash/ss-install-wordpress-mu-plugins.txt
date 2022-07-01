@@ -32,7 +32,7 @@ source /var/www/ss-functions
 
 ## A. Touch Timestamp File
 ## B. Message (Begin Script)
-## C. Install XXX-Common
+## C. Install XXX-Common.php
 
 ####################################################################################################
 #### A. SS-Install-WordPress-MU-Plugins: Touch Timestamp File ######################################
@@ -52,39 +52,36 @@ ss_touch "${TIMESTAMP_SS_INSTALL_WORDPRESS_MU_PLUGINS}"
 ## it will only be noticed by sudo users who manually call ss core bash scripts ##
 
 ## echo message ##
-ss_echo "${COLOR_INFO}Running ss-install-wordpress-mu-plugins: Reinstalls all the WordPress MU plugins for SlickStack servers (idempotent)... ${COLOR_RESET}"
+ss_echo "${COLOR_INFO}Running ss-install-wordpress-mu-plugins... ${COLOR_RESET}"
 
 ####################################################################################################
 #### SS-Muplugs: Ensure MU (Must-Use) Directory Exists + Delete Current MU Plugins #################
 ####################################################################################################
 
-## install Linux utilities (Zip, Unzip) in case missing ##
-apt install zip unzip > /dev/null 2>&1
+## run ss-install-ubuntu-utils ##
+source "${PATH_SS_INSTALL_UBUNTU_UTILS}"
 
 ## ensure MU (Must-Use) plugins directory exists ##
-mkdir /var/www/html/wp-content/mu-plugins
+ss_mkdir /var/www/html/wp-content/mu-plugins
 ss_rm /var/www/html/wp-content/mu-plugins/*
 
 if [[ "${DEV_SITE}" == "true" ]]; then
-    mkdir /var/www/html/dev/wp-content/mu-plugins
+    ss_mkdir /var/www/html/dev/wp-content/mu-plugins
     ss_rm /var/www/html/dev/wp-content/mu-plugins/*
 fi
 
 if [[ "${STAGING_SITE}" == "true" ]]; then
-    mkdir /var/www/html/staging/wp-content/mu-plugins
+    ss_mkdir /var/www/html/staging/wp-content/mu-plugins
     ss_rm /var/www/html/staging/wp-content/mu-plugins/*
 fi
 
 ####################################################################################################
-#### SS-Muplugs: Get SS-Icon #############################
+#### C. SS-Install-WordPress-MU-Plugins: Install XXX-Common.php ####################################
 ####################################################################################################
 
+## get icon ##
 ss_wget_slowest "${TMP_SS_ICON_SVG}" "${MIRROR_SS_ICON_SVG}"
 ss_mv "${TMP_SS_ICON_SVG}" "${PATH_SS_ICON_SVG}"
-
-####################################################################################################
-#### C. SS-Install-WordPress-MU-Plugins: Install XXX-Common ########################################
-####################################################################################################
 
 ## download XXX Notices (required MU plugins) files  ##
 ss_wget_slowest /tmp/xxx-common.php "$MIRROR_XXX_COMMON_PHP"
@@ -102,16 +99,16 @@ ss_rm /var/www/html/staging/wp-content/plugins/xxx-staging*
 ss_rm /var/www/html/staging/wp-content/plugins/xxx-dev*
 
     if [[ -z "$WHITELABEL_BRAND" ]]; then 
-        sed -i "s/@WHITELABEL_BRAND/SlickStack/g" /tmp/xxx-common.php
+        ss_sed "s/@WHITELABEL_BRAND/SlickStack/g" /tmp/xxx-common.php
     else 
-        sed -i "s/@WHITELABEL_BRAND/${WHITELABEL_BRAND}/g" /tmp/xxx-common.php
+        ss_sed "s/@WHITELABEL_BRAND/${WHITELABEL_BRAND}/g" /tmp/xxx-common.php
     fi
     
     
     ## CURRENT NOT USED BUT COMING BACK SOON ##
 ## enable WP Admin toolbar switcher shortcut ##
 # if [[ "$STAGING_SITE" != "false" ]]; then 
-#     sed -i "s#//@STAGING_SITE_TRUE//##g" /var/www/html/wp-content/mu-plugins/xxx-common.php
+#     ss_sed "s#//@STAGING_SITE_TRUE//##g" /var/www/html/wp-content/mu-plugins/xxx-common.php
 # fi
     
 cp /tmp/xxx-common.php /var/www/html/wp-content/mu-plugins/xxx-common.php
