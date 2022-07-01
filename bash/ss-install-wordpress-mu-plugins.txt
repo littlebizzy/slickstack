@@ -32,6 +32,7 @@ source /var/www/ss-functions
 
 ## A. Touch Timestamp File
 ## B. Message (Begin Script)
+## C. Install XXX-Common
 
 ####################################################################################################
 #### A. SS-Install-WordPress-MU-Plugins: Touch Timestamp File ######################################
@@ -52,45 +53,6 @@ ss_touch "${TIMESTAMP_SS_INSTALL_WORDPRESS_MU_PLUGINS}"
 
 ## echo message ##
 ss_echo "${COLOR_INFO}Running ss-install-wordpress-mu-plugins: Reinstalls all the WordPress MU plugins for SlickStack servers (idempotent)... ${COLOR_RESET}"
-
-####################################################################################################
-#### SS-Install-WordPress-MU-Plugins: Cleanup Temporary Files ######################################
-####################################################################################################
-
-## delete tmp files ##
-ss_rm /tmp/autoloader*
-ss_rm /tmp/custom-functions*
-ss_rm /tmp/functions*
-ss_rm /tmp/xxx-*
-ss_rm /tmp/object-cache*
-ss_rm /tmp/redis-cache*
-
-ss_rm /tmp/clear-caches*
-ss_rm /tmp/cloudflare*
-ss_rm /tmp/dashboard-cleanup*
-ss_rm /tmp/delete-expired-transients*
-ss_rm /tmp/disable-attachment-pages*
-ss_rm /tmp/disable-default-runner*
-ss_rm /tmp/disable-emails*
-ss_rm /tmp/disable-embeds*
-ss_rm /tmp/disable-emojis*
-ss_rm /tmp/disable-empty-trash*
-ss_rm /tmp/disable-gutenberg*
-ss_rm /tmp/disable-image-compression*
-ss_rm /tmp/disable-post-via-email*
-ss_rm /tmp/disable-xml-rpc*
-ss_rm /tmp/error-log-monitor*
-ss_rm /tmp/force-https*
-ss_rm /tmp/force-strong-hashing*
-ss_rm /tmp/header-cleanup*
-ss_rm /tmp/limit-heartbeat*
-ss_rm /tmp/minify-html*
-ss_rm /tmp/plugin-blacklist*
-ss_rm /tmp/remove-query-strings*
-ss_rm /tmp/virtual-robotstxt*
-
-## delete (custom) MU plugins temporary files ##
-# (coming soon)
 
 ####################################################################################################
 #### SS-Muplugs: Ensure MU (Must-Use) Directory Exists + Delete Current MU Plugins #################
@@ -121,14 +83,55 @@ ss_wget_slowest "${TMP_SS_ICON_SVG}" "${MIRROR_SS_ICON_SVG}"
 ss_mv "${TMP_SS_ICON_SVG}" "${PATH_SS_ICON_SVG}"
 
 ####################################################################################################
+#### C. SS-Install-WordPress-MU-Plugins: Install XXX-Common ########################################
+####################################################################################################
+
+## download XXX Notices (required MU plugins) files  ##
+ss_wget_slowest /tmp/xxx-common.php "$MIRROR_XXX_COMMON_PHP"
+
+## delete potentially conflicting normal plugins (with required MU plugins) ##
+ss_rm /var/www/html/wp-content/plugins/xxx-common*
+ss_rm /var/www/html/wp-content/plugins/xxx-notices*
+ss_rm /var/www/html/wp-content/plugins/xxx-staging*
+ss_rm /var/www/html/wp-content/plugins/xxx-dev*
+
+## and from staging ##
+ss_rm /var/www/html/staging/wp-content/plugins/xxx-common*
+ss_rm /var/www/html/staging/wp-content/plugins/xxx-notices*
+ss_rm /var/www/html/staging/wp-content/plugins/xxx-staging*
+ss_rm /var/www/html/staging/wp-content/plugins/xxx-dev*
+
+    if [[ -z "$WHITELABEL_BRAND" ]]; then 
+        sed -i "s/@WHITELABEL_BRAND/SlickStack/g" /tmp/xxx-common.php
+    else 
+        sed -i "s/@WHITELABEL_BRAND/${WHITELABEL_BRAND}/g" /tmp/xxx-common.php
+    fi
+    
+    
+    ## CURRENT NOT USED BUT COMING BACK SOON ##
+## enable WP Admin toolbar switcher shortcut ##
+# if [[ "$STAGING_SITE" != "false" ]]; then 
+#     sed -i "s#//@STAGING_SITE_TRUE//##g" /var/www/html/wp-content/mu-plugins/xxx-common.php
+# fi
+    
+cp /tmp/xxx-common.php /var/www/html/wp-content/mu-plugins/xxx-common.php
+
+## and staging ##
+if [[ "${STAGING_SITE}" == "true" ]]; then
+cp /tmp/xxx-common.php /var/www/html/staging/wp-content/mu-plugins/xxx-common.php
+fi
+
+## and dev ##
+if [[ "${DEV_SITE}" == "true" ]]; then
+cp /tmp/xxx-common.php /var/www/html/dev/wp-content/mu-plugins/xxx-common.php
+fi
+
+####################################################################################################
 #### SS-Muplugs: Install Required MU (Must-Use) Plugins + Object Cache #############################
 ####################################################################################################
 
 ## download Autoloader (required script) files ##
 ss_wget_slowest /tmp/autoloader.php "$MIRROR_AUTOLOADER_PHP"
-
-## download XXX Notices (required MU plugins) files  ##
-ss_wget_slowest /tmp/xxx-common.php "$MIRROR_XXX_COMMON_PHP"
 
 ## staging site ##
 ss_wget_slowest /tmp/disable-emails.zip "$MIRROR_DISABLE_EMAILS_ZIP"
@@ -145,17 +148,7 @@ ss_wget_slowest /tmp/object-cache.php "$MIRROR_OBJECT_CACHE_PHP_TILL"
 unzip /tmp/disable-emails.zip -d /tmp
 unzip /tmp/disable-default-runner.zip -d /tmp
 
-## delete potentially conflicting normal plugins (with required MU plugins) ##
-ss_rm /var/www/html/wp-content/plugins/xxx-common*
-ss_rm /var/www/html/wp-content/plugins/xxx-notices*
-ss_rm /var/www/html/wp-content/plugins/xxx-staging*
-ss_rm /var/www/html/wp-content/plugins/xxx-dev*
-
-## and from staging ##
-ss_rm /var/www/html/staging/wp-content/plugins/xxx-common*
-ss_rm /var/www/html/staging/wp-content/plugins/xxx-notices*
-ss_rm /var/www/html/staging/wp-content/plugins/xxx-staging*
-ss_rm /var/www/html/staging/wp-content/plugins/xxx-dev*
+## staging ##
 ss_rm /var/www/html/staging/wp-content/plugins/disable-emails*
 ss_rm /var/www/html/staging/wp-content/plugins/disable-default-runner*
 
@@ -192,24 +185,15 @@ fi
 
 ## copy required MU plugins files to destinations ##
 
-    if [[ -z "$WHITELABEL_BRAND" ]]; then 
-        sed -i "s/@WHITELABEL_BRAND/SlickStack/g" /tmp/xxx-common.php
-    else 
-        sed -i "s/@WHITELABEL_BRAND/${WHITELABEL_BRAND}/g" /tmp/xxx-common.php
-    fi
-    
-cp /tmp/xxx-common.php /var/www/html/wp-content/mu-plugins/xxx-common.php
 
 ## and staging ##
 if [[ "${STAGING_SITE}" == "true" ]]; then
-cp /tmp/xxx-common.php /var/www/html/staging/wp-content/mu-plugins/xxx-common.php
 cp /tmp/disable-emails /var/www/html/staging/wp-content/mu-plugins/disable-emails
 cp /tmp/disable-default-runner /var/www/html/staging/wp-content/mu-plugins/disable-default-runner
 fi
 
 ## and dev ##
 if [[ "${DEV_SITE}" == "true" ]]; then
-cp /tmp/xxx-common.php /var/www/html/dev/wp-content/mu-plugins/xxx-common.php
 cp /tmp/disable-emails /var/www/html/dev/wp-content/mu-plugins/disable-emails
 cp /tmp/disable-default-runner /var/www/html/dev/wp-content/mu-plugins/disable-default-runner
 fi
@@ -496,16 +480,6 @@ fi
 
 ## run ss-perms-wordpress-mu-plugins ##
 source "${PATH_SS_PERMS_WORDPRESS_MU_PLUGINS}"
-
-####################################################################################################
-#### SS-Install-WordPress-MU-Plugins: Modify WP Admin Toolbar Shortcuts ############################
-####################################################################################################
-
-## CURRENT NOT USED BUT COMING BACK SOON ##
-## enable WP Admin toolbar switcher shortcut ##
-# if [[ "$STAGING_SITE" != "false" ]]; then 
-#     sed -i "s#//@STAGING_SITE_TRUE//##g" /var/www/html/wp-content/mu-plugins/xxx-common.php
-# fi
 
 ####################################################################################################
 #### SS-Install-WordPress-MU-Plugins: Purge Cache (PHP OPcache) ####################################
