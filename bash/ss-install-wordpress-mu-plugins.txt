@@ -9,7 +9,7 @@
 #### purpose: Reinstalls all the WordPress MU plugins for SlickStack servers (idempotent) ##########
 #### module version: WordPress 6.0.x ###############################################################
 #### sourced by: ss-install ########################################################################
-#### bash aliases: ss install wordpress|wp mu plugins, ss install mu plugins #######################
+#### bash aliases: ss install mu plugins, ss install [wordpress|wp] mu plugins #####################
 ####################################################################################################
 
 ## SS-CONFIG MUST BE PROPERLY CONFIGURED AND ON CURRENT BUILD BEFORE RUNNING SS-INSTALL ##
@@ -98,29 +98,50 @@ ss_rm /var/www/html/staging/wp-content/plugins/xxx-notices*
 ss_rm /var/www/html/staging/wp-content/plugins/xxx-staging*
 ss_rm /var/www/html/staging/wp-content/plugins/xxx-dev*
 
-    if [[ -z "$WHITELABEL_BRAND" ]]; then 
-        ss_sed "s/@WHITELABEL_BRAND/SlickStack/g" /tmp/xxx-common.php
-    else 
-        ss_sed "s/@WHITELABEL_BRAND/${WHITELABEL_BRAND}/g" /tmp/xxx-common.php
-    fi
-    
-    
-    ## CURRENT NOT USED BUT COMING BACK SOON ##
+## whitelabel brand ##
+if [[ -z "${WHITELABEL_BRAND}" ]]; then 
+    ss_sed "s|@WHITELABEL_BRAND|LittleBizzy|g" /tmp/xxx-common.php
+else 
+    ss_sed "s|@WHITELABEL_BRAND|${WHITELABEL_BRAND}|g" /tmp/xxx-common.php
+fi
+
+## whitelabel homepage ##
+if [[ -z "${WHITELABEL_HOMEPAGE}" ]]; then 
+    ss_sed "s|@WHITELABEL_HOMEPAGE|https://www.littlebizzy.com|g" /tmp/xxx-common.php
+else 
+    ss_sed "s|@WHITELABEL_HOMEPAGE|${WHITELABEL_HOMEPAGE}|g" /tmp/xxx-common.php
+fi
+
+## whitelabel support url ##
+if [[ -z "${WHITELABEL_SUPPORT_URL}" ]]; then 
+    ss_sed "s|@WHITELABEL_SUPPORT_URL|https://www.littlebizzy.com/support|g" /tmp/xxx-common.php
+else 
+    ss_sed "s|@WHITELABEL_SUPPORT_URL|${WHITELABEL_SUPPORT_URL}|g" /tmp/xxx-common.php
+fi
+
+## whitelabel support email ##
+if [[ -z "${WHITELABEL_SUPPORT_EMAIL}" ]]; then 
+    ss_sed "s|@WHITELABEL_SUPPORT_EMAIL|support@littlebizzy.com|g" /tmp/xxx-common.php
+else 
+    ss_sed "s|@WHITELABEL_SUPPORT_EMAIL|${WHITELABEL_SUPPORT_EMAIL}|g" /tmp/xxx-common.php
+fi
+
+## CURRENT NOT USED BUT COMING BACK SOON ##
 ## enable WP Admin toolbar switcher shortcut ##
 # if [[ "$STAGING_SITE" != "false" ]]; then 
 #     ss_sed "s#//@STAGING_SITE_TRUE//##g" /var/www/html/wp-content/mu-plugins/xxx-common.php
 # fi
     
-cp /tmp/xxx-common.php /var/www/html/wp-content/mu-plugins/xxx-common.php
+ss_cp /tmp/xxx-common.php /var/www/html/wp-content/mu-plugins/xxx-common.php
 
 ## and staging ##
 if [[ "${STAGING_SITE}" == "true" ]]; then
-cp /tmp/xxx-common.php /var/www/html/staging/wp-content/mu-plugins/xxx-common.php
+ss_cp /tmp/xxx-common.php /var/www/html/staging/wp-content/mu-plugins/xxx-common.php
 fi
 
 ## and dev ##
 if [[ "${DEV_SITE}" == "true" ]]; then
-cp /tmp/xxx-common.php /var/www/html/dev/wp-content/mu-plugins/xxx-common.php
+ss_cp /tmp/xxx-common.php /var/www/html/dev/wp-content/mu-plugins/xxx-common.php
 fi
 
 ####################################################################################################
