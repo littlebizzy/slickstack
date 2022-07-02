@@ -54,15 +54,6 @@ ss_touch "${TIMESTAMP_SS_INSTALL_WORDPRESS_CLI}"
 ss_echo "${COLOR_INFO}Running ss-install-wordpress-cli... ${COLOR_RESET}"
 
 ####################################################################################################
-#### SS-Install-WordPress-CLI: Cleanup Temporary Files #############################################
-####################################################################################################
-
-## delete tmp files ##
-rm "$TMP_WP_CLI_PHAR"
-rm "$TMP_WP_CLI_YML"
-rm "$TMP_WP_COMPLETION"
-
-####################################################################################################
 ### SS-Install-Bash: Prepare WP-CLI Configuration ##################################################
 ####################################################################################################
 
@@ -95,13 +86,22 @@ cp "$TMP_WP_COMPLETION" "$PATH_WP_COMPLETION_BASH"
 source "$PATH_SS_PERMS_WORDPRESS_CLI"
 
 ####################################################################################################
-#### SS-Install-WordPress-CLI: Cleanup Temporary Files #############################################
+#### PLACEHOLDER: Reset Permissions (SlickStack Scripts) ###########################################
 ####################################################################################################
 
-## delete tmp files ##
-rm "$TMP_WP_CLI_PHAR"
-rm "$TMP_WP_CLI_YML"
-rm "$TMP_WP_COMPLETION"
+## we include this permissions reset in all cron jobs and bash scripts for redundancy ##
+## chmod 0700 means only the root/sudo users can execute any SlickStack scripts ##
+
+## THIS SNIPPET DOES NOT RELY ON SS-CONFIG OR SS-FUNCTIONS
+## SNIPPET: ss bash scripts, ss cron jobs
+## UPDATED: 02JUL2022
+
+chown root:root /var/www/ss* ## must be root:root
+chown root:root /var/www/crons/*cron* ## must be root:root
+chown root:root /var/www/crons/custom/*cron* ## must be root:root
+chmod 0700 /var/www/ss* ## 0700 means only root/sudo can execute
+chmod 0700 /var/www/crons/*cron* ## 0700 means only root/sudo can execute
+chmod 0700 /var/www/crons/custom/*cron* ## 0700 means only root/sudo can execute
 
 ####################################################################################################
 #### SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ###############
