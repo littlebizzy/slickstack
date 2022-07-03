@@ -64,29 +64,29 @@ ss_echo "${COLOR_INFO}Running ss-dump-database... ${COLOR_RESET}"
 ## to support remote database servers we force the TCP protocol (not sockets) ##
 
 ## dump production database ##
-if [[ "$SS_DUMP_DATABASE_PRODUCTION" != "false" ]]; then
-    ss_mysqldump "$DB_NAME" > "$PATH_DUMP_DATABASE_PRODUCTION" 2> /dev/null
+if [[ "${SS_DUMP_DATABASE_PRODUCTION}" != "false" ]]; then
+    ss_mysqldump "${DB_NAME}" > "${PATH_DUMP_DATABASE_PRODUCTION}" 2> /dev/null
 fi
 
 ## dump staging database ##
-if [[ "$SS_DUMP_DATABASE_STAGING" == "true" ]]; then
-    ss_mysqldump staging > "$PATH_DUMP_DATABASE_STAGING" 2> /dev/null
+if [[ "${SS_DUMP_DATABASE_STAGING}" == "true" ]]; then
+    ss_mysqldump staging > "${PATH_DUMP_DATABASE_STAGING}" 2> /dev/null
 fi
 
 ## dump development database ##
-if [[ "$SS_DUMP_DATABASE_DEVELOPMENT" == "true" ]]; then
-    ss_mysqldump development > "$PATH_DUMP_DATABASE_DEVELOPMENT" 2> /dev/null
+if [[ "${SS_DUMP_DATABASE_DEVELOPMENT}" == "true" ]]; then
+    ss_mysqldump development > "${PATH_DUMP_DATABASE_DEVELOPMENT}" 2> /dev/null
 fi
 
 ## DO NOT ENABLE THIS IN SS-CONFIG UNLESS YOUR SERVER HAS A TON OF EXTRA DISK SPACE ##
 ## (also in future should stop mysql-server here before ss-dump to avoid corrupted mysql data files) ##
 ## also should check if enough disk space before doing this ##
-if [[ "$SS_DUMP_DATABASE_FILES" == "true" ]]; then 
-    cp "$PATH_DATABASE_FILES_01" "$PATH_DUMP_DATABASE_FILES_01"
-    cp "$PATH_DATABASE_FILES_02" "$PATH_DUMP_DATABASE_FILES_02"
-    cp "$PATH_DATABASE_FILES_03" "$PATH_DUMP_DATABASE_FILES_03"
-    cp "$PATH_DATABASE_FILES_04" "$PATH_DUMP_DATABASE_FILES_04"
-    cp "$PATH_DATABASE_FILES_05" "$PATH_DUMP_DATABASE_FILES_05"
+if [[ "${SS_DUMP_DATABASE_FILES}" == "true" ]]; then 
+    ss_cp "${PATH_DATABASE_FILES_01}" "${PATH_DUMP_DATABASE_FILES_01}"
+    ss_cp "${PATH_DATABASE_FILES_02}" "${PATH_DUMP_DATABASE_FILES_02}"
+    ss_cp "${PATH_DATABASE_FILES_03}" "${PATH_DUMP_DATABASE_FILES_03}"
+    ss_cp "${PATH_DATABASE_FILES_04}" "${PATH_DUMP_DATABASE_FILES_04}"
+    ss_cp "${PATH_DATABASE_FILES_05}" "${PATH_DUMP_DATABASE_FILES_05}"
 fi
 
 ####################################################################################################
@@ -97,19 +97,19 @@ fi
 ## keep in mind that root/sudo users will have access to this file regardless ##
 
 ## reset permissions (production) ##
-chown -R $SFTP_USER:www-data "$PATH_DUMP_DATABASE_PRODUCTION"
-chmod 0440 "$PATH_DUMP_DATABASE_PRODUCTION"
+chown -R "${SFTP_USER}":www-data "${PATH_DUMP_DATABASE_PRODUCTION}"
+chmod 0440 "${PATH_DUMP_DATABASE_PRODUCTION}"
 
 ## reset permissions (staging) ##
-if [[ "$SS_DUMP_DATABASE_STAGING" == "true" ]]; then
-    chown -R $SFTP_USER:www-data "$PATH_DUMP_DATABASE_STAGING"
-    chmod 0440 "$PATH_DUMP_DATABASE_STAGING"
+if [[ "${SS_DUMP_DATABASE_STAGING}" == "true" ]]; then
+    chown -R "${SFTP_USER}":www-data "${PATH_DUMP_DATABASE_STAGING}"
+    chmod 0440 "${PATH_DUMP_DATABASE_STAGING}"
 fi
 
 ## reset permissions (development) ##
-if [[ "$SS_DUMP_DATABASE_DEVELOPMENT" == "true" ]]; then
-    chown -R $SFTP_USER:www-data "$PATH_DUMP_DATABASE_DEVELOPMENT"
-    chmod 0440 "$PATH_DUMP_DATABASE_DEVELOPMENT"
+if [[ "${SS_DUMP_DATABASE_DEVELOPMENT}" == "true" ]]; then
+    chown -R "${SFTP_USER}":www-data "${PATH_DUMP_DATABASE_DEVELOPMENT}"
+    chmod 0440 "${PATH_DUMP_DATABASE_DEVELOPMENT}"
 fi
 
 ####################################################################################################
