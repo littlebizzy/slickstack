@@ -7,9 +7,9 @@
 #### path: /var/www/ss-dump-files ##################################################################
 #### destination: n/a (not a boilerplate) ##########################################################
 #### purpose: Dumps html files to /var/www/backups/html/production.tar.gz (SFTP can access) ########
-#### module version: Ubuntu 20.04 LTS ##############################################################
+#### module version: Ubuntu 22.04 LTS ##############################################################
 #### sourced by: ss core cron jobs #################################################################
-#### bash aliases: ss dump files, ss export files ##################################################
+#### bash aliases: ss dump files ###################################################################
 ####################################################################################################
 
 ## source ss-config ##
@@ -29,8 +29,9 @@ source /var/www/ss-functions
 
 ## A. Touch Timestamp File
 ## B. Message (Begin Script)
-## C. Export (Archive) Public HTML Directory
-## D. Reset Permissions (Archives)
+## C. Dump Public HTML Directory
+## D. Reset Permissions (HTML Dump Files)
+## E. Reset Permissions (SlickStack Scripts)
 
 ####################################################################################################
 #### A. SS-Dump-Files: Touch Timestamp File ########################################################
@@ -53,7 +54,7 @@ ss_touch "${TIMESTAMP_SS_DUMP_FILES}"
 ss_echo "${COLOR_INFO}Running ss-dump-files... ${COLOR_RESET}"
 
 ####################################################################################################
-#### C. SS-Dump-Files: Export (Archive) Public HTML Directory ######################################
+#### C. SS-Dump-Files: Dump Public HTML Directory ##################################################
 ####################################################################################################
 
 ## NEEDED: calculate free space and if free space is less than used space display error and exit
@@ -71,7 +72,7 @@ if [[ "$SS_DUMP_FILES_DEVELOPMENT" == "true" ]]; then
 fi
 
 ####################################################################################################
-#### D. SS-Dump-Files: Reset Permissions (Archives) ################################################
+#### D. SS-Dump-Files: Reset Permissions (HTML Dump Files) #########################################
 ####################################################################################################
 
 ## here we do a quick permissions reset to ensure SFTP users can access the dump file ##
@@ -93,16 +94,8 @@ if [[ "$SS_DUMP_FILES_DEVELOPMENT" == "true" ]]; then
     chmod 0440 "$PATH_DUMP_FILES_DEVELOPMENT"
 fi
 
-
 ####################################################################################################
-#### SS-Dump-Files: SUCCESS (OR FAIL) MESSAGE ###################################################
-####################################################################################################
-
-## FUTURE: if = file exists + recent touch time + file contents not zero ##
-# echo -e "${YELLOW}The HTML Files were successfully dumped to: /var/www/backups/html/... ${NORMAL}" >&2
-
-####################################################################################################
-#### PLACEHOLDER: Reset Permissions (SlickStack Scripts) ###########################################
+#### E. SS-Dump-Files: Reset Permissions (SlickStack Scripts) ######################################
 ####################################################################################################
 
 ## we include this permissions reset in all cron jobs and bash scripts for redundancy ##
