@@ -31,6 +31,8 @@ SlickStack is a free LEMP stack automation script written in Bash designed to en
 
 ## Changelog
 
+* **NEW!** Our philosophy on staging/dev sites continues to harden: going forward, we consider dev sites to be for completely new designs or re-designs, and staging sites to be for brief testing of new features (mostly plugins). There is a new script `ss-sync-development` that you can manually run to duplicate your entire production site (including media uploads) to the dev subdomain. This is DIFFERENT from `ss-sync-staging` which skips the /uploads/ folder, since the staging subdomain loads media files automagically from the production directories to save disk space. By default, SlickStack will automatically run `ss-sync-staging` every so often if you have `STAGING_SITE` enabled in ss-config. However SlickStack will not run `ss-sync-development` automatically by default, and most likely we will never support this script being able to run automatically via cron jobs (only run manually).
+
 * **NEW!** More variables added to our experimental pilot file concept including Cloudflare API creds and "powered by" Nginx header, this means you can rapidly update dozens or hundreds of SlickStack servers using a single private Gist file.
 
 * **NEW!** New option `WP_DEFAULT_THEME` lets you hardcode a default WP theme in your wp-config.php per-server for better stability, and also lets you use SlickStack for special scenarios like sharing 2 sites with different themes from the same remote database!
