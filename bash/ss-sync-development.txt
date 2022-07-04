@@ -28,11 +28,10 @@
 ## D. Backup Production Database
 ## E. Import Production Database To Development Database
 ## F. Copy All Files From Production To Development
-
 ## G. Run SS-Install-WordPress-Config (Conditional)
 ## H. Run SS-Install-WordPress-MU-Plugins (Conditional)
-## I. Fix Any Hardcoded Links In Staging Theme Files
-## J. Cleanup Temporary Files
+## I. Fix Any Hardcoded Links In Development Theme Files
+## J. Reset Permissions (SlickStack Scripts)
 
 ####################################################################################################
 #### A. SS-Sync-Development: Source SS-Config + SS-Functions #######################################
@@ -114,29 +113,23 @@ if [[ "${DEV_SITE}" == "true" ]]; then
         fi
     fi
     
+    ## delete tmp files ##
+    rm /tmp/sync-development.sql
+    
 ####################################################################################################
 #### F. SS-Sync-Development: Copy All Files From Production To Development #########################
 ####################################################################################################
 
-## here we copy over everything from production to staging besides uploads (media files) ##
-## schedule ss-clean beforehand in order to remove various (large) junk files ##
+## here we copy over everything from production to dev including media uploads folder ##
 
-    ## copy wp core directories ##
-    # ss_rsync /var/www/html/wp-admin/ /var/www/html/dev/wp-admin
-    # ss_rsync /var/www/html/wp-includes/ /var/www/html/dev/wp-includes
-
-    ## copy wp core root php files (only) ##
-    # --exclude-from="/var/www/meta/exclude.txt" 
-    # ss_rsync --exclude="wp-config*.php*" --include="index.php" --include="wp-*.php" --exclude="*" /var/www/html/ /var/www/html/dev
-
-    ## copy wp-content files over (skips media uploads) ##
-    ss_rsync --max-size=5mb --exclude="mu-plugins*" --exclude="uploads*" /var/www/html/wp-content/ /var/www/html/dev/wp-content
+## copy wp-content files over (does not skip uploads) ##
+ss_rsync --max-size=5mb --exclude mu-plugins /var/www/html/wp-content/ /var/www/html/dev/wp-content
     
-    ## remove potential run-on subdirectories ##
-    ss_rm /var/www/html/dev/dev*
+## delete potential run-on subdirectories ##
+ss_rm /var/www/html/dev/dev*
     
 ####################################################################################################
-#### G. SS-Sync-Staging: Run SS-Install-WordPress-Config (Conditional) #############################
+#### G. SS-Sync-Development: Run SS-Install-WordPress-Config (Conditional) #########################
 ####################################################################################################
 
 ## below snippet will install wp-config.php in case does not exist already in staging ##
@@ -148,7 +141,7 @@ if [[ ! -f "/var/www/html/dev/wp-config.php" ]]; then
 fi
 
 ####################################################################################################
-#### H. SS-Sync-Staging: Run SS-Install-WordPress-MU-Plugins (Conditional) #########################
+#### H. SS-Sync-Development: Run SS-Install-WordPress-MU-Plugins (Conditional) #####################
 ####################################################################################################
 
 ## below snippet will install MU plugins in case they do not exist already in staging ##
@@ -160,7 +153,7 @@ if [[ ! -f "/var/www/html/dev/wp-content/mu-plugins/xxx-common.php" ]]; then
 fi
 
 ####################################################################################################
-#### I. SS-Sync-Staging: Fix Any Hardcoded Links In Staging Theme Files ############################
+#### I. SS-Sync-Development: Fix Any Hardcoded Links In Development Theme Files ####################
 ####################################################################################################
 
 ## many themes (or custom-coded themes) often contain hardcoded HTML assets and links ##
@@ -179,14 +172,7 @@ fi
 fi
 
 ####################################################################################################
-## J. SS-Sync-Staging: Cleanup Temporary Files #####################################################
-####################################################################################################
-
-## delete tmp files ##
-rm /tmp/sync-development.sql
-
-####################################################################################################
-#### PLACEHOLDER: Reset Permissions (SlickStack Scripts) ###########################################
+#### J. SS-Sync-Development: Reset Permissions (SlickStack Scripts) ################################
 ####################################################################################################
 
 ## we include this permissions reset in all cron jobs and bash scripts for redundancy ##
