@@ -6,14 +6,14 @@
 #### mirror: https://mirrors.slickstack.io/bash/ss-sync-development.txt ############################
 #### path: /var/www/ss-sync-development ############################################################
 #### destination: n/a (not a boilerplate) ##########################################################
-#### purpose: Syncs relevant files and database from production site to the dev site ###############
+#### purpose: Syncs all physical files and database from production site to the dev site ###########
 #### module version: MySQL 8.0.x + WordPress 6.0.x #################################################
 #### sourced by: n/a ###############################################################################
 #### bash aliases: ss sync [dev|development] #######################################################
 ####################################################################################################
 
-## SS-SYNC-STAGING DUPLICATES RELEVANT FILES FROM PRODUCTION TO STAGING (NOT UPLOADS) ##
-## STAGING SITES WILL AUTOMAGICALLY LOAD ALL MEDIA UPLOADS FROM PRODUCTION ##
+## SS-SYNC-DEVELOPMENT DUPLICATES THE DATABASE AND ALL FILES FROM PRODUCTION TO DEV ##
+## DEV SITES ARE CONSIDERED INDEPENDENT THUS AUTO-SYNC IS DISABLED BY DEFAULT ##
 
 ####################################################################################################
 #### TABLE OF CONTENTS (SS-Sync-Development) #######################################################
@@ -25,9 +25,10 @@
 ## A. Source SS-Config + SS-Functions
 ## B. Touch Timestamp File
 ## C. Message (Begin Script)
-## D. Run SS-Dump-Database (Conditional)
-## E. Import Production Database To Staging Database
-## F. Copy All Relevant Files From Production To Staging
+## D. Backup Production Database
+## E. Import Production Database To Development Database
+## F. Copy All Files From Production To Development
+
 ## G. Run SS-Install-WordPress-Config (Conditional)
 ## H. Run SS-Install-WordPress-MU-Plugins (Conditional)
 ## I. Fix Any Hardcoded Links In Staging Theme Files
@@ -80,16 +81,14 @@ ss_echo "${COLOR_INFO}Running ss-sync-development... ${COLOR_RESET}"
 if [[ "${SS_SYNC_DEVELOPMENT}" != "false" ]]; then
 
 ####################################################################################################
-#### D. SS-Sync-Development: Backup Production Database (Conditional) ##############################
+#### D. SS-Sync-Development: Backup Production Database ############################################
 ####################################################################################################
 
 ## we must run ss-dump-database now if no database dump file is found under backups ##
 ## this ensures that a dump file exists before atempting to sync it to staging ##
 
-## FIX: change this to be OUTDATED instead e.g. more than X hours old ##
-if [[ ! -f "/var/www/backups/mysql/production.sql" ]]; then
-    source "${PATH_SS_DUMP_DATABASE}"
-fi
+## run ss-dump-database ##
+source "${PATH_SS_DUMP_DATABASE}"
 
 ####################################################################################################
 #### E. SS-Sync-Development: Import Production Database To Development Database ####################
@@ -116,7 +115,7 @@ if [[ "${DEV_SITE}" == "true" ]]; then
     fi
     
 ####################################################################################################
-#### F. SS-Sync-Staging: Copy All Relevant Files From Production To Staging ########################
+#### F. SS-Sync-Development: Copy All Files From Production To Development #########################
 ####################################################################################################
 
 ## here we copy over everything from production to staging besides uploads (media files) ##
