@@ -11,7 +11,7 @@ SlickStack is a free LEMP stack automation script written in Bash designed to en
 
 ## Core Modules
 
-*Last updated: Apr 30, 2022*
+*Last updated: Jul 4, 2022*
 
 | LEMP Module | Mirrors | Version | What does SlickStack optimize? |
 | :------------- | :----------: | :----------: | :----------: |
@@ -22,7 +22,7 @@ SlickStack is a free LEMP stack automation script written in Bash designed to en
 | **MySQL** | [mirrors](https://mirrors.slickstack.io/modules/mysql/) | 8.0.x | `my.cnf` |
 | **PHP-FPM** | [mirrors](https://mirrors.slickstack.io/modules/php-fpm/) | 8.1.x | `php.ini` + `php-fpm.conf` + `www.conf` |
 | **Redis** | [mirrors](https://mirrors.slickstack.io/modules/redis/) | 6.0.x | `redis.conf` + `object-cache.php` |
-| **WordPress** | [mirrors](https://mirrors.slickstack.io/modules/wordpress/) | 5.9.x | some WP Core junk files are removed by `ss-clean` |
+| **WordPress** | [mirrors](https://mirrors.slickstack.io/modules/wordpress/) | 6.0.x | some WP Core junk files are removed by `ss-clean` |
 | **WP-CLI** | [mirrors](https://mirrors.slickstack.io/modules/wordpress/wp-cli/) | 2.6.0 | some commands are disabled |
 | **Adminer** | [mirrors](https://mirrors.slickstack.io/modules/adminer/) | 4.8.1 | default config |
 | **Git** | [mirrors](https://mirrors.slickstack.io/modules/git/) | 2.34.x | default config |
@@ -31,7 +31,7 @@ SlickStack is a free LEMP stack automation script written in Bash designed to en
 
 ## Changelog
 
-* **NEW!** Our philosophy on staging/dev sites continues to harden: going forward, we consider dev sites to be for completely new designs or re-designs, and staging sites to be for brief testing of new features (mostly plugins). There is a new script `ss-sync-development` that you can manually run to duplicate your entire production site (including media uploads) to the dev subdomain. This is DIFFERENT from `ss-sync-staging` which skips the /uploads/ folder, since the staging subdomain loads media files automagically from the production directories to save disk space. By default, SlickStack will automatically run `ss-sync-staging` every so often if you have `STAGING_SITE` enabled in ss-config. However SlickStack will not run `ss-sync-development` automatically by default, and most likely we will never support this script being able to run automatically via cron jobs (only run manually).
+* **NEW!** Our philosophy on staging/dev sites continues to harden: going forward, we consider dev sites to be for completely new designs or re-designs, and staging sites to be for brief testing of new features (mostly plugins). There is a new script `ss-sync-development` that you can manually run to duplicate your entire production site (including media uploads) to the dev subdomain. This is DIFFERENT from `ss-sync-staging` which skips the /uploads/ folder, since the staging subdomain loads media files automagically from the production directories to save disk space. By default, SlickStack will automatically run `ss-sync-staging` every so often if you have `STAGING_SITE` enabled in ss-config. However SlickStack will not run `ss-sync-development` automatically by default (even if you have `DEV_SITE` enabled) and most likely we will never support this script being able to run automatically via cron jobs (only run manually).
 
 * **NEW!** More variables added to our experimental pilot file concept including Cloudflare API creds and "powered by" Nginx header, this means you can rapidly update dozens or hundreds of SlickStack servers using a single private Gist file.
 
