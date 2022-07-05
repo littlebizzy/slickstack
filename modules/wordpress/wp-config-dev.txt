@@ -50,10 +50,12 @@ define('WP_ENVIRONMENT_TYPE', 'development'); // ss = development
 define('WP_LOCAL_DEV', false); // ss = false
 
 /** ********************************************************************************************* */
-/** WP-Config (Development): Domain + Path Settings ********************************************* */
+/** WP-Config (Development): Domain Settings **************************************************** */
 /** ********************************************************************************************* */
 
-/** force URI structure */
+/** all domain settings are hardcoded to avoid conflicts and maintain best practices */
+/** there should never be any reason to change these settings no matter what */
+
 define('WP_HOME', 'https://dev.@SITE_DOMAIN'); // ss = *must be unique*
 define('WP_SITEURL', 'https://dev.@SITE_DOMAIN'); // ss = *must be unique*
 define('WP_CONTENT_URL', 'https://dev.@SITE_DOMAIN/wp-content'); // ss = *must be unique*
@@ -78,71 +80,42 @@ define('FORCE_SSL_LOGIN', true); // ss = true
 /** WP-Config (Development): Cookie Settings **************************************************** */
 /** ********************************************************************************************* */
 
-/** for single sites with a staging/dev subdomain the main domain controls cookies */
-/** but for Multisite networks an empty value is best for COOKIE_DOMAIN */
+/** for single sites prod/staging/dev use distinct cookies to avoid login conflicts */
+/** but for Multisite networks each site in COOKIE_DOMAIN is auto-detected */
 
-// define('COOKIE_DOMAIN', 'dev.@SITE_DOMAIN');
-// define('COOKIEPATH', dev.@SITE_DOMAIN . '/');
-// define('SITECOOKIEPATH', dev.@SITE_DOMAIN . '/');
-// define('COOKIEPATH', '/');
-// define('SITECOOKIEPATH', '/');
-// define('ADMIN_COOKIE_PATH', SITECOOKIEPATH . 'wp-admin');
-// define('ADMIN_COOKIE_PATH', 'wp-admin');
-
-/** ********************************************************************************************* */
-/** WP-Config (Development): Multisite Settings ************************************************* */
-/** ********************************************************************************************* */
-
-/** for stability reasons SlickStack requires Multisite domain to match SITE_DOMAIN */
-/** domain mapping (e.g. for your clients) requires the subdomains approach */
-
-define('WP_ALLOW_MULTISITE', @WP_MULTISITE); // ss = false
-define('MULTISITE', @WP_MULTISITE); // ss = false
-define('SUBDOMAIN_INSTALL', @WP_MULTISITE_SUBDOMAINS); // ss = true
-define('DOMAIN_CURRENT_SITE', 'dev.@SITE_DOMAIN_EXCLUDING_WWW'); // ss = *must be unique*
-define('NOBLOGREDIRECT', 'dev.@SITE_DOMAIN_EXCLUDING_WWW'); // ss = *must be unique*
-define('PATH_CURRENT_SITE', '/'); // ss = /
-define('SITE_ID_CURRENT_SITE', 1); // ss = 1
-define('BLOG_ID_CURRENT_SITE', 1); // ss = 1
+define('COOKIE_DOMAIN', 'dev.@SITE_DOMAIN');
+define('COOKIEPATH', '/');
+define('SITECOOKIEPATH', '/');
+define('ADMIN_COOKIE_PATH', SITECOOKIEPATH . 'wp-admin');
 
 /** ********************************************************************************************* */
 /** WP-Config (Development): Debug Settings ***************************************************** */
 /** ********************************************************************************************* */
 
-/** many debugging and error settings are hardcoded in SlickStack (in PHP + WP-Config) */
-/** for more verbose debugging use the staging/dev sites and not production */
+/** most debugging and error handling is hardcoded in SlickStack for better stability */
+/** for more verbose debugging use staging/dev sites as WP_DEBUG is enabled */
 
-/** WP_DEBUG = [false|true] sets PHP error_reporting to E_ALL and enables child options */
-/** WP_DEBUG_LOG = [false|true] creates debug.log (unnecessary on SlickStack) */
-/** WP_DEBUG_DISPLAY = [true|false] displays PHP errors in HTML (unsafe in production) */
-
-define('WP_DEBUG', true);
-define('WP_DEBUG_LOG', false);
-define('WP_DEBUG_DISPLAY', false);
+define('WP_DEBUG', true); // ss = true
+define('WP_DEBUG_LOG', false); // ss = false (disables debug.log)
+define('WP_DEBUG_DISPLAY', false); // ss = false
 
 /** ********************************************************************************************* */
-/** WP-Config (Development): Cache Settings ***************************************************** */
+/** WP-Config (Development): Core Update Settings *********************************************** */
 /** ********************************************************************************************* */
 
-/** because SlickStack uses server-level Nginx caching we disable WordPress caching */
-/** any plugins or themes that require cache directory are improperly coded */
-
-define('WP_CACHE', false); // ss = false
-
-/** ********************************************************************************************* */
-/** WP-Config: WordPress Core Updates Settings ************************************************** */
-/** ********************************************************************************************* */
-
-/** for security and stability reasons SlickStack does not prevent WP Core from updating */
-/** only minor releases (patches) will auto-update and bundled themes are skipped */
+/** for security reasons SlickStack does not prevent WordPress from receiving updates */
+/** minor releases (patches) will auto-update and bundled themes are skipped */
 
 define('AUTOMATIC_UPDATER_DISABLED', false); // ss = false
 define('WP_AUTO_UPDATE_CORE', 'minor'); // ss = minor
 define('CORE_UPGRADE_SKIP_NEW_BUNDLED', true); // ss = true
 
 /** ********************************************************************************************* */
-/** WP-Config: Security Salts Settings (No-Conflict Hashes Generated By OpenSSL) **************** */
+/** WP-Config (Development): Salt Settings ****************************************************** */
 /** ********************************************************************************************* */
+
+/** the salt strings are used by WordPress to secure and randomize login sessions etc */
+/** to avoid conflicts we do not mix complex symbols in the generated strings */
 
 define('AUTH_KEY', '@AUTHKEY'); // ss = *must be unique*
 define('SECURE_AUTH_KEY', '@SECUREAUTHKEY'); // ss = *must be unique*
@@ -152,6 +125,15 @@ define('AUTH_SALT', '@AUTHSALT'); // ss = *must be unique*
 define('SECURE_AUTH_SALT', '@SECUREAUTHSALT'); // ss = *must be unique*
 define('LOGGED_IN_SALT', '@LOGGEDINSALT'); // ss = *must be unique*
 define('NONCE_SALT', '@NONCESALT'); // ss = *must be unique*
+
+/** ********************************************************************************************* */
+/** WP-Config (Development): Cache Settings ***************************************************** */
+/** ********************************************************************************************* */
+
+/** because SlickStack uses server-level Nginx caching we disable WordPress caching */
+/** any plugins or themes that require cache directory are improperly coded */
+
+define('WP_CACHE', false); // ss = false
 
 /** ********************************************************************************************* */
 /** WP-Config: File + Upload + API Permissions Settings ***************************************** */
