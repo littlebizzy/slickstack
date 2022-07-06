@@ -39,7 +39,8 @@ source /var/www/ss-functions
 ## G. Set Default PHP Version
 ## H. Reset Permissions (PHP Packages)
 ## I. Purge Cache (PHP OPcache)
-## J.Restart Services (PHP-FPM)
+## J. Restart Services (PHP-FPM)
+## K. Reset Permissions (SlickStack Scripts)
 
 ####################################################################################################
 #### A. SS-Install-PHP-Packages: Touch Timestamp File ##############################################
@@ -107,35 +108,75 @@ fi
 
 if [[ "${SS_APP}" != "mysql" ]]; then
 
-## php8.1 not needed for php8.1-fpm (Ubuntu 22.04 LTS) ##
-if [[ "${UBUNTU_VERSION}" == "22.04" ]] && [[ -n "${PHP_EXTENSIONS}" ]]; then
-    PHP_EXTENSIONS_NOW=$(source /var/www/ss-config; echo $PHP_EXTENSIONS)
-        if [[ "${PHP_EXTENSIONS_NOW}" == *"php8.1"* ]]; then
-            ss_apt_install "${PHP_EXTENSIONS_NOW}"
-        else
-            ss_apt_install php8.1-fpm php8.1-bcmath php8.1-curl php8.1-gd php8.1-imagick php8.1-mbstring php8.1-mysql php8.1-soap php8.1-sqlite3 php8.1-xml php8.1-zip > /dev/null 2>&1
-        fi
+## ubuntu 22.04 ##
+if [[ "${UBUNTU_VERSION}" == "22.04" ]]; then
+    PHP_EXTENSIONS_NOW=$(source /var/www/ss-config; echo "${PHP_EXTENSIONS}")
+    if [[ "${PHP_EXTENSIONS_NOW}" == *"php8.1"* ]]; then
+        ss_apt_install "${PHP_EXTENSIONS_NOW}"
+    else
+        ss_apt_install php8.1-fpm
+        ss_apt_install php8.1-bcmath
+        ss_apt_install php8.1-curl
+        ss_apt_install php8.1-gd
+        ss_apt_install php8.1-imagick
+        ss_apt_install php8.1-mbstring
+        ss_apt_install php8.1-mysql
+        ss_apt_install php8.1-soap
+        ss_apt_install php8.1-sqlite3
+        ss_apt_install php8.1-xml
+        ss_apt_install php8.1-zip
+    fi
 fi
 
-## php7.4 not needed for php7.4-fpm (Ubuntu 20.04 LTS) ##
-if [[ "${UBUNTU_VERSION}" == "20.04" ]] && [[ -n "${PHP_EXTENSIONS}" ]]; then
-    PHP_EXTENSIONS_NOW=$(source /var/www/ss-config; echo $PHP_EXTENSIONS)
-        if [[ "${PHP_EXTENSIONS_NOW}" == *"php7.4"* ]]; then
-            ss_apt_install "${PHP_EXTENSIONS_NOW}"
-        else
-            ## cannot include these directly (part of other packages): hash,libxml,openssl,pcre,pdo_mysql,sodium ##
-            ss_apt_install php7.4-fpm php7.4-bcmath php7.4-ctype php7.4-curl php7.4-dom php7.4-fileinfo php7.4-gd php7.4-iconv php7.4-intl php7.4-imagick php7.4-json php7.4-mbstring php7.4-mysql php7.4-simplexml php7.4-soap php7.4-sockets php7.4-sqlite3 php7.4-xml php7.4-xmlwriter php7.4-xsl php7.4-zip > /dev/null 2>&1
-        fi
+## ubuntu 20.04 ##
+if [[ "${UBUNTU_VERSION}" == "20.04" ]]; then
+    PHP_EXTENSIONS_NOW=$(source /var/www/ss-config; echo "${PHP_EXTENSIONS}")
+    if [[ "${PHP_EXTENSIONS_NOW}" == *"php7.4"* ]]; then
+        ss_apt_install "${PHP_EXTENSIONS_NOW}"
+    else
+        ss_apt_install php7.4-fpm
+        ss_apt_install php7.4-bcmath
+        ss_apt_install php7.4-ctype
+        ss_apt_install php7.4-curl
+        ss_apt_install php7.4-dom
+        ss_apt_install php7.4-fileinfo
+        ss_apt_install php7.4-gd
+        ss_apt_install php7.4-iconv
+        ss_apt_install php7.4-intl
+        ss_apt_install php7.4-imagick
+        ss_apt_install php7.4-json
+        ss_apt_install php7.4-mbstring
+        ss_apt_install php7.4-mysql
+        ss_apt_install php7.4-simplexml
+        ss_apt_install php7.4-soap
+        ss_apt_install php7.4-sockets
+        ss_apt_install php7.4-sqlite3
+        ss_apt_install php7.4-xml
+        ss_apt_install php7.4-xmlwriter
+        ss_apt_install php7.4-xsl
+        ss_apt_install php7.4-zip
+    fi
 fi
 
-## php7.2 not needed for php7.2-fpm (Ubuntu 18.04 LTS) ##
-if [[ "${UBUNTU_VERSION}" == "18.04" ]] && [[ -n "${PHP_EXTENSIONS}" ]]; then
-    PHP_EXTENSIONS_NOW=$(source /var/www/ss-config; echo $PHP_EXTENSIONS)
-        if [[ "${PHP_EXTENSIONS_NOW}" == *"php7.2"* ]]; then
-            ss_apt_install "${PHP_EXTENSIONS_NOW}"
-        else
-            ss_apt_install php7.2-fpm php7.2-bcmath php7.2-curl php7.2-gd php7.2-imagick php7.2-json php7.2-mbstring php7.2-mysql php7.2-soap php7.2-sqlite3 php7.2-xml php7.2-zip > /dev/null 2>&1
-        fi
+## ubuntu 18.04 ##
+if [[ "${UBUNTU_VERSION}" == "18.04" ]]; then
+    PHP_EXTENSIONS_NOW=$(source /var/www/ss-config; echo "${PHP_EXTENSIONS}")
+    if [[ "${PHP_EXTENSIONS_NOW}" == *"php7.2"* ]]; then
+        ss_apt_install "${PHP_EXTENSIONS_NOW}"
+    else
+        ss_apt_install php7.2-fpm
+        ss_apt_install php7.2-bcmath
+        ss_apt_install php7.2-curl
+        ss_apt_install php7.2-gd
+        ss_apt_install php7.2-imagick
+        ss_apt_install php7.2-json
+        ss_apt_install php7.2-mbstring
+        ss_apt_install php7.2-mysql
+        ss_apt_install php7.2-soap
+        ss_apt_install php7.2-sqlite3
+        ss_apt_install php7.2-xml
+        ss_apt_install php7.2-zip
+    fi
 fi
 
 fi 
@@ -175,17 +216,17 @@ fi
 
 if [[ "${SS_APP}" != "mysql" ]]; then
 
-## php8.1 (Ubuntu 22.04 LTS) ##
+## ubuntu 22.04 ##
 if [[ "${UBUNTU_VERSION}" == "22.04" ]]; then
     update-alternatives --set php /usr/bin/php8.1
 fi
 
-## php7.4 (Ubuntu 20.04 LTS) ##
+## ubuntu 20.04 ##
 if [[ "${UBUNTU_VERSION}" == "20.04" ]]; then
     update-alternatives --set php /usr/bin/php7.4
 fi
 
-## php7.2 (Ubuntu 18.04 LTS) ##
+## ubuntu 18.04 ##
 if [[ "${UBUNTU_VERSION}" == "18.04" ]]; then
     update-alternatives --set php /usr/bin/php7.2
 fi
@@ -214,7 +255,7 @@ source "${PATH_SS_PURGE_OPCACHE}"
 source "${PATH_SS_RESTART_PHP}"
 
 ####################################################################################################
-#### PLACEHOLDER: Reset Permissions (SlickStack Scripts) ###########################################
+#### K. SS-Install-PHP-Packages: Reset Permissions (SlickStack Scripts) ############################
 ####################################################################################################
 
 ## we include this permissions reset in all cron jobs and bash scripts for redundancy ##
