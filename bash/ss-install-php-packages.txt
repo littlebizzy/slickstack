@@ -15,6 +15,30 @@
 ## SS-CONFIG MUST BE PROPERLY CONFIGURED AND ON CURRENT BUILD BEFORE RUNNING SS-INSTALL ##
 ## ENSURE YOUR SS-CONFIG BUILD REMAINS CURRENT BY RUNNING SS-UPDATE OCCASIONALLY ##
 
+####################################################################################################
+#### TABLE OF CONTENTS (SS-Install-PHP-Packages) ###################################################
+####################################################################################################
+
+## this is a brief summary of the different code snippets you will find in this script ##
+## each section should be commented so you understand what is being accomplished ##
+
+## A. Source SS-Config + SS-Functions
+## B. Touch Timestamp File
+## C. Message (Begin Script)
+## D. Update Existing Packages
+## E. Purge Any Existing PHP Packages (Optional)
+## F. Install PHP-FPM + PHP Extensions
+## G. Install PHP-Redis Extension (Required)
+## H. Set Default PHP Version
+## I. Reset Permissions (PHP Packages)
+## J. Purge Cache (PHP OPcache)
+## K. Restart Services (PHP-FPM)
+## L. Reset Permissions (SlickStack Scripts)
+
+####################################################################################################
+#### A. SS-Install-PHP-Packages: Source SS-Config + SS-Functions ###################################
+####################################################################################################
+
 ## source ss-config ##
 source /var/www/ss-config
 
@@ -24,26 +48,7 @@ source /var/www/ss-functions
 ## BELOW THIS RELIES ON SS-CONFIG AND SS-FUNCTIONS
 
 ####################################################################################################
-#### TABLE OF CONTENTS (SS-Install-PHP-Packages) ###################################################
-####################################################################################################
-
-## this is a brief summary of the different code snippets you will find in this script ##
-## each section should be commented so you understand what is being accomplished ##
-
-## A. Touch Timestamp File
-## B. Message (Begin Script)
-## C. Update Existing Packages
-## D. Purge Any Existing PHP Packages (Optional)
-## E. Install PHP-FPM + PHP Extensions
-## F. Install PHP-Redis Extension (Required)
-## G. Set Default PHP Version
-## H. Reset Permissions (PHP Packages)
-## I. Purge Cache (PHP OPcache)
-## J. Restart Services (PHP-FPM)
-## K. Reset Permissions (SlickStack Scripts)
-
-####################################################################################################
-#### A. SS-Install-PHP-Packages: Touch Timestamp File ##############################################
+#### B. SS-Install-PHP-Packages: Touch Timestamp File ##############################################
 ####################################################################################################
 
 ## this is a dummy timestamp file that will remember the last time this script was run ##
@@ -53,7 +58,7 @@ source /var/www/ss-functions
 ss_touch "${TIMESTAMP_SS_INSTALL_PHP_PACKAGES}"
 
 ####################################################################################################
-#### B. SS-Install-PHP-Packages: Message (Begin Script) ############################################
+#### C. SS-Install-PHP-Packages: Message (Begin Script) ############################################
 ####################################################################################################
 
 ## this is a simple message that announces to the shell the purpose of this bash script ##
@@ -63,14 +68,14 @@ ss_touch "${TIMESTAMP_SS_INSTALL_PHP_PACKAGES}"
 ss_echo "${COLOR_INFO}Running ss-install-php-packages... ${COLOR_RESET}"
 
 ####################################################################################################
-#### C. SS-Install-PHP-Packages: Update Existing Packages ##########################################
+#### D. SS-Install-PHP-Packages: Update Existing Packages ##########################################
 ####################################################################################################
-
-## SNIPPET: ss-install-*-packages bash scripts
-## UPDATED: 30MAR2022
 
 ## we must include the standard apt update/upgrade in case script is called directly ##
 ## this helps to avoid conflicts and outdated packages during installation ##
+
+## SNIPPET: ss-install-[module]-packages bash scripts
+## UPDATED: 08JUL2022
 
 ## update apt cache ##
 ss_apt_update
@@ -79,7 +84,7 @@ ss_apt_update
 ss_apt_upgrade
 
 ####################################################################################################
-#### D. SS-Install-PHP-Packages: Purge Any Existing PHP Packages (Optional) ########################
+#### E. SS-Install-PHP-Packages: Purge Any Existing PHP Packages (Optional) ########################
 ####################################################################################################
 
 ## here we first purge any existing PHP packages and then reinstall PHP-FPM from scratch ##
@@ -100,7 +105,7 @@ if [[ "${SS_APP}" != "mysql" ]]; then
 fi
 
 ####################################################################################################
-#### E. SS-Install-PHP-Packages: Install PHP-FPM + PHP Extensions ##################################
+#### F. SS-Install-PHP-Packages: Install PHP-FPM + PHP Extensions ##################################
 ####################################################################################################
 
 ## here PHP-FPM will be installed along with any custom PHP extensions in your ss-config ##
@@ -200,80 +205,72 @@ fi
 fi
 
 ####################################################################################################
-#### F. SS-Install-PHP-Packages: Install PHP-Redis Extension (Required) ############################
+#### G. SS-Install-PHP-Packages: Install PHP-Redis Extension (Required) ############################
 ####################################################################################################
 
 ## we force install the php-redis extension to ensure it exists on SlickStack servers ##
 ## this is because Redis is a core module and required for i.e. object caching ##
 
-if [[ "${SS_APP}" != "mysql" ]]; then
-
-## php-redis (Ubuntu 22.04 LTS) ##
-if [[ "${UBUNTU_VERSION}" == "22.04" ]]; then
+## ubuntu 22.04 ##
+if [[ "${UBUNTU_VERSION}" == "22.04" ]] && [[ "${SS_APP}" != "mysql" ]]; then
     ss_apt_install php-redis
 fi
 
-## php-redis (Ubuntu 20.04 LTS) ##
-if [[ "${UBUNTU_VERSION}" == "20.04" ]]; then
+## ubuntu 20.04 ##
+if [[ "${UBUNTU_VERSION}" == "20.04" ]] && [[ "${SS_APP}" != "mysql" ]]; then
     ss_apt_install php-redis
 fi
 
-## php-redis (Ubuntu 18.04 LTS) ##
-if [[ "${UBUNTU_VERSION}" == "18.04" ]]; then
+## ubuntu 18.04 ##
+if [[ "${UBUNTU_VERSION}" == "18.04" ]] && [[ "${SS_APP}" != "mysql" ]]; then
     ss_apt_install php-redis
-fi
-
 fi
 
 ####################################################################################################
-#### G. SS-Install-PHP-Packages: Set Default PHP Version ###########################################
+#### H. SS-Install-PHP-Packages: Set Default PHP Version ###########################################
 ####################################################################################################
 
 ## here we set the default PHP version depending on the version of Ubuntu LTS detected ##
 ## in most cases this step is not necessary but we do it anyway for consistency ##
 
-if [[ "${SS_APP}" != "mysql" ]]; then
-
 ## ubuntu 22.04 ##
-if [[ "${UBUNTU_VERSION}" == "22.04" ]]; then
+if [[ "${UBUNTU_VERSION}" == "22.04" ]] && [[ "${SS_APP}" != "mysql" ]]; then
     update-alternatives --set php /usr/bin/php8.1
 fi
 
 ## ubuntu 20.04 ##
-if [[ "${UBUNTU_VERSION}" == "20.04" ]]; then
+if [[ "${UBUNTU_VERSION}" == "20.04" ]] && [[ "${SS_APP}" != "mysql" ]]; then
     update-alternatives --set php /usr/bin/php7.4
 fi
 
 ## ubuntu 18.04 ##
-if [[ "${UBUNTU_VERSION}" == "18.04" ]]; then
+if [[ "${UBUNTU_VERSION}" == "18.04" ]] && [[ "${SS_APP}" != "mysql" ]]; then
     update-alternatives --set php /usr/bin/php7.2
 fi
 
-fi 
-
 ####################################################################################################
-#### H. SS-Install-PHP-Packages: Reset Permissions (PHP Packages) ##################################
+#### I. SS-Install-PHP-Packages: Reset Permissions (PHP Packages) ##################################
 ####################################################################################################
 
 ## run ss-perms-php-packages ##
 source "${PATH_SS_PERMS_PHP_PACKAGES}"
 
 ####################################################################################################
-#### I. SS-Install-PHP-Packages: Purge Cache (PHP OPcache) #########################################
+#### J. SS-Install-PHP-Packages: Purge Cache (PHP OPcache) #########################################
 ####################################################################################################
 
 ## run ss-purge-opcache ##
 source "${PATH_SS_PURGE_OPCACHE}"
 
 ####################################################################################################
-#### J. SS-Install-PHP-Packages: Restart Services (PHP-FPM) ########################################
+#### K. SS-Install-PHP-Packages: Restart Services (PHP-FPM) ########################################
 ####################################################################################################
 
 ## run ss-restart-php ##
 source "${PATH_SS_RESTART_PHP}"
 
 ####################################################################################################
-#### K. SS-Install-PHP-Packages: Reset Permissions (SlickStack Scripts) ############################
+#### L. SS-Install-PHP-Packages: Reset Permissions (SlickStack Scripts) ############################
 ####################################################################################################
 
 ## we include this permissions reset in all cron jobs and bash scripts for redundancy ##
