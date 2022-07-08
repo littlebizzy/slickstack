@@ -407,12 +407,10 @@ chmod 0700 /var/www/ss* ## 0700 means only root can execute
 ## maintaining a thoughtful blacklist vastly improves WP performance and security ##
 
 ## download latest blacklist (or custom blacklist) ##
-if [[ -z "$PLUGIN_BLACKLIST_SOURCE" ]] && [[ -z "$SS_WORDPRESS_PLUGIN_BLACKLIST_SOURCE" ]]; then 
+if [[ -z "${WP_PLUGIN_BLACKLIST_SOURCE}" ]]; then 
     ss_wget_slowest "${TMP_BLACKLIST_TXT}" "${MIRROR_BLACKLIST_TXT}"
-elif [[ -n "$PLUGIN_BLACKLIST_SOURCE" ]]; then
-    ss_wget_slowest "${TMP_BLACKLIST_TXT}" "${PLUGIN_BLACKLIST_SOURCE}"
-elif [[ -n "$SS_WORDPRESS_PLUGIN_BLACKLIST_SOURCE" ]]; then
-    ss_wget_slowest "${TMP_BLACKLIST_TXT}" "${SS_WORDPRESS_PLUGIN_BLACKLIST_SOURCE}"
+else
+    ss_wget_slowest "${TMP_BLACKLIST_TXT}" "${WP_PLUGIN_BLACKLIST_SOURCE}"
 fi
 
 ## copy file to wp-content directory ##
@@ -424,7 +422,7 @@ chown www-data:wordpress /var/www/html/wp-content/blacklist.txt ## change to www
 chmod 0440 /var/www/html/wp-content/blacklist.txt
 
 ## NULL blacklist.txt if ss-config false (allows default SS MU plugin to be installed while still being able to disable plugin blacklist) ##
-if [[ "${SS_PLUGIN_BLACKLIST}" == "false" || "${SS_WORDPRESS_PLUGIN_BLACKLIST}" == "false" ]]; then 
+if [[ "${WP_PLUGIN_BLACKLIST}" == "false" ]]; then 
 cat /dev/null > /var/www/html/wp-content/blacklist.txt
     if [[ "${DEV_SITE}" != "false" ]]; then 
         ss_touch /var/www/html/dev/wp-content/blacklist.txt
