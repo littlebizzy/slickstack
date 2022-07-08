@@ -21,7 +21,7 @@
 ## run ss-update-config if outdated (check the public mirror link for current build) ##
 ## or copy mirror boilerplate to /var/www/ss-config and customize settings ##
 
-SS_BUILD="JUL2022F"
+SS_BUILD="JUL2022G"
 
 ####################################################################################################
 #### SS-Config: Access Settings ####################################################################
@@ -43,7 +43,7 @@ SUDO_PASSWORD="@SUDO_PASSWORD"
 
 ## SSH_KEYS = [false|true] if enabled then SSH password logins will be disabled ##
 ## SSH_RESTRICT_IP = [false|true] enable restricting SSH logins per IP address (caution) ##
-## SSH_IPV4 = [192.0.2.1|etc] only allow SSH logins from the specified IPv4 address ##
+## SSH_IPV4 = [*must be unique*] only allow SSH logins from the given IPv4 address ##
 
 SSH_KEYS="@SSH_KEYS"
 SSH_RESTRICT_IP="@SSH_RESTRICT_IP"
@@ -77,15 +77,15 @@ SITE_NOINDEX="@SITE_NOINDEX"
 #### SS-Config: Database Settings ##################################################################
 ####################################################################################################
 
-## using a remote MySQL database has not been extensively tested (use at your own risk) ##
-## for security reasons choose a unique password for the MySQL root/admin user ##
+## remote MySQL databases are supported along with whatever port number is required ##
+## for security reasons choose a unique password for MySQL admin (root) user ##
 
 ## DB_NAME = [production] active production database (staging/development hardcoded) ##
 ## DB_USER = [example|etc] for easier management it can be the same as SFTP_USER ##
 ## DB_PASSWORD = [*must be unique*] something strong but not too complex or confusing ##
 ## DB_PASSWORD_ROOT = [*must be unique*] now only used for admin@127.0.0.1 ##
 ## DB_HOST = [127.0.0.1|etc] enter remote database server IP here otherwise use loopback ##
-## DB_PORT = [3306|25060|etc] some managed database providers require a specific port ##
+## DB_PORT = [3306|25060|etc] some remote database providers require a specific port ##
 ## DB_PREFIX = [wp_|etc] for easier management the default wp_ prefix is recommended ##
 ## DB_CHARSET = [utf8mb4|etc] most databases these days should be using utf8mb4 ##
 ## DB_COLLATE = [NULL|etc] leave it blank unless you really know what you are doing ##
@@ -105,7 +105,7 @@ DB_COLLATE=""
 ####################################################################################################
 
 ## these settings are to control Cloudflare from the WP Admin for easier management ##
-## our WordPress MU plugin uses these or your other plugins could use them too ##
+## our WordPress MU plugin uses these or your other scripts could use them too ##
 
 ## CLOUDFLARE_API_KEY = [*must be unique*] the API key/token in your CloudFlare account ##
 ## CLOUDFLARE_API_EMAIL = [*must be unique*] the email address of your CloudFlare account ##
@@ -126,7 +126,7 @@ CLOUDFLARE_API_EMAIL="@CLOUDFLARE_API_EMAIL"
 DEV_SITE="@DEV_SITE_STATUS"
 DEV_SITE_PROTECT="@DEV_SITE_PROTECT"
 
-## staging site subdomains are auto-synced from production to briefly test new features ##
+## staging site subdomains are auto-synced from production to briefly test features ##
 ## enabling creates staging database and Nginx block during ss-install ##
 
 ## STAGING_SITE = [true|false] enables staging subdomain and WP Admin toolbar switcher ##
@@ -135,8 +135,8 @@ DEV_SITE_PROTECT="@DEV_SITE_PROTECT"
 STAGING_SITE="@STAGING_SITE_STATUS"
 STAGING_SITE_PROTECT="@STAGING_SITE_PROTECT"
 
-## the guest user is something you can use to view staging/dev subdomains (or clients) ##
-## to password protect production site you should use a WordPress plugin ##
+## the guest user can be provided to clients for viewing the staging/dev subdomains ##
+## to password protect production site please use a WordPress plugin instead ##
 
 ## GUEST_USER = [*must be unique*] this user can login to view staging/dev sites ##
 ## GUEST_PASSWORD = [*must be unique*] something easy for clients to remember ##
@@ -150,8 +150,8 @@ GUEST_PASSWORD="@GUEST_PASSWORD"
 
 ## BE SURE TO ENABLE YOUR PREFERRED SERVICE USING SS_REMOTE_BACKUPS OPTION IN SS-CONFIG ##
 
-## not to be confused with the ss-dump script which creates a temporary local archive ##
-## remote backups push your SlickStack data to cloud storage using Rclone ##
+## not to be confused with the ss-dump scripts which create temporary local archives ##
+## remote backups push your SlickStack data to cloud storage using rsync/rclone ##
 
 ## RCLONE_TYPE = [b2|dropbox|etc] choose a supported rclone cloud storage provider ##
 ## RCLONE_MODE = [copy|sync] copy avoids data loss but complicates restores ##
@@ -161,8 +161,9 @@ GUEST_PASSWORD="@GUEST_PASSWORD"
 ## RCLONE_USER = [*must be unique*] some services want to know your username ##
 ## RCLONE_PASSWORD = [*must be unique*] some services want to know your password ##
 ## RCLONE_TOKEN = [*must be unique*] usually a one-time token you must generate ##
-## RCLONE_BACKUP_PATH = [/var/www/|/var/www/backups/] select backups subfolder when you enable SS_DUMP_FILES ##
-## RCLONE_PARALLEL_TRANSFERS = [15|100|...] number of parallel transfers - more is faster ##
+## RCLONE_BACKUP_PATH = [/var/www/backups/|etc] directory tree that you want to rclone ##
+## RCLONE_PARALLEL_TRANSFERS = [15|100|...] number of parallel transfers (more is faster) ##
+
 ## about parallel transfers: 1000 on 2c VPS = 200% CPU, 500 = 120% CPU, 100 = 10% CPU ##
 ## WARNING: when you set parallel transfers high and have files that are big, it could crash your VPS. ##
 ## when you have files over 5GB, it will chunk that data to 96MB and stores them in RAM. 96MB*transfers=RAM Usage ##
@@ -172,19 +173,19 @@ GUEST_PASSWORD="@GUEST_PASSWORD"
 
 RCLONE_TYPE="b2" ## only b2 supported for now
 RCLONE_MODE="copy" ## recommended to leave "copy" and use b2 lifecycle rules
-RCLONE_REMOTE_PATH="/bucketname/@SITE_DOMAIN"  ## for b2, use bucketname (and then subfolder)
+RCLONE_REMOTE_PATH="/bucketname/@SITE_DOMAIN"  ## for b2 use /bucketname/ and then subfolder
 RCLONE_CLIENT_ID="" ## fill with b2 key ID
 RCLONE_CLIENT_SECRET="" ## fill with b2 key
 RCLONE_USER=""
 RCLONE_PASSWORD=""
 RCLONE_TOKEN=""
-RCLONE_BACKUP_PATH="/var/www/backups/"
-RCLONE_PARALLEL_TRANSFERS="15" ## default 15 - recommended lower for big files
+RCLONE_BACKUP_PATH="/var/www/backups/" ## enable SS_DUMP_FILES first
+RCLONE_PARALLEL_TRANSFERS="15" ## default 15 (recommended lower for big files)
 
 ## RSYNC_REMOTE_HOST = [192.0.2.1|example.rsync.net|etc] remote host address for rsync ##
-## RSYNC_BACKUP_PATH = [/var/www/html/] best to backup entire html directory for rsync ##
-## RSYNC_USER = [*must be unique*] username is assigned by some services like rsync.net ##
-## RSYNC_PASSWORD = [*must be unique*] password is assigned by some services like rsync.net ##
+## RSYNC_BACKUP_PATH = [/var/www/html/|etc] best to backup html directory for rsync ##
+## RSYNC_USER = [*must be unique*] username is assigned by services like rsync.net ##
+## RSYNC_PASSWORD = [*must be unique*] password is assigned by services like rsync.net ##
 
 RSYNC_REMOTE_HOST="192.0.2.1"
 RSYNC_BACKUP_PATH="/var/www/html/" ## hardcoded for now in ss-remote-backups
@@ -201,28 +202,20 @@ RSYNC_PASSWORD=""
 ####################################################################################################
 ####################################################################################################
 
-## most websites should be fine using the default settings that are pre-configured below ##
-## only advanced users with sysadmin experience should mess around with these ##
-
 ####################################################################################################
 #### SS-Config: General Settings ###################################################################
 ####################################################################################################
 
-## SS_APP = [wordpress|mysql|mediawiki] more options coming soon (send us your feedback) ##
-## SS_LANGUAGE = [en_US|de_DE|etc] affects minor features like Nginx skip cache slugs ##
+## here you can choose the CMS app that this SlickStack server is configured to run ##
+## language setting affects minor features like the Nginx skip cache slugs ##
 
-SS_APP="@SS_APP" ## only wordpress is stable
-SS_LANGUAGE="@SS_LANGUAGE" ## en_US best supported currently
+## SS_APP = [wordpress|etc] which CMS app that you want to install on this server ##
+## SS_LANGUAGE = [en_US|de_DE|pl_PL|etc] en_US is best supported right now ##
 
-## SS_PILOT_FILE = [*must be unique*] the direct URL to your secret Gist file or otherwise ##
-## in the pilot file you can enter all variable of ss-config that you want to change ##
-## check the current version of ss-worker.txt on github to see what variables are already implemented ##
-## enter them VARIABLE_NAME="variable value" like seen here, one in each line ##
-## paste the full URL to your secret gist in this config or during the install ##
-## your ss-config will be updated on every ss-worker run (see the interval settings section below) ##
-## some updated settings may only be used when running ss-update or other specialized ss functions ##
+SS_APP="@SS_APP" ## only wordpress supported now
+SS_LANGUAGE="@SS_LANGUAGE"
 
-SS_PILOT_FILE="@SS_PILOT_FILE"
+
 
 ## SS_DATABASE_REMOTE = [false|true] skips MySQL install if true (remote database) ##
 ## SS_OBJECT_CACHE = [true|false] most sites will benefit from object caching ##
@@ -258,6 +251,17 @@ WHITELABEL_HOMEPAGE="https://www.littlebizzy.com"
 WHITELABEL_SUPPORT_URL="https://www.littlebizzy.com/support"
 WHITELABEL_SUPPORT_EMAIL="support@littlebizzy.com"
 
+## SS_PILOT_FILE = [*must be unique*] the direct URL to your secret Gist file or otherwise ##
+
+## in the pilot file you can enter all variable of ss-config that you want to change ##
+## check the current version of ss-worker.txt on github to see what variables are already implemented ##
+## enter them VARIABLE_NAME="variable value" like seen here, one in each line ##
+## paste the full URL to your secret gist in this config or during the install ##
+## your ss-config will be updated on every ss-worker run (see the interval settings section below) ##
+## some updated settings may only be used when running ss-update or other specialized ss functions ##
+
+SS_PILOT_FILE="@SS_PILOT_FILE"
+
 ####################################################################################################
 #### SS-Config: SSL Settings (CSR Optional) ########################################################
 ####################################################################################################
@@ -279,6 +283,9 @@ SSL_SESSION_TIMEOUT="1d"
 SSL_SESSION_CACHE="shared:SSL:64m"
 SSL_BUFFER_SIZE="16k"
 
+## the CSR settings below are not required and exist only in case of future needs ##
+## Certbot does not use this CSR data (only OpenSSL uses it currently) ##
+
 ## CSR_COUNTRY = [US|etc] country to be used with your SSL CSR request data ##
 ## CSR_STATE = [Nevada|etc] state or province to be used with your SSL CSR request data ##
 ## CSR_CITY = [Las Vegas|etc] city or town to be used with your SSL CSR request data ##
@@ -291,17 +298,14 @@ CSR_CITY="Las Vegas"
 CSR_COMPANY="Example, LLC"
 CSR_DEPT="DevOps"
 
-## CERTBOT_CHALLENGE_TYPE = [http|dns] which method of verifying your domain do you want ##
-## ...ss-install wizard would need to pause or something if DNS verify chosen?
-
 ####################################################################################################
 #### SS-Config: WordPress Settings #################################################################
 ####################################################################################################
 
 ## by default wp-cron will be managed entirely by WordPress unless you modify it here ##
-## if set to server then ss core cron jobs will take over wp-cron management ##
+## if set to server then SlickStack cron jobs will take over wp-cron management ##
 
-## WP_CRON_METHOD = [wordpress|server] server means ss core cron jobs will manage it ##
+## WP_CRON_METHOD = [wordpress|server] server means SlickStack cron jobs will run it ##
 ## WP_CRON_INTERVAL = [regular|quarter-hourly|half-hourly|hourly|quarter-daily|half-daily] ##
 
 WP_CRON_METHOD="wordpress"
@@ -312,11 +316,11 @@ WP_CRON_INTERVAL="quarter-hourly"
 
 ## WP_MULTISITE = [false|true] enables WP Multisite using the same directory structure ##
 ## WP_MULTISITE_SUBDOMAINS = [true|false] subdomains approach highly recommended ##
-## WP_MULTISITE_DOMAIN_MAPPING = [false|true] hosting multiple TLD domains not recommended ##
+## WP_MULTISITE_DOMAIN_MAPPING = [true|false] now works much more reliably than in past ##
 
 WP_MULTISITE="@WP_MULTISITE_STATUS" ## experimental
-WP_MULTISITE_SUBDOMAINS="@WP_MULTISITE_SUBDOMAINS" ## subdirs not yet supported
-WP_MULTISITE_DOMAIN_MAPPING="false" ## should work
+WP_MULTISITE_SUBDOMAINS="@WP_MULTISITE_SUBDOMAINS" ## subdirs not supported
+WP_MULTISITE_DOMAIN_MAPPING="true"
 
 ## for stability reasons several WP defined constants are hardcoded in wp-config.php ##
 ## you can define additional constants inside the /wp-content/functions.php ##
@@ -339,15 +343,14 @@ WP_DISALLOW_FILE_MODS="false"
 WP_ALLOW_UNFILTERED_UPLOADS="true"
 WP_DEFAULT_THEME="@WP_DEFAULT_THEME"
 
+## the WordPress plugin blacklist can be disabled entirely or custom blacklist used ##
+## to use a custom blacklist simply replace source with your Gist file or etc ##
+
 ## WP_PLUGIN_BLACKLIST = [true|false] enable or disable the WordPress plugin blacklist ##
 ## WP_PLUGIN_BLACKLIST_SOURCE = [*must be unique*] URL to your custom blacklist.txt ##
 
 WP_PLUGIN_BLACKLIST="@SS_WORDPRESS_PLUGIN_BLACKLIST"
 WP_PLUGIN_BLACKLIST_SOURCE="https://raw.githubusercontent.com/littlebizzy/slickstack/master/modules/wordpress/blacklist.txt"
-
-## old spelling (will be deleted soon, use the new spelling) ##
-SS_WORDPRESS_PLUGIN_BLACKLIST="@SS_WORDPRESS_PLUGIN_BLACKLIST"
-SS_WORDPRESS_PLUGIN_BLACKLIST_SOURCE="https://raw.githubusercontent.com/littlebizzy/slickstack/master/modules/wordpress/blacklist.txt"
 
 ####################################################################################################
 #### SS-Config: Nginx Settings #####################################################################
