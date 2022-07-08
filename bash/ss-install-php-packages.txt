@@ -131,9 +131,7 @@ fi
 ## ubuntu 20.04 ##
 if [[ "${UBUNTU_VERSION}" == "20.04" ]]; then
     PHP_EXTENSIONS_NOW=$(source /var/www/ss-config; echo "${PHP_EXTENSIONS}")
-    if [[ "${PHP_EXTENSIONS_NOW}" == *"php7.4"* ]]; then
-        ss_apt_install "${PHP_EXTENSIONS_NOW}"
-    else
+    
         ss_apt_install php7.4-fpm
         ss_apt_install php7.4-bcmath
         ss_apt_install php7.4-ctype
@@ -155,7 +153,15 @@ if [[ "${UBUNTU_VERSION}" == "20.04" ]]; then
         ss_apt_install php7.4-xmlwriter
         ss_apt_install php7.4-xsl
         ss_apt_install php7.4-zip
+        
+        ## https://stackoverflow.com/questions/27702452/loop-through-a-comma-separated-shell-variable
+    if [[ -n "${PHP_EXTENSIONS_NOW}" ]]; then
+        for i in ${PHP_EXTENSIONS_NOW//,/ }
+            do
+            ss_apt_install php7.4-"$i"
+        done
     fi
+
 fi
 
 ## ubuntu 18.04 ##
