@@ -111,9 +111,7 @@ if [[ "${SS_APP}" != "mysql" ]]; then
 ## ubuntu 22.04 ##
 if [[ "${UBUNTU_VERSION}" == "22.04" ]]; then
     PHP_EXTENSIONS_NOW=$(source /var/www/ss-config; echo "${PHP_EXTENSIONS}")
-    if [[ "${PHP_EXTENSIONS_NOW}" == *"php8.1"* ]]; then
-        ss_apt_install "${PHP_EXTENSIONS_NOW}"
-    else
+    
         ss_apt_install php8.1-fpm
         ss_apt_install php8.1-bcmath
         ss_apt_install php8.1-curl
@@ -125,6 +123,13 @@ if [[ "${UBUNTU_VERSION}" == "22.04" ]]; then
         ss_apt_install php8.1-sqlite3
         ss_apt_install php8.1-xml
         ss_apt_install php8.1-zip
+    
+        ## https://stackoverflow.com/questions/27702452/loop-through-a-comma-separated-shell-variable
+    if [[ -n "${PHP_EXTENSIONS_NOW}" ]]; then
+        for i in ${PHP_EXTENSIONS_NOW//,/ }
+            do
+            ss_apt_install php8.1-"$i"
+        done
     fi
 fi
 
@@ -167,9 +172,7 @@ fi
 ## ubuntu 18.04 ##
 if [[ "${UBUNTU_VERSION}" == "18.04" ]]; then
     PHP_EXTENSIONS_NOW=$(source /var/www/ss-config; echo "${PHP_EXTENSIONS}")
-    if [[ "${PHP_EXTENSIONS_NOW}" == *"php7.2"* ]]; then
-        ss_apt_install "${PHP_EXTENSIONS_NOW}"
-    else
+    
         ss_apt_install php7.2-fpm
         ss_apt_install php7.2-bcmath
         ss_apt_install php7.2-curl
@@ -182,10 +185,19 @@ if [[ "${UBUNTU_VERSION}" == "18.04" ]]; then
         ss_apt_install php7.2-sqlite3
         ss_apt_install php7.2-xml
         ss_apt_install php7.2-zip
+
+        ## https://stackoverflow.com/questions/27702452/loop-through-a-comma-separated-shell-variable
+    if [[ -n "${PHP_EXTENSIONS_NOW}" ]]; then
+        for i in ${PHP_EXTENSIONS_NOW//,/ }
+            do
+            ss_apt_install php7.2-"$i"
+        done
     fi
-fi
 
 fi 
+
+## end if not mysql app
+fi
 
 ####################################################################################################
 #### F. SS-Install-PHP-Packages: Install PHP-Redis Extension (Required) ############################
