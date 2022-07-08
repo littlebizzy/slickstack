@@ -35,6 +35,12 @@ source /var/www/ss-functions
 ## C. Run SS-Install-Ubuntu-Utils
 ## D. Install XXX-Common.php
 ## E. Install Autoloader.php
+## F. Install Object-Cache.php
+## G. Install Required Staging/Dev MU Plugins
+## H. Install Specified MU Plugins
+## I. Reset Permissions (WordPress MU Plugins)
+## J. Purge Cache (PHP OPcache)
+## K. Reset Permissions (SlickStack Scripts)
 
 ####################################################################################################
 #### A. SS-Install-WordPress-MU-Plugins: Touch Timestamp File ######################################
@@ -85,7 +91,7 @@ fi
 #### D. SS-Install-WordPress-MU-Plugins: Install XXX-Common.php ####################################
 ####################################################################################################
 
-## get icon ##
+## get icon first ##
 ss_wget_slowest "${TMP_SS_ICON_SVG}" "${MIRROR_SS_ICON_SVG}"
 ss_mv "${TMP_SS_ICON_SVG}" "${PATH_SS_ICON_SVG}"
 
@@ -94,15 +100,16 @@ ss_wget_slowest /tmp/xxx-common.php "${MIRROR_XXX_COMMON_PHP}"
 
 ## delete potentially conflicting normal plugins (with required MU plugins) ##
 ss_rm /var/www/html/wp-content/plugins/xxx-common*
-ss_rm /var/www/html/wp-content/plugins/xxx-notices*
-ss_rm /var/www/html/wp-content/plugins/xxx-staging*
-ss_rm /var/www/html/wp-content/plugins/xxx-dev*
 
 ## and from staging ##
+if [[ "${STAGING_SITE}" == "true" ]]; then
 ss_rm /var/www/html/staging/wp-content/plugins/xxx-common*
-ss_rm /var/www/html/staging/wp-content/plugins/xxx-notices*
-ss_rm /var/www/html/staging/wp-content/plugins/xxx-staging*
-ss_rm /var/www/html/staging/wp-content/plugins/xxx-dev*
+fi
+
+## and from dev ##
+if [[ "${DEV_SITE}" == "true" ]]; then
+ss_rm /var/www/html/dev/wp-content/plugins/xxx-common*
+fi
 
 ## whitelabel brand ##
 if [[ -z "${WHITELABEL_BRAND}" ]]; then 
@@ -134,7 +141,7 @@ fi
 
 ## CURRENT NOT USED BUT COMING BACK SOON ##
 ## enable WP Admin toolbar switcher shortcut ##
-# if [[ "$STAGING_SITE" != "false" ]]; then 
+# if [[ "${STAGING_SITE}" != "false" ]] && [[ "${DEV_SITE}" != "false" ]]; then 
 #     ss_sed "s#//@STAGING_SITE_TRUE//##g" /var/www/html/wp-content/mu-plugins/xxx-common.php
 # fi
     
@@ -175,7 +182,7 @@ fi
 ## object-cache.php is only installed on production to avoid Redis query conflicts ##
 
 ## retrieve files ##
-ss_wget_slowest /tmp/object-cache.php "$MIRROR_OBJECT_CACHE_PHP_TILL"
+ss_wget_slowest /tmp/object-cache.php "${MIRROR_OBJECT_CACHE_PHP_TILL}"
 
 ## delete existing files ##
 ss_rm /var/www/html/wp-content/object-cache*
@@ -188,7 +195,7 @@ if [[ "${SS_OBJECT_CACHE}" != "false" ]]; then
 fi
 
 ####################################################################################################
-#### SS-Muplugs: Install Required MU (Must-Use) Plugins + Object Cache #############################
+#### G. SS-Install-WordPress-MU-Plugins: Install Required Staging/Dev MU Plugins ###################
 ####################################################################################################
 
 ## staging site ##
@@ -200,10 +207,15 @@ unzip /tmp/disable-emails.zip -d /tmp
 unzip /tmp/disable-default-runner.zip -d /tmp
 
 ## delete old ##
+if [[ "${STAGING_SITE}" == "true" ]]; then
 ss_rm /var/www/html/staging/wp-content/plugins/disable-emails*
 ss_rm /var/www/html/staging/wp-content/plugins/disable-default-runner*
+fi
+
+if [[ "${DEV_SITE}" == "true" ]]; then
 ss_rm /var/www/html/dev/wp-content/plugins/disable-emails*
 ss_rm /var/www/html/dev/wp-content/plugins/disable-default-runner*
+fi
 
 ## and staging ##
 if [[ "${STAGING_SITE}" == "true" ]]; then
@@ -218,13 +230,13 @@ ss_cp /tmp/disable-default-runner /var/www/html/dev/wp-content/mu-plugins/disabl
 fi
 
 ####################################################################################################
-#### SS-Muplugs: Install Specified MU (Must-Use) Plugins (Optional) ################################
+#### H. SS-Install-WordPress-MU-Plugins: Install Specified MU Plugins ##############################
 ####################################################################################################
 
 ## below MU plugins are distinct from the required MU plugins that are always included ##
 ## in the case these are missing the default LittleBizzy plugins are installed ##
 
-if [[ "$SS_WORDPRESS_MU_PLUGINS" == "custom" || "$SS_MU_PLUGINS" == "custom" ]] && [[ -n "${MU_PLUGIN_01_SOURCE}" ]] && [[ -n "${MU_PLUGIN_01_DIR}" ]]; then
+if [[ "${SS_WORDPRESS_MU_PLUGINS}" == "custom" || "${SS_MU_PLUGINS}" == "custom" ]] && [[ -n "${MU_PLUGIN_01_SOURCE}" ]] && [[ -n "${MU_PLUGIN_01_DIR}" ]]; then
     ## download specified (custom) MU plugins ##
     ss_wget_slowest /tmp/${MU_PLUGIN_01_DIR}.zip ${MU_PLUGIN_01_SOURCE}
     ss_wget_slowest /tmp/${MU_PLUGIN_02_DIR}.zip ${MU_PLUGIN_02_SOURCE}
@@ -333,7 +345,7 @@ if [[ "$SS_WORDPRESS_MU_PLUGINS" == "custom" || "$SS_MU_PLUGINS" == "custom" ]] 
     ss_cp /tmp/${MU_PLUGIN_24_DIR} /var/www/html/staging/wp-content/mu-plugins/${MU_PLUGIN_24_DIR}
     ss_cp /tmp/${MU_PLUGIN_25_DIR} /var/www/html/staging/wp-content/mu-plugins/${MU_PLUGIN_25_DIR}
     
-      ## copy to destinations (dev subdirectory) ##
+    ## copy to destinations (dev subdirectory) ##
     ss_cp /tmp/${MU_PLUGIN_01_DIR} /var/www/html/dev/wp-content/mu-plugins/${MU_PLUGIN_01_DIR}
     ss_cp /tmp/${MU_PLUGIN_02_DIR} /var/www/html/dev/wp-content/mu-plugins/${MU_PLUGIN_02_DIR}
     ss_cp /tmp/${MU_PLUGIN_03_DIR} /var/www/html/dev/wp-content/mu-plugins/${MU_PLUGIN_03_DIR}
@@ -362,18 +374,18 @@ if [[ "$SS_WORDPRESS_MU_PLUGINS" == "custom" || "$SS_MU_PLUGINS" == "custom" ]] 
     
 else
 ## otherwise download default LittleBizzy MU plugins ##
-ss_wget_slowest /tmp/clear-caches.zip "$MIRROR_CLEAR_CACHES_ZIP"
-ss_wget_slowest /tmp/cloudflare.zip "$MIRROR_CLOUDFLARE_ZIP"
-ss_wget_slowest /tmp/delete-expired-transients.zip "$MIRROR_DELETE_EXPIRED_TRANSIENTS_ZIP"
-ss_wget_slowest /tmp/disable-attachment-pages.zip "$MIRROR_DISABLE_ATTACHMENT_PAGES_ZIP"
-ss_wget_slowest /tmp/disable-emojis.zip "$MIRROR_DISABLE_EMOJIS_ZIP"
-ss_wget_slowest /tmp/disable-empty-trash.zip "$MIRROR_DISABLE_EMPTY_TRASH_ZIP"
-ss_wget_slowest /tmp/disable-image-compression.zip "$MIRROR_DISABLE_IMAGE_COMPRESSION_ZIP"
-ss_wget_slowest /tmp/disable-post-via-email.zip "$MIRROR_DISABLE_POST_VIA_EMAIL_ZIP"
-ss_wget_slowest /tmp/disable-xml-rpc.zip "$MIRROR_DISABLE_XML_RPC_ZIP"
-ss_wget_slowest /tmp/force-https.zip "$MIRROR_FORCE_HTTPS_ZIP"
-ss_wget_slowest /tmp/header-cleanup.zip "$MIRROR_HEADER_CLEANUP_ZIP"
-ss_wget_slowest /tmp/plugin-blacklist.zip "$MIRROR_PLUGIN_BLACKLIST_ZIP"
+ss_wget_slowest /tmp/clear-caches.zip "${MIRROR_CLEAR_CACHES_ZIP}"
+ss_wget_slowest /tmp/cloudflare.zip "${MIRROR_CLOUDFLARE_ZIP}"
+ss_wget_slowest /tmp/delete-expired-transients.zip "${MIRROR_DELETE_EXPIRED_TRANSIENTS_ZIP}"
+ss_wget_slowest /tmp/disable-attachment-pages.zip "${MIRROR_DISABLE_ATTACHMENT_PAGES_ZIP}"
+ss_wget_slowest /tmp/disable-emojis.zip "${MIRROR_DISABLE_EMOJIS_ZIP}"
+ss_wget_slowest /tmp/disable-empty-trash.zip "${MIRROR_DISABLE_EMPTY_TRASH_ZIP}"
+ss_wget_slowest /tmp/disable-image-compression.zip "${MIRROR_DISABLE_IMAGE_COMPRESSION_ZIP}"
+ss_wget_slowest /tmp/disable-post-via-email.zip "${MIRROR_DISABLE_POST_VIA_EMAIL_ZIP}"
+ss_wget_slowest /tmp/disable-xml-rpc.zip "${MIRROR_DISABLE_XML_RPC_ZIP}"
+ss_wget_slowest /tmp/force-https.zip "${MIRROR_FORCE_HTTPS_ZIP}"
+ss_wget_slowest /tmp/header-cleanup.zip "${MIRROR_HEADER_CLEANUP_ZIP}"
+ss_wget_slowest /tmp/plugin-blacklist.zip "${MIRROR_PLUGIN_BLACKLIST_ZIP}"
 
 ## unzip them all ##
 unzip /tmp/clear-caches.zip -d /tmp
@@ -480,14 +492,14 @@ ss_cp /tmp/plugin-blacklist /var/www/html/wp-content/mu-plugins/plugin-blacklist
 fi
 
 ####################################################################################################
-#### SS-Install-WordPress-MU-Plugins: Reset Permissions (WordPress MU Plugins) #####################
+#### I. SS-Install-WordPress-MU-Plugins: Reset Permissions (WordPress MU Plugins) ##################
 ####################################################################################################
 
 ## run ss-perms-wordpress-mu-plugins ##
 source "${PATH_SS_PERMS_WORDPRESS_MU_PLUGINS}"
 
 ####################################################################################################
-#### SS-Install-WordPress-MU-Plugins: Purge Cache (PHP OPcache) ####################################
+#### J. SS-Install-WordPress-MU-Plugins: Purge Cache (PHP OPcache) #################################
 ####################################################################################################
 
 ## run ss-purge-opcache ##
@@ -534,6 +546,8 @@ ss_rm /tmp/sftp-details*
 ss_rm /tmp/virtual-robotstxt*
 
 ####################################################################################################
+####################################################################################################
+####################################################################################################
 
 ## delete (custom) MU plugins temporary files ##
 # (coming soon)
@@ -544,7 +558,7 @@ ss_rm /var/www/html/staging/wp-content/mu-plugins/tmp/
 ss_rm /var/www/html/dev/wp-content/mu-plugins/tmp/
 
 ####################################################################################################
-#### PLACEHOLDER: Reset Permissions (SlickStack Scripts) ###########################################
+#### K. SS-Install-WordPress-MU-Plugins: Reset Permissions (SlickStack Scripts) ####################
 ####################################################################################################
 
 ## we include this permissions reset in all cron jobs and bash scripts for redundancy ##
