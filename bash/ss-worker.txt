@@ -23,9 +23,9 @@
 ## each section should be commented so you understand what is being accomplished ##
 
 ## A. Source SS-Config + SS-Functions
-## A. Touch Timestamp File
-## B. Message (Begin Script)
-## C. Backup Active SS-Config File
+## B. Touch Timestamp File
+## C. Message (Begin Script)
+## D. Backup Active SS-Config File
 ## D. Retrieve Current SS-Check (Bash Script)
 ## E. Transfer Pilot File Settings (If Exists)
 ## F. Install Current SS-Constants.php Boilerplate
@@ -50,7 +50,7 @@ source /var/www/ss-functions
 ## BELOW THIS RELIES ON SS-CONFIG AND SS-FUNCTIONS
 
 ####################################################################################################
-#### A. SS-Worker: Touch Timestamp File ############################################################
+#### B. SS-Worker: Touch Timestamp File ############################################################
 ####################################################################################################
 
 ## this is a dummy timestamp file that will remember the last time this script was run ##
@@ -60,7 +60,7 @@ source /var/www/ss-functions
 ss_touch "${TIMESTAMP_SS_WORKER}"
 
 ####################################################################################################
-#### B. SS-Worker: Message (Begin Script) ##########################################################
+#### C. SS-Worker: Message (Begin Script) ##########################################################
 ####################################################################################################
 
 ## this is a simple message that announces to the shell the purpose of this bash script ##
@@ -70,7 +70,7 @@ ss_touch "${TIMESTAMP_SS_WORKER}"
 ss_echo "${COLOR_INFO}Running ss-worker... ${COLOR_RESET}"
 
 ####################################################################################################
-#### C. SS-Worker: Backup Active SS-Config File ####################################################
+#### D. SS-Worker: Backup Active SS-Config File ####################################################
 ####################################################################################################
 
 ## this will replicate your current ss-config file (and settings) to the backups dir ##
@@ -193,12 +193,12 @@ fi
 ## retrieve current boilerplate ##
 ss_wget_slowest "${TMP_SS_CONSTANTS_PHP}" "${MIRROR_SS_CONSTANTS_PHP}"
 
-    ## set SlickStack dashboard ##
-    if [[ -z "$SS_WORDPRESS_ADMIN_DASHBOARD" ]]; then 
-        ss_sed "s/@SS_WORDPRESS_ADMIN_DASHBOARD/true/g" "${TMP_SS_CONSTANTS_PHP}"
-    else 
-        ss_sed "s/@SS_WORDPRESS_ADMIN_DASHBOARD/${SS_WORDPRESS_ADMIN_DASHBOARD}/g" "${TMP_SS_CONSTANTS_PHP}"
-    fi
+## set SlickStack dashboard ##
+if [[ -z "${SS_WORDPRESS_ADMIN_DASHBOARD}" ]]; then 
+    ss_sed "s/@SS_WORDPRESS_ADMIN_DASHBOARD/true/g" "${TMP_SS_CONSTANTS_PHP}"
+else 
+    ss_sed "s/@SS_WORDPRESS_ADMIN_DASHBOARD/${SS_WORDPRESS_ADMIN_DASHBOARD}/g" "${TMP_SS_CONSTANTS_PHP}"
+fi
     
 SYSTEM_SERVER_SOFTWARE=$(nginx -v |& sed 's#nginx version: nginx/##')
 SYSTEM_MYSQL_SIZE=$(du -sh /var/lib/mysql |& sed 's#/var/lib/mysql##')
@@ -218,6 +218,7 @@ fi
 ## ss build ##
 ss_sed "s|@SS_BUILD|${SS_BUILD}|g" "${TMP_SS_CONSTANTS_PHP}"
 
+## deprecated ##
 ## wp plugin blacklist ##
 ss_sed "s|@SS_WORDPRESS_PLUGIN_BLACKLIST_SOURCE|${WP_PLUGIN_BLACKLIST_SOURCE}|g" "${TMP_SS_CONSTANTS_PHP}"
 ss_sed "s|@SS_WORDPRESS_PLUGIN_BLACKLIST_STATUS|${WP_PLUGIN_BLACKLIST}|g" "${TMP_SS_CONSTANTS_PHP}"
@@ -296,7 +297,7 @@ ss_sed "s|@WHITELABEL_SUPPORT_EMAIL|${WHITELABEL_SUPPORT_EMAIL}|g" "${TMP_SS_CON
 
 ## validate and reinstall ##
 VALIDATE_TMP_SS_CONSTANTS_PHP=$(grep 'SS_EOF' "$TMP_SS_CONSTANTS_PHP")
-if [[ -n "$VALIDATE_TMP_SS_CONSTANTS_PHP" ]]; then
+if [[ -n "${VALIDATE_TMP_SS_CONSTANTS_PHP}" ]]; then
     ss_mv "${TMP_SS_CONSTANTS_PHP}" "${PATH_SS_CONSTANTS_PHP}"
     chown www-data:www-data "${PATH_SS_CONSTANTS_PHP}"
     chmod 0440 "${PATH_SS_CONSTANTS_PHP}" ## 0440 (read-only)
