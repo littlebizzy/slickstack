@@ -242,8 +242,27 @@ function ss_menu() {
 	
 	case 'tools':
 	
+		$home_url = home_url();
+        $home_domain = str_replace(array('https://', ''), array('http://', ''), $home_url);
+        $homeurl_clean = preg_replace( "#^[^:/.]*[:/]+#i", "", preg_replace( "{/$}", "", urldecode( $home_url ) ) ); 
+			
 		echo '<br class="clear" />
-		<p>Free auditing tools</p>';
+		<h2>Free Auditing Tools</h2>
+		<p>Please use the below tools to test the security and performance of your website:</p>
+		<ul class="ul-disc">
+		<li>Security Headers (By Scott Helme): <a href="https://securityheaders.com/?q='. $home_url .'&hide=on&followRedirects=on">TEST</a></li> 
+		<li>GTmetrix (By Carbon60): <a href="https://gtmetrix.com/?url='. $home_url .'&location=2">TEST</a></li>
+		<li>DNSSEC Analyzer (By VeriSign): <a href="https://dnssec-analyzer.verisignlabs.com/'. $homeurl_clean .'">TEST</a></li>
+		<li>PageSpeed Insights (By Google): <a href="https://developers.google.com/speed/pagespeed/insights/?url='. $home_url .'">TEST</a></li>
+		<li>SSL Test (By Qualys SSL Labs): <a href="https://www.ssllabs.com/ssltest/analyze.html?d='. $home_url .'&latest">TEST</a></li>
+		<li>Mobile-Friendly Test (By Google): <a href="https://search.google.com/test/mobile-friendly?url='. $home_url .'">TEST</a></li>
+		<li>Blacklist Spam Check (By MxToolbox): <a href="https://mxtoolbox.com/SuperTool.aspx?action=blacklist%3a'. $homeurl_clean .'&run=toolpage">TEST</a></li>
+		<li>IPv6 Ready Test (By  Jamie Finnigan): <a href="https://ready.chair6.net/?url='. $home_url .'">TEST</a></li>
+		<li>DNS Lookup (By IntoDNS): <a href="https://intodns.com/'. $homeurl_clean .'">TEST</a></li>
+		<li>MX Lookup (By MxToolbox): <a href="https://mxtoolbox.com/SuperTool.aspx?action=mx%3a'. $homeurl_clean .'&run=toolpage">TEST</a></li>
+		<li>DMARC Lookup (By Mimecast): <a href="https://www.dmarcanalyzer.com/dmarc/dmarc-record-check/?dmarcdns%5Btype%5D=dmarc&dmarcdns%5Bdomain%5D='. $homeurl_clean .'">TEST</a></li>
+		<li>Web Security Test (By ImmuniWeb): <a href="https://www.immuniweb.com/websec/?id='. $home_url .'">TEST</a></li>
+		</ul>';
         
 	break;
 	
@@ -465,47 +484,7 @@ function slickstack_menu() {
     if(current_user_can('manage_options') ) {
         global $wp_admin_bar;
         $ss_menu = 'slickstack-menu';
-        $home_url = home_url();
-        $home_domain = str_replace(array('https://', ''), array('http://', ''), $home_url);
-        $homeurl_input = home_url();   
-        $homeurl_clean = preg_replace( "#^[^:/.]*[:/]+#i", "", preg_replace( "{/$}", "", urldecode( $homeurl_input ) ) ); 
-        $dnssec_refer = 'https://dnssec-analyzer.verisignlabs.com/'. $homeurl_clean .'';
-        $ssllabs_refer = 'https://www.ssllabs.com/ssltest/analyze.html?d='. $home_url .'&latest';
-        $gtmetrix_refer = 'https://gtmetrix.com/?url='. $home_url .'&location=2';
-        $security_headers_refer = 'https://securityheaders.com/?q='. $home_url .'&hide=on&followRedirects=on';
-        $pagespeed_refer = 'https://developers.google.com/speed/pagespeed/insights/?url='. $home_url .'';
-        $mobilefriendly_refer = 'https://search.google.com/test/mobile-friendly?url='. $home_url .'';
-        $ipv6_refer = 'https://www.ultratools.com/tools/ipv6reportsResult?hostName='. $homeurl_clean .'';
-        $blackspam_refer = 'https://mxtoolbox.com/SuperTool.aspx?action=blacklist%3a'. $homeurl_clean .'&run=toolpage';
-        $intodns_refer = 'https://intodns.com/'. $homeurl_clean .'';
-        $mxrecord_refer = 'https://mxtoolbox.com/SuperTool.aspx?action=mx%3a'. $homeurl_clean .'&run=toolpage';
-	$mimecast_refer = 'https://www.dmarcanalyzer.com/dmarc/dmarc-record-check/?dmarcdns%5Btype%5D=dmarc&dmarcdns%5Bdomain%5D='. $homeurl_clean .'';
-	$immuniweb_refer = 'https://www.immuniweb.com/websec/?id='. $home_url .'';
-        $wp_admin_bar->add_menu( array('id' => $ss_menu, 'title' => 'SlickStack', 'href' => '/wp-admin/admin.php?page=slickstack') );
-        // $wp_admin_bar->add_menu( array('parent' => $ss_menu, 'id' => 'ss-menu-adminer', 'title' => 'Adminer (phpMyAdmin)', 'href' => '/adminer', 'meta' => array('target' => '_blank') ) );
-        $wp_admin_bar->add_menu( array('parent' => $ss_menu, 'id' => 'ss-menu-homepage', 'title' => 'SlickStack.io portal',  'href' => 'https://slickstack.io', 'meta' => array('target' => '_blank') ) );
-        $wp_admin_bar->add_menu( array('parent' => $ss_menu, 'id' => 'ss-menu-faq', 'title' => 'General FAQ',  'href' => 'https://slickstack.io/faq', 'meta' => array('target' => '_blank') ) );
-        $wp_admin_bar->add_menu( array('parent' => $ss_menu, 'id' => 'ss-menu-mirrors', 'title' => 'Public mirrors', 'href' => 'https://mirrors.slickstack.io', 'meta' => array('target' => '_blank') ) );
-        $wp_admin_bar->add_menu( array('parent' => $ss_menu, 'id' => 'ss-menu-issue', 'title' => 'Report an issue (bug)', 'href' => 'https://github.com/littlebizzy/slickstack/issues/new', 'meta' => array('target' => '_blank') ) );
-        $wp_admin_bar->add_menu( array('parent' => $ss_menu, 'id' => 'ss-menu-github', 'title' => 'GitHub repo', 'href' => 'https://github.com/littlebizzy/slickstack', 'meta' => array('target' => '_blank') ) );
-        $wp_admin_bar->add_menu( array('parent' => $ss_menu, 'id' => 'ss-menu-newsletter', 'title' => 'Email newsletter',  'href' => 'https://cdn.forms-content.sg-form.com/6ba39413-e148-11ea-b64b-d22850ff1ee7', 'meta' => array('target' => '_blank') ) );
-	$wp_admin_bar->add_menu( array('parent' => $ss_menu, 'id' => 'ss-menu-chat-rooms', 'title' => 'Free chat rooms',  'href' => false) );
-	$wp_admin_bar->add_menu( array('parent' => 'ss-menu-chat-rooms', 'id' => 'ss-menu-discord-server', 'title' => 'Discord server',  'href' => 'https://discord.gg/nGskJdg', 'meta' => array('target' => '_blank') ) );
-        $wp_admin_bar->add_menu( array('parent' => 'ss-menu-chat-rooms', 'id' => 'ss-menu-matrix-room', 'title' => 'Matrix room (public)',  'href' => 'https://app.element.io/#/room/#general:matrix.slickstack.io', 'meta' => array('target' => '_blank') ) );
-	$wp_admin_bar->add_menu( array('parent' => 'ss-menu-chat-rooms', 'id' => 'ss-menu-skype-chat', 'title' => 'Skype group chat',  'href' => 'https://join.skype.com/NdpqKrN2BHdN', 'meta' => array('target' => '_blank') ) );
-        $wp_admin_bar->add_menu( array('parent' => $ss_menu, 'id' => 'ss_menu_benchmark', 'title' => 'Benchmarking tools',  'href' => false) );
-        $wp_admin_bar->add_menu( array('parent' => 'ss_menu_benchmark', 'id' => 'ss-menu-secheaders', 'title' => 'Security Headers (By Scott Helme)',  'href' => $security_headers_refer, 'meta' => array('target' => '_blank') ) );
-	$wp_admin_bar->add_menu( array('parent' => 'ss_menu_benchmark', 'id' => 'ss-menu-gtmetrix', 'title' => 'GTmetrix (By Carbon60)',  'href' => $gtmetrix_refer, 'meta' => array('target' => '_blank') ) );
-	$wp_admin_bar->add_menu( array('parent' => 'ss_menu_benchmark', 'id' => 'ss-menu-dnssec', 'title' => 'DNSSEC Analyzer (By VeriSign)',  'href' => $dnssec_refer, 'meta' => array('target' => '_blank') ) );
-        	$wp_admin_bar->add_menu( array('parent' => 'ss_menu_benchmark', 'id' => 'ss-menu-pagespeed', 'title' => 'PageSpeed Insights (By Google)',  'href' => $pagespeed_refer, 'meta' => array('target' => '_blank') ) );
-		$wp_admin_bar->add_menu( array('parent' => 'ss_menu_benchmark', 'id' => 'ss-menu-ssllabs', 'title' => 'SSL Test (By Qualys SSL Labs)',  'href' => $ssllabs_refer, 'meta' => array('target' => '_blank') ) );
-        	$wp_admin_bar->add_menu( array('parent' => 'ss_menu_benchmark', 'id' => 'ss-menu-mobfriendly', 'title' => 'Mobile-Friendly Test (By Google)',  'href' => $mobilefriendly_refer, 'meta' => array('target' => '_blank') ) );
-        	$wp_admin_bar->add_menu( array('parent' => 'ss_menu_benchmark', 'id' => 'ss-menu-blackspam', 'title' => 'Blacklist (Spam) Check (By MxToolbox)',  'href' => $blackspam_refer, 'meta' => array('target' => '_blank') ) );
-        	$wp_admin_bar->add_menu( array('parent' => 'ss_menu_benchmark', 'id' => 'ss-menu-ipv6', 'title' => 'IPv6 Compatibility (By Neustar)',  'href' => $ipv6_refer, 'meta' => array('target' => '_blank') ) );
-        	$wp_admin_bar->add_menu( array('parent' => 'ss_menu_benchmark', 'id' => 'ss-menu-intodns', 'title' => 'DNS Lookup (By IntoDNS)',  'href' => $intodns_refer, 'meta' => array('target' => '_blank') ) );
-        	$wp_admin_bar->add_menu( array('parent' => 'ss_menu_benchmark', 'id' => 'ss-menu-mxrecord', 'title' => 'MX Lookup (By MxToolbox)',  'href' => $mxrecord_refer, 'meta' => array('target' => '_blank') ) );
-        	$wp_admin_bar->add_menu( array('parent' => 'ss_menu_benchmark', 'id' => 'ss-menu-dmarc', 'title' => 'DMARC Lookup (By Mimecast)',  'href' => $mimecast_refer, 'meta' => array('target' => '_blank') ) );
-		$wp_admin_bar->add_menu( array('parent' => 'ss_menu_benchmark', 'id' => 'ss-menu-immuniweb', 'title' => 'Web Security Test (By ImmuniWeb)',  'href' => $immuniweb_refer, 'meta' => array('target' => '_blank') ) );
+
 		$wp_admin_bar->add_menu( array('parent' => $ss_menu, 'id' => 'ss-menu-reviews', 'title' => 'Review SlickStack',  'href' => false) );
         $wp_admin_bar->add_menu( array('parent' => 'ss-menu-reviews', 'id' => 'ss-menu-reviews-facebook', 'title' => 'Review on Facebook',  'href' => 'https://www.facebook.com/slickstack/reviews', 'meta' => array('target' => '_blank') ) );
         $wp_admin_bar->add_menu( array('parent' => 'ss-menu-reviews', 'id' => 'ss-menu-reviews-producthunt', 'title' => 'Review on Product Hunt',  'href' => 'https://www.producthunt.com/posts/slickstack', 'meta' => array('target' => '_blank') ) );
@@ -522,8 +501,6 @@ function slickstack_menu() {
     
         // $wp_admin_bar->add_menu(array('parent' => $menu_id, 'title' => __('Client Login'), 'id' => 'slickstack-account', 'href' => 'https://www.littlebizzy.com/account', 'meta' => array('target' => '_blank')));
         // $wp_admin_bar->add_menu(array('parent' => $menu_id, 'title' => __('CloudFlare Login'), 'id' => 'slickstack-cloudflare', 'href' => 'https://dash.cloudflare.com/login', 'meta' => array('target' => '_blank')));   
-        // $wp_admin_bar->add_menu(array('parent' => $menu_id, 'title' => __('Telegram Channel'), 'id' => 'slickstack-telegram', 'href' => 'https://t.me/littlebizzy', 'meta' => array('target' => '_blank')));
-        // $wp_admin_bar->add_menu(array('parent' => $menu_id, 'title' => __('FAQ'), 'id' => 'slickstack-faq', 'href' => 'https://www.littlebizzy.com/faq', 'meta' => array('target' => '_blank')));
         // $wp_admin_bar->add_menu(array('parent' => $menu_id, 'title' => __('User Guide'), 'id' => 'slickstack-guide', 'href' => 'https://www.littlebizzy.com/guide', 'meta' => array('target' => '_blank')));
 
 /** ********************************************************************************************* */
