@@ -12,17 +12,8 @@
 #### bash aliases: ss clean files, ss cleanup files ################################################
 ####################################################################################################
 
-## update below cuz not true anymore with new setting SS_CLEAN_FILES_WORDPRESS_PLUGINS ##
-## CERTAIN WP PLUGINS WILL BE FORCE-DELETED: https://slickstack.io/faq/blacklisted-plugins ##
-## SS-CLEAN DOES NOT PERFORM ANY MALWARE FILE SCANNING (PLEASE USE SS-SCAN INSTEAD) ##
-
-## source ss-config ##
-source /var/www/ss-config
-
-## source ss-functions ##
-source /var/www/ss-functions
-
-## BELOW THIS RELIES ON SS-CONFIG AND SS-FUNCTIONS
+## CERTAIN UNSAFE FILES WILL BE FORCE DELETED REGARDLESS OF YOUR SLICKSTACK SETTINGS ##
+## SS-CLEAN-FILES DOES NOT PERFORM ANY MALWARE SCANNING (USE SS-SCAN-MALWARE) ##
 
 ####################################################################################################
 #### TABLE OF CONTENTS (SS-Clean-Files) ############################################################
@@ -31,6 +22,7 @@ source /var/www/ss-functions
 ## this is a brief summary of the different code snippets you will find in this script ##
 ## each section should be commented so you understand what is being accomplished ##
 
+## A. Source SS-Config + SS-Functions
 ## A. Touch Timestamp File
 ## B. Message (Begin Script)
 ## C. Delete SSH Private Key (If Exists)
@@ -44,6 +36,18 @@ source /var/www/ss-functions
 
 ## L. Delete Certain WordPress Plugins (Forced)
 ## M. Delete Certain WordPress Plugins (Conditional)
+
+####################################################################################################
+#### A. SS-Clean-Files: Source SS-Config + SS-Functions ############################################
+####################################################################################################
+
+## source ss-config ##
+source /var/www/ss-config
+
+## source ss-functions ##
+source /var/www/ss-functions
+
+## BELOW THIS RELIES ON SS-CONFIG AND SS-FUNCTIONS
 
 ####################################################################################################
 #### A. SS-Clean-Files: Touch Timestamp File #######################################################
@@ -838,97 +842,145 @@ ss_rm /var/www/html/wp-content/mu-plugins/SupportCenterMUAutoloader.php* ## Eleg
 #### L. SS-Clean-Files: Delete Certain WordPress Plugins (Forced) ##################################
 ####################################################################################################
 
-## even if you disable the Plugin Blacklist certain problematic plugins are still deleted ##
-## this is to ensure stability of SlickStack and to establish some best practices ##
+## we force delete plugins that are malware, deprecated, or conflict with SlickStack ##
+## this snippet will run regardless of any settings you have in your ss-config ##
 
 ## production ##
 ss_rm /var/www/html/wp-content/plugins/adminer* ## ss conflicts
+ss_rm /var/www/html/wp-content/plugins/allow-php-in-posts-and-pages* ## php hacks
 ss_rm /var/www/html/wp-content/plugins/ari-adminer* ## ss conflicts
 ss_rm /var/www/html/wp-content/plugins/askapache-debug-viewer* ## ss conflicts
+ss_rm /var/www/html/wp-content/plugins/autologin-links* ## exploitable, ss conflicts
 ss_rm /var/www/html/wp-content/plugins/bitcoin-plus-miner* ## cryptomining
 ss_rm /var/www/html/wp-content/plugins/browser-caching-with-htaccess* ## ss conflicts
 ss_rm /var/www/html/wp-content/plugins/change-wp-admin-login* ## ss conflicts (by Nuno Morais Sarmento)
 ss_rm /var/www/html/wp-content/plugins/dreamhost* ## vendor-specific
 ss_rm /var/www/html/wp-content/plugins/dreamobjects* ## vendor-specific
+ss_rm /var/www/html/wp-content/plugins/envato-wordpress-toolkit* ## deprecated
 ss_rm /var/www/html/wp-content/plugins/fb-instant-articles ## not maintained, serious errors (by Automattic)
+ss_rm /var/www/html/wp-content/plugins/folders ## creates instability, ss conflicts
 ss_rm /var/www/html/wp-content/plugins/hello.php* ## pointless
 ss_rm /var/www/html/wp-content/plugins/hide_my_wp* ## ss conflicts
 ss_rm /var/www/html/wp-content/plugins/htaccess* ## ss conflicts
+ss_rm /var/www/html/wp-content/plugins/hummingbird-performance* ## ss conflicts
+ss_rm /var/www/html/wp-content/plugins/hyperdb* ## ss conflicts, not maintained
 ss_rm /var/www/html/wp-content/plugins/increase-upload-file-size-maximum-execution-time-limit* ## ss conflicts
 ss_rm /var/www/html/wp-content/plugins/integrate-monero-miner* ## cryptomining
+ss_rm /var/www/html/wp-content/plugins/jm-live-blog* ## serious errors, database thrashing, not maintained
 ss_rm /var/www/html/wp-content/plugins/jsecoin* ## cryptomining
+ss_rm /var/www/html/wp-content/plugins/last-modified-timestamp* ## ss conflicts
+ss_rm /var/www/html/wp-content/plugins/linkman* ## deprecated, database thrashing
 ss_rm /var/www/html/wp-content/plugins/litespeed* ## ss conflicts
+ss_rm /var/www/html/wp-content/plugins/maintenance-mode-littlebizzy* ## not maintained
 ss_rm /var/www/html/wp-content/plugins/miwoftp* ## exploitable
+ss_rm /var/www/html/wp-content/plugins/periods-in-titles* ## bad for seo
 ss_rm /var/www/html/wp-content/plugins/php-settings* ## php hacks, ss conflicts
 ss_rm /var/www/html/wp-content/plugins/phpmyadmin* ## ss conflicts
+ss_rm /var/www/html/wp-content/plugins/protect-wp-admin* ## ss conflicts
 ss_rm /var/www/html/wp-content/plugins/redis-cache* ## ss conflicts
 ss_rm /var/www/html/wp-content/plugins/redis-object-cache* ## ss conflicts
 ss_rm /var/www/html/wp-content/plugins/sg-cachepress* ## ss conflicts, vendor specific (by Siteground)
 ss_rm /var/www/html/wp-content/plugins/simple-monero-miner-coin-hive* ## cryptomining
+ss_rm /var/www/html/wp-content/plugins/sitewide-message/ ## deprecated
 ss_rm /var/www/html/wp-content/plugins/timthumb* ## exploitable, deprecated
+ss_rm /var/www/html/wp-content/plugins/w3-total-cache* ## ss conflicts
+ss_rm /var/www/html/wp-content/plugins/w3speedster* ## ss conflicts
 ss_rm /var/www/html/wp-content/plugins/weather-for-us-widget* ## cryptomining
 ss_rm /var/www/html/wp-content/plugins/wp-redis* ## ss conflicts
 ss_rm /var/www/html/wp-content/plugins/wpengine-geoip* ## vendor specific (by WP Engine)
+ss_rm /var/www/html/wp-content/plugins/wpmudev-updates* ## ss conflicts, vendor specific (by WPMU Dev)
 ss_rm /var/www/html/wp-content/plugins/wps-hide-login* ## ss conflicts
 
 ## staging ##
 ss_rm /var/www/html/staging/wp-content/plugins/adminer* ## ss conflicts
+ss_rm /var/www/html/staging/wp-content/plugins/allow-php-in-posts-and-pages* ## php hacks
 ss_rm /var/www/html/staging/wp-content/plugins/ari-adminer* ## ss conflicts
 ss_rm /var/www/html/staging/wp-content/plugins/askapache-debug-viewer* ## ss conflicts
+ss_rm /var/www/html/staging/wp-content/plugins/autologin-links* ## exploitable, ss conflicts
 ss_rm /var/www/html/staging/wp-content/plugins/bitcoin-plus-miner* ## cryptomining
 ss_rm /var/www/html/staging/wp-content/plugins/browser-caching-with-htaccess* ## ss conflicts
 ss_rm /var/www/html/staging/wp-content/plugins/change-wp-admin-login* ## ss conflicts (by Nuno Morais Sarmento)
 ss_rm /var/www/html/staging/wp-content/plugins/dreamhost* ## vendor-specific
 ss_rm /var/www/html/staging/wp-content/plugins/dreamobjects* ## vendor-specific
+ss_rm /var/www/html/staging/wp-content/plugins/envato-wordpress-toolkit* ## deprecated
 ss_rm /var/www/html/staging/wp-content/plugins/fb-instant-articles ## not maintained, serious errors (by Automattic)
+ss_rm /var/www/html/staging/wp-content/plugins/folders ## creates instability, ss conflicts
 ss_rm /var/www/html/staging/wp-content/plugins/hello.php* ## pointless
 ss_rm /var/www/html/staging/wp-content/plugins/hide_my_wp* ## ss conflicts
 ss_rm /var/www/html/staging/wp-content/plugins/htaccess* ## ss conflicts
+ss_rm /var/www/html/staging/wp-content/plugins/hummingbird-performance* ## ss conflicts
+ss_rm /var/www/html/staging/wp-content/plugins/hyperdb* ## ss conflicts, not maintained
 ss_rm /var/www/html/staging/wp-content/plugins/increase-upload-file-size-maximum-execution-time-limit* ## ss conflicts
 ss_rm /var/www/html/staging/wp-content/plugins/integrate-monero-miner* ## cryptomining
+ss_rm /var/www/html/staging/wp-content/plugins/jm-live-blog* ## serious errors, database thrashing, not maintained
 ss_rm /var/www/html/staging/wp-content/plugins/jsecoin* ## cryptomining
+ss_rm /var/www/html/staging/wp-content/plugins/last-modified-timestamp* ## ss conflicts
+ss_rm /var/www/html/staging/wp-content/plugins/linkman* ## deprecated, database thrashing
 ss_rm /var/www/html/staging/wp-content/plugins/litespeed* ## ss conflicts
+ss_rm /var/www/html/staging/wp-content/plugins/maintenance-mode-littlebizzy* ## not maintained
 ss_rm /var/www/html/staging/wp-content/plugins/miwoftp* ## exploitable
+ss_rm /var/www/html/staging/wp-content/plugins/periods-in-titles* ## bad for seo
 ss_rm /var/www/html/staging/wp-content/plugins/php-settings* ## php hacks, ss conflicts
 ss_rm /var/www/html/staging/wp-content/plugins/phpmyadmin* ## ss conflicts
+ss_rm /var/www/html/staging/wp-content/plugins/protect-wp-admin* ## ss conflicts
 ss_rm /var/www/html/staging/wp-content/plugins/redis-cache* ## ss conflicts
 ss_rm /var/www/html/staging/wp-content/plugins/redis-object-cache* ## ss conflicts
 ss_rm /var/www/html/staging/wp-content/plugins/sg-cachepress* ## ss conflicts, vendor specific (by Siteground)
 ss_rm /var/www/html/staging/wp-content/plugins/simple-monero-miner-coin-hive* ## cryptomining
+ss_rm /var/www/html/staging/wp-content/plugins/sitewide-message/ ## deprecated
 ss_rm /var/www/html/staging/wp-content/plugins/timthumb* ## exploitable, deprecated
+ss_rm /var/www/html/staging/wp-content/plugins/w3-total-cache* ## ss conflicts
+ss_rm /var/www/html/staging/wp-content/plugins/w3speedster* ## ss conflicts
 ss_rm /var/www/html/staging/wp-content/plugins/weather-for-us-widget* ## cryptomining
 ss_rm /var/www/html/staging/wp-content/plugins/wp-redis* ## ss conflicts
 ss_rm /var/www/html/staging/wp-content/plugins/wpengine-geoip* ## vendor specific (by WP Engine)
+ss_rm /var/www/html/staging/wp-content/plugins/wpmudev-updates* ## ss conflicts, vendor specific (by WPMU Dev)
 ss_rm /var/www/html/staging/wp-content/plugins/wps-hide-login* ## ss conflicts
 
 ## development ##
 ss_rm /var/www/html/dev/wp-content/plugins/adminer* ## ss conflicts
+ss_rm /var/www/html/dev/wp-content/plugins/allow-php-in-posts-and-pages* ## php hacks
 ss_rm /var/www/html/dev/wp-content/plugins/ari-adminer* ## ss conflicts
 ss_rm /var/www/html/dev/wp-content/plugins/askapache-debug-viewer* ## ss conflicts
+ss_rm /var/www/html/dev/wp-content/plugins/autologin-links* ## exploitable, ss conflicts
 ss_rm /var/www/html/dev/wp-content/plugins/bitcoin-plus-miner* ## cryptomining
 ss_rm /var/www/html/dev/wp-content/plugins/browser-caching-with-htaccess* ## ss conflicts
 ss_rm /var/www/html/dev/wp-content/plugins/change-wp-admin-login* ## ss conflicts (by Nuno Morais Sarmento)
 ss_rm /var/www/html/dev/wp-content/plugins/dreamhost* ## vendor-specific
 ss_rm /var/www/html/dev/wp-content/plugins/dreamobjects* ## vendor-specific
+ss_rm /var/www/html/dev/wp-content/plugins/envato-wordpress-toolkit* ## deprecated
 ss_rm /var/www/html/dev/wp-content/plugins/fb-instant-articles ## not maintained, serious errors (by Automattic)
+ss_rm /var/www/html/dev/wp-content/plugins/folders ## creates instability, ss conflicts
 ss_rm /var/www/html/dev/wp-content/plugins/hello.php* ## pointless
 ss_rm /var/www/html/dev/wp-content/plugins/hide_my_wp* ## ss conflicts
 ss_rm /var/www/html/dev/wp-content/plugins/htaccess* ## ss conflicts
+ss_rm /var/www/html/dev/wp-content/plugins/hummingbird-performance* ## ss conflicts
+ss_rm /var/www/html/dev/wp-content/plugins/hyperdb* ## ss conflicts, not maintained
 ss_rm /var/www/html/dev/wp-content/plugins/increase-upload-file-size-maximum-execution-time-limit* ## ss conflicts
 ss_rm /var/www/html/dev/wp-content/plugins/integrate-monero-miner* ## cryptomining
+ss_rm /var/www/html/dev/wp-content/plugins/jm-live-blog* ## serious errors, database thrashing, not maintained
 ss_rm /var/www/html/dev/wp-content/plugins/jsecoin* ## cryptomining
+ss_rm /var/www/html/dev/wp-content/plugins/last-modified-timestamp* ## ss conflicts
+ss_rm /var/www/html/dev/wp-content/plugins/linkman* ## deprecated, database thrashing
 ss_rm /var/www/html/dev/wp-content/plugins/litespeed* ## ss conflicts
+ss_rm /var/www/html/dev/wp-content/plugins/maintenance-mode-littlebizzy* ## not maintained
 ss_rm /var/www/html/dev/wp-content/plugins/miwoftp* ## exploitable
+ss_rm /var/www/html/dev/wp-content/plugins/periods-in-titles* ## bad for seo
 ss_rm /var/www/html/dev/wp-content/plugins/php-settings* ## php hacks, ss conflicts
 ss_rm /var/www/html/dev/wp-content/plugins/phpmyadmin* ## ss conflicts
+ss_rm /var/www/html/dev/wp-content/plugins/protect-wp-admin* ## ss conflicts
 ss_rm /var/www/html/dev/wp-content/plugins/redis-cache* ## ss conflicts
 ss_rm /var/www/html/dev/wp-content/plugins/redis-object-cache* ## ss conflicts
 ss_rm /var/www/html/dev/wp-content/plugins/sg-cachepress* ## ss conflicts, vendor specific (by Siteground)
 ss_rm /var/www/html/dev/wp-content/plugins/simple-monero-miner-coin-hive* ## cryptomining
+ss_rm /var/www/html/dev/wp-content/plugins/sitewide-message/ ## deprecated
 ss_rm /var/www/html/dev/wp-content/plugins/timthumb* ## exploitable, deprecated
+ss_rm /var/www/html/dev/wp-content/plugins/w3-total-cache* ## ss conflicts
+ss_rm /var/www/html/dev/wp-content/plugins/w3speedster* ## ss conflicts
 ss_rm /var/www/html/dev/wp-content/plugins/weather-for-us-widget* ## cryptomining
 ss_rm /var/www/html/dev/wp-content/plugins/wp-redis* ## ss conflicts
 ss_rm /var/www/html/dev/wp-content/plugins/wpengine-geoip* ## vendor specific (by WP Engine)
+ss_rm /var/www/html/dev/wp-content/plugins/wpmudev-updates* ## ss conflicts, vendor specific (by WPMU Dev)
 ss_rm /var/www/html/dev/wp-content/plugins/wps-hide-login* ## ss conflicts
 
 ####################################################################################################
@@ -975,16 +1027,13 @@ ss_rm /var/www/html/wp-content/plugins/admin-menu-editor* ## creates instability
 # ss_rm /var/www/html/wp-content/plugins/ajax-load-more* ## resource intensive (by Darren Cooney)
 ss_rm /var/www/html/wp-content/plugins/ajax-thumbnail-rebuild* ## database thrashing
 ss_rm /var/www/html/wp-content/plugins/akeebabackupwp* ## unsafe local backups (stored in this dir)
-ss_rm /var/www/html/wp-content/plugins/allow-php-in-posts-and-pages* ## php hacks
 ss_rm /var/www/html/wp-content/plugins/apikey ## malware
-ss_rm /var/www/html/wp-content/plugins/autologin-links* ## exploitable
 ss_rm /var/www/html/wp-content/plugins/BoosterPage ## deprecated, exploitable (Smart Marketer)
 ss_rm /var/www/html/wp-content/plugins/broken-link-checker* ## resource intensive, not maintained
 ss_rm /var/www/html/wp-content/plugins/bugherd* ## ss conflicts
 ss_rm /var/www/html/wp-content/plugins/captcha ## deprecated
 # ss_rm /var/www/html/wp-content/plugins/classic-editor* ## ss conflicts
 ss_rm /var/www/html/wp-content/plugins/clearfy* ## ss conflicts, bloated (Clearfy)
-# ss_rm /var/www/html/wp-content/plugins/codeguard* ## ss conflicts
 ss_rm /var/www/html/wp-content/plugins/contextual-related-posts* ## resource intensive
 ss_rm /var/www/html/wp-content/plugins/creative-clans-embed-script* ## better options exist, not maintained (By Guido Tonnaer)
 ss_rm /var/www/html/wp-content/plugins/custom-sidebars* ## exploitable, errors/conflicts, resource intensive, bad practice (WPMU Dev)
@@ -994,7 +1043,6 @@ ss_rm /var/www/html/wp-content/plugins/divi-booster* ## serious errors, creates 
 ss_rm /var/www/html/wp-content/plugins/dynamic-related-posts*
 # ss_rm /var/www/html/wp-content/plugins/easy-contact-forms*
 ss_rm /var/www/html/wp-content/plugins/easy-wp-smtp* ## blacklist risk (smtp)
-ss_rm /var/www/html/wp-content/plugins/envato-wordpress-toolkit* ## deprecated
 ss_rm /var/www/html/wp-content/plugins/error_log* ## improper error log
 ss_rm /var/www/html/wp-content/plugins/ewww-image-optimizer* ## generates junk files, resource intensive
 # ss_rm /var/www/html/wp-content/plugins/ewww-image-optimizer-cloud
@@ -1003,32 +1051,22 @@ ss_rm /var/www/html/wp-content/plugins/fancy-box ## not maintained
 ss_rm /var/www/html/wp-content/plugins/fb-messenger ## deprecated
 ss_rm /var/www/html/wp-content/plugins/file-away* ## creates instability, not maintained
 ss_rm /var/www/html/wp-content/plugins/flexi-quote-rotator* ## not maintained, serious errors
-ss_rm /var/www/html/wp-content/plugins/folders ## creates instability
 ss_rm /var/www/html/wp-content/plugins/fuzzy-seo-booster* ## database thrashing
 # ss_rm /var/www/html/wp-content/plugins/geotargeting-pro* ## potential resource intensive
-ss_rm /var/www/html/wp-content/plugins/godaddy-email-marketing-sign-up-forms* ## vendor specific (godaddy)
 ss_rm /var/www/html/wp-content/plugins/google-analyticator* ## history of poor code, poor maintenance, better options exist (By SumoMe)
 ss_rm /var/www/html/wp-content/plugins/google-analytics-for-wordpress* ## bloated, spammy, spyware
 ss_rm /var/www/html/wp-content/plugins/google-analytics-dashboard-for-wp* ## spammy, bloated, creates instability
 ss_rm /var/www/html/wp-content/plugins/googleanalytics ## malware/spyware
-# ss_rm /var/www/html/wp-content/plugins/google-site-kit*
 ss_rm /var/www/html/wp-content/plugins/heartbeat-control* ## ss conflicts
-ss_rm /var/www/html/wp-content/plugins/hummingbird-performance* ## ss conflicts
-ss_rm /var/www/html/wp-content/plugins/hyperdb* ## ss conflicts, not maintained
 ss_rm /var/www/html/wp-content/plugins/intuitive-custom-post-order* ## resource intensive, creates instability
 ss_rm /var/www/html/wp-content/plugins/ithemes-sync* ## ss conflicts
 ss_rm /var/www/html/wp-content/plugins/iwp-client*
 # ss_rm /var/www/html/wp-content/plugins/jetpack* ## bloated, ss conflicts
-ss_rm /var/www/html/wp-content/plugins/jm-live-blog* ## serious errors, database thrashing, not maintained
 ss_rm /var/www/html/wp-content/plugins/jonradio-multiple-themes* ## creates instability
 # ss_rm /var/www/html/wp-content/plugins/js_composer_theme ## modified (nulled?) version of WP Bakery
-ss_rm /var/www/html/wp-content/plugins/last-modified-timestamp* ## ss conflicts
 # ss_rm /var/www/html/wp-content/plugins/leadpages ## potential creates instability
-ss_rm /var/www/html/wp-content/plugins/linkman* ## deprecated, database thrashing
 ss_rm /var/www/html/wp-content/plugins/mailchimp
 ss_rm /var/www/html/wp-content/plugins/mailchimp-forms-by-mailmunch* ## malware/spyware
-ss_rm /var/www/html/wp-content/plugins/maintenance-mode ## ss conflicts
-ss_rm /var/www/html/wp-content/plugins/maintenance-mode-litlebizzy* ## ss conflicts
 ss_rm /var/www/html/wp-content/plugins/mainwp* ## ss conflicts, creates instability (MainWP)
 ss_rm /var/www/html/wp-content/plugins/mainwp-child* ## ss conflicts, creates instability (MainWP)
 ss_rm /var/www/html/wp-content/plugins/manual-image-crop*
@@ -1049,12 +1087,10 @@ ss_rm /var/www/html/wp-content/plugins/p3-profiler* ## serious errors, not maint
 ss_rm /var/www/html/wp-content/plugins/page-links-to* ## not maintained, poorly coded, bad practice (redirects should not conflict with permalinks)
 ss_rm /var/www/html/wp-content/plugins/pc-google-analytics* ## deprecated
 ss_rm /var/www/html/wp-content/plugins/perfmatters* ## ss conflicts, bloated, stolen code (by Perfmatters)
-ss_rm /var/www/html/wp-content/plugins/periods-in-titles* ## bad for seo
 # ss_rm /var/www/html/wp-content/plugins/photomix* ## resource intensive
 ss_rm /var/www/html/wp-content/plugins/post-types-order* ## creates instability, potential data loss
 # ss_rm /var/www/html/wp-content/plugins/postman-smtp ## not maintained, blacklist risk (smtp)
 ss_rm /var/www/html/wp-content/plugins/pp_default_lib.php ## wordpresss junk files
-ss_rm /var/www/html/wp-content/plugins/protect-wp-admin* ## ss conflicts, breaks firewalls
 # ss_rm /var/www/html/wp-content/plugins/pt-instant*
 ss_rm /var/www/html/wp-content/plugins/pushlive* ## not maintained (by 1 Squared, Jamin Szczesny)
 ss_rm /var/www/html/wp-content/plugins/qtranslate-x* ## deprecated, serious errors
@@ -1074,7 +1110,6 @@ ss_rm /var/www/html/wp-content/plugins/similar-posts* ## database thrashing
 ss_rm /var/www/html/wp-content/plugins/simple-share-buttons-adder* ## serious errors
 ss_rm /var/www/html/wp-content/plugins/simple-wistia-embed* ## exists in wp core
 ss_rm /var/www/html/wp-content/plugins/sitespeed* ## malware (as per Sucuri report)
-ss_rm /var/www/html/wp-content/plugins/sitewide-message/ ## abandoned
 ss_rm /var/www/html/wp-content/plugins/snapshot ## unsafe local archives (by WPMU Dev)
 ss_rm /var/www/html/wp-content/uploads/sucuri* ## ss conflicts, bloated
 ss_rm /var/www/html/wp-content/plugins/sucuri-scanner* ## ss conflicts, bloated
@@ -1092,10 +1127,8 @@ ss_rm /var/www/html/wp-content/plugins/twitter ## deprecated
 ss_rm /var/www/html/wp-content/plugins/upload-max-file-size* ## ss conflicts, php hacks
 ss_rm /var/www/html/wp-content/plugins/uploadify*
 ss_rm /var/www/html/wp-content/plugins/use-any-font* ## bad practice, creates instability
-ss_rm /var/www/html/wp-content/plugins/w3-total-cache* ## ss conflicts, bloated
 ss_rm /var/www/html/wp-content/plugins/way2enjoy-compress-images*
 ss_rm /var/www/html/wp-content/plugins/wistia-responsive* ## exists in wp core
-ss_rm /var/www/html/wp-content/plugins/w3speedster*
 ss_rm /var/www/html/wp-content/plugins/wp-404-auto-redirect-to-similar-post* ## bad practice, creates instability (By hwk-fr)
 ss_rm /var/www/html/wp-content/plugins/wp-htaccess-control* ## ss conflicts (apache)
 ss_rm /var/www/html/wp-content/plugins/wordpress-firewall-2* ## ss conflicts, creates instability
@@ -1140,7 +1173,6 @@ ss_rm /var/www/html/wp-content/plugins/wp_mainlog2* ## unknown
 ss_rm /var/www/html/wp-content/plugins/wpe-advanced-cache-options* ## vendor specific
 ss_rm /var/www/html/wp-content/plugins/wpframework* ## malware (reported by Sucuri)
 ss_rm /var/www/html/wp-content/plugins/wpide ## exists in wp core (syntax editor)
-ss_rm /var/www/html/wp-content/plugins/wpmudev-updates* ## ss conflicts, vendor specific (WPMUDev Dashboard)
 ss_rm /var/www/html/wp-content/plugins/wpremote*
 # ss_rm /var/www/html/wp-content/plugins/woocommerce-digital-download-free-shipping*
 ss_rm /var/www/html/wp-content/plugins/yet-another-related-posts-plugin*
