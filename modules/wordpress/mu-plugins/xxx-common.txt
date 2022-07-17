@@ -399,26 +399,30 @@ add_action('admin_menu', 'ss_menu');
 }
 
 /** ********************************************************************************************* */
-/** XXX-Common: SlickStack Server Resources Notices (WP Admin) ********************************** */
+/** XXX-Common: SlickStack Disk Space Usage (WP Admin) ****************************************** */
 /** ********************************************************************************************* */
 
-// add_action('admin_notices', 'ss_notices_resources');
+// https://stackoverflow.com/questions/15001353/remove-characters-from-a-variable
+// https://stackoverflow.com/questions/54865119/php-if-greater-than
 
-/*
+$disk_used_percent_now = SYSTEM_DISK_USED_PERCENT;
+$disk_used_percent_now_cleaner = trim($disk_used_percent_now, '%');
+
+if ((int)$disk_used_percent_now_cleaner >= 85) {
+	add_action('admin_notices', 'ss_notices_resources');
+}
+
 function ss_notices_resources() {
     $current_user = wp_get_current_user();
     if(current_user_can('manage_options')) { ?>
 
-    <div class="notice notice-error">
-    <p>Server CPU usage is consistently high, consider upgrading your server.</p>
-    <p>Server RAM memory usage is consistently high, consider upgrading your server.</p>
-    <p>Server disk spage is running out, consider upgrading your server.</p>
-    <p><em>This message will disappear automatically after a few days, thank you. — SlickStack</em></p>
+    <div class="notice notice-warning">
+    <p>Server disk space is running out with <?php echo $disk_used_percent_now; ?> already used, please consider upgrading your server, adding block storage to this server, and/or deleting any files and folders that are not being used.</p>
+	<p><em>This message will disappear after sufficient free space exists, thank you. — SlickStack</em></p>
     </div>
 
     <?php } else { }
 }
-*/
 
 /** ********************************************************************************************* */
 /** XXX-Common: SlickStack Non-Critical WP Admin Notices **************************************** */
