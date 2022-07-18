@@ -551,7 +551,6 @@ find /var/www/html/ -name "*.cmd" -type f -delete
 find /var/www/html/ -name "*.cpl" -type f -delete
 find /var/www/html/ -name "*.com" -type f -delete
 find /var/www/html/ -name "*.dll" -type f -delete
-find /var/www/html/ -name ".DS_Store*" -type f -delete ## macOS files
 find /var/www/html/ -name "*.exe" -type f -delete
 find /var/www/html/ -name "*.fla" -type f -delete
 find /var/www/html/ -name "*.flv" -type f -delete
@@ -576,27 +575,27 @@ find /var/www/html/ -name "*.sem" -type f -delete ## (Alpha Five software)
 find /var/www/html/ -name "*.vbs" -type f -delete
 find /var/www/html/ -name "*.vxd" -type f -delete
 
-## delete conflict file types ##
-find /var/www/html/ -name "*.conf" -type f -delete ## ss conflicts (Nginx hacks)
-find /var/www/html/ -name "*.config" -type f -delete ## ss conflicts (Nginx hacks)
-find /var/www/html/ -name "nginx.conf" -type f -delete
+## delete unsupported file types ##
+find /var/www/html/ -name "*.conf" -type f -delete ## Nginx hacks
+find /var/www/html/ -name "*.config" -type f -delete ## Nginx hacks
+find /var/www/html/ -name ".DS_Store*" -type f -delete ## macOS files
+find /var/www/html/ -name "error_log*" -type f -delete ## Apache error logs (not supported on Nginx servers)
+find /var/www/html/ -name "*.ftpquota" -type f -delete ## cPanel style files
+find /var/www/html/ -name ".htaccess*" -type f -delete ## Apache files (not supported on Nginx servers)
+# find /var/www/html/ -name "*.ini" -type f -delete ## PHP hacks ## DISABLED BECAUSE CERTAIN WP PLUGINS CRASH IF FILE MISSING
+find /var/www/html/ -name "*.ini.php" -type f -delete ## PHP hacks
+find /var/www/html/ -name "nginx.conf" -type f -delete ## Nginx hacks
+find /var/www/html/ -name "*.user.ini" -type f -delete ## PHP hacks
 
+## MAYBE QUARANTINE THESE into /backups/quarantine/
 ## delete unsafe database dumps ##
 # find /var/www/html/ -name "*.sql" -type f -delete ## unsafe dumps
 # find /var/www/html/ -name "*.wpress" -type f -delete ## All In One Migration archives
-
-## delete apache junk files ##
-find /var/www/html/ -name ".htaccess*" -type f -delete ## not supported by Nginx servers
-find /var/www/html/ -name "error_log*" -type f -delete ## Apache error logs
 
 ## delete linux junk files ##
 # find /var/www/html/ -name ".listing*" -type f -delete
 
 ## delete php.ini hijacking ##
-find /var/www/html/ -name "*.ftpquota" -type f -delete
-find /var/www/html/ -name "*.user.ini" -type f -delete
-# find /var/www/html/ -name "*.ini" -type f -delete ## conflicts with certain WP plugins
-find /var/www/html/ -name "*.ini.php" -type f -delete
 sed -i '/INI_SET/d' /var/www/html/wp-config.php
 sed -i '/ini_set/d' /var/www/html/wp-config.php
 
