@@ -34,6 +34,7 @@
 ## I. Delete Unused WordPress Core Files
 ## J. Delete Junk Linux System Files
 
+## L. Delete Certain Files Throughout Public Web Root (Required) 
 ## L. Delete Certain WordPress Plugins (Required)
 ## M. Delete Certain WordPress Plugins (Conditional)
 ## Purge Cache (PHP OPcache)
@@ -352,7 +353,7 @@ ss_rm /var/lib/mysql/binlog.*
 # find /var/www/html/wp-content/themes -type f -name "*.php" -exec sed -i '/error_reporting/d' {} \;
 
 ####################################################################################################
-#### SS-Clean-Files: Cleanup SlickStack Core Files Under /var/www/ #################################
+#### K. SS-Clean-Files: Cleanup SlickStack Core Files Under /var/www/ #################################
 ####################################################################################################
 
 if [[ "$SS_CLEAN_FILES_ROOT_PRIVATE" != "false" ]]; then
@@ -458,18 +459,11 @@ ss_rm /var/www/meta/myisam-tables.sql*
 fi
 
 ####################################################################################################
-#### SS-Clean-Files: cleanup Various Files Throughout Public Web Root /var/www/html/ ###############
+#### L. SS-Clean-Files: Delete Certain Files Throughout Public Web Root (Required) #################
 ####################################################################################################
 
-## these powerful commands delete several unsafe file types throughout the html web root ##
-## the file types will be permanently deleted regardless of where they are found ##
-
-
-
-
-## delete PHP files that do not belong to WordPress Core ##
-## find .......
-
+## this powerful snippet deletes several unsafe file types throughout the public dir ##
+## these files will be permanently deleted regardless of where they are found ##
 
 ## delete known malware files ##
 # find /var/www/html/ -name "script.php" -type f -delete
@@ -543,62 +537,57 @@ ss_rm /var/www/html/staging/wp-content/plugins/wpematico*
 find /var/www/html/ -name "wp-xmlrpc.php" -type f -delete
 
 ## delete unsafe file extensions ##
-find /var/www/html/ -name "*.exe" -type f -delete
-find /var/www/html/ -name "*.cmd" -type f -delete
 find /var/www/html/ -name "*.asp" -type f -delete
 find /var/www/html/ -name "*.aspx" -type f -delete
-find /var/www/html/ -name "*.jsb" -type f -delete
-find /var/www/html/ -name "*.jsp" -type f -delete
-find /var/www/html/ -name "*.com" -type f -delete
-find /var/www/html/ -name "*.bat" -type f -delete
 find /var/www/html/ -name "*.ascx" -type f -delete
+find /var/www/html/ -name "*.asis" -type f -delete
+find /var/www/html/ -name "*.bat" -type f -delete
 find /var/www/html/ -name "*.cfc" -type f -delete
 find /var/www/html/ -name "*.cfm" -type f -delete
 find /var/www/html/ -name "*.cfml" -type f -delete
 find /var/www/html/ -name "*.cfr" -type f -delete
 find /var/www/html/ -name "*.cfswf" -type f -delete
-find /var/www/html/ -name "*.jws" -type f -delete
-find /var/www/html/ -name "*.dll" -type f -delete
-find /var/www/html/ -name "*.vbs" -type f -delete
-find /var/www/html/ -name "*.reg" -type f -delete
-find /var/www/html/ -name "*.asis" -type f -delete
-find /var/www/html/ -name "*.pwml" -type f -delete
+find /var/www/html/ -name "*.cmd" -type f -delete
 find /var/www/html/ -name "*.cpl" -type f -delete
-find /var/www/html/ -name "*.asis" -type f -delete
+find /var/www/html/ -name "*.com" -type f -delete
+find /var/www/html/ -name "*.dll" -type f -delete
+find /var/www/html/ -name ".DS_Store*" -type f -delete ## macOS files
+find /var/www/html/ -name "*.exe" -type f -delete
+find /var/www/html/ -name "*.fla" -type f -delete
+find /var/www/html/ -name "*.flv" -type f -delete
+find /var/www/html/ -name "*.htc" -type f -delete
 find /var/www/html/ -name "*.jhtml" -type f -delete
+find /var/www/html/ -name "*.jsb" -type f -delete
+find /var/www/html/ -name "*.jsp" -type f -delete
+find /var/www/html/ -name "*.jws" -type f -delete
 find /var/www/html/ -name "*.mht" -type f -delete
 find /var/www/html/ -name "*.mhtml" -type f -delete
 find /var/www/html/ -name "*.msi" -type f -delete
 find /var/www/html/ -name "*.pif" -type f -delete
 find /var/www/html/ -name "*.py" -type f -delete
-find /var/www/html/ -name "*.scr" -type f -delete
-find /var/www/html/ -name "*.vxd" -type f -delete
+find /var/www/html/ -name "*.pwml" -type f -delete
 find /var/www/html/ -name "*.rb" -type f -delete
-find /var/www/html/ -name "*.htc" -type f -delete
-
-## delete flash related files ##
-find /var/www/html/ -name "*.fla" -type f -delete
-find /var/www/html/ -name "*.flv" -type f -delete
+find /var/www/html/ -name "*.reg" -type f -delete
+find /var/www/html/ -name "*.scr" -type f -delete
 find /var/www/html/ -name "*.swf" -type f -delete
 find /var/www/html/ -name "*.swt" -type f -delete
 find /var/www/html/ -name "*.swc" -type f -delete
-
-## delete deprecated file types ##
 find /var/www/html/ -name "*.sem" -type f -delete ## (Alpha Five software)
+find /var/www/html/ -name "*.vbs" -type f -delete
+find /var/www/html/ -name "*.vxd" -type f -delete
 
 ## delete conflict file types ##
 find /var/www/html/ -name "*.conf" -type f -delete ## ss conflicts (Nginx hacks)
 find /var/www/html/ -name "*.config" -type f -delete ## ss conflicts (Nginx hacks)
+find /var/www/html/ -name "nginx.conf" -type f -delete
 
 ## delete unsafe database dumps ##
 # find /var/www/html/ -name "*.sql" -type f -delete ## unsafe dumps
 # find /var/www/html/ -name "*.wpress" -type f -delete ## All In One Migration archives
 
-## various delete types ##
-find /var/www/html/ -name ".DS_Store*" -type f -delete ## macOS files
-
 ## delete apache junk files ##
-find /var/www/html/ -name ".htaccess*" -type f -delete ## not supported by Nginx servers (poorly coded WP plugins etc should never require .htaccess files)
+find /var/www/html/ -name ".htaccess*" -type f -delete ## not supported by Nginx servers
+find /var/www/html/ -name "error_log*" -type f -delete ## Apache error logs
 
 ## delete linux junk files ##
 # find /var/www/html/ -name ".listing*" -type f -delete
@@ -614,14 +603,6 @@ sed -i '/ini_set/d' /var/www/html/wp-config.php
 ## delete leftover plugin junk file types ##
 find /var/www/html/ -name "adminer*.version*" -type f -delete ## Adminer plugin config
 find /var/www/html/ -name "php_errorlog*" -type f -delete ## Adminer plugin config
-
-## delete nginx junk files ##
-find /var/www/html/ -name "nginx.conf" -type f -delete
-# find /var/www/html/ -name "*.conf" -type f -delete
-
-## delete suspicious and non-critical files ##
-## fix this later ## https://github.com/littlebizzy/slickstack/issues/28
-# find /var/www/html/ -name "default_library_puvox.php" -type f -delete ## not malware (by Puvox.Software)
 
 ## BASED ON RECENT MALWARE ATTACK FINDINGS ... some plugins use the /uploads/ folder for all kinds of improper stuff, PHP should never be here ##
 ## .htaccess and index.php files also not needed for security reasons as SlickStack already blocks these folders from frontend indexing ##
@@ -1080,7 +1061,6 @@ ss_rm /var/www/html/wp-content/plugins/display-widgets ## malware/spyware
 ss_rm /var/www/html/wp-content/plugins/divi-booster* ## serious errors, creates instability
 ss_rm /var/www/html/wp-content/plugins/dynamic-related-posts*
 # ss_rm /var/www/html/wp-content/plugins/easy-contact-forms*
-ss_rm /var/www/html/wp-content/plugins/error_log* ## improper error log
 ss_rm /var/www/html/wp-content/plugins/ewww-image-optimizer* ## generates junk files, resource intensive
 # ss_rm /var/www/html/wp-content/plugins/ewww-image-optimizer-cloud
 ss_rm /var/www/html/wp-content/plugins/extend-bundle-widgets* ## not maintained, no public docs, possibly exploitable
