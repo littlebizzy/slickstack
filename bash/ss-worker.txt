@@ -32,6 +32,8 @@
 ## G. Reset Permissions (SlickStack)
 ## H. Download Current Blacklist.txt File
 ## I. Install Default Robots.txt File (If Not Exists)
+
+## I. Delete Object Cache Files (Conditional)
 ## J. Temporary Tasks (Urgent Patches)
 
 ####################################################################################################
@@ -451,6 +453,20 @@ if [[ ! -f "${PATH_ROBOTS_TXT}" ]]; then
     chown www-data:www-data "${PATH_ROBOTS_TXT}"
     chmod 0644 "${PATH_ROBOTS_TXT}"
 fi
+
+####################################################################################################
+#### I. SS-Clean-Files: Delete Object Cache Files (Conditional) ####################################
+####################################################################################################
+
+## SINCE THIS IS STACK CONFIGURATION PROBABLY SHOULD NOT EXIST IN ss-clean ##
+## in case the object cache is disabled in ss-config settings we delete that file here ##
+
+if [[ "${SS_OBJECT_CACHE}" == "false" ]]; then
+    ss_rm /var/www/html/wp-content/object-cache.php
+    ss_rm /var/www/html/staging/wp-content/object-cache.php
+    ss_rm /var/www/html/dev/wp-content/object-cache.php
+fi
+
 
 ####################################################################################################
 #### J. SS-Worker: Temporary Tasks (Urgent Patches) ################################################
