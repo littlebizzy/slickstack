@@ -30,8 +30,8 @@
 ## F. Delete Staging Site Files (Conditional)
 ## G. Delete MySQL Data Folder Backups
 ## H. Delete Oldest SS-Config Backups
+## I. Delete Deprecated SlickStack Files
 
-## H. Delete Deprecated SlickStack Files
 ## I. Delete Unused WordPress Core Files
 ## J. Delete Junk Linux System Files
 
@@ -135,78 +135,89 @@ fi
 find /var/www/backups/config -maxdepth 1 -name "ss-config.bak*" -type f -mtime +3 -delete
 
 ####################################################################################################
-#### SS-Clean-Files: Delete Object Cache Files (Conditional) ####################################
+#### I. SS-Clean-Files: Delete Deprecated SlickStack Files #########################################
 ####################################################################################################
 
-## SINCE THIS IS STACK CONFIGURATION PROBABLY SHOULD NOT EXIST IN ss-clean ##
-## in case the object cache is disabled in ss-config settings we delete that file here ##
-
-if [[ "${SS_OBJECT_CACHE}" == "false" ]]; then
-    ss_rm /var/www/html/wp-content/object-cache.php
-    ss_rm /var/www/html/staging/wp-content/object-cache.php
-    ss_rm /var/www/html/dev/wp-content/object-cache.php
-fi
-
-####################################################################################################
-#### H. SS-Clean-Files: Delete Deprecated SlickStack Files #########################################
-####################################################################################################
-
-## as both SlickStack and WordPress evolve there are certain files that become irrelevant ##
-## most of the time this consists of temp install files, unused MU plugins, etc ##
-
-## delete wp installation scripts (avoids malware/bots) ##
-ss_rm /var/www/html/wp-admin/install.php
-ss_rm /var/www/html/dev/wp-admin/install.php
-ss_rm /var/www/html/staging/wp-admin/install.php
+## as SlickStack evolves there are certain files that become irrelevant and not used ##
+## for example bash scripts change names or config files change locations ##
 
 ## temp fix to delete files generated from empty variables in ss-config MU plugins ##
 ss_rm /var/www/html/wp-content/mu-plugins/tmp* ## junk folder from before
 
-## log files ##
+## delete deprecated log files ##
 ss_rm /var/www/logs/cron.log ## deprecated
+ss_rm /var/www/logs/error.log ## now php-error.log
 ss_rm /var/www/logs/nginx.log ## now nginx-error.log
-# ss_rm /var/www/logs/error.log ## now php-error.log
 
 ## old cache dir ##
 ss_rm /etc/nginx/cache*
 
 ## deprecated (production) ##
 ss_rm /var/www/html/wp-content/functions.php
-
-## deprecated (staging) ##
 ss_rm /var/www/html/staging/wp-content/functions.php
-
-## deprecated (development) ##
 ss_rm /var/www/html/dev/wp-content/functions.php
 
 ## themes (production) ##
 ss_rm /var/www/html/wp-content/themes/throwaway*
-
-## themes (staging) ##
 ss_rm /var/www/html/staging/wp-content/themes/throwaway*
+ss_rm /var/www/html/dev/wp-content/themes/throwaway*
 
-## mu-plugins (production) ##
-ss_rm /var/www/html/wp-content/mu-plugins/index-autoload* ## included in WP 5.3+
-ss_rm /var/www/html/wp-content/mu-plugins/server-status* ## outdated
-ss_rm /var/www/html/wp-content/mu-plugins/error-log-monitor* ## outdated
-ss_rm /var/www/html/wp-content/mu-plugins/remove-query-strings* ## no longer recommended
+## deleted deprecated mu plugins (production) ##
+ss_rm /var/www/html/wp-content/mu-plugins/dashboard-cleanup*
+ss_rm /var/www/html/wp-content/mu-plugins/delete-expired-transients*
+ss_rm /var/www/html/wp-content/mu-plugins/disable-embeds*
+ss_rm /var/www/html/wp-content/mu-plugins/disable-gutenberg*
+ss_rm /var/www/html/wp-content/mu-plugins/error-log-monitor*
+ss_rm /var/www/html/wp-content/mu-plugins/force-strong-hashing*
+ss_rm /var/www/html/wp-content/mu-plugins/index-autoload*
+ss_rm /var/www/html/wp-content/mu-plugins/limit-heartbeat*
+ss_rm /var/www/html/wp-content/mu-plugins/minify-html*
+ss_rm /var/www/html/wp-content/mu-plugins/redis-cache*
+ss_rm /var/www/html/wp-content/mu-plugins/remove-query-strings*
+ss_rm /var/www/html/wp-content/mu-plugins/server-status*
+ss_rm /var/www/html/wp-content/mu-plugins/sftp-details*
+ss_rm /var/www/html/wp-content/mu-plugins/virtual-robotstxt*
+ss_rm /var/www/html/wp-content/mu-plugins/xxx-dev*
 ss_rm /var/www/html/wp-content/mu-plugins/xxx-notices*
 ss_rm /var/www/html/wp-content/mu-plugins/xxx-staging*
-ss_rm /var/www/html/wp-content/mu-plugins/xxx-dev*
-ss_rm /var/www/html/staging/wp-content/plugins/xxx-notices*
-ss_rm /var/www/html/staging/wp-content/plugins/xxx-staging*
-ss_rm /var/www/html/staging/wp-content/plugins/xxx-dev*
-ss_rm /var/www/html/wp-content/mu-plugins/sftp-details*
 
-## mu-plugins (staging) ##
-ss_rm /var/www/html/staging/wp-content/mu-plugins/index-autoload* ## included in WP 5.3+
-ss_rm /var/www/html/staging/wp-content/mu-plugins/remove-query-strings* ## no longer recommended
-ss_rm /var/www/html/staging/wp-content/mu-plugins/xxx-staging*
+## deleted deprecated mu plugins (staging) ##
+ss_rm /var/www/html/staging/wp-content/mu-plugins/dashboard-cleanup*
+ss_rm /var/www/html/staging/wp-content/mu-plugins/delete-expired-transients*
+ss_rm /var/www/html/staging/wp-content/mu-plugins/disable-embeds*
+ss_rm /var/www/html/staging/wp-content/mu-plugins/disable-gutenberg*
+ss_rm /var/www/html/staging/wp-content/mu-plugins/error-log-monitor*
+ss_rm /var/www/html/staging/wp-content/mu-plugins/force-strong-hashing*
+ss_rm /var/www/html/staging/wp-content/mu-plugins/index-autoload*
+ss_rm /var/www/html/staging/wp-content/mu-plugins/limit-heartbeat*
+ss_rm /var/www/html/staging/wp-content/mu-plugins/minify-html*
+ss_rm /var/www/html/staging/wp-content/mu-plugins/redis-cache*
+ss_rm /var/www/html/staging/wp-content/mu-plugins/remove-query-strings*
+ss_rm /var/www/html/staging/wp-content/mu-plugins/server-status*
 ss_rm /var/www/html/staging/wp-content/mu-plugins/sftp-details*
+ss_rm /var/www/html/staging/wp-content/mu-plugins/virtual-robotstxt*
+ss_rm /var/www/html/staging/wp-content/mu-plugins/xxx-dev*
+ss_rm /var/www/html/staging/wp-content/mu-plugins/xxx-notices*
+ss_rm /var/www/html/staging/wp-content/mu-plugins/xxx-staging*
 
-## mu-plugins (developement) ##
-ss_rm /var/www/html/dev/wp-content/mu-plugins/xxx-dev*
+## deleted deprecated mu plugins (developement) ##
+ss_rm /var/www/html/dev/wp-content/mu-plugins/dashboard-cleanup*
+ss_rm /var/www/html/dev/wp-content/mu-plugins/delete-expired-transients*
+ss_rm /var/www/html/dev/wp-content/mu-plugins/disable-embeds*
+ss_rm /var/www/html/dev/wp-content/mu-plugins/disable-gutenberg*
+ss_rm /var/www/html/dev/wp-content/mu-plugins/error-log-monitor*
+ss_rm /var/www/html/dev/wp-content/mu-plugins/force-strong-hashing*
+ss_rm /var/www/html/dev/wp-content/mu-plugins/index-autoload*
+ss_rm /var/www/html/dev/wp-content/mu-plugins/limit-heartbeat*
+ss_rm /var/www/html/dev/wp-content/mu-plugins/minify-html*
+ss_rm /var/www/html/dev/wp-content/mu-plugins/redis-cache*
+ss_rm /var/www/html/dev/wp-content/mu-plugins/remove-query-strings*
+ss_rm /var/www/html/dev/wp-content/mu-plugins/server-status*
 ss_rm /var/www/html/dev/wp-content/mu-plugins/sftp-details*
+ss_rm /var/www/html/dev/wp-content/mu-plugins/virtual-robotstxt*
+ss_rm /var/www/html/dev/wp-content/mu-plugins/xxx-dev*
+ss_rm /var/www/html/dev/wp-content/mu-plugins/xxx-notices*
+ss_rm /var/www/html/dev/wp-content/mu-plugins/xxx-staging*
 
 ## bash scripts ##
 ss_rm /var/www/0-crontab
@@ -296,6 +307,11 @@ ss_rm /var/log/monit.log*
 
 ## partly for backwards compatibility (but also stubborness) WP Core retains these files ##
 ## none are critical yet they greatly hurt security thus SlickStack deletes them ##
+
+## delete wp installation scripts (avoids malware/bots) ##
+ss_rm /var/www/html/wp-admin/install.php
+ss_rm /var/www/html/dev/wp-admin/install.php
+ss_rm /var/www/html/staging/wp-admin/install.php
 
 ## delete old + exploitable WordPress Core files ##
 ss_rm /var/www/html/readme*.html ## wordpresss junk files
