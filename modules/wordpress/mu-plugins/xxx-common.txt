@@ -105,8 +105,8 @@ function ss_admin_notices_staging() {
     $current_user = wp_get_current_user();
     $environment = WP_ENVIRONMENT_TYPE;
     if(current_user_can('manage_options') && $environment == 'staging') { ?>
-
-    <div class="notice notice-warning">
+	
+	<div class="notice notice-warning">
     <p><strong>FOR STAGING PURPOSES ONLY:</strong> You are now browsing a temporary staging site, created automagically from your live production site. Data is continuously synced every 12 hours and will overwrite existing data (i.e. all staging files/database) unless you pause syncing. Please use this site to briefly test new plugins, themes, or features, and not for long-term web design work or publishing content. Both sites share the <code>/uploads/</code> directory from the production site to save disk space and avoid conflicts, so be sure not to upload any media files here. To avoid conflicts and reduce database bloat, it is best not to push your staging database to your production site (instead, you can simply replicate successful "staging" features on your production site); however, if you do push your staging site live, keep in mind that only <strong>Plugins</strong>, <strong>Themes</strong>, and the <code>wp_options</code> table will be pushed, and nothing else (this process will overwrite the Plugins, Themes, and <code>wp_options</code> table on your production site). ALL OTHER FILES AND MYSQL TABLES WILL BE IGNORED WHEN PUSHING FROM STAGING TO PRODUCTION.</p>
     <p>The following functions are installed by default: <em>Disable Emails</em>, <em>Disable WP Cron</em>, and <em>Disable Default Runner (WooCommerce Scheduler)</em>.</p>
     </div>
@@ -121,7 +121,19 @@ function ss_admin_notices_staging() {
 /** this is a dynamic notice that is force displayed on the WP Admin backend screen */
 /** we use this to announce occasional updates and other critical information */
 
-// coming soon
+add_action('admin_notices', 'ss_admin_notices_development');
+
+function ss_admin_notices_development() {
+    $current_user = wp_get_current_user();
+    $environment = WP_ENVIRONMENT_TYPE;
+    if(current_user_can('manage_options') && $environment == 'development') { ?>
+
+    <div class="notice notice-warning">
+    <p>This is a standalone dev site hosted on the same server as your production site, that uses its own database called <code>development</code> along with its own files (nothing is shared between this dev site and staging/production). You may use this site for start-from-scratch web design projects without worrying about anything ever being overwritten. If you wish to copy the web design of this dev site to your production site, simply use a free WordPress plugin such as <strong>All In One Migration</strong>, or copy the files over via SFTP, and the database over via Adminer.</p>
+    </div>
+
+    <?php } else { }
+}
 
 /** ********************************************************************************************* */
 /** E. XXX Common: SlickStack Dashboard ********************************************************* */
