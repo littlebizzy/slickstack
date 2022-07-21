@@ -18,11 +18,18 @@ Prefix: SSCOMM
 /** TABLE OF CONTENTS (XXX Common) ************************************************************** */
 /** ********************************************************************************************* */
 
-// A. WordPress Login Messages
+/** this is a brief summary of the different code snippets you will find in this script */
+/** each section should be commented so you understand what is being accomplished */
+
+// A. WP Login Messages
 // B. WP Admin Notices (Production)
+// C. WP Admin Notices (Staging)
+// D. WP Admin Notices (Development)
+// E. SlickStack Dashboard
+// F. Disk Space Warning (WP Admin Notice)
 
 /** ********************************************************************************************* */
-/** A. XXX Common: WordPress Login Messages ***************************************************** */
+/** A. XXX Common: WP Login Messages ************************************************************ */
 /** ********************************************************************************************* */
 
 /** this is a brief login page welcome message that we use to announce important things */
@@ -86,7 +93,7 @@ function ss_admin_notice_production_one() {
 }
 
 /** ********************************************************************************************* */
-/** XXX Common: SlickStack WP Admin Notices (Staging) ******************************************* */
+/** C. XXX Common: WP Admin Notices (Staging) *************************************************** */
 /** ********************************************************************************************* */
 
 /** this is a dynamic notice that is force displayed on the WP Admin backend screen */
@@ -108,7 +115,7 @@ function ss_admin_notices_staging() {
 }
 
 /** ********************************************************************************************* */
-/** XXX Common: SlickStack WP Admin Notices (Development) *************************************** */
+/** D. XXX Common: WP Admin Notices (Development) *********************************************** */
 /** ********************************************************************************************* */
 
 /** this is a dynamic notice that is force displayed on the WP Admin backend screen */
@@ -117,7 +124,7 @@ function ss_admin_notices_staging() {
 // coming soon
 
 /** ********************************************************************************************* */
-/** XXX Common: SlickStack Dashboard ************************************************************ */
+/** E. XXX Common: SlickStack Dashboard ********************************************************* */
 /** ********************************************************************************************* */
 
 /** this lightweight control panel displays SlickStack settings to admin users only */
@@ -398,33 +405,19 @@ add_action('admin_menu', 'ss_menu');
 }
 
 /** ********************************************************************************************* */
-/** XXX-Common: SlickStack Disk Space Usage (WP Admin) ****************************************** */
+/** F. XXX-Common: Disk Space Warning (WP Admin Notice) ***************************************** */
 /** ********************************************************************************************* */
 
-// https://stackoverflow.com/questions/15001353/remove-characters-from-a-variable
-// https://stackoverflow.com/questions/54865119/php-if-greater-than
+/** this hardcoded notice will appear when server disk space is beginning to run out */
+/** it will be red if more than 90% used and yellow if more than 85% used */
 
 $disk_used_percent_now = SYSTEM_DISK_USED_PERCENT;
 $disk_used_percent_now_cleaner = trim($disk_used_percent_now, '%');
 
-if ((int)$disk_used_percent_now_cleaner >= 85) {
-	add_action('admin_notices', 'ss_notices_disk_space_85');
-} elseif ((int)$disk_used_percent_now_cleaner >= 90) { 
+if ((int)$disk_used_percent_now_cleaner >= 90) {
 	add_action('admin_notices', 'ss_notices_disk_space_90');
-}
-
-// more than 85% used
-function ss_notices_disk_space_85() {
-    $current_user = wp_get_current_user();
-    if(current_user_can('manage_options')) { ?>
-
-    <div class="notice notice-warning">
-	<p><strong>Disk Space Warning</strong></p>
-    <p>Server disk space is running out with <?php echo $disk_used_percent_now; ?> already used; please consider upgrading your server, adding additional block storage to this server, and/or deleting any files and folders that are not being used.</p>
-	<p><em>This message will disappear after sufficient free space exists, thank you. — SlickStack</em></p>
-    </div>
-
-    <?php } else { }
+} elseif ((int)$disk_used_percent_now_cleaner >= 85) { 
+	add_action('admin_notices', 'ss_notices_disk_space_85');
 }
 
 // more than 90% used
@@ -433,6 +426,20 @@ function ss_notices_disk_space_90() {
     if(current_user_can('manage_options')) { ?>
 
     <div class="notice notice-error">
+	<p><strong>Disk Space Warning</strong></p>
+    <p>Server disk space is running out with <?php echo $disk_used_percent_now; ?> already used; please consider upgrading your server, adding additional block storage to this server, and/or deleting any files and folders that are not being used.</p>
+	<p><em>This message will disappear after sufficient free space exists, thank you. — SlickStack</em></p>
+    </div>
+
+    <?php } else { }
+}
+
+// more than 85% used
+function ss_notices_disk_space_85() {
+    $current_user = wp_get_current_user();
+    if(current_user_can('manage_options')) { ?>
+
+    <div class="notice notice-warning">
 	<p><strong>Disk Space Warning</strong></p>
     <p>Server disk space is running out with <?php echo $disk_used_percent_now; ?> already used; please consider upgrading your server, adding additional block storage to this server, and/or deleting any files and folders that are not being used.</p>
 	<p><em>This message will disappear after sufficient free space exists, thank you. — SlickStack</em></p>
@@ -623,5 +630,7 @@ function ss_environment_menu($admin_bar) {
 // Ref: https://github.com/palantir/blueprint/issues/2389
 // Ref: https://stackoverflow.com/questions/29110399/how-to-edit-the-contents-of-a-file-on-button-click-php
 // Ref: https://digwp.com/2016/05/wordpress-admin-notices/
+// Ref: https://stackoverflow.com/questions/15001353/remove-characters-from-a-variable
+// Ref: https://stackoverflow.com/questions/54865119/php-if-greater-than
 
 // SS_EOF
