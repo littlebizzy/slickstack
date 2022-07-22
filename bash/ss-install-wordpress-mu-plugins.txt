@@ -225,6 +225,7 @@ fi
 ## staging site ##
 ss_wget_slowest /tmp/disable-emails.zip "${MIRROR_DISABLE_EMAILS_ZIP}"
 ss_wget_slowest /tmp/disable-default-runner.zip "${MIRROR_DISABLE_DEFAULT_RUNNER_ZIP}"
+ss_wget_slowest /tmp/disable-media-uploads.php https://raw.githubusercontent.com/littlebizzy/slickstack/master/modules/wordpress/mu-plugins/disable-media-uploads.txt
 
 ## unzip various files ##
 unzip /tmp/disable-emails.zip -d /tmp
@@ -234,17 +235,20 @@ unzip /tmp/disable-default-runner.zip -d /tmp
 if [[ "${STAGING_SITE}" == "true" ]]; then
 ss_rm /var/www/html/staging/wp-content/plugins/disable-emails*
 ss_rm /var/www/html/staging/wp-content/plugins/disable-default-runner*
+ss_rm /var/www/html/staging/wp-content/plugins/disable-media-uploads*
 fi
 
 if [[ "${DEV_SITE}" == "true" ]]; then
 ss_rm /var/www/html/dev/wp-content/plugins/disable-emails*
 ss_rm /var/www/html/dev/wp-content/plugins/disable-default-runner*
+ss_rm /var/www/html/dev/wp-content/plugins/disable-media-uploads*
 fi
 
 ## and staging ##
 if [[ "${STAGING_SITE}" == "true" ]]; then
 ss_cp /tmp/disable-emails /var/www/html/staging/wp-content/mu-plugins/disable-emails
 ss_cp /tmp/disable-default-runner /var/www/html/staging/wp-content/mu-plugins/disable-default-runner
+ss_cp /tmp/disable-media-uploads.php /var/www/html/staging/wp-content/mu-plugins/disable-media-uploads.php
 fi
 
 ## and dev ##
@@ -582,5 +586,6 @@ chmod 0700 /var/www/crons/custom/*cron* ## 0700 means only root/sudo can execute
 ####################################################################################################
 
 ## Ref: https://unix.stackexchange.com/questions/368246/cant-use-alias-in-script-even-if-i-define-it-just-above
+## Ref: https://wordpress.stackexchange.com/questions/99248/disable-media-uploads-to-non-admin-users
 
 ## SS_EOF
