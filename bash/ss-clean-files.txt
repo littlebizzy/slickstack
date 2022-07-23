@@ -38,8 +38,10 @@
 ## J. Delete Junk Linux System Files
 
 ## L. Delete Certain Files Throughout Public Web Root (Required) 
+
 ## L. Delete Certain WordPress Plugins (Required)
-## M. Delete Certain WordPress Plugins (Conditional)
+## M. Delete Junk Files In WordPress Plugins Directory
+
 ## Purge Cache (PHP OPcache)
 ## Reset Permissions (SlickStack Scripts)
 
@@ -1213,33 +1215,50 @@ ss_rm /var/www/html/dev/wp-content/plugins/youtube-embed-* ## malware
 ss_rm /var/www/html/dev/wp-content/plugins/yuzo-related-post* ## deprecated, exploitable
 
 ####################################################################################################
-#### M. SS-Clean-Files: Delete Certain WordPress Plugins (Conditional) #############################
+#### M. SS-Clean-Files: Delete Junk Files In WordPress Plugins Directory ###########################
 ####################################################################################################
 
-## even if you disable the Plugin Blacklist certain problematic plugins are still deleted ##
-## this is to ensure stability of SlickStack and to establish some best practices ##
+## this is a brief snippet to delete any existing junk files in the plugins directory ##
+## there is never a good reason to have archives, logs, or non-plugins in here ##
 
-if [[ "${SS_CLEAN_FILES_WORDPRESS_PLUGINS}" != "false" ]] && [[ "${SS_WORDPRESS_PLUGIN_BLACKLIST}" != "false" ]]; then
-
-## cleanup file types ##
+## delete archive files (production) ##
 find /var/www/html/wp-content/plugins/ -name "*.gz" -type f -delete
 find /var/www/html/wp-content/plugins/ -name "*.tar" -type f -delete
 find /var/www/html/wp-content/plugins/ -name "*.zip" -type f -delete
 
+## delete archive files (staging) ##
+find /var/www/html/staging/wp-content/plugins/ -name "*.gz" -type f -delete
+find /var/www/html/staging/wp-content/plugins/ -name "*.tar" -type f -delete
+find /var/www/html/staging/wp-content/plugins/ -name "*.zip" -type f -delete
+
+## delete archive files (development) ##
+find /var/www/html/dev/wp-content/plugins/ -name "*.gz" -type f -delete
+find /var/www/html/dev/wp-content/plugins/ -name "*.tar" -type f -delete
+find /var/www/html/dev/wp-content/plugins/ -name "*.zip" -type f -delete
+
+## delete junk files (production) ##
 ss_rm /var/www/html/wp-content/plugins/Licensing ## junk folder
+ss_rm /var/www/html/wp-content/plugins/pp_default_lib.php ## wordpresss junk files
 ss_rm /var/www/html/wp-content/plugins/wp_mainlog2* ## unknown
 
-ss_rm /var/www/html/wp-content/plugins/creative-clans-embed-script* ## better options exist, not maintained (By Guido Tonnaer)
+## delete junk files (staging) ##
+ss_rm /var/www/html/staging/wp-content/plugins/Licensing ## junk folder
+ss_rm /var/www/html/staging/wp-content/plugins/pp_default_lib.php ## wordpresss junk files
+ss_rm /var/www/html/staging/wp-content/plugins/wp_mainlog2* ## unknown
+
+## delete junk files (development) ##
+ss_rm /var/www/html/dev/wp-content/plugins/Licensing ## junk folder
+ss_rm /var/www/html/dev/wp-content/plugins/pp_default_lib.php ## wordpresss junk files
+ss_rm /var/www/html/dev/wp-content/plugins/wp_mainlog2* ## unknown
+
+if [[ "${SS_CLEAN_FILES_WORDPRESS_PLUGINS}" != "false" ]] && [[ "${SS_WORDPRESS_PLUGIN_BLACKLIST}" != "false" ]]; then
+
 ss_rm /var/www/html/wp-content/plugins/googleanalytics ## malware/spyware
 ss_rm /var/www/html/wp-content/plugins/optimizemember* ## requires OptimizePress (banned)
 ss_rm /var/www/html/wp-content/plugins/optimizeMember* ## requires OptimizePress (banned)
 ss_rm /var/www/html/wp-content/plugins/optimizePress* ## serious errors, potential data loss, creates instability
 ss_rm /var/www/html/wp-content/plugins/optimizePressPlugin* ## serious errors, potential data loss, creates instability
 ss_rm /var/www/html/wp-content/plugins/optimizepress* ## serious errors, potential data loss, creates instability
-ss_rm /var/www/html/wp-content/plugins/pp_default_lib.php ## wordpresss junk files
-ss_rm /var/www/html/wp-content/uploads/sucuri* ## ss conflicts, bloated
-ss_rm /var/www/html/wp-content/plugins/sucuri-scanner* ## ss conflicts, bloated
-ss_rm /var/www/html/wp-content/plugins/wordpress-firewall-2* ## ss conflicts, creates instability
 
 fi
 
