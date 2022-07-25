@@ -12,7 +12,8 @@
 #### bash aliases: ss push staging #################################################################
 ####################################################################################################
 
-
+## SS-PUSH-STAGING OVERWRITES PRODUCTION FILES AND DATABASE WITH THOSE FROM STAGING ##
+## ENSURE YOU HAVE BOTH LOCAL AND OFF-SERVER BACKUPS BEFORE RUNNING THIS ##
 
 ####################################################################################################
 #### TABLE OF CONTENTS (SS-Push-Staging) ###########################################################
@@ -24,9 +25,12 @@
 ## A. Source SS-Config + SS-Functions
 ## B. Touch Timestamp File
 ## C. Message (Begin Script)
-## D. AGREE
+## D. Dump Production Database
+## E. VERBOSE CONFIRMATION TO PROCEED
 ## E. Import Staging Database To Production Database
 ## F. Copy All Relevant Files From Staging To Production
+## G. Fix Any Hardcoded Links In Production Theme Files
+## H. Reset Permissions (SlickStack Scripts)
 
 ####################################################################################################
 #### A. SS-Sync-Staging: Source SS-Config + SS-Functions ###########################################
@@ -64,17 +68,19 @@ ss_touch "${TIMESTAMP_SS_PUSH_STAGING}"
 ss_echo "${COLOR_INFO}Running ss-push-staging... ${COLOR_RESET}"
 
 ####################################################################################################
-#### C. SS-Push-Staging: Dump Production Database ##################################################
+#### D. SS-Push-Staging: Dump Production Database ##################################################
 ####################################################################################################
+
+## first we need to dump the production database locally in case anything goes wrong ##
+## in case of emergency you can restore this dump to your live production site ##
 
 source "${PATH_SS_DUMP_DATABASE}"
 
 ####################################################################################################
-#### D. SS-Push-Staging: AGREE #####################
+#### E. SS-Push-Staging: VERBOSE CONFIRMATION TO PROCEED ###########################################
 ####################################################################################################
 
-
-read -r -p "EXPERIMENTAL... BE CAREFUL... BACKUP FIRST: Push staging files (themes, plugins, wp-content) and wp_options to production ...are you sure? [y/N]" response
+read -r -p "EXPERIMENTAL... BE CAREFUL... BACKUP FIRST: Push staging files (themes, plugins, wp-content) and database to production, are you sure? [y/N]" response
 if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]]
 then
 
@@ -86,52 +92,17 @@ then
 ## then it forecfully replaces the home/siteurl options to staging subdomain ##
 
 ## import database ##
-ss_cp /var/www/backups/mysql/production.sql /tmp/staging.sql
-chown mysql:mysql /tmp/staging.sql ## does not matter if -L flag used below
-chmod 0644 /tmp/staging.sql ## does not matter if -L flag used below
-ss_mysql_8.0 staging < /tmp/staging.sql
+# ss_cp /var/www/backups/mysql/production.sql /tmp/staging.sql
+# chown mysql:mysql /tmp/staging.sql ## does not matter if -L flag used below
+# chmod 0644 /tmp/staging.sql ## does not matter if -L flag used below
+# ss_mysql_8.0 staging < /tmp/staging.sql
     
-## fix staging home and siteurl fields (no mass search/replace to avoid potential conflicts) ##
+## fix domain in database ##
 if [[ "${SS_APP}" == "wordpress" ]]; then
-    if [[ -n $(mysql --execute "SHOW TABLES FROM staging WHERE Tables_in_staging LIKE '${DB_PREFIX}options';" 2> /dev/null) ]]; then
-        mysql --execute="UPDATE staging.${DB_PREFIX}options SET option_value='https://staging.${SITE_DOMAIN_EXCLUDING_WWW}' WHERE option_name='home'";
-        mysql --execute="UPDATE staging.${DB_PREFIX}options SET option_value='https://staging.${SITE_DOMAIN_EXCLUDING_WWW}' WHERE option_name='siteurl'";
+    if [[ -n $(mysql --execute "SHOW TABLES FROM ${DB_NAME} WHERE Tables_in_${DB_NAME} LIKE '${DB_PREFIX}options';" 2> /dev/null) ]]; then
+    mysql --execute="UPDATE ${DB_NAME}.${DB_PREFIX}options SET option_value='https://${SITE_DOMAIN}' WHERE option_name='home'";
+    mysql --execute="UPDATE ${DB_NAME}.${DB_PREFIX}options SET option_value='https://${SITE_DOMAIN}' WHERE option_name='siteurl'";
     fi
-fi
-
-##
-##
-
-####################################################################################################
-####################################################################################################
-####################################################################################################
-
-## only if staging site is enabled ##
-if [[ "${STAGING_SITE}" == "true" ]]; then
-
-    ## import database ##
-   #  cp /var/www/backups/mysql/production.sql /tmp/staging.sql
-   # chown mysql:mysql /tmp/staging.sql ## does not matter if -L flag used below
-  #  chmod 0644 /tmp/staging.sql ## does not matter if -L flag used below
-#    sudo mysql -L -f staging < /tmp/staging.sql
-#    rm /tmp/staging.sql
-
-
-    if [[ "${SS_APP}" == "wordpress" ]]; then
-
-        ## production ##
-        if [[ -n $(mysql --execute "SHOW TABLES FROM ${DB_NAME} WHERE Tables_in_${DB_NAME} LIKE '${DB_PREFIX}options';") ]]; then
-    
-            mysql --execute="UPDATE ${DB_NAME}.${DB_PREFIX}options SET option_value='https://${SITE_DOMAIN}' WHERE option_name='home'";
-            mysql --execute="UPDATE ${DB_NAME}.${DB_PREFIX}options SET option_value='https://${SITE_DOMAIN}' WHERE option_name='siteurl'";
-    
-        fi
-
-    ## end parent if ##
-    fi
-
-
-## end parent if ##
 fi
 
 ####################################################################################################
@@ -148,21 +119,17 @@ ss_rsync --max-size=5mb --exclude mu-plugins --exclude uploads /var/www/html/sta
 ss_rm /var/www/html/wp-content/wp-content*
 
 ####################################################################################################
-#### E. SS-Sync-Staging: Fix Any Hardcoded Links In Production Theme Files #########################
+#### G. SS-Sync-Staging: Fix Any Hardcoded Links In Production Theme Files #########################
 ####################################################################################################
 
 ## many themes (or custom-coded themes) often contain hardcoded HTML assets and links ##
 ## here we forcefully fix these links to ensure production sites render properly ##
 
-## change staging hardlinks to production ##
-find /var/www/html/wp-content/themes/ -type f -exec sed -i "s#https://staging.$SITE_DOMAIN#https://${SITE_DOMAIN}#g" {} +
-find /var/www/html/wp-content/themes/ -type f -exec sed -i "s#http://staging.$SITE_DOMAIN#https://${SITE_DOMAIN}#g" {} +
-    
-## change dev hardlinks to production ##
-find /var/www/html/wp-content/themes/ -type f -exec sed -i "s#https://dev.$SITE_DOMAIN#https://${SITE_DOMAIN}#g" {} +
-find /var/www/html/wp-content/themes/ -type f -exec sed -i "s#http://dev.$SITE_DOMAIN#https://${SITE_DOMAIN}#g" {} +
-
-
+## fix hardcoded theme links ##
+find /var/www/html/wp-content/themes/ -type f -exec sed -i "s#https://staging.${SITE_DOMAIN_INCLUDING_WWW}#https://${SITE_DOMAIN_EXCLUDING_WWW}#g" {} +
+find /var/www/html/wp-content/themes/ -type f -exec sed -i "s#http://staging.${SITE_DOMAIN_INCLUDING_WWW}#https://${SITE_DOMAIN_EXCLUDING_WWW}#g" {} +
+find /var/www/html/wp-content/themes/ -type f -exec sed -i "s#https://staging.${SITE_DOMAIN_EXCLUDING_WWW}#https://${SITE_DOMAIN_EXCLUDING_WWW}#g" {} +
+find /var/www/html/wp-content/themes/ -type f -exec sed -i "s#http://staging.${SITE_DOMAIN_EXCLUDING_WWW}#https://${SITE_DOMAIN_EXCLUDING_WWW}#g" {} +
 
 
 ## end interactive ##
@@ -171,7 +138,7 @@ else
 fi
 
 ####################################################################################################
-#### PLACEHOLDER: Reset Permissions (SlickStack Scripts) ###########################################
+#### H. SS-Sync-Staging: Reset Permissions (SlickStack Scripts) ####################################
 ####################################################################################################
 
 ## we include this permissions reset in all cron jobs and bash scripts for redundancy ##
