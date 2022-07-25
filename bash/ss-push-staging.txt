@@ -24,6 +24,9 @@
 ## A. Source SS-Config + SS-Functions
 ## B. Touch Timestamp File
 ## C. Message (Begin Script)
+## D. AGREE
+## E. Import Staging Database To Production Database
+## F. Copy All Relevant Files From Staging To Production
 
 ####################################################################################################
 #### A. SS-Sync-Staging: Source SS-Config + SS-Functions ###########################################
@@ -67,7 +70,7 @@ ss_echo "${COLOR_INFO}Running ss-push-staging... ${COLOR_RESET}"
 source "${PATH_SS_DUMP_DATABASE}"
 
 ####################################################################################################
-#### C. SS-Push-Staging: Push Staging To Production (Plugins, Themes, Options) #####################
+#### D. SS-Push-Staging: AGREE #####################
 ####################################################################################################
 
 
@@ -75,8 +78,33 @@ read -r -p "EXPERIMENTAL... BE CAREFUL... BACKUP FIRST: Push staging files (them
 if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]]
 then
 
+####################################################################################################
+#### E. SS-Push-Staging: Import Staging Database To Production Database ############################
+####################################################################################################
+
+## this snippet duplicates the dumped production database and imports it into MySQL ##
+## then it forecfully replaces the home/siteurl options to staging subdomain ##
+
+## import database ##
+ss_cp /var/www/backups/mysql/production.sql /tmp/staging.sql
+chown mysql:mysql /tmp/staging.sql ## does not matter if -L flag used below
+chmod 0644 /tmp/staging.sql ## does not matter if -L flag used below
+ss_mysql_8.0 staging < /tmp/staging.sql
+    
+## fix staging home and siteurl fields (no mass search/replace to avoid potential conflicts) ##
+if [[ "${SS_APP}" == "wordpress" ]]; then
+    if [[ -n $(mysql --execute "SHOW TABLES FROM staging WHERE Tables_in_staging LIKE '${DB_PREFIX}options';" 2> /dev/null) ]]; then
+        mysql --execute="UPDATE staging.${DB_PREFIX}options SET option_value='https://staging.${SITE_DOMAIN_EXCLUDING_WWW}' WHERE option_name='home'";
+        mysql --execute="UPDATE staging.${DB_PREFIX}options SET option_value='https://staging.${SITE_DOMAIN_EXCLUDING_WWW}' WHERE option_name='siteurl'";
+    fi
+fi
+
 ##
 ##
+
+####################################################################################################
+####################################################################################################
+####################################################################################################
 
 ## only if staging site is enabled ##
 if [[ "${STAGING_SITE}" == "true" ]]; then
@@ -107,26 +135,17 @@ if [[ "${STAGING_SITE}" == "true" ]]; then
 fi
 
 ####################################################################################################
-#### D. SS-Push-Staging: Copy All Relevant Files From Staging To Production ########################
+#### F. SS-Push-Staging: Copy All Relevant Files From Staging To Production ########################
 ####################################################################################################
 
 ## here we copy over a limited array of files and folders from staging to production ##
 ## keep in mind that both sites share the same uploads folder (so not copied) ##
 
-## only if staging site is enabled ##
-if [[ "${STAGING_SITE}" == "true" ]]; then
+## copy wp-content files over (skips media uploads) ##
+ss_rsync --max-size=5mb --exclude mu-plugins --exclude uploads /var/www/html/staging/wp-content/ /var/www/html/wp-content
 
-    ## copy wp-content files over (skips media uploads) ##
-    ss_rsync --max-size=5mb --exclude="mu-plugins*" --exclude="uploads*" /var/www/html/staging/wp-content/ /var/www/html/wp-content
-    
-    ## remove potential run-on subdirectories ##
-    rm /var/www/html/wp-content/wp-content*
-    rm /var/www/html/staging/staging*
-    
-    ## do we need to copy post meta tables here in case media files were uploaded to staging?
-    
-## end parent if ##
-fi
+## remove potential run-on subdirectories ##
+ss_rm /var/www/html/wp-content/wp-content*
 
 ####################################################################################################
 #### E. SS-Sync-Staging: Fix Any Hardcoded Links In Production Theme Files #########################
