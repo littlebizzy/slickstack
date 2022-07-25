@@ -26,6 +26,9 @@
 ## B. Touch Timestamp File
 ## C. Message (Begin Script)
 ## D. Run SS-Dump-Database (Conditional)
+
+## X Install Database (Conditional)
+
 ## E. Import Production Database To Staging Database
 ## F. Copy All Relevant Files From Production To Staging
 ## G. Run SS-Install-WordPress-Config (Conditional)
@@ -36,6 +39,9 @@
 ####################################################################################################
 #### A. SS-Sync-Staging: Source SS-Config + SS-Functions ###########################################
 ####################################################################################################
+
+## before anything else we must source the critical variables that power this script ##
+## ss-config is setup during ss-install wizard but ss-functions is hardcoded ##
 
 ## source ss-config ##
 source /var/www/ss-config
@@ -93,33 +99,35 @@ if [[ ! -f "/var/www/backups/mysql/production.sql" ]]; then
 fi
 
 ####################################################################################################
+#### X. SS-Sync-Staging: Install Database (Conditional) #############################
+####################################################################################################
+
+## FIX THIS
+## run ss-install-mysql-database ##
+# if [[  ]]; then
+#    source "${PATH_SS_INSTALL_MYSQL_DATABASE}"
+# fi
+
+####################################################################################################
 #### E. SS-Sync-Staging: Import Production Database To Staging Database ############################
 ####################################################################################################
 
 ## this snippet duplicates the dumped production database and imports it into MySQL ##
 ## then it forecfully replaces the home/siteurl options to staging subdomain ##
 
-## only if staging site is enabled ##
-if [[ "${STAGING_SITE}" == "true" ]]; then
-
-
-## IF STAGING DATABASE DOES NOT EXIST RUN SS INSTALL DB HERE !!!!!! ####
-##    add here
-
-
-    ## import database ##
-    cp /var/www/backups/mysql/production.sql /tmp/staging.sql
-    chown mysql:mysql /tmp/staging.sql ## does not matter if -L flag used below
-    chmod 0644 /tmp/staging.sql ## does not matter if -L flag used below
-    ss_mysql_8.0 staging < /tmp/staging.sql
+## import database ##
+ss_cp /var/www/backups/mysql/production.sql /tmp/staging.sql
+chown mysql:mysql /tmp/staging.sql ## does not matter if -L flag used below
+chmod 0644 /tmp/staging.sql ## does not matter if -L flag used below
+ss_mysql_8.0 staging < /tmp/staging.sql
     
-    ## fix staging home and siteurl fields (no mass search/replace to avoid potential conflicts) ##
-    if [[ "${SS_APP}" == "wordpress" ]]; then
-        if [[ -n $(mysql --execute "SHOW TABLES FROM staging WHERE Tables_in_staging LIKE '${DB_PREFIX}options';" 2> /dev/null) ]]; then
-            mysql --execute="UPDATE staging.${DB_PREFIX}options SET option_value='https://staging.${SITE_DOMAIN_EXCLUDING_WWW}' WHERE option_name='home'";
-            mysql --execute="UPDATE staging.${DB_PREFIX}options SET option_value='https://staging.${SITE_DOMAIN_EXCLUDING_WWW}' WHERE option_name='siteurl'";
-        fi
+## fix staging home and siteurl fields (no mass search/replace to avoid potential conflicts) ##
+if [[ "${SS_APP}" == "wordpress" ]]; then
+    if [[ -n $(mysql --execute "SHOW TABLES FROM staging WHERE Tables_in_staging LIKE '${DB_PREFIX}options';" 2> /dev/null) ]]; then
+        mysql --execute="UPDATE staging.${DB_PREFIX}options SET option_value='https://staging.${SITE_DOMAIN_EXCLUDING_WWW}' WHERE option_name='home'";
+        mysql --execute="UPDATE staging.${DB_PREFIX}options SET option_value='https://staging.${SITE_DOMAIN_EXCLUDING_WWW}' WHERE option_name='siteurl'";
     fi
+fi
     
 ####################################################################################################
 #### F. SS-Sync-Staging: Copy All Relevant Files From Production To Staging ########################
@@ -128,19 +136,15 @@ if [[ "${STAGING_SITE}" == "true" ]]; then
 ## here we copy over everything from production to staging besides uploads (media files) ##
 ## schedule ss-clean beforehand in order to remove various (large) junk files ##
 
-    ## copy wp core directories ##
-    ss_rsync /var/www/html/wp-admin/ /var/www/html/staging/wp-admin
-    ss_rsync /var/www/html/wp-includes/ /var/www/html/staging/wp-includes
+## copy wp core directories ##
+ss_rsync /var/www/html/wp-admin/ /var/www/html/staging/wp-admin
+ss_rsync /var/www/html/wp-includes/ /var/www/html/staging/wp-includes
 
-    ## copy wp core root php files (only) ##
-    # --exclude-from="/var/www/meta/exclude.txt" 
-    ss_rsync --exclude="wp-config*.php" --include="index.php" --include="wp-*.php" --exclude="*" /var/www/html/ /var/www/html/staging
-
-    ## copy wp-content files over (skips media uploads) ##
-    ss_rsync --max-size=5mb --exclude mu-plugins --exclude uploads /var/www/html/wp-content/ /var/www/html/staging/wp-content
+## copy wp-content files over (skips media uploads) ##
+ss_rsync --max-size=5mb --exclude mu-plugins --exclude uploads /var/www/html/wp-content/ /var/www/html/staging/wp-content
     
-    ## remove potential run-on subdirectories ##
-    ss_rm /var/www/html/staging/staging*
+## remove potential run-on subdirectories ##
+ss_rm /var/www/html/staging/staging*
     
 ####################################################################################################
 #### G. SS-Sync-Staging: Run SS-Install-WordPress-Config (Conditional) #############################
@@ -179,10 +183,11 @@ find /var/www/html/staging/wp-content/themes/ -type f -exec sed -i "s#http://${S
 find /var/www/html/staging/wp-content/themes/ -type f -exec sed -i "s#https://${SITE_DOMAIN_EXCLUDING_WWW}#https://staging.${SITE_DOMAIN_EXCLUDING_WWW}#g" {} +
 find /var/www/html/staging/wp-content/themes/ -type f -exec sed -i "s#http://${SITE_DOMAIN_EXCLUDING_WWW}#https://staging.${SITE_DOMAIN_EXCLUDING_WWW}#g" {} +
 
-## end parent if ##
-fi
 
-## end parent parent if ##
+
+
+
+## end if staging site true ##
 fi
 
 ####################################################################################################
@@ -190,7 +195,7 @@ fi
 ####################################################################################################
 
 ## delete tmp files ##
-rm /tmp/staging.sql
+ss_rm /tmp/staging.sql
 
 ####################################################################################################
 #### PLACEHOLDER: Reset Permissions (SlickStack Scripts) ###########################################
