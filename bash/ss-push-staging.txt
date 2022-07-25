@@ -80,7 +80,7 @@ source "${PATH_SS_DUMP_DATABASE}"
 #### E. SS-Push-Staging: VERBOSE CONFIRMATION TO PROCEED ###########################################
 ####################################################################################################
 
-read -r -p "EXPERIMENTAL... BE CAREFUL... BACKUP FIRST: Push staging files (themes, plugins, wp-content) and database to production, are you sure? [y/N]" response
+read -r -p "EXPERIMENTAL... BE CAREFUL... WILL OVERWRITE PRODUCTION... BACKUP FIRST: Push staging files (wp-content and database) to production, are you sure? [y/N]" response
 if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]]
 then
 
@@ -92,10 +92,10 @@ then
 ## then it forecfully replaces the home/siteurl options to staging subdomain ##
 
 ## import database ##
-# ss_cp /var/www/backups/mysql/production.sql /tmp/staging.sql
-# chown mysql:mysql /tmp/staging.sql ## does not matter if -L flag used below
-# chmod 0644 /tmp/staging.sql ## does not matter if -L flag used below
-# ss_mysql_8.0 staging < /tmp/staging.sql
+ss_cp /var/www/backups/mysql/staging.sql /tmp/staging_push.sql
+chown mysql:mysql /tmp/staging_push.sql ## does not matter if -L flag used below
+chmod 0644 /tmp/staging_push.sql ## does not matter if -L flag used below
+ss_mysql_8.0 "${DB_NAME}" < /tmp/staging_push.sql
     
 ## fix domain in database ##
 if [[ "${SS_APP}" == "wordpress" ]]; then
@@ -104,6 +104,8 @@ if [[ "${SS_APP}" == "wordpress" ]]; then
     mysql --execute="UPDATE ${DB_NAME}.${DB_PREFIX}options SET option_value='https://${SITE_DOMAIN}' WHERE option_name='siteurl'";
     fi
 fi
+
+ss_rm /tmp/staging_push.sql
 
 ####################################################################################################
 #### F. SS-Push-Staging: Copy All Relevant Files From Staging To Production ########################
