@@ -34,7 +34,8 @@
 ## G. Run SS-Install-WordPress-Config (Conditional)
 ## H. Run SS-Install-WordPress-MU-Plugins (Conditional)
 ## I. Fix Any Hardcoded Links In Staging Theme Files
-## J. Cleanup Temporary Files
+
+## J. Reset Permissions (SlickStack Scripts)
 
 ####################################################################################################
 #### A. SS-Sync-Staging: Source SS-Config + SS-Functions ###########################################
@@ -128,6 +129,9 @@ if [[ "${SS_APP}" == "wordpress" ]]; then
         mysql --execute="UPDATE staging.${DB_PREFIX}options SET option_value='https://staging.${SITE_DOMAIN_EXCLUDING_WWW}' WHERE option_name='siteurl'";
     fi
 fi
+
+## cleanup files ##
+ss_rm /tmp/staging.sql
     
 ####################################################################################################
 #### F. SS-Sync-Staging: Copy All Relevant Files From Production To Staging ########################
@@ -184,21 +188,11 @@ find /var/www/html/staging/wp-content/themes/ -type f -exec sed -i "s#https://${
 find /var/www/html/staging/wp-content/themes/ -type f -exec sed -i "s#http://${SITE_DOMAIN_EXCLUDING_WWW}#https://staging.${SITE_DOMAIN_EXCLUDING_WWW}#g" {} +
 
 
-
-
-
 ## end if staging site true ##
 fi
 
 ####################################################################################################
-## J. SS-Sync-Staging: Cleanup Temporary Files #####################################################
-####################################################################################################
-
-## delete tmp files ##
-ss_rm /tmp/staging.sql
-
-####################################################################################################
-#### PLACEHOLDER: Reset Permissions (SlickStack Scripts) ###########################################
+#### J. SS-Sync-Staging: Reset Permissions (SlickStack Scripts) ####################################
 ####################################################################################################
 
 ## we include this permissions reset in all cron jobs and bash scripts for redundancy ##
