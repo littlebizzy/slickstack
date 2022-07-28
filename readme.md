@@ -31,6 +31,8 @@ SlickStack is a free LEMP stack automation script written in Bash designed to en
 
 ## Changelog
 
+* **NEW!** Added "HttpOnly" and "Secure" cookie flags to both Nginx and PHP configuration...
+
 * **NEW!** `ss-dump-database` will now automatically dump `staging` and/or `development` database if STAGING_SITE or DEV_SITE are enabled in ss-config... this provides better sureity for our staging features, remote backups, and otherwise.
 
 * **NEW!** We have established clearer "rules" for when SlickStack will force delete WordPress plugins: malware, exploitable (e.g. deprecated and no longer being patched), database thrashing or causing crashes, and unresolvable conflicts with SlickStack. To be clear, any "cache" plugins will be forced deleted by SlickStack going forward, since we use Nginx caching already, please have a conversation with your clients about why they don't need additional cache plugins, and why most performance/security plugins are not required on SlickStack (even if we don't force delete them). Community feedback is a must re: our plugin blacklist, which will become more relevant than ss-clean-files for most users going forward... we need feedback and suggestions to ensure we abide by strict rules in regard to both force deleting WP plugins and also re: our plugin blacklist.
