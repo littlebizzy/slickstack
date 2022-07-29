@@ -28,6 +28,7 @@ Prefix: SSCOMM
 // E. SlickStack Dashboard
 // F. Disk Space Warning (WP Admin Notice)
 // G. PHP Hacks Warning (WP Admin Notice)
+// H. Switch Environment Menu
 
 /** ********************************************************************************************* */
 /** A. XXX Common: WP Login Messages ************************************************************ */
@@ -541,12 +542,10 @@ function slickstack_menu() {
         // $wp_admin_bar->add_menu(array('parent' => $menu_id, 'title' => __('User Guide'), 'id' => 'slickstack-guide', 'href' => 'https://www.littlebizzy.com/guide', 'meta' => array('target' => '_blank')));
 
 /** ********************************************************************************************* */
-/** XXX-Common: SlickStack WP Admin Toolbar Menu (Staging Switcher) ***************************** */
+/** H. XXX-Common: Switch Environment Menu ****************************************************** */
 /** ********************************************************************************************* */
 
-/** Toolbar Switcher (Production) */
-// Future: replace this janky thing with a defined constant
-//@STAGING_SITE_TRUE//
+
 
 add_action('admin_bar_menu', 'ss_environment_menu', 25);
 
@@ -568,6 +567,8 @@ function ss_environment_menu($admin_bar) {
     
     if(current_user_can('manage_options')) {
     
+	
+		// staging site drop-down menu
         if(WP_ENVIRONMENT_TYPE == 'staging') {
         
             // current environment
@@ -578,7 +579,7 @@ function ss_environment_menu($admin_bar) {
                 'href'  => false
                 ) );
             
-        // Production Link
+        // production (required)
         $admin_bar->add_menu( array(
             'parent' => 'ss_environment_current', 
             'id' => 'ss_environment_toggle_production',
@@ -587,7 +588,8 @@ function ss_environment_menu($admin_bar) {
             'meta' => array('target' => '_blank')
             ) );
             
-        // Dev Link
+        // dev (if enabled)
+		if(DEV_SITE_STATUS == 'true') {
         $admin_bar->add_menu( array(
             'parent' => 'ss_environment_current', 
             'id' => 'ss_environment_toggle_dev',
@@ -595,12 +597,15 @@ function ss_environment_menu($admin_bar) {
             'href' => $ss_dev_link_fixed, 
             'meta' => array('target' => '_blank')
             ) );
+		}
             
-        } // end if staging
+        } // end staging site drop-down menu
         
+		
+		// dev site drop-down menu
         elseif(WP_ENVIRONMENT_TYPE == 'development') {
                 
-        // Current Environment
+        // current environment
         $admin_bar->add_menu( array(
             'parent' => 'top-secondary',
             'id'    => 'ss_environment_current',
@@ -608,7 +613,7 @@ function ss_environment_menu($admin_bar) {
             'href'  => false
             ) );
             
-        // Production Link
+        // production (required)
         $admin_bar->add_menu( array(
             'parent' => 'ss_environment_current', 
             'id' => 'ss_environment_toggle_production',
@@ -617,7 +622,8 @@ function ss_environment_menu($admin_bar) {
             'meta' => array('target' => '_blank')
             ) );
             
-        // Staging Link
+        // staging (if enabled)
+		if(STAGING_SITE_STATUS == 'true') {
         $admin_bar->add_menu( array(
             'parent' => 'ss_environment_current', 
             'id' => 'ss_environment_toggle_dev',
@@ -625,12 +631,15 @@ function ss_environment_menu($admin_bar) {
             'href' => $ss_staging_link_fixed, 
             'meta' => array('target' => '_blank')
             ) );
+		}
             
-        } // end elseif dev
+        } // end dev site drop-down menu
         
+		
+		// production site drop-down menu
         else {
         
-        // Current Environment
+        // current environment
         $admin_bar->add_menu( array(
             'parent' => 'top-secondary',
             'id'    => 'ss_environment_current',
@@ -638,7 +647,8 @@ function ss_environment_menu($admin_bar) {
             'href'  => false
             ) );
             
-        // Staging Link
+        // staging (if enabled)
+		if(STAGING_SITE_STATUS == 'true') {
         $admin_bar->add_menu( array(
             'parent' => 'ss_environment_current', 
             'id' => 'ss_environment_toggle_staging',
@@ -646,8 +656,10 @@ function ss_environment_menu($admin_bar) {
             'href' => $ss_staging_link_fixed, 
             'meta' => array('target' => '_blank')
             ) );
+		}
             
-        // Dev Link
+        // dev (if enabled)
+		if(DEV_SITE_STATUS == 'true') {
         $admin_bar->add_menu( array(
             'parent' => 'ss_environment_current', 
             'id' => 'ss_environment_toggle_dev',
@@ -655,8 +667,9 @@ function ss_environment_menu($admin_bar) {
             'href' => $ss_dev_link_fixed, 
             'meta' => array('target' => '_blank')
             ) );
+		}
             
-        } // end else (production)
+        } // end production site drop-down menu
         
     } else { }
 }
@@ -691,5 +704,6 @@ function ss_environment_menu($admin_bar) {
 // Ref: https://wordpress.stackexchange.com/questions/229139/how-to-properly-refresh-page-after-form-action
 // Ref: https://stackoverflow.com/questions/21843830/clear-form-after-submit-and-page-refresh-wordpress
 // Ref: https://github.com/woocommerce/woocommerce/wiki/Database-Description
+// Ref: https://github.com/littlebizzy/slickstack/issues/121
 
 // SS_EOF
