@@ -545,32 +545,32 @@ function slickstack_menu() {
 /** H. XXX-Common: Switch Environment Menu ****************************************************** */
 /** ********************************************************************************************* */
 
+/** this small drop-down menu lets you easily switch between enabled environments */
+/** links will be hidden in case certain environments have been disabled */
 
-
+// add action
 add_action('admin_bar_menu', 'ss_environment_menu', 25);
 
+## ss_environment_menu function
 function ss_environment_menu($admin_bar) {
     
-    // global $wp_admin_bar;
-    
     $current_user = wp_get_current_user();
-    
-    $ss_production_link = home_url( $path = '', $scheme = 'https' );
-    $ss_production_link = str_replace('staging.', '', $ss_production_link);
-    $ss_production_link = str_replace('dev.', '', $ss_production_link);
-
-    $ss_staging_link = str_replace('https://', 'https://staging.', $ss_production_link);
-    $ss_staging_link_fixed = str_replace('www.', '', $ss_staging_link);
-    
-    $ss_dev_link = str_replace('https://', 'https://dev.', $ss_production_link);
-    $ss_dev_link_fixed = str_replace('www.', '', $ss_dev_link);
+    $ss_production_link = '@SITE_DOMAIN';
+    $ss_staging_link = 'staging.@SITE_DOMAIN_EXCLUDING_WWW';
+    $ss_dev_link = 'dev.@SITE_DOMAIN_EXCLUDING_WWW';
+	$actual_link = "https://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
+	$actual_link_staging_to_production = str_replace($ss_staging_link, $ss_production_link, $actual_link);
+	$actual_link_staging_to_dev = str_replace($ss_dev_link, $ss_production_link, $actual_link);
+	$actual_link_dev_to_production = str_replace($ss_dev_link, $ss_production_link, $actual_link);
+	$actual_link_dev_to_staging = str_replace($ss_dev_link, $ss_staging_link, $actual_link);
+	$actual_link_production_to_dev = str_replace($ss_production_link, $ss_dev_link, $actual_link);
+	$actual_link_production_to_staging = str_replace($ss_production_link, $ss_staging_link, $actual_link);
     
     if(current_user_can('manage_options')) {
-    
 	
 		// staging site drop-down menu
         if(WP_ENVIRONMENT_TYPE == 'staging') {
-        
+		
             // current environment
             $admin_bar->add_menu( array(
                 'parent' => 'top-secondary',
@@ -578,23 +578,23 @@ function ss_environment_menu($admin_bar) {
                 'title' => '<span style="color:#FFBA00;">STAGING ONLY</span>',
                 'href'  => false
                 ) );
-            
+				
         // production (required)
         $admin_bar->add_menu( array(
             'parent' => 'ss_environment_current', 
             'id' => 'ss_environment_toggle_production',
             'title' => 'Switch To Production', 
-            'href' => $ss_production_link, 
+            'href' => $actual_link_staging_to_production, 
             'meta' => array('target' => '_blank')
             ) );
-            
+			
         // dev (if enabled)
 		if(DEV_SITE_STATUS == 'true') {
         $admin_bar->add_menu( array(
             'parent' => 'ss_environment_current', 
             'id' => 'ss_environment_toggle_dev',
             'title' => 'Switch To Dev', 
-            'href' => $ss_dev_link_fixed, 
+            'href' => $actual_link_staging_to_dev, 
             'meta' => array('target' => '_blank')
             ) );
 		}
@@ -618,7 +618,7 @@ function ss_environment_menu($admin_bar) {
             'parent' => 'ss_environment_current', 
             'id' => 'ss_environment_toggle_production',
             'title' => 'Switch To Production', 
-            'href' => $ss_production_link, 
+            'href' => $actual_link_dev_to_production, 
             'meta' => array('target' => '_blank')
             ) );
             
@@ -628,7 +628,7 @@ function ss_environment_menu($admin_bar) {
             'parent' => 'ss_environment_current', 
             'id' => 'ss_environment_toggle_dev',
             'title' => 'Switch To Staging', 
-            'href' => $ss_staging_link_fixed, 
+            'href' => $actual_link_dev_to_staging, 
             'meta' => array('target' => '_blank')
             ) );
 		}
@@ -653,7 +653,7 @@ function ss_environment_menu($admin_bar) {
             'parent' => 'ss_environment_current', 
             'id' => 'ss_environment_toggle_staging',
             'title' => 'Switch To Staging', 
-            'href' => $ss_staging_link_fixed, 
+            'href' => $actual_link_production_to_staging, 
             'meta' => array('target' => '_blank')
             ) );
 		}
@@ -664,7 +664,7 @@ function ss_environment_menu($admin_bar) {
             'parent' => 'ss_environment_current', 
             'id' => 'ss_environment_toggle_dev',
             'title' => 'Switch To Dev', 
-            'href' => $ss_dev_link_fixed, 
+            'href' => $actual_link_production_to_dev, 
             'meta' => array('target' => '_blank')
             ) );
 		}
@@ -705,5 +705,6 @@ function ss_environment_menu($admin_bar) {
 // Ref: https://stackoverflow.com/questions/21843830/clear-form-after-submit-and-page-refresh-wordpress
 // Ref: https://github.com/woocommerce/woocommerce/wiki/Database-Description
 // Ref: https://github.com/littlebizzy/slickstack/issues/121
+// Ref: https://stackoverflow.com/questions/6768793/get-the-full-url-in-php
 
 // SS_EOF
