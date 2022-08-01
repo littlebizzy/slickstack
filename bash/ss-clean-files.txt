@@ -39,7 +39,7 @@
 
 ## L. Delete Certain Files Throughout Public Web Root (Required) 
 
-## L. Delete High-Risk Files In WordPress Content Directory
+## L. Delete Certain Files In WordPress Content Directory
 ## L. Delete Certain WordPress Plugins (Required)
 ## M. Delete Junk Files In WordPress Plugins Directory
 ## N. Delete Junk Files In WordPress Themes Directory
@@ -744,38 +744,74 @@ ss_rm /var/www/html/wps-fbre-logs* ## unknown
 fi
 
 ####################################################################################################
-#### L. SS-Clean-Files: Delete High-Risk Files In WordPress Content Directory ######################
+#### L. SS-Clean-Files: Delete Certain Files In WordPress Content Directory ########################
 ####################################################################################################
 
 ## going forward this snippet will only delete things that are high risk categories ##
 ## this means malware, exploitable, thrashing, or conflicts with SlickStack ##
 
-if [[ "$SS_CLEAN_FILES_WORDPRESS_CONTENT" == "CURRENTLYDISABLED" ]] && [[ "$SS_WORDPRESS_PLUGIN_BLACKLIST" != "false" ]]; then
-
-## cleanup various files ##
+## production ##
 ss_rm /var/www/html/wp-content/advanced-cache.php* ## ss conflicts
 ss_rm /var/www/html/wp-content/ari-adminer-config.php* ## ss conflicts
-ss_rm /var/www/html/wp-content/deleteme*.php ## unknown source
-ss_rm /var/www/html/wp-content/install.php* ## plugin junk files (Jetpack)
+ss_rm /var/www/html/wp-content/deleteme*.php ## junk files
+ss_rm /var/www/html/wp-content/install.php* ## junk files (by Jetpack)
 ss_rm /var/www/html/wp-content/litespeed* ## ss conflicts
-ss_rm /var/www/html/wp-content/nginx-helper* ## ss conflicts, junk logs (Nginx Helper)
-ss_rm /var/www/html/wp-content/siteground-migrator* ## vendor specific
+ss_rm /var/www/html/wp-content/nginx-helper* ## ss conflicts (by Nginx Helper)
+ss_rm /var/www/html/wp-content/siteground-migrator* ## vendor-specific
+ss_rm /var/www/html/wp-content/temp-write-test* ## junk files
 ss_rm /var/www/html/wp-content/w3tc-config* ## ss conflicts
+ss_rm /var/www/html/wp-content/wcfe* ## ss conflicts (by WP Config File Editor)
 ss_rm /var/www/html/wp-content/wflogs* ## ss conflicts (by WordFence)
-ss_rm /var/www/html/wp-content/temp-write-test* ## unknown
 ss_rm /var/www/html/wp-content/wp-cache-config.php* ## ss conflicts
-ss_rm /var/www/html/wp-content/wp-rocket-config* ## ss conflicts (WP Rocket)
-ss_rm /var/www/html/wp-content/wp-performance-score-booster* ## ss conflicts, bad practice, creates instability
-ss_rm /var/www/html/wp-content/wp-rocket ## ss conflicts (WP Rocket)
-ss_rm /var/www/html/wp-content/wp-rocket-config* ## ss conflicts (WP Rocket)
-ss_rm /var/www/html/wp-content/wcfe* ## ss conflicts (WP Config File Editor)
-ss_rm /var/www/html/wp-content/wphb-cache* ## ss conflicts Hummingbird files
-ss_rm /var/www/html/wp-content/wphb-logs* ## ss conflicts Hummingbird files
-ss_rm /var/www/html/wp-content/wpo-cache* ## ss conflicts (WP-Optimize)
-# ss_rm /var/www/html/wp-content/revslider* ## serious errors, exploitable, better options exist (Revslider)
-ss_rm /var/www/html/wp-content/sunrise.php*
+ss_rm /var/www/html/wp-content/wp-rocket* ## ss conflicts (by WP Rocket)
+ss_rm /var/www/html/wp-content/wp-rocket-config* ## ss conflicts (by WP Rocket)
+ss_rm /var/www/html/wp-content/wp-performance-score-booster* ## ss conflicts (by WP Performance Score Booster)
+ss_rm /var/www/html/wp-content/wpo-cache* ## ss conflicts (by WP-Optimize)
+ss_rm /var/www/html/wp-content/wphb-cache* ## ss conflicts (by Hummingbird)
+ss_rm /var/www/html/wp-content/wphb-logs* ## ss conflicts (by Hummingbird)
+ss_rm /var/www/html/wp-content/sunrise.php* ## deprecated (previously for Multisite domain mapping)
 
-fi
+## staging ##
+ss_rm /var/www/html/staging/wp-content/advanced-cache.php* ## ss conflicts
+ss_rm /var/www/html/staging/wp-content/ari-adminer-config.php* ## ss conflicts
+ss_rm /var/www/html/staging/wp-content/deleteme*.php ## junk files
+ss_rm /var/www/html/staging/wp-content/install.php* ## junk files (by Jetpack)
+ss_rm /var/www/html/staging/wp-content/litespeed* ## ss conflicts
+ss_rm /var/www/html/staging/wp-content/nginx-helper* ## ss conflicts (by Nginx Helper)
+ss_rm /var/www/html/staging/wp-content/siteground-migrator* ## vendor-specific
+ss_rm /var/www/html/staging/wp-content/temp-write-test* ## junk files
+ss_rm /var/www/html/staging/wp-content/w3tc-config* ## ss conflicts
+ss_rm /var/www/html/staging/wp-content/wcfe* ## ss conflicts (by WP Config File Editor)
+ss_rm /var/www/html/staging/wp-content/wflogs* ## ss conflicts (by WordFence)
+ss_rm /var/www/html/staging/wp-content/wp-cache-config.php* ## ss conflicts
+ss_rm /var/www/html/staging/wp-content/wp-rocket* ## ss conflicts (by WP Rocket)
+ss_rm /var/www/html/staging/wp-content/wp-rocket-config* ## ss conflicts (by WP Rocket)
+ss_rm /var/www/html/staging/wp-content/wp-performance-score-booster* ## ss conflicts (by WP Performance Score Booster)
+ss_rm /var/www/html/staging/wp-content/wpo-cache* ## ss conflicts (by WP-Optimize)
+ss_rm /var/www/html/staging/wp-content/wphb-cache* ## ss conflicts (by Hummingbird)
+ss_rm /var/www/html/staging/wp-content/wphb-logs* ## ss conflicts (by Hummingbird)
+ss_rm /var/www/html/staging/wp-content/sunrise.php* ## deprecated (previously for Multisite domain mapping)
+
+## development ##
+ss_rm /var/www/html/dev/wp-content/advanced-cache.php* ## ss conflicts
+ss_rm /var/www/html/dev/wp-content/ari-adminer-config.php* ## ss conflicts
+ss_rm /var/www/html/dev/wp-content/deleteme*.php ## junk files
+ss_rm /var/www/html/dev/wp-content/install.php* ## junk files (by Jetpack)
+ss_rm /var/www/html/dev/wp-content/litespeed* ## ss conflicts
+ss_rm /var/www/html/dev/wp-content/nginx-helper* ## ss conflicts (by Nginx Helper)
+ss_rm /var/www/html/dev/wp-content/siteground-migrator* ## vendor-specific
+ss_rm /var/www/html/dev/wp-content/temp-write-test* ## junk files
+ss_rm /var/www/html/dev/wp-content/w3tc-config* ## ss conflicts
+ss_rm /var/www/html/dev/wp-content/wcfe* ## ss conflicts (by WP Config File Editor)
+ss_rm /var/www/html/dev/wp-content/wflogs* ## ss conflicts (by WordFence)
+ss_rm /var/www/html/dev/wp-content/wp-cache-config.php* ## ss conflicts
+ss_rm /var/www/html/dev/wp-content/wp-rocket* ## ss conflicts (by WP Rocket)
+ss_rm /var/www/html/dev/wp-content/wp-rocket-config* ## ss conflicts (by WP Rocket)
+ss_rm /var/www/html/dev/wp-content/wp-performance-score-booster* ## ss conflicts (by WP Performance Score Booster)
+ss_rm /var/www/html/dev/wp-content/wpo-cache* ## ss conflicts (by WP-Optimize)
+ss_rm /var/www/html/dev/wp-content/wphb-cache* ## ss conflicts (by Hummingbird)
+ss_rm /var/www/html/dev/wp-content/wphb-logs* ## ss conflicts (by Hummingbird)
+ss_rm /var/www/html/dev/wp-content/sunrise.php* ## deprecated (previously for Multisite domain mapping)
 
 ####################################################################################################
 #### SS-Clean-Files: /var/www/html/wp-content/mu-plugins/ ##########################################
