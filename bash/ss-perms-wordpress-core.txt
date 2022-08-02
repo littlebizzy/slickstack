@@ -77,19 +77,23 @@ chmod 0440 /var/www/html/wp-config.php ## 0440 probably better (0660 not needed 
 
 
 ## staging ##
-if [[ "$STAGING_SITE" != "false" ]]; then 
+if [[ "${STAGING_SITE}" != "false" ]]; then 
     mkdir /var/www/html/staging
     mkdir /var/www/html/staging/wp-content/temp
-    ss_ln /var/www/html/wp-content/uploads /var/www/html/staging/wp-content/uploads
     mkdir /var/www/html/staging/wp-content/upgrade
     chown -R www-data:wordpress /var/www/html/staging/wp-content/temp
     chown -R www-data:wordpress /var/www/html/staging/wp-content/upgrade
     chown www-data:wordpress /var/www/html/staging/wp-config.php
     chmod 0440 /var/www/html/staging/wp-config.php ## 0440 probably better (0660 not needed as wp-config restricted in SlickStack and 0640 either)
+    ## create uploads symlink if does not exist ##
+    if [[ ! -L "${PATH_WORDPRESS_UPLOADS_STAGING}" ]]; then
+        ss_rm "${PATH_WORDPRESS_UPLOADS_STAGING}"
+        ss_ln "${PATH_WORDPRESS_UPLOADS_PRODUCTION}" "${PATH_WORDPRESS_UPLOADS_STAGING}"
+    fi
 fi
 
 ## dev ##
-if [[ "$DEV_SITE" != "false" ]]; then 
+if [[ "${DEV_SITE}" != "false" ]]; then 
     mkdir /var/www/html/dev
     mkdir /var/www/html/dev/wp-content/temp
     mkdir /var/www/html/dev/wp-content/uploads
