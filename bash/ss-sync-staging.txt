@@ -35,7 +35,8 @@
 ## H. Run SS-Install-WordPress-MU-Plugins (Conditional)
 ## I. Fix Any Hardcoded Links In Staging Theme Files
 
-## J. Reset Permissions (SlickStack Scripts)
+## J. Reset Permissions (WordPress Core)
+## K. Reset Permissions (SlickStack Scripts)
 
 ####################################################################################################
 #### A. SS-Sync-Staging: Source SS-Config + SS-Functions ###########################################
@@ -150,13 +151,6 @@ ss_rm /var/www/html/staging/wp-content/wp-content*
 ## remove object-cache.php if exists ##
 ss_rm /var/www/html/staging/wp-content/object-cache.php*
 
-## create uploads symlink if does not exist ##
-if [[ ! -L "${PATH_WORDPRESS_UPLOADS_STAGING}" ]]; then
-    ss_rm "${PATH_WORDPRESS_UPLOADS_STAGING}"
-    ss_ln "${PATH_WORDPRESS_UPLOADS_PRODUCTION}" "${PATH_WORDPRESS_UPLOADS_STAGING}"
-    source "${PATH_SS_PERMS_WORDPRESS_CORE}"
-fi
-
 ####################################################################################################
 #### G. SS-Sync-Staging: Run SS-Install-WordPress-Config (Conditional) #############################
 ####################################################################################################
@@ -199,7 +193,13 @@ find /var/www/html/staging/wp-content/themes/ -type f -exec sed -i "s#http://${S
 fi
 
 ####################################################################################################
-#### J. SS-Sync-Staging: Reset Permissions (SlickStack Scripts) ####################################
+#### J. SS-Sync-Staging: Reset Permissions (WordPress Core) ########################################
+####################################################################################################
+
+source "${PATH_SS_PERMS_WORDPRESS_CORE}"
+
+####################################################################################################
+#### K. SS-Sync-Staging: Reset Permissions (SlickStack Scripts) ####################################
 ####################################################################################################
 
 ## we include this permissions reset in all cron jobs and bash scripts for redundancy ##
