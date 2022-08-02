@@ -25,16 +25,15 @@
 ## A. Source SS-Config + SS-Functions
 ## B. Touch Timestamp File
 ## C. Message (Begin Script)
-## D. Run SS-Dump-Database (Conditional)
+## D. Dump Production Database
 
 ## X Install Database (Conditional)
 
 ## E. Import Production Database To Staging Database
-## F. Copy All Relevant Files From Production To Staging
+## F. Copy Relevant Files From Production To Staging
 ## G. Run SS-Install-WordPress-Config (Conditional)
 ## H. Run SS-Install-WordPress-MU-Plugins (Conditional)
 ## I. Fix Any Hardcoded Links In Staging Theme Files
-
 ## J. Reset Permissions (WordPress Core)
 ## K. Reset Permissions (SlickStack Scripts)
 
@@ -89,22 +88,20 @@ ss_echo "${COLOR_INFO}Running ss-sync-staging... ${COLOR_RESET}"
 if [[ "${STAGING_SITE}" != "false" ]] && [[ "${SS_SYNC_STAGING}" != "false" ]] && [[ "${WP_MULTISITE}" != "true" ]]; then
 
 ####################################################################################################
-#### D. SS-Sync-Staging: Run SS-Dump-Database (Conditional) ########################################
+#### D. SS-Sync-Staging: Dump Production Database ##################################################
 ####################################################################################################
 
 ## we must run ss-dump-database now if no database dump file is found under backups ##
 ## this ensures that a dump file exists before atempting to sync it to staging ##
 
-## FIX: change this to be OUTDATED instead e.g. more than X hours old ##
-if [[ ! -f "/var/www/backups/mysql/production.sql" ]]; then
-    source "${PATH_SS_DUMP_DATABASE}"
-fi
+source "${PATH_SS_DUMP_DATABASE}"
 
 ####################################################################################################
 #### X. SS-Sync-Staging: Install Database (Conditional) #############################
 ####################################################################################################
 
 ## FIX THIS
+## IF staging database not found
 ## run ss-install-mysql-database ##
 # if [[  ]]; then
 #    source "${PATH_SS_INSTALL_MYSQL_DATABASE}"
@@ -135,7 +132,7 @@ fi
 ss_rm /tmp/staging.sql
     
 ####################################################################################################
-#### F. SS-Sync-Staging: Copy All Relevant Files From Production To Staging ########################
+#### F. SS-Sync-Staging: Copy Relevant Files From Production To Staging ############################
 ####################################################################################################
 
 ## here we copy over everything from production to staging besides uploads (media files) ##
