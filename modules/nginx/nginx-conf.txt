@@ -14,7 +14,17 @@
 ## FASTCGI CACHE AND SSL SETTINGS ARE ALSO INCLUDED IN THIS BOILERPLATE ##
 
 ####################################################################################################
-#### Nginx.conf: General Settings ##################################################################
+#### TABLE OF CONTENTS (Nginx.conf) ################################################################
+####################################################################################################
+
+## this is a brief summary of the different code snippets you will find in this script ##
+## each section should be commented so you understand what is being accomplished ##
+
+## A. General Settings
+## B. Event Handling Settings
+
+####################################################################################################
+#### A. Nginx.conf: General Settings ###############################################################
 ####################################################################################################
 
 ## for stability and simplicity Nginx always runs as www-data with auto worker processes ##
@@ -29,16 +39,18 @@ pid /run/nginx.pid;
 include /etc/nginx/modules-enabled/*.conf;
 
 ####################################################################################################
-#### Nginx.conf: Event Handling Settings ###########################################################
+#### B. Nginx.conf: Event Handling Settings ########################################################
 ####################################################################################################
 
 ## virtually all Linux servers should use epoll and multi_accept so they are hardcoded ##
 ## worker_connections should be tuned in relevance to worker_rlimit_nofile (etc) ##
 
 events {
-    worker_connections @NGINX_WORKER_CONNECTIONS;
-    multi_accept on;
-    use epoll;
+
+worker_connections @NGINX_WORKER_CONNECTIONS;
+multi_accept on;
+use epoll;
+
 }
 
 ####################################################################################################
@@ -46,6 +58,7 @@ events {
 ####################################################################################################
 
 http {
+
     sendfile on;
     tcp_nopush on;
     tcp_nodelay on;
@@ -61,23 +74,23 @@ http {
 ## FastCGI Cache is arguably the most powerful Nginx feature for scaling high-traffic sites ##
 ## whenever possible maintain aggressive (higher) settings to improve performance ##
     
-    fastcgi_cache_path /var/www/cache/nginx levels=1:2 keys_zone=WORDPRESS:@FCGI_CACHE_MEMORY inactive=@FCGI_CACHE_INACTIVE max_size=@FCGI_CACHE_MAX_SIZE;
-    fastcgi_cache_key "$scheme$request_method$host$request_uri$rt_session";
-    fastcgi_cache_use_stale error timeout invalid_header updating http_500;
-    fastcgi_ignore_headers Cache-Control Expires Set-Cookie;
-    fastcgi_cache_lock on;
-    fastcgi_cache_background_update off;
-    ## fastcgi_cache_valid 2m; ## exists in server blocks
-    fastcgi_connect_timeout @FCGI_CONNECT_TIMEOUT;
-    fastcgi_read_timeout @FCGI_READ_TIMEOUT;
-    fastcgi_send_timeout @FCGI_SEND_TIMEOUT;
-    
-    ## buffers ##
-    fastcgi_buffering on;
-    # fastcgi_buffers @FCGI_BUFFERS;
-    # fastcgi_buffer_size @FCGI_BUFFER_SIZE;
-    # fastcgi_busy_buffers_size @FCGI_BUSY_BUFFERS_SIZE;
-    # fastcgi_temp_file_write_size @FCGI_TEMP_FILE_WRITE_SIZE;
+fastcgi_cache_path /var/www/cache/nginx levels=1:2 keys_zone=WORDPRESS:@FCGI_CACHE_MEMORY inactive=@FCGI_CACHE_INACTIVE max_size=@FCGI_CACHE_MAX_SIZE;
+fastcgi_cache_key "$scheme$request_method$host$request_uri$rt_session";
+
+fastcgi_cache_use_stale error timeout invalid_header updating http_500;
+fastcgi_ignore_headers Cache-Control Expires Set-Cookie;
+fastcgi_cache_lock on;
+fastcgi_cache_background_update off;
+
+fastcgi_connect_timeout @FCGI_CONNECT_TIMEOUT;
+fastcgi_read_timeout @FCGI_READ_TIMEOUT;
+fastcgi_send_timeout @FCGI_SEND_TIMEOUT;
+
+fastcgi_buffering on;
+# fastcgi_buffers @FCGI_BUFFERS;
+# fastcgi_buffer_size @FCGI_BUFFER_SIZE;
+# fastcgi_busy_buffers_size @FCGI_BUSY_BUFFERS_SIZE;
+# fastcgi_temp_file_write_size @FCGI_TEMP_FILE_WRITE_SIZE;
     
 ####################################################################################################
 #### Nginx.conf: Open File Cache Settings ##########################################################
@@ -86,10 +99,10 @@ http {
 ## Open File Cache is one of the most effective (and underrated) features to scale Nginx ##
 ## tuning this well in conjunction with FastCGI Cache will provide robust results ##
     
-    open_file_cache max=@OPEN_FILE_CACHE_MAX inactive=@OPEN_FILE_CACHE_INACTIVE;
-    open_file_cache_valid @OPEN_FILE_CACHE_VALID;
-    open_file_cache_min_uses @OPEN_FILE_CACHE_MIN_USES;
-    open_file_cache_errors @OPEN_FILE_CACHE_ERRORS;
+open_file_cache max=@OPEN_FILE_CACHE_MAX inactive=@OPEN_FILE_CACHE_INACTIVE;
+open_file_cache_valid @OPEN_FILE_CACHE_VALID;
+open_file_cache_min_uses @OPEN_FILE_CACHE_MIN_USES;
+open_file_cache_errors @OPEN_FILE_CACHE_ERRORS;
 	
 ####################################################################################################
 #### Nginx.conf: Buffer Settings ###################################################################
@@ -366,5 +379,6 @@ http {
 ## Ref: https://discourse.roots.io/t/caching-not-working-correctly-fastcgi-cache-header-set-to-stale/17420
 ## Ref: https://siipo.la/blog/never-miss-the-cache-with-nginx-microcaching
 ## Ref: https://serverfault.com/questions/907051/nginx-fastcgi-cache-hit-vs-stale
+## Ref: https://www.velumi.com/guides/how-to-setup-nginx-fastcgi-cache-with-wordpress/
 
 ## SS_EOF
