@@ -60,48 +60,80 @@ ss_touch "${TIMESTAMP_SS_INSTALL_UBUNTU_USERS}"
 ss_echo "${COLOR_INFO}Running ss-install-ubuntu-users... ${COLOR_RESET}"
 
 ####################################################################################################
-#### D. SS-Install-Ubuntu-Users: Configure Users + Passwords + Groups ##############################
+#### D. SS-Install-Ubuntu-Users: Configure Root User ###################################################
 ####################################################################################################
 
 ## set root password ##
 echo "root:${ROOT_PASSWORD}" | /usr/sbin/chpasswd
 
 ## ensure root password never expires ##
-# passwd -x -1 <username>
 chage -E -1 -m 0 -M -1 -I -1 -W 99999 root
-# chage -E -1 -m 0 -M -1 -I -1 -W 99999 $SUDO_USER
-# chage -E -1 -m 0 -M -1 -I -1 -W 99999 $SFTP_USER
 
-## add sudo user ##
+####################################################################################################
+#### D. SS-Install-Ubuntu-Users: Configure Sudo User ###################################################
+####################################################################################################
+
+## create sudo user ##
 ss_adduser "${SUDO_USER}"
+
+## assign password to sudo user ##
 echo "${SUDO_USER}:${SUDO_PASSWORD}" | /usr/sbin/chpasswd
+
+# chage -E -1 -m 0 -M -1 -I -1 -W 99999 $SUDO_USER
 
 ## ensure home directory exists ##
 mkhomedir_helper "${SUDO_USER}"
 
-## add sftp user ##
+####################################################################################################
+#### D. SS-Install-Ubuntu-Users: Configure SFTP User ###################################################
+####################################################################################################
+
+## create sftp user ##
 ss_adduser "${SFTP_USER}"
+
+## assign password to sftp user ##
 echo "${SFTP_USER}:${SFTP_PASSWORD}" | /usr/sbin/chpasswd
+
+# chage -E -1 -m 0 -M -1 -I -1 -W 99999 $SFTP_USER
 
 ## ensure home directory exists ##
 mkhomedir_helper "${SFTP_USER}"
 
+####################################################################################################
+#### D. SS-Install-Ubuntu-Users: Configure Groups ##################################################
+####################################################################################################
+
 ## ensure wordpress group exists ##
 groupadd -f wordpress
-# groupadd -f slickstack
 
-## add SFTP_USER and www-data to wordpress group + add SFTP_USER to www-data group ##
+## add sftp user to groups ##
 usermod -a -G wordpress "${SFTP_USER}"
-usermod -a -G wordpress www-data
 usermod -a -G www-data "${SFTP_USER}"
+
+## add sudo user to groups ##
+usermod -a -G wordpress "${SUDO_USER}"
 usermod -a -G www-data "${SUDO_USER}"
 
+## add www-data user to groups ##
+usermod -a -G wordpress www-data
+
+#####
+
+# groupadd -f slickstack
+
+## add sftp user to groups ##
 # usermod -a -G slickstack "${SFTP_USER}"
-# usermod -a -G slickstack www-data
 # usermod -a -G www-data "${SFTP_USER}"
 
+## add sudo user to groups ##
+# usermod -a -G slickstack "${SUDO_USER}"
+# usermod -a -G www-data "${SUDO_USER}"
+
+## add www-data user to groups ##
+# usermod -a -G slickstack www-data
+
 ####################################################################################################
-#### E. SS-Install-Ubuntu-Users: Configure Sudo Permissions ########################################
+#### E. SS-Install-Ubuntu-Users: Configure Sudoers File ########################################
 ####################################################################################################
 
 ## download latest versions ##
