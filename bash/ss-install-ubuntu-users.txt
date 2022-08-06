@@ -32,11 +32,11 @@ source /var/www/ss-functions
 
 ## A. Touch Timestamp File
 ## B. Message (Begin Script)
-## C. Cleanup Temporary Files
+
 ## D. Configure Users + Passwords + Groups
 ## E. Configure Sudo Permissions
 ## F. Reset Permissions (Ubuntu Users)
-## G. Cleanup Temporary Files
+
 ## H. Configure Ubuntu Bash Shortcuts
 
 ####################################################################################################
@@ -58,13 +58,6 @@ ss_touch "${TIMESTAMP_SS_INSTALL_UBUNTU_USERS}"
 
 ## echo message ##
 ss_echo "${COLOR_INFO}Running ss-install-ubuntu-users... ${COLOR_RESET}"
-
-####################################################################################################
-#### C. SS-Install-Ubuntu-Users: Cleanup Temporary Files ###########################################
-####################################################################################################
-
-## delete tmp files ##
-ss_rm "${TMP_SUDOERS}"
 
 ####################################################################################################
 #### D. SS-Install-Ubuntu-Users: Configure Users + Passwords + Groups ##############################
@@ -95,6 +88,7 @@ mkhomedir_helper "${SFTP_USER}"
 
 ## ensure wordpress group exists ##
 groupadd -f wordpress
+# groupadd -f slickstack
 
 ## add SFTP_USER and www-data to wordpress group + add SFTP_USER to www-data group ##
 usermod -a -G wordpress "${SFTP_USER}"
@@ -114,19 +108,15 @@ sed -i "s/@SUDO_USER/${SUDO_USER}/g" "${TMP_SUDOERS}"
 ## copy files to their destinations ##
 ss_mv "${TMP_SUDOERS}" "${PATH_SUDOERS}"
 
+## delete tmp files ##
+ss_rm "${TMP_SUDOERS}"
+
 ####################################################################################################
 #### F. SS-Install-Ubuntu-Users: Reset Permissions (Ubuntu Users) ##################################
 ####################################################################################################
 
 ## run ss-perms-ubuntu-users ##
 source "${PATH_SS_PERMS_UBUNTU_USERS}"
-
-####################################################################################################
-#### G. SS-Install-Ubuntu-Users: Cleanup Temporary Files ###########################################
-####################################################################################################
-
-## delete tmp files ##
-ss_rm "${TMP_SUDOERS}"
 
 ####################################################################################################
 #### H. SS-Install-Ubuntu-Users: Configure Ubuntu Bash Shortcuts ###################################
