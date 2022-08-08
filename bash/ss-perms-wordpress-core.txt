@@ -60,7 +60,7 @@ ss_echo "${COLOR_INFO}Running ss-perms-wordpress-core... ${COLOR_RESET}"
 ## keep in mind that non-WordPress Core files are not affected by this snippet ##
 
 ## all environments ##
-chown -R "${SFTP_USER}":wordpress /var/www/html
+chown -R "${SFTP_USER}":slickstack /var/www/html
 chmod 0775 /var/www/html ## 0775 (0755 not enough)
 find /var/www/html/ -type d -exec chmod 0775 {} \; ## 0775 (0755 not enough)
 find /var/www/html/ -type f -exec chmod 0664 {} \; ## 0664 (0644 not enough)
@@ -72,10 +72,8 @@ ss_mkdir /var/www/html/wp-content/uploads
 ss_mkdir /var/www/html/wp-content/upgrade
 ss_mkdir /var/www/html/wp-content/languages
 ss_mkdir /var/www/html/wp-content/mu-plugins
-chown -R www-data:wordpress /var/www/html/wp-content/temp
-chown -R www-data:wordpress /var/www/html/wp-content/upgrade
-chown www-data:wordpress /var/www/html/wp-config.php
-chmod 0440 /var/www/html/wp-config.php ## 0440 probably better (0660 not needed as wp-config restricted in SlickStack and 0640 either)
+chown -R www-data:slickstack /var/www/html/wp-content/temp
+chown -R www-data:slickstack /var/www/html/wp-content/upgrade
 
 
 ## staging ##
@@ -83,10 +81,9 @@ if [[ "${STAGING_SITE}" != "false" ]]; then
     ss_mkdir /var/www/html/staging
     ss_mkdir /var/www/html/staging/wp-content/temp
     ss_mkdir /var/www/html/staging/wp-content/upgrade
-    chown -R www-data:wordpress /var/www/html/staging/wp-content/temp
-    chown -R www-data:wordpress /var/www/html/staging/wp-content/upgrade
-    chown www-data:wordpress /var/www/html/staging/wp-config.php
-    chmod 0440 /var/www/html/staging/wp-config.php ## 0440 probably better (0660 not needed as wp-config restricted in SlickStack and 0640 either)
+    chown -R www-data:slickstack /var/www/html/staging/wp-content/temp
+    chown -R www-data:slickstack /var/www/html/staging/wp-content/upgrade
+
     ## create uploads symlink if does not exist ##
     if [[ ! -L "${PATH_WORDPRESS_UPLOADS_STAGING}" ]]; then
         ss_rm "${PATH_WORDPRESS_UPLOADS_STAGING}"
@@ -100,11 +97,16 @@ if [[ "${DEV_SITE}" != "false" ]]; then
     ss_mkdir /var/www/html/dev/wp-content/temp
     ss_mkdir /var/www/html/dev/wp-content/uploads
     ss_mkdir /var/www/html/dev/wp-content/upgrade
-    chown -R www-data:wordpress /var/www/html/dev/wp-content/temp
-    chown -R www-data:wordpress /var/www/html/dev/wp-content/upgrade
-    chown www-data:wordpress /var/www/html/dev/wp-config.php
-    chmod 0440 /var/www/html/dev/wp-config.php ## 0440 probably better (0660 not needed as wp-config restricted in SlickStack and 0640 either)
+    chown -R www-data:slickstack /var/www/html/dev/wp-content/temp
+    chown -R www-data:slickstack /var/www/html/dev/wp-content/upgrade
 fi
+
+####################################################################################################
+#### SS-Perms-WordPress-Config: Reset Permissions (WordPress Config) ##################################
+####################################################################################################
+
+## run ss-perms-wordpress-config ##
+source "${PATH_SS_PERMS_WORDPRESS_CONFIG}"
 
 ####################################################################################################
 #### D. SS-Perms-WordPress-Core: Reset Permissions (SlickStack Scripts) ############################
