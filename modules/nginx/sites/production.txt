@@ -25,6 +25,7 @@
 ## C. Well-Known (Domain Verification)
 ## D. Redirect Any AMP Requests
 ## E. Noindex Thin Content (Regex)
+## E. Noindex Certain File Types
 ## F. FastCGI Cache Settings
 ## G. PHP-FPM Routing
 ## H. WP-Login (Rate Limiting)
@@ -169,6 +170,20 @@ server {
 		try_files $uri $uri/ /index.php?$args;
 		set $robots "noindex, nofollow, nosnippet, noarchive";
 	}
+	
+####################################################################################################
+#### E. Server Block (Production): Noindex Certain File Types ######################################
+####################################################################################################
+
+## these powerful rules force-noindex non-WordPress file types for cleaner SEO results ##
+## in this way malware or spam attacks or forgotten files are hidden from SERPs ##
+
+## allowed: html, xml (also css, js, php, etc)
+## Ref: https://support.google.com/webmasters/answer/35287?hl=en
+
+location ~* \.(asp|aspx|doc|docx|dwf|gpx|htm|hwp|jsp|kml|kmz|log|odp|ods|odt|pdf|ppt|pptx|ps|rtf|tex|text|txt|wap|wml|xls|xlsx)$ {
+	set $robots "noindex, nofollow, nosnippet, noarchive";
+}
 
 ####################################################################################################
 
@@ -613,5 +628,9 @@ server {
 ## Ref: https://serverfault.com/questions/512054/globally-setting-ipv6only-off
 ## Ref: https://github.com/ampproject/amp-wp/issues/2204
 ## Ref: https://github.com/littlebizzy/slickstack/issues/130
+## Ref: https://gist.github.com/sergejmueller/0e508f3a4d92fd7ec110
+## Ref: https://moz.com/community/q/topic/57022/removing-css-js-files-from-index
+## Ref: https://webmasters.stackexchange.com/questions/63613/should-i-set-noindex-header-for-my-js-css-and-image-files
+## Ref: https://support.google.com/webmasters/answer/35287?hl=en
 
 ## SS_EOF
