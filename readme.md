@@ -31,6 +31,8 @@ SlickStack is a free LEMP stack automation script written in Bash designed to en
 
 ## Changelog
 
+* **NEW!** For cleaner SEO, certain file types are now force noindexed such as PDF, DOC, TXT, and LOG files...
+
 * **NEW!** Added "HttpOnly" and "Secure" cookie flags to both Nginx and PHP configuration...
 
 * **NEW!** `ss-dump-database` will now automatically dump `staging` and/or `development` database if STAGING_SITE or DEV_SITE are enabled in ss-config... this provides better sureity for our staging features, remote backups, and otherwise.
