@@ -81,13 +81,13 @@ server {
 ## the well-known hidden directory is becoming more important for domain verification ##
 ## we implement an abundance of rules to improve functionality and stability ##
 
-	## well-known ##
-	location ^~ /.well-known/ {
-		allow all;
-		auth_basic off;
-		default_type "text/plain";
-		try_files $uri =404;
-	}
+## well-known ##
+location ^~ /.well-known/ {
+	allow all;
+	auth_basic off;
+	default_type "text/plain";
+	try_files $uri =404;
+}
     
 ####################################################################################################
 #### D. Server Block (Production): Redirect Any AMP Requests #######################################
@@ -96,13 +96,13 @@ server {
 ## this powerful snippet will redirect all the messy URLs created by AMP software ##
 ## SlickStack does not support AMP for both stability and political reasons ##
 
-	## redirect /amp queries ##
-	rewrite ^(.*/)amp(.*)$ $1 permanent;
+## redirect /amp queries ##
+rewrite ^(.*/)amp(.*)$ $1 permanent;
 	
-	## redirect ?amp queries ##
-	if ($query_string ~ "^amp(.*)$") {
-        	rewrite ^(.*)$ $uri? permanent;
-	}
+## redirect ?amp queries ##
+if ($query_string ~ "^amp(.*)$") {
+	rewrite ^(.*)$ $uri? permanent;
+}
 
 ####################################################################################################
 #### Server Block (Production): Root Location Block ################################################
@@ -111,34 +111,34 @@ server {
 ## below is the main location block that applies to pretty much the entire website ##
 ## this includes site-wide rules for security, maintenance, and other purposes ##
 
-	## force trailing slash on */wp-admin requests ##
-	rewrite /wp-admin$ https://$host$uri/ permanent;
+## force trailing slash on */wp-admin requests ##
+rewrite /wp-admin$ https://$host$uri/ permanent;
 		
-	location / {
+location / {
 
-	## first try files, then directories, otherwise query index.php ##
-	try_files $uri $uri/ /index.php?$args;
+## first try files, then directories, otherwise query index.php ##
+try_files $uri $uri/ /index.php?$args;
 	
-	## THIS SNIPPET IS BREAKING TRACKING QUERIES SUCH AS /?ref=google&utm_source= ##
-	## redirect index.php to root ##
-	# if ($request_uri ~* "^(.*/)index\.php$") {
-	#	return 301 $1;
-	# }
+## THIS SNIPPET IS BREAKING TRACKING QUERIES SUCH AS /?ref=google&utm_source= ##
+## redirect index.php to root ##
+# if ($request_uri ~* "^(.*/)index\.php$") {
+#	return 301 $1;
+# }
 
-	## 503 error if maintenance file found in web root ##
-	if (-f /var/www/html/maintenance.html) {
-		return 503;
-	}
+## 503 error if maintenance file found in web root ##
+if (-f /var/www/html/maintenance.html) {
+	return 503;
+}
 	
-	## force trailing slashes on urls (do not enable for bbPress/BuddyPress sites) ##
-	# rewrite ^([^.]*[^/])$ $1/ permanent;
+## force trailing slashes on urls (do not enable for bbPress/BuddyPress sites) ##
+# rewrite ^([^.]*[^/])$ $1/ permanent;
 	
-	## block user enumeration ##
-	if ( $query_string ~ "author=([0-9]*)" ) { 
-		return 403;
-	}
+## block user enumeration ##
+if ( $query_string ~ "author=([0-9]*)" ) { 
+	return 403;
+}
 		
-    }
+}
 
 ####################################################################################################
 #### E. Server Block (Production): Noindex Thin Content (Regex) ####################################
