@@ -239,36 +239,39 @@ server {
     }
     
 ####################################################################################################
-#### Server Block: Static Resource Settings (Expiration Headers) ###################################
+#### Server Block (Development): Static Files ######################################################
 ####################################################################################################
 
-## CloudFlare (or CDNs) overwrite these headers ##
+## this snippet controls expiration headers and any other settings for static assets ##
+## keep in mind that CloudFlare or CDNs will likely overwrite these settings ##
     
-    location ~* .(atom|bmp|bz2|css|doc|docx|eot|gif|gz|ico|jpeg|jpg|js|mid|midi|mp4|ogg|ogv|otf|png|ppt|rar|rss|rtf|svg|svgz|tar|tgz|ttf|wav|webp|woff|xls|zip)$ {
-        expires max;
-    }
-
-####################################################################################################
-#### Server Block: Browser Resource (Render) Settings ##############################################
-####################################################################################################
-
-## avoid render security errors in certain browsers e.g. Firefox/IE ##
-
-    location ~* .(eot|ttf|ttc|otf|woff|woff2|svg|css|js)$ {
-        add_header Access-Control-Allow-Origin "*";
+location ~* \.(atom|bmp|bz2|css|doc|docx|eot|gif|gz|ico|jpeg|jpg|js|mid|midi|mp4|ogg|ogv|otf|png|ppt|rar|rss|rtf|svg|svgz|tar|tgz|ttf|wav|webp|woff|xls|zip)$ {
 	expires max;
-    }
-    
+}
+
 ####################################################################################################
-#### Server Block: Favicon Settings ################################################################
+#### Server Block (Development): Browser Asset Rendering ###########################################
 ####################################################################################################
 
-## 204 error better than 404 error if not found ##
+## avoids render security errors for cross-origin in certain browsers e.g. Firefox/IE ##
+## this pretty much tells browsers to stop being paranoid and load your fonts ##
 
-    location = /favicon.ico {
-        try_files $uri =204;
-    }
-    
+location ~* \.(eot|ttf|ttc|otf|woff|woff2|svg|css|js)$ {
+	add_header Access-Control-Allow-Origin "*";
+	expires max;
+}
+
+####################################################################################################
+#### Server Block (Development): Favicon Files #####################################################
+####################################################################################################
+
+## the favicon file is annoying and old-fashioned but still something we must optimize ##
+## issuing a 204 error is better (and faster) than a 404 error if not found ##
+
+location = /favicon.ico {
+	try_files $uri =204;
+}
+
 ####################################################################################################
 #### Server Block: Robots.txt Settings (Optimized For Virtual Robots.txt MU Plugin) ################
 ####################################################################################################
