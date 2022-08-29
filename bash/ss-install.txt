@@ -262,14 +262,14 @@ ss_echo "${COLOR_WARN}in your ss-config file later on (simply run ss-install aga
 ss_echo ""
 ss_echo "${COLOR_WARN}Please use the below wizard to configure required options, or hit Ctrl+C to ${COLOR_RESET}"
   
-    wait_time=30 # seconds
-    temp_cnt=${wait_time}
-    while [[ ${temp_cnt} -gt 0 ]];
-    do
-        printf "${COLOR_WARN}\rexit and configure your ss-config file manually: ${LIGHTGRAY}%2d ${NOCOLOR}" ${temp_cnt}
-        sleep 1
-        ((temp_cnt--))
-    done
+wait_time=30 # seconds
+temp_cnt=${wait_time}
+while [[ ${temp_cnt} -gt 0 ]];
+do
+    printf "${COLOR_WARN}\rexit and configure your ss-config file manually: ${LIGHTGRAY}%2d ${NOCOLOR}" ${temp_cnt}
+    sleep 1
+    ((temp_cnt--))
+done
     
 ss_echo ""
 ss_echo ""
@@ -278,255 +278,255 @@ ss_echo "${COLOR_INFO}#### SlickStack Interactive Setup Wizard (SS-Config) #####
 ss_echo "${COLOR_INFO}################################################################################ ${COLOR_RESET}"
 ss_echo ""
     
-    ## replace root password fields with random strings ##
-    sed -i "s/@ROOT_PASSWORD/$(openssl rand -hex 12)/g" /tmp/ss-config-wizard
-    sed -i "s/@DB_PASSWORD_ROOT/$(openssl rand -hex 12)/g" /tmp/ss-config-wizard
+## replace root password fields with random strings ##
+ss_sed "s/@ROOT_PASSWORD/$(openssl rand -hex 12)/g" /tmp/ss-config-wizard
+ss_sed "s/@DB_PASSWORD_ROOT/$(openssl rand -hex 12)/g" /tmp/ss-config-wizard
     
-    ## PROMPT: choose sudo username (default = batman) ##
-    read -t 300 -p "$(echo -e ${LIGHTGRAY}"Choose sudo username (for SSH):" ${LIGHTGREEN})" -e -i 'batman' ss_var_sudo_user || ss_var_sudo_user=batman
-    sed -i "s|@SUDO_USER|${ss_var_sudo_user}|g" /tmp/ss-config-wizard
+## PROMPT: choose sudo username (default = batman) ##
+read -t 300 -p "$(echo -e ${LIGHTGRAY}"Choose sudo username (for SSH):" ${LIGHTGREEN})" -e -i 'batman' ss_var_sudo_user || ss_var_sudo_user=batman
+ss_sed "s|@SUDO_USER|${ss_var_sudo_user}|g" /tmp/ss-config-wizard
     
-    ## new line ##
-    printf "${COLOR_RESET}\n"
+## new line ##
+printf "${COLOR_RESET}\n"
     
-    ## PROMPT: choose sudo password (default = random) ##
-    sudopass_random=$(openssl rand -hex 12)
-    read -t 300 -p "$(echo -e ${LIGHTGRAY}"Choose sudo password (should be strong): "${LIGHTGREEN})" -e -i ${sudopass_random} ss_var_sudo_password || ss_var_sudo_password=${sudopass_random}
-    sed -i "s|@SUDO_PASSWORD|${ss_var_sudo_password}|g" /tmp/ss-config-wizard
+## PROMPT: choose sudo password (default = random) ##
+sudopass_random=$(openssl rand -hex 12)
+read -t 300 -p "$(echo -e ${LIGHTGRAY}"Choose sudo password (should be strong): "${LIGHTGREEN})" -e -i ${sudopass_random} ss_var_sudo_password || ss_var_sudo_password=${sudopass_random}
+ss_sed "s|@SUDO_PASSWORD|${ss_var_sudo_password}|g" /tmp/ss-config-wizard
     
-    ## new line ##
-    printf "${COLOR_RESET}\n"
+## new line ##
+printf "${COLOR_RESET}\n"
     
-    ## PROMPT: enable SSH keys (default = false) ##
-    read -t 300 -p "$(echo -e ${LIGHTGRAY}"Enable SSH keys (advanced users only): "${LIGHTGREEN})" -e -i 'false' ss_var_ssh_keys || ss_var_ssh_keys=false
-    sed -i "s|@SSH_KEYS|${ss_var_ssh_keys}|g" /tmp/ss-config-wizard
+## PROMPT: enable SSH keys (default = false) ##
+read -t 300 -p "$(echo -e ${LIGHTGRAY}"Enable SSH keys (advanced users only): "${LIGHTGREEN})" -e -i 'false' ss_var_ssh_keys || ss_var_ssh_keys=false
+ss_sed "s|@SSH_KEYS|${ss_var_ssh_keys}|g" /tmp/ss-config-wizard
     
-    ## new line ##
-    printf "${COLOR_RESET}\n"
+## new line ##
+printf "${COLOR_RESET}\n"
     
-    ## PROMPT: restrict SSH logins to specific IP address ##
-    read -t 300 -p "$(echo -e ${LIGHTGRAY}"Restrict SSH access to specific IP address?: "${LIGHTGREEN})" -e -i 'false' ss_restrict_ssh_ip || ss_restrict_ssh_ip=false
-    sed -i "s|@SSH_RESTRICT_IP|${ss_restrict_ssh_ip}|g" /tmp/ss-config-wizard
+## PROMPT: restrict SSH logins to specific IP address ##
+read -t 300 -p "$(echo -e ${LIGHTGRAY}"Restrict SSH access to specific IP address?: "${LIGHTGREEN})" -e -i 'false' ss_restrict_ssh_ip || ss_restrict_ssh_ip=false
+ss_sed "s|@SSH_RESTRICT_IP|${ss_restrict_ssh_ip}|g" /tmp/ss-config-wizard
     
-    ## new line ##
-    printf "${COLOR_RESET}\n"
+## new line ##
+printf "${COLOR_RESET}\n"
     
-    ## PROMPT: specify the IP address for SSH login ##
-    read -t 300 -p "$(echo -e ${LIGHTGRAY}"Which IP address for SSH logins (ignore if disabled above)?: "${LIGHTGREEN})" -e -i '192.0.2.1' ss_ipv4_ssh_allow || ss_ipv4_ssh_allow=192.0.2.1
-    sed -i "s|@SSH_IPV4|${ss_ipv4_ssh_allow}|g" /tmp/ss-config-wizard
+## PROMPT: specify the IP address for SSH login ##
+read -t 300 -p "$(echo -e ${LIGHTGRAY}"Which IP address for SSH logins (ignore if disabled above)?: "${LIGHTGREEN})" -e -i '192.0.2.1' ss_ipv4_ssh_allow || ss_ipv4_ssh_allow=192.0.2.1
+ss_sed "s|@SSH_IPV4|${ss_ipv4_ssh_allow}|g" /tmp/ss-config-wizard
     
-    ## new line ##
-    printf "${COLOR_RESET}\n"
+## new line ##
+printf "${COLOR_RESET}\n"
     
-    ## PROMPT: choose SFTP username (default = robin) ##
-    read -t 300 -p "$(echo -e ${LIGHTGRAY}"Choose SFTP username (limited access): "${LIGHTGREEN})" -e -i 'robin' ss_var_sftp_user || ss_var_sftp_user=robin
-    sed -i "s|@SFTP_USER|${ss_var_sftp_user}|g" /tmp/ss-config-wizard
+## PROMPT: choose SFTP username (default = robin) ##
+read -t 300 -p "$(echo -e ${LIGHTGRAY}"Choose SFTP username (limited access): "${LIGHTGREEN})" -e -i 'robin' ss_var_sftp_user || ss_var_sftp_user=robin
+ss_sed "s|@SFTP_USER|${ss_var_sftp_user}|g" /tmp/ss-config-wizard
     
-    ## new line ##
-    printf "${COLOR_RESET}\n"
+## new line ##
+printf "${COLOR_RESET}\n"
     
-    ## PROMPT: choose SFTP password (default = random) ##
-    sftp_pass_random=$(openssl rand -hex 12)
-    read -t 300 -p "$(echo -e ${LIGHTGRAY}"Choose SFTP password (should be strong): "${LIGHTGREEN})" -e -i ${sftp_pass_random} ss_var_sftp_password || ss_var_sftp_password=${sftp_pass_random}
-    sed -i "s|@SFTP_PASSWORD|${ss_var_sftp_password}|g" /tmp/ss-config-wizard
+## PROMPT: choose SFTP password (default = random) ##
+sftp_pass_random=$(openssl rand -hex 12)
+read -t 300 -p "$(echo -e ${LIGHTGRAY}"Choose SFTP password (should be strong): "${LIGHTGREEN})" -e -i ${sftp_pass_random} ss_var_sftp_password || ss_var_sftp_password=${sftp_pass_random}
+ss_sed "s|@SFTP_PASSWORD|${ss_var_sftp_password}|g" /tmp/ss-config-wizard
     
-    ## new line ##
-    printf "${COLOR_RESET}\n"
+## new line ##
+printf "${COLOR_RESET}\n"
     
-    ## PROMPT: choose app (default = wordpress) ##
-    read -t 300 -p "$(echo -e ${LIGHTGRAY}"Choose app (only wordpress supported currently): "${LIGHTGREEN})" -e -i 'wordpress' ss_var_app_name || ss_var_app_name=wordpress
-    sed -i "s|@SS_APP|${ss_var_app_name}|g" /tmp/ss-config-wizard
+## PROMPT: choose app (default = wordpress) ##
+read -t 300 -p "$(echo -e ${LIGHTGRAY}"Choose app (only wordpress supported currently): "${LIGHTGREEN})" -e -i 'wordpress' ss_var_app_name || ss_var_app_name=wordpress
+ss_sed "s|@SS_APP|${ss_var_app_name}|g" /tmp/ss-config-wizard
     
-    ## new line ##
-    printf "${COLOR_RESET}\n"
+## new line ##
+printf "${COLOR_RESET}\n"
     
-    ## PROMPT: choose default wp theme ##
-    read -t 300 -p "$(echo -e ${LIGHTGRAY}"Choose default WordPress theme: "${LIGHTGREEN})" -e -i 'twentytwenty' ss_var_default_wp_theme || ss_var_default_wp_theme=twentytwenty
-    sed -i "s|@WP_DEFAULT_THEME|${ss_var_default_wp_theme}|g" /tmp/ss-config-wizard
+## PROMPT: choose default wp theme ##
+read -t 300 -p "$(echo -e ${LIGHTGRAY}"Choose default WordPress theme: "${LIGHTGREEN})" -e -i 'twentytwenty' ss_var_default_wp_theme || ss_var_default_wp_theme=twentytwenty
+ss_sed "s|@WP_DEFAULT_THEME|${ss_var_default_wp_theme}|g" /tmp/ss-config-wizard
     
-    ## new line ##
-    printf "${COLOR_RESET}\n"
+## new line ##
+printf "${COLOR_RESET}\n"
     
-    ## PROMPT: choose language (default = en_US) ##
-    read -t 300 -p "$(echo -e ${LIGHTGRAY}"Choose language (only affects minor features): "${LIGHTGREEN})" -e -i 'en_US' ss_var_language || ss_var_language=en_US
-    sed -i "s|@SS_LANGUAGE|${ss_var_language}|g" /tmp/ss-config-wizard
+## PROMPT: choose language (default = en_US) ##
+read -t 300 -p "$(echo -e ${LIGHTGRAY}"Choose language (only affects minor features): "${LIGHTGREEN})" -e -i 'en_US' ss_var_language || ss_var_language=en_US
+ss_sed "s|@SS_LANGUAGE|${ss_var_language}|g" /tmp/ss-config-wizard
     
-    ## new line ##
-    printf "${COLOR_RESET}\n"
+## new line ##
+printf "${COLOR_RESET}\n"
     
-    ## PROMPT: enable plugin blacklist (default = true) ##
-    read -t 300 -p "$(echo -e ${LIGHTGRAY}"Enable the WordPress plugin blacklist: "${LIGHTGREEN})" -e -i 'true' ss_var_plugin_blacklist || ss_var_plugin_blacklist=true
-    sed -i "s|@SS_WORDPRESS_PLUGIN_BLACKLIST|${ss_var_plugin_blacklist}|g" /tmp/ss-config-wizard
+## PROMPT: enable plugin blacklist (default = true) ##
+read -t 300 -p "$(echo -e ${LIGHTGRAY}"Enable the WordPress plugin blacklist: "${LIGHTGREEN})" -e -i 'true' ss_var_plugin_blacklist || ss_var_plugin_blacklist=true
+ss_sed "s|@SS_WORDPRESS_PLUGIN_BLACKLIST|${ss_var_plugin_blacklist}|g" /tmp/ss-config-wizard
     
-    ## new line ##
-    printf "${COLOR_RESET}\n"
+## new line ##
+printf "${COLOR_RESET}\n"
     
-    ## PROMPT: link your pilot file (default = blank) ##
-    read -t 300 -p "$(echo -e ${LIGHTGRAY}"Link to your pilot file (leave blank if none): "${LIGHTGREEN})" -e -i '' ss_var_pilot_file || ss_var_pilot_file=
-    sed -i "s|@SS_PILOT_FILE|${ss_var_pilot_file}|g" /tmp/ss-config-wizard
+## PROMPT: link your pilot file (default = blank) ##
+read -t 300 -p "$(echo -e ${LIGHTGRAY}"Link to your pilot file (leave blank if none): "${LIGHTGREEN})" -e -i '' ss_var_pilot_file || ss_var_pilot_file=
+ss_sed "s|@SS_PILOT_FILE|${ss_var_pilot_file}|g" /tmp/ss-config-wizard
     
-    ## new line ##
-    printf "${COLOR_RESET}\n"
+## new line ##
+printf "${COLOR_RESET}\n"
     
-    ## PROMPT: using a remote database (default = wordpress) ##
-    read -t 300 -p "$(echo -e ${LIGHTGRAY}"Are you using a remote database: "${LIGHTGREEN})" -e -i 'false' ss_var_database_remote || ss_var_database_remote=false
-    sed -i "s|@SS_DATABASE_REMOTE|${ss_var_database_remote}|g" /tmp/ss-config-wizard
+## PROMPT: using a remote database (default = wordpress) ##
+read -t 300 -p "$(echo -e ${LIGHTGRAY}"Are you using a remote database: "${LIGHTGREEN})" -e -i 'false' ss_var_database_remote || ss_var_database_remote=false
+ss_sed "s|@SS_DATABASE_REMOTE|${ss_var_database_remote}|g" /tmp/ss-config-wizard
     
-    ## new line ##
-    printf "${COLOR_RESET}\n"
+## new line ##
+printf "${COLOR_RESET}\n"
     
-    ## PROMPT: enable public adminer link ##
-    read -t 300 -p "$(echo -e ${LIGHTGRAY}"Make the adminer (phpmyadmin) link public?: "${LIGHTGREEN})" -e -i 'true' ss_var_adminer_public || ss_var_adminer_public=true
-    sed -i "s|@SS_ADMINER_PUBLIC|${ss_var_adminer_public}|g" /tmp/ss-config-wizard
+## PROMPT: enable public adminer link ##
+read -t 300 -p "$(echo -e ${LIGHTGRAY}"Make the adminer (phpmyadmin) link public?: "${LIGHTGREEN})" -e -i 'true' ss_var_adminer_public || ss_var_adminer_public=true
+ss_sed "s|@SS_ADMINER_PUBLIC|${ss_var_adminer_public}|g" /tmp/ss-config-wizard
     
-    ## new line ##
-    printf "${COLOR_RESET}\n"
+## new line ##
+printf "${COLOR_RESET}\n"
     
-    ## PROMPT: choose database name (default = production) ##
-    read -t 300 -p "$(echo -e ${LIGHTGRAY}"Choose database name (single database): "${LIGHTGREEN})" -e -i 'production' ss_var_db_name || ss_var_db_name=production
-    sed -i "s|@DB_NAME|${ss_var_db_name}|g" /tmp/ss-config-wizard
+## PROMPT: choose database name (default = production) ##
+read -t 300 -p "$(echo -e ${LIGHTGRAY}"Choose database name (single database): "${LIGHTGREEN})" -e -i 'production' ss_var_db_name || ss_var_db_name=production
+ss_sed "s|@DB_NAME|${ss_var_db_name}|g" /tmp/ss-config-wizard
     
-    ## new line ##
-    printf "${COLOR_RESET}\n"
+## new line ##
+printf "${COLOR_RESET}\n"
     
-    ## PROMPT: choose database user (default = robin) ##
-    read -t 300 -p "$(echo -e ${LIGHTGRAY}"Choose database user (non-root user): "${LIGHTGREEN})" -e -i 'robin' ss_var_db_user || ss_var_db_user=robin
-    sed -i "s|@DB_USER|${ss_var_db_user}|g" /tmp/ss-config-wizard
+## PROMPT: choose database user (default = robin) ##
+read -t 300 -p "$(echo -e ${LIGHTGRAY}"Choose database user (non-root user): "${LIGHTGREEN})" -e -i 'robin' ss_var_db_user || ss_var_db_user=robin
+ss_sed "s|@DB_USER|${ss_var_db_user}|g" /tmp/ss-config-wizard
     
-    ## new line ##
-    printf "${COLOR_RESET}\n"
+## new line ##
+printf "${COLOR_RESET}\n"
     
-    ## PROMPT: choose database user password (default = random) ##
-    db_pass_random=$(openssl rand -hex 12)
-    read -t 300 -p "$(echo -e ${LIGHTGRAY}"Choose database user password (should be strong): "${LIGHTGREEN})" -e -i ${db_pass_random} ss_var_db_password || ss_var_db_password=${db_pass_random}
-    sed -i "s|@DB_PASSWORD_USER|${ss_var_db_password}|g" /tmp/ss-config-wizard
+## PROMPT: choose database user password (default = random) ##
+db_pass_random=$(openssl rand -hex 12)
+read -t 300 -p "$(echo -e ${LIGHTGRAY}"Choose database user password (should be strong): "${LIGHTGREEN})" -e -i ${db_pass_random} ss_var_db_password || ss_var_db_password=${db_pass_random}
+ss_sed "s|@DB_PASSWORD_USER|${ss_var_db_password}|g" /tmp/ss-config-wizard
     
-    ## new line ##
-    printf "${COLOR_RESET}\n"
+## new line ##
+printf "${COLOR_RESET}\n"
     
-    ## PROMPT: choose database host ##
-    read -t 300 -p "$(echo -e ${LIGHTGRAY}"Choose database host (IP address): "${LIGHTGREEN})" -e -i '127.0.0.1' ss_var_db_host || ss_var_db_host=127.0.0.1
-    sed -i "s|@DB_HOST|${ss_var_db_host}|g" /tmp/ss-config-wizard
+## PROMPT: choose database host ##
+read -t 300 -p "$(echo -e ${LIGHTGRAY}"Choose database host (IP address): "${LIGHTGREEN})" -e -i '127.0.0.1' ss_var_db_host || ss_var_db_host=127.0.0.1
+ss_sed "s|@DB_HOST|${ss_var_db_host}|g" /tmp/ss-config-wizard
     
-    ## new line ##
-    printf "${COLOR_RESET}\n"
+## new line ##
+printf "${COLOR_RESET}\n"
     
-    ## PROMPT: choose database port ##
-    read -t 300 -p "$(echo -e ${LIGHTGRAY}"Choose database port (3306 if using localhost): "${LIGHTGREEN})" -e -i '3306' ss_var_db_port || ss_var_db_port=3306
-    sed -i "s|@DB_PORT|${ss_var_db_port}|g" /tmp/ss-config-wizard
+## PROMPT: choose database port ##
+read -t 300 -p "$(echo -e ${LIGHTGRAY}"Choose database port (3306 if using localhost): "${LIGHTGREEN})" -e -i '3306' ss_var_db_port || ss_var_db_port=3306
+ss_sed "s|@DB_PORT|${ss_var_db_port}|g" /tmp/ss-config-wizard
     
-    ## new line ##
-    printf "${COLOR_RESET}\n"
+## new line ##
+printf "${COLOR_RESET}\n"
     
-    ## PROMPT: choose database prefix ##
-    read -t 300 -p "$(echo -e ${LIGHTGRAY}"Choose database table prefix: "${LIGHTGREEN})" -e -i 'wp_' ss_var_db_prefix || ss_var_db_prefix=wp_
-    sed -i "s|@DB_PREFIX|${ss_var_db_prefix}|g" /tmp/ss-config-wizard
+## PROMPT: choose database prefix ##
+read -t 300 -p "$(echo -e ${LIGHTGRAY}"Choose database table prefix: "${LIGHTGREEN})" -e -i 'wp_' ss_var_db_prefix || ss_var_db_prefix=wp_
+ss_sed "s|@DB_PREFIX|${ss_var_db_prefix}|g" /tmp/ss-config-wizard
     
-    ## new line ##
-    printf "${COLOR_RESET}\n"
+## new line ##
+printf "${COLOR_RESET}\n"
     
-    ## PROMPT: choose site TLD (otherwise example.com) ##
-    read -t 300 -p "$(echo -e ${LIGHTGRAY}"Choose site TLD (subdomains not allowed): "${LIGHTGREEN})" -e -i "${SS_TLD}" ss_var_site_tld || ss_var_site_tld=${SS_TLD}
-    sed -i "s|@SITE_TLD|${ss_var_site_tld}|g" /tmp/ss-config-wizard
+## PROMPT: choose site TLD (otherwise example.com) ##
+read -t 300 -p "$(echo -e ${LIGHTGRAY}"Choose site TLD (subdomains not allowed): "${LIGHTGREEN})" -e -i "${SS_TLD}" ss_var_site_tld || ss_var_site_tld=${SS_TLD}
+ss_sed "s|@SITE_TLD|${ss_var_site_tld}|g" /tmp/ss-config-wizard
     
-    ## new line ##
-    printf "${COLOR_RESET}\n"
+## new line ##
+printf "${COLOR_RESET}\n"
     
-    ## PROMPT: choose site domain (otherwise www.example.com) ##
-    read -t 300 -p "$(echo -e ${LIGHTGRAY}"Choose site domain (subdirectories not allowed): "${LIGHTGREEN})" -e -i "www.${SS_TLD}" ss_var_site_domain || ss_var_site_tld=www.${SS_TLD}
-    sed -i "s|@SITE_DOMAIN|${ss_var_site_domain}|g" /tmp/ss-config-wizard
+## PROMPT: choose site domain (otherwise www.example.com) ##
+read -t 300 -p "$(echo -e ${LIGHTGRAY}"Choose site domain (subdirectories not allowed): "${LIGHTGREEN})" -e -i "www.${SS_TLD}" ss_var_site_domain || ss_var_site_tld=www.${SS_TLD}
+ss_sed "s|@SITE_DOMAIN|${ss_var_site_domain}|g" /tmp/ss-config-wizard
     
-    ## new line ##
-    printf "${COLOR_RESET}\n"
+## new line ##
+printf "${COLOR_RESET}\n"
     
-    ## PROMPT: enable noindex server (default = false) ##
-    read -t 300 -p "$(echo -e ${LIGHTGRAY}"Enable site noindexing (block robots): "${LIGHTGREEN})" -e -i 'false' ss_var_site_noindex || ss_var_site_noindex=false
-    sed -i "s|@SITE_NOINDEX|${ss_var_site_noindex}|g" /tmp/ss-config-wizard
+## PROMPT: enable noindex server (default = false) ##
+read -t 300 -p "$(echo -e ${LIGHTGRAY}"Enable site noindexing (block robots): "${LIGHTGREEN})" -e -i 'false' ss_var_site_noindex || ss_var_site_noindex=false
+ss_sed "s|@SITE_NOINDEX|${ss_var_site_noindex}|g" /tmp/ss-config-wizard
     
-    ## new line ##
-    printf "${COLOR_RESET}\n"
+## new line ##
+printf "${COLOR_RESET}\n"
     
-    ## PROMPT: enable WP Multisite ##
-    read -t 300 -p "$(echo -e ${LIGHTGRAY}"Enable WordPress Multisite (experimental): "${LIGHTGREEN})" -e -i 'false' ss_var_wp_multisite_status || ss_var_wp_multisite_status=false
-    sed -i "s|@WP_MULTISITE_STATUS|${ss_var_wp_multisite_status}|g" /tmp/ss-config-wizard
+## PROMPT: enable WP Multisite ##
+read -t 300 -p "$(echo -e ${LIGHTGRAY}"Enable WordPress Multisite (experimental): "${LIGHTGREEN})" -e -i 'false' ss_var_wp_multisite_status || ss_var_wp_multisite_status=false
+ss_sed "s|@WP_MULTISITE_STATUS|${ss_var_wp_multisite_status}|g" /tmp/ss-config-wizard
     
-    ## new line ##
-    printf "${COLOR_RESET}\n"
+## new line ##
+printf "${COLOR_RESET}\n"
     
-    ## PROMPT: enable Multisite subdomains ##
-    read -t 300 -p "$(echo -e ${LIGHTGRAY}"Enable subdomains for WP Multisite?: "${LIGHTGREEN})" -e -i 'true' ss_var_wp_multisite_subdomains || ss_var_wp_multisite_subdomains=true
-    sed -i "s|@WP_MULTISITE_SUBDOMAINS|${ss_var_wp_multisite_subdomains}|g" /tmp/ss-config-wizard
+## PROMPT: enable Multisite subdomains ##
+read -t 300 -p "$(echo -e ${LIGHTGRAY}"Enable subdomains for WP Multisite?: "${LIGHTGREEN})" -e -i 'true' ss_var_wp_multisite_subdomains || ss_var_wp_multisite_subdomains=true
+ss_sed "s|@WP_MULTISITE_SUBDOMAINS|${ss_var_wp_multisite_subdomains}|g" /tmp/ss-config-wizard
     
-    ## new line ##
-    printf "${COLOR_RESET}\n"
+## new line ##
+printf "${COLOR_RESET}\n"
     
-    ## PROMPT: choose Cloudflare API key (otherwise 123456789) ##
-    read -t 300 -p "$(echo -e ${LIGHTGRAY}"Choose Cloudflare API key (account profile): "${LIGHTGREEN})" -e -i '123456789' ss_var_cloudflare_api_key || ss_var_cloudflare_api_key=123456789
-    sed -i "s|@CLOUDFLARE_API_KEY|${ss_var_cloudflare_api_key}|g" /tmp/ss-config-wizard
+## PROMPT: choose Cloudflare API key (otherwise 123456789) ##
+read -t 300 -p "$(echo -e ${LIGHTGRAY}"Choose Cloudflare API key (account profile): "${LIGHTGREEN})" -e -i '123456789' ss_var_cloudflare_api_key || ss_var_cloudflare_api_key=123456789
+ss_sed "s|@CLOUDFLARE_API_KEY|${ss_var_cloudflare_api_key}|g" /tmp/ss-config-wizard
     
-    ## new line ##
-    printf "${COLOR_RESET}\n"
+## new line ##
+printf "${COLOR_RESET}\n"
     
-    ## PROMPT: choose Cloudflare API email (otherwise user@example.com) ##
-    read -t 300 -p "$(echo -e ${LIGHTGRAY}"Choose Cloudflare API email (account profile): "${LIGHTGREEN})" -e -i 'user@example.com' ss_var_cloudflare_api_email || ss_var_cloudflare_api_email=user@example.com
-    sed -i "s|@CLOUDFLARE_API_EMAIL|${ss_var_cloudflare_api_email}|g" /tmp/ss-config-wizard
+## PROMPT: choose Cloudflare API email (otherwise user@example.com) ##
+read -t 300 -p "$(echo -e ${LIGHTGRAY}"Choose Cloudflare API email (account profile): "${LIGHTGREEN})" -e -i 'user@example.com' ss_var_cloudflare_api_email || ss_var_cloudflare_api_email=user@example.com
+ss_sed "s|@CLOUDFLARE_API_EMAIL|${ss_var_cloudflare_api_email}|g" /tmp/ss-config-wizard
     
-    ## new line ##
-    printf "${COLOR_RESET}\n"
+## new line ##
+printf "${COLOR_RESET}\n"
     
-    ## PROMPT: enable staging site ##
-    read -t 300 -p "$(echo -e ${LIGHTGRAY}"Enable staging site (subdomain): "${LIGHTGREEN})" -e -i 'false' ss_var_staging_site || ss_var_staging_site=false
-    sed -i "s|@STAGING_SITE_STATUS|${ss_var_staging_site}|g" /tmp/ss-config-wizard
+## PROMPT: enable staging site ##
+read -t 300 -p "$(echo -e ${LIGHTGRAY}"Enable staging site (subdomain): "${LIGHTGREEN})" -e -i 'false' ss_var_staging_site || ss_var_staging_site=false
+ss_sed "s|@STAGING_SITE_STATUS|${ss_var_staging_site}|g" /tmp/ss-config-wizard
     
-    ## new line ##
-    printf "${COLOR_RESET}\n"
+## new line ##
+printf "${COLOR_RESET}\n"
     
-    ## PROMPT: protect staging site ##
-    read -t 300 -p "$(echo -e ${LIGHTGRAY}"Password protect staging site: "${LIGHTGREEN})" -e -i 'false' ss_var_staging_site_protect || ss_var_staging_site_protect=false
-    sed -i "s|@STAGING_SITE_PROTECT|${ss_var_staging_site_protect}|g" /tmp/ss-config-wizard
+## PROMPT: protect staging site ##
+read -t 300 -p "$(echo -e ${LIGHTGRAY}"Password protect staging site: "${LIGHTGREEN})" -e -i 'false' ss_var_staging_site_protect || ss_var_staging_site_protect=false
+ss_sed "s|@STAGING_SITE_PROTECT|${ss_var_staging_site_protect}|g" /tmp/ss-config-wizard
     
-    ## new line ##
-    printf "${COLOR_RESET}\n"
+## new line ##
+printf "${COLOR_RESET}\n"
     
-    ## PROMPT: enable dev site ##
-    read -t 300 -p "$(echo -e ${LIGHTGRAY}"Enable dev site (subdomain): "${LIGHTGREEN})" -e -i 'false' ss_var_dev_site || ss_var_dev_site=false
-    sed -i "s|@DEV_SITE_STATUS|${ss_var_dev_site}|g" /tmp/ss-config-wizard
+## PROMPT: enable dev site ##
+read -t 300 -p "$(echo -e ${LIGHTGRAY}"Enable dev site (subdomain): "${LIGHTGREEN})" -e -i 'false' ss_var_dev_site || ss_var_dev_site=false
+ss_sed "s|@DEV_SITE_STATUS|${ss_var_dev_site}|g" /tmp/ss-config-wizard
     
-    ## new line ##
-    printf "${COLOR_RESET}\n"
+## new line ##
+printf "${COLOR_RESET}\n"
     
-    ## PROMPT: protect dev site ##
-    read -t 300 -p "$(echo -e ${LIGHTGRAY}"Password protect dev site: "${LIGHTGREEN})" -e -i 'false' ss_var_dev_site_protect || ss_var_dev_site_protect=false
-    sed -i "s|@DEV_SITE_PROTECT|${ss_var_dev_site_protect}|g" /tmp/ss-config-wizard
+## PROMPT: protect dev site ##
+read -t 300 -p "$(echo -e ${LIGHTGRAY}"Password protect dev site: "${LIGHTGREEN})" -e -i 'false' ss_var_dev_site_protect || ss_var_dev_site_protect=false
+ss_sed "s|@DEV_SITE_PROTECT|${ss_var_dev_site_protect}|g" /tmp/ss-config-wizard
     
-    ## new line ##
-    printf "${COLOR_RESET}\n"
+## new line ##
+printf "${COLOR_RESET}\n"
     
-    ## PROMPT: choose guest username (default = guest) ##
-    read -t 300 -p "$(echo -e ${LIGHTGRAY}"Choose guest username (to view staging/dev): "${LIGHTGREEN})" -e -i 'guest' ss_var_guest_user || ss_var_guest_user=guest
-    sed -i "s|@GUEST_USER|${ss_var_guest_user}|g" /tmp/ss-config-wizard
+## PROMPT: choose guest username (default = guest) ##
+read -t 300 -p "$(echo -e ${LIGHTGRAY}"Choose guest username (to view staging/dev): "${LIGHTGREEN})" -e -i 'guest' ss_var_guest_user || ss_var_guest_user=guest
+ss_sed "s|@GUEST_USER|${ss_var_guest_user}|g" /tmp/ss-config-wizard
     
-    ## new line ##
-    printf "${COLOR_RESET}\n"
+## new line ##
+printf "${COLOR_RESET}\n"
     
-    ## PROMPT: choose guest password (default = random) ##
-    guest_pass_random=$(openssl rand -hex 12)
-    read -t 300 -p "$(echo -e ${LIGHTGRAY}"Choose guest password (easy is fine): "${LIGHTGREEN})" -e -i ${guest_pass_random} ss_var_guest_password || ss_var_guest_password=${guest_pass_random}
-    sed -i "s|@GUEST_PASSWORD|${ss_var_guest_password}|g" /tmp/ss-config-wizard
+## PROMPT: choose guest password (default = random) ##
+guest_pass_random=$(openssl rand -hex 12)
+read -t 300 -p "$(echo -e ${LIGHTGRAY}"Choose guest password (easy is fine): "${LIGHTGREEN})" -e -i ${guest_pass_random} ss_var_guest_password || ss_var_guest_password=${guest_pass_random}
+ss_sed "s|@GUEST_PASSWORD|${ss_var_guest_password}|g" /tmp/ss-config-wizard
+
+## new line ##
+printf "${COLOR_RESET}\n"
+
+## PROMPT: which remote backups do you want ##
+read -t 300 -p "$(echo -e ${LIGHTGRAY}"Which remote backups do you want? (none|rsync|rclone): "${LIGHTGREEN})" -e -i 'none' ss_var_remote_backups || ss_var_remote_backups=none
+ss_sed "s|@SS_REMOTE_BACKUPS|${ss_var_remote_backups}|g" /tmp/ss-config-wizard
     
-    ## new line ##
-    printf "${COLOR_RESET}\n"
+## new line ##
+printf "${COLOR_RESET}\n"
     
-    ## PROMPT: which remote backups do you want ##
-    read -t 300 -p "$(echo -e ${LIGHTGRAY}"Which remote backups do you want? (none|rsync|rclone): "${LIGHTGREEN})" -e -i 'none' ss_var_remote_backups || ss_var_remote_backups=none
-    sed -i "s|@SS_REMOTE_BACKUPS|${ss_var_remote_backups}|g" /tmp/ss-config-wizard
-    
-    ## new line ##
-    printf "${COLOR_RESET}\n"
-    
- ####################################################################################################
- #### G. SS-Install: Activate SS-Config File Generated By Wizard ####################################
- ####################################################################################################
+####################################################################################################
+#### G. SS-Install: Activate SS-Config File Generated By Wizard ####################################
+####################################################################################################
     
 ## copy files to their destinations ##
 ss_mkdir /var/www
@@ -613,20 +613,21 @@ ss_echo "${COLOR_INFO}Running ss-install... ${COLOR_RESET}"
 
 else
 
-    echo -e "${COLOR_INFO}################################################################################${NOCOLOR}"
-    echo -e "${FIRST_LINE_TRIM}"
-    echo -e "${SECOND_LINE_TRIM}"
-    echo -e "${THIRD_LINE_TRIM}"
-    echo -e "${FOURTH_LINE_TRIM}"
-    echo -e "${FIFTH_LINE_TRIM}"
-    echo -e "${INTRO_MEMORY_TRIM}"
-    echo -e "${INTRO_SWAPFILE_TRIM}"
-    echo -e "${SIXTH_LINE_TRIM}"
-    echo -e "${EIGHT_LINE_TRIM}"
-    echo -e "${NINE_LINE_TRIM}"
-    echo -e "${COLOR_INFO}################################################################################${NOCOLOR}"
-    echo -e ""
-    echo -e "${COLOR_INFO}Running ss-install... ${NOCOLOR}"
+ss_echo "${COLOR_INFO}################################################################################ ${COLOR_RESET}"
+ss_echo "${FIRST_LINE_TRIM}"
+ss_echo "${SECOND_LINE_TRIM}"
+ss_echo "${THIRD_LINE_TRIM}"
+ss_echo "${FOURTH_LINE_TRIM}"
+ss_echo "${FIFTH_LINE_TRIM}"
+ss_echo "${INTRO_MEMORY_TRIM}"
+ss_echo "${INTRO_SWAPFILE_TRIM}"
+ss_echo "${SIXTH_LINE_TRIM}"
+ss_echo "${EIGHT_LINE_TRIM}"
+ss_echo "${NINE_LINE_TRIM}"
+ss_echo "${COLOR_INFO}################################################################################ ${COLOR_RESET}"
+ss_echo ""
+ss_echo "${COLOR_INFO}Running ss-install... ${NOCOLOR}"
+
 fi
 
 
