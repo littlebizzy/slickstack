@@ -297,28 +297,26 @@ location ~* \.(asp|aspx|doc|docx|dwf|gpx|htm|hwp|jsp|kml|kmz|log|odp|ods|odt|pdf
     }
     
 ####################################################################################################
-#### H. Server Block (Production): WP-Login (Rate Limiting) ########################################
+#### H. Server Block (Production): Rate Limit WP-Login.php #########################################
 ####################################################################################################
 
 ## because of goofy Nginx we must reinclude all PHP directives here as they exist above ##
 ## next we enable rate-limiting to prevent automated brute force hack attempts ##
 
-	location = /wp-login.php {
-		include /etc/nginx/fastcgi.conf;
-        	try_files $uri =404;
-        	fastcgi_split_path_info ^(.+\.php)(/.+)$;
-		fastcgi_pass 127.0.0.1:9000;
-		fastcgi_read_timeout 300;
-        	fastcgi_index index.php;
-        	fastcgi_cache WORDPRESS;
-        	fastcgi_cache_valid 200 301 404 @CACHEVALID;
-        	fastcgi_cache_bypass $skip_cache;
-        	fastcgi_no_cache $skip_cache;
-	
-		## rate limit zone
-        	limit_req zone=wplogin burst=1 nodelay;
-    	}
-    
+location = /wp-login.php {
+	include /etc/nginx/fastcgi.conf;
+	try_files $uri =404;
+	fastcgi_split_path_info ^(.+\.php)(/.+)$;
+	fastcgi_pass 127.0.0.1:9000;
+	fastcgi_read_timeout 300;
+	fastcgi_index index.php;
+	fastcgi_cache WORDPRESS;
+	fastcgi_cache_valid 200 301 404 @CACHEVALID;
+	fastcgi_cache_bypass $skip_cache;
+	fastcgi_no_cache $skip_cache;
+	limit_req zone=wplogin burst=1 nodelay;
+}
+
 ####################################################################################################
 #### I. Server Block (Production): Adminer Script ##################################################
 ####################################################################################################
