@@ -170,29 +170,38 @@ server {
     # }
 
 ####################################################################################################
-#### Server Block: PHP-FPM Routing + FastCGI Routing Settings ######################################
+#### Server Block (Staging): PHP-FPM Routing #######################################################
 ####################################################################################################
 
-    location ~ \.php$ {
+## here are the critical settings that allow Nginx and PHP to work together via FCGI ##
+## we also have to optimize cookies here too since working with WordPress ##
+
+location ~* \.php$ {
+set $rt_session "";
+if ($http_cookie ~* "wp_woocommerce_session_[^=]*=([^%]+)%7C") {
+	set $rt_session wp_woocommerce_session_$1;
+}
+if ($skip_cache = 0 ) {
+	more_clear_headers "Set-Cookie*";
 	set $rt_session "";
-        if ($http_cookie ~* "wp_woocommerce_session_[^=]*=([^%]+)%7C") {
-                set $rt_session wp_woocommerce_session_$1;
-        }	
-        if ($skip_cache = 0 ) {
-                more_clear_headers "Set-Cookie*";
-                set $rt_session "";
-        }
-        include /etc/nginx/fastcgi.conf;
-        try_files $uri =404;
-        fastcgi_split_path_info ^(.+\.php)(/.+)$;
-	fastcgi_pass 127.0.0.1:9000;
-	fastcgi_read_timeout 300;
-        fastcgi_index index.php;
-        fastcgi_cache WORDPRESS;
-        fastcgi_cache_valid 200 301 404 @CACHEVALID;
-        fastcgi_cache_bypass $skip_cache;
-        fastcgi_no_cache $skip_cache;
-    }
+}
+include /etc/nginx/fastcgi.conf;
+try_files $uri =404;
+fastcgi_split_path_info ^(.+\.php)(/.+)$;
+fastcgi_pass 127.0.0.1:9000;
+fastcgi_read_timeout 300;
+fastcgi_index index.php;
+fastcgi_cache WORDPRESS;
+fastcgi_cache_valid 200 301 404 @CACHEVALID;
+fastcgi_cache_bypass $skip_cache;
+fastcgi_no_cache $skip_cache;
+
+more_set_headers "X-Robots-Tag $robots";
+
+## coming soon after testing ##
+## strip any potential cache headers from WordPress plugins etc ##
+# more_clear_headers "Cache-Control";
+}
 
 ####################################################################################################
 #### Server Block (Staging): Rate Limit WP-Login.php ###############################################
