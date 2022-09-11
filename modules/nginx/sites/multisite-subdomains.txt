@@ -265,20 +265,6 @@ server {
         fastcgi_cache off;
     }
     
-    location ^~ /phpmyadmin {
-        ## limit access to one request per 30 second per IP address
-        limit_req zone=phpmyadmin burst=1 nodelay;
-        alias /var/www/meta/adminer.php;
-        ## PHP-FPM routing must be re-included here to ensure processing ##
-        include /etc/nginx/fastcgi.conf;
-        try_files $uri =404;
-        fastcgi_split_path_info ^(.+\.php)(/.+)$;
-        fastcgi_pass 127.0.0.1:9000;
-        fastcgi_read_timeout 300;
-        fastcgi_index index.php;
-        fastcgi_cache off;
-    }
-    
 ####################################################################################################
 #### Server Block (Multisite Subdomains): Staging/Dev Subdirectories ###############################
 ####################################################################################################
@@ -317,42 +303,40 @@ location ~* \.(css|eot|js|otf|svg|ttc|ttf|woff|woff2)$ {
 }
 
 ####################################################################################################
-#### Server Block (Production): Favicon Settings ###################################################
+#### Server Block (Multisite Subdomains): Favicon Files ############################################
 ####################################################################################################
 
 ## the favicon file is annoying and old-fashioned but still something we must optimize ##
 ## issuing a 204 error is better (and faster) than a 404 error if not found ##
 
-    location = /favicon.ico {
-        try_files $uri =204;
-    }
-    
+location = /favicon.ico {
+	try_files $uri =204;
+}
+
 ####################################################################################################
-#### Server Block (Production): Robots.txt Settings ################################################
+#### Server Block (Multisite Subdomains): Physical or Virtual Robots.txt ###########################
 ####################################################################################################
 
 ## messing up robots.txt rules is one of the most common issues with WordPress sites ##
-## if possible use a virtual one to avoid data loss and ridiculous rulesets ##
+## in most cases it should be near-empty (noindex meta tags usually better) ##
 
-    location = /robots.txt {
-        ## try files, then directories, otherwise query index ##
-        try_files $uri $uri/ /index.php?$args;
+location = /robots.txt {
+	try_files $uri $uri/ /index.php?$args;
 	allow all;
-    }
-    
+}
+
 ####################################################################################################
-#### Server Block (Production): Ads.txt Settings ###################################################
+#### Server Block (Multisite Subdomains): Physical or Virtual Ads.txt ##############################
 ####################################################################################################
 
-## just like robots.txt the ads.txt file can be generated within WordPress itself ##
-## if possible use a virtual one to avoid data loss and ridiculous rulesets ##
+## just like robots.txt the ads.txt file can be generated using WordPress plugins ##
+## virtual ones can be easier to manage/migrate but also more code bloat ##
 
-    location = /ads.txt {
-        ## try files, then directories, otherwise query index ##
-        try_files $uri $uri/ /index.php?$args;
+location = /ads.txt {
+	try_files $uri $uri/ /index.php?$args;
 	allow all;
-    }
-    
+}
+
 ####################################################################################################
 #### Server Block: Git Configuration Settings ######################################################
 ####################################################################################################
