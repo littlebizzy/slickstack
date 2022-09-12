@@ -104,39 +104,98 @@ if ($query_string ~ "^amp(.*)$") {
     # }
 
 ####################################################################################################
-#### Server Block: Indexing + Try Files Settings ###################################################
+#### Server Block (Multisite Subdomains): Root Location Block ######################################
 ####################################################################################################
-    
-    ## redirect index.php requests ##
-    if ($request_uri ~* "^(.*/)index\.php$") {
-        return 301 $1;
-    }
-    
-    ## force trailing slash on */wp-admin requests ##
-    rewrite /wp-admin$ $scheme://$host$uri/ permanent;
-    
-    ## try files order ##
-    location / {
-        ## first try files, then directories, otherwise query index
-        try_files $uri $uri/ /index.php?$args;
-	## force trailing slashes on urls (do not enable for bbPress/BuddyPress sites)
-        # rewrite ^([^.]*[^/])$ $1/ permanent;
-    }
-    
-    ## hidden files (block access) ##
-    location ~ /\. {
-        ## do not enable if using Certbot, Git, etc ##
-	# deny all;
-    }
-    
-    ## Certbot domain verification ##
-    location = /.well-known* {
-        # default_type "text/plain";
-        allow all;
-    }
+
+## below is the main location block that applies to pretty much the entire website ##
+## this includes site-wide rules for security, maintenance, and other purposes ##
+
+## force trailing slash on */wp-admin requests ##
+rewrite /wp-admin$ https://$host$uri/ permanent;
+		
+location / {
+
+## first try files, then directories, otherwise query index.php ##
+try_files $uri $uri/ /index.php?$args;
+	
+## THIS SNIPPET IS BREAKING TRACKING QUERIES SUCH AS /?ref=google&utm_source= ##
+## redirect index.php to root ##
+# if ($request_uri ~* "^(.*/)index\.php$") {
+#	return 301 $1;
+# }
+
+## 503 error if maintenance file found in web root ##
+if (-f /var/www/html/maintenance.html) {
+	return 503;
+}
+	
+## force trailing slashes on urls (do not enable for bbPress/BuddyPress sites) ##
+# rewrite ^([^.]*[^/])$ $1/ permanent;
+	
+## block user enumeration ##
+if ( $query_string ~ "author=([0-9]*)" ) { 
+	return 403;
+}
+
+}
 
 ####################################################################################################
-#### Server Block (Production): FastCGI Cache Settings #############################################
+#### Server Block (Multisite Subdomains): Noindex Thin Content (Regex) #############################
+####################################################################################################
+
+## these are very powerful rules that force-noindex thin content for huge SEO results ##
+## in this way your clients, plugins, or WP themes cannot mess up your indexing ##
+
+## pagination ##
+location ~ ^(.*)/page/(.*)/$ {
+	try_files $uri $uri/ /index.php?$args;
+	set $robots "noindex, nofollow, nosnippet, noarchive";
+}
+
+## tags ##
+location ~ ^(.*)/tag/(.*)/$ {
+	try_files $uri $uri/ /index.php?$args;
+	set $robots "noindex, nofollow, nosnippet, noarchive";
+}
+
+## rss feeds ##
+location ~ ^(.*)/feed/$ {
+	try_files $uri $uri/ /index.php?$args;
+	set $robots "noindex, nofollow, nosnippet, noarchive";
+}
+
+## date archives ##
+location ~ "^(.*)/[0-9]{4}/([0-9]{2}/)?([0-9]{2}/)?$" {
+	try_files $uri $uri/ /index.php?$args;
+	set $robots "noindex, nofollow, nosnippet, noarchive";
+}
+
+####################################################################################################
+#### Server Block (Multisite Subdomains): Noindex Certain File Types ###############################
+####################################################################################################
+
+## these powerful rules force-noindex non-WordPress file types for cleaner SEO results ##
+## in this way malware or spam attacks or forgotten files are hidden from SERPs ##
+
+## allowed: html, xml (also css, js, php, etc)
+## Ref: https://support.google.com/webmasters/answer/35287?hl=en
+
+location ~* \.(asp|aspx|doc|docx|dwf|gpx|htm|hwp|jsp|kml|kmz|log|odp|ods|odt|pdf|ppt|pptx|ps|rtf|tex|text|txt|wap|wml|xls|xlsx)$ {
+	set $robots "noindex, nofollow, nosnippet, noarchive";
+}
+
+####################################################################################################
+
+####################################################################################################
+
+## fixes potential 403 denied issues with WP-JSON ##
+location ~ ^/wp-json/ {
+	## if permalinks not enabled or not loaded properly in the browser ##
+	rewrite ^/wp-json/(.*?)$ /?rest_route=/$1 last;
+}
+
+####################################################################################################
+#### Server Block (Multisite Subdomains): FastCGI Cache Settings ###################################
 ####################################################################################################
 
 ## several common patterns are configured to skip FastCGI caching to avoid conflicts ##
