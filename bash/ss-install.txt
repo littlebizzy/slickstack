@@ -45,7 +45,7 @@
 ## this build version ensures compatibility with ss-config boilerplate (on localhost) ##
 ## it must match the active ss-config build otherwise installing will fail ##
 
-SS_INSTALL_BUILD="SEP2022C"
+SS_INSTALL_BUILD="SEP2022D"
 
 ####################################################################################################
 #### B. SS-Install: Validate SS-Functions ##########################################################
@@ -254,11 +254,16 @@ ss_echo ""
     
 ss_echo "${COLOR_WARN}Welcome to SlickStack! It appears your /var/www/ss-config file has not been ${COLOR_RESET}"
 ss_echo "${COLOR_WARN}setup yet and/or this is a new installation. Before proceeding, please ensure ${COLOR_RESET}"
-ss_echo "${COLOR_WARN}that your domain is active in Cloudflare already, and that staging/dev ${COLOR_RESET}"
-ss_echo "${COLOR_WARN}subdomains are pointing to your cloud server if you plan to enable those ${COLOR_RESET}"
-ss_echo "${COLOR_WARN}features. If you are not ready to install SlickStack on your production site ${COLOR_RESET}"
-ss_echo "${COLOR_WARN}yet, you can install on a temporary subdomain for testing, and change settings ${COLOR_RESET}"
-ss_echo "${COLOR_WARN}in your ss-config file later on (simply run ss-install again as needed). ${COLOR_RESET}"
+ss_echo "${COLOR_WARN}that your domain is active in Cloudflare, with proxying and Full SSL enabled, ${COLOR_RESET}"
+ss_echo "${COLOR_WARN}and that your A records for @ and www are pointing to IP address of this cloud ${COLOR_RESET}"
+ss_echo "${COLOR_WARN}server, along with staging/dev subdomains if you plan to use those features. ${COLOR_RESET}"
+ss_echo "${COLOR_WARN}If you are not ready to install SlickStack on your production site, you can ${COLOR_RESET}"
+ss_echo "${COLOR_WARN}install on a temporary subdomain for testing, and later change domain settings ${COLOR_RESET}"
+ss_echo "${COLOR_WARN}in your ss-config file (simply run ss-install again after changing it). ${COLOR_RESET}"
+ss_echo ""
+ss_echo "${COLOR_WARN}SlickStack installs both self-signed OpenSSL and Lets Encrypt certs, but uses ${COLOR_RESET}"
+ss_echo "${COLOR_WARN}the OpenSSL by default. If you are not using Cloudflare, be sure to change ${COLOR_RESET}"
+ss_echo "${COLOR_WARN}settings to the Lets Encrypt cert to avoid browser warnings. ${COLOR_RESET}"
 ss_echo ""
 ss_echo "${COLOR_WARN}Please use the below wizard to configure required options, or hit Ctrl+C to ${COLOR_RESET}"
   
@@ -426,14 +431,14 @@ ss_sed "s|@DB_PREFIX|${ss_var_db_prefix}|g" /tmp/ss-config-wizard
 ss_print "${COLOR_RESET}\n"
     
 ## PROMPT: choose site TLD (otherwise example.com) ##
-read -t 300 -p "$(echo -e ${LIGHTGRAY}"Choose site TLD (subdomains not allowed): "${LIGHTGREEN})" -e -i "${SS_TLD}" ss_var_site_tld || ss_var_site_tld=${SS_TLD}
+read -t 300 -p "$(echo -e ${LIGHTGRAY}"Choose site TLD (subdomains not allowed): "${LIGHTGREEN})" -e -i 'example.com' ss_var_site_tld || ss_var_site_tld=${SS_TLD}
 ss_sed "s|@SITE_TLD|${ss_var_site_tld}|g" /tmp/ss-config-wizard
     
 ## new line ##
 ss_print "${COLOR_RESET}\n"
     
 ## PROMPT: choose site domain (otherwise www.example.com) ##
-read -t 300 -p "$(echo -e ${LIGHTGRAY}"Choose site domain (subdirectories not allowed): "${LIGHTGREEN})" -e -i "www.${SS_TLD}" ss_var_site_domain || ss_var_site_tld=www.${SS_TLD}
+read -t 300 -p "$(echo -e ${LIGHTGRAY}"Choose site domain (subdirectories not allowed): "${LIGHTGREEN})" -e -i 'www.example.com' ss_var_site_domain || ss_var_site_tld=www.${SS_TLD}
 ss_sed "s|@SITE_DOMAIN|${ss_var_site_domain}|g" /tmp/ss-config-wizard
     
 ## new line ##
@@ -461,18 +466,18 @@ ss_sed "s|@WP_MULTISITE_SUBDOMAINS|${ss_var_wp_multisite_subdomains}|g" /tmp/ss-
 ss_print "${COLOR_RESET}\n"
     
 ## PROMPT: choose Cloudflare API key (otherwise 123456789) ##
-read -t 300 -p "$(echo -e ${LIGHTGRAY}"Choose Cloudflare API key (account profile): "${LIGHTGREEN})" -e -i '123456789' ss_var_cloudflare_api_key || ss_var_cloudflare_api_key=123456789
-ss_sed "s|@CLOUDFLARE_API_KEY|${ss_var_cloudflare_api_key}|g" /tmp/ss-config-wizard
+# read -t 300 -p "$(echo -e ${LIGHTGRAY}"Choose Cloudflare API key (account profile): "${LIGHTGREEN})" -e -i '123456789' ss_var_cloudflare_api_key || ss_var_cloudflare_api_key=123456789
+# ss_sed "s|@CLOUDFLARE_API_KEY|${ss_var_cloudflare_api_key}|g" /tmp/ss-config-wizard
     
 ## new line ##
-ss_print "${COLOR_RESET}\n"
+# ss_print "${COLOR_RESET}\n"
     
 ## PROMPT: choose Cloudflare API email (otherwise user@example.com) ##
-read -t 300 -p "$(echo -e ${LIGHTGRAY}"Choose Cloudflare API email (account profile): "${LIGHTGREEN})" -e -i 'user@example.com' ss_var_cloudflare_api_email || ss_var_cloudflare_api_email=user@example.com
-ss_sed "s|@CLOUDFLARE_API_EMAIL|${ss_var_cloudflare_api_email}|g" /tmp/ss-config-wizard
+# read -t 300 -p "$(echo -e ${LIGHTGRAY}"Choose Cloudflare API email (account profile): "${LIGHTGREEN})" -e -i 'user@example.com' ss_var_cloudflare_api_email || ss_var_cloudflare_api_email=user@example.com
+# ss_sed "s|@CLOUDFLARE_API_EMAIL|${ss_var_cloudflare_api_email}|g" /tmp/ss-config-wizard
     
 ## new line ##
-ss_print "${COLOR_RESET}\n"
+# ss_print "${COLOR_RESET}\n"
     
 ## PROMPT: enable staging site ##
 read -t 300 -p "$(echo -e ${LIGHTGRAY}"Enable staging site (subdomain): "${LIGHTGREEN})" -e -i 'false' ss_var_staging_site || ss_var_staging_site=false
