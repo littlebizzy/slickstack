@@ -1560,12 +1560,10 @@ fi
 #### J. SS-Functions: SlickStack Functions #########################################################
 ####################################################################################################
 
-## SNIPPET: ss-functions, ss-install
-
-## these functions are sourced into ss core cron jobs and bash scripts for consistency ##
+## these functions are sourced in SlickStack cron jobs and bash scripts for efficiency ##
 ## this also speeds up processing time by avoiding repeat inline bash commands ##
 
-## add-apt-repository alias flags ##
+## add-apt-repository ##
 function add-apt-repository {
     export DEBIAN_FRONTEND=noninteractive
     export DEBIAN_PRIORITY=critical
@@ -1573,7 +1571,7 @@ function add-apt-repository {
     command /usr/bin/add-apt-repository --yes "$@"
 }
 
-## apt alias flags ##
+## apt ##
 function apt {
     export DEBIAN_FRONTEND=noninteractive
     export DEBIAN_PRIORITY=critical
@@ -1611,6 +1609,7 @@ function ss_apt_install {
     apt install "$@" > /dev/null 2>&1
 }
 
+## ss_adduser ##
 function ss_adduser {
     adduser --disabled-password --quiet --shell /bin/bash --gecos "" "$@" 2> /dev/null
 }
@@ -1625,12 +1624,12 @@ function ss_certbot {
     command certbot certonly --noninteractive --agree-tos --register-unsafely-without-email --cert-name slickstack --webroot -w /var/www/html/ "$@"
 }
 
-## cp alias flags ##
+## cp ##
 function cp {
     command cp -R -f -d --no-preserve=mode,ownership "$@"
 }
 
-## ss_cp alias flags ##
+## ss_cp ##
 function ss_cp {
     command cp -R -f -d --no-preserve=mode,ownership "$@"
 }
@@ -1732,24 +1731,25 @@ function ss_grep_boolean {
     command grep --no-messages "$@"
 }
 
-## mkdir alias flags ##
+## mkdir ##
 function mkdir {
     command mkdir -p "$@"
 }
 
-## ss_mkdir alias flags ##
+## ss_mkdir ##
 function ss_mkdir {
     command mkdir -p "$@"
 }
 
-## mysql alias flags (8.0) ##
+## DELETE LATER ?? ##
+## mysql default ##
 function mysql {
     command mysql --user=root --host=localhost --protocol=socket --port=3306 --force "$@"
     # mysql --user=root --host="${DB_HOST}" --protocol=tcp --port=3306 --force "$@"
     # --max_allowed_packet=1GB ... add this after test
 }
 
-## mysql alias flags (8.0) ##
+## mysql (8.0) ##
 function ss_mysql_8.0 {
     command mysql --user=root --host=localhost --protocol=socket --port=3306 --force "$@"
     # command mysql --user=root --host="${DB_HOST}" --protocol=tcp --port=3306 --force "$@" ## if remote database
@@ -1782,13 +1782,7 @@ function ss_mysql_5.7_sudo {
     command mysql --user="$SUDO_USER" --host=localhost --protocol=socket --port=3306 --force "$@"
 }
 
-## mysqldump alias flags ##
-# function mysqldump {
-    # /usr/bin/mysqldump
-#     command mysqldump --user=$DB_USER --password=$DB_PASSWORD --host=$DB_HOST --protocol=tcp --port=3306 --no-tablespaces --single-transaction --skip-lock-tables --dump-date --force "$@"
-# }
-
-## mysqldump alias flags ##
+## mysqldump ##
 function mysqldump {
     # /usr/bin/mysqldump
     command mysqldump --user=$DB_USER --password=$DB_PASSWORD --host=$DB_HOST --protocol=tcp --port=3306 --no-tablespaces --single-transaction --skip-lock-tables --no-create-db --dump-date --force "$@"
@@ -1799,30 +1793,28 @@ function ss_mysqldump {
     command mysqldump --user=$DB_USER --password=$DB_PASSWORD --host=$DB_HOST --protocol=tcp --port=3306 --no-tablespaces --single-transaction --skip-lock-tables --no-create-db --dump-date --force "$@"
 }
 
-## rm alias flags ##
+## rm ##
 function rm {
     command rm -R -f "$@"
 }
 
-## ss_rm alias flags ##
+## ss_rm ##
 function ss_rm {
     command rm -R -f "$@"
 }
 
-
-
-## ss_rsync_backup alias flags ##
+## ss_rsync_backup ##
 function ss_rsync_backup {
     command rsync -acz --mkpath --rsh="sshpass -p ${RSYNC_PASSWORD} ssh -o StrictHostKeyChecking=no -l ${RSYNC_USER}" "$@"
     # command rsync -acze "ssh -o StrictHostKeyChecking=no" --mkpath --rsh='sshpass -p "${RSYNC_PASSWORD}" -e ssh -l test' "$@"
 }
 
-## unzip alias flags ##
+## unzip ##
 function unzip {
     command unzip -q -o "$@"
 }
 
-## ss_tar alias flags ##
+## ss_tar ##
 function ss_tar {
     command tar -zcf "$@"
 }
@@ -1842,10 +1834,8 @@ function ss_wget_slowest {
 #### K. SS-Functions: Shell Styling ################################################################
 ####################################################################################################
 
-## SNIPPET: ss-functions, ss-install
-
-## these color variables help maintain cleaner and prettier Bash scripts in SlickStack ##
-## we substitute e.g. ${PINK} within any echo line then use ${RESET} to revert ##
+## these styling variables enable cleaner and more aesthetic shell scripting feedback ##
+## we use e.g. ${COLOR_INFO} within any echo then use ${COLOR_RESET} to revert ##
 
 ## pretty colors old ##
 DARKRED='\033[0;31m'
@@ -1863,7 +1853,6 @@ LIGHTGRAY='\033[0;37m'
 
 ## new ##
 GREEN='\033[1;32m'
-NOCOLOR='\033[0m'
 ORANGE='\033[0;33m'
 PINK='\033[1;35m'
 PURPLE='\033[0;35m'
@@ -1884,8 +1873,8 @@ PURPLE_LIGHT='\033[1;35m'
 GRAY_DARK='\033[1;30m'
 GRAY_LIGHT='\033[0;37m'
 
-# even newest ##
-COLOR_RESET='\033[0m' ## light gray (default)
+## even newest ##
+COLOR_RESET='\033[0m' ## default (light grey)
 COLOR_INFO='\033[0;35m' ## dark purple
 COLOR_WARN='\033[0;33m' ## orange
 COLOR_ERROR='\033[1;31m' ## light red
