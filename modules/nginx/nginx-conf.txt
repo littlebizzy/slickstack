@@ -22,6 +22,9 @@
 
 ## A. General Settings
 ## B. Event Handling Settings
+## C.
+## D. FastCGI Cache Settings
+## E. Open File Cache Settings
 
 ####################################################################################################
 #### A. Nginx.conf: General Settings ###############################################################
@@ -54,7 +57,7 @@ use epoll;
 }
 
 ####################################################################################################
-#### Nginx.conf: Miscellaneous Settings ############################################################
+#### C. Nginx.conf: Miscellaneous Settings ############################################################
 ####################################################################################################
 
 http {
@@ -62,13 +65,14 @@ http {
 sendfile on;
 tcp_nopush on;
 tcp_nodelay on;
+# port_in_redirect off;
 server_name_in_redirect off;
 server_names_hash_bucket_size @NGINX_SERVER_NAMES_HASH_BUCKET_SIZE;
 server_names_hash_max_size @NGINX_SERVER_NAMES_MAX_HASH_SIZE;
 types_hash_max_size @NGINX_TYPES_MAX_HASH_SIZE;
 
 ####################################################################################################
-#### Nginx.conf: FastCGI Cache Settings ############################################################
+#### D. Nginx.conf: FastCGI Cache Settings #########################################################
 ####################################################################################################
     
 ## FastCGI Cache is arguably the most powerful Nginx feature for scaling high-traffic sites ##
@@ -93,7 +97,7 @@ fastcgi_buffering on;
 # fastcgi_temp_file_write_size @FCGI_TEMP_FILE_WRITE_SIZE;
     
 ####################################################################################################
-#### Nginx.conf: Open File Cache Settings ##########################################################
+#### E. Nginx.conf: Open File Cache Settings #######################################################
 ####################################################################################################
 
 ## Open File Cache is one of the most effective (and underrated) features to scale Nginx ##
@@ -194,7 +198,7 @@ default_type application/octet-stream;
 ## to improve scalability access_log is hardcode disabled to reduce CPU and disk usage ##
 ## error_log is hardcoded in conjunction with SlickStack error handling settings ##
 
-access_log @NGINX_ACCESS_LOG;
+access_log /var/www/logs/nginx-access.log;
 error_log /var/www/logs/nginx-error.log crit;
 log_not_found off;
 
@@ -205,31 +209,31 @@ log_not_found off;
 ## Gzip is powerful but is known to have diminishing returns when setup too aggressively ##
 ## keep in mind that CloudFlare will overwrite gzip_vary and Brotli compression ##
 
-    gzip on;
-    gzip_vary off; ## CloudFlare converts if browser requests it (rare)
-    gzip_proxied any;
-    gzip_comp_level 4;
-    gzip_min_length 1024;
-    gzip_buffers 4 32k; ## better than 8 16k
-    gzip_http_version 1.1;
-    gzip_types
-        application/atom+xml
-        application/javascript
-        application/json
-        application/rss+xml
-        application/vnd.ms-fontobject
-        application/x-font-ttf
-        application/x-web-app-manifest+json
-        application/xhtml+xml
-        application/xml
-        font/opentype
-        image/svg+xml
-        image/x-icon
-        text/css
-        text/plain
-        text/x-component
-        text/xml
-        text/javascript;
+gzip on;
+gzip_vary off; ## CloudFlare converts if browser requests it (rare)
+gzip_proxied any;
+gzip_comp_level 4;
+gzip_min_length 1024;
+gzip_buffers 4 32k; ## better than 8 16k
+gzip_http_version 1.1;
+gzip_types
+    application/atom+xml
+    application/javascript
+    application/json
+    application/rss+xml
+    application/vnd.ms-fontobject
+    application/x-font-ttf
+    application/x-web-app-manifest+json
+    application/xhtml+xml
+    application/xml
+    font/opentype
+    image/svg+xml
+    image/x-icon
+    text/css
+    text/plain
+    text/x-component
+    text/xml
+    text/javascript;
     
 ####################################################################################################
 #### Nginx.conf: Rate-Limiting Settings ############################################################
@@ -238,19 +242,19 @@ log_not_found off;
 ## basic rate limiting helps protect the server from small DDOS or brute force attacks ##
 ## it is useful for common targets but an external WAF firewall is recommended ##
     
-    limit_req_zone $binary_remote_addr zone=wplogin:10m rate=1r/s;
-    limit_req_zone $binary_remote_addr zone=adminer:10m rate=100r/s;
-    limit_req_zone $binary_remote_addr zone=phpmyadmin:10m rate=100r/s;
-    limit_req_status 444;
+limit_req_zone $binary_remote_addr zone=wplogin:10m rate=1r/s;
+limit_req_zone $binary_remote_addr zone=adminer:10m rate=100r/s;
+limit_req_zone $binary_remote_addr zone=phpmyadmin:10m rate=100r/s;
+limit_req_status 444;
     
 ####################################################################################################
-#### Nginx.conf: Indexing + Public Directory Settings ##############################################
+#### Nginx.conf: Indexing Settings #################################################################
 ####################################################################################################
 
 ## for security and stability reasons we disable autoindexing and default to PHP indexes ##
 
-    autoindex off;
-    index index.php index.html;
+autoindex off;
+index index.php index.html;
 
 ####################################################################################################
 #### Nginx.conf: Include Nginx Sub-Config Files + Server Blocks ####################################
@@ -259,12 +263,12 @@ log_not_found off;
 ## here we include the conditional sub-config files and server blocks for SlickStack ##
 ## these lines absolutely must appear at the very end of this nginx.conf file ##
     
-    ## include sub-config ##
-    include /etc/nginx/conf.d/*.conf;
-    
-    ## include blocks ##
-    include /var/www/sites/*;
-    
+## include sub-config ##
+include /etc/nginx/conf.d/*.conf;
+
+## include blocks ##
+include /var/www/sites/*;
+
 }
 
 ####################################################################################################
@@ -385,5 +389,6 @@ log_not_found off;
 ## Ref: https://www.velumi.com/guides/how-to-setup-nginx-fastcgi-cache-with-wordpress/
 ## Ref: https://serverfault.com/questions/686982/fastcgi-cache-is-always-a-miss
 ## Ref: https://serverfault.com/questions/741740/nginx-fast-cgi-dont-cache-static-file
+## Ref: https://kagg.eu/en/10000-clients-second-wordpress/
 
 ## SS_EOF
