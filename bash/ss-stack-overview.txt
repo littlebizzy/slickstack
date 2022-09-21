@@ -72,6 +72,14 @@ if [[ -f "${PATH_OPENSSL_CERTIFICATE}" ]]; then
     OPENSSL_STATUS="MISSING"
 fi
 
+## validate crontab ##
+VALIDATE_CRONTAB=$(ss_grep_boolean 'SS_EOF' /var/spool/cron/crontabs/root)
+if [[ -n "${VALIDATE_CRONTAB}" ]]; then
+    CRONTAB_STATUS="OK"
+else
+    CRONTAB_STATUS="MISSING"
+fi
+
 ## add more checks like block files exist, which ssl is active etc
 
 #############
@@ -136,7 +144,7 @@ ss_echo "${COLOR_INFO}Rsync server: ${LIGHTGREEN}${RSYNC_REMOTE_HOST} ${COLOR_RE
 ss_echo "${COLOR_INFO}Rsync user: ${LIGHTGREEN}${RSYNC_USER} ${COLOR_RESET}"
 ss_echo "${COLOR_INFO}Rsync password: ${LIGHTGREEN}${RSYNC_PASSWORD} ${COLOR_RESET}"
 ss_echo "${COLOR_INFO}Swapfile: ${LIGHTGREEN} ${COLOR_RESET}"
-ss_echo "${COLOR_INFO}Crontab: ${LIGHTGREEN} ${COLOR_RESET}"
+ss_echo "${COLOR_INFO}Crontab: ${LIGHTGREEN}${CRONTAB_STATUS} ${COLOR_RESET}"
 ss_echo "${COLOR_INFO}OpenSSL status: ${LIGHTGREEN}${OPENSSL_STATUS} ${COLOR_RESET}"
 ss_echo "${COLOR_INFO}Lets Encrypt status: ${LIGHTGREEN}${LETSENCRYPT_STATUS} ${COLOR_RESET}"
 ss_echo ""
