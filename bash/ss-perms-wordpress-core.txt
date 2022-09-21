@@ -60,18 +60,16 @@ ss_echo "${COLOR_INFO}Running ss-perms-wordpress-core... ${COLOR_RESET}"
 ## keep in mind that non-WordPress Core files are not affected by this snippet ##
 
 ## all environments ##
-chown -R "${SFTP_USER}":slickstack /var/www/html
-chmod 0775 /var/www/html ## 0775 (0755 not enough)
-find /var/www/html/ -type d -exec chmod 0775 {} \; ## 0775 (0755 not enough)
-find /var/www/html/ -type f -exec chmod 0664 {} \; ## 0664 (0644 not enough)
+ss_chown "${SFTP_USER}":slickstack /var/www/html
+chmod 0775 /var/www/html ## must be 0775 (0755 not enough)
+find /var/www/html/ -type d -exec chmod 0775 {} \; ## must be 0775 (0755 not enough)
+find /var/www/html/ -type f -exec chmod 0664 {} \; ## must be 0664 (0644 not enough)
 
 ## production ##
 ss_mkdir /var/www/html/wp-content
 ss_mkdir /var/www/html/wp-content/temp
-ss_mkdir /var/www/html/wp-content/uploads
 ss_mkdir /var/www/html/wp-content/upgrade
-ss_mkdir /var/www/html/wp-content/languages
-ss_mkdir /var/www/html/wp-content/mu-plugins
+ss_mkdir /var/www/html/wp-content/uploads
 
 ## staging ##
 if [[ "${STAGING_SITE}" != "false" ]]; then 
@@ -86,16 +84,16 @@ if [[ "${STAGING_SITE}" != "false" ]]; then
     fi
 fi
 
-## dev ##
+## development ##
 if [[ "${DEV_SITE}" != "false" ]]; then 
     ss_mkdir /var/www/html/dev
     ss_mkdir /var/www/html/dev/wp-content/temp
-    ss_mkdir /var/www/html/dev/wp-content/uploads
     ss_mkdir /var/www/html/dev/wp-content/upgrade
+    ss_mkdir /var/www/html/dev/wp-content/uploads
 fi
 
 ####################################################################################################
-#### SS-Perms-WordPress-Config: Reset Permissions (WordPress Config) ##################################
+#### SS-Perms-WordPress-Core: Reset Permissions (WordPress Config) #################################
 ####################################################################################################
 
 ## run ss-perms-wordpress-config ##
