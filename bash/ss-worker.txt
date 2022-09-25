@@ -92,7 +92,7 @@ ss_cp "${PATH_SS_CONFIG}" /var/www/backups/config/ss-config.bak.${SYSTEM_CURRENT
 ## thus ss-check avoids installing itself and no single point of failure (SPOF) ##
 
 ## retrieve current ss-check ##
-ss_wget_slowest "${TMP_SS_CHECK}" "${MIRROR_SS_CHECK}"
+ss_wget "${TMP_SS_CHECK}" "${MIRROR_SS_CHECK}"
 
 ## install ss-check ##
 ss_mv "${TMP_SS_CHECK}" "${PATH_SS_CHECK}"
@@ -107,7 +107,7 @@ ss_mv "${TMP_SS_CHECK}" "${PATH_SS_CHECK}"
 ## retrieve pilot file if exists ##
 if [[ -n "${SS_PILOT_FILE}" ]]; then 
 
-    ss_wget_slowest "${TMP_SS_PILOT_FILE}" "${SS_PILOT_FILE}"
+    ss_wget "${TMP_SS_PILOT_FILE}" "${SS_PILOT_FILE}"
 
     ## read variables from pilot file ##
     PILOT_CLOUDFLARE_API_KEY=$(source /tmp/ss-pilot; echo "${CLOUDFLARE_API_KEY}")
@@ -193,7 +193,7 @@ fi
 ## SNIPPET: ss-install-wordpress-config, ss-worker
 
 ## retrieve current boilerplate ##
-ss_wget_slowest "${TMP_SS_CONSTANTS_PHP}" "${MIRROR_SS_CONSTANTS_PHP}"
+ss_wget "${TMP_SS_CONSTANTS_PHP}" "${MIRROR_SS_CONSTANTS_PHP}"
 
 ## set SlickStack dashboard ##
 if [[ -z "${SS_WORDPRESS_ADMIN_DASHBOARD}" ]]; then 
@@ -421,9 +421,9 @@ chmod 0700 /var/www/ss* ## 0700 means only root can execute
 
 ## download latest blacklist (or custom blacklist) ##
 if [[ -z "${WP_PLUGIN_BLACKLIST_SOURCE}" ]]; then 
-    ss_wget_slowest "${TMP_BLACKLIST_TXT}" "${MIRROR_BLACKLIST_TXT}"
+    ss_wget "${TMP_BLACKLIST_TXT}" "${MIRROR_BLACKLIST_TXT}"
 else
-    ss_wget_slowest "${TMP_BLACKLIST_TXT}" "${WP_PLUGIN_BLACKLIST_SOURCE}"
+    ss_wget "${TMP_BLACKLIST_TXT}" "${WP_PLUGIN_BLACKLIST_SOURCE}"
 fi
 
 ## copy file to wp-content directory ##
@@ -455,7 +455,7 @@ fi
 ## by default we allow all URLs to be crawled and block archive.org crawling ##
 
 if [[ ! -f "${PATH_ROBOTS_TXT}" ]]; then 
-    ss_wget_slowest "${TMP_ROBOTS_TXT}" "${MIRROR_ROBOTS_TXT}"
+    ss_wget "${TMP_ROBOTS_TXT}" "${MIRROR_ROBOTS_TXT}"
     ss_cp "${TMP_ROBOTS_TXT}" "${PATH_ROBOTS_TXT}"
     chown www-data:www-data "${PATH_ROBOTS_TXT}"
     chmod 0644 "${PATH_ROBOTS_TXT}"
@@ -503,7 +503,7 @@ fi
 ## to avoid potential lockouts we will not force-enable UFW until possibly later ##
 
 if [[ ! -f "/var/www/html/wp-content/mu-plugins/ss-icon.svg" ]]; then 
-    ss_wget_slowest "${TMP_SS_ICON_SVG}" "${MIRROR_SS_ICON_SVG}"
+    ss_wget "${TMP_SS_ICON_SVG}" "${MIRROR_SS_ICON_SVG}"
     ss_mv "${TMP_SS_ICON_SVG}" "${PATH_SS_ICON_SVG}"
 fi
 
