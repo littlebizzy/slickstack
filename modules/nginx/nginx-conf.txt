@@ -25,6 +25,9 @@
 ## C.
 ## D. FastCGI Cache Settings
 ## E. Open File Cache Settings
+## F. Buffer Settings
+## G. Timeout/Keepalive Settings
+## H. HTTP Header Settings
 
 ####################################################################################################
 #### A. Nginx.conf: General Settings ###############################################################
@@ -110,7 +113,7 @@ open_file_cache_min_uses @OPEN_FILE_CACHE_MIN_USES;
 open_file_cache_errors @OPEN_FILE_CACHE_ERRORS;
 	
 ####################################################################################################
-#### Nginx.conf: Buffer Settings ###################################################################
+#### F. Nginx.conf: Buffer Settings ################################################################
 ####################################################################################################
 
 client_max_body_size @NGINX_CLIENT_MAX_BODY_SIZE;
@@ -119,7 +122,7 @@ client_header_buffer_size @NGINX_CLIENT_HEADER_BUFFER_SIZE;
 large_client_header_buffers @NGINX_LARGE_CLIENT_HEADER_BUFFERS;
 
 ####################################################################################################
-#### Nginx.conf: Various Timeout + Keepalive Settings ##############################################
+#### G. Nginx.conf: Timeout/Keepalive Settings #####################################################
 ####################################################################################################
 
 ## when scaling high traffic websites it is important to keep timeouts relatively short ##
@@ -133,7 +136,7 @@ send_timeout @NGINX_SEND_TIMEOUT;
 reset_timedout_connection on;
 	
 ####################################################################################################
-#### Nginx.conf: HTTP Header Settings ##############################################################
+#### H. Nginx.conf: HTTP Header Settings ###########################################################
 ####################################################################################################
 
 ## several HTTP security headers are well-known best practices and are thus hardcoded ##
@@ -151,11 +154,11 @@ add_header Referrer-Policy "strict-origin-when-cross-origin";
 add_header Permissions-Policy "camera=(), encrypted-media=(), geolocation=(), microphone=(), midi=()";
 add_header Set-Cookie "Path=/; HttpOnly; Secure";
 
-## cache-control ##
-add_header Cache-Control "$cachecontrol";
-
 ## noindex ##
 #@NOINDEX# add_header X-Robots-Tag "noindex, nofollow, nosnippet, noarchive";
+
+## cache-control ##
+add_header Cache-Control "$cachecontrol";
 
 ## fastcgi cache ##
 add_header X-FastCGI-Cache $upstream_cache_status;
@@ -253,6 +256,7 @@ limit_req_status 444;
 ####################################################################################################
 
 ## for security and stability reasons we disable autoindexing and default to PHP indexes ##
+## this allows HTML pages to load properly but prioritizes PHP over HTML loading ##
 
 autoindex off;
 index index.php index.html;
@@ -392,5 +396,6 @@ include /var/www/sites/*;
 ## Ref: https://serverfault.com/questions/741740/nginx-fast-cgi-dont-cache-static-file
 ## Ref: https://kagg.eu/en/10000-clients-second-wordpress/
 ## Ref: http://kbeezie.com/nginx/
+## Ref: https://www.claudiokuenzler.com/blog/1177/nginx-add-header-not-working-headers-not-showing-response-always
 
 ## SS_EOF
