@@ -244,6 +244,19 @@ location ^~ /adminer {
 }
 
 ####################################################################################################
+#### Server Block (Staging): HTML Files ############################################################
+####################################################################################################
+
+## because some websites mix WordPress with other static .html files we include this ##
+## in case .html files are missing they will be redirected to WordPress here ##
+
+location ~* \.(html)$ {
+	try_files $uri $uri/ /index.php?$args;
+	set $cachecontrol "public, max-age=691200"; ## 1 week
+	set $setcookie "";
+}
+
+####################################################################################################
 #### Server Block (Staging): Static Files ##########################################################
 ####################################################################################################
 
@@ -251,7 +264,8 @@ location ^~ /adminer {
 ## keep in mind that Cloudflare or CDNs will likely overwrite these settings ##
 
 location ~* \.(atom|bmp|bz2|css|doc|docx|eot|gif|gz|ico|jpeg|jpg|js|mid|midi|mp4|ogg|ogv|otf|png|ppt|rar|rss|rtf|svg|svgz|tar|tgz|ttc|ttf|wav|webp|woff|woff2|xls|zip)$ {
-	add_header Cache-Control "public, max-age=691200";
+	set $cachecontrol "public, max-age=2628000"; ## 1 month
+	set $setcookie "";
 }
 
 ####################################################################################################
@@ -301,84 +315,98 @@ location = /ads.txt {
 }
 
 ####################################################################################################
-#### Server Block: Custom Functions (MU Plugin) Settings ###########################################
-####################################################################################################
-    
-    location = /wp-content/functions.php {
-	deny all;
-    }
-    
-####################################################################################################
-#### Server Block: Plugin Blacklist (MU Plugin) Settings ###########################################
-####################################################################################################
-    
-    location = /wp-content/blacklist.txt {
-	deny all;
-    }
-    
-####################################################################################################
-#### Server Block: Git Configuration Settings ######################################################
+#### Server Block (Staging): Git Configuration #####################################################
 ####################################################################################################
 
-    location = /.git/config {
-        deny all;
-    }
-    
+location = /.git/config {
+    deny all;
+}
+
 ####################################################################################################
-#### Server Block: Deny Access To Various (Unsafe + Unused) WordPress Core Files ###################
+#### Server Block (Staging): Deny Access To Certain WordPress Files ################################
 ####################################################################################################
 
-    ## WP directories ##
-    location ~* /(?:wp-includes|wp-content|mu-plugins|uploads)/.*\.php$ {
-        deny all;
-    }
-    
-    ## WP meta files ##
-    location ~* (license|licence|readme)\.(htm|html|txt) {
+## block install script ##
+location = /wp-admin/install.php {
 	deny all;
-    }
+}
+	
+## wordpress directories ##
+location ~* /(?:wp-includes|wp-content|mu-plugins|uploads)/.*\.php$ {
+    deny all;
+}
     
-    ## wp-config ##
-    location = /wp-config*.php {
+## WP meta files ##
+location ~* (license|licence|readme)\.(htm|html|txt) {
 	deny all;
-    }
-    
-    ## XML-RPC ##
-    location = /xmlrpc.php {
+}
+
+## wp-admin concatenation ##
+location = /wp-admin/load-scripts.php {
+    deny all;
+}
+
+## wp-admin concatenation ##
+location = /wp-admin/load-styles.php {
+    deny all;
+}
+
+## wp-config ##
+location ~ /wp-config*.php {
 	deny all;
-    }
-    
-    ## wp-mail ##
-    location = /wp-mail.php {
+}
+
+## XML-RPC ##
+location = /xmlrpc.php {
 	deny all;
-    }
-    
-    ## wp-links-opml ##
-    location = /wp-links-opml.php {
+}
+
+## wp-mail ##
+location = /wp-mail.php {
 	deny all;
-    }
-    
-    ## wp-trackback ##
-    location = /wp-trackback.php {
+}
+
+## wp-links-opml ##
+location = /wp-links-opml.php {
 	deny all;
-    }
-    
-    ## WP debug logs ##
-    location ~ /wp-content/debug\.log {
+}
+
+## wp-trackback ##
+location = /wp-trackback.php {
 	deny all;
-    }
-    
+}
+
+## WP debug logs ##
+location ~ /wp-content/debug\.log {
+	deny all;
+}
+
 ####################################################################################################
-#### Server Block (Staging): Deny Access To WordPress Installer ####################################
+#### Server Block (Staging): Deny Access To Certain SlickStack Files ###############################
 ####################################################################################################
-    
-## SlickStack blocks access to the staging WordPress installer to avoid hacking etc ##
-## staging sites should populate their data using ss-sync-staging only ##
-    
-    ## block install script ##
-    location = /wp-admin/install.php {
+
+## here we deny frontend access to certain sensitive files that are part of SlickStack ##
+## this provides extra security and prevents snooping into your configuration ##
+
+## object-cache.php ##
+location = /wp-content/object-cache.php {
 	deny all;
-    }
+}
+    
+## blacklist.txt ##
+location = /wp-content/blacklist.txt {
+	deny all;
+}
+
+## functions.php ##
+location = /wp-content/functions.php {
+	deny all;
+}
+
+## xxx-common.php ##
+location = /wp-content/mu-plugins/xxx-common.php {
+	deny all;
+}
 
 ####################################################################################################
 #### Server Block: Custom Settings For Popular Third-Party WordPress Plugins #######################
