@@ -135,7 +135,7 @@ fi
 ## REDUCE THIS to be like 500mb or something
 ## verify at least 5GB free disk space remains ##
 # if [[ "${SYSTEM_DISK_FREE}" -lt 5242880 ]]; then ## 10G = 10485760 / 5GB = 5242880
-#    echo -e "${COLOR_WARN}Exiting ss-install: It looks like your server has less than 5GB free space available, please upgrade your server and then run ss-install again. ${NOCOLOR}"
+#    ss_echo "${COLOR_WARN}Exiting ss-install: It looks like your server has less than 5GB free space available, please upgrade your server and then run ss-install again. ${NOCOLOR}"
 #    exit 1
 # fi
 
@@ -175,19 +175,19 @@ fi
 ## here we retrieve the ss-config boilerplate from our public mirrors to begin wizard ##
 ## in case the first mirror fails to validate our backup mirrors will be tried ##
 
-ss_rm /tmp/ss-config-wizard
+ss_rm "${TMP_SS_CONFIG_WIZARD}"
 
 ## retrieve ss-config boilerplate ##
-ss_wget /tmp/ss-config-wizard "${MIRROR_SS_CONFIG_SAMPLE}"
+ss_wget "${TMP_SS_CONFIG_WIZARD}" "${MIRROR_SS_CONFIG_SAMPLE}"
 
 VALIDATE_TMP_SS_CONFIG=$(grep 'SS_EOF' /tmp/ss-config-wizard 2> /dev/null)
 
 if [[ -z "${VALIDATE_TMP_SS_CONFIG}" ]]; then
-    ss_wget /tmp/ss-config-wizard "${MIRROR2_SS_CONFIG_SAMPLE}"
+    ss_wget "${TMP_SS_CONFIG_WIZARD}" "${MIRROR2_SS_CONFIG_SAMPLE}"
 fi
 
 if [[ -z "${VALIDATE_TMP_SS_CONFIG}" ]]; then
-    ss_wget /tmp/ss-config-wizard "${MIRROR3_SS_CONFIG_SAMPLE}"
+    ss_wget "${TMP_SS_CONFIG_WIZARD}" "${MIRROR3_SS_CONFIG_SAMPLE}"
 fi
 
 ####################################################################################################
@@ -225,7 +225,7 @@ EIGHT_LINE_TRIM=${EIGHT_LINE::120}
 NINE_LINE="${COLOR_INFO}#### ${LIGHTGRAY}IP Address (IPv6): ${LIGHTGREEN}${SYSTEM_IPV6_ADDRESS} ${COLOR_INFO}${FILLER}${NOCOLOR}"
 NINE_LINE_TRIM=${NINE_LINE::120}
 
-echo -e "${COLOR_INFO}"
+ss_echo "${COLOR_INFO}"
 cat << "EOF"
          ___      __        __             __  
    _____/ (_)____/ /_______/ /_____ ______/ /__
@@ -288,7 +288,7 @@ ss_sed "s/@ROOT_PASSWORD/$(openssl rand -hex 12)/g" /tmp/ss-config-wizard
 ss_sed "s/@DB_PASSWORD_ROOT/$(openssl rand -hex 12)/g" /tmp/ss-config-wizard
     
 ## PROMPT: choose sudo username (default = batman) ##
-read -t 300 -p "$(echo -e ${LIGHTGRAY}"Choose sudo username (for SSH):" ${LIGHTGREEN})" -e -i 'batman' ss_var_sudo_user || ss_var_sudo_user=batman
+read -t 300 -p "$(ss_echo ${LIGHTGRAY}"Choose sudo username (for SSH):" ${LIGHTGREEN})" -e -i 'batman' ss_var_sudo_user || ss_var_sudo_user=batman
 ss_sed "s|@SUDO_USER|${ss_var_sudo_user}|g" /tmp/ss-config-wizard
     
 ## new line ##
@@ -296,35 +296,35 @@ ss_print "${COLOR_RESET}\n"
     
 ## PROMPT: choose sudo password (default = random) ##
 sudopass_random=$(openssl rand -hex 12)
-read -t 300 -p "$(echo -e ${LIGHTGRAY}"Choose sudo password (should be strong): "${LIGHTGREEN})" -e -i ${sudopass_random} ss_var_sudo_password || ss_var_sudo_password=${sudopass_random}
+read -t 300 -p "$(ss_echo ${LIGHTGRAY}"Choose sudo password (should be strong): "${LIGHTGREEN})" -e -i ${sudopass_random} ss_var_sudo_password || ss_var_sudo_password=${sudopass_random}
 ss_sed "s|@SUDO_PASSWORD|${ss_var_sudo_password}|g" /tmp/ss-config-wizard
     
 ## new line ##
 ss_print "${COLOR_RESET}\n"
     
 ## PROMPT: enable SSH keys (default = false) ##
-read -t 300 -p "$(echo -e ${LIGHTGRAY}"Enable SSH keys (advanced users only): "${LIGHTGREEN})" -e -i 'false' ss_var_ssh_keys || ss_var_ssh_keys=false
+read -t 300 -p "$(ss_echo ${LIGHTGRAY}"Enable SSH keys (advanced users only): "${LIGHTGREEN})" -e -i 'false' ss_var_ssh_keys || ss_var_ssh_keys=false
 ss_sed "s|@SSH_KEYS|${ss_var_ssh_keys}|g" /tmp/ss-config-wizard
     
 ## new line ##
 ss_print "${COLOR_RESET}\n"
     
 ## PROMPT: restrict SSH logins to specific IP address ##
-read -t 300 -p "$(echo -e ${LIGHTGRAY}"Restrict SSH access to specific IP address?: "${LIGHTGREEN})" -e -i 'false' ss_restrict_ssh_ip || ss_restrict_ssh_ip=false
+read -t 300 -p "$(ss_echo ${LIGHTGRAY}"Restrict SSH access to specific IP address?: "${LIGHTGREEN})" -e -i 'false' ss_restrict_ssh_ip || ss_restrict_ssh_ip=false
 ss_sed "s|@SSH_RESTRICT_IP|${ss_restrict_ssh_ip}|g" /tmp/ss-config-wizard
     
 ## new line ##
 ss_print "${COLOR_RESET}\n"
     
 ## PROMPT: specify the IP address for SSH login ##
-read -t 300 -p "$(echo -e ${LIGHTGRAY}"Which IP address for SSH logins (ignore if disabled above)?: "${LIGHTGREEN})" -e -i '192.0.2.1' ss_ipv4_ssh_allow || ss_ipv4_ssh_allow=192.0.2.1
+read -t 300 -p "$(ss_echo ${LIGHTGRAY}"Which IP address for SSH logins (ignore if disabled above)?: "${LIGHTGREEN})" -e -i '192.0.2.1' ss_ipv4_ssh_allow || ss_ipv4_ssh_allow=192.0.2.1
 ss_sed "s|@SSH_IPV4|${ss_ipv4_ssh_allow}|g" /tmp/ss-config-wizard
     
 ## new line ##
 ss_print "${COLOR_RESET}\n"
     
 ## PROMPT: choose SFTP username (default = robin) ##
-read -t 300 -p "$(echo -e ${LIGHTGRAY}"Choose SFTP username (limited access): "${LIGHTGREEN})" -e -i 'robin' ss_var_sftp_user || ss_var_sftp_user=robin
+read -t 300 -p "$(ss_echo ${LIGHTGRAY}"Choose SFTP username (limited access): "${LIGHTGREEN})" -e -i 'robin' ss_var_sftp_user || ss_var_sftp_user=robin
 ss_sed "s|@SFTP_USER|${ss_var_sftp_user}|g" /tmp/ss-config-wizard
     
 ## new line ##
@@ -332,70 +332,70 @@ ss_print "${COLOR_RESET}\n"
     
 ## PROMPT: choose SFTP password (default = random) ##
 sftp_pass_random=$(openssl rand -hex 12)
-read -t 300 -p "$(echo -e ${LIGHTGRAY}"Choose SFTP password (should be strong): "${LIGHTGREEN})" -e -i ${sftp_pass_random} ss_var_sftp_password || ss_var_sftp_password=${sftp_pass_random}
+read -t 300 -p "$(ss_echo ${LIGHTGRAY}"Choose SFTP password (should be strong): "${LIGHTGREEN})" -e -i ${sftp_pass_random} ss_var_sftp_password || ss_var_sftp_password=${sftp_pass_random}
 ss_sed "s|@SFTP_PASSWORD|${ss_var_sftp_password}|g" /tmp/ss-config-wizard
     
 ## new line ##
 ss_print "${COLOR_RESET}\n"
     
 ## PROMPT: choose app (default = wordpress) ##
-read -t 300 -p "$(echo -e ${LIGHTGRAY}"Choose app (only wordpress supported currently): "${LIGHTGREEN})" -e -i 'wordpress' ss_var_app_name || ss_var_app_name=wordpress
+read -t 300 -p "$(ss_echo ${LIGHTGRAY}"Choose app (only wordpress supported currently): "${LIGHTGREEN})" -e -i 'wordpress' ss_var_app_name || ss_var_app_name=wordpress
 ss_sed "s|@SS_APP|${ss_var_app_name}|g" /tmp/ss-config-wizard
     
 ## new line ##
 ss_print "${COLOR_RESET}\n"
     
 ## PROMPT: choose default wp theme ##
-read -t 300 -p "$(echo -e ${LIGHTGRAY}"Choose default WordPress theme: "${LIGHTGREEN})" -e -i 'twentytwenty' ss_var_default_wp_theme || ss_var_default_wp_theme=twentytwenty
+read -t 300 -p "$(ss_echo ${LIGHTGRAY}"Choose default WordPress theme: "${LIGHTGREEN})" -e -i 'twentytwenty' ss_var_default_wp_theme || ss_var_default_wp_theme=twentytwenty
 ss_sed "s|@WP_DEFAULT_THEME|${ss_var_default_wp_theme}|g" /tmp/ss-config-wizard
     
 ## new line ##
 ss_print "${COLOR_RESET}\n"
     
 ## PROMPT: choose language (default = en_US) ##
-read -t 300 -p "$(echo -e ${LIGHTGRAY}"Choose language (only affects minor features): "${LIGHTGREEN})" -e -i 'en_US' ss_var_language || ss_var_language=en_US
+read -t 300 -p "$(ss_echo ${LIGHTGRAY}"Choose language (only affects minor features): "${LIGHTGREEN})" -e -i 'en_US' ss_var_language || ss_var_language=en_US
 ss_sed "s|@SS_LANGUAGE|${ss_var_language}|g" /tmp/ss-config-wizard
     
 ## new line ##
 ss_print "${COLOR_RESET}\n"
     
 ## PROMPT: enable plugin blacklist (default = true) ##
-read -t 300 -p "$(echo -e ${LIGHTGRAY}"Enable the WordPress plugin blacklist: "${LIGHTGREEN})" -e -i 'true' ss_var_plugin_blacklist || ss_var_plugin_blacklist=true
+read -t 300 -p "$(ss_echo ${LIGHTGRAY}"Enable the WordPress plugin blacklist: "${LIGHTGREEN})" -e -i 'true' ss_var_plugin_blacklist || ss_var_plugin_blacklist=true
 ss_sed "s|@SS_WORDPRESS_PLUGIN_BLACKLIST|${ss_var_plugin_blacklist}|g" /tmp/ss-config-wizard
     
 ## new line ##
 ss_print "${COLOR_RESET}\n"
     
 ## PROMPT: link your pilot file (default = blank) ##
-read -t 300 -p "$(echo -e ${LIGHTGRAY}"Link to your pilot file (leave blank if none): "${LIGHTGREEN})" -e -i '' ss_var_pilot_file || ss_var_pilot_file=
+read -t 300 -p "$(ss_echo ${LIGHTGRAY}"Link to your pilot file (leave blank if none): "${LIGHTGREEN})" -e -i '' ss_var_pilot_file || ss_var_pilot_file=
 ss_sed "s|@SS_PILOT_FILE|${ss_var_pilot_file}|g" /tmp/ss-config-wizard
     
 ## new line ##
 ss_print "${COLOR_RESET}\n"
     
 ## PROMPT: using a remote database (default = wordpress) ##
-read -t 300 -p "$(echo -e ${LIGHTGRAY}"Are you using a remote database: "${LIGHTGREEN})" -e -i 'false' ss_var_database_remote || ss_var_database_remote=false
+read -t 300 -p "$(ss_echo ${LIGHTGRAY}"Are you using a remote database: "${LIGHTGREEN})" -e -i 'false' ss_var_database_remote || ss_var_database_remote=false
 ss_sed "s|@SS_DATABASE_REMOTE|${ss_var_database_remote}|g" /tmp/ss-config-wizard
     
 ## new line ##
 ss_print "${COLOR_RESET}\n"
     
 ## PROMPT: enable public adminer link ##
-read -t 300 -p "$(echo -e ${LIGHTGRAY}"Make the adminer (phpmyadmin) link public?: "${LIGHTGREEN})" -e -i 'true' ss_var_adminer_public || ss_var_adminer_public=true
+read -t 300 -p "$(ss_echo ${LIGHTGRAY}"Make the adminer (phpmyadmin) link public?: "${LIGHTGREEN})" -e -i 'true' ss_var_adminer_public || ss_var_adminer_public=true
 ss_sed "s|@SS_ADMINER_PUBLIC|${ss_var_adminer_public}|g" /tmp/ss-config-wizard
     
 ## new line ##
 ss_print "${COLOR_RESET}\n"
     
 ## PROMPT: choose database name (default = production) ##
-read -t 300 -p "$(echo -e ${LIGHTGRAY}"Choose database name (single database): "${LIGHTGREEN})" -e -i 'production' ss_var_db_name || ss_var_db_name=production
+read -t 300 -p "$(ss_echo ${LIGHTGRAY}"Choose database name (single database): "${LIGHTGREEN})" -e -i 'production' ss_var_db_name || ss_var_db_name=production
 ss_sed "s|@DB_NAME|${ss_var_db_name}|g" /tmp/ss-config-wizard
     
 ## new line ##
 ss_print "${COLOR_RESET}\n"
     
 ## PROMPT: choose database user (default = robin) ##
-read -t 300 -p "$(echo -e ${LIGHTGRAY}"Choose database user (non-root user): "${LIGHTGREEN})" -e -i 'robin' ss_var_db_user || ss_var_db_user=robin
+read -t 300 -p "$(ss_echo ${LIGHTGRAY}"Choose database user (non-root user): "${LIGHTGREEN})" -e -i 'robin' ss_var_db_user || ss_var_db_user=robin
 ss_sed "s|@DB_USER|${ss_var_db_user}|g" /tmp/ss-config-wizard
     
 ## new line ##
@@ -403,98 +403,98 @@ ss_print "${COLOR_RESET}\n"
     
 ## PROMPT: choose database user password (default = random) ##
 db_pass_random=$(openssl rand -hex 12)
-read -t 300 -p "$(echo -e ${LIGHTGRAY}"Choose database user password (should be strong): "${LIGHTGREEN})" -e -i ${db_pass_random} ss_var_db_password || ss_var_db_password=${db_pass_random}
+read -t 300 -p "$(ss_echo ${LIGHTGRAY}"Choose database user password (should be strong): "${LIGHTGREEN})" -e -i ${db_pass_random} ss_var_db_password || ss_var_db_password=${db_pass_random}
 ss_sed "s|@DB_PASSWORD_USER|${ss_var_db_password}|g" /tmp/ss-config-wizard
     
 ## new line ##
 ss_print "${COLOR_RESET}\n"
     
 ## PROMPT: choose database host ##
-read -t 300 -p "$(echo -e ${LIGHTGRAY}"Choose database host (IP address): "${LIGHTGREEN})" -e -i '127.0.0.1' ss_var_db_host || ss_var_db_host=127.0.0.1
+read -t 300 -p "$(ss_echo ${LIGHTGRAY}"Choose database host (IP address): "${LIGHTGREEN})" -e -i '127.0.0.1' ss_var_db_host || ss_var_db_host=127.0.0.1
 ss_sed "s|@DB_HOST|${ss_var_db_host}|g" /tmp/ss-config-wizard
     
 ## new line ##
 ss_print "${COLOR_RESET}\n"
     
 ## PROMPT: choose database port ##
-read -t 300 -p "$(echo -e ${LIGHTGRAY}"Choose database port (3306 if using localhost): "${LIGHTGREEN})" -e -i '3306' ss_var_db_port || ss_var_db_port=3306
+read -t 300 -p "$(ss_echo ${LIGHTGRAY}"Choose database port (3306 if using localhost): "${LIGHTGREEN})" -e -i '3306' ss_var_db_port || ss_var_db_port=3306
 ss_sed "s|@DB_PORT|${ss_var_db_port}|g" /tmp/ss-config-wizard
     
 ## new line ##
 ss_print "${COLOR_RESET}\n"
     
 ## PROMPT: choose database prefix ##
-read -t 300 -p "$(echo -e ${LIGHTGRAY}"Choose database table prefix: "${LIGHTGREEN})" -e -i 'wp_' ss_var_db_prefix || ss_var_db_prefix=wp_
+read -t 300 -p "$(ss_echo ${LIGHTGRAY}"Choose database table prefix: "${LIGHTGREEN})" -e -i 'wp_' ss_var_db_prefix || ss_var_db_prefix=wp_
 ss_sed "s|@DB_PREFIX|${ss_var_db_prefix}|g" /tmp/ss-config-wizard
     
 ## new line ##
 ss_print "${COLOR_RESET}\n"
     
 ## PROMPT: choose site TLD (otherwise example.com) ##
-read -t 300 -p "$(echo -e ${LIGHTGRAY}"Choose site TLD (subdomains not allowed): "${LIGHTGREEN})" -e -i 'example.com' ss_var_site_tld || ss_var_site_tld=${SS_TLD}
+read -t 300 -p "$(ss_echo ${LIGHTGRAY}"Choose site TLD (subdomains not allowed): "${LIGHTGREEN})" -e -i 'example.com' ss_var_site_tld || ss_var_site_tld=${SS_TLD}
 ss_sed "s|@SITE_TLD|${ss_var_site_tld}|g" /tmp/ss-config-wizard
     
 ## new line ##
 ss_print "${COLOR_RESET}\n"
     
 ## PROMPT: choose site domain (otherwise www.example.com) ##
-read -t 300 -p "$(echo -e ${LIGHTGRAY}"Choose site domain (subdirectories not allowed): "${LIGHTGREEN})" -e -i 'www.example.com' ss_var_site_domain || ss_var_site_tld=www.${SS_TLD}
+read -t 300 -p "$(ss_echo ${LIGHTGRAY}"Choose site domain (subdirectories not allowed): "${LIGHTGREEN})" -e -i 'www.example.com' ss_var_site_domain || ss_var_site_tld=www.${SS_TLD}
 ss_sed "s|@SITE_DOMAIN|${ss_var_site_domain}|g" /tmp/ss-config-wizard
     
 ## new line ##
 ss_print "${COLOR_RESET}\n"
     
 ## PROMPT: enable noindex server (default = false) ##
-read -t 300 -p "$(echo -e ${LIGHTGRAY}"Enable site noindexing (block robots): "${LIGHTGREEN})" -e -i 'false' ss_var_site_noindex || ss_var_site_noindex=false
+read -t 300 -p "$(ss_echo ${LIGHTGRAY}"Enable site noindexing (block robots): "${LIGHTGREEN})" -e -i 'false' ss_var_site_noindex || ss_var_site_noindex=false
 ss_sed "s|@SITE_NOINDEX|${ss_var_site_noindex}|g" /tmp/ss-config-wizard
     
 ## new line ##
 ss_print "${COLOR_RESET}\n"
     
 ## PROMPT: enable WP Multisite ##
-read -t 300 -p "$(echo -e ${LIGHTGRAY}"Enable WordPress Multisite (experimental): "${LIGHTGREEN})" -e -i 'false' ss_var_wp_multisite_status || ss_var_wp_multisite_status=false
+read -t 300 -p "$(ss_echo ${LIGHTGRAY}"Enable WordPress Multisite (experimental): "${LIGHTGREEN})" -e -i 'false' ss_var_wp_multisite_status || ss_var_wp_multisite_status=false
 ss_sed "s|@WP_MULTISITE_STATUS|${ss_var_wp_multisite_status}|g" /tmp/ss-config-wizard
     
 ## new line ##
 ss_print "${COLOR_RESET}\n"
     
 ## PROMPT: enable Multisite subdomains ##
-read -t 300 -p "$(echo -e ${LIGHTGRAY}"Enable subdomains for WP Multisite?: "${LIGHTGREEN})" -e -i 'true' ss_var_wp_multisite_subdomains || ss_var_wp_multisite_subdomains=true
+read -t 300 -p "$(ss_echo ${LIGHTGRAY}"Enable subdomains for WP Multisite?: "${LIGHTGREEN})" -e -i 'true' ss_var_wp_multisite_subdomains || ss_var_wp_multisite_subdomains=true
 ss_sed "s|@WP_MULTISITE_SUBDOMAINS|${ss_var_wp_multisite_subdomains}|g" /tmp/ss-config-wizard
     
 ## new line ##
 ss_print "${COLOR_RESET}\n"
     
 ## PROMPT: enable staging site ##
-read -t 300 -p "$(echo -e ${LIGHTGRAY}"Enable staging site (subdomain): "${LIGHTGREEN})" -e -i 'false' ss_var_staging_site || ss_var_staging_site=false
+read -t 300 -p "$(ss_echo ${LIGHTGRAY}"Enable staging site (subdomain): "${LIGHTGREEN})" -e -i 'false' ss_var_staging_site || ss_var_staging_site=false
 ss_sed "s|@STAGING_SITE_STATUS|${ss_var_staging_site}|g" /tmp/ss-config-wizard
     
 ## new line ##
 ss_print "${COLOR_RESET}\n"
     
 ## PROMPT: protect staging site ##
-read -t 300 -p "$(echo -e ${LIGHTGRAY}"Password protect staging site: "${LIGHTGREEN})" -e -i 'false' ss_var_staging_site_protect || ss_var_staging_site_protect=false
+read -t 300 -p "$(ss_echo ${LIGHTGRAY}"Password protect staging site: "${LIGHTGREEN})" -e -i 'false' ss_var_staging_site_protect || ss_var_staging_site_protect=false
 ss_sed "s|@STAGING_SITE_PROTECT|${ss_var_staging_site_protect}|g" /tmp/ss-config-wizard
     
 ## new line ##
 ss_print "${COLOR_RESET}\n"
     
 ## PROMPT: enable dev site ##
-read -t 300 -p "$(echo -e ${LIGHTGRAY}"Enable dev site (subdomain): "${LIGHTGREEN})" -e -i 'false' ss_var_dev_site || ss_var_dev_site=false
+read -t 300 -p "$(ss_echo ${LIGHTGRAY}"Enable dev site (subdomain): "${LIGHTGREEN})" -e -i 'false' ss_var_dev_site || ss_var_dev_site=false
 ss_sed "s|@DEV_SITE_STATUS|${ss_var_dev_site}|g" /tmp/ss-config-wizard
     
 ## new line ##
 ss_print "${COLOR_RESET}\n"
     
 ## PROMPT: protect dev site ##
-read -t 300 -p "$(echo -e ${LIGHTGRAY}"Password protect dev site: "${LIGHTGREEN})" -e -i 'false' ss_var_dev_site_protect || ss_var_dev_site_protect=false
+read -t 300 -p "$(ss_echo ${LIGHTGRAY}"Password protect dev site: "${LIGHTGREEN})" -e -i 'false' ss_var_dev_site_protect || ss_var_dev_site_protect=false
 ss_sed "s|@DEV_SITE_PROTECT|${ss_var_dev_site_protect}|g" /tmp/ss-config-wizard
     
 ## new line ##
 ss_print "${COLOR_RESET}\n"
     
 ## PROMPT: choose guest username (default = guest) ##
-read -t 300 -p "$(echo -e ${LIGHTGRAY}"Choose guest username (to view staging/dev): "${LIGHTGREEN})" -e -i 'guest' ss_var_guest_user || ss_var_guest_user=guest
+read -t 300 -p "$(ss_echo ${LIGHTGRAY}"Choose guest username (to view staging/dev): "${LIGHTGREEN})" -e -i 'guest' ss_var_guest_user || ss_var_guest_user=guest
 ss_sed "s|@GUEST_USER|${ss_var_guest_user}|g" /tmp/ss-config-wizard
     
 ## new line ##
@@ -502,28 +502,27 @@ ss_print "${COLOR_RESET}\n"
     
 ## PROMPT: choose guest password (default = random) ##
 guest_pass_random=$(openssl rand -hex 12)
-read -t 300 -p "$(echo -e ${LIGHTGRAY}"Choose guest password (easy is fine): "${LIGHTGREEN})" -e -i ${guest_pass_random} ss_var_guest_password || ss_var_guest_password=${guest_pass_random}
+read -t 300 -p "$(ss_echo ${LIGHTGRAY}"Choose guest password (easy is fine): "${LIGHTGREEN})" -e -i ${guest_pass_random} ss_var_guest_password || ss_var_guest_password=${guest_pass_random}
 ss_sed "s|@GUEST_PASSWORD|${ss_var_guest_password}|g" /tmp/ss-config-wizard
 
 ## new line ##
 ss_print "${COLOR_RESET}\n"
 
 ## PROMPT: which remote backups do you want ##
-read -t 300 -p "$(echo -e ${LIGHTGRAY}"Which remote backups do you want? (none|rsync|rclone): "${LIGHTGREEN})" -e -i 'none' ss_var_remote_backups || ss_var_remote_backups=none
+read -t 300 -p "$(ss_echo ${LIGHTGRAY}"Which remote backups do you want? (none|rsync|rclone): "${LIGHTGREEN})" -e -i 'none' ss_var_remote_backups || ss_var_remote_backups=none
 ss_sed "s|@SS_REMOTE_BACKUPS|${ss_var_remote_backups}|g" /tmp/ss-config-wizard
     
 ## new line ##
 ss_print "${COLOR_RESET}\n"
-    
+
 ####################################################################################################
 #### G. SS-Install: Activate SS-Config File Generated By Wizard ####################################
 ####################################################################################################
-    
-## copy files to their destinations ##
+
 ss_mkdir /var/www
-ss_mv /tmp/ss-config-wizard /var/www/ss-config
-chown root:root /var/www/ss-config ## must be root:root
-chmod 0700 /var/www/ss-config ## 0700 means only root can execute
+ss_mv "${TMP_SS_CONFIG_WIZARD}" "${PATH_SS_CONFIG}"
+ss_chown root:root "${PATH_SS_CONFIG}" ## must be root:root
+chmod 0700 "${PATH_SS_CONFIG}" ## 0700 means only root can execute
     
 ####################################################################################################
 #### H. SS-Install: Retrieve SS-Check ##############################################################
@@ -547,7 +546,7 @@ fi
 
 ## copy files to destination ##
 ss_mv "${TMP_SS_CHECK}" "${PATH_SS_CHECK}"
-chown root:root /var/www/ss* ## must be root:root
+ss_chown root:root /var/www/ss* ## must be root:root
 chmod 0700 /var/www/ss* ## 0700 means root can execute
 
 ####################################################################################################
@@ -560,14 +559,14 @@ chmod 0700 /var/www/ss* ## 0700 means root can execute
 ## force exit if SSH keys chosen ##
 SSHKEYS_CHOSEN=$(source /var/www/ss-config; echo ${SSH_KEYS} 2> /dev/null)
 if [[ "${SSHKEYS_CHOSEN}" == "true" ]] && [[ ! -f "/var/www/auth/id_rsa.pub" ]]; then
-    echo -e "${YELLOW}Exiting ss-install: Please upload your /var/www/auth/id_rsa.pub file before proceeding... ${NOCOLOR}"
-    echo -e "${YELLOW}Alternatively SlickStack will create a new key pair for you (just run ss-install again now)... ${NOCOLOR}"
+    ss_echo "${YELLOW}Exiting ss-install: Please upload your /var/www/auth/id_rsa.pub file before proceeding... ${NOCOLOR}"
+    ss_echo "${YELLOW}Alternatively SlickStack will create a new key pair for you (just run ss-install again now)... ${NOCOLOR}"
 fi
 
 ## force exit if thirdparty SSL chosen ##
 THIRDPARTY_CHOSEN=$(source /var/www/ss-config; echo ${SSL_TYPE})
 if [[ "${THIRDPARTY_CHOSEN}" == "thirdparty" ]] && [[ ! -f "/var/www/certs/thirdparty.pem" || ! -f "/var/www/certs/keys/thirdparty.key" ]]; then
-    echo -e "${YELLOW}Exiting ss-install: Since you chose thirdparty SSL please upload your cert/key before proceeding... ${NOCOLOR}"
+    ss_echo "${YELLOW}Exiting ss-install: Since you chose thirdparty SSL please upload your cert/key before proceeding... ${NOCOLOR}"
 fi
 
 ####################################################################################################
@@ -575,13 +574,13 @@ fi
 ####################################################################################################
 
 ## echo message ##
-ss_echo "${COLOR_WARN}Your /var/www/ss-config file is now ready! Ctrl+C to exit now if you  ${NOCOLOR}"
+ss_echo "${COLOR_WARN}Your /var/www/ss-config file is now ready! Ctrl+C to exit now if you  ${COLOR_RESET}"
 
 WAIT_TIME_LAST_CHANCE="15" # seconds
 WAIT_TIME_LAST_CHANCE_TMP="${WAIT_TIME_LAST_CHANCE}"
 while [[ ${WAIT_TIME_LAST_CHANCE_TMP} -gt 0 ]];
     do
-        ss_print "${COLOR_WARN}\rwant to review options before proceeding, otherwise wait... ${LIGHTGRAY}%2d ${NOCOLOR}" ${WAIT_TIME_LAST_CHANCE_TMP}
+        ss_print "${COLOR_WARN}\rwant to review options before proceeding, otherwise wait... ${COLOR_RESET}%2d ${COLOR_RESET}" ${WAIT_TIME_LAST_CHANCE_TMP}
         sleep 1
         ((WAIT_TIME_LAST_CHANCE_TMP--))
 done
@@ -687,16 +686,16 @@ if [[ "${DEV_SITE}" != "false" ]]; then
 fi
 
 ## user/group ownership ##
-chown root:root /var/www ## must be root:root
-chown root:root /var/www/backups ## must be root:root
-chown root:root /var/www/backups/config ## must be root:root
-chown root:root /var/www/backups/mysql ## must be root:root
-chown root:root /var/www/backups/mysql/data ## must be root:root
-chown root:root /var/www/cache/system ## must be root:root
-chown root:root /var/www/certs ## must be root:root
-chown root:root /var/www/certs/keys ## must be root:root
-chown root:root /var/www/crons ## must be root:root
-chown root:root /var/www/crons/custom ## must be root:root
+ss_chown root:root /var/www ## must be root:root
+ss_chown root:root /var/www/backups ## must be root:root
+ss_chown root:root /var/www/backups/config ## must be root:root
+ss_chown root:root /var/www/backups/mysql ## must be root:root
+ss_chown root:root /var/www/backups/mysql/data ## must be root:root
+ss_chown root:root /var/www/cache/system ## must be root:root
+ss_chown root:root /var/www/certs ## must be root:root
+ss_chown root:root /var/www/certs/keys ## must be root:root
+ss_chown root:root /var/www/crons ## must be root:root
+ss_chown root:root /var/www/crons/custom ## must be root:root
 
 ####################################################################################################
 #### N. SS-Update-Packages: Upgrade Ubuntu Packages + Linux Kernel #################################
@@ -812,8 +811,6 @@ source "${PATH_SS_INSTALL_ADMINER}"
 #### SS-Install: Install CMS (WordPress, PrestaShop, MediaWiki, Etc) ###############################
 ####################################################################################################
 
-## SNIPPET: ss-install, ss-update
-
 ## this snippet fetches the latest stable version of WordPress from SlickStack mirrors ##
 ## major CMS releases (unpatched) are never considered stable for our purposes ##
     
@@ -822,14 +819,8 @@ if [[ "${SS_APP}" == "wordpress" ]]; then
     ## run ss-install-wordpress-core ##
     source "${PATH_SS_INSTALL_WORDPRESS_CORE}"
 
-    ## here we retrieve latest wp-config.php boilerplate and customize per ss-config settings ##
-    ## you should never make changes directly to wp-config.php in SlickStack servers ##
-
     ## run ss-install-wordpress-config ##
     source "${PATH_SS_INSTALL_WORDPRESS_CONFIG}"
-
-    ## this will install the designated MU plugins and also Custom Functions and Object Cache ##
-    ## with a few exceptions these can all be customized using ss-config settings ##
 
     ## run ss-install-wordpress-mu-plugins ##
     source "${PATH_SS_INSTALL_WORDPRESS_MU_PLUGINS}"
@@ -838,10 +829,6 @@ if [[ "${SS_APP}" == "wordpress" ]]; then
     source "${PATH_SS_INSTALL_WORDPRESS_CLI}"
 
 fi
-
-
-## this snippet fetches the latest stable version of PrestaShop from SlickStack mirrors ##
-## major CMS releases (unpatched) are never considered stable for our purposes ##
 
 if [[ "${SS_APP}" == "prestashop" ]]; then
 
@@ -852,9 +839,6 @@ if [[ "${SS_APP}" == "prestashop" ]]; then
     source "${PATH_SS_INSTALL_PRESTASHOP_CONFIG}"
     
 fi
-
-## this snippet fetches the latest stable version of MediaWiki from SlickStack mirrors ##
-## major CMS releases (unpatched) are never considered stable for our purposes ##
 
 if [[ "${SS_APP}" == "mediawiki" ]]; then
 
