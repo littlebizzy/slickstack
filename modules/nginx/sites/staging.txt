@@ -20,12 +20,13 @@
 ## this is a brief summary of the different code snippets you will find in this script ##
 ## each section should be commented so you understand what is being accomplished ##
 
-## A. Canonical Subdomain (Single Website)
-## B. Well-Known (Domain Verification)
-## C. Redirect Any AMP Requests
+## A. Canonical Staging Subdomain
+## B. Share Production Media Uploads
+## C. Well-Known Directory
+## D. Redirect AMP Requests
 
 ####################################################################################################
-#### A. Server Block (Staging): Canonical Subdomain (Single Website) ###############################
+#### A. Server Block (Staging): Canonical Staging Subdomain ########################################
 ####################################################################################################
 
 ## CloudFlare ignores HTTP/2 from origin server but we enable in case of Lets Encrypt ##
@@ -41,13 +42,17 @@ auth_basic "Restricted Content";
 auth_basic_user_file /var/www/meta/.htpasswd;
 more_set_headers "X-Robots-Tag noindex, nofollow, nosnippet, noarchive";
 
+####################################################################################################
+#### B. Server Block (Staging): Share Production Media Uploads #####################################
+####################################################################################################
+
 ## alias media files ##
 location ^~ /wp-content/uploads/ {
 	alias /var/www/html/wp-content/uploads/;
 }
 
 ####################################################################################################
-#### B. Server Block (Staging): Well-Known Directory ###############################################
+#### C. Server Block (Staging): Well-Known Directory ###############################################
 ####################################################################################################
 
 ## the well-known hidden directory is becoming more important for domain verification ##
@@ -64,7 +69,7 @@ location ^~ /.well-known/ {
 }
 
 ####################################################################################################
-#### C. Server Block (Staging): Redirect AMP Requests ##############################################
+#### D. Server Block (Staging): Redirect AMP Requests ##############################################
 ####################################################################################################
 
 ## this powerful snippet will redirect all the messy URLs created by AMP software ##
