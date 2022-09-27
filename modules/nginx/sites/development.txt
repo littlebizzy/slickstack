@@ -20,59 +20,61 @@
 ## this is a brief summary of the different code snippets you will find in this script ##
 ## each section should be commented so you understand what is being accomplished ##
 
-## A. Canonical Subdomain (Single Website)
-## B. Well-Known (Domain Verification)
-## C. Redirect Any AMP Requests
+## A. Canonical Dev Subdomain
+## B. Well-Known Directory
+## C. Redirect AMP Requests
 
 ####################################################################################################
-#### A. Server Block (Development): Canonical Subdomain (Single Website) ###########################
+#### A. Server Block (Development): Canonical Dev Subdomain ########################################
 ####################################################################################################
 
 ## CloudFlare ignores HTTP/2 from origin server but we enable in case of Lets Encrypt ##
 ## because SlickStack is HTTPS-only the canonical block is port 443 (SSL) only ##
 
 server {
-	listen                      443 ssl http2;
-	listen                      [::]:443 ssl http2;
-	server_name                 dev.@SITE_DOMAIN_EXCLUDING_WWW;
-	root                        /var/www/html/dev;
-	auth_basic                  "Restricted Content";
-	auth_basic_user_file        /var/www/meta/.htpasswd;
-	more_set_headers            "X-Robots-Tag noindex, nofollow, nosnippet, noarchive";
+
+listen 443 ssl http2;
+listen [::]:443 ssl http2;
+server_name dev.@SITE_DOMAIN_EXCLUDING_WWW;
+root /var/www/html/dev;
+auth_basic "Restricted Content";
+auth_basic_user_file /var/www/meta/.htpasswd;
+more_set_headers "X-Robots-Tag noindex, nofollow, nosnippet, noarchive";
 
 ####################################################################################################
-#### B. Server Block (Development): Well-Known (Domain Verification) ###############################
+#### B. Server Block (Development): Well-Known Directory ###########################################
 ####################################################################################################
 
 ## the well-known hidden directory is becoming more important for domain verification ##
 ## we implement an abundance of rules to improve functionality and stability ##
 
-	## well-known ##
-	location ^~ /.well-known/ {
-		allow all;
-		auth_basic off;
-		default_type        "text/plain";
-		try_files           $uri =404;
-		alias               /var/www/html/.well-known/; ## staging/dev use prod
-	}
-    
+location ^~ /.well-known/ {
+	allow all;
+	auth_basic off;
+	default_type "text/plain";
+	try_files $uri =404;
+	
+	## share directory from production ##
+	alias /var/www/html/.well-known/;
+}
+
 ####################################################################################################
-#### C. Server Block (Development): Redirect Any AMP Requests ######################################
+#### C. Server Block (Development): Redirect AMP Requests ##########################################
 ####################################################################################################
 
 ## this powerful snippet will redirect all the messy URLs created by AMP software ##
 ## SlickStack does not support AMP for both stability and political reasons ##
 
-	## redirect /amp queries ##
-	rewrite ^(.*/)amp(.*)$ $1 permanent;
+## redirect /amp queries ##
+rewrite ^(.*/)amp(.*)$ $1 permanent;
 	
-	## redirect ?amp queries ##
-	if ($query_string ~ "^amp(.*)$") {
-        	rewrite ^(.*)$ $uri? permanent;
-	}
+## redirect ?amp queries ##
+if ($query_string ~ "^amp(.*)$") {
+	rewrite ^(.*)$ $uri? permanent;
+}
 
 ####################################################################################################
-#### Server Block: Indexing + Public URI + Try Files Settings ######################################
+#### Server Block (Development): Indexing + Public URI + Try Files Settings ########################
 ####################################################################################################
 
 	## THIS SNIPPET IS BREAKING TRACKING QUERIES SUCH AS /?ref=google&utm_source= ##
@@ -105,7 +107,7 @@ server {
     }
 
 ####################################################################################################
-#### Server Block: FastCGI Cache Settings ##########################################################
+#### Server Block (Development): FastCGI Cache Settings ############################################
 ####################################################################################################
 
 ## several common URI patterns are configured to skip FastCGI caching to avoid conflicts ##
@@ -181,7 +183,8 @@ if ($skip_cache = 0 ) {
 	set $rt_session "";
 }
 include /etc/nginx/fastcgi.conf;
-try_files $uri =404;
+# try_files $uri =404;
+try_files $uri $uri/ /index.php?$args;
 fastcgi_split_path_info ^(.+\.php)(/.+)$;
 fastcgi_pass 127.0.0.1:9000;
 fastcgi_read_timeout 300;
@@ -192,10 +195,10 @@ fastcgi_cache_bypass $skip_cache;
 fastcgi_no_cache $skip_cache;
 
 more_set_headers "X-Robots-Tag $robots";
+set $cachecontrol "nocache"; ## disable browser caching for dynamic pages
 
-## coming soon after testing ##
-## strip any potential cache headers from WordPress plugins etc ##
-# more_clear_headers "Cache-Control";
+## set-cookie on PHP content ##
+set $setcookie "Path=/; HttpOnly; Secure";
 }
 
 ####################################################################################################
@@ -239,6 +242,19 @@ location ^~ /adminer {
 }
 
 ####################################################################################################
+#### Server Block (Development): HTML Files ########################################################
+####################################################################################################
+
+## because some websites mix WordPress with other static .html files we include this ##
+## in case .html files are missing they will be redirected to WordPress here ##
+
+location ~* \.(html)$ {
+	try_files $uri $uri/ /index.php?$args;
+	set $cachecontrol "public, max-age=691200"; ## 1 week
+	set $setcookie "";
+}
+
+####################################################################################################
 #### Server Block (Development): Static Files ######################################################
 ####################################################################################################
 
@@ -246,7 +262,8 @@ location ^~ /adminer {
 ## keep in mind that Cloudflare or CDNs will likely overwrite these settings ##
 
 location ~* \.(atom|bmp|bz2|css|doc|docx|eot|gif|gz|ico|jpeg|jpg|js|mid|midi|mp4|ogg|ogv|otf|png|ppt|rar|rss|rtf|svg|svgz|tar|tgz|ttc|ttf|wav|webp|woff|woff2|xls|zip)$ {
-	add_header Cache-Control "public, max-age=691200";
+	set $cachecontrol "public, max-age=2628000"; ## 1 month
+	set $setcookie "";
 }
 
 ####################################################################################################
@@ -296,96 +313,108 @@ location = /ads.txt {
 }
 
 ####################################################################################################
-#### Server Block: Custom Functions (MU Plugin) Settings ###########################################
-####################################################################################################
-    
-    location = /wp-content/functions.php {
-	deny all;
-    }
-    
-####################################################################################################
-#### Server Block: Plugin Blacklist (MU Plugin) Settings ###########################################
-####################################################################################################
-    
-    location = /wp-content/blacklist.txt {
-	deny all;
-    }
-    
-####################################################################################################
-#### Server Block: Git Configuration Settings ######################################################
+#### Server Block (Staging): Git Configuration #####################################################
 ####################################################################################################
 
-    location = /.git/config {
-        deny all;
-    }
-    
-####################################################################################################
-#### Server Block: Deny Access To Various (Unsafe + Unused) WordPress Core Files ###################
-####################################################################################################
-
-    ## WP directories ##
-    location ~* /(?:wp-includes|wp-content|mu-plugins|uploads)/.*\.php$ {
-        deny all;
-    }
-    
-    ## WP meta files ##
-    location ~* (license|licence|readme)\.(htm|html|txt) {
-	deny all;
-    }
-    
-    ## wp-config ##
-    location = /wp-config*.php {
-	deny all;
-    }
-    
-    ## XML-RPC ##
-    location = /xmlrpc.php {
-	deny all;
-    }
-    
-    ## wp-mail ##
-    location = /wp-mail.php {
-	deny all;
-    }
-    
-    ## wp-links-opml ##
-    location = /wp-links-opml.php {
-	deny all;
-    }
-    
-    ## wp-trackback ##
-    location = /wp-trackback.php {
-	deny all;
-    }
-    
-    ## WP debug logs ##
-    location ~ /wp-content/debug\.log {
-	deny all;
-    }
+location = /.git/config {
+    deny all;
+}
 
 ####################################################################################################
-#### Server Block (Development): Deny Access To WordPress Installer ################################
+#### Server Block (Staging): Deny Access To Certain WordPress Files ################################
 ####################################################################################################
-    
-## SlickStack blocks access to the development WordPress installer to avoid hacking etc ##
-## dev sites populate their minimum wp_options by ss-install-wordpress-core ##
-    
-    ## block install script ##
-    location = /wp-admin/install.php {
+
+## block install script ##
+location = /wp-admin/install.php {
 	deny all;
-    }
+}
+	
+## wordpress directories ##
+location ~* /(?:wp-includes|wp-content|mu-plugins|uploads)/.*\.php$ {
+    deny all;
+}
+    
+## WP meta files ##
+location ~* (license|licence|readme)\.(htm|html|txt) {
+	deny all;
+}
+
+## wp-admin concatenation ##
+location = /wp-admin/load-scripts.php {
+    deny all;
+}
+
+## wp-admin concatenation ##
+location = /wp-admin/load-styles.php {
+    deny all;
+}
+
+## wp-config ##
+location ~ /wp-config*.php {
+	deny all;
+}
+
+## XML-RPC ##
+location = /xmlrpc.php {
+	deny all;
+}
+
+## wp-mail ##
+location = /wp-mail.php {
+	deny all;
+}
+
+## wp-links-opml ##
+location = /wp-links-opml.php {
+	deny all;
+}
+
+## wp-trackback ##
+location = /wp-trackback.php {
+	deny all;
+}
+
+## WP debug logs ##
+location ~ /wp-content/debug\.log {
+	deny all;
+}
+
+####################################################################################################
+#### Server Block (Staging): Deny Access To Certain SlickStack Files ###############################
+####################################################################################################
+
+## here we deny frontend access to certain sensitive files that are part of SlickStack ##
+## this provides extra security and prevents snooping into your configuration ##
+
+## object-cache.php ##
+location = /wp-content/object-cache.php {
+	deny all;
+}
+    
+## blacklist.txt ##
+location = /wp-content/blacklist.txt {
+	deny all;
+}
+
+## functions.php ##
+location = /wp-content/functions.php {
+	deny all;
+}
+
+## xxx-common.php ##
+location = /wp-content/mu-plugins/xxx-common.php {
+	deny all;
+}
 
 ####################################################################################################
 #### Server Block: Custom Settings For Popular Third-Party WordPress Plugins #######################
 ####################################################################################################
-    
-    ## Easy Digital Downloads ##
-    location ~ ^/wp-content/uploads/edd/(.*?)\.zip$ {
-        rewrite / permanent;
-    }
-    
-    ## more coming soon... ##
-    
+
+## Easy Digital Downloads ##
+location ~ ^/wp-content/uploads/edd/(.*?)\.zip$ {
+    rewrite / permanent;
+}
+
     
 ## DO NOT REMOVE THIS CURLY BRACKET ᕦ⊙෴⊙ᕤ ##
 }
