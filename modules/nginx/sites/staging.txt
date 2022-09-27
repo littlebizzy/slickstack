@@ -32,49 +32,51 @@
 ## because SlickStack is HTTPS-only the canonical block is port 443 (SSL) only ##
 
 server {
-	listen                      443 ssl http2;
-	listen                      [::]:443 ssl http2;
-	server_name                 staging.@SITE_DOMAIN_EXCLUDING_WWW;
-	root                        /var/www/html/staging;
-	auth_basic                  "Restricted Content";
-	auth_basic_user_file        /var/www/meta/.htpasswd;
-	more_set_headers            "X-Robots-Tag noindex, nofollow, nosnippet, noarchive";
-	
-	## alias media files ##
-	location ^~ /wp-content/uploads/ {
-		alias        /var/www/html/wp-content/uploads/;
-    	}
+
+listen 443 ssl http2;
+listen [::]:443 ssl http2;
+server_name staging.@SITE_DOMAIN_EXCLUDING_WWW;
+root /var/www/html/staging;
+auth_basic "Restricted Content";
+auth_basic_user_file /var/www/meta/.htpasswd;
+more_set_headers "X-Robots-Tag noindex, nofollow, nosnippet, noarchive";
+
+## alias media files ##
+location ^~ /wp-content/uploads/ {
+	alias /var/www/html/wp-content/uploads/;
+}
 
 ####################################################################################################
-#### B. Server Block (Staging): Well-Known (Domain Verification) ###################################
+#### B. Server Block (Staging): Well-Known Directory ###############################################
 ####################################################################################################
 
 ## the well-known hidden directory is becoming more important for domain verification ##
 ## we implement an abundance of rules to improve functionality and stability ##
 
-	## well-known ##
-	location ^~ /.well-known/ {
-		allow all;
-		auth_basic off;
-		default_type        "text/plain";
-		try_files           $uri =404;
-		alias               /var/www/html/.well-known/; ## staging/dev use prod
-	}
+location ^~ /.well-known/ {
+	allow all;
+	auth_basic off;
+	default_type "text/plain";
+	try_files $uri =404;
 	
+	## share directory from production ##
+	alias /var/www/html/.well-known/;
+}
+
 ####################################################################################################
-#### C. Server Block (Staging): Redirect Any AMP Requests ##########################################
+#### C. Server Block (Staging): Redirect AMP Requests ##############################################
 ####################################################################################################
 
 ## this powerful snippet will redirect all the messy URLs created by AMP software ##
 ## SlickStack does not support AMP for both stability and political reasons ##
 
-	## redirect /amp queries ##
-	rewrite ^(.*/)amp(.*)$ $1 permanent;
+## redirect /amp queries ##
+rewrite ^(.*/)amp(.*)$ $1 permanent;
 	
-	## redirect ?amp queries ##
-	if ($query_string ~ "^amp(.*)$") {
-        	rewrite ^(.*)$ $uri? permanent;
-	}
+## redirect ?amp queries ##
+if ($query_string ~ "^amp(.*)$") {
+	rewrite ^(.*)$ $uri? permanent;
+}
 
 ####################################################################################################
 #### Server Block (Staging): Indexing + Public URI + Try Files Settings ############################
@@ -186,7 +188,8 @@ if ($skip_cache = 0 ) {
 	set $rt_session "";
 }
 include /etc/nginx/fastcgi.conf;
-try_files $uri =404;
+# try_files $uri =404;
+try_files $uri $uri/ /index.php?$args;
 fastcgi_split_path_info ^(.+\.php)(/.+)$;
 fastcgi_pass 127.0.0.1:9000;
 fastcgi_read_timeout 300;
@@ -197,10 +200,10 @@ fastcgi_cache_bypass $skip_cache;
 fastcgi_no_cache $skip_cache;
 
 more_set_headers "X-Robots-Tag $robots";
+set $cachecontrol "nocache"; ## disable browser caching for dynamic pages
 
-## coming soon after testing ##
-## strip any potential cache headers from WordPress plugins etc ##
-# more_clear_headers "Cache-Control";
+## set-cookie on PHP content ##
+set $setcookie "Path=/; HttpOnly; Secure";
 }
 
 ####################################################################################################
@@ -412,13 +415,11 @@ location = /wp-content/mu-plugins/xxx-common.php {
 #### Server Block: Custom Settings For Popular Third-Party WordPress Plugins #######################
 ####################################################################################################
     
-    ## Easy Digital Downloads ##
-    location ~ ^/wp-content/uploads/edd/(.*?)\.zip$ {
-        rewrite / permanent;
-    }
-    
-    ## more coming soon... ##
-    
+## Easy Digital Downloads ##
+location ~ ^/wp-content/uploads/edd/(.*?)\.zip$ {
+    rewrite / permanent;
+}
+
     
 ## DO NOT REMOVE THIS CURLY BRACKET ᕦ⊙෴⊙ᕤ ##
 }
