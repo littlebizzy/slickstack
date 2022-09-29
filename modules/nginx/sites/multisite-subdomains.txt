@@ -170,6 +170,18 @@ location ~ "^(.*)/[0-9]{4}/([0-9]{2}/)?([0-9]{2}/)?$" {
 	set $robots "noindex, nofollow, nosnippet, noarchive";
 }
 
+## embed subdirs (bbpress) ##
+location ~ ^(.*)/embed/$ {
+	try_files $uri $uri/ /index.php?$args;
+	set $robots "noindex, nofollow, nosnippet, noarchive";
+}
+
+## reply sublinks (bbpress) ##
+location ~ ^(.*)/reply/$ {
+	try_files $uri $uri/ /index.php?$args;
+	set $robots "noindex, nofollow, nosnippet, noarchive";
+}
+
 ####################################################################################################
 #### Server Block (Multisite Subdomains): Noindex Certain File Types ###############################
 ####################################################################################################
@@ -271,7 +283,8 @@ if ($skip_cache = 0 ) {
 	set $rt_session "";
 }
 include /etc/nginx/fastcgi.conf;
-try_files $uri =404; ## more secure than try_files $uri $uri/ /index.php?$args;
+# try_files $uri =404;
+try_files $uri $uri/ /index.php?$args;
 fastcgi_split_path_info ^(.+\.php)(/.+)$;
 fastcgi_pass 127.0.0.1:9000;
 fastcgi_read_timeout 300;
@@ -282,8 +295,10 @@ fastcgi_cache_bypass $skip_cache;
 fastcgi_no_cache $skip_cache;
 
 more_set_headers "X-Robots-Tag $robots";
-
 set $cachecontrol "nocache"; ## disable browser caching for dynamic pages
+
+## set-cookie on PHP content ##
+set $setcookie "Path=/; HttpOnly; Secure";
 }
 
 ####################################################################################################
@@ -350,7 +365,8 @@ location /dev/ {
 
 location ~* \.(html)$ {
 	try_files $uri $uri/ /index.php?$args;
-	set $cachecontrol "public, max-age=691200";
+	set $cachecontrol "public, max-age=691200"; ## 1 week
+	set $setcookie "";
 }
 
 ####################################################################################################
@@ -361,7 +377,8 @@ location ~* \.(html)$ {
 ## keep in mind that Cloudflare or CDNs will likely overwrite these settings ##
 
 location ~* \.(atom|bmp|bz2|css|doc|docx|eot|gif|gz|ico|jpeg|jpg|js|mid|midi|mp4|ogg|ogv|otf|png|ppt|rar|rss|rtf|svg|svgz|tar|tgz|ttc|ttf|wav|webp|woff|woff2|xls|zip)$ {
-	set $cachecontrol "public, max-age=691200";
+	set $cachecontrol "public, max-age=2628000"; ## 1 month
+	set $setcookie "";
 }
 
 ####################################################################################################
@@ -439,8 +456,18 @@ location = /ads.txt {
 	deny all;
     }
     
+    ## wp-admin concatenation ##
+    location = /wp-admin/load-scripts.php {
+        deny all;
+    }
+    
+    ## wp-admin concatenation ##
+    location = /wp-admin/load-styles.php {
+        deny all;
+    }
+    
     ## wp-config ##
-    location = /wp-config*.php {
+    location ~ /wp-config*.php {
 	deny all;
     }
     
@@ -468,7 +495,46 @@ location = /ads.txt {
     location ~ /wp-content/debug\.log {
 	deny all;
     }
+	
+####################################################################################################
+#### R. Server Block (Production): Deny Access To Unsafe SlickStack Files ##########################
+####################################################################################################
 
+## here we deny frontend access to certain sensitive files that are part of SlickStack ##
+## this provides extra security and prevents snooping into your configuration ##
+
+    ## object-cache.php ##
+    location = /wp-content/object-cache.php {
+	deny all;
+    }
+    
+    ## blacklist.txt ##
+    location = /wp-content/blacklist.txt {
+	deny all;
+    }
+    
+    ## functions.php ##
+    location = /wp-content/functions.php {
+	deny all;
+    }
+    
+    ## xxx-common.php ##
+    location = /wp-content/mu-plugins/xxx-common.php {
+	deny all;
+    }
+
+####################################################################################################
+#### Server Block (Production): Deny Access To WordPress Installer #################################
+####################################################################################################
+    
+## SlickStack blocks access to the staging WordPress installer to avoid hacking etc ##
+## staging sites should populate their data using ss-sync-staging only ##
+    
+    ## block install script ##
+    location = /wp-admin/install.php {
+    	deny all;
+    }
+	
 ####################################################################################################
 #### Server Block: Custom Settings For Popular Third-Party WordPress Plugins #######################
 ####################################################################################################
