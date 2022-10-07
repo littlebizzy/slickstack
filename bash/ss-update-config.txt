@@ -41,7 +41,7 @@
 ## this build version ensures compatibility with ss-config boilerplate (from mirrors) ##
 ## it must match the latest ss-config boilerplate otherwise updating will fail ##
 
-SS_UPDATE_CONFIG_BUILD="SEP2022L"
+SS_UPDATE_CONFIG_BUILD="OCT2022A"
 
 ####################################################################################################
 #### B. SS-Update-Config: Source SS-Config + SS-Functions ##########################################
@@ -107,7 +107,7 @@ VALIDATE_SS_CONFIG=$(grep 'EOF' "$PATH_SS_CONFIG") ## change to "$SS_EOF" later
 
 ## validate ss-config ##
 if [[ -z "${VALIDATE_SS_CONFIG}" ]]; then
-    echo -e "${COLOR_ERROR}Exiting ss-update-config: Your current ss-config file is missing or corrupt so update was skipped... ${NOCOLOR}"
+    ss_echo "${COLOR_ERROR}Exiting ss-update-config: Your current ss-config file is missing or corrupt so update was skipped... ${NOCOLOR}"
     exit 1
 fi
 
@@ -126,8 +126,8 @@ SS_BUILD_LATEST=$(source /tmp/ss-config; echo "${SS_BUILD}" 2> /dev/null)
 
 ## ensure latest (retrieved) ss-config build matches current ss-update build ##
 if [[ "${SS_BUILD_LATEST}" != "${SS_UPDATE_CONFIG_BUILD}" ]]; then
-    rm "${TMP_SS_CONFIG}"
-    echo -e "${LIGHTRED}Exiting ss-update-config: There is a version mismatch between this script and public mirrors... ${NOCOLOR}"
+    ss_rm "${TMP_SS_CONFIG}"
+    ss_echo "${LIGHTRED}Exiting ss-update-config: There is a version mismatch between this script and public mirrors... ${NOCOLOR}"
     exit 1
 fi
 
@@ -137,6 +137,9 @@ fi
 
 ## this will update the existing ss-config file to latest boilerplate from our mirrors ##
 ## all existing options will be safely transferred to the new boilerplate ##
+
+## ss lockdown ##
+ss_sed "s|\(^SS_LOCKDOWN=\).*|SS_LOCKDOWN=\"$SS_LOCKDOWN\"|g" "${TMP_SS_CONFIG}"
 
 ## access settings ##
 ss_sed "s|\(^ROOT_PASSWORD=\).*|ROOT_PASSWORD=\"$ROOT_PASSWORD\"|g" "${TMP_SS_CONFIG}"
@@ -1211,10 +1214,10 @@ VALIDATE_TMP_SS_CONFIG=$(grep "${SS_EOF}" "${TMP_SS_CONFIG}")
 DB_NAME_NOW=$(source "${TMP_SS_CONFIG}"; echo "${DB_NAME}")
 if [[ -n "${VALIDATE_TMP_SS_CONFIG}" ]] && [[ -n "${DB_NAME_NOW}" ]]; then
     ss_mv "${TMP_SS_CONFIG}" "${PATH_SS_CONFIG}"
-    chown root:root "${PATH_SS_CONFIG}" ## must be root:root
+    ss_chown root:root "${PATH_SS_CONFIG}" ## must be root:root
     chmod 0700 "${PATH_SS_CONFIG}" ## must be 0700
 else
-    echo -e "${COLOR_ERROR}ss-update-config: The boilerplate appears corrupt so update was skipped... ${COLOR_RESET}"
+    ss_echo "${COLOR_ERROR}ss-update-config: The boilerplate appears corrupt so update was skipped... ${COLOR_RESET}"
 fi
 
 ####################################################################################################
