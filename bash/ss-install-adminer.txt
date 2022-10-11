@@ -48,6 +48,13 @@ source /var/www/ss-functions
 ## script timestamp ##
 ss_touch "${TIMESTAMP_SS_INSTALL_ADMINER}"
 
+
+####### new feature experimental #####
+if [[ "${SS_LOCKDOWN}" == "true" ]]; then
+    read -r -p "Your SlickStack server has lockdown enabled, run ss-install-adminer anyways? [y/N]" response
+    if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]]
+    then
+
 ####################################################################################################
 #### B. SS-Install-Adminer: Message (Begin Script) #################################################
 ####################################################################################################
@@ -95,6 +102,13 @@ ss_rm "$TMP_ADMINER_PHP"
 
 ## run ss-perms-adminer ##
 source "${PATH_SS_PERMS_ADMINER}"
+
+
+## lockdown if statement continued here
+else
+        exit 1
+    fi
+fi ## end lockdown check
 
 ####################################################################################################
 #### PLACEHOLDER: Reset Permissions (SlickStack Scripts) ###########################################
