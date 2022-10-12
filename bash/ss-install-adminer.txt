@@ -31,12 +31,11 @@ source /var/www/ss-functions
 ## each section should be commented so you understand what is being accomplished ##
 
 ## A. Touch Timestamp File
-## B. Message (Begin Script)
-
-## C. Cleanup Temporary Files
-## C. Install Adminer (phpMyAdmin)
-## D. Reset Permissions (Adminer)
-## E. Cleanup Temporary Files
+## B. Interactive Lockdown Prompt
+## C. Message (Begin Script)
+## D. Install Adminer (phpMyAdmin)
+## E. Reset Permissions (Adminer)
+## F. Exit Script Per Feedback
 
 ####################################################################################################
 #### A. SS-Install-Adminer: Touch Timestamp File ###################################################
@@ -48,8 +47,10 @@ source /var/www/ss-functions
 ## script timestamp ##
 ss_touch "${TIMESTAMP_SS_INSTALL_ADMINER}"
 
+####################################################################################################
+#### B. SS-Install-Adminer: Interactive Lockdown Prompt ############################################
+####################################################################################################
 
-####### new feature experimental #####
 if [[ "${SS_LOCKDOWN}" == "true" ]]; then
     read -r -p "Your SlickStack server has lockdown enabled, run ss-install-adminer anyways? [y/N]" response
 fi
@@ -58,7 +59,7 @@ if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]] || [[ "${SS_LOCKDOWN}" != "true" ]
     then
 
 ####################################################################################################
-#### B. SS-Install-Adminer: Message (Begin Script) #################################################
+#### C. SS-Install-Adminer: Message (Begin Script) #################################################
 ####################################################################################################
 
 ## this is a simple message that announces to the shell the purpose of this bash script ##
@@ -68,7 +69,7 @@ if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]] || [[ "${SS_LOCKDOWN}" != "true" ]
 ss_echo "${COLOR_INFO}Running ss-install-adminer... ${COLOR_RESET}"
 
 ####################################################################################################
-#### C. SS-Install-Adminer: Install Adminer (phpMyAdmin) ###########################################
+#### D. SS-Install-Adminer: Install Adminer (phpMyAdmin) ###########################################
 ####################################################################################################
 
 ## here we retrieve the latest version of adminer.php from our mirrors and install it ##
@@ -99,17 +100,19 @@ fi
 ss_rm "$TMP_ADMINER_PHP"
 
 ####################################################################################################
-#### D. SS-Install-Adminer: Reset Permissions (Adminer) ############################################
+#### E. SS-Install-Adminer: Reset Permissions (Adminer) ############################################
 ####################################################################################################
 
 ## run ss-perms-adminer ##
 source "${PATH_SS_PERMS_ADMINER}"
 
+####################################################################################################
+#### F. SS-Install-Adminer: Exit Script Per Feedback ###############################################
+####################################################################################################
 
-## lockdown if statement continued here
 else
     exit 1
-fi ## end lockdown check
+fi
 
 ####################################################################################################
 #### PLACEHOLDER: Reset Permissions (SlickStack Scripts) ###########################################
