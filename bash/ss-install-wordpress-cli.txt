@@ -7,9 +7,9 @@
 #### path: /var/www/ss-install-wordpress-cli #######################################################
 #### destination: n/a (not a boilerplate) ##########################################################
 #### purpose: Reinstalls the entire WP-CLI module for SlickStack servers (idempotent) ##############
-#### module version: WP-CLI 2.6.0 ##################################################################
+#### module version: WP-CLI 2.7.0 ##################################################################
 #### sourced by: ss-install ########################################################################
-#### bash aliases: ss install wordpress|wp cli, ss install wp-cli ##################################
+#### bash aliases: ss install wordpress|wp cli, ss install wp-cli|wpcli ############################
 ####################################################################################################
 
 ## SS-CONFIG MUST BE PROPERLY CONFIGURED AND ON CURRENT BUILD BEFORE RUNNING SS-INSTALL ##
@@ -32,6 +32,9 @@ source /var/www/ss-functions
 
 ## A. Touch Timestamp File
 ## B. Message (Begin Script)
+## C. Install WP-CLI
+## D. Reset Permissions (WP-CLI)
+## E. Reset Permissions (SlickStack Scripts)
 
 ####################################################################################################
 #### A. SS-Install-WordPress-CLI: Touch Timestamp File #############################################
@@ -54,7 +57,7 @@ ss_touch "${TIMESTAMP_SS_INSTALL_WORDPRESS_CLI}"
 ss_echo "${COLOR_INFO}Running ss-install-wordpress-cli... ${COLOR_RESET}"
 
 ####################################################################################################
-### SS-Install-Bash: Prepare WP-CLI Configuration ##################################################
+### C. SS-Install-WordPress-CLI: Install WP-CLI ####################################################
 ####################################################################################################
 
 ## to keep things simple we include the WP-CLI aliases within our own Bash aliases file ##
@@ -76,21 +79,20 @@ chmod +x "${TMP_WP_CLI_PHAR}"
 ## replace placeholders in wp-cli.yml ##
 ss_sed "s|@SITE_DOMAIN|${SITE_DOMAIN}|g" "${TMP_WP_CLI_YML}"
 
-
 ## copy files to destinations ##
 ss_cp "${TMP_WP_CLI_PHAR}" "${PATH_WP_CLI_PHAR}"
 ss_cp "${TMP_WP_CLI_YML}" "${PATH_WP_CLI_YML}"
 ss_cp "${TMP_WP_COMPLETION}" "${PATH_WP_COMPLETION_BASH}"
 
 ####################################################################################################
-#### SS-Install-WordPress-CLI: Reset Permissions (WordPress CLI) ###################################
+#### D. SS-Install-WordPress-CLI: Reset Permissions (WP-CLI) #######################################
 ####################################################################################################
 
 ## run ss-perms-wordpress-cli ##
 source "${PATH_SS_PERMS_WORDPRESS_CLI}"
 
 ####################################################################################################
-#### PLACEHOLDER: Reset Permissions (SlickStack Scripts) ###########################################
+#### E. SS-Install-WordPress-CLI: Reset Permissions (SlickStack Scripts) ###########################
 ####################################################################################################
 
 ## we include this permissions reset in all cron jobs and bash scripts for redundancy ##
