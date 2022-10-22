@@ -47,6 +47,20 @@ source /var/www/ss-functions
 ss_touch "${TIMESTAMP_SS_INSTALL_WORDPRESS_CLI}"
 
 ####################################################################################################
+#### B. SS-Install-WordPress-CLI: Interactive Lockdown Prompt ######################################
+####################################################################################################
+
+## in case SS_LOCKDOWN is enabled this interactive prompt will ask before proceeding ##
+## otherwise by default this script cannot run if lockdown is currently enabled ##
+
+if [[ "${SS_LOCKDOWN}" == "true" ]]; then
+    read -r -p "Your SlickStack server has lockdown enabled, run ss-install-wordpress-cli anyways? [y/N]" response
+fi
+
+if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]] || [[ "${SS_LOCKDOWN}" != "true" ]]
+    then
+    
+####################################################################################################
 #### B. SS-Install-WordPress-CLI: Message (Begin Script) ###########################################
 ####################################################################################################
 
@@ -90,6 +104,14 @@ ss_cp "${TMP_WP_COMPLETION}" "${PATH_WP_COMPLETION_BASH}"
 
 ## run ss-perms-wordpress-cli ##
 source "${PATH_SS_PERMS_WORDPRESS_CLI}"
+
+####################################################################################################
+#### F. SS-Install-WordPress-CLI: Exit Script Per Feedback #########################################
+####################################################################################################
+
+else
+    exit 1
+fi
 
 ####################################################################################################
 #### E. SS-Install-WordPress-CLI: Reset Permissions (SlickStack Scripts) ###########################
