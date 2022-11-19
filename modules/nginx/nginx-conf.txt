@@ -84,10 +84,12 @@ types_hash_max_size @NGINX_TYPES_MAX_HASH_SIZE;
 fastcgi_cache_path /var/www/cache/nginx levels=1:2 keys_zone=WORDPRESS:@FCGI_CACHE_MEMORY inactive=@FCGI_CACHE_INACTIVE max_size=@FCGI_CACHE_MAX_SIZE;
 fastcgi_cache_key "$scheme$request_method$host$request_uri$rt_session";
 
-fastcgi_cache_use_stale error timeout invalid_header updating http_500;
 fastcgi_ignore_headers Cache-Control Expires Set-Cookie;
+
 fastcgi_cache_lock on;
-fastcgi_cache_background_update off;
+fastcgi_cache_use_stale error timeout invalid_header updating http_500;
+fastcgi_cache_background_update on;
+fastcgi_cache_revalidate on;
 
 fastcgi_connect_timeout @FCGI_CONNECT_TIMEOUT;
 fastcgi_read_timeout @FCGI_READ_TIMEOUT;
@@ -408,5 +410,7 @@ include /var/www/sites/*;
 ## Ref: https://gist.github.com/corburn/9ad9d07535d59b478159
 ## Ref: https://content-security-policy.com/frame-ancestors/
 ## Ref: https://stackoverflow.com/questions/63989613/how-to-allow-all-frame-ancestors-with-csp-header
+## Ref: https://serverfault.com/questions/907051/why-is-nginx-fastcgi-cache-stale-response-slower-than-hit-response
+## Ref: https://speakerdeck.com/rungta/micro-caching-in-nginx-for-high-performance
 
 ## SS_EOF
