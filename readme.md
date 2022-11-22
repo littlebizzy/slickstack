@@ -11,7 +11,7 @@ SlickStack is a free LEMP stack automation script written in Bash designed to en
 
 ## Core Modules
 
-*Last updated: Oct 18, 2022*
+*Last updated: Nov 23, 2022*
 
 | LEMP Module | Mirrors | Version | What does SlickStack optimize? |
 | :------------- | :----------: | :----------: | :----------: |
@@ -22,14 +22,16 @@ SlickStack is a free LEMP stack automation script written in Bash designed to en
 | **MySQL** | [mirrors](https://mirrors.slickstack.io/modules/mysql/) | 8.0.x | `my.cnf` |
 | **PHP-FPM** | [mirrors](https://mirrors.slickstack.io/modules/php-fpm/) | 8.1.x | `php.ini` + `php-fpm.conf` + `www.conf` |
 | **Redis** | [mirrors](https://mirrors.slickstack.io/modules/redis/) | 6.0.x | `redis.conf` + `object-cache.php` |
-| **WordPress** | [mirrors](https://mirrors.slickstack.io/modules/wordpress/) | 6.0.x | some WP Core junk files are removed by `ss-clean` |
-| **WP-CLI** | [mirrors](https://mirrors.slickstack.io/modules/wordpress/wp-cli/) | 2.7.1 | some commands are disabled |
+| **WordPress** | [mirrors](https://mirrors.slickstack.io/modules/wordpress/) | 6.1.x | some WP Core junk files are removed by `ss-clean` |
+| **WP-CLI** | [mirrors](https://mirrors.slickstack.io/modules/wordpress/wp-cli/) | 2.7.x | some commands are disabled |
 | **Adminer** | [mirrors](https://mirrors.slickstack.io/modules/adminer/) | 4.8.1 | default config |
 | **Git** | [mirrors](https://mirrors.slickstack.io/modules/git/) | 2.34.x | default config |
 | **UFW Firewall** | [mirrors](https://mirrors.slickstack.io/modules/ufw-firewall/) | 0.36.x | `ufw` + `ufw.conf` + `user-rules` |
 | **ClamAV** | [mirrors](https://mirrors.slickstack.io/modules/clamav/) | 0.103.x | `freshclam.conf` |
 
 ## Changelog
+
+* **NEW!** Our free default theme HoverCraft is now installed via `ss-install-wordpress-core`... feedback desired from web designers and SEO consultants as we continue theme development!
 
 * **NEW!** For cleaner SEO, certain file types are now force noindexed such as PDF, DOC, TXT, and LOG files...
 
