@@ -108,8 +108,17 @@ if ($query_string ~ "^amp(.*)$") {
 #### Redirect Junk URLs
 ####################################################################################################
 
-## redirect /trackback/ ##
+## trackback ##
 rewrite ^(.*)/trackback/?$ $1 permanent;
+
+## feed (preserve master feed) ##
+location = /feed/?$ {
+        try_files $uri $uri/ /index.php?$args;
+        set $robots "noindex, nofollow, nosnippet, noarchive";
+}
+
+## feed ##
+rewrite ^/(.*)/feed/?$ /$1 permanent;
 
 ####################################################################################################
 #### Server Block (Production): Root Location Block ################################################
@@ -162,18 +171,6 @@ location ~ ^(.*)/page/(.*)/$ {
 
 ## tags ##
 location ~ ^(.*)/tag/(.*)/$ {
-	try_files $uri $uri/ /index.php?$args;
-	set $robots "noindex, nofollow, nosnippet, noarchive";
-}
-
-## rss feeds ##
-location ~ ^(.*)/feed/$ {
-	try_files $uri $uri/ /index.php?$args;
-	set $robots "noindex, nofollow, nosnippet, noarchive";
-}
-
-## trackback ##
-location ~ ^(.*)/trackback/$ {
 	try_files $uri $uri/ /index.php?$args;
 	set $robots "noindex, nofollow, nosnippet, noarchive";
 }
