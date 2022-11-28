@@ -80,9 +80,6 @@ types_hash_max_size @NGINX_TYPES_MAX_HASH_SIZE;
     
 ## FastCGI Cache is arguably the most powerful Nginx feature for scaling high-traffic sites ##
 ## whenever possible maintain aggressive (higher) settings to improve performance ##
-
-fastcgi_ignore_headers Cache-Control Expires Set-Cookie;
-fastcgi_intercept_errors off;
     
 fastcgi_cache_path /var/www/cache/nginx levels=1:2 keys_zone=WORDPRESS:@FCGI_CACHE_MEMORY inactive=@FCGI_CACHE_INACTIVE max_size=@FCGI_CACHE_MAX_SIZE;
 fastcgi_cache_key "$scheme$request_method$host$request_uri$rt_session";
@@ -91,15 +88,18 @@ fastcgi_cache_use_stale error timeout invalid_header updating http_500;
 fastcgi_cache_background_update on;
 fastcgi_cache_revalidate on;
 
+fastcgi_ignore_headers Cache-Control Expires Set-Cookie;
+fastcgi_intercept_errors off;
+
 fastcgi_connect_timeout @FCGI_CONNECT_TIMEOUT;
 fastcgi_read_timeout @FCGI_READ_TIMEOUT;
 fastcgi_send_timeout @FCGI_SEND_TIMEOUT;
 
 fastcgi_buffering on;
-# fastcgi_buffers @FCGI_BUFFERS;
-# fastcgi_buffer_size @FCGI_BUFFER_SIZE;
-# fastcgi_busy_buffers_size @FCGI_BUSY_BUFFERS_SIZE;
-# fastcgi_temp_file_write_size @FCGI_TEMP_FILE_WRITE_SIZE;
+fastcgi_buffers @FCGI_BUFFERS;
+fastcgi_buffer_size @FCGI_BUFFER_SIZE;
+fastcgi_busy_buffers_size @FCGI_BUSY_BUFFERS_SIZE;
+fastcgi_temp_file_write_size @FCGI_TEMP_FILE_WRITE_SIZE;
     
 ####################################################################################################
 #### E. Nginx.conf: Open File Cache Settings #######################################################
