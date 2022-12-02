@@ -104,9 +104,9 @@ fi
 
 ## prepare new files ##
 ss_cp "${TMP_WORDPRESS_ZIP}" /var/www/html
-unzip /var/www/html/wordpress.zip -d /var/www/html
+ss_unzip /var/www/html/wordpress.zip -d /var/www/html
 chown -R www-data:slickstack /var/www/html/wordpress
-chmod 775 /var/www/html/wordpress
+ss_chmod 775 /var/www/html/wordpress
 
 ## install new files ##
 ss_rsync /var/www/html/wordpress/* /var/www/html
@@ -122,12 +122,12 @@ ss_wget "${TMP_HOVERCRAFT_ZIP}" "${MIRROR_HOVERCRAFT_ZIP}"
 ss_unzip "${TMP_HOVERCRAFT_ZIP}"
 ss_mv /tmp/hovercraft-master /tmp/hovercraft
 chown -R www-data:slickstack /tmp/hovercraft
-chmod 775 /tmp/hovercraft
+ss_chmod 775 /tmp/hovercraft
 ss_mkdir /var/www/html/wp-content/themes/hovercraft
 ss_rm /var/www/html/wp-content/themes/hovercraft/*
 ss_rsync /tmp/hovercraft/* /var/www/html/wp-content/themes/hovercraft
 chown -R www-data:slickstack /var/www/html/wp-content/themes/hovercraft
-chmod 775 /var/www/html/wp-content/themes/hovercraft
+ss_chmod 775 /var/www/html/wp-content/themes/hovercraft
 ss_rm /tmp/hovercraft*
 ss_rm /tmp/master*.zip*
 
@@ -155,9 +155,9 @@ if [[ "${STAGING_SITE}" == "true" ]]; then
 
     ## prepare new files ##
     ss_cp "${TMP_WORDPRESS_ZIP}" /var/www/html/staging
-    unzip /var/www/html/staging/wordpress.zip -d /var/www/html/staging
+    ss_unzip /var/www/html/staging/wordpress.zip -d /var/www/html/staging
     chown -R www-data:slickstack /var/www/html/staging/wordpress
-    chmod 775 /var/www/html/staging/wordpress
+    ss_chmod 775 /var/www/html/staging/wordpress
     
     ## install new files files ##
     ss_rsync /var/www/html/staging/wordpress/* /var/www/html/staging
@@ -192,9 +192,9 @@ if [[ "${DEV_SITE}" == "true" ]]; then
 
     ## prepare new files ##
     ss_cp "${TMP_WORDPRESS_ZIP}" /var/www/html/dev
-    unzip /var/www/html/dev/wordpress.zip -d /var/www/html/dev
+    ss_unzip /var/www/html/dev/wordpress.zip -d /var/www/html/dev
     chown -R www-data:slickstack /var/www/html/dev/wordpress
-    chmod 775 /var/www/html/dev/wordpress
+    ss_chmod 775 /var/www/html/dev/wordpress
     
     ## install new files ##
     ss_rsync /var/www/html/dev/wordpress/* /var/www/html/dev
@@ -258,7 +258,7 @@ if [[ -n $(mysql --execute "SHOW TABLES FROM ${DB_NAME} WHERE Tables_in_${DB_NAM
 fi
 
 ## staging ##
-if [[ "$STAGING_SITE" == "true" ]]; then 
+if [[ "${STAGING_SITE}" == "true" ]]; then 
     
     if [[ -n $(mysql --execute "SHOW TABLES FROM staging WHERE Tables_in_staging LIKE '${DB_PREFIX}options';" 2> /dev/null) ]]; then
     
@@ -269,7 +269,7 @@ if [[ "$STAGING_SITE" == "true" ]]; then
 fi
 
 ## development ##
-if [[ "$DEV_SITE" == "true" ]]; then 
+if [[ "${DEV_SITE}" == "true" ]]; then 
     
     if [[ -n $(mysql --execute "SHOW TABLES FROM development WHERE Tables_in_development LIKE '${DB_PREFIX}options';" 2> /dev/null) ]]; then
     
