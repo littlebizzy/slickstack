@@ -82,10 +82,10 @@ types_hash_max_size @NGINX_TYPES_MAX_HASH_SIZE;
 ## whenever possible maintain aggressive (higher) settings to improve performance ##
     
 fastcgi_cache_path /var/www/cache/nginx levels=1:2 keys_zone=WORDPRESS:@FCGI_CACHE_MEMORY inactive=@FCGI_CACHE_INACTIVE max_size=@FCGI_CACHE_MAX_SIZE;
-fastcgi_cache_key "$scheme$request_method$host$request_uri$rt_session";
+fastcgi_cache_key "$scheme$request_method$host$request_uri$rt_session"; ## $rt_session exists in server block
 fastcgi_cache_lock on;
 fastcgi_cache_use_stale error timeout invalid_header updating http_500;
-fastcgi_cache_background_update on;
+fastcgi_cache_background_update on; ## requires fastcgi_cache_use_stale updating
 fastcgi_cache_revalidate on;
 
 fastcgi_ignore_headers Cache-Control Expires Set-Cookie;
@@ -411,5 +411,7 @@ include /var/www/sites/*;
 ## Ref: https://stackoverflow.com/questions/63989613/how-to-allow-all-frame-ancestors-with-csp-header
 ## Ref: https://serverfault.com/questions/907051/why-is-nginx-fastcgi-cache-stale-response-slower-than-hit-response
 ## Ref: https://speakerdeck.com/rungta/micro-caching-in-nginx-for-high-performance
+## Ref: https://10web.io/blog/wordpress-cache/
+## Ref: https://kb.levine.org/homelab/applications/nginx/how-to-use-nginx-for-in-memory-caching/
 
 ## SS_EOF
