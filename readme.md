@@ -29,6 +29,10 @@ SlickStack is a free LEMP stack automation script written in Bash designed to en
 | **UFW Firewall** | [mirrors](https://mirrors.slickstack.io/modules/ufw-firewall/) | 0.36.x | `ufw` + `ufw.conf` + `user-rules` |
 | **ClamAV** | [mirrors](https://mirrors.slickstack.io/modules/clamav/) | 0.103.x | `freshclam.conf` |
 
+## Thanks to our sponsors!
+
+- [backamblock](https://github.com/backamblock)
+
 ## Changelog
 
 * **NEW!** Our free default theme HoverCraft is now installed via `ss-install-wordpress-core`... feedback desired from web designers and SEO consultants as we continue theme development!
