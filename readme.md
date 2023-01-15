@@ -2,12 +2,11 @@
 
 SlickStack is a free LEMP stack automation script written in Bash designed to enhance and simplify WordPress provisioning, performance, and security.
 
-* [**Discord server**](https://discord.gg/nGskJdg) (subscribe to #announce for updates)
-* [**Skype group chat**](https://join.skype.com/NdpqKrN2BHdN)
+[**Become a sponsor**](https://github.com/sponsors/jessuppi?o=esb) and receive access to our private Discord server!
 
-| PageSpeed | GTMetrix | Pingdom | SecHeaders | SSL Labs | WebPageTest | ImmuniWeb |
-| :--------------: | :------: | :-----: | :--------------: | :-------------: | :-------------: | :-------------: |
-| [**A**](https://developers.google.com/speed/pagespeed/insights/?url=https%3A%2F%2Fslickstack.io%2F) | [**A**](https://gtmetrix.com/reports/slickstack.io/zpLMZ1eb) | [**A**](https://tools.pingdom.com/#5aeba9dea8000000) | [**A**](https://securityheaders.com/?q=https%3A%2F%2Fslickstack.io%2F&followRedirects=on) | [**A**](https://www.ssllabs.com/ssltest/analyze.html?d=slickstack.io&latest) | [**A**](https://www.webpagetest.org/result/190920_68_a4a541db9847ce601ef264b41df9d0f3/) | [**A**](https://www.immuniweb.com/websec/?id=pmqYyXDB) |
+## Thank you to our sponsors!
+
+[backamblock](https://github.com/backamblock), [yamanmucahit](https://github.com/yamanmucahit), [maxalerator](https://github.com/maxalerator), [konkova](https://github.com/konkova), [HDBear](https://github.com/HDBear)
 
 ## Core Modules
 
@@ -28,10 +27,6 @@ SlickStack is a free LEMP stack automation script written in Bash designed to en
 | **Git** | [mirrors](https://mirrors.slickstack.io/modules/git/) | 2.34.x | default config |
 | **UFW Firewall** | [mirrors](https://mirrors.slickstack.io/modules/ufw-firewall/) | 0.36.x | `ufw` + `ufw.conf` + `user-rules` |
 | **ClamAV** | [mirrors](https://mirrors.slickstack.io/modules/clamav/) | 0.103.x | `freshclam.conf` |
-
-## Thanks to our sponsors!
-
-- [backamblock](https://github.com/backamblock)
 
 ## Changelog
 
