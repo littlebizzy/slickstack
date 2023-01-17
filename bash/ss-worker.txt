@@ -91,11 +91,18 @@ ss_cp "${PATH_SS_CONFIG}" /var/www/backups/config/ss-config.bak.${SYSTEM_CURRENT
 ## here we retrieve the latest ss-check core bash script to improve overall redundancy ##
 ## thus ss-check avoids installing itself and no single point of failure (SPOF) ##
 
-## retrieve current ss-check ##
-ss_wget "${TMP_SS_CHECK}" "${MIRROR_SS_CHECK}"
+## retrieve ss-check ##
+ss_wget "${TMP_SS_CHECK}" "${GITHUB_SS_CHECK}"
+VALIDATE_TMP_SS_CHECK=$(grep 'SS_EOF' "${TMP_SS_CHECK}" 2> /dev/null)
+if [[ -z "${VALIDATE_TMP_SS_CHECK}" ]]; then
+    ss_wget "${TMP_SS_CHECK}" "${GITLAB_SS_CHECK}"
+fi
 
 ## install ss-check ##
-ss_mv "${TMP_SS_CHECK}" "${PATH_SS_CHECK}"
+VALIDATE2_TMP_SS_CHECK=$(grep 'SS_EOF' "${TMP_SS_CHECK}" 2> /dev/null)
+if [[ -n "${VALIDATE2_TMP_SS_CHECK}" ]]; then
+    ss_mv "${TMP_SS_CHECK}" "${PATH_SS_CHECK}"
+fi
 
 ####################################################################################################
 #### E. SS-Worker: Transfer Pilot File Settings (If Exists) ########################################
