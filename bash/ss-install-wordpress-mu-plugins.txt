@@ -33,13 +33,15 @@ source /var/www/ss-functions
 ## A. Touch Timestamp File
 ## B. Message (Begin Script)
 ## C. Run SS-Install-Ubuntu-Utils
-## D. Install XXX-Common.php
-## E. Install Autoloader.php
-## F. Install Object-Cache.php
-## G. Install Required Staging/Dev MU Plugins
-## H. Install Specified MU Plugins
-## I. Reset Permissions (WordPress MU Plugins)
-## J. Purge Cache (PHP OPcache)
+
+## D. Delete MU Plugins Directory Contents
+## E. Install XXX-Common.php
+## F. Install Autoloader.php
+## G. Install Object-Cache.php
+## H. Install Required Staging/Dev MU Plugins
+## I. Install Specified MU Plugins
+## J. Reset Permissions (WordPress MU Plugins)
+## K. Purge Cache (PHP OPcache)
 
 ####################################################################################################
 #### A. SS-Install-WordPress-MU-Plugins: Touch Timestamp File ######################################
@@ -56,7 +58,7 @@ ss_touch "${TIMESTAMP_SS_INSTALL_WORDPRESS_MU_PLUGINS}"
 ####################################################################################################
 
 ## this is a simple message that announces to the shell the purpose of this bash script ##
-## it will only be noticed by sudo users who manually call ss core bash scripts ##
+## it will only be seen by sudo users who manually run this script in the shell ##
 
 ## echo message ##
 ss_echo "${COLOR_INFO}Running ss-install-wordpress-mu-plugins... ${COLOR_RESET}"
@@ -69,25 +71,30 @@ ss_echo "${COLOR_INFO}Running ss-install-wordpress-mu-plugins... ${COLOR_RESET}"
 source "${PATH_SS_INSTALL_UBUNTU_UTILS}"
 
 ####################################################################################################
-#### SS-Muplugs: Ensure MU (Must-Use) Directory Exists + Delete Current MU Plugins #################
+#### D. SS-Install-WordPress-MU-Plugins: Delete MU Plugins Directory Contents ######################
 ####################################################################################################
 
-## ensure MU (Must-Use) plugins directory exists ##
+## first we must ensure that the mu-plugins directory exists and delete existing contents ##
+## this helps avoid malware and any secret changes to your website file structure ##
+
+## production ##
 ss_mkdir /var/www/html/wp-content/mu-plugins
 ss_rm /var/www/html/wp-content/mu-plugins/*
 
+## development ##
 if [[ "${DEV_SITE}" == "true" ]]; then
     ss_mkdir /var/www/html/dev/wp-content/mu-plugins
     ss_rm /var/www/html/dev/wp-content/mu-plugins/*
 fi
 
+## staging ##
 if [[ "${STAGING_SITE}" == "true" ]]; then
     ss_mkdir /var/www/html/staging/wp-content/mu-plugins
     ss_rm /var/www/html/staging/wp-content/mu-plugins/*
 fi
 
 ####################################################################################################
-#### D. SS-Install-WordPress-MU-Plugins: Install XXX-Common.php ####################################
+#### E. SS-Install-WordPress-MU-Plugins: Install XXX-Common.php ####################################
 ####################################################################################################
 
 ## xxx-common is a critical MU plugin for SlickStack that provides WP Admin features ##
@@ -181,7 +188,7 @@ ss_cp "${TMP_XXX_COMMON_PHP}" /var/www/html/dev/wp-content/mu-plugins/xxx-common
 fi
 
 ####################################################################################################
-#### E. SS-Install-WordPress-MU-Plugins: Install Autoloader.php ####################################
+#### F. SS-Install-WordPress-MU-Plugins: Install Autoloader.php ####################################
 ####################################################################################################
 
 ## retrieve files ##
@@ -199,7 +206,7 @@ if [[ "${DEV_SITE}" == "true" ]]; then
 fi
 
 ####################################################################################################
-#### F. SS-Install-WordPress-MU-Plugins: Install Object-Cache.php ##################################
+#### G. SS-Install-WordPress-MU-Plugins: Install Object-Cache.php ##################################
 ####################################################################################################
 
 ## object-cache.php is only installed on production to avoid Redis query conflicts ##
@@ -218,7 +225,7 @@ if [[ "${SS_OBJECT_CACHE}" != "false" ]]; then
 fi
 
 ####################################################################################################
-#### G. SS-Install-WordPress-MU-Plugins: Install Required Staging/Dev MU Plugins ###################
+#### H. SS-Install-WordPress-MU-Plugins: Install Required Staging/Dev MU Plugins ###################
 ####################################################################################################
 
 ## staging site ##
@@ -255,7 +262,7 @@ if [[ "${DEV_SITE}" == "true" ]]; then
 fi
 
 ####################################################################################################
-#### H. SS-Install-WordPress-MU-Plugins: Install Specified MU Plugins ##############################
+#### I. SS-Install-WordPress-MU-Plugins: Install Specified MU Plugins ##############################
 ####################################################################################################
 
 ## below MU plugins are distinct from the required MU plugins that are always included ##
@@ -263,114 +270,114 @@ fi
 
 if [[ "${SS_WORDPRESS_MU_PLUGINS}" == "custom" || "${SS_MU_PLUGINS}" == "custom" ]] && [[ -n "${MU_PLUGIN_01_SOURCE}" ]] && [[ -n "${MU_PLUGIN_01_DIR}" ]]; then
     ## download specified (custom) MU plugins ##
-    ss_wget /tmp/${MU_PLUGIN_01_DIR}.zip ${MU_PLUGIN_01_SOURCE}
-    ss_wget /tmp/${MU_PLUGIN_02_DIR}.zip ${MU_PLUGIN_02_SOURCE}
-    ss_wget /tmp/${MU_PLUGIN_03_DIR}.zip ${MU_PLUGIN_03_SOURCE}
-    ss_wget /tmp/${MU_PLUGIN_04_DIR}.zip ${MU_PLUGIN_04_SOURCE}
-    ss_wget /tmp/${MU_PLUGIN_05_DIR}.zip ${MU_PLUGIN_05_SOURCE}
-    ss_wget /tmp/${MU_PLUGIN_06_DIR}.zip ${MU_PLUGIN_06_SOURCE}
-    ss_wget /tmp/${MU_PLUGIN_07_DIR}.zip ${MU_PLUGIN_07_SOURCE}
-    ss_wget /tmp/${MU_PLUGIN_08_DIR}.zip ${MU_PLUGIN_08_SOURCE}
-    ss_wget /tmp/${MU_PLUGIN_09_DIR}.zip ${MU_PLUGIN_09_SOURCE}
-    ss_wget /tmp/${MU_PLUGIN_10_DIR}.zip ${MU_PLUGIN_10_SOURCE}
-    ss_wget /tmp/${MU_PLUGIN_11_DIR}.zip ${MU_PLUGIN_11_SOURCE}
-    ss_wget /tmp/${MU_PLUGIN_12_DIR}.zip ${MU_PLUGIN_12_SOURCE}
-    ss_wget /tmp/${MU_PLUGIN_13_DIR}.zip ${MU_PLUGIN_13_SOURCE}
-    ss_wget /tmp/${MU_PLUGIN_14_DIR}.zip ${MU_PLUGIN_14_SOURCE}
-    ss_wget /tmp/${MU_PLUGIN_15_DIR}.zip ${MU_PLUGIN_15_SOURCE}
-    ss_wget /tmp/${MU_PLUGIN_16_DIR}.zip ${MU_PLUGIN_16_SOURCE}
-    ss_wget /tmp/${MU_PLUGIN_17_DIR}.zip ${MU_PLUGIN_17_SOURCE}
-    ss_wget /tmp/${MU_PLUGIN_18_DIR}.zip ${MU_PLUGIN_18_SOURCE}
-    ss_wget /tmp/${MU_PLUGIN_19_DIR}.zip ${MU_PLUGIN_19_SOURCE}
-    ss_wget /tmp/${MU_PLUGIN_20_DIR}.zip ${MU_PLUGIN_20_SOURCE}
+    ss_wget /tmp/"${MU_PLUGIN_01_DIR}".zip "${MU_PLUGIN_01_SOURCE}"
+    ss_wget /tmp/"${MU_PLUGIN_02_DIR}".zip "${MU_PLUGIN_02_SOURCE}"
+    ss_wget /tmp/"${MU_PLUGIN_03_DIR}".zip "${MU_PLUGIN_03_SOURCE}"
+    ss_wget /tmp/"${MU_PLUGIN_04_DIR}".zip "${MU_PLUGIN_04_SOURCE}"
+    ss_wget /tmp/"${MU_PLUGIN_05_DIR}".zip "${MU_PLUGIN_05_SOURCE}"
+    ss_wget /tmp/"${MU_PLUGIN_06_DIR}".zip "${MU_PLUGIN_06_SOURCE}"
+    ss_wget /tmp/"${MU_PLUGIN_07_DIR}".zip "${MU_PLUGIN_07_SOURCE}"
+    ss_wget /tmp/"${MU_PLUGIN_08_DIR}".zip "${MU_PLUGIN_08_SOURCE}"
+    ss_wget /tmp/"${MU_PLUGIN_09_DIR}".zip "${MU_PLUGIN_09_SOURCE}"
+    ss_wget /tmp/"${MU_PLUGIN_10_DIR}".zip "${MU_PLUGIN_10_SOURCE}"
+    ss_wget /tmp/"${MU_PLUGIN_11_DIR}".zip "${MU_PLUGIN_11_SOURCE}"
+    ss_wget /tmp/"${MU_PLUGIN_12_DIR}".zip "${MU_PLUGIN_12_SOURCE}"
+    ss_wget /tmp/"${MU_PLUGIN_13_DIR}".zip "${MU_PLUGIN_13_SOURCE}"
+    ss_wget /tmp/"${MU_PLUGIN_14_DIR}".zip "${MU_PLUGIN_14_SOURCE}"
+    ss_wget /tmp/"${MU_PLUGIN_15_DIR}".zip "${MU_PLUGIN_15_SOURCE}"
+    ss_wget /tmp/"${MU_PLUGIN_16_DIR}".zip "${MU_PLUGIN_16_SOURCE}"
+    ss_wget /tmp/"${MU_PLUGIN_17_DIR}".zip "${MU_PLUGIN_17_SOURCE}"
+    ss_wget /tmp/"${MU_PLUGIN_18_DIR}".zip "${MU_PLUGIN_18_SOURCE}"
+    ss_wget /tmp/"${MU_PLUGIN_19_DIR}".zip "${MU_PLUGIN_19_SOURCE}"
+    ss_wget /tmp/"${MU_PLUGIN_20_DIR}".zip "${MU_PLUGIN_20_SOURCE}"
     
     ## unzip them all ##
-    unzip /tmp/${MU_PLUGIN_01_DIR}.zip -d /tmp
-    unzip /tmp/${MU_PLUGIN_02_DIR}.zip -d /tmp
-    unzip /tmp/${MU_PLUGIN_03_DIR}.zip -d /tmp
-    unzip /tmp/${MU_PLUGIN_04_DIR}.zip -d /tmp
-    unzip /tmp/${MU_PLUGIN_05_DIR}.zip -d /tmp
-    unzip /tmp/${MU_PLUGIN_06_DIR}.zip -d /tmp
-    unzip /tmp/${MU_PLUGIN_07_DIR}.zip -d /tmp
-    unzip /tmp/${MU_PLUGIN_08_DIR}.zip -d /tmp
-    unzip /tmp/${MU_PLUGIN_09_DIR}.zip -d /tmp
-    unzip /tmp/${MU_PLUGIN_10_DIR}.zip -d /tmp
-    unzip /tmp/${MU_PLUGIN_11_DIR}.zip -d /tmp
-    unzip /tmp/${MU_PLUGIN_12_DIR}.zip -d /tmp
-    unzip /tmp/${MU_PLUGIN_13_DIR}.zip -d /tmp
-    unzip /tmp/${MU_PLUGIN_14_DIR}.zip -d /tmp
-    unzip /tmp/${MU_PLUGIN_15_DIR}.zip -d /tmp
-    unzip /tmp/${MU_PLUGIN_16_DIR}.zip -d /tmp
-    unzip /tmp/${MU_PLUGIN_17_DIR}.zip -d /tmp
-    unzip /tmp/${MU_PLUGIN_18_DIR}.zip -d /tmp
-    unzip /tmp/${MU_PLUGIN_19_DIR}.zip -d /tmp
-    unzip /tmp/${MU_PLUGIN_20_DIR}.zip -d /tmp
+    unzip /tmp/"${MU_PLUGIN_01_DIR}".zip -d /tmp
+    unzip /tmp/"${MU_PLUGIN_02_DIR}".zip -d /tmp
+    unzip /tmp/"${MU_PLUGIN_03_DIR}".zip -d /tmp
+    unzip /tmp/"${MU_PLUGIN_04_DIR}".zip -d /tmp
+    unzip /tmp/"${MU_PLUGIN_05_DIR}".zip -d /tmp
+    unzip /tmp/"${MU_PLUGIN_06_DIR}".zip -d /tmp
+    unzip /tmp/"${MU_PLUGIN_07_DIR}".zip -d /tmp
+    unzip /tmp/"${MU_PLUGIN_08_DIR}".zip -d /tmp
+    unzip /tmp/"${MU_PLUGIN_09_DIR}".zip -d /tmp
+    unzip /tmp/"${MU_PLUGIN_10_DIR}".zip -d /tmp
+    unzip /tmp/"${MU_PLUGIN_11_DIR}".zip -d /tmp
+    unzip /tmp/"${MU_PLUGIN_12_DIR}".zip -d /tmp
+    unzip /tmp/"${MU_PLUGIN_13_DIR}".zip -d /tmp
+    unzip /tmp/"${MU_PLUGIN_14_DIR}".zip -d /tmp
+    unzip /tmp/"${MU_PLUGIN_15_DIR}".zip -d /tmp
+    unzip /tmp/"${MU_PLUGIN_16_DIR}".zip -d /tmp
+    unzip /tmp/"${MU_PLUGIN_17_DIR}".zip -d /tmp
+    unzip /tmp/"${MU_PLUGIN_18_DIR}".zip -d /tmp
+    unzip /tmp/"${MU_PLUGIN_19_DIR}".zip -d /tmp
+    unzip /tmp/"${MU_PLUGIN_20_DIR}".zip -d /tmp
     
     ## copy to destinations ##
-    ss_cp /tmp/${MU_PLUGIN_01_DIR} /var/www/html/wp-content/mu-plugins/${MU_PLUGIN_01_DIR}
-    ss_cp /tmp/${MU_PLUGIN_02_DIR} /var/www/html/wp-content/mu-plugins/${MU_PLUGIN_02_DIR}
-    ss_cp /tmp/${MU_PLUGIN_03_DIR} /var/www/html/wp-content/mu-plugins/${MU_PLUGIN_03_DIR}
-    ss_cp /tmp/${MU_PLUGIN_04_DIR} /var/www/html/wp-content/mu-plugins/${MU_PLUGIN_04_DIR}
-    ss_cp /tmp/${MU_PLUGIN_05_DIR} /var/www/html/wp-content/mu-plugins/${MU_PLUGIN_05_DIR}
-    ss_cp /tmp/${MU_PLUGIN_06_DIR} /var/www/html/wp-content/mu-plugins/${MU_PLUGIN_06_DIR}
-    ss_cp /tmp/${MU_PLUGIN_07_DIR} /var/www/html/wp-content/mu-plugins/${MU_PLUGIN_07_DIR}
-    ss_cp /tmp/${MU_PLUGIN_08_DIR} /var/www/html/wp-content/mu-plugins/${MU_PLUGIN_08_DIR}
-    ss_cp /tmp/${MU_PLUGIN_09_DIR} /var/www/html/wp-content/mu-plugins/${MU_PLUGIN_09_DIR}
-    ss_cp /tmp/${MU_PLUGIN_10_DIR} /var/www/html/wp-content/mu-plugins/${MU_PLUGIN_10_DIR}
-    ss_cp /tmp/${MU_PLUGIN_11_DIR} /var/www/html/wp-content/mu-plugins/${MU_PLUGIN_11_DIR}
-    ss_cp /tmp/${MU_PLUGIN_12_DIR} /var/www/html/wp-content/mu-plugins/${MU_PLUGIN_12_DIR}
-    ss_cp /tmp/${MU_PLUGIN_13_DIR} /var/www/html/wp-content/mu-plugins/${MU_PLUGIN_13_DIR}
-    ss_cp /tmp/${MU_PLUGIN_14_DIR} /var/www/html/wp-content/mu-plugins/${MU_PLUGIN_14_DIR}
-    ss_cp /tmp/${MU_PLUGIN_15_DIR} /var/www/html/wp-content/mu-plugins/${MU_PLUGIN_15_DIR}
-    ss_cp /tmp/${MU_PLUGIN_16_DIR} /var/www/html/wp-content/mu-plugins/${MU_PLUGIN_16_DIR}
-    ss_cp /tmp/${MU_PLUGIN_17_DIR} /var/www/html/wp-content/mu-plugins/${MU_PLUGIN_17_DIR}
-    ss_cp /tmp/${MU_PLUGIN_18_DIR} /var/www/html/wp-content/mu-plugins/${MU_PLUGIN_18_DIR}
-    ss_cp /tmp/${MU_PLUGIN_19_DIR} /var/www/html/wp-content/mu-plugins/${MU_PLUGIN_19_DIR}
-    ss_cp /tmp/${MU_PLUGIN_20_DIR} /var/www/html/wp-content/mu-plugins/${MU_PLUGIN_20_DIR}
+    ss_cp /tmp/"${MU_PLUGIN_01_DIR}" /var/www/html/wp-content/mu-plugins/"${MU_PLUGIN_01_DIR}"
+    ss_cp /tmp/"${MU_PLUGIN_02_DIR}" /var/www/html/wp-content/mu-plugins/"${MU_PLUGIN_02_DIR}"
+    ss_cp /tmp/"${MU_PLUGIN_03_DIR}" /var/www/html/wp-content/mu-plugins/"${MU_PLUGIN_03_DIR}"
+    ss_cp /tmp/"${MU_PLUGIN_04_DIR}" /var/www/html/wp-content/mu-plugins/"${MU_PLUGIN_04_DIR}"
+    ss_cp /tmp/"${MU_PLUGIN_05_DIR}" /var/www/html/wp-content/mu-plugins/"${MU_PLUGIN_05_DIR}"
+    ss_cp /tmp/"${MU_PLUGIN_06_DIR}" /var/www/html/wp-content/mu-plugins/"${MU_PLUGIN_06_DIR}"
+    ss_cp /tmp/"${MU_PLUGIN_07_DIR}" /var/www/html/wp-content/mu-plugins/"${MU_PLUGIN_07_DIR}"
+    ss_cp /tmp/"${MU_PLUGIN_08_DIR}" /var/www/html/wp-content/mu-plugins/"${MU_PLUGIN_08_DIR}"
+    ss_cp /tmp/"${MU_PLUGIN_09_DIR}" /var/www/html/wp-content/mu-plugins/"${MU_PLUGIN_09_DIR}"
+    ss_cp /tmp/"${MU_PLUGIN_10_DIR}" /var/www/html/wp-content/mu-plugins/"${MU_PLUGIN_10_DIR}"
+    ss_cp /tmp/"${MU_PLUGIN_11_DIR}" /var/www/html/wp-content/mu-plugins/"${MU_PLUGIN_11_DIR}"
+    ss_cp /tmp/"${MU_PLUGIN_12_DIR}" /var/www/html/wp-content/mu-plugins/"${MU_PLUGIN_12_DIR}"
+    ss_cp /tmp/"${MU_PLUGIN_13_DIR}" /var/www/html/wp-content/mu-plugins/"${MU_PLUGIN_13_DIR}"
+    ss_cp /tmp/"${MU_PLUGIN_14_DIR}" /var/www/html/wp-content/mu-plugins/"${MU_PLUGIN_14_DIR}"
+    ss_cp /tmp/"${MU_PLUGIN_15_DIR}" /var/www/html/wp-content/mu-plugins/"${MU_PLUGIN_15_DIR}"
+    ss_cp /tmp/"${MU_PLUGIN_16_DIR}" /var/www/html/wp-content/mu-plugins/"${MU_PLUGIN_16_DIR}"
+    ss_cp /tmp/"${MU_PLUGIN_17_DIR}" /var/www/html/wp-content/mu-plugins/"${MU_PLUGIN_17_DIR}"
+    ss_cp /tmp/"${MU_PLUGIN_18_DIR}" /var/www/html/wp-content/mu-plugins/"${MU_PLUGIN_18_DIR}"
+    ss_cp /tmp/"${MU_PLUGIN_19_DIR}" /var/www/html/wp-content/mu-plugins/"${MU_PLUGIN_19_DIR}"
+    ss_cp /tmp/"${MU_PLUGIN_20_DIR}" /var/www/html/wp-content/mu-plugins/"${MU_PLUGIN_20_DIR}"
     
     ## copy to destinations (staging subdirectory) ##
-    ss_cp /tmp/${MU_PLUGIN_01_DIR} /var/www/html/staging/wp-content/mu-plugins/${MU_PLUGIN_01_DIR}
-    ss_cp /tmp/${MU_PLUGIN_02_DIR} /var/www/html/staging/wp-content/mu-plugins/${MU_PLUGIN_02_DIR}
-    ss_cp /tmp/${MU_PLUGIN_03_DIR} /var/www/html/staging/wp-content/mu-plugins/${MU_PLUGIN_03_DIR}
-    ss_cp /tmp/${MU_PLUGIN_04_DIR} /var/www/html/staging/wp-content/mu-plugins/${MU_PLUGIN_04_DIR}
-    ss_cp /tmp/${MU_PLUGIN_05_DIR} /var/www/html/staging/wp-content/mu-plugins/${MU_PLUGIN_05_DIR}
-    ss_cp /tmp/${MU_PLUGIN_06_DIR} /var/www/html/staging/wp-content/mu-plugins/${MU_PLUGIN_06_DIR}
-    ss_cp /tmp/${MU_PLUGIN_07_DIR} /var/www/html/staging/wp-content/mu-plugins/${MU_PLUGIN_07_DIR}
-    ss_cp /tmp/${MU_PLUGIN_08_DIR} /var/www/html/staging/wp-content/mu-plugins/${MU_PLUGIN_08_DIR}
-    ss_cp /tmp/${MU_PLUGIN_09_DIR} /var/www/html/staging/wp-content/mu-plugins/${MU_PLUGIN_09_DIR}
-    ss_cp /tmp/${MU_PLUGIN_10_DIR} /var/www/html/staging/wp-content/mu-plugins/${MU_PLUGIN_10_DIR}
-    ss_cp /tmp/${MU_PLUGIN_11_DIR} /var/www/html/staging/wp-content/mu-plugins/${MU_PLUGIN_11_DIR}
-    ss_cp /tmp/${MU_PLUGIN_12_DIR} /var/www/html/staging/wp-content/mu-plugins/${MU_PLUGIN_12_DIR}
-    ss_cp /tmp/${MU_PLUGIN_13_DIR} /var/www/html/staging/wp-content/mu-plugins/${MU_PLUGIN_13_DIR}
-    ss_cp /tmp/${MU_PLUGIN_14_DIR} /var/www/html/staging/wp-content/mu-plugins/${MU_PLUGIN_14_DIR}
-    ss_cp /tmp/${MU_PLUGIN_15_DIR} /var/www/html/staging/wp-content/mu-plugins/${MU_PLUGIN_15_DIR}
-    ss_cp /tmp/${MU_PLUGIN_16_DIR} /var/www/html/staging/wp-content/mu-plugins/${MU_PLUGIN_16_DIR}
-    ss_cp /tmp/${MU_PLUGIN_17_DIR} /var/www/html/staging/wp-content/mu-plugins/${MU_PLUGIN_17_DIR}
-    ss_cp /tmp/${MU_PLUGIN_18_DIR} /var/www/html/staging/wp-content/mu-plugins/${MU_PLUGIN_18_DIR}
-    ss_cp /tmp/${MU_PLUGIN_19_DIR} /var/www/html/staging/wp-content/mu-plugins/${MU_PLUGIN_19_DIR}
-    ss_cp /tmp/${MU_PLUGIN_20_DIR} /var/www/html/staging/wp-content/mu-plugins/${MU_PLUGIN_20_DIR}
+    ss_cp /tmp/"${MU_PLUGIN_01_DIR}" /var/www/html/staging/wp-content/mu-plugins/"${MU_PLUGIN_01_DIR}"
+    ss_cp /tmp/"${MU_PLUGIN_02_DIR}" /var/www/html/staging/wp-content/mu-plugins/"${MU_PLUGIN_02_DIR}"
+    ss_cp /tmp/"${MU_PLUGIN_03_DIR}" /var/www/html/staging/wp-content/mu-plugins/"${MU_PLUGIN_03_DIR}"
+    ss_cp /tmp/"${MU_PLUGIN_04_DIR}" /var/www/html/staging/wp-content/mu-plugins/"${MU_PLUGIN_04_DIR}"
+    ss_cp /tmp/"${MU_PLUGIN_05_DIR}" /var/www/html/staging/wp-content/mu-plugins/"${MU_PLUGIN_05_DIR}"
+    ss_cp /tmp/"${MU_PLUGIN_06_DIR}" /var/www/html/staging/wp-content/mu-plugins/"${MU_PLUGIN_06_DIR}"
+    ss_cp /tmp/"${MU_PLUGIN_07_DIR}" /var/www/html/staging/wp-content/mu-plugins/"${MU_PLUGIN_07_DIR}"
+    ss_cp /tmp/"${MU_PLUGIN_08_DIR}" /var/www/html/staging/wp-content/mu-plugins/"${MU_PLUGIN_08_DIR}"
+    ss_cp /tmp/"${MU_PLUGIN_09_DIR}" /var/www/html/staging/wp-content/mu-plugins/"${MU_PLUGIN_09_DIR}"
+    ss_cp /tmp/"${MU_PLUGIN_10_DIR}" /var/www/html/staging/wp-content/mu-plugins/"${MU_PLUGIN_10_DIR}"
+    ss_cp /tmp/"${MU_PLUGIN_11_DIR}" /var/www/html/staging/wp-content/mu-plugins/"${MU_PLUGIN_11_DIR}"
+    ss_cp /tmp/"${MU_PLUGIN_12_DIR}" /var/www/html/staging/wp-content/mu-plugins/"${MU_PLUGIN_12_DIR}"
+    ss_cp /tmp/"${MU_PLUGIN_13_DIR}" /var/www/html/staging/wp-content/mu-plugins/"${MU_PLUGIN_13_DIR}"
+    ss_cp /tmp/"${MU_PLUGIN_14_DIR}" /var/www/html/staging/wp-content/mu-plugins/"${MU_PLUGIN_14_DIR}"
+    ss_cp /tmp/"${MU_PLUGIN_15_DIR}" /var/www/html/staging/wp-content/mu-plugins/"${MU_PLUGIN_15_DIR}"
+    ss_cp /tmp/"${MU_PLUGIN_16_DIR}" /var/www/html/staging/wp-content/mu-plugins/"${MU_PLUGIN_16_DIR}"
+    ss_cp /tmp/"${MU_PLUGIN_17_DIR}" /var/www/html/staging/wp-content/mu-plugins/"${MU_PLUGIN_17_DIR}"
+    ss_cp /tmp/"${MU_PLUGIN_18_DIR}" /var/www/html/staging/wp-content/mu-plugins/"${MU_PLUGIN_18_DIR}"
+    ss_cp /tmp/"${MU_PLUGIN_19_DIR}" /var/www/html/staging/wp-content/mu-plugins/"${MU_PLUGIN_19_DIR}"
+    ss_cp /tmp/"${MU_PLUGIN_20_DIR}" /var/www/html/staging/wp-content/mu-plugins/"${MU_PLUGIN_20_DIR}"
     
     ## copy to destinations (dev subdirectory) ##
-    ss_cp /tmp/${MU_PLUGIN_01_DIR} /var/www/html/dev/wp-content/mu-plugins/${MU_PLUGIN_01_DIR}
-    ss_cp /tmp/${MU_PLUGIN_02_DIR} /var/www/html/dev/wp-content/mu-plugins/${MU_PLUGIN_02_DIR}
-    ss_cp /tmp/${MU_PLUGIN_03_DIR} /var/www/html/dev/wp-content/mu-plugins/${MU_PLUGIN_03_DIR}
-    ss_cp /tmp/${MU_PLUGIN_04_DIR} /var/www/html/dev/wp-content/mu-plugins/${MU_PLUGIN_04_DIR}
-    ss_cp /tmp/${MU_PLUGIN_05_DIR} /var/www/html/dev/wp-content/mu-plugins/${MU_PLUGIN_05_DIR}
-    ss_cp /tmp/${MU_PLUGIN_06_DIR} /var/www/html/dev/wp-content/mu-plugins/${MU_PLUGIN_06_DIR}
-    ss_cp /tmp/${MU_PLUGIN_07_DIR} /var/www/html/dev/wp-content/mu-plugins/${MU_PLUGIN_07_DIR}
-    ss_cp /tmp/${MU_PLUGIN_08_DIR} /var/www/html/dev/wp-content/mu-plugins/${MU_PLUGIN_08_DIR}
-    ss_cp /tmp/${MU_PLUGIN_09_DIR} /var/www/html/dev/wp-content/mu-plugins/${MU_PLUGIN_09_DIR}
-    ss_cp /tmp/${MU_PLUGIN_10_DIR} /var/www/html/dev/wp-content/mu-plugins/${MU_PLUGIN_10_DIR}
-    ss_cp /tmp/${MU_PLUGIN_11_DIR} /var/www/html/dev/wp-content/mu-plugins/${MU_PLUGIN_11_DIR}
-    ss_cp /tmp/${MU_PLUGIN_12_DIR} /var/www/html/dev/wp-content/mu-plugins/${MU_PLUGIN_12_DIR}
-    ss_cp /tmp/${MU_PLUGIN_13_DIR} /var/www/html/dev/wp-content/mu-plugins/${MU_PLUGIN_13_DIR}
-    ss_cp /tmp/${MU_PLUGIN_14_DIR} /var/www/html/dev/wp-content/mu-plugins/${MU_PLUGIN_14_DIR}
-    ss_cp /tmp/${MU_PLUGIN_15_DIR} /var/www/html/dev/wp-content/mu-plugins/${MU_PLUGIN_15_DIR}
-    ss_cp /tmp/${MU_PLUGIN_16_DIR} /var/www/html/dev/wp-content/mu-plugins/${MU_PLUGIN_16_DIR}
-    ss_cp /tmp/${MU_PLUGIN_17_DIR} /var/www/html/dev/wp-content/mu-plugins/${MU_PLUGIN_17_DIR}
-    ss_cp /tmp/${MU_PLUGIN_18_DIR} /var/www/html/dev/wp-content/mu-plugins/${MU_PLUGIN_18_DIR}
-    ss_cp /tmp/${MU_PLUGIN_19_DIR} /var/www/html/dev/wp-content/mu-plugins/${MU_PLUGIN_19_DIR}
-    ss_cp /tmp/${MU_PLUGIN_20_DIR} /var/www/html/dev/wp-content/mu-plugins/${MU_PLUGIN_20_DIR}
+    ss_cp /tmp/"${MU_PLUGIN_01_DIR}" /var/www/html/dev/wp-content/mu-plugins/"${MU_PLUGIN_01_DIR}"
+    ss_cp /tmp/"${MU_PLUGIN_02_DIR}" /var/www/html/dev/wp-content/mu-plugins/"${MU_PLUGIN_02_DIR}"
+    ss_cp /tmp/"${MU_PLUGIN_03_DIR}" /var/www/html/dev/wp-content/mu-plugins/"${MU_PLUGIN_03_DIR}"
+    ss_cp /tmp/"${MU_PLUGIN_04_DIR}" /var/www/html/dev/wp-content/mu-plugins/"${MU_PLUGIN_04_DIR}"
+    ss_cp /tmp/"${MU_PLUGIN_05_DIR}" /var/www/html/dev/wp-content/mu-plugins/"${MU_PLUGIN_05_DIR}"
+    ss_cp /tmp/"${MU_PLUGIN_06_DIR}" /var/www/html/dev/wp-content/mu-plugins/"${MU_PLUGIN_06_DIR}"
+    ss_cp /tmp/"${MU_PLUGIN_07_DIR}" /var/www/html/dev/wp-content/mu-plugins/"${MU_PLUGIN_07_DIR}"
+    ss_cp /tmp/"${MU_PLUGIN_08_DIR}" /var/www/html/dev/wp-content/mu-plugins/"${MU_PLUGIN_08_DIR}"
+    ss_cp /tmp/"${MU_PLUGIN_09_DIR}" /var/www/html/dev/wp-content/mu-plugins/"${MU_PLUGIN_09_DIR}"
+    ss_cp /tmp/"${MU_PLUGIN_10_DIR}" /var/www/html/dev/wp-content/mu-plugins/"${MU_PLUGIN_10_DIR}"
+    ss_cp /tmp/"${MU_PLUGIN_11_DIR}" /var/www/html/dev/wp-content/mu-plugins/"${MU_PLUGIN_11_DIR}"
+    ss_cp /tmp/"${MU_PLUGIN_12_DIR}" /var/www/html/dev/wp-content/mu-plugins/"${MU_PLUGIN_12_DIR}"
+    ss_cp /tmp/"${MU_PLUGIN_13_DIR}" /var/www/html/dev/wp-content/mu-plugins/"${MU_PLUGIN_13_DIR}"
+    ss_cp /tmp/"${MU_PLUGIN_14_DIR}" /var/www/html/dev/wp-content/mu-plugins/"${MU_PLUGIN_14_DIR}"
+    ss_cp /tmp/"${MU_PLUGIN_15_DIR}" /var/www/html/dev/wp-content/mu-plugins/"${MU_PLUGIN_15_DIR}"
+    ss_cp /tmp/"${MU_PLUGIN_16_DIR}" /var/www/html/dev/wp-content/mu-plugins/"${MU_PLUGIN_16_DIR}"
+    ss_cp /tmp/"${MU_PLUGIN_17_DIR}" /var/www/html/dev/wp-content/mu-plugins/"${MU_PLUGIN_17_DIR}"
+    ss_cp /tmp/"${MU_PLUGIN_18_DIR}" /var/www/html/dev/wp-content/mu-plugins/"${MU_PLUGIN_18_DIR}"
+    ss_cp /tmp/"${MU_PLUGIN_19_DIR}" /var/www/html/dev/wp-content/mu-plugins/"${MU_PLUGIN_19_DIR}"
+    ss_cp /tmp/"${MU_PLUGIN_20_DIR}" /var/www/html/dev/wp-content/mu-plugins/"${MU_PLUGIN_20_DIR}"
     
 else
 ## otherwise download default LittleBizzy MU plugins ##
@@ -457,7 +464,7 @@ ss_cp /tmp/plugin-blacklist /var/www/html/wp-content/mu-plugins/plugin-blacklist
 fi
 
 ####################################################################################################
-#### I. SS-Install-WordPress-MU-Plugins: Run SS-Worker ##################
+#### K. SS-Install-WordPress-MU-Plugins: Run SS-Worker ##################
 ####################################################################################################
 
 ## ensure ss-constants is populated with latest data for xxx-common.php to use ##
@@ -465,14 +472,14 @@ fi
 source "${PATH_SS_WORKER}"
 
 ####################################################################################################
-#### I. SS-Install-WordPress-MU-Plugins: Reset Permissions (WordPress MU Plugins) ##################
+#### L. SS-Install-WordPress-MU-Plugins: Reset Permissions (WordPress MU Plugins) ##################
 ####################################################################################################
 
 ## run ss-perms-wordpress-mu-plugins ##
 source "${PATH_SS_PERMS_WORDPRESS_MU_PLUGINS}"
 
 ####################################################################################################
-#### J. SS-Install-WordPress-MU-Plugins: Purge Cache (PHP OPcache) #################################
+#### M. SS-Install-WordPress-MU-Plugins: Purge Cache (PHP OPcache) #################################
 ####################################################################################################
 
 ## run ss-purge-opcache ##
