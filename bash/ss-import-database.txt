@@ -6,7 +6,7 @@
 #### mirror: https://mirrors.slickstack.io/bash/ss-import-database.txt #############################
 #### path: /var/www/ss-import-database #############################################################
 #### destination: n/a (not a boilerplate) ##########################################################
-#### purpose: Force imports /var/www/meta/import.sql (or import.sql.zip|gz) to database ############
+#### purpose: Force imports /tmp/import.sql|.sql.zip|.sql.gz and overwrites database ###############
 #### module version: MySQL 8.0.x ###################################################################
 #### sourced by: n/a ###############################################################################
 #### bash aliases: ss import database, ss import db ################################################
@@ -29,6 +29,8 @@ source /var/www/ss-functions
 
 ## A. Touch Timestamp File
 ## B. Message (Begin Script)
+## C. Backup Database Before Proceeding (Run SS-Dump-Database)
+## D. Import Database (Overwrites Data)
 
 ####################################################################################################
 #### A. SS-Import-Database: Touch Timestamp File ###################################################
@@ -51,20 +53,14 @@ ss_touch "${TIMESTAMP_SS_IMPORT_DATABASE}"
 ss_echo "${COLOR_INFO}Running ss-import-database... ${COLOR_RESET}"
 
 ####################################################################################################
-#### SS-Import: Delete Any Previous / Leftover (Conflicting) Temporary Files #######################
-####################################################################################################
-
-
-
-####################################################################################################
-#### SS-Import-Database: Backup Database Before Proceeding (Via SS-Dump-Database) ##################
+#### C. SS-Import-Database: Backup Database Before Proceeding (Run SS-Dump-Database) ###############
 ####################################################################################################
 
 ## run ss-dump-database ##
 source /var/www/ss-dump-database
 
 ####################################################################################################
-#### SS-Import: Import Database (Overwrites Data) ##################################################
+#### D. SS-Import-Database: Import Database (Overwrites Data) ######################################
 ####################################################################################################
 
 ## import production database ##
@@ -78,13 +74,6 @@ else
     echo -e "No import.sql|zip|gz file found, cannot import database."
 fi
 
-####################################################################################################
-#### SS-Import: Import Database (Overwrites Data) ##################################################
-####################################################################################################
-
-## MESSAGE ##
-echo -e "${LIGHTPURPLE}Importing (and overwriting) production files and database (don't worry, we will backup first)...${NOCOLOR}" >&2
-
 chown -R $SFTP_USER:www-data /var/www/meta/import.sql
 chmod 6775 /var/www/meta/import.sql
 chown -R $SFTP_USER:www-data /var/www/meta/import.sql.zip
@@ -93,7 +82,7 @@ chown -R $SFTP_USER:www-data /var/www/meta/import.sql.gz
 chmod 6775 /var/www/meta/import.sql.gz
 
 ####################################################################################################
-#### PLACEHOLDER: Reset Permissions (SlickStack Scripts) ###########################################
+#### SlickStack: Reset Permissions (SlickStack Scripts) ############################################
 ####################################################################################################
 
 ## we include this permissions reset in all cron jobs and bash scripts for redundancy ##
