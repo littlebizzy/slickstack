@@ -56,15 +56,19 @@ ss_echo "${COLOR_INFO}Running ss-import-files... ${COLOR_RESET}"
 ####################################################################################################
 
 ## reset permissions ##
-ss_chown "${SFTP_USER}":www-data /tmp/import.zip
-ss_chown "${SFTP_USER}":www-data /tmp/import.tar
-ss_chown "${SFTP_USER}":www-data /tmp/import.tar.gz
-chmod 6775 /tmp/import.zip
-chmod 6775 /tmp/import.tar
-chmod 6775 /tmp/import.tar.gz
+
+if [[ -f "/tmp/import.tar" ]]; then
+    ss_chown "${SFTP_USER}":www-data /tmp/import.tar
+    chmod 6775 /tmp/import.tar
+fi
+
+if [[ -f "/tmp/import.tar.gz" ]]; then
+    ss_chown "${SFTP_USER}":www-data /tmp/import.tar.gz
+    chmod 6775 /tmp/import.tar.gz
+fi
+
 
 ## import (overwrite) static files (filename hierarchy will choose best archive format) ##
-# unzip /var/www/meta/migrate.zip
 # tar -xf /var/www/meta/migrate.tar
 # tar -xzf /var/www/meta/migrate.tar.gz
 
