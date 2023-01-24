@@ -64,10 +64,12 @@ if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]]; then
         echo "found import.tar and proceeding to import and overwrite"
         ss_chown "${SFTP_USER}":www-data /tmp/import.tar
         chmod 6775 /tmp/import.tar
+        ss_untar /tmp/import.tar
     elif [[ ! -f "/tmp/import.tar" ]] && [[ -f "/tmp/import.tar.gz" ]]; then
         echo "found import.tar.gz and proceeding to import and overwrite"
         ss_chown "${SFTP_USER}":www-data /tmp/import.tar.gz
         chmod 6775 /tmp/import.tar.gz
+        ss_untargz /tmp/import.tar.gz
     elif [[ ! -f "/tmp/import.tar" ]] && [[ ! -f "/tmp/import.tar.gz" ]]; then
         echo "could not find import.tar or import.tar.gz in /tmp/ folder"
     fi
@@ -76,9 +78,6 @@ else
     echo "cancelled import"
     exit 1
 fi
-
-# tar -xf /var/www/meta/migrate.tar
-# tar -xzf /var/www/meta/migrate.tar.gz
 
 ####################################################################################################
 #### SlickStack: Reset Permissions (SlickStack Scripts) ############################################
