@@ -6,8 +6,8 @@
 #### mirror: https://mirrors.slickstack.io/bash/ss-import-files.txt ################################
 #### path: /var/www/ss-import-files ################################################################
 #### destination: n/a (not a boilerplate) ##########################################################
-#### purpose: Force imports /var/www/meta/import.tar|tar.gz and overwrites html directory ##########
-#### module version: n/a ###################################################################
+#### purpose: Force imports /tmp/import.tar|.tar.gz and overwrites entire html directory ###########
+#### module version: n/a ###########################################################################
 #### sourced by: n/a ###############################################################################
 #### bash aliases: ss import files #################################################################
 ####################################################################################################
@@ -29,6 +29,7 @@ source /var/www/ss-functions
 
 ## A. Touch Timestamp File
 ## B. Message (Begin Script)
+## C. Import Static Files (Overwrites Data)
 
 ####################################################################################################
 #### A. SS-Import-Files: Touch Timestamp File ######################################################
@@ -45,28 +46,22 @@ ss_touch "${TIMESTAMP_SS_IMPORT_FILES}"
 ####################################################################################################
 
 ## this is a simple message that announces to the shell the purpose of this bash script ##
-## it will only be noticed by sudo users who manually call ss core bash scripts ##
+## it will only be seen by sudo users who manually run this script in the shell ##
 
 ## echo message ##
 ss_echo "${COLOR_INFO}Running ss-import-files... ${COLOR_RESET}"
 
 ####################################################################################################
-#### SS-Import-Files: Delete Any Previous / Leftover (Conflicting) Temporary Files #######################
-####################################################################################################
-
-##
-
-####################################################################################################
-#### SS-Import: Import Static Files (Overwrites Data) ##############################################
+#### C. SS-Import-Files: Import Static Files (Overwrites Data) #####################################
 ####################################################################################################
 
 ## reset permissions ##
-chown -R $SFTP_USER:www-data /var/www/meta/import.zip
-chmod 6775 /var/www/meta/import.zip
-chown -R $SFTP_USER:www-data /var/www/meta/import.tar
-chmod 6775 /var/www/meta/import.tar
-chown -R $SFTP_USER:www-data /var/www/meta/import.tar.gz
-chmod 6775 /var/www/meta/import.tar.gz
+ss_chown "${SFTP_USER}":www-data /tmp/import.zip
+ss_chown "${SFTP_USER}":www-data /tmp/import.tar
+ss_chown "${SFTP_USER}":www-data /tmp/import.tar.gz
+chmod 6775 /tmp/import.zip
+chmod 6775 /tmp/import.tar
+chmod 6775 /tmp/import.tar.gz
 
 ## import (overwrite) static files (filename hierarchy will choose best archive format) ##
 # unzip /var/www/meta/migrate.zip
@@ -74,13 +69,7 @@ chmod 6775 /var/www/meta/import.tar.gz
 # tar -xzf /var/www/meta/migrate.tar.gz
 
 ####################################################################################################
-#### SS-Import-Files: Import Database (Overwrites Data) ##################################################
-####################################################################################################
-
-##
-
-####################################################################################################
-#### PLACEHOLDER: Reset Permissions (SlickStack Scripts) ###########################################
+#### SlickStack: Reset Permissions (SlickStack Scripts) ############################################
 ####################################################################################################
 
 ## we include this permissions reset in all cron jobs and bash scripts for redundancy ##
