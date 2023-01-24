@@ -47,7 +47,7 @@ ss_touch "${TIMESTAMP_SS_IMPORT_DATABASE}"
 ####################################################################################################
 
 ## this is a simple message that announces to the shell the purpose of this bash script ##
-## it will only be noticed by sudo users who manually call ss core bash scripts ##
+## it will only be seen by sudo users who manually run this script in the shell ##
 
 ## echo message ##
 ss_echo "${COLOR_INFO}Running ss-import-database... ${COLOR_RESET}"
@@ -63,23 +63,32 @@ source /var/www/ss-dump-database
 #### D. SS-Import-Database: Import Database (Overwrites Data) ######################################
 ####################################################################################################
 
-## import production database ##
-if [[ -f "/var/www/meta/import.sql" ]]; then
-    mysql "$DB_NAME" < /var/www/meta/import.sql
-elif [[ ! -f "/var/www/meta/import.sql" ]] && [[ -f "/var/www/meta/import.zip" ]]; then
-    mysql "$DB_NAME" < /var/www/meta/import.zip
-elif [[ ! -f "/var/www/meta/import.sql" ]] && [[ ! -f "/var/www/meta/import.zip" ]] && [[ -f "/var/www/meta/import.gz" ]]; then
-    mysql "$DB_NAME" < /var/www/meta/import.gz
-else 
-    echo -e "No import.sql|zip|gz file found, cannot import database."
-fi
 
-chown -R $SFTP_USER:www-data /var/www/meta/import.sql
-chmod 6775 /var/www/meta/import.sql
-chown -R $SFTP_USER:www-data /var/www/meta/import.sql.zip
-chmod 6775 /var/www/meta/import.sql.zip
-chown -R $SFTP_USER:www-data /var/www/meta/import.sql.gz
-chmod 6775 /var/www/meta/import.sql.gz
+read -r -p "DATABASE will be completely overwritten, are you sure? [y/N]" response
+if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]]; then
+
+    ## import production database ##
+    if [[ -f "/tmp/import.sql" ]]; then
+        mysql "$DB_NAME" < /var/www/meta/import.sql
+    elif [[ ! -f "/var/www/meta/import.sql" ]] && [[ -f "/var/www/meta/import.zip" ]]; then
+        mysql "$DB_NAME" < /var/www/meta/import.zip
+    elif [[ ! -f "/var/www/meta/import.sql" ]] && [[ ! -f "/var/www/meta/import.zip" ]] && [[ -f "/var/www/meta/import.gz" ]]; then
+        mysql "$DB_NAME" < /var/www/meta/import.gz
+    else 
+        echo -e "No import.sql|zip|gz file found, cannot import database."
+    fi
+
+    chown -R $SFTP_USER:www-data /var/www/meta/import.sql
+    chmod 6775 /var/www/meta/import.sql
+    chown -R $SFTP_USER:www-data /var/www/meta/import.sql.zip
+    chmod 6775 /var/www/meta/import.sql.zip
+    chown -R $SFTP_USER:www-data /var/www/meta/import.sql.gz
+    chmod 6775 /var/www/meta/import.sql.gz
+
+else
+    echo "cancelled import"
+    exit 1
+fi
 
 ####################################################################################################
 #### SlickStack: Reset Permissions (SlickStack Scripts) ############################################
