@@ -7,7 +7,7 @@
 #### path: /var/www/ss-install-mediawiki-core ######################################################
 #### destination: n/a (not a boilerplate) ##########################################################
 #### purpose: Reinstalls the MediaWiki module (CMS) package and non-config files (idempotent) ######
-#### module version: MediaWiki x.x.x ###############################################################
+#### module version: MediaWiki 1.39.x ##############################################################
 #### sourced by: ss-install ########################################################################
 #### bash aliases: ss install mediawiki core #######################################################
 ####################################################################################################
@@ -34,6 +34,10 @@ source /var/www/ss-functions
 
 ## A. Touch Timestamp File
 ## B. Message (Begin Script)
+## C. Install Ubuntu Utils
+## D. Retrieve MediaWiki ZIP
+## E. Install MediaWiki
+## F. Reset Permissions (MediaWiki Core)
 
 ####################################################################################################
 #### A. SS-Install-MediaWiki-Core: Touch Timestamp File ############################################
@@ -50,27 +54,20 @@ ss_touch "${TIMESTAMP_SS_INSTALL_MEDIAWIKI_CORE}"
 ####################################################################################################
 
 ## this is a simple message that announces to the shell the purpose of this bash script ##
-## it will only be noticed by sudo users who manually call ss core bash scripts ##
+## it will only be seen by sudo users who manually run this script in the shell ##
 
 ## echo message ##
 ss_echo "${COLOR_INFO}Running ss-install-mediawiki-core... ${COLOR_RESET}"
 
 ####################################################################################################
-#### SS-Install-MediaWiki-Core: Cleanup Temporary Files ############################################
-####################################################################################################
-
-## delete tmp files ##
-# n/a
-
-####################################################################################################
-#### SS-Install-MediaWiki-Core: Install Ubuntu Utils ###############################################
+#### C. SS-Install-MediaWiki-Core: Install Ubuntu Utils ############################################
 ####################################################################################################
 
 ## run ss-install-ubuntu-utils ##
 source /var/www/ss-install-ubuntu-utils
 
 ####################################################################################################
-#### D. SS-Install-WordPress-Core: Retrieve MediaWiki Core ZIP #####################################
+#### D. SS-Install-MediaWiki-Core: Retrieve MediaWiki ZIP ##########################################
 ####################################################################################################
 
 ## CMS modules are installed by SlickStack via files from our public mirror servers ##
@@ -78,6 +75,10 @@ source /var/www/ss-install-ubuntu-utils
 
 ## retrieve latest version ##
 ss_wget "${TMP_MEDIAWIKI_ZIP}" https://releases.wikimedia.org/mediawiki/1.39/mediawiki-1.39.1.zip
+
+####################################################################################################
+#### E. SS-Install-MediaWiki-Core: Install MediaWiki ###############################################
+####################################################################################################
 
 ## prepare new files ##
 ss_cp "${TMP_MEDIAWIKI_ZIP}" /var/www/html
@@ -91,24 +92,15 @@ ss_rsync /var/www/html/mediawiki/* /var/www/html
 ## delete tmp files ##
 ss_rm /var/www/html/mediawiki
 
-
-
 ####################################################################################################
-#### SS-Install-MediaWiki-Core: Reset Permissions (MediaWiki Core) #################################
+#### F. SS-Install-MediaWiki-Core: Reset Permissions (MediaWiki Core) ##############################
 ####################################################################################################
 
 ## run ss-perms-mediawiki-core ##
 source "$PATH_SS_PERMS_MEDIAWIKI_CORE"
 
 ####################################################################################################
-#### SS-Install-MediaWiki-Core: Cleanup Temporary Files ############################################
-####################################################################################################
-
-## delete tmp files ##
-# n/a
-
-####################################################################################################
-#### PLACEHOLDER: Reset Permissions (SlickStack Scripts) ###########################################
+#### SlickStack: Reset Permissions (SlickStack Scripts) ############################################
 ####################################################################################################
 
 ## we include this permissions reset in all cron jobs and bash scripts for redundancy ##
