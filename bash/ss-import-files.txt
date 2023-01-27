@@ -58,7 +58,7 @@ ss_echo "${COLOR_INFO}Running ss-import-files... ${COLOR_RESET}"
 ## here the sudo user must manually confirm importing the files before it can proceed ##
 ## import.tar is the preferred file format followed by import.tar.gz (gzipped) ##
 
-read -r -p "ALL FILES will be overwritten in the html folder, are you sure? [y/N]" response
+read -r -p "ALL PRODUCTION FILES will be overwritten in the html folder, are you sure? [y/N]" response
 if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]]; then
 
     if [[ -f "/tmp/import.tar" ]]; then
@@ -68,7 +68,7 @@ if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]]; then
         ss_mkdir /var/www/html
         ss_chown "${SFTP_USER}":slickstack /var/www/html
         chmod 0775 /var/www/html ## must be 0775 (0755 not enough)
-        ss_untar /tmp/import.tar --strip-components=1 --directory /var/www/html
+        ss_untar /tmp/import.tar -C /var/www/html
         
         ## run ss-perms-wordpress-core ##
         source "${PATH_SS_PERMS_WORDPRESS_CORE}"
@@ -86,7 +86,7 @@ if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]]; then
         ss_mkdir /var/www/html
         ss_chown "${SFTP_USER}":slickstack /var/www/html
         chmod 0775 /var/www/html ## must be 0775 (0755 not enough)
-        ss_untargz /tmp/import.tar.gz --strip-components=1 --directory /var/www/html
+        ss_untargz /tmp/import.tar.gz -C /var/www/html
         
         ## run ss-perms-wordpress-core ##
         source "${PATH_SS_PERMS_WORDPRESS_CORE}"
