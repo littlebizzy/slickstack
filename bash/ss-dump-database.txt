@@ -64,9 +64,7 @@ ss_echo "${COLOR_INFO}Running ss-dump-database... ${COLOR_RESET}"
 ## to support remote database servers we force the TCP protocol (not sockets) ##
 
 ## dump production database ##
-if [[ "${SS_DUMP_DATABASE_PRODUCTION}" != "false" ]]; then
-    ss_mysqldump "${DB_NAME}" > "${PATH_DUMP_DATABASE_PRODUCTION}" 2> /dev/null
-fi
+ss_mysqldump "${DB_NAME}" > "${PATH_DUMP_DATABASE_PRODUCTION}" 2> /dev/null
 
 ## dump staging database ##
 if [[ "${STAGING_SITE}" == "true" ]]; then
@@ -101,19 +99,19 @@ chown -R "${SFTP_USER}":www-data "${PATH_DUMP_DATABASE_PRODUCTION}"
 chmod 0440 "${PATH_DUMP_DATABASE_PRODUCTION}"
 
 ## reset permissions (staging) ##
-if [[ "${SS_DUMP_DATABASE_STAGING}" == "true" ]]; then
+if [[ "${STAGING_SITE}" == "true" ]]; then
     chown -R "${SFTP_USER}":www-data "${PATH_DUMP_DATABASE_STAGING}"
     chmod 0440 "${PATH_DUMP_DATABASE_STAGING}"
 fi
 
 ## reset permissions (development) ##
-if [[ "${SS_DUMP_DATABASE_DEVELOPMENT}" == "true" ]]; then
+if [[ "${DEV_SITE}" == "true" ]]; then
     chown -R "${SFTP_USER}":www-data "${PATH_DUMP_DATABASE_DEVELOPMENT}"
     chmod 0440 "${PATH_DUMP_DATABASE_DEVELOPMENT}"
 fi
 
 ####################################################################################################
-#### E. SS-Dump-Database: Reset Permissions (SlickStack Scripts) ###################################
+#### SlickStack: Reset Permissions (SlickStack Scripts) ############################################
 ####################################################################################################
 
 ## we include this permissions reset in all cron jobs and bash scripts for redundancy ##
