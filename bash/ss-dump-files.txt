@@ -31,7 +31,6 @@ source /var/www/ss-functions
 ## B. Message (Begin Script)
 ## C. Dump Public HTML Directory
 ## D. Reset Permissions (HTML Dump Files)
-## E. Reset Permissions (SlickStack Scripts)
 
 ####################################################################################################
 #### A. SS-Dump-Files: Touch Timestamp File ########################################################
@@ -61,13 +60,16 @@ ss_echo "${COLOR_INFO}Running ss-dump-files... ${COLOR_RESET}"
 ## this is to avoid exhausting disk space and crashing the server
 ## if free space is okay then dump TAR ball of /html/ to /var/www/backups/html/export.tar.gz (must overwrite each time to save space)
 
+## production ##
 ss_tar "${PATH_DUMP_FILES_PRODUCTION}" --exclude="staging" --exclude="dev" -C /var/www html
 
-if [[ "${SS_DUMP_FILES_STAGING}" == "true" ]]; then
+## staging ##
+if [[ "${STAGING_SITE}" == "true" ]]; then
     ss_tar "${PATH_DUMP_FILES_STAGING}" /var/www/html/staging
 fi
 
-if [[ "${SS_DUMP_FILES_DEVELOPMENT}" == "true" ]]; then
+## development ##
+if [[ "${DEV_SITE}" == "true" ]]; then
     ss_tar "${PATH_DUMP_FILES_DEVELOPMENT}" /var/www/html/dev
 fi
 
@@ -78,24 +80,24 @@ fi
 ## here we do a quick permissions reset to ensure SFTP users can access the dump file ##
 ## keep in mind that root/sudo users will have access to this file regardless ##
 
-## reset permissions (production) ##
+## production ##
 chown -R "${SFTP_USER}":www-data "${PATH_DUMP_FILES_PRODUCTION}"
 chmod 0440 "${PATH_DUMP_FILES_PRODUCTION}"
 
-## reset permissions (staging) ##
-if [[ "${SS_DUMP_FILES_STAGING}" == "true" ]]; then
+## staging ##
+if [[ "${STAGING_SITE}" == "true" ]]; then
     chown -R "${SFTP_USER}":www-data "${PATH_DUMP_FILES_STAGING}"
     chmod 0440 "${PATH_DUMP_FILES_STAGING}"
 fi
 
-## reset permissions (development) ##
-if [[ "${SS_DUMP_FILES_DEVELOPMENT}" == "true" ]]; then
+## development ##
+if [[ "${DEV_SITE}" == "true" ]]; then
     chown -R "${SFTP_USER}":www-data "${PATH_DUMP_FILES_DEVELOPMENT}"
     chmod 0440 "${PATH_DUMP_FILES_DEVELOPMENT}"
 fi
 
 ####################################################################################################
-#### E. SS-Dump-Files: Reset Permissions (SlickStack Scripts) ######################################
+#### SlickStack: Reset Permissions (SlickStack Scripts) ############################################
 ####################################################################################################
 
 ## we include this permissions reset in all cron jobs and bash scripts for redundancy ##
