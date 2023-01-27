@@ -61,16 +61,16 @@ ss_echo "${COLOR_INFO}Running ss-dump-files... ${COLOR_RESET}"
 ## if free space is okay then dump TAR ball of /html/ to /var/www/backups/html/export.tar.gz (must overwrite each time to save space)
 
 ## production ##
-ss_targz "${PATH_DUMP_FILES_PRODUCTION}" --exclude="staging" --exclude="dev" -C /var/www html ## space required
+ss_targz "${PATH_DUMP_FILES_PRODUCTION}" --exclude="staging" --exclude="dev" -C /var/www/html .
 
 ## staging ##
 if [[ "${STAGING_SITE}" == "true" ]]; then
-    ss_tar "${PATH_DUMP_FILES_STAGING}" /var/www/html/staging
+    ss_targz "${PATH_DUMP_FILES_STAGING}" -C /var/www/html/staging .
 fi
 
 ## development ##
 if [[ "${DEV_SITE}" == "true" ]]; then
-    ss_tar "${PATH_DUMP_FILES_DEVELOPMENT}" /var/www/html/dev
+    ss_targz "${PATH_DUMP_FILES_DEVELOPMENT}" -C /var/www/html/dev .
 fi
 
 ####################################################################################################
@@ -126,5 +126,7 @@ chmod 0700 /var/www/crons/custom/*cron* ## 0700 means only root/sudo can execute
 ## Ref: https://askubuntu.com/questions/811081/how-do-i-use-tar-to-exclude-all-files-of-a-certain-directory
 ## Ref: https://www.computerhope.com/unix/utar.htm
 ## Ref: https://stackoverflow.com/questions/18681595/tar-a-directory-but-dont-store-full-absolute-paths-in-the-archive
+## Ref: https://unix.stackexchange.com/questions/627540/tar-gz-a-directory-in-another-location-into-a-destination-directory
+## Ref: https://stackoverflow.com/questions/939982/how-do-i-tar-a-directory-of-files-and-folders-without-including-the-directory-it
 
 ## SS_EOF
