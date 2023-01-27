@@ -34,7 +34,6 @@ source /var/www/ss-functions
 ## B. Message (Begin Script)
 ## C. Dump MySQL Database(s)
 ## D. Reset Permissions (Database Dump Files)
-## E. Reset Permissions (SlickStack Scripts)
 
 ####################################################################################################
 #### A. SS-Dump-Database: Touch Timestamp File #####################################################
@@ -51,7 +50,7 @@ ss_touch "${TIMESTAMP_SS_DUMP_DATABASE}"
 ####################################################################################################
 
 ## this is a simple message that announces to the shell the purpose of this bash script ##
-## it will only be noticed by sudo users who manually call ss core bash scripts ##
+## it will only be seen by sudo users who manually run this script in the shell ##
 
 ## echo message ##
 ss_echo "${COLOR_INFO}Running ss-dump-database... ${COLOR_RESET}"
@@ -63,15 +62,15 @@ ss_echo "${COLOR_INFO}Running ss-dump-database... ${COLOR_RESET}"
 ## here we use mysqldump to dump the various databases under /var/www/backups/mysql/ ##
 ## to support remote database servers we force the TCP protocol (not sockets) ##
 
-## dump production database ##
+## production ##
 ss_mysqldump "${DB_NAME}" > "${PATH_DUMP_DATABASE_PRODUCTION}" 2> /dev/null
 
-## dump staging database ##
+## staging ##
 if [[ "${STAGING_SITE}" == "true" ]]; then
     ss_mysqldump staging > "${PATH_DUMP_DATABASE_STAGING}" 2> /dev/null
 fi
 
-## dump development database ##
+## development ##
 if [[ "${DEV_SITE}" == "true" ]]; then
     ss_mysqldump development > "${PATH_DUMP_DATABASE_DEVELOPMENT}" 2> /dev/null
 fi
@@ -94,17 +93,17 @@ fi
 ## here we do a quick permissions reset to ensure SFTP users can access the dump file ##
 ## keep in mind that root/sudo users will have access to this file regardless ##
 
-## reset permissions (production) ##
+## production ##
 chown -R "${SFTP_USER}":www-data "${PATH_DUMP_DATABASE_PRODUCTION}"
 chmod 0440 "${PATH_DUMP_DATABASE_PRODUCTION}"
 
-## reset permissions (staging) ##
+## staging ##
 if [[ "${STAGING_SITE}" == "true" ]]; then
     chown -R "${SFTP_USER}":www-data "${PATH_DUMP_DATABASE_STAGING}"
     chmod 0440 "${PATH_DUMP_DATABASE_STAGING}"
 fi
 
-## reset permissions (development) ##
+## development ##
 if [[ "${DEV_SITE}" == "true" ]]; then
     chown -R "${SFTP_USER}":www-data "${PATH_DUMP_DATABASE_DEVELOPMENT}"
     chmod 0440 "${PATH_DUMP_DATABASE_DEVELOPMENT}"
