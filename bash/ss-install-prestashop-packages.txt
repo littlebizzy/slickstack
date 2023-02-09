@@ -3,13 +3,13 @@
 ####################################################################################################
 #### author: SlickStack ############################################################################
 #### link: https://slickstack.io ###################################################################
-#### mirror: https://mirrors.slickstack.io/bash/ss-install-prestashop-core.txt #####################
-#### path: /var/www/ss-install-prestashop-core #####################################################
+#### mirror: https://mirrors.slickstack.io/bash/ss-install-prestashop-packages.txt #################
+#### path: /var/www/ss-install-prestashop-packages #################################################
 #### destination: n/a (not a boilerplate) ##########################################################
-#### purpose: Reinstalls the PrestaShop module (CMS) package and non-config files (idempotent) #####
+#### purpose: Reinstalls the PrestaShop module packages and non-config files (idempotent) ##########
 #### module version: PrestaShop 1.7.x.x ############################################################
 #### sourced by: ss-install ########################################################################
-#### bash aliases: ss install prestashop core ######################################################
+#### bash aliases: ss install prestashop core|packages #############################################
 ####################################################################################################
 
 ## SS-CONFIG MUST BE PROPERLY CONFIGURED AND ON CURRENT BUILD BEFORE RUNNING SS-INSTALL ##
@@ -24,7 +24,7 @@ source /var/www/ss-functions
 ## BELOW THIS RELIES ON SS-CONFIG AND SS-FUNCTIONS
 
 ####################################################################################################
-#### TABLE OF CONTENTS (SS-Install-PrestaShop-Core) ################################################
+#### TABLE OF CONTENTS (SS-Install-PrestaShop-Packages) ############################################
 ####################################################################################################
 
 ## this is a brief summary of the different code snippets you will find in this script ##
@@ -34,27 +34,27 @@ source /var/www/ss-functions
 ## B. Message (Begin Script)
 
 ####################################################################################################
-#### A. SS-Install-PrestaShop-Core: Touch Timestamp File ###########################################
+#### A. SS-Install-PrestaShop-Packages: Touch Timestamp File #######################################
 ####################################################################################################
 
 ## this is a dummy timestamp file that will remember the last time this script was run ##
 ## it can be useful for developer reference and is sometimes used by SlickStack ##
 
 ## script timestamp ##
-ss_touch "${TIMESTAMP_SS_INSTALL_PRESTASHOP_CORE}"
+ss_touch "${TIMESTAMP_SS_INSTALL_PRESTASHOP_PACKAGES}"
 
 ####################################################################################################
-#### B. SS-Install-PrestaShop-Core: Message (Begin Script) #########################################
+#### B. SS-Install-PrestaShop-Packages: Message (Begin Script) #####################################
 ####################################################################################################
 
 ## this is a simple message that announces to the shell the purpose of this bash script ##
 ## it will only be noticed by sudo users who manually call ss core bash scripts ##
 
 ## echo message ##
-ss_echo "${COLOR_INFO}Running ss-install-prestashop-core... ${COLOR_RESET}"
+ss_echo "${COLOR_INFO}Running ss-install-prestashop-packages... ${COLOR_RESET}"
 
 ####################################################################################################
-#### SS-Install-PrestaShop-Core: Install Ubuntu Utils ##############################################
+#### SS-Install-PrestaShop-Packages: Install Ubuntu Utils ##########################################
 ####################################################################################################
 
 ## after trial and error we have realized that installing Ubuntu utils first is good ##
@@ -64,7 +64,7 @@ ss_echo "${COLOR_INFO}Running ss-install-prestashop-core... ${COLOR_RESET}"
 source "$PATH_SS_INSTALL_UBUNTU_UTILS"
 
 ####################################################################################################
-#### SS-Install-PrestaShop-Core: Install Latest Stable (Minor) PrestaShop Version ##################
+#### SS-Install-PrestaShop-Packages: Install Latest Stable (Minor) PrestaShop Version ##############
 ####################################################################################################
 
 if [[ "$SS_APP" == "prestashop" ]]; then
@@ -107,33 +107,15 @@ rm /var/www/html/prestashop*
 rm /var/www/html/staging/prestashop*
 
 else
-    echo -e "${PURPLE}Exiting ss-install-prestashop-core: It appears your SlickStack is configured to use a CMS other than Prestashop... ${NOCOLOR}"
+    echo -e "${PURPLE}Exiting ss-install-prestashop-packages: It appears your SlickStack is configured to use a CMS other than Prestashop... ${NOCOLOR}"
 fi
 
 ####################################################################################################
-#### SS-Install-WordPress-Core: Modify Database Options For WordPress ##############################
+#### SS-Install-PrestaShop-Packages: Reset Permissions (PrestaShop Packages) #######################
 ####################################################################################################
 
-## here we manually fix certain fields in the MySQL database to ensure proper settings ##
-
-
-## ensure home + siteurl options are correct in the wp_options table ##
-# mysql --execute="UPDATE ${DB_PREFIX}options SET option_value='https://$SITE_DOMAIN' WHERE option_name='home'";
-# mysql --execute="UPDATE ${DB_PREFIX}options SET option_value='https://$SITE_DOMAIN' WHERE option_name='siteurl'";
-
-####################################################################################################
-#### SS-Install-PrestaShop-Core: Reset Permissions (PrestaShop Core) ###############################
-####################################################################################################
-
-## run ss-perms-prestashop-core ##
-source "$PATH_SS_PERMS_PRESTASHOP_CORE"
-
-####################################################################################################
-#### SS-Install-PrestaShop-Core: Cleanup Temporary Files ###########################################
-####################################################################################################
-
-## delete tmp files ##
-# n/a
+## run ss-perms-prestashop-packages ##
+source "${PATH_SS_PERMS_PRESTASHOP_PACKAGES}"
 
 ####################################################################################################
 #### SlickStack: Reset Permissions (SlickStack Scripts) ############################################
