@@ -41,7 +41,7 @@
 ## this build version ensures compatibility with ss-config boilerplate (from mirrors) ##
 ## it must match the latest ss-config boilerplate otherwise updating will fail ##
 
-SS_UPDATE_CONFIG_BUILD="FEB2023C"
+SS_UPDATE_CONFIG_BUILD="FEB2023D"
 
 ####################################################################################################
 #### B. SS-Update-Config: Source SS-Config + SS-Functions ##########################################
@@ -117,8 +117,12 @@ fi
 ## variables will only be copied over from the previous ss-config file if they are defined ##
 ## otherwise default (recommended) options will be used from the new boilerplate ##
 
-## retrieve latest version of ss-config-sample ##
-ss_wget "${TMP_SS_CONFIG}" "${MIRROR_SS_CONFIG_SAMPLE}"
+## retrieve ss-config-sample ##
+ss_wget "${TMP_SS_CONFIG}" "${GITHUB_SS_CONFIG_SAMPLE}"
+VALIDATE_TMP_SS_CONFIG=$(grep 'SS_EOF' "${TMP_SS_CONFIG}" 2> /dev/null)
+if [[ -z "${VALIDATE_TMP_SS_CONFIG}" ]]; then
+    ss_wget "${TMP_SS_CONFIG}" "${GITLAB_SS_CONFIG_SAMPLE}"
+fi
 
 ## snippet variables ##
 SS_BUILD_LATEST=$(source /tmp/ss-config; echo "${SS_BUILD}" 2> /dev/null)
