@@ -77,29 +77,18 @@ ss_echo "${COLOR_INFO}Running ss-install-adminer... ${COLOR_RESET}"
 ## here we retrieve the latest version of adminer.php from our mirrors and install it ##
 ## note that adminer.php cannot be converted to UTF-8 or else it will break ##
 
-## download latest versions ##
+## retrieve adminer.php ##
 ss_wget "${TMP_ADMINER_PHP}" "${GITHUB_ADMINER_PHP}"
-
-## validate temp adminer.php then install ##
-VALIDATE_TMP_ADMINER_PHP=$(grep 'Jakub Vrana' "$TMP_ADMINER_PHP")
-if [[ -n "$VALIDATE_TMP_ADMINER_PHP" ]]; then
-    ss_cp "${TMP_ADMINER_PHP}" "${PATH_ADMINER_PHP}"
-else
-    ss_rm "${TMP_ADMINER_PHP}"
-    ss_wget "${TMP_ADMINER_PHP}" "${MIRROR2_ADMINER_PHP}"
-    ss_cp "${TMP_ADMINER_PHP}" "${PATH_ADMINER_PHP}"
+VALIDATE_TMP_ADMINER_PHP=$(grep 'Jakub Vrana' "${TMP_ADMINER_PHP}" 2> /dev/null)
+if [[ -z "${VALIDATE_TMP_ADMINER_PHP}" ]]; then
+    ss_wget "${TMP_ADMINER_PHP}" "${GITLAB_ADMINER_PHP}"
 fi
 
-## validate path adminer.php and reinstall if needed ##
-VALIDATE_PATH_ADMINER_PHP=$(grep 'Jakub Vrana' "$PATH_ADMINER_PHP")
-if [[ -z "$VALIDATE_PATH_ADMINER_PHP" ]]; then
-    ss_rm "${TMP_ADMINER_PHP}"
-    ss_wget "${TMP_ADMINER_PHP}" "${GITHUB_ADMINER_PHP}"
-    ss_cp "${TMP_ADMINER_PHP}" "${PATH_ADMINER_PHP}"
+## install adminer.php ##
+VALIDATE2_TMP_ADMINER_PHP=$(grep 'Jakub Vrana' "${TMP_ADMINER_PHP}" 2> /dev/null)
+if [[ -n "${VALIDATE2_TMP_ADMINER_PHP}" ]]; then
+    ss_mv "${TMP_ADMINER_PHP}" "${PATH_ADMINER_PHP}"
 fi
-
-## delete tmp files ##
-ss_rm "$TMP_ADMINER_PHP"
 
 ####################################################################################################
 #### E. SS-Install-Adminer: Reset Permissions (Adminer) ############################################
