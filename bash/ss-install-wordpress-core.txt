@@ -1,0 +1,346 @@
+#!/bin/bash
+
+## TO BE DELETED
+
+####################################################################################################
+#### author: SlickStack ############################################################################
+#### link: https://slickstack.io ###################################################################
+#### mirror: https://mirrors.slickstack.io/bash/ss-install-wordpress-core.txt ######################
+#### path: /var/www/ss-install-wordpress-core ######################################################
+#### destination: n/a (not a boilerplate) ##########################################################
+#### purpose: Reinstalls the WordPress module (CMS) package and non-config files (idempotent) ######
+#### module version: WordPress 6.0.x ###############################################################
+#### sourced by: ss-install ########################################################################
+#### bash aliases: ss install [wordpress|wp] core ##################################################
+####################################################################################################
+
+## SS-CONFIG MUST BE PROPERLY CONFIGURED AND ON CURRENT BUILD BEFORE RUNNING SS-INSTALL ##
+## ENSURE YOUR SS-CONFIG BUILD REMAINS CURRENT BY RUNNING SS-UPDATE OCCASIONALLY ##
+
+## source ss-config ##
+source /var/www/ss-config
+
+## source ss-functions ##
+source /var/www/ss-functions
+
+## BELOW THIS RELIES ON SS-CONFIG AND SS-FUNCTIONS
+
+####################################################################################################
+#### TABLE OF CONTENTS (SS-Install-WordPress-Core) #################################################
+####################################################################################################
+
+## this is a brief summary of the different code snippets you will find in this script ##
+## each section should be commented so you understand what is being accomplished ##
+
+## A. Touch Timestamp File
+## B. Message (Begin Script)
+## C. Install Ubuntu Utils
+## D. Retrieve WordPress Core ZIP 
+## E. Install WordPress Core (Production)
+## F. Install WordPress Core (Staging)
+## G. Install WordPress Core (Development)
+## H. Populate Production Database Options (Conditional)
+## I. Populate Development Database Options (Conditional)
+## J. Modify Site Domains In Database
+## K. Sync Production Database To Staging
+## L. Purge Cache (PHP OPcache)
+## M. Reset Permissions (WordPress Core)
+## N. Cleanup Temporary Files
+
+####################################################################################################
+#### A. SS-Install-WordPress-Core: Touch Timestamp File ############################################
+####################################################################################################
+
+## this is a dummy timestamp file that will remember the last time this script was run ##
+## it can be useful for developer reference and is sometimes used by SlickStack ##
+
+## script timestamp ##
+ss_touch "${TIMESTAMP_SS_INSTALL_WORDPRESS_CORE}"
+
+####################################################################################################
+#### B. SS-Install-WordPress-Core: Message (Begin Script) ##########################################
+####################################################################################################
+
+## this is a simple message that announces to the shell the purpose of this bash script ##
+## it will only be seen by sudo users who manually run this script in the shell ##
+
+ss_echo "${COLOR_INFO}Running ss-install-wordpress-core... ${COLOR_RESET}"
+
+####################################################################################################
+#### C. SS-Install-WordPress-Core: Install Ubuntu Utils ############################################
+####################################################################################################
+
+## run ss-install-ubuntu-utils ##
+source "${PATH_SS_INSTALL_UBUNTU_UTILS}"
+
+####################################################################################################
+#### D. SS-Install-WordPress-Core: Retrieve WordPress Core ZIP #####################################
+####################################################################################################
+
+## CMS modules are installed by SlickStack via files from our public mirror servers ##
+## we always install the latest stable minor version (never major versions) ##
+
+## retrieve latest version ##
+ss_wget "${TMP_WORDPRESS_ZIP}" "${GITHUB_WORDPRESS_ZIP}"
+
+####################################################################################################
+#### E. SS-Install-WordPress-Core: Install WordPress Core (Production) #############################
+####################################################################################################
+
+## this installation process removes outdated WordPress Core files or potential malware ##
+## it is not foolproof but it should address several common infection targets ##
+
+## cleanup old files ##
+if [[ -f "${TMP_WORDPRESS_ZIP}" ]] && [[ "${SS_INSTALL_WORDPRESS_CORE_DELETE_WP_ADMIN}" != "false" ]]; then
+    ss_rm /var/www/html/wp-admin
+fi
+
+if [[ -f "${TMP_WORDPRESS_ZIP}" ]] && [[ "${SS_INSTALL_WORDPRESS_CORE_DELETE_WP_INCLUDES}" != "false" ]]; then
+    ss_rm /var/www/html/wp-includes
+fi
+
+if [[ -f "${TMP_WORDPRESS_ZIP}" ]] && [[ "${SS_INSTALL_WORDPRESS_CORE_DELETE_PHP_FILES_ROOT}" != "false" ]]; then
+    find /var/www/html/ -maxdepth 1 -type f ! -name "wp-config.php" -name "*.php" -delete 
+fi
+
+## prepare new files ##
+ss_cp "${TMP_WORDPRESS_ZIP}" /var/www/html
+ss_unzip /var/www/html/wordpress.zip -d /var/www/html
+chown -R www-data:slickstack /var/www/html/wordpress
+ss_chmod 775 /var/www/html/wordpress
+
+## install new files ##
+ss_rsync /var/www/html/wordpress/* /var/www/html
+
+## delete tmp files ##
+ss_rm /var/www/html/wordpress
+ss_rm /var/www/html/wordpress.zip*
+
+## install hovercraft default theme ##
+ss_rm /tmp/hovercraft*
+ss_rm /tmp/master*.zip*
+ss_wget "${TMP_HOVERCRAFT_ZIP}" "${GITHUB_HOVERCRAFT_ZIP}"
+ss_unzip "${TMP_HOVERCRAFT_ZIP}" -d /tmp
+ss_mv /tmp/hovercraft-master /tmp/hovercraft
+chown -R www-data:slickstack /tmp/hovercraft
+ss_chmod 775 /tmp/hovercraft
+ss_mkdir /var/www/html/wp-content/themes/hovercraft
+ss_rm /var/www/html/wp-content/themes/hovercraft/*
+ss_rsync /tmp/hovercraft/* /var/www/html/wp-content/themes/hovercraft
+chown -R www-data:slickstack /var/www/html/wp-content/themes/hovercraft
+ss_chmod 775 /var/www/html/wp-content/themes/hovercraft
+ss_rm /tmp/hovercraft*
+ss_rm /tmp/master*.zip*
+
+####################################################################################################
+#### F. SS-Install-WordPress-Core: Install WordPress Core (Staging) ################################
+####################################################################################################
+
+## this installation process removes outdated WordPress Core files or potential malware ##
+## it is not foolproof but it should address several common infection targets ##
+
+if [[ "${STAGING_SITE}" == "true" ]]; then 
+
+    ## cleanup old files ##
+    if [[ -f "${TMP_WORDPRESS_ZIP}" ]] && [[ "${SS_INSTALL_WORDPRESS_CORE_DELETE_WP_ADMIN}" != "false" ]]; then
+        ss_rm /var/www/html/staging/wp-admin
+    fi
+
+    if [[ -f "${TMP_WORDPRESS_ZIP}" ]] && [[ "${SS_INSTALL_WORDPRESS_CORE_DELETE_WP_INCLUDES}" != "false" ]]; then
+        ss_rm /var/www/html/staging/wp-includes
+    fi
+
+    if [[ -f "${TMP_WORDPRESS_ZIP}" ]] && [[ "${SS_INSTALL_WORDPRESS_CORE_DELETE_PHP_FILES_ROOT}" != "false" ]]; then
+        find /var/www/html/staging/ -maxdepth 1 -type f ! -name "wp-config.php" -name "*.php" -delete 
+    fi
+
+    ## prepare new files ##
+    ss_cp "${TMP_WORDPRESS_ZIP}" /var/www/html/staging
+    ss_unzip /var/www/html/staging/wordpress.zip -d /var/www/html/staging
+    chown -R www-data:slickstack /var/www/html/staging/wordpress
+    ss_chmod 775 /var/www/html/staging/wordpress
+    
+    ## install new files files ##
+    ss_rsync /var/www/html/staging/wordpress/* /var/www/html/staging
+    
+    ## delete tmp files ##
+    ss_rm /var/www/html/staging/wordpress
+    ss_rm /var/www/html/staging/wordpress.zip*
+    
+fi
+
+####################################################################################################
+#### G. SS-Install-WordPress-Core: Install WordPress Core (Development) ############################
+####################################################################################################
+
+## this installation process removes outdated WordPress Core files or potential malware ##
+## it is not foolproof but it should address several common infection targets ##
+
+if [[ "${DEV_SITE}" == "true" ]]; then 
+
+    ## cleanup old files ##
+    if [[ -f "${TMP_WORDPRESS_ZIP}" ]] && [[ "${SS_INSTALL_WORDPRESS_CORE_DELETE_WP_ADMIN}" != "false" ]]; then
+        ss_rm /var/www/html/dev/wp-admin
+    fi
+
+    if [[ -f "${TMP_WORDPRESS_ZIP}" ]] && [[ "${SS_INSTALL_WORDPRESS_CORE_DELETE_WP_INCLUDES}" != "false" ]]; then
+        ss_rm /var/www/html/dev/wp-includes
+    fi
+
+    if [[ -f "${TMP_WORDPRESS_ZIP}" ]] && [[ "${SS_INSTALL_WORDPRESS_CORE_DELETE_PHP_FILES_ROOT}" != "false" ]]; then
+        find /var/www/html/dev/ -maxdepth 1 -type f ! -name "wp-config.php" -name "*.php" -delete 
+    fi
+
+    ## prepare new files ##
+    ss_cp "${TMP_WORDPRESS_ZIP}" /var/www/html/dev
+    ss_unzip /var/www/html/dev/wordpress.zip -d /var/www/html/dev
+    chown -R www-data:slickstack /var/www/html/dev/wordpress
+    ss_chmod 775 /var/www/html/dev/wordpress
+    
+    ## install new files ##
+    ss_rsync /var/www/html/dev/wordpress/* /var/www/html/dev
+    
+    ## delete tmp files ##
+    ss_rm /var/www/html/dev/wordpress
+    ss_rm /var/www/html/dev/wordpress.zip*
+    
+fi
+
+####################################################################################################
+#### H. SS-Install-WordPress-Core: Populate Production Database Options (Conditional) ##############
+####################################################################################################
+
+## minimum wp_options required to avoid /wp-admin/install.php redirect are below: ##
+## home/siteurl, blogname, admin_user, admin_email, admin_password ##
+
+QUERY_PRODUCTION_WP_OPTIONS_EXIST=$(mysql --execute "SHOW TABLES FROM ${DB_NAME} WHERE Tables_in_${DB_NAME} LIKE '${DB_PREFIX}options';")
+GREP_WP_OPTIONS_STRING_PRODUCTION=$(echo "${QUERY_PRODUCTION_WP_OPTIONS_EXIST}" | ss_grep_boolean "${DB_PREFIX}"options)
+
+## populate wp_options if not exists ##
+if [[ -z "${GREP_WP_OPTIONS_STRING_PRODUCTION}" ]]; then
+    /usr/bin/php -qCr "include '/var/www/html/wp-admin/install.php'; wp_install('SlickStack', '\"${SFTP_USER}\"', '\"${SFTP_USER}\"@\"${SITE_DOMAIN_EXCLUDING_WWW}\"', 1, '', \"${SFTP_PASSWORD}\", 'en_US');"
+    mysql --execute="UPDATE ${DB_PREFIX}options SET option_value='Lightning-fast WordPress on Nginx' WHERE option_name='blogdescription';"
+fi
+
+####################################################################################################
+#### I. SS-Install-WordPress-Core: Populate Development Database Options (Conditional) #############
+####################################################################################################
+
+## minimum wp_options required to avoid /wp-admin/install.php redirect are below: ##
+## home/siteurl, blogname, admin_user, admin_email, admin_password ##
+
+## populate wp_options if not exists ##
+if [[ "${DEV_SITE}" == "true" ]]; then
+    QUERY_DEVELOPMENT_WP_OPTIONS_EXIST=$(mysql --execute "SHOW TABLES FROM development WHERE Tables_in_development LIKE '${DB_PREFIX}options';" 2> /dev/null)
+    GREP_WP_OPTIONS_STRING_DEVELOPMENT=$(echo "${QUERY_DEVELOPMENT_WP_OPTIONS_EXIST}" | ss_grep_boolean "${DB_PREFIX}"options)
+    ## populate wp_options if not exists ##
+    if [[ -z "${GREP_WP_OPTIONS_STRING_DEVELOPMENT}" ]]; then
+        /usr/bin/php -qCr "include '/var/www/html/dev/wp-admin/install.php'; wp_install('SlickStack', '\"${SFTP_USER}\"', '\"${SFTP_USER}\"@\"${SITE_DOMAIN_EXCLUDING_WWW}\"', 1, '', \"${SFTP_PASSWORD}\", 'en_US');"
+        mysql --execute="UPDATE ${DB_PREFIX}options SET option_value='Lightning-fast WordPress on Nginx' WHERE option_name='blogdescription';"
+    fi
+fi
+
+####################################################################################################
+#### J. SS-Install-WordPress-Core: Modify Site Domains In Database #################################
+####################################################################################################
+
+## here we manually fix certain fields in the database to ensure proper functionality ##
+## this fix required for WP Multisite (wp-config.php enough for single sites) ##
+
+## SNIPPET: ss-install-wordpress-config, ss-install-wordpress-core
+## UPDATED: 28MAR2022
+
+## production ##
+if [[ -n $(mysql --execute "SHOW TABLES FROM ${DB_NAME} WHERE Tables_in_${DB_NAME} LIKE '${DB_PREFIX}options';" 2> /dev/null) ]]; then
+    
+    mysql --execute="UPDATE ${DB_NAME}.${DB_PREFIX}options SET option_value='https://${SITE_DOMAIN}' WHERE option_name='home'";
+    mysql --execute="UPDATE ${DB_NAME}.${DB_PREFIX}options SET option_value='https://${SITE_DOMAIN}' WHERE option_name='siteurl'";
+    
+fi
+
+## staging ##
+if [[ "${STAGING_SITE}" == "true" ]]; then 
+    
+    if [[ -n $(mysql --execute "SHOW TABLES FROM staging WHERE Tables_in_staging LIKE '${DB_PREFIX}options';" 2> /dev/null) ]]; then
+    
+        mysql --execute="UPDATE staging.${DB_PREFIX}options SET option_value='https://staging.${SITE_DOMAIN_EXCLUDING_WWW}' WHERE option_name='home'";
+        mysql --execute="UPDATE staging.${DB_PREFIX}options SET option_value='https://staging.${SITE_DOMAIN_EXCLUDING_WWW}' WHERE option_name='siteurl'";
+    fi
+    
+fi
+
+## development ##
+if [[ "${DEV_SITE}" == "true" ]]; then 
+    
+    if [[ -n $(mysql --execute "SHOW TABLES FROM development WHERE Tables_in_development LIKE '${DB_PREFIX}options';" 2> /dev/null) ]]; then
+    
+        mysql --execute="UPDATE development.${DB_PREFIX}options SET option_value='https://dev.${SITE_DOMAIN_EXCLUDING_WWW}' WHERE option_name='home'";
+        mysql --execute="UPDATE development.${DB_PREFIX}options SET option_value='https://dev.${SITE_DOMAIN_EXCLUDING_WWW}' WHERE option_name='siteurl'";
+    fi
+
+fi
+
+####################################################################################################
+#### K. SS-Install-WordPress-Core: Sync Production Database To Staging #############################
+####################################################################################################
+
+## we include the sync to staging while installing WordPress Core to avoid blank sites ##
+## otherwise the staging site files/database would potentially display broken ##
+
+## run ss-sync-staging ##
+source "${PATH_SS_SYNC_STAGING}"
+
+####################################################################################################
+#### L. SS-Install-WordPress-Core: Purge Cache (PHP OPcache) #######################################
+####################################################################################################
+
+## run ss-purge-opcache ##
+source "${PATH_SS_PURGE_OPCACHE}"
+
+####################################################################################################
+#### M. SS-Install-WordPress-Core: Reset Permissions (WordPress Core) ##############################
+####################################################################################################
+
+## run ss-perms-wordpress-core ##
+source "${PATH_SS_PERMS_WORDPRESS_CORE}"
+
+####################################################################################################
+#### SlickStack: Reset Permissions (SlickStack Scripts) ############################################
+####################################################################################################
+
+## we include this permissions reset in all cron jobs and bash scripts for redundancy ##
+## chmod 0700 means only the root/sudo users can execute any SlickStack scripts ##
+
+## THIS SNIPPET DOES NOT RELY ON SS-CONFIG OR SS-FUNCTIONS
+## SNIPPET: ss bash scripts, ss cron jobs
+## UPDATED: 02JUL2022
+
+chown root:root /var/www/ss* ## must be root:root
+chown root:root /var/www/crons/*cron* ## must be root:root
+chown root:root /var/www/crons/custom/*cron* ## must be root:root
+chmod 0700 /var/www/ss* ## 0700 means only root/sudo can execute
+chmod 0700 /var/www/crons/*cron* ## 0700 means only root/sudo can execute
+chmod 0700 /var/www/crons/custom/*cron* ## 0700 means only root/sudo can execute
+
+####################################################################################################
+#### SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ###############
+####################################################################################################
+
+## Ref: https://github.com/littlebizzy/throwaway-theme/blob/master/functions.php
+## Ref: https://pressidium.com/blog/2020/wordpress-image-sizes-explained/
+## Ref: https://developer.wordpress.org/cli/commands/core/install/
+## Ref: https://www.linuxtweaks.in/how-to-install-wordpress-using-bash-script-and-wp-cli/
+## Ref: https://stackoverflow.com/questions/10062513/install-wordpress-using-bash-shell-without-visiting-wp-admin-install-php
+## Ref: https://serverascode.com/2014/06/22/automated-wordpress-database-deployment.html
+## Ref: https://web.archive.org/web/20140711110900/http://www.openlogic.com/wazi/bid/324425/How-to-install-WordPress-from-the-command-line
+## Ref: https://wordpress.org/support/article/how-to-install-wordpress/
+## Ref: https://stackoverflow.com/questions/6781225/how-do-i-check-if-a-directory-has-child-directories/6781343
+## Ref: https://www.cloudsavvyit.com/1081/check-a-value-in-a-mysql-database-from-a-linux-bash-script/
+## Ref: https://www.php.net/manual/en/features.commandline.options.php
+## Ref: https://stackoverflow.com/questions/33067909/bash-variable-under-a-mysql-query
+## Ref: https://stackoverflow.com/questions/21526581/how-to-clear-hide-mysql-errors-from-command-prompt
+## Ref: https://www.php.net/manual/en/features.commandline.options.php
+## Ref: https://www.medo64.com/2016/07/random-blog-description-for-wordpress/
+## Ref: https://github.com/wp-cli/wp-cli/issues/1319
+
+## SS_EOF
