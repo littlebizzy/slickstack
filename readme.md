@@ -4,13 +4,13 @@ SlickStack is a free LEMP stack automation script written in Bash designed to en
 
 ## Thank you to our sponsors!
 
-[backamblock](https://github.com/backamblock), [yamanmucahit](https://github.com/yamanmucahit), [maxalerator](https://github.com/maxalerator), [konkova](https://github.com/konkova), [HDBear](https://github.com/HDBear), [Politicalite](https://github.com/politicalite)
+[backamblock](https://github.com/backamblock), [yamanmucahit](https://github.com/yamanmucahit), [maxalerator](https://github.com/maxalerator), [konkova](https://github.com/konkova), [HDBear](https://github.com/HDBear), [Politicalite](https://github.com/politicalite), [@liwernyap](https://github.com/liwernyap), [vivdev](https://github.com/vivdev), [hamzah](https://github.com/hamzah), [gingibash](https://github.com/gingibash), [damiafaw](https://github.com/damiafaw), [trevplaig](https://github.com/trevplaig)
 
 [**Become a sponsor**](https://github.com/sponsors/jessuppi?o=esb) and receive access to our private Discord server and changelog!
 
 ## Changelog
 
-Our changelog is now only available to members of our private Discord on the **#announce** channel. This is to encourage serious users of SlickStack to become more involved and support our project.
+Our changelog is now only available to members of our private Discord on the **#announce** channel. This is to encourage serious users of SlickStack to become more involved and support our project, thank you!
 
 ## Core Modules
 
