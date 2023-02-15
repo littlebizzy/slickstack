@@ -1551,7 +1551,7 @@ fi
 
 ## old stuff ##
 # SS_MYSQL_VERSION=`mysqld --version`
-# SS_MYSQL_SIZE=`mysql --execute="SELECT table_schema AS "wordpress", SUM(data_length + index_length) / 1024 / 1024 / 1024 AS "Size (GB)" FROM information_schema.TABLES GROUP BY table_schema";`
+# SS_MYSQL_SIZE=`ss_mysql_root --execute="SELECT table_schema AS "wordpress", SUM(data_length + index_length) / 1024 / 1024 / 1024 AS "Size (GB)" FROM information_schema.TABLES GROUP BY table_schema";`
 # SS_PHP_VERSION=`php -v | grep ^PHP | cut -d' ' -f2`
 # SS_PHP_EXTENSIONS=`php -r "print_r(implode(', ', get_loaded_extensions()));"`
 
@@ -1755,6 +1755,7 @@ function ss_mysql_root {
     command mysql --user=root --host=localhost --protocol=socket --port="${DB_PORT}" --force "$@" 2> /dev/null
 }
 
+## --max_allowed_packet=1GB ... add this after test?
 ## ss_mysql_user ##
 function ss_mysql_user {
     command mysql --user="${DB_USER}" --password="${DB_PASSWORD}" --host="${DB_HOST}" --protocol=tcp --port="${DB_PORT}" --force "$@" 2> /dev/null
@@ -1763,23 +1764,6 @@ function ss_mysql_user {
 ## ss_mysql_admin ##
 function ss_mysql_admin {
     command mysql --user=admin --password="${DB_PASSWORD_ROOT}" --host="${DB_HOST}" --protocol=tcp --port="${DB_PORT}" --force "$@" 2> /dev/null
-}
-
-#### DELETE BELOW HERE ####
-
-## mysql default ##
-function mysql {
-    command mysql --user=root --host=localhost --protocol=socket --port=3306 --force "$@"
-    # mysql --user=root --host="${DB_HOST}" --protocol=tcp --port=3306 --force "$@"
-    # --max_allowed_packet=1GB ... add this after test?
-}
-
-#### DELETE ABOVE HERE ####
-
-## mysqldump (delete this) ##
-function mysqldump {
-    # /usr/bin/mysqldump
-    command mysqldump --user=$DB_USER --password=$DB_PASSWORD --host=$DB_HOST --protocol=tcp --port=3306 --no-tablespaces --single-transaction --skip-lock-tables --no-create-db --dump-date --force "$@"
 }
 
 ## ss_mysqldump ##
