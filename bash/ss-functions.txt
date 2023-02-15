@@ -1750,12 +1750,28 @@ function ss_mkdir {
     command mkdir -p "$@"
 }
 
-## DELETE LATER ?? ##
+## ss_mysql_root ##
+function ss_mysql_root {
+    command mysql --user=root --host=localhost --protocol=socket --port="${DB_PORT}" --force "$@" 2> /dev/null
+}
+
+## ss_mysql_user ##
+function ss_mysql_user {
+    command mysql --user="${DB_USER}" --password="${DB_PASSWORD}" --host="${DB_HOST}" --protocol=tcp --port="${DB_PORT}" --force "$@" 2> /dev/null
+}
+
+## ss_mysql_admin ##
+function ss_mysql_admin {
+    command mysql --user=admin --password="${DB_PASSWORD_ROOT}" --host="${DB_HOST}" --protocol=tcp --port="${DB_PORT}" --force "$@" 2> /dev/null
+}
+
+#### DELETE BELOW HERE ####
+
 ## mysql default ##
 function mysql {
     command mysql --user=root --host=localhost --protocol=socket --port=3306 --force "$@"
     # mysql --user=root --host="${DB_HOST}" --protocol=tcp --port=3306 --force "$@"
-    # --max_allowed_packet=1GB ... add this after test
+    # --max_allowed_packet=1GB ... add this after test?
 }
 
 ## mysql (8.0) ##
@@ -1790,6 +1806,8 @@ function ss_mysql_5.7 {
 function ss_mysql_5.7_sudo {
     command mysql --user="$SUDO_USER" --host=localhost --protocol=socket --port=3306 --force "$@"
 }
+
+#### DELETE ABOVE HERE ####
 
 ## mysqldump (delete this) ##
 function mysqldump {
