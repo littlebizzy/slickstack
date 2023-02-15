@@ -114,19 +114,8 @@ source "${PATH_SS_DUMP_DATABASE}"
 ss_cp /var/www/backups/mysql/production.sql /tmp/staging.sql
 chown mysql:mysql /tmp/staging.sql ## does not matter if -L flag used below
 chmod 0644 /tmp/staging.sql ## does not matter if -L flag used below
+ss_mysql_user staging < /tmp/staging.sql
 
-if [[ "${UBUNTU_VERSION}" == "22.04" ]]; then
-    mysql_8.0_tcp staging < /tmp/staging.sql
-fi
-
-if [[ "${UBUNTU_VERSION}" == "20.04" ]]; then
-    mysql_8.0_tcp staging < /tmp/staging.sql
-fi
-
-if [[ "${UBUNTU_VERSION}" == "18.04" ]]; then
-    mysql_5.7_tcp staging < /tmp/staging.sql
-fi
-    
 ## fix staging home and siteurl fields (no mass search/replace to avoid potential conflicts) ##
 if [[ "${SS_APP}" == "wordpress" ]]; then
 
