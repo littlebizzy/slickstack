@@ -70,7 +70,7 @@ ss_echo "${COLOR_INFO}Running ss-sync-development... ${COLOR_RESET}"
 ## check if SlickStack dashboard staging.wp_options has paused this script before proceeding
 
 # select EmployeeName from DemoTable where isMarried=true;
-# ss_options_staging_sync_status=$(mysql -BNe "USE staging; SELECT EmployeeName FROM DemoTable WHERE id=1")
+# ss_options_staging_sync_status=$(ss_mysql_user -BNe "USE staging; SELECT EmployeeName FROM DemoTable WHERE id=1")
 # $sql = "SELECT 'id' FROM Users WHERE username='$name'";
 
 
@@ -100,13 +100,13 @@ if [[ "${DEV_SITE}" == "true" ]]; then
     ss_cp /var/www/backups/mysql/production.sql /tmp/sync-development.sql
     chown mysql:mysql /tmp/sync-development.sql ## does not matter if -L flag used below
     chmod 0644 /tmp/sync-development.sql ## does not matter if -L flag used below
-    ss_mysql_8.0 development < /tmp/sync-development.sql
+    ss_mysql_root development < /tmp/sync-development.sql
     
     ## fix staging home and siteurl fields (no mass search/replace to avoid potential conflicts) ##
     if [[ "${SS_APP}" == "wordpress" ]]; then
-        if [[ -n $(mysql --execute "SHOW TABLES FROM staging WHERE Tables_in_staging LIKE '${DB_PREFIX}options';" 2> /dev/null) ]]; then
-            mysql --execute="UPDATE development.${DB_PREFIX}options SET option_value='https://dev.${SITE_DOMAIN_EXCLUDING_WWW}' WHERE option_name='home'";
-            mysql --execute="UPDATE development.${DB_PREFIX}options SET option_value='https://dev.${SITE_DOMAIN_EXCLUDING_WWW}' WHERE option_name='siteurl'";
+        if [[ -n $(ss_mysql_user --execute "SHOW TABLES FROM staging WHERE Tables_in_staging LIKE '${DB_PREFIX}options';" 2> /dev/null) ]]; then
+            ss_mysql_user --execute="UPDATE development.${DB_PREFIX}options SET option_value='https://dev.${SITE_DOMAIN_EXCLUDING_WWW}' WHERE option_name='home'";
+            ss_mysql_user --execute="UPDATE development.${DB_PREFIX}options SET option_value='https://dev.${SITE_DOMAIN_EXCLUDING_WWW}' WHERE option_name='siteurl'";
         fi
     fi
     
