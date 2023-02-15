@@ -24,9 +24,10 @@
 
 ## A. Build Version
 ## A. Validate (Restore) SS-Functions
-## C. Source SS-Config + SS-Functions (After Validated)
+## C. Source SS-Config (Conditional) + SS-Functions
 ## D. Touch Timestamp File
-## C. Verify Environment Compatibility
+## E. Verify Environment Compatibility
+
 ## D. Check For Any Undefined Options
 ## E. Retrieve SS-Config Boilerplate
 ## F. Interactive Bash Setup Wizard (SS-Config)
@@ -42,8 +43,8 @@
 #### A. SS-Install: Build Version ##################################################################
 ####################################################################################################
 
-## this build version ensures compatibility with ss-config boilerplate (on localhost) ##
-## it must match the active ss-config build otherwise installing will fail ##
+## this build version ensures compatibility with the currently active ss-config file ##
+## it must match the localhost ss-config otherwise installation will fail ##
 
 SS_INSTALL_BUILD="FEB2023K"
 
@@ -87,7 +88,7 @@ if [[ -z "${VALIDATE_SS_FUNCTIONS}" ]] || [[ -n "${OUTDATED_SS_FUNCTIONS}" ]]; t
 fi
 
 ####################################################################################################
-#### C. SS-Install: Source SS-Config + SS-Functions (After Validated) ##############################
+#### C. SS-Install: Source SS-Config (Conditional) + SS-Functions ##################################
 ####################################################################################################
 
 ## at this point we have restored ss-functions and ss-config may or may not exist yet ##
@@ -95,7 +96,7 @@ fi
 
 ## source ss-config (if exists) ##
 SS_CONFIG="/var/www/ss-config"
-test -f "${SS_CONFIG}" && source "${SS_CONFIG}"
+test -f "${SS_CONFIG}" && source "${SS_CONFIG}" ## does not rely on ss-functions
 
 ## source ss-functions ##
 source /var/www/ss-functions
@@ -112,34 +113,34 @@ source /var/www/ss-functions
 ss_touch "${TIMESTAMP_SS_INSTALL}"
 
 ####################################################################################################
-#### C. SS-Install: Verify Environment Compatibility ###############################################
+#### E. SS-Install: Verify Environment Compatibility ###############################################
 ####################################################################################################
 
-## never run ss-install unless the build version below matches active ss-config version ##
-## in case of emergencies the SlickStack team might purposefully mismatch builds ##
+## here we perform some checks to ensure compatibility between different applications ##
+## SlickStack requires matching build versions, Ubuntu LTS, no Docker, and etc ##
 
 ## verify ss-install build matches ss-config (if exists) ##
 if [[ -f "/var/www/ss-config" ]] && [[ "${SS_BUILD}" != "${SS_INSTALL_BUILD}" ]]; then 
-    ss_echo "${COLOR_WARN}ss-install: Please run ss-update-config and then run ss-install again... ${NOCOLOR}"
+    ss_echo "${COLOR_WARN}ss-install: Please run ss-update-config and then run ss-install again... ${COLOR_RESET}"
     exit 1
 fi
 
 ## verify supported ubuntu version ##
 if [[ "${UBUNTU_VERSION}" != @(22.04|20.04|18.04) ]]; then
-    ss_echo "${COLOR_WARN}Exiting ss-install: SlickStack is designed for Ubuntu LTS (but this VPS is running ${UBUNTU_VERSION})... ${NOCOLOR}"
+    ss_echo "${COLOR_WARN}Exiting ss-install: SlickStack is designed for Ubuntu LTS (but this VPS is running ${UBUNTU_VERSION})... ${COLOR_RESET}"
     exit 1
 fi
 
 ## REDUCE THIS to be like 500mb or something
 ## verify at least 5GB free disk space remains ##
 # if [[ "${SYSTEM_DISK_FREE}" -lt 5242880 ]]; then ## 10G = 10485760 / 5GB = 5242880
-#    ss_echo "${COLOR_WARN}Exiting ss-install: It looks like your server has less than 5GB free space available, please upgrade your server and then run ss-install again. ${NOCOLOR}"
+#    ss_echo "${COLOR_WARN}Exiting ss-install: It looks like your server has less than 5GB free space available, please upgrade your server and then run ss-install again. ${COLOR_RESET}"
 #    exit 1
 # fi
 
 ## very not in docker/lxc container ##
 if [[ -f "/.dockerenv" ]] || grep -Eq '(lxc|docker)' /proc/1/cgroup; then 
-    ss_echo "${COLOR_WARN}Exiting ss-install: It appears your server is running Docker or another container... but SlickStack requires normal Ubuntu LTS without containers. ${NOCOLOR}"
+    ss_echo "${COLOR_WARN}Exiting ss-install: It appears your server is running Docker or another container... but SlickStack requires normal Ubuntu LTS without containers. ${COLOR_RESET}"
     exit 1
 fi
 
@@ -160,7 +161,7 @@ SS_CONFIG_OPTION_PLACEHOLDER=$(grep -c '"@' /var/www/ss-config 2> /dev/null)
 if [[ -f "/var/www/ss-config" ]]; then
     if [[ "${SS_CONFIG_OPTION_PLACEHOLDER}" -gt 0 ]]; then
         ss_echo ""
-        ss_echo "${COLOR_WARN}ss-install: Replace all "@..." placeholders in ss-config and try again... ${NOCOLOR}"
+        ss_echo "${COLOR_WARN}ss-install: Replace all "@..." placeholders in ss-config and try again... ${COLOR_RESET}"
         ss_echo ""
         exit 1
     fi
@@ -196,25 +197,25 @@ clear -x
 SS_BUILD_CURRENT=$(source /tmp/ss-config-wizard; echo "${SS_BUILD}" 2> /dev/null)
 
 ## intro variables ##
-FIRST_LINE="${COLOR_INFO}#### ${LIGHTGRAY}SlickStack build: ${LIGHTGREEN}${SS_BUILD_CURRENT} ${COLOR_INFO}${FILLER}${NOCOLOR}"
+FIRST_LINE="${COLOR_INFO}#### ${LIGHTGRAY}SlickStack build: ${LIGHTGREEN}${SS_BUILD_CURRENT} ${COLOR_INFO}${FILLER}${COLOR_RESET}"
 FIRST_LINE_TRIM=${FIRST_LINE::120}
-SECOND_LINE="${COLOR_INFO}#### ${LIGHTGRAY}Ubuntu (OS) version: ${LIGHTGREEN}${UBUNTU_VERSION} LTS ${COLOR_INFO}${FILLER}${NOCOLOR}"
+SECOND_LINE="${COLOR_INFO}#### ${LIGHTGRAY}Ubuntu (OS) version: ${LIGHTGREEN}${UBUNTU_VERSION} LTS ${COLOR_INFO}${FILLER}${COLOR_RESET}"
 SECOND_LINE_TRIM=${SECOND_LINE::120}
-THIRD_LINE="${COLOR_INFO}#### ${LIGHTGRAY}Server hostname: ${LIGHTGREEN}${SYSTEM_HOSTNAME} ${COLOR_INFO}${FILLER}${NOCOLOR}"
+THIRD_LINE="${COLOR_INFO}#### ${LIGHTGRAY}Server hostname: ${LIGHTGREEN}${SYSTEM_HOSTNAME} ${COLOR_INFO}${FILLER}${COLOR_RESET}"
 THIRD_LINE_TRIM=${THIRD_LINE::120}
-FOURTH_LINE="${COLOR_INFO}#### ${LIGHTGRAY}Virtualization: ${LIGHTGREEN}${SYSTEM_VIRTUAL_UPPERCASE} (for best results use KVM servers) ${COLOR_INFO}${FILLER}${NOCOLOR}"
+FOURTH_LINE="${COLOR_INFO}#### ${LIGHTGRAY}Virtualization: ${LIGHTGREEN}${SYSTEM_VIRTUAL_UPPERCASE} (for best results use KVM servers) ${COLOR_INFO}${FILLER}${COLOR_RESET}"
 FOURTH_LINE_TRIM=${FOURTH_LINE::120}
-FIFTH_LINE="${COLOR_INFO}#### ${LIGHTGRAY}Disk space: ${LIGHTGREEN}${SYSTEM_DISK_FREE_EASY} free space out of ${SYSTEM_DISK_TOTAL_EASY} total space (${SYSTEM_DISK_USED_PERCENT} currently used) ${COLOR_INFO}${FILLER}${NOCOLOR}"
+FIFTH_LINE="${COLOR_INFO}#### ${LIGHTGRAY}Disk space: ${LIGHTGREEN}${SYSTEM_DISK_FREE_EASY} free space out of ${SYSTEM_DISK_TOTAL_EASY} total space (${SYSTEM_DISK_USED_PERCENT} currently used) ${COLOR_INFO}${FILLER}${COLOR_RESET}"
 FIFTH_LINE_TRIM=${FIFTH_LINE::120}
-INTRO_SWAPFILE="${COLOR_INFO}#### ${LIGHTGRAY}Swapfile: ${LIGHTGREEN}${SYSTEM_SWAP_TOTAL_FINAL} (will be installed if not exists) ${COLOR_INFO}${FILLER}${NOCOLOR}"
+INTRO_SWAPFILE="${COLOR_INFO}#### ${LIGHTGRAY}Swapfile: ${LIGHTGREEN}${SYSTEM_SWAP_TOTAL_FINAL} (will be installed if not exists) ${COLOR_INFO}${FILLER}${COLOR_RESET}"
 INTRO_SWAPFILE_TRIM=${INTRO_SWAPFILE::120}
-INTRO_MEMORY="${COLOR_INFO}#### ${LIGHTGRAY}RAM memory (total): ${LIGHTGREEN}${SYSTEM_RAM_TOTAL} (2GB+ best for WooCommerce and such) ${COLOR_INFO}${FILLER}${NOCOLOR}"
+INTRO_MEMORY="${COLOR_INFO}#### ${LIGHTGRAY}RAM memory (total): ${LIGHTGREEN}${SYSTEM_RAM_TOTAL} (2GB+ best for WooCommerce and such) ${COLOR_INFO}${FILLER}${COLOR_RESET}"
 INTRO_MEMORY_TRIM=${INTRO_MEMORY::120}
-SIXTH_LINE="${COLOR_INFO}#### ${LIGHTGRAY}vCPU cores: ${LIGHTGREEN}${SYSTEM_CPU_CORES} core(s) ${COLOR_INFO}${FILLER}${NOCOLOR}"
+SIXTH_LINE="${COLOR_INFO}#### ${LIGHTGRAY}vCPU cores: ${LIGHTGREEN}${SYSTEM_CPU_CORES} core(s) ${COLOR_INFO}${FILLER}${COLOR_RESET}"
 SIXTH_LINE_TRIM=${SIXTH_LINE::120}
-EIGHT_LINE="${COLOR_INFO}#### ${LIGHTGRAY}IP Address (IPv4): ${LIGHTGREEN}${SYSTEM_IPV4_ADDRESS} ${COLOR_INFO}${FILLER}${NOCOLOR}"
+EIGHT_LINE="${COLOR_INFO}#### ${LIGHTGRAY}IP Address (IPv4): ${LIGHTGREEN}${SYSTEM_IPV4_ADDRESS} ${COLOR_INFO}${FILLER}${COLOR_RESET}"
 EIGHT_LINE_TRIM=${EIGHT_LINE::120}
-NINE_LINE="${COLOR_INFO}#### ${LIGHTGRAY}IP Address (IPv6): ${LIGHTGREEN}${SYSTEM_IPV6_ADDRESS} ${COLOR_INFO}${FILLER}${NOCOLOR}"
+NINE_LINE="${COLOR_INFO}#### ${LIGHTGRAY}IP Address (IPv6): ${LIGHTGREEN}${SYSTEM_IPV6_ADDRESS} ${COLOR_INFO}${FILLER}${COLOR_RESET}"
 NINE_LINE_TRIM=${NINE_LINE::120}
 
 ss_echo "${COLOR_INFO}"
@@ -263,7 +264,7 @@ wait_time=30 # seconds
 temp_cnt=${wait_time}
 while [[ ${temp_cnt} -gt 0 ]];
     do
-        ss_print "${COLOR_WARN}\rexit and configure your ss-config file manually: ${LIGHTGRAY}%2d ${NOCOLOR}" ${temp_cnt}
+        ss_print "${COLOR_WARN}\rexit and configure your ss-config file manually: ${LIGHTGRAY}%2d ${COLOR_RESET}" ${temp_cnt}
         sleep 1
         ((temp_cnt--))
 done
@@ -545,14 +546,14 @@ chmod 0700 /var/www/ss* ## 0700 means root can execute
 ## force exit if SSH keys chosen ##
 SSHKEYS_CHOSEN=$(source /var/www/ss-config; echo ${SSH_KEYS} 2> /dev/null)
 if [[ "${SSHKEYS_CHOSEN}" == "true" ]] && [[ ! -f "/var/www/auth/id_rsa.pub" ]]; then
-    ss_echo "${YELLOW}Exiting ss-install: Please upload your /var/www/auth/id_rsa.pub file before proceeding... ${NOCOLOR}"
-    ss_echo "${YELLOW}Alternatively SlickStack will create a new key pair for you (just run ss-install again now)... ${NOCOLOR}"
+    ss_echo "${YELLOW}Exiting ss-install: Please upload your /var/www/auth/id_rsa.pub file before proceeding... ${COLOR_RESET}"
+    ss_echo "${YELLOW}Alternatively SlickStack will create a new key pair for you (just run ss-install again now)... ${COLOR_RESET}"
 fi
 
 ## force exit if thirdparty SSL chosen ##
 THIRDPARTY_CHOSEN=$(source /var/www/ss-config; echo ${SSL_TYPE})
 if [[ "${THIRDPARTY_CHOSEN}" == "thirdparty" ]] && [[ ! -f "/var/www/certs/thirdparty.pem" || ! -f "/var/www/certs/keys/thirdparty.key" ]]; then
-    ss_echo "${YELLOW}Exiting ss-install: Since you chose thirdparty SSL please upload your cert/key before proceeding... ${NOCOLOR}"
+    ss_echo "${YELLOW}Exiting ss-install: Since you chose thirdparty SSL please upload your cert/key before proceeding... ${COLOR_RESET}"
 fi
 
 ####################################################################################################
@@ -606,7 +607,7 @@ ss_echo "${EIGHT_LINE_TRIM}"
 ss_echo "${NINE_LINE_TRIM}"
 ss_echo "${COLOR_INFO}################################################################################ ${COLOR_RESET}"
 ss_echo ""
-ss_echo "${COLOR_INFO}Running ss-install... ${NOCOLOR}"
+ss_echo "${COLOR_INFO}Running ss-install... ${COLOR_RESET}"
 
 fi
 
