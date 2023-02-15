@@ -62,16 +62,24 @@ ss_echo "${COLOR_INFO}Running ss-dump-database... ${COLOR_RESET}"
 ## to support remote database servers we force the TCP protocol (not sockets) ##
 
 ## production ##
-ss_mysqldump "${DB_NAME}" > "${PATH_DUMP_DATABASE_PRODUCTION}" 2> /dev/null
+if [[ "${SS_DATABASE_REMOTE}" == "true" ]]; then
+    ss_mysqldump_user "${DB_NAME}" > "${PATH_DUMP_DATABASE_PRODUCTION}" 2> /dev/null
+else
+    ss_mysqldump_admin "${DB_NAME}" > "${PATH_DUMP_DATABASE_PRODUCTION}" 2> /dev/null
+fi
 
 ## staging ##
-if [[ "${STAGING_SITE}" == "true" ]]; then
-    ss_mysqldump staging > "${PATH_DUMP_DATABASE_STAGING}" 2> /dev/null
+if [[ "${STAGING_SITE}" == "true" ]] && [[ "${SS_DATABASE_REMOTE}" == "true" ]]; then
+    ss_mysqldump_user staging > "${PATH_DUMP_DATABASE_STAGING}" 2> /dev/null
+elif [[ "${STAGING_SITE}" == "true" ]] && [[ "${SS_DATABASE_REMOTE}" != "true" ]]; then
+    ss_mysqldump_admin staging > "${PATH_DUMP_DATABASE_STAGING}" 2> /dev/null
 fi
 
 ## development ##
-if [[ "${DEV_SITE}" == "true" ]]; then
-    ss_mysqldump development > "${PATH_DUMP_DATABASE_DEVELOPMENT}" 2> /dev/null
+if [[ "${DEV_SITE}" == "true" ]] && [[ "${SS_DATABASE_REMOTE}" == "true" ]]; then
+    ss_mysqldump_user development > "${PATH_DUMP_DATABASE_DEVELOPMENT}" 2> /dev/null
+elif [[ "${DEV_SITE}" == "true" ]] && [[ "${SS_DATABASE_REMOTE}" != "true" ]]; then
+    ss_mysqldump_admin development > "${PATH_DUMP_DATABASE_DEVELOPMENT}" 2> /dev/null
 fi
 
 ####################################################################################################
@@ -158,5 +166,6 @@ chmod 0700 /var/www/crons/custom/*cron* ## 0700 means only root/sudo can execute
 ## Ref: https://stackoverflow.com/questions/30835874/how-to-avoid-use-database-statement-on-mysqldump-backups
 ## Ref: https://forums.asp.net/t/1534483.aspx?mysql+dump+don+t+generate+USE+database+
 ## Ref: https://anothercoffee.net/how-to-fix-the-mysqldump-access-denied-process-privilege-error/
+## Ref: https://stackoverflow.com/questions/37740062/mysql-user-privilege-for-restore-from-mysqldump
 
 ## SS_EOF
