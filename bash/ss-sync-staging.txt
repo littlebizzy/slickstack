@@ -7,7 +7,7 @@
 #### path: /var/www/ss-sync-staging ################################################################
 #### destination: n/a (not a boilerplate) ##########################################################
 #### purpose: Syncs relevant files and database from production site to the staging site ###########
-#### module version: MySQL 8.0.x + WordPress 6.0.x #################################################
+#### module version: MySQL 8.0.x + WordPress 6.1.x #################################################
 #### sourced by: n/a ###############################################################################
 #### bash aliases: ss sync staging #################################################################
 ####################################################################################################
@@ -26,15 +26,14 @@
 ## B. Touch Timestamp File
 ## C. Message (Begin Script)
 ## D. Dump Production Database
-
-## X Install Database (Conditional)
-
-## E. Import Production Database To Staging Database
-## F. Copy Relevant Files From Production To Staging
-## G. Run SS-Install-WordPress-Config (Conditional)
-## H. Run SS-Install-WordPress-MU-Plugins (Conditional)
-## I. Fix Any Hardcoded Links In Staging Theme Files
-## J. Reset Permissions (WordPress Core)
+## E. Install Staging Database (Conditional)
+## F. Import Production Database To Staging Database
+## G. Copy Relevant Files From Production To Staging
+## H. Run SS-Install-WordPress-Config (Conditional)
+## I. Run SS-Install-WordPress-MU-Plugins (Conditional)
+## J. Fix Any Hardcoded Links In Staging Theme Files
+## K. Fix Incorrect URLs In Staging Database
+## L. Reset Permissions (WordPress Core)
 
 ####################################################################################################
 #### A. SS-Sync-Staging: Source SS-Config + SS-Functions ###########################################
@@ -88,13 +87,13 @@ if [[ "${STAGING_SITE}" != "false" ]] && [[ "${SS_SYNC_STAGING}" != "false" ]] &
 #### D. SS-Sync-Staging: Dump Production Database ##################################################
 ####################################################################################################
 
-## we must run ss-dump-database now if no database dump file is found under backups ##
-## this ensures that a dump file exists before atempting to sync it to staging ##
+## we run ss-dump-database now to export the latest version of production database ##
+## this ensures the dump is recent before attempting to sync it to staging ##
 
 source "${PATH_SS_DUMP_DATABASE}"
 
 ####################################################################################################
-#### X. SS-Sync-Staging: Install Database (Conditional) #############################
+#### E. SS-Sync-Staging: Install Staging Database (Conditional) ####################################
 ####################################################################################################
 
 ## FIX THIS
@@ -105,39 +104,77 @@ source "${PATH_SS_DUMP_DATABASE}"
 # fi
 
 ####################################################################################################
-#### E. SS-Sync-Staging: Import Production Database To Staging Database ############################
+#### F. SS-Sync-Staging: Import Production Database To Staging Database ############################
 ####################################################################################################
 
 ## this snippet duplicates the dumped production database and imports it into MySQL ##
-## then it forecfully replaces the home/siteurl options to staging subdomain ##
+## then it forcefully replaces the home/siteurl options to staging subdomain ##
 
 ## import database ##
 ss_cp /var/www/backups/mysql/production.sql /tmp/staging.sql
 chown mysql:mysql /tmp/staging.sql ## does not matter if -L flag used below
 chmod 0644 /tmp/staging.sql ## does not matter if -L flag used below
-ss_mysql_8.0 staging < /tmp/staging.sql
+
+if [[ "${UBUNTU_VERSION}" == "22.04" ]]; then
+    mysql_8.0_tcp staging < /tmp/staging.sql
+fi
+
+if [[ "${UBUNTU_VERSION}" == "20.04" ]]; then
+    mysql_8.0_tcp staging < /tmp/staging.sql
+fi
+
+if [[ "${UBUNTU_VERSION}" == "18.04" ]]; then
+    mysql_5.7_tcp staging < /tmp/staging.sql
+fi
     
 ## fix staging home and siteurl fields (no mass search/replace to avoid potential conflicts) ##
 if [[ "${SS_APP}" == "wordpress" ]]; then
-    if [[ -n $(mysql --execute "SHOW TABLES FROM staging WHERE Tables_in_staging LIKE '${DB_PREFIX}options';" 2> /dev/null) ]]; then
-        mysql --execute="UPDATE staging.${DB_PREFIX}options SET option_value='https://staging.${SITE_DOMAIN_EXCLUDING_WWW}' WHERE option_name='home'";
-        mysql --execute="UPDATE staging.${DB_PREFIX}options SET option_value='https://staging.${SITE_DOMAIN_EXCLUDING_WWW}' WHERE option_name='siteurl'";
+
+    ## ubuntu 22.04 ##
+    if [[ "${UBUNTU_VERSION}" == "22.04" ]]; then
+
+        if [[ -n $(mysql_8.0_tcp --execute "SHOW TABLES FROM staging WHERE Tables_in_staging LIKE '${DB_PREFIX}options';" 2> /dev/null) ]]; then
+            mysql_8.0_tcp --execute="UPDATE staging.${DB_PREFIX}options SET option_value='https://staging.${SITE_DOMAIN_EXCLUDING_WWW}' WHERE option_name='home'";
+            mysql_8.0_tcp --execute="UPDATE staging.${DB_PREFIX}options SET option_value='https://staging.${SITE_DOMAIN_EXCLUDING_WWW}' WHERE option_name='siteurl'";
+        fi
+    
     fi
+    
+    ## ubuntu 20.04 ##
+    if [[ "${UBUNTU_VERSION}" == "20.04" ]]; then
+
+        if [[ -n $(mysql_8.0_tcp --execute "SHOW TABLES FROM staging WHERE Tables_in_staging LIKE '${DB_PREFIX}options';" 2> /dev/null) ]]; then
+            mysql_8.0_tcp --execute="UPDATE staging.${DB_PREFIX}options SET option_value='https://staging.${SITE_DOMAIN_EXCLUDING_WWW}' WHERE option_name='home'";
+            mysql_8.0_tcp --execute="UPDATE staging.${DB_PREFIX}options SET option_value='https://staging.${SITE_DOMAIN_EXCLUDING_WWW}' WHERE option_name='siteurl'";
+        fi
+    
+    fi
+    
+    ## ubuntu 18.04 ##
+    if [[ "${UBUNTU_VERSION}" == "18.04" ]]; then
+
+        if [[ -n $(mysql_5.7_tcp --execute "SHOW TABLES FROM staging WHERE Tables_in_staging LIKE '${DB_PREFIX}options';" 2> /dev/null) ]]; then
+            mysql_5.7_tcp --execute="UPDATE staging.${DB_PREFIX}options SET option_value='https://staging.${SITE_DOMAIN_EXCLUDING_WWW}' WHERE option_name='home'";
+            mysql_5.7_tcp --execute="UPDATE staging.${DB_PREFIX}options SET option_value='https://staging.${SITE_DOMAIN_EXCLUDING_WWW}' WHERE option_name='siteurl'";
+        fi
+    
+    fi
+    
 fi
 
 ## cleanup files ##
 ss_rm /tmp/staging.sql
     
 ####################################################################################################
-#### F. SS-Sync-Staging: Copy Relevant Files From Production To Staging ############################
+#### G. SS-Sync-Staging: Copy Relevant Files From Production To Staging ############################
 ####################################################################################################
 
-## here we copy over everything from production to staging besides uploads (media files) ##
-## schedule ss-clean beforehand in order to remove various (large) junk files ##
+## here we copy over all the files from production to staging besides media uploads ##
+## very large files e.g. backup archives are always skipped in this snippet ##
 
 ## copy wp-content files over (skips media uploads) ##
 ss_rsync --max-size=5mb --exclude 'blacklist.txt' --exclude 'object-cache.php' --exclude mu-plugins --exclude temp --exclude upgrade --exclude uploads /var/www/html/wp-content/ /var/www/html/staging/wp-content
-    
+
 ## remove potential run-on subdirectories ##
 ss_rm /var/www/html/staging/staging*
 ss_rm /var/www/html/staging/wp-content/wp-content*
@@ -146,48 +183,45 @@ ss_rm /var/www/html/staging/wp-content/wp-content*
 ss_rm /var/www/html/staging/wp-content/object-cache.php*
 
 ####################################################################################################
-#### G. SS-Sync-Staging: Run SS-Install-WordPress-Config (Conditional) #############################
+#### H. SS-Sync-Staging: Run SS-Install-WordPress-Config (Conditional) #############################
 ####################################################################################################
 
 ## below snippet will install wp-config.php in case does not exist already in staging ##
 ## this is a failsafe in case staging enabled in ss-config post-installation ##
 
-## run ss-install-wordpress-config ##
 if [[ ! -f "/var/www/html/staging/wp-config.php" ]]; then
     source "${PATH_SS_INSTALL_WORDPRESS_CONFIG}"
 fi
 
 ####################################################################################################
-#### H. SS-Sync-Staging: Run SS-Install-WordPress-MU-Plugins (Conditional) #########################
+#### I. SS-Sync-Staging: Run SS-Install-WordPress-MU-Plugins (Conditional) #########################
 ####################################################################################################
 
 ## below snippet will install MU plugins in case they do not exist already in staging ##
 ## this is a failsafe in case staging enabled in ss-config post-installation ##
 
-## run ss-install-wordpress-mu-plugins ##
 if [[ ! -f "/var/www/html/staging/wp-content/mu-plugins/xxx-common.php" ]]; then
     source "${PATH_SS_INSTALL_WORDPRESS_MU_PLUGINS}"
 fi
 
 ####################################################################################################
-#### I. SS-Sync-Staging: Fix Any Hardcoded Links In Staging Theme Files ############################
+#### J. SS-Sync-Staging: Fix Any Hardcoded Links In Staging Theme Files ############################
 ####################################################################################################
 
 ## many themes (or custom-coded themes) often contain hardcoded HTML assets and links ##
 ## here we forcefully fix these links to ensure staging sites render properly ##
 
-## fix hardcoded theme links ##
-find /var/www/html/staging/wp-content/themes/ -type f -exec sed -i "s#https://${SITE_DOMAIN_INCLUDING_WWW}#https://staging.${SITE_DOMAIN_EXCLUDING_WWW}#g" {} +
-find /var/www/html/staging/wp-content/themes/ -type f -exec sed -i "s#http://${SITE_DOMAIN_INCLUDING_WWW}#https://staging.${SITE_DOMAIN_EXCLUDING_WWW}#g" {} +
-find /var/www/html/staging/wp-content/themes/ -type f -exec sed -i "s#https://${SITE_DOMAIN_EXCLUDING_WWW}#https://staging.${SITE_DOMAIN_EXCLUDING_WWW}#g" {} +
-find /var/www/html/staging/wp-content/themes/ -type f -exec sed -i "s#http://${SITE_DOMAIN_EXCLUDING_WWW}#https://staging.${SITE_DOMAIN_EXCLUDING_WWW}#g" {} +
+find /var/www/html/staging/wp-content/themes/ -type f -exec sed -i "s|https://${SITE_DOMAIN_INCLUDING_WWW}|https://staging.${SITE_DOMAIN_EXCLUDING_WWW}|g" {} +
+find /var/www/html/staging/wp-content/themes/ -type f -exec sed -i "s|http://${SITE_DOMAIN_INCLUDING_WWW}|https://staging.${SITE_DOMAIN_EXCLUDING_WWW}|g" {} +
+find /var/www/html/staging/wp-content/themes/ -type f -exec sed -i "s|https://${SITE_DOMAIN_EXCLUDING_WWW}|https://staging.${SITE_DOMAIN_EXCLUDING_WWW}|g" {} +
+find /var/www/html/staging/wp-content/themes/ -type f -exec sed -i "s|http://${SITE_DOMAIN_EXCLUDING_WWW}|https://staging.${SITE_DOMAIN_EXCLUDING_WWW}|g" {} +
 
-
+####################################################################################################
 ## end if staging site true ##
 fi
 
 ####################################################################################################
-#### G. SS-Sync-Staging: Fix Wrong URLs in Staging Database #########################
+#### K. SS-Sync-Staging: Fix Incorrect URLs In Staging Database ####################################
 ####################################################################################################
 
 ## needs more testing
@@ -196,7 +230,7 @@ fi
 # wp search-replace https://"${SITE_DOMAIN}" https://staging."${SITE_DOMAIN_EXCLUDING_WWW}" --all-tables
 
 ####################################################################################################
-#### J. SS-Sync-Staging: Reset Permissions (WordPress Packages) ####################################
+#### L. SS-Sync-Staging: Reset Permissions (WordPress Packages) ####################################
 ####################################################################################################
 
 source "${PATH_SS_PERMS_WORDPRESS_PACKAGES}"
