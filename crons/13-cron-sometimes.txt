@@ -1,0 +1,307 @@
+#!/bin/bash
+
+####################################################################################################
+#### author: SlickStack ############################################################################
+#### link: https://slickstack.io ###################################################################
+#### mirror: https://mirrors.slickstack.io/crons/13-cron-sometimes.txt #############################
+#### path: /var/www/crons/13-cron-sometimes ########################################################
+#### destination: n/a (not a boilerplate) ##########################################################
+#### purpose: SlickStack cron job *sometimes* (13/13) will run every ~2 months #####################
+#### module version: Ubuntu 22.04 LTS ##############################################################
+#### sourced by: root crontab ######################################################################
+#### bash aliases: ss cron 13, ss cron sometimes ###################################################
+####################################################################################################
+
+## NEVER MODIFY ROOT CRONTAB OR SLICKSTACK CRON JOBS OR YOUR STACK WILL STOP WORKING ##
+## INSTEAD ADJUST INTERVAL_SS SETTINGS IN SS-CONFIG OR EDIT CUSTOM CRON FILES ##
+
+####################################################################################################
+#### TABLE OF CONTENTS (13-Cron-Sometimes) #########################################################
+####################################################################################################
+
+## this is a brief summary of the different code snippets you will find in this script ##
+## each section should be commented so you understand what is being accomplished ##
+
+## A. Validate (Restore) SS-Config
+## B. Validate (Restore) SS-Functions
+## C. Validate (Restore) SS-Check + SS-Worker
+## D. Source SS-Config + SS-Functions (After Validated)
+## E. Touch Timestamp File
+## F. Run Custom Tasks (EDIT SOURCED FILES)
+## G. Run Scheduled Tasks (DO NOT EDIT)
+## H. Run Scheduled Reboot (DO NOT EDIT)
+## I. Reset Permissions (SlickStack Core Scripts)
+## J. Delete Lock File
+
+####################################################################################################
+#### A. 13-Cron-Sometimes: Validate (Restore) SS-Config ############################################
+####################################################################################################
+
+## this attempts to restore missing or damaged ss-config using a recent intact backup ##
+## however it is not foolproof since there is no way to verify all settings ##
+
+## THIS SNIPPET DOES NOT RELY ON SS-CONFIG OR SS-FUNCTIONS
+## SNIPPET: ss cron jobs
+## UPDATED: 10FEB2023
+
+VALIDATE_SS_CONFIG=$(grep 'SS_BUILD' /var/www/ss-config)
+if [[ -z "${VALIDATE_SS_CONFIG}" ]]; then
+    SS_CONFIG_RECENT_BACKUPS=$(ls -1rta /var/www/backups/config/ss-config.bak* | tail -n1)
+    SS_CONFIG_BEST_MATCH=$(grep -il 'SS_BUILD' "${SS_CONFIG_RECENT_BACKUPS}")
+    rm -rf /tmp/ss-config
+    mv -f "${SS_CONFIG_BEST_MATCH}" /tmp/ss-config
+    VALIDATE_TMP_SS_CONFIG=$(grep 'SS_BUILD' /tmp/ss-config)
+    if [[ -n "${VALIDATE_TMP_SS_CONFIG}" ]]; then
+        mv -f /tmp/ss-config /var/www/ss-config
+        chown root:root /var/www/ss-config ## must be root:root
+        chmod 0700 /var/www/ss-config ## 0700 means only root can execute
+    fi
+    rm -rf /tmp/ss-config
+fi
+
+####################################################################################################
+#### B. 13-Cron-Sometimes: Validate (Restore) SS-Functions #########################################
+####################################################################################################
+
+## this attempts to restore missing or outdated ss-functions from our public mirrors ##
+## we perform this check before ss-install runs and before any cron job tasks ##
+
+## THIS SNIPPET DOES NOT RELY ON SS-CONFIG OR SS-FUNCTIONS
+## SNIPPET: ss-install, ss cron jobs
+## UPDATED: 15FEB2023
+
+VALIDATE_SS_FUNCTIONS=$(grep 'SS_EOF' /var/www/ss-functions 2> /dev/null)
+OUTDATED_SS_FUNCTIONS=$(find "/var/www/ss-functions" -mtime 2> /dev/null)
+if [[ -z "${VALIDATE_SS_FUNCTIONS}" ]] || [[ -n "${OUTDATED_SS_FUNCTIONS}" ]]; then
+    wget --no-check-certificate --no-cache --no-cookies --quiet --inet4-only --tries=30 --timeout=300 --waitretry=15 -O /tmp/ss-functions https://raw.githubusercontent.com/littlebizzy/slickstack/master/bash/ss-functions.txt
+    VALIDATE_TMP_SS_FUNCTIONS=$(grep 'SS_EOF' /tmp/ss-functions 2> /dev/null)
+    if [[ -n "${VALIDATE_TMP_SS_FUNCTIONS}" ]]; then
+        mkdir -p /var/www > /dev/null 2>&1
+        mv -f /tmp/ss-functions /var/www/ss-functions
+        chown root:root /var/www/ss-functions ## must be root:root
+        chmod 0700 /var/www/ss-functions ## 0700 means only root can execute
+    else
+        wget --no-check-certificate --no-cache --no-cookies --quiet --inet4-only --tries=30 --timeout=300 --waitretry=15 -O /tmp/ss-functions https://gitlab.com/littlebizzy/slickstack/-/raw/master/bash/ss-functions.txt
+        VALIDATE_TMP_SS_FUNCTIONS=$(grep 'SS_EOF' /tmp/ss-functions 2> /dev/null)
+        if [[ -n "${VALIDATE_TMP_SS_FUNCTIONS}" ]]; then
+            mkdir -p /var/www > /dev/null 2>&1
+            mv -f /tmp/ss-functions /var/www/ss-functions
+            chown root:root /var/www/ss-functions ## must be root:root
+            chmod 0700 /var/www/ss-functions ## 0700 means only root can execute
+        else
+            wget --no-check-certificate --no-cache --no-cookies --quiet --inet4-only --tries=30 --timeout=300 --waitretry=15 -O /tmp/ss-functions https://sourceforge.net/p/slickstack/code/ci/master/tree/bash/ss-functions.txt?format=raw
+            mkdir -p /var/www > /dev/null 2>&1
+            mv -f /tmp/ss-functions /var/www/ss-functions
+            chown root:root /var/www/ss-functions ## must be root:root
+            chmod 0700 /var/www/ss-functions ## 0700 means only root can execute
+        fi
+    fi
+fi
+
+####################################################################################################
+#### C. 13-Cron-Sometimes: Validate (Restore) SS-Check + SS-Worker #################################
+####################################################################################################
+
+## THIS SNIPPET DOES NOT RELY ON SS-CONFIG OR SS-FUNCTIONS
+
+## SNIPPET: ss core cron jobs
+
+## this attempts to restore damaged or outdated ss-check and ss-worker bash scripts ##
+## they are critical to maintenance tasks and keeping ss core files updated ##
+
+## validate ss-check ##
+VALIDATE_SS_CHECK=$(grep 'SS_EOF' /var/www/ss-check)
+OUTDATED_SS_CHECK=$(find "/var/www/ss-check" -mtime +1)
+if [[ -z "$VALIDATE_SS_CHECK" ]] || [[ -n "$OUTDATED_SS_CHECK" ]]; then
+    rm -rf /tmp/ss-check
+    wget --no-check-certificate -q -4 -t 1 -T 15 -O /tmp/ss-check https://raw.githubusercontent.com/littlebizzy/slickstack/master/bash/ss-check.txt
+    VALIDATE_TMP_SS_CHECK=$(grep 'SS_EOF' /tmp/ss-check)
+    if [[ -n "$VALIDATE_TMP_SS_CHECK" ]]; then
+        mv -f /tmp/ss-check /var/www/ss-check
+        chown root:root /var/www/ss-check ## must be root:root
+        chmod 0700 /var/www/ss-check ## 0700 means only root can execute
+    else
+        wget --no-check-certificate -q -4 -t 3 -T 30 -O /tmp/ss-check https://gitlab.com/littlebizzy/slickstack/-/raw/master/bash/ss-check.txt
+        mv -f /tmp/ss-check /var/www/ss-check
+        chown root:root /var/www/ss-check ## must be root:root
+        chmod 0700 /var/www/ss-check ## 0700 means only root can execute
+    fi
+    rm -rf /tmp/ss-check
+fi
+
+## validate ss-worker ##
+VALIDATE_SS_WORKER=$(grep 'SS_EOF' /var/www/ss-worker)
+OUTDATED_SS_WORKER=$(find "/var/www/ss-worker" -mtime +1)
+if [[ -z "$VALIDATE_SS_WORKER" ]] || [[ -n "$OUTDATED_SS_WORKER" ]]; then
+    rm -rf /tmp/ss-worker
+    wget --no-check-certificate -q -4 -t 1 -T 15 -O /tmp/ss-worker https://raw.githubusercontent.com/littlebizzy/slickstack/master/bash/ss-worker.txt
+    VALIDATE_TMP_SS_WORKER=$(grep 'SS_EOF' /tmp/ss-worker)
+    if [[ -n "$VALIDATE_TMP_SS_WORKER" ]]; then
+        mv -f /tmp/ss-worker /var/www/ss-worker
+        chown root:root /var/www/ss-worker ## must be root:root
+        chmod 0700 /var/www/ss-worker ## 0700 means only root can execute
+    else
+        wget --no-check-certificate -q -4 -t 3 -T 30 -O /tmp/ss-worker https://gitlab.com/littlebizzy/slickstack/-/raw/master/bash/ss-worker.txt
+        mv -f /tmp/ss-worker /var/www/ss-worker
+        chown root:root /var/www/ss-worker ## must be root:root
+        chmod 0700 /var/www/ss-worker ## 0700 means only root can execute
+    fi
+    rm -rf /tmp/ss-worker
+fi
+
+####################################################################################################
+#### D. 13-Cron-Sometimes: Source SS-Config + SS-Functions (After Validated) #######################
+####################################################################################################
+
+## at this point we know that ss-config and ss-functions exist or have been restored ##
+## so we source them now to carry on with custom and scheduled cron job tasks ##
+
+## source ss-config ##
+source /var/www/ss-config
+
+## source ss-functions ##
+source /var/www/ss-functions
+
+## BELOW THIS RELIES ON SS-CONFIG AND SS-FUNCTIONS
+
+####################################################################################################
+#### E. 13-Cron-Sometimes: Touch Timestamp File ####################################################
+####################################################################################################
+
+## this is a dummy timestamp file that will remember the last time this script was run ##
+## it can be useful for developer reference and is sometimes used by SlickStack ##
+
+ss_touch "${TIMESTAMP_13_CRON_SOMETIMES}"
+
+####################################################################################################
+#### F. 13-Cron-Sometimes: Run Custom Tasks (EDIT SOURCED FILES) ###################################
+####################################################################################################
+
+## this will run custom shell commands that you can save in a reserved filename below ##
+## carefully consider server resources and best practices before customizing ##
+
+## run 13-cron-sometimes-custom ##
+source "${PATH_13_CRON_SOMETIMES_CUSTOM}"
+
+####################################################################################################
+#### G. 13-Cron-Sometimes: Run Scheduled Tasks (DO NOT EDIT) #######################################
+####################################################################################################
+
+## the below tasks will be called if configured to run at this interval in ss-config ##
+## certain tasks are automatically called if the relevant interval is missing ##
+
+## run ss-update-config if set to sometimes ##
+if [[ "${INTERVAL_SS_UPDATE_CONFIG}" == "sometimes" ]]; then 
+    source "${PATH_SS_UPDATE_CONFIG}"
+fi
+
+## run ss-encrypt-openssl if set to sometimes ##
+if [[ "${INTERVAL_SS_ENCRYPT_OPENSSL}" == "sometimes" ]]; then 
+    source "${PATH_SS_ENCRYPT_OPENSSL}"
+fi
+
+## run ss-encrypt-certbot if set to sometimes ##
+if [[ "${INTERVAL_SS_ENCRYPT_CERTBOT}" == "sometimes" ]]; then 
+    source "${PATH_SS_ENCRYPT_CERTBOT}"
+fi
+
+## run ss-install-adminer if set to sometimes ##
+if [[ "${INTERVAL_SS_INSTALL_ADMINER}" == "sometimes" ]]; then 
+    source "${PATH_SS_INSTALL_ADMINER}"
+fi
+
+## run ss-install-wordpress-cli if set to sometimes ##
+if [[ "${INTERVAL_SS_INSTALL_WORDPRESS_CLI}" == "sometimes" ]]; then 
+    source "${PATH_SS_INSTALL_WORDPRESS_CLI}"
+fi
+
+## run ss-install-clamav if set to sometimes ##
+if [[ "${INTERVAL_SS_INSTALL_CLAMAV}" == "sometimes" ]]; then 
+    source "${PATH_SS_INSTALL_CLAMAV}"
+fi
+
+## run ss-install-ubuntu-utils if set to sometimes ##
+if [[ "${INTERVAL_SS_INSTALL_UBUNTU_UTILS}" == "sometimes" ]]; then 
+    source "${PATH_SS_INSTALL_UBUNTU_UTILS}"
+fi
+
+## run ss-install-ufw-packages if set to sometimes ##
+if [[ "${INTERVAL_SS_INSTALL_UFW_PACKAGES}" == "sometimes " ]]; then 
+    source "${PATH_SS_INSTALL_UFW_PACKAGES}"
+fi
+
+## run ss-install-ufw-config if set to sometimes ##
+if [[ "${INTERVAL_SS_INSTALL_UFW_CONFIG}" == "sometimes" ]]; then 
+    source "${PATH_SS_INSTALL_UFW_CONFIG}"
+fi
+
+## run ss-update-modules if set to sometimes ##
+if [[ "${INTERVAL_SS_UPDATE_MODULES}" == "sometimes" ]]; then 
+    source "${PATH_SS_UPDATE_MODULES}"
+fi
+
+## run ss-install-ubuntu-swapfile if set to sometimes ##
+if [[ "${INTERVAL_SS_INSTALL_UBUNTU_SWAPFILE}" == "sometimes" ]]; then 
+    source "${PATH_SS_INSTALL_UBUNTU_SWAPFILE}"
+fi
+
+## THESE TASKS MUST RUN LAST
+
+## run ss-install-ubuntu-crontab if set to sometimes or if not defined (default) ##
+if [[ "${INTERVAL_SS_INSTALL_UBUNTU_CRONTAB}" == "sometimes" ]] || [[ -z "${INTERVAL_SS_INSTALL_UBUNTU_CRONTAB}" ]]; then 
+    source "${PATH_SS_INSTALL_UBUNTU_CRONTAB}"
+fi
+
+####################################################################################################
+#### H. 13-Cron-Sometimes: Run Scheduled Reboot (DO NOT EDIT) ######################################
+####################################################################################################
+
+## reboot task must come last in this cron job to avoid skipping other scheduled tasks ##
+## we also force delete the cron lock file to ensure removal before rebooting ##
+
+## run ss-reboot-machine if set to sometimes ##
+if [[ "$INTERVAL_SS_REBOOT_MACHINE" == "sometimes" ]]; then 
+    ss_rm "$LOCK_13_CRON_SOMETIMES"
+    source "$PATH_SS_REBOOT_MACHINE"
+fi
+
+####################################################################################################
+#### J. 13-Cron-Sometimes: Delete Lock File ########################################################
+####################################################################################################
+
+## here we delete the lock file associated with this cron job to clear the cron queue ##
+## this is technically not necessary but we do it anyway for extra security ##
+
+## delete lock ##
+ss_rm "${LOCK_13_CRON_SOMETIMES}"
+
+####################################################################################################
+#### SlickStack: Reset Permissions (SlickStack Scripts) ############################################
+####################################################################################################
+
+## we include this permissions reset in all cron jobs and bash scripts for redundancy ##
+## chmod 0700 means only the root/sudo users can execute any SlickStack scripts ##
+
+## THIS SNIPPET DOES NOT RELY ON SS-CONFIG OR SS-FUNCTIONS
+## SNIPPET: ss bash scripts, ss cron jobs
+## UPDATED: 02JUL2022
+
+chown root:root /var/www/ss* ## must be root:root
+chown root:root /var/www/crons/*cron* ## must be root:root
+chown root:root /var/www/crons/custom/*cron* ## must be root:root
+chmod 0700 /var/www/ss* ## 0700 means only root/sudo can execute
+chmod 0700 /var/www/crons/*cron* ## 0700 means only root/sudo can execute
+chmod 0700 /var/www/crons/custom/*cron* ## 0700 means only root/sudo can execute
+
+####################################################################################################
+#### SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ###############
+####################################################################################################
+
+## Ref: https://bash.cyberciti.biz/guide/Setting_up_permissions_on_a_script
+## Ref: https://stackoverflow.com/questions/22861580/bash-script-check-if-a-file-contains-a-specific-line
+## Ref: https://stackoverflow.com/questions/4749330/how-to-test-if-string-exists-in-file-with-bash/14201583
+## Ref: https://stackoverflow.com/questions/11287861/how-to-check-if-a-file-contains-a-specific-string-using-bash
+## Ref: https://stackoverflow.com/questions/4749330/how-to-test-if-string-exists-in-file-with-bash-
+## Ref: https://stackoverflow.com/questions/42377739/while-file-doesnt-contain-string-bash
+
+## SS_EOF
