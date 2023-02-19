@@ -163,6 +163,30 @@ source /var/www/ss-functions
 ## BELOW THIS RELIES ON SS-CONFIG AND SS-FUNCTIONS
 
 ####################################################################################################
+#### X. 03-Cron-Regular: Run SS-Check + SS-Worker In Case Frozen ###################################
+####################################################################################################
+
+## SlickStack crontab and cron jobs can self-heal but that is not enough to recover ##
+## this snippet ensures that ss-check and ss-worker are run in case inactive ##
+
+OUTDATED_SECONDS="900" ## 15 mins
+CURRENT_TIME=$(date +%s)
+MODIFIED_TIMESTAMP_SS_CHECK=$(stat "${TIMESTAMP_SS_CHECK}" -c %Y)
+MODIFIED_TIMESTAMP_SS_WORKER=$(stat "${TIMESTAMP_SS_WORKER}" -c %Y)
+TIME_DIFFERENCE_SS_CHECK=$(expr "${CURRENT_TIME}" - "${MODIFIED_TIMESTAMP_SS_CHECK}")
+TIME_DIFFERENCE_SS_WORKER=$(expr "${CURRENT_TIME}" - "${MODIFIED_TIMESTAMP_SS_WORKER}")
+
+## run ss-check if frozen ##
+if [[ "${TIME_DIFFERENCE_SS_CHECK}" -gt "${OUTDATED_SECONDS}" ]]; then
+   source /var/www/ss-check
+fi
+
+## run ss-worker if frozen ##
+if [[ "${TIME_DIFFERENCE_SS_WORKER}" -gt "${OUTDATED_SECONDS}" ]]; then
+   source /var/www/ss-worker
+fi
+
+####################################################################################################
 #### E. 03-Cron-Regular: Touch Timestamp File ######################################################
 ####################################################################################################
 
