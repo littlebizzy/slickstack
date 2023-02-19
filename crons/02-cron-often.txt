@@ -26,10 +26,11 @@
 ## B. Validate (Restore) SS-Functions
 ## C. Validate (Restore) SS-Check + SS-Worker
 ## D. Source SS-Config + SS-Functions (After Validated)
-## E. Touch Timestamp File
-## F. Run Custom Tasks (EDIT SOURCED FILES)
-## G. Run Scheduled Tasks (DO NOT EDIT)
-## H. Delete Lock File
+## E. Run SS-Check + SS-Worker In Case Frozen
+## F. Touch Timestamp File
+## G. Run Custom Tasks (EDIT SOURCED FILES)
+## H. Run Scheduled Tasks (DO NOT EDIT)
+## I. Delete Lock File
 
 ####################################################################################################
 #### A. 02-Cron-Often: Validate (Restore) SS-Config ################################################
@@ -163,7 +164,7 @@ source /var/www/ss-functions
 ## BELOW THIS RELIES ON SS-CONFIG AND SS-FUNCTIONS
 
 ####################################################################################################
-#### X. 02-Cron-Often: Run SS-Check + SS-Worker In Case Frozen #####################################
+#### E. 02-Cron-Often: Run SS-Check + SS-Worker In Case Frozen #####################################
 ####################################################################################################
 
 ## SlickStack crontab and cron jobs can self-heal but that is not enough to recover ##
@@ -187,7 +188,7 @@ if [[ "${TIME_DIFFERENCE_SS_WORKER}" -gt "${OUTDATED_SECONDS}" ]]; then
 fi
 
 ####################################################################################################
-#### E. 02-Cron-Often: Touch Timestamp File ########################################################
+#### F. 02-Cron-Often: Touch Timestamp File ########################################################
 ####################################################################################################
 
 ## this is a dummy timestamp file that will remember the last time this script was run ##
@@ -196,7 +197,7 @@ fi
 ss_touch "${TIMESTAMP_02_CRON_OFTEN}"
 
 ####################################################################################################
-#### F. 02-Cron-Often: Run Custom Tasks (EDIT SOURCED FILES) #######################################
+#### G. 02-Cron-Often: Run Custom Tasks (EDIT SOURCED FILES) #######################################
 ####################################################################################################
 
 ## this will run custom shell commands that you can save in a reserved filename below ##
@@ -205,7 +206,7 @@ ss_touch "${TIMESTAMP_02_CRON_OFTEN}"
 source "${PATH_02_CRON_OFTEN_CUSTOM}"
 
 ####################################################################################################
-#### G. 02-Cron-Often: Run Scheduled Tasks (DO NOT EDIT) ###########################################
+#### H. 02-Cron-Often: Run Scheduled Tasks (DO NOT EDIT) ###########################################
 ####################################################################################################
 
 ## the below tasks will be called if configured to run at this interval in ss-config ##
@@ -222,7 +223,7 @@ if [[ "${INTERVAL_SS_DUMP_DATABASE}" == "often" ]]; then
 fi
 
 ####################################################################################################
-#### H. 02-Cron-Often: Delete Lock File ############################################################
+#### I. 02-Cron-Often: Delete Lock File ############################################################
 ####################################################################################################
 
 ## here we delete the lock file associated with this cron job to clear the cron queue ##
