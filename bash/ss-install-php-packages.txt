@@ -9,7 +9,7 @@
 #### purpose: Reinstalls the PHP-FPM module Ubuntu packages and extensions (idempotent) ############
 #### module version: PHP-FPM 8.1.x #################################################################
 #### sourced by: ss-install ########################################################################
-#### bash aliases: ss install php core, ss install php packages ####################################
+#### bash aliases: ss install php core|packages ####################################################
 ####################################################################################################
 
 ## SS-CONFIG MUST BE PROPERLY CONFIGURED AND ON CURRENT BUILD BEFORE RUNNING SS-INSTALL ##
@@ -87,18 +87,15 @@ ss_apt_upgrade
 ## here we first purge any existing PHP packages and then reinstall PHP-FPM from scratch ##
 ## this approach is safe and helps avoid any conflicts between package versions ##
 
-if [[ "${SS_APP}" != "mysql" ]]; then
-
-    if [[ "${SS_INSTALL_PHP_PACKAGES_PURGE_FIRST}" == "true" ]]; then
+if [[ "${SS_INSTALL_PHP_PACKAGES_PURGE_FIRST}" == "true" ]]; then
 
     ## purge packages ##
     apt purge ^php
 
-    ## delete any leftover PHP files (disable for now because apt will not create these files if it notices the php directory exists already) ##
+    ## delete any leftover PHP files (disable for now because apt will not create ##
+    ## these files if it notices the php directory exists already) ##
     # rm /etc/php*
     
-    fi
-
 fi
 
 ####################################################################################################
@@ -107,8 +104,6 @@ fi
 
 ## here PHP-FPM will be installed along with any custom PHP extensions in your ss-config ##
 ## remember to check version compatibility of PHP extensions if you modify them ##
-
-if [[ "${SS_APP}" != "mysql" ]]; then
 
 ## ubuntu 22.04 ##
 if [[ "${UBUNTU_VERSION}" == "22.04" ]]; then
@@ -198,9 +193,6 @@ if [[ "${UBUNTU_VERSION}" == "18.04" ]]; then
 
 fi 
 
-## end if not mysql app
-fi
-
 ####################################################################################################
 #### G. SS-Install-PHP-Packages: Install PHP-Redis Extension (Required) ############################
 ####################################################################################################
@@ -250,7 +242,6 @@ fi
 #### I. SS-Install-PHP-Packages: Reset Permissions (PHP Packages) ##################################
 ####################################################################################################
 
-## run ss-perms-php-packages ##
 source "${PATH_SS_PERMS_PHP_PACKAGES}"
 
 ####################################################################################################
@@ -264,7 +255,6 @@ source "${PATH_SS_PURGE_OPCACHE}"
 #### K. SS-Install-PHP-Packages: Restart Services (PHP-FPM) ########################################
 ####################################################################################################
 
-## run ss-restart-php ##
 source "${PATH_SS_RESTART_PHP}"
 
 ####################################################################################################
