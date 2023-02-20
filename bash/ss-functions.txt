@@ -1465,11 +1465,8 @@ TIMESTAMP_SS_WORKER="/var/www/meta/timestamps/ss-worker.timestamp"
 ## these lock files are used by Linux to ensure cron jobs do not overrun each other ##
 ## custom cron jobs run as child scripts thus a single lock file is enough ##
 
-## cron jobs ##
 LOCK_01_CRON_MINUTELY="/tmp/01-cron-minutely.lock"
-LOCK_01_CRON_OFTEN="/tmp/01-cron-often.lock" ## to be deleted
 LOCK_02_CRON_OFTEN="/tmp/02-cron-often.lock"
-LOCK_02_CRON_REGULAR="/tmp/02-cron-regular.lock" ## to be deleted
 LOCK_03_CRON_REGULAR="/tmp/03-cron-regular.lock"
 LOCK_04_CRON_QUARTER_HOURLY="/tmp/04-cron-quarter-hourly.lock"
 LOCK_05_CRON_HALF_HOURLY="/tmp/05-cron-half-hourly.lock"
@@ -1504,10 +1501,10 @@ SYSTEM_VIRTUAL=$(systemd-detect-virt)
 SYSTEM_VIRTUAL_UPPERCASE=${SYSTEM_VIRTUAL^^}
 SYSTEM_LINUX_KERNEL=$(uname -a)
 SYSTEM_OS_PRETTY_NAME=$(lsb_release -ds)
-SYSTEM_CPU_CORES=$(grep -c ^processor /proc/cpuinfo 2>/dev/null || sysctl -n hw.ncpu || echo "$NUMBER_OF_PROCESSORS")
+SYSTEM_CPU_CORES=$(grep -c ^processor /proc/cpuinfo 2>/dev/null || sysctl -n hw.ncpu || echo "${NUMBER_OF_PROCESSORS}")
 SYSTEM_DISK_TOTAL=$(df | grep '^/dev/' | awk '{s+=$2} END {print s/1048576}')
-SYSTEM_DISK_FREE=$(df -k --output=avail "$PWD" | tail -n1)
-SYSTEM_DISK_FREE_HUMAN=$(df -kh --output=avail "$PWD" | tail -n1)
+SYSTEM_DISK_FREE=$(df -k --output=avail "${PWD}" | tail -n1)
+SYSTEM_DISK_FREE_HUMAN=$(df -kh --output=avail "${PWD}" | tail -n1)
 SYSTEM_DISK_TOTAL_EASY=$(df -kh . | tail -n1 | awk '{print $2}')
 SYSTEM_DISK_FREE_EASY=$(df -kh . | tail -n1 | awk '{print $4}')
 SYSTEM_DISK_USED_PERCENT=$(df -kh . | tail -n1 | awk '{print $5}')
@@ -1524,8 +1521,8 @@ else
 fi
 
 SYSTEM_NETWORK_INTERFACE=$(ip route get 1.1.1.1 | head -n1 | awk '{print $5}')
-SYSTEM_IPV4_ADDRESS=$(ip addr show "$SYSTEM_NETWORK_INTERFACE" | grep "inet " | awk '{ print $2;exit }' | cut -d/ -f1)
-SYSTEM_IPV6_ADDRESS=$(ip addr show "$SYSTEM_NETWORK_INTERFACE" | grep "inet6 " | awk '{ print $2;exit }' | cut -d/ -f1)
+SYSTEM_IPV4_ADDRESS=$(ip addr show "${SYSTEM_NETWORK_INTERFACE}" | grep "inet " | awk '{ print $2;exit }' | cut -d/ -f1)
+SYSTEM_IPV6_ADDRESS=$(ip addr show "${SYSTEM_NETWORK_INTERFACE}" | grep "inet6 " | awk '{ print $2;exit }' | cut -d/ -f1)
 SYSTEM_HOSTNAME=$(/bin/hostname -f) ## remove -f in future
 # SYSTEM_HOSTNAME_ALL=`/bin/hostname -A`
 # SYSTEM_HOSTNAME_FQDN=`/bin/hostname -f`
