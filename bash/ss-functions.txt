@@ -1497,6 +1497,9 @@ else
 fi
 
 SYSTEM_NETWORK_INTERFACE=$(ip route get 1.1.1.1 | head -n1 | awk '{print $5}')
+SYSTEM_NETWORK_INTERFACE_IPV4=$(ip route get 1.1.1.1 | head -n1 | awk '{print $5}')
+SYSTEM_NETWORK_INTERFACE_IPV6=$(ip -6 route get 2606:4700:4700::1111 | head -n1 | awk '{print $5}')
+
 
 ## ipv4 depends on how network interface defined (ip vs nickname) ##
 if [[ "${SYSTEM_NETWORK_INTERFACE}" =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
@@ -1505,7 +1508,14 @@ else
     SYSTEM_IPV4_ADDRESS=$(ip addr show "${SYSTEM_NETWORK_INTERFACE}" | grep "inet " | awk '{ print $2;exit }' | cut -d/ -f1)
 fi
 
-SYSTEM_IPV6_ADDRESS=$(ip addr show "${SYSTEM_NETWORK_INTERFACE}" | grep "inet6 " | awk '{ print $2;exit }' | cut -d/ -f1)
+## ipv6 depends on how network interface defined (ip vs nickname) ##
+if [[ "${SYSTEM_NETWORK_INTERFACE_IPV6}" =~ ^([0-9a-fA-F]{0,4}:){1,7}[0-9a-fA-F]{0,4}$ ]]; then
+    SYSTEM_IPV6_ADDRESS="${SYSTEM_NETWORK_INTERFACE_IPV6}"
+else
+    SYSTEM_IPV6_ADDRESS=$(ip addr show "${SYSTEM_NETWORK_INTERFACE_IPV6}" | grep "inet6 " | awk '{ print $2;exit }' | cut -d/ -f1)
+fi
+
+
 SYSTEM_HOSTNAME=$(/bin/hostname -f) ## remove -f in future
 # SYSTEM_HOSTNAME_ALL=`/bin/hostname -A`
 # SYSTEM_HOSTNAME_FQDN=`/bin/hostname -f`
@@ -1979,5 +1989,7 @@ ENDSTAND=$(tput rmso) # end standout
 ## Ref: https://www.baeldung.com/linux/create-destination-directory
 ## Ref: https://unix.stackexchange.com/questions/484423/should-we-use-utf-8-characters-like-in-bash-shell-script
 ## Ref: https://stackoverflow.com/questions/13777387/check-for-ip-validity
+## Ref: https://stackoverflow.com/questions/45565521/regex-validate-ipv6-shell-script
+## Ref: https://1.1.1.1/dns/
 
 ## SS_EOF
