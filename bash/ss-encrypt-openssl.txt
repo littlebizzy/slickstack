@@ -35,7 +35,6 @@ source /var/www/ss-functions
 ## C. Hide Bug In OpenSSL 1.1.1x
 ## D. Regenerate OpenSSL Certificate
 ## E. Reset Permissions (Nginx SSL)
-## F. Restart Modules (Nginx)
 
 ####################################################################################################
 #### A. SS-Encrypt-OpenSSL: Touch Timestamp File ###################################################
@@ -59,7 +58,6 @@ ss_echo "${COLOR_INFO}Running ss-encrypt-openssl... ${COLOR_RESET}"
 #### C. SS-Encrypt-OpenSSL: Hide Bug In OpenSSL 1.1.1x #############################################
 ####################################################################################################
 
-## hide error message (workaround) ##
 ss_touch /home/${SUDO_USER}/.rnd
 ss_touch /home/${SFTP_USER}/.rnd
 
@@ -79,17 +77,17 @@ ss_rm "${PATH_OPENSSL_CERTIFICATE}"
 ss_rm "${PATH_OPENSSL_KEY}"
 
 ## generate self-signed certificate (valid 10 years) ##
-if [[ "$WP_MULTISITE" == "false" ]]; then 
-openssl req -x509 -newkey rsa:4096 -sha256 -days 3650 -nodes \
+if [[ "${WP_MULTISITE}" != "true" ]]; then 
+    openssl req -x509 -newkey rsa:4096 -sha256 -days 3650 -nodes \
     -keyout /var/www/certs/keys/slickstack.key -out /var/www/certs/slickstack.crt -subj "/CN=${SITE_DOMAIN}" \
     -addext "subjectAltName=DNS:${SITE_DOMAIN_EXCLUDING_WWW},DNS:${SITE_DOMAIN_INCLUDING_WWW},DNS:staging.${SITE_DOMAIN_EXCLUDING_WWW},DNS:dev.${SITE_DOMAIN_EXCLUDING_WWW},IP:${SYSTEM_IPV4_ADDRESS}" 2> /dev/null
 
-elif [[ "$WP_MULTISITE" == "true" ]] && [[ "$WP_MULTISITE_SUBDOMAINS" != "false" ]]; then 
+elif [[ "${WP_MULTISITE}" == "true" ]] && [[ "${WP_MULTISITE_SUBDOMAINS}" != "false" ]]; then 
     openssl req -x509 -newkey rsa:4096 -sha256 -days 3650 -nodes \
     -keyout /var/www/certs/keys/slickstack.key -out /var/www/certs/slickstack.crt -subj "/CN=${SITE_DOMAIN}" \
     -addext "subjectAltName=DNS:${SITE_DOMAIN_EXCLUDING_WWW},DNS:*.${SITE_DOMAIN_EXCLUDING_WWW},IP:${SYSTEM_IPV4_ADDRESS}" 2> /dev/null
     
-elif [[ "$WP_MULTISITE" == "true" ]] && [[ "$WP_MULTISITE_SUBDOMAINS" == "false" ]]; then 
+elif [[ "${WP_MULTISITE}" == "true" ]] && [[ "${WP_MULTISITE_SUBDOMAINS}" == "false" ]]; then 
     openssl req -x509 -newkey rsa:4096 -sha256 -days 3650 -nodes \
     -keyout /var/www/certs/keys/slickstack.key -out /var/www/certs/slickstack.crt -subj "/CN=${SITE_DOMAIN}" \
     -addext "subjectAltName=DNS:${SITE_DOMAIN_EXCLUDING_WWW},DNS:${SITE_DOMAIN_INCLUDING_WWW},DNS:staging.${SITE_DOMAIN_EXCLUDING_WWW},DNS:dev.${SITE_DOMAIN_EXCLUDING_WWW},IP:${SYSTEM_IPV4_ADDRESS}" 2> /dev/null
@@ -108,7 +106,6 @@ fi
 #### E. SS-Encrypt-OpenSSL: Reset Permissions (Nginx SSL) ##########################################
 ####################################################################################################
 
-## run ss-perms-nginx-ssl ##
 source "${PATH_SS_PERMS_NGINX_SSL}"
 
 ####################################################################################################
@@ -199,5 +196,7 @@ chmod 0700 /var/www/crons/custom/*cron* ## 0700 means only root/sudo can execute
 ## Ref: https://www.redhat.com/sysadmin/6-openssl-commands
 ## Ref: https://geekflare.com/openssl-commands-certificates/
 ## Ref: https://stackoverflow.com/questions/1822268/how-do-i-create-my-own-wildcard-certificate-on-linux/1822279
+## Ref: https://github.com/openssl/openssl/issues/904
+## Ref: https://commandlinefanatic.com/cgi-bin/showarticle.cgi?article=art030
 
 ## SS_EOF
