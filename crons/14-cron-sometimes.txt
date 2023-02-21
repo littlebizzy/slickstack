@@ -26,11 +26,12 @@
 ## B. Validate (Restore) SS-Functions
 ## C. Validate (Restore) SS-Check + SS-Worker
 ## D. Source SS-Config + SS-Functions (After Validated)
-## E. Touch Timestamp File
-## F. Run Custom Tasks (EDIT SOURCED FILES)
-## G. Run Scheduled Tasks (DO NOT EDIT)
-## H. Run Scheduled Reboot
-## I. Delete Lock File
+## E. Run SS-Check + SS-Worker In Case Frozen
+## F. Touch Timestamp File
+## G. Run Custom Tasks (EDIT SOURCED FILES)
+## H. Run Scheduled Tasks (DO NOT EDIT)
+## I. Run Scheduled Reboot
+## J. Delete Lock File
 
 ####################################################################################################
 #### A. 14-Cron-Sometimes: Validate (Restore) SS-Config ############################################
@@ -164,7 +165,34 @@ source /var/www/ss-functions
 ## BELOW THIS RELIES ON SS-CONFIG AND SS-FUNCTIONS
 
 ####################################################################################################
-#### E. 14-Cron-Sometimes: Touch Timestamp File ####################################################
+#### E. 14-Cron-Sometimes: Run SS-Check + SS-Worker In Case Frozen #################################
+####################################################################################################
+
+## SlickStack crontab and cron jobs can self-heal but that is not enough to recover ##
+## this snippet ensures that ss-check and ss-worker are run in case inactive ##
+
+## SNIPPET: ss cron jobs
+## UPDATED: 21FEB2023
+
+OUTDATED_SECONDS="900" ## 15 mins
+CURRENT_TIME=$(date +%s)
+MODIFIED_TIMESTAMP_SS_CHECK=$(stat "${TIMESTAMP_SS_CHECK}" -c %Y)
+MODIFIED_TIMESTAMP_SS_WORKER=$(stat "${TIMESTAMP_SS_WORKER}" -c %Y)
+TIME_DIFFERENCE_SS_CHECK=$(expr "${CURRENT_TIME}" - "${MODIFIED_TIMESTAMP_SS_CHECK}")
+TIME_DIFFERENCE_SS_WORKER=$(expr "${CURRENT_TIME}" - "${MODIFIED_TIMESTAMP_SS_WORKER}")
+
+## run ss-check if frozen ##
+if [[ "${TIME_DIFFERENCE_SS_CHECK}" -gt "${OUTDATED_SECONDS}" ]]; then
+   source /var/www/ss-check
+fi
+
+## run ss-worker if frozen ##
+if [[ "${TIME_DIFFERENCE_SS_WORKER}" -gt "${OUTDATED_SECONDS}" ]]; then
+   source /var/www/ss-worker
+fi
+
+####################################################################################################
+#### F. 14-Cron-Sometimes: Touch Timestamp File ####################################################
 ####################################################################################################
 
 ## this is a dummy timestamp file that will remember the last time this script was run ##
@@ -173,7 +201,7 @@ source /var/www/ss-functions
 ss_touch "${TIMESTAMP_14_CRON_SOMETIMES}"
 
 ####################################################################################################
-#### F. 14-Cron-Sometimes: Run Custom Tasks (EDIT SOURCED FILES) ###################################
+#### G. 14-Cron-Sometimes: Run Custom Tasks (EDIT SOURCED FILES) ###################################
 ####################################################################################################
 
 ## this will run custom shell commands that you can save in a reserved filename below ##
@@ -182,7 +210,7 @@ ss_touch "${TIMESTAMP_14_CRON_SOMETIMES}"
 source "${PATH_14_CRON_SOMETIMES_CUSTOM}"
 
 ####################################################################################################
-#### G. 13-Cron-Sometimes: Run Scheduled Tasks (DO NOT EDIT) #######################################
+#### H. 13-Cron-Sometimes: Run Scheduled Tasks (DO NOT EDIT) #######################################
 ####################################################################################################
 
 ## the below tasks will be called if configured to run at this interval in ss-config ##
@@ -251,7 +279,7 @@ if [[ "${INTERVAL_SS_INSTALL_UBUNTU_CRONTAB}" == "sometimes" ]] || [[ -z "${INTE
 fi
 
 ####################################################################################################
-#### H. 14-Cron-Sometimes: Run Scheduled Reboot ####################################################
+#### I. 14-Cron-Sometimes: Run Scheduled Reboot ####################################################
 ####################################################################################################
 
 ## reboot task must come last in this cron job to avoid skipping other scheduled tasks ##
@@ -264,7 +292,7 @@ if [[ "${INTERVAL_SS_REBOOT_MACHINE}" == "sometimes" ]]; then
 fi
 
 ####################################################################################################
-#### I. 14-Cron-Sometimes: Delete Lock File ########################################################
+#### J. 14-Cron-Sometimes: Delete Lock File ########################################################
 ####################################################################################################
 
 ## here we delete the lock file associated with this cron job to clear the cron queue ##
