@@ -26,10 +26,11 @@
 ## B. Validate (Restore) SS-Functions
 ## C. Validate (Restore) SS-Check + SS-Worker
 ## D. Source SS-Config + SS-Functions (After Validated)
-## E. Touch Timestamp File
-## F. Run Custom Tasks (EDIT SOURCED FILES)
-## G. Run Scheduled Tasks (DO NOT EDIT)
-## H. Delete Lock File
+## E. Run SS-Check + SS-Worker In Case Frozen
+## F. Touch Timestamp File
+## G. Run Custom Tasks (EDIT SOURCED FILES)
+## H. Run Scheduled Tasks (DO NOT EDIT)
+## I. Delete Lock File
 
 ####################################################################################################
 #### A. 11-Cron-Weekly: Validate (Restore) SS-Config ###############################################
@@ -163,7 +164,34 @@ source /var/www/ss-functions
 ## BELOW THIS RELIES ON SS-CONFIG AND SS-FUNCTIONS
 
 ####################################################################################################
-#### E. 11-Cron-Weekly: Touch Timestamp File #######################################################
+#### E. 11-Cron-Weekly: Run SS-Check + SS-Worker In Case Frozen ####################################
+####################################################################################################
+
+## SlickStack crontab and cron jobs can self-heal but that is not enough to recover ##
+## this snippet ensures that ss-check and ss-worker are run in case inactive ##
+
+## SNIPPET: ss cron jobs
+## UPDATED: 21FEB2023
+
+OUTDATED_SECONDS="900" ## 15 mins
+CURRENT_TIME=$(date +%s)
+MODIFIED_TIMESTAMP_SS_CHECK=$(stat "${TIMESTAMP_SS_CHECK}" -c %Y)
+MODIFIED_TIMESTAMP_SS_WORKER=$(stat "${TIMESTAMP_SS_WORKER}" -c %Y)
+TIME_DIFFERENCE_SS_CHECK=$(expr "${CURRENT_TIME}" - "${MODIFIED_TIMESTAMP_SS_CHECK}")
+TIME_DIFFERENCE_SS_WORKER=$(expr "${CURRENT_TIME}" - "${MODIFIED_TIMESTAMP_SS_WORKER}")
+
+## run ss-check if frozen ##
+if [[ "${TIME_DIFFERENCE_SS_CHECK}" -gt "${OUTDATED_SECONDS}" ]]; then
+   source /var/www/ss-check
+fi
+
+## run ss-worker if frozen ##
+if [[ "${TIME_DIFFERENCE_SS_WORKER}" -gt "${OUTDATED_SECONDS}" ]]; then
+   source /var/www/ss-worker
+fi
+
+####################################################################################################
+#### F. 11-Cron-Weekly: Touch Timestamp File #######################################################
 ####################################################################################################
 
 ## this is a dummy timestamp file that will remember the last time this script was run ##
@@ -172,7 +200,7 @@ source /var/www/ss-functions
 ss_touch "${TIMESTAMP_11_CRON_WEEKLY}"
 
 ####################################################################################################
-#### F. 11-Cron-Weekly: Run Custom Tasks (EDIT SOURCED FILES) ######################################
+#### G. 11-Cron-Weekly: Run Custom Tasks (EDIT SOURCED FILES) ######################################
 ####################################################################################################
 
 ## this will run custom shell commands that you can save in a reserved filename below ##
@@ -181,7 +209,7 @@ ss_touch "${TIMESTAMP_11_CRON_WEEKLY}"
 source "${PATH_11_CRON_WEEKLY_CUSTOM}"
 
 ####################################################################################################
-#### G. 11-Cron-Weekly: Run Scheduled Tasks (DO NOT EDIT) ##########################################
+#### H. 11-Cron-Weekly: Run Scheduled Tasks (DO NOT EDIT) ##########################################
 ####################################################################################################
 
 ## the below tasks will be called if configured to run at this interval in ss-config ##
@@ -373,7 +401,7 @@ if [[ "${INTERVAL_SS_REBOOT_MACHINE}" == "weekly" ]]; then
 fi
 
 ####################################################################################################
-#### H. 11-Cron-Weekly: Delete Lock File ###########################################################
+#### I. 11-Cron-Weekly: Delete Lock File ###########################################################
 ####################################################################################################
 
 ## here we delete the lock file associated with this cron job to clear the cron queue ##
