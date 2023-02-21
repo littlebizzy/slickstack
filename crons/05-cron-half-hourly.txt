@@ -26,11 +26,12 @@
 ## B. Validate (Restore) SS-Functions
 ## C. Validate (Restore) SS-Check + SS-Worker
 ## D. Source SS-Config + SS-Functions (After Validated)
-## E. Touch Timestamp File
-## F. Run Custom Tasks (EDIT SOURCED FILES)
-## G. Run WP-Cron (Conditional)
-## G. Run Scheduled Tasks (DO NOT EDIT)
-## H. Delete Lock File
+## E. Run SS-Check + SS-Worker In Case Frozen
+## F. Touch Timestamp File
+## G. Run Custom Tasks (EDIT SOURCED FILES)
+## H. Run WP-Cron (Conditional)
+## I. Run Scheduled Tasks (DO NOT EDIT)
+## J. Delete Lock File
 
 ####################################################################################################
 #### A. 05-Cron-Half-Hourly: Validate (Restore) SS-Config ##########################################
@@ -164,7 +165,34 @@ source /var/www/ss-functions
 ## BELOW THIS RELIES ON SS-CONFIG AND SS-FUNCTIONS
 
 ####################################################################################################
-#### E. 05-Cron-Half-Hourly: Touch Timestamp File ##################################################
+#### E. 05-Cron-Half-Hourly: Run SS-Check + SS-Worker In Case Frozen ###############################
+####################################################################################################
+
+## SlickStack crontab and cron jobs can self-heal but that is not enough to recover ##
+## this snippet ensures that ss-check and ss-worker are run in case inactive ##
+
+## SNIPPET: ss cron jobs
+## UPDATED: 21FEB2023
+
+OUTDATED_SECONDS="900" ## 15 mins
+CURRENT_TIME=$(date +%s)
+MODIFIED_TIMESTAMP_SS_CHECK=$(stat "${TIMESTAMP_SS_CHECK}" -c %Y)
+MODIFIED_TIMESTAMP_SS_WORKER=$(stat "${TIMESTAMP_SS_WORKER}" -c %Y)
+TIME_DIFFERENCE_SS_CHECK=$(expr "${CURRENT_TIME}" - "${MODIFIED_TIMESTAMP_SS_CHECK}")
+TIME_DIFFERENCE_SS_WORKER=$(expr "${CURRENT_TIME}" - "${MODIFIED_TIMESTAMP_SS_WORKER}")
+
+## run ss-check if frozen ##
+if [[ "${TIME_DIFFERENCE_SS_CHECK}" -gt "${OUTDATED_SECONDS}" ]]; then
+   source /var/www/ss-check
+fi
+
+## run ss-worker if frozen ##
+if [[ "${TIME_DIFFERENCE_SS_WORKER}" -gt "${OUTDATED_SECONDS}" ]]; then
+   source /var/www/ss-worker
+fi
+
+####################################################################################################
+#### F. 05-Cron-Half-Hourly: Touch Timestamp File ##################################################
 ####################################################################################################
 
 ## this is a dummy timestamp file that will remember the last time this script was run ##
@@ -173,7 +201,7 @@ source /var/www/ss-functions
 ss_touch "${TIMESTAMP_05_CRON_HALF_HOURLY}"
 
 ####################################################################################################
-#### F. 05-Cron-Half-Hourly: Run Custom Tasks (EDIT SOURCED FILES) #################################
+#### G. 05-Cron-Half-Hourly: Run Custom Tasks (EDIT SOURCED FILES) #################################
 ####################################################################################################
 
 ## this will run custom shell commands that you can save in a reserved filename below ##
@@ -182,7 +210,7 @@ ss_touch "${TIMESTAMP_05_CRON_HALF_HOURLY}"
 source "${PATH_05_CRON_HALF_HOURLY_CUSTOM}"
 
 ####################################################################################################
-#### G. 05-Cron-Half-Hourly: Run WP-Cron (Conditional) #############################################
+#### H. 05-Cron-Half-Hourly: Run WP-Cron (Conditional) #############################################
 ####################################################################################################
 
 ## this snippet will call wp-cron via the server if enabled in your ss-config settings ##
@@ -194,7 +222,7 @@ if [[ "${WP_CRON_METHOD}" == "server" ]] && [[ "${WP_CRON_INTERVAL}" == "half-ho
 fi
 
 ####################################################################################################
-#### H. 05-Cron-Half-Hourly: Run Scheduled Tasks (DO NOT EDIT) #####################################
+#### I. 05-Cron-Half-Hourly: Run Scheduled Tasks (DO NOT EDIT) #####################################
 ####################################################################################################
 
 ## the below tasks will be called if configured to run at this interval in ss-config ##
