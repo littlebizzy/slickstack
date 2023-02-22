@@ -9,7 +9,7 @@
 #### purpose: Updates and cleans up required Ubuntu packages including the Linux kernel ############
 #### module version: Ubuntu 22.04 LTS ##############################################################
 #### sourced by: n/a ###############################################################################
-#### bash aliases: ss update|upgrade modules, ss update|upgrade packages ###########################
+#### bash aliases: ss update|upgrade modules|packages ##############################################
 ####################################################################################################
 
 ## YOU CAN SAFELY RUN UPDATES WITH NO CHANGES TO YOUR LEMP MODULE CONFIGURATION FILES ##
@@ -32,7 +32,8 @@ source /var/www/ss-functions
 
 ## A. Touch Timestamp File
 ## B. Message (Begin Script)
-## C. Backup MySQL Database Before Proceeding
+## C. Backup Database Before Proceeding (Conditional)
+## D. Upgrade Ubuntu Packages + Linux Kernel
 
 ####################################################################################################
 #### A. SS-Update-Modules: Touch Timestamp File ####################################################
@@ -53,41 +54,18 @@ ss_touch "${TIMESTAMP_SS_UPDATE_MODULES}"
 ss_echo "${COLOR_INFO}Running ss-update-modules... ${COLOR_RESET}"
 
 ####################################################################################################
-#### C. SS-Update-Modules: Backup MySQL Database Before Proceeding #################################
+#### C. SS-Update-Modules: Backup Database Before Proceeding (Conditional) #########################
 ####################################################################################################
 
 ## here we first dump the live production database to /var/www/meta/ before proceeding ##
 ## this ensures a recent backup exists in case any database corruption occurs ##
 
-## delete? ##
+## this needs to be conditional so no errors on virgin ss servers since ss-install calls this script ##
 ## run ss-dump-database ##
 # source "${PATH_SS_DUMP_DATABASE}"
 
 ####################################################################################################
-#### SS-Update: Retrieve Latest SS-Check + SS-Worker (Core Bash Scripts) ###########################
-####################################################################################################
-
-## here we run ss-check and ss-worker in case ss core cron jobs have not been running ##
-## this ensures that all ss core bash scripts are updated before proceeding ##
-
-## delete? ##
-## run ss-check and ss-worker ##
-# source "${PATH_SS_CHECK}"
-# source "${PATH_SS_WORKER}"
-# source "${PATH_SS_CHECK}"
-
-####################################################################################################
-#### SS-Update: Set Dpkg Basic Settings + Update Apt (Package) Cache ###############################
-####################################################################################################
-
-## for smoother execution and to avoid conflicts we set dpkg to noninteractive/confold ##
-## it is much better to run ss-update instead of calling apt get upgrade manually ##
-
-## set confold as dpkg default (fail-safe in case apt upgrade called directly) ##
-DEBIAN_FRONTEND=noninteractive dpkg --configure -a --force-confold
-
-####################################################################################################
-#### SS-Update-Packages: Upgrade Ubuntu Packages + Linux Kernel ####################################
+#### D. SS-Update-Modules: Upgrade Ubuntu Packages + Linux Kernel ##################################
 ####################################################################################################
 
 ## the main purpose of ss-update is to upgrade all currently installed Ubuntu packages ##
@@ -104,25 +82,6 @@ ss_apt_full_upgrade
 
 ## remove unused dependencies ##
 ss_apt_autoremove
-
-####################################################################################################
-#### SS-Update-Packages: Restart Modules (All Modules) #############################################
-####################################################################################################
-
-## this script is using init.d instead of systemd shortcuts to allow for absolute paths ##
-## we are looking into including other snippets here such as unmasking (etc) ##
-
-## run ss-restart-php ##
-# source "${PATH_SS_RESTART_PHP}"
-
-## run ss-restart-nginx ##
-# source "${PATH_SS_RESTART_NGINX}"
-
-## run ss-restart-mysql ##
-# source "${PATH_SS_RESTART_MYSQL}"
-
-## run ss-restart-redis ##
-# source "${PATH_SS_RESTART_REDIS}"
 
 ####################################################################################################
 #### SlickStack: Reset Permissions (SlickStack Scripts) ############################################
@@ -228,5 +187,7 @@ chmod 0700 /var/www/crons/custom/*cron* ## 0700 means only root/sudo can execute
 ## Ref: https://unix.stackexchange.com/questions/48535/can-grep-return-true-false-or-are-there-alternative-methods
 ## Ref: https://ubuntuforums.org/showthread.php?t=2243852
 ## Ref: https://www.networkworld.com/article/3453032/cleaning-up-with-apt-get.html
+## Ref: https://www.cyberciti.biz/faq/explain-debian_frontend-apt-get-variable-for-ubuntu-debian/
+## Ref: https://linuxhint.com/debian_frontend_noninteractive/
 
 ## SS_EOF
