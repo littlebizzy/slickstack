@@ -7,9 +7,9 @@
 #### path: /var/www/ss-encrypt-openssl #############################################################
 #### destination: n/a (not a boilerplate) ##########################################################
 #### purpose: Regenerates free self-signed OpenSSL certificate for use by Nginx (idempotent) #######
-#### module version: OpenSSL 1.1.1x ################################################################
+#### module version: OpenSSL 3.0.x #################################################################
 #### sourced by: ss-install-nginx-config ###########################################################
-#### bash aliases: ss encrypt openssl, ss generate openssl #########################################
+#### bash aliases: ss encrypt|gen|generate openssl #################################################
 ####################################################################################################
 
 ## SS-ENCRYPT PERFORMS BASIC NGINX CONFIG MODIFICATION REGARDLESS OF SS-INSTALL-NGINX ##
@@ -34,7 +34,8 @@ source /var/www/ss-functions
 ## B. Message (Begin Script)
 ## C. Hide Bug In OpenSSL 1.1.1x
 ## D. Regenerate OpenSSL Certificate
-## E. Reset Permissions (Nginx SSL)
+## E. Validate OpenSSL Certificate
+## F. Reset Permissions (Nginx SSL)
 
 ####################################################################################################
 #### A. SS-Encrypt-OpenSSL: Touch Timestamp File ###################################################
@@ -68,10 +69,6 @@ ss_touch /home/${SFTP_USER}/.rnd
 ## this will generate a new self-signed OpenSSL certificate every single time it runs ##
 ## there are no rate-limits and it pairs perfectly with CloudFlare SSL proxy ##
 
-## make dirs ##
-ss_mkdir /var/www/certs
-ss_mkdir /var/www/certs/keys
-
 ## delete previous files ##
 ss_rm "${PATH_OPENSSL_CERTIFICATE}"
 ss_rm "${PATH_OPENSSL_KEY}"
@@ -98,12 +95,10 @@ fi
 #### E. SS-Encrypt-OpenSSL: Validate OpenSSL Certificate ###########################################
 ####################################################################################################
 
-# Move to ss-stack-overview ?
-## validate openssl cert ##
-# openssl x509 -noout -text -in "${PATH_OPENSSL_CERTIFICATE}"
+openssl x509 -noout -text -in "${PATH_OPENSSL_CERTIFICATE}"
 
 ####################################################################################################
-#### E. SS-Encrypt-OpenSSL: Reset Permissions (Nginx SSL) ##########################################
+#### F. SS-Encrypt-OpenSSL: Reset Permissions (Nginx SSL) ##########################################
 ####################################################################################################
 
 source "${PATH_SS_PERMS_NGINX_SSL}"
