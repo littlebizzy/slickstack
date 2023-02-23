@@ -9,7 +9,7 @@
 #### purpose: Regenerates Letsencrypt certs and relevant symlinks ##################################
 #### module version: Certbot 1.21.x ################################################################
 #### sourced by: ss-install-nginx-config ###########################################################
-#### bash aliases: ss certbot, ss encrypt [certbot|letsencrypt], ss letsencrypt ####################
+#### bash aliases: ss certbot, ss encrypt certbot|letsencrypt, ss letsencrypt ######################
 ####################################################################################################
 
 ## SS-ENCRYPT-CERTBOT WILL ALWAYS ACTIVATE OPENSSL BEFORE REQUESTING LETSENCRYPT CERTS ##
@@ -32,9 +32,11 @@ source /var/www/ss-functions
 
 ## A. Touch Timestamp File
 ## B. Message (Begin Script)
-## C. Reset Permissions (Nginx SSL)
-## D. Generate DH Parameters
-## E. Temporarily Activate OpenSSL
+## C. Temporarily Activate OpenSSL
+## D. Request Certificates From Lets Encrypt Servers
+## E. Create Lets Encrypt Symlinks
+## F. Reset Permissions (Nginx SSL)
+## G. Restart Modules (Nginx)
 
 ####################################################################################################
 #### A. SS-Encrypt-Certbot: Touch Timestamp File ###################################################
@@ -55,7 +57,7 @@ ss_touch "${TIMESTAMP_SS_ENCRYPT_CERTBOT}"
 ss_echo "${COLOR_INFO}Running ss-encrypt-certbot... ${COLOR_RESET}"
 
 ####################################################################################################
-#### E. SS-Install-Nginx-Config: Temporarily Activate OpenSSL ######################################
+#### C. SS-Encrypt-Certbot: Temporarily Activate OpenSSL ###########################################
 ####################################################################################################
 
 ## this should work fine even for live sites tha enabled certbot but might want to change it later to avoid potential broken frontends ##
@@ -67,7 +69,7 @@ ss_echo "${COLOR_INFO}Running ss-encrypt-certbot... ${COLOR_RESET}"
 source "${PATH_SS_INSTALL_NGINX_OPENSSL}"
 
 ####################################################################################################
-#### SS-Encrypt-Certbot: Request Certificates From Lets Encrypt Servers (Rate-Limited) #############
+#### D. SS-Encrypt-Certbot: Request Certificates From Lets Encrypt Servers #########################
 ####################################################################################################
 
 ## NOTICE: SLICKSTACK DOES NOT SUPPORT SUB-SUBDOMAINS LIKE WWW.BLOG.EXAMPLE.COM ##
@@ -213,30 +215,27 @@ else
 fi
 
 ####################################################################################################
-#### SS-Encrypt-Certbot: Create Lets Encrypt Symlinks (For SlickStack) #############################
+#### E. SS-Encrypt-Certbot: Create Lets Encrypt Symlinks ###########################################
 ####################################################################################################
 
 ## here we create symlinks in the /var/www/certs/ directory that point to Lets Encrypt ##
 ## this hardcode method simplifies our Nginx settings and makes it more stable ##
 
-## create symlinks ##
 ss_ln "${PATH_LETSENCRYPT_CERT_CERT}" "${SYMLINK_LETSENCRYPT_CERT}"
 ss_ln "${PATH_LETSENCRYPT_CERT_CHAIN}" "${SYMLINK_LETSENCRYPT_CHAIN}"
 ss_ln "${PATH_LETSENCRYPT_CERT_FULLCHAIN}" "${SYMLINK_LETSENCRYPT_FULLCHAIN}"
 ss_ln "${PATH_LETSENCRYPT_CERT_PRIVKEY}" "${SYMLINK_LETSENCRYPT_PRIVKEY}"
 
 ####################################################################################################
-#### SS-Install-Nginx-SSL: Reset Permissions (Nginx SSL) ###########################################
+#### F. SS-Encrypt-Certbot: Reset Permissions (Nginx SSL) ##########################################
 ####################################################################################################
 
-## run ss-perms-nginx-ssl ##
 ## source "${PATH_SS_PERMS_NGINX_SSL}"
 
 ####################################################################################################
-#### SS-Encrypt-Certbot: Restart Modules (Nginx) ###################################################
+#### G. SS-Encrypt-Certbot: Restart Modules (Nginx) ################################################
 ####################################################################################################
 
-## run ss-restart-services-nginx ##
 ## source "${PATH_SS_RESTART_NGINX}"
 
 ####################################################################################################
