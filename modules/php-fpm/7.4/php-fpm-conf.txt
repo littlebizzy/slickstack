@@ -6,47 +6,41 @@
 ;;;; destination: /etc/php/7.4/fpm/php-fpm.conf (after install) ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; purpose: PHP-FPM configuration file boilerplate optimized for SlickStack servers ;;;;;;;;;;;;;;
 ;;;; module version: PHP-FPM 7.4.x ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;; sourced by: PHP-FPM ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;; sourced by: n/a ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; bash aliases: n/a (ss-install-php-config) ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 [global]
 
-pid = /run/php/php7.4-fpm.pid
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;; PHP-FPM.conf: Error Handing + Logging Settings ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;; PHP-FPM.conf: Global Options ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; hardcoding error log settings reduces potential conflicts and server resource usage ;;
-;; temporarily enabling debug.log in WordPress (when needed) is best practice ;;
+;; take extreme caution when modifying any of below settings in your ss-config ;;
 
+pid = /run/php/php7.4-fpm.pid
 error_log = /var/www/logs/php-error.log
-log_level = error
 syslog.facility = daemon
 syslog.ident = php-fpm
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;; PHP-FPM.conf: Various Settings ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-;; because SlickStack does not use any containers we can safely daemonize PHP-FPM ;;
-;; take extreme caution in modifying below settings in your ss-config ;;
-
-daemonize = yes
-events.mechanism = epoll
+log_level = error
 emergency_restart_threshold = @FPM_EMERGENCY_RESTART_THRESHOLD
 emergency_restart_interval = @FPM_EMERGENCY_RESTART_INTERVAL
 process_control_timeout = @FPM_PROCESS_CONTROL_TIMEOUT
-systemd_interval = @FPM_SYSTEMD_INTERVAL
 process.max = @FPM_PROCESS_MAX
 process.priority = @FPM_PROCESS_PRIORITY
+daemonize = yes ;; SlickStack does not use containers so we can daemonize
 rlimit_files = @FPM_RLIMIT_FILES
 rlimit_core = @FPM_RLIMIT_CORE
+events.mechanism = epoll
+systemd_interval = @FPM_SYSTEMD_INTERVAL
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; PHP-FPM.conf: Pool Definitions ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; the FPM pool directory (and child config files) might change depending on your OS ;;
+;; we should consider using the new path @prefix@ in SlickStack if possible ;;
 
 include=/etc/php/7.4/fpm/pool.d/*.conf
 
