@@ -16,30 +16,24 @@
 ;;;; WWW.conf: Pool Settings ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;; users, groups, and listen directives are hardcoded in SlickStack to avoid conflicts ;;
-;; www-data is the default user for Nginx and TCP/IP listening avoids disk I/O ;;
+;; users/groups and listen directives are hardcoded in SlickStack for better stability ;;
+;; only high-traffic sites or uncommon stacks should adjust these in ss-config ;;
 
+;; prefix = /path/to/pools/$pool
 user = www-data
 group = www-data
-listen = 127.0.0.1:9000
+listen = 127.0.0.1:9000 ;; avoids disk I/O
+listen.backlog = @WWW_LISTEN_BACKLOG ;; ss = 65535
 listen.allowed_clients = 127.0.0.1
-listen.backlog = @WWW_LISTEN_BACKLOG
+
 listen.owner = www-data
 listen.group = www-data
 
-;; prefix = /path/to/pools/$pool
 ;; listen.mode = 0660
 ;; listen.acl_users =
 ;; listen.acl_groups =
 ;; process.priority = -19
 ;; process.dumpable = yes
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;; WWW.conf: Child Processes Settings ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-;; ondemand is best for the majority of VPS servers (contrary to many online tutorials) ;;
-;; only incredibly high traffic servers should use dynamic after tuning settings ;;
 
 pm = @WWW_PM_MODE
 pm.max_children = @WWW_PM_MAX_CHILDREN
