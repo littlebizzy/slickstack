@@ -62,76 +62,11 @@ ss_echo "${COLOR_INFO}Running ss-install-wordpress-config... ${COLOR_RESET}"
 ####################################################################################################
 
 ## move to ss-install-php-config ??
-## SNIPPET: ss-worker, ss-install-wordpress-config
-## UPDATED:
-
-## retrieve ss-constants.php boilerplate ##
-ss_wget "${TMP_SS_CONSTANTS_PHP}" "${GITHUB_SS_CONSTANTS_PHP}"
-VALIDATE_TMP_SS_CONSTANTS_PHP=$(grep 'SS_EOF' "${TMP_SS_CONSTANTS_PHP}" 2> /dev/null)
-if [[ -z "${VALIDATE_TMP_SS_CONSTANTS_PHP}" ]]; then
-    ss_wget "${TMP_SS_CONSTANTS_PHP}" "${GITLAB_SS_CONSTANTS_PHP}"
-fi
-
-    ## set SlickStack dashboard ##
-    if [[ -z "$SS_WORDPRESS_ADMIN_DASHBOARD" ]]; then 
-        ss_sed "s/@SS_WORDPRESS_ADMIN_DASHBOARD/true/g" "${TMP_SS_CONSTANTS_PHP}"
-    else 
-        ss_sed "s/@SS_WORDPRESS_ADMIN_DASHBOARD/${SS_WORDPRESS_ADMIN_DASHBOARD}/g" "${TMP_SS_CONSTANTS_PHP}"
-    fi
-    
-SYSTEM_SERVER_SOFTWARE=$(nginx -v |& sed 's#nginx version: nginx/##')
-SYSTEM_MYSQL_SIZE=$(du -sh /var/lib/mysql |& sed 's#/var/lib/mysql##')
-
-ss_sed "s|@SYSTEM_VIRTUAL|${SYSTEM_VIRTUAL}|g" "${TMP_SS_CONSTANTS_PHP}"
-ss_sed "s|@SYSTEM_LINUX_KERNEL|${SYSTEM_LINUX_KERNEL}|g" "${TMP_SS_CONSTANTS_PHP}"
-ss_sed "s|@SYSTEM_CPU_CORES|${SYSTEM_CPU_CORES}|g" "${TMP_SS_CONSTANTS_PHP}"
-ss_sed "s|@SYSTEM_OS_PRETTY_NAME|${SYSTEM_OS_PRETTY_NAME}|g" "${TMP_SS_CONSTANTS_PHP}"
-
-if [[ "${UBUNTU_VERSION}" == "22.04" ]]; then
-SYSTEM_MYSQL_VERSION=$(ss_mysql_root --version |& awk '{print $3}' | sed 's/,//g')
-fi
-
-if [[ "${UBUNTU_VERSION}" == "20.04" ]]; then
-SYSTEM_MYSQL_VERSION=$(ss_mysql_root --version |& awk '{print $3}' | sed 's/,//g')
-fi
-
-if [[ "${UBUNTU_VERSION}" == "18.04" ]]; then
-SYSTEM_MYSQL_VERSION=$(ss_mysql_root --version |& awk '{print $5}' | sed 's/,//g')
-fi
-
-if [[ "${SS_DATABASE_REMOTE}" != "false" ]]; then
-    ss_sed "s|@SYSTEM_MYSQL_VERSION|Unavailable|g" "${TMP_SS_CONSTANTS_PHP}"
-else
-    ss_sed "s|@SYSTEM_MYSQL_VERSION|${SYSTEM_MYSQL_VERSION}|g" "${TMP_SS_CONSTANTS_PHP}"
-fi
-
-if [[ "${SS_DATABASE_REMOTE}" != "false" ]]; then
-    ss_sed "/MYSQL_SIZE/d" "${TMP_SS_CONSTANTS_PHP}"
-else
-    ss_sed "s|@SYSTEM_MYSQL_SIZE|${SYSTEM_MYSQL_SIZE}|g" "${TMP_SS_CONSTANTS_PHP}"
-fi
-
-ss_sed "s|@SYSTEM_DISK_FREE|${SYSTEM_DISK_FREE}|g" "${TMP_SS_CONSTANTS_PHP}"
-ss_sed "s|@SYSTEM_DISK_TOTAL|${SYSTEM_DISK_TOTAL}|g" "${TMP_SS_CONSTANTS_PHP}"
-ss_sed "s|@SYSTEM_IPV4_ADDRESS|${SYSTEM_IPV4_ADDRESS}|g" "${TMP_SS_CONSTANTS_PHP}"
-ss_sed "s|@SYSTEM_IPV6_ADDRESS|${SYSTEM_IPV6_ADDRESS}|g" "${TMP_SS_CONSTANTS_PHP}"
-ss_sed "s|@SYSTEM_HOSTNAME|${SYSTEM_HOSTNAME}|g" "${TMP_SS_CONSTANTS_PHP}"
-ss_sed "s|@SYSTEM_SERVER_SOFTWARE|${SYSTEM_SERVER_SOFTWARE}|g" "${TMP_SS_CONSTANTS_PHP}"
-ss_sed "s|@SYSTEM_PHP_VERSION|${SYSTEM_PHP_VERSION}|g" "${TMP_SS_CONSTANTS_PHP}"
-ss_sed "s|@SYSTEM_PHP_EXTENSIONS|${SYSTEM_PHP_EXTENSIONS}|g" "${TMP_SS_CONSTANTS_PHP}"
-
-VALIDATE_TMP_SS_CONSTANTS_PHP=$(grep 'SS_EOF' "${TMP_SS_CONSTANTS_PHP}")
-if [[ -n "$VALIDATE_TMP_SS_CONSTANTS_PHP" ]]; then
-    cp "${TMP_SS_CONSTANTS_PHP}" "$PATH_SS_CONSTANTS_PHP"
-    chown www-data:www-data "$PATH_SS_CONSTANTS_PHP"
-    chmod 0440 "$PATH_SS_CONSTANTS_PHP" ## 0440 (read-only)
-fi 
-
 
 ## run this because ss-constants.php has some temp fixes to replaced @placeholders ##
 
 ## run ss-worker ##
-source "$PATH_SS_WORKER"
+source "${PATH_SS_WORKER}"
 
 ## remove this after above snippet synced with snippet in ss-worker
 
