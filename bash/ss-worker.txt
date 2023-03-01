@@ -246,9 +246,20 @@ ss_sed "s|@SYSTEM_LINUX_KERNEL|${SYSTEM_LINUX_KERNEL}|g" "${TMP_SS_CONSTANTS_PHP
 ss_sed "s|@SYSTEM_CPU_CORES|${SYSTEM_CPU_CORES}|g" "${TMP_SS_CONSTANTS_PHP}"
 ss_sed "s|@SYSTEM_OS_PRETTY_NAME|${SYSTEM_OS_PRETTY_NAME}|g" "${TMP_SS_CONSTANTS_PHP}"
 
+if [[ "${UBUNTU_VERSION}" == "22.04" ]]; then
+SYSTEM_MYSQL_VERSION=$(ss_mysql_root --version |& awk '{print $3}' | sed 's/,//g')
+fi
+
+if [[ "${UBUNTU_VERSION}" == "20.04" ]]; then
+SYSTEM_MYSQL_VERSION=$(ss_mysql_root --version |& awk '{print $3}' | sed 's/,//g')
+fi
+
+if [[ "${UBUNTU_VERSION}" == "18.04" ]]; then
+SYSTEM_MYSQL_VERSION=$(ss_mysql_root --version |& awk '{print $5}' | sed 's/,//g')
+fi
+
 ## mysql version ##
 if [[ "${SS_DATABASE_REMOTE}" != "false" ]]; then
-    # ss_sed "/MYSQL_VERSION/d" "${TMP_SS_CONSTANTS_PHP}"
     ss_sed "s|@SYSTEM_MYSQL_VERSION|Unavailable|g" "${TMP_SS_CONSTANTS_PHP}"
 else
     ss_sed "s|@SYSTEM_MYSQL_VERSION|${SYSTEM_MYSQL_VERSION}|g" "${TMP_SS_CONSTANTS_PHP}"
