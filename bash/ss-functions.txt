@@ -1473,25 +1473,23 @@ else
     SYSTEM_SWAP_TOTAL_FINAL="${SYSTEM_SWAP_TOTAL}"
 fi
 
-SYSTEM_NETWORK_INTERFACE=$(ip route get 1.1.1.1 | head -n1 | awk '{print $5}')
+## network interface ##
 SYSTEM_NETWORK_INTERFACE_IPV4=$(ip route get 1.1.1.1 | head -n1 | awk '{print $5}')
 SYSTEM_NETWORK_INTERFACE_IPV6=$(ip -6 route get 2606:4700:4700::1111 | head -n1 | awk '{print $5}')
 
-
-## ipv4 depends on how network interface defined (ip vs nickname) ##
-if [[ "${SYSTEM_NETWORK_INTERFACE}" =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-    SYSTEM_IPV4_ADDRESS="${SYSTEM_NETWORK_INTERFACE}"
+## ipv4 depends on how network interface is setup (ip vs nickname) ##
+if [[ "${SYSTEM_NETWORK_INTERFACE_IPV4}" =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+    SYSTEM_IPV4_ADDRESS="${SYSTEM_NETWORK_INTERFACE_IPV4}"
 else
-    SYSTEM_IPV4_ADDRESS=$(ip addr show "${SYSTEM_NETWORK_INTERFACE}" | grep "inet " | awk '{ print $2;exit }' | cut -d/ -f1)
+    SYSTEM_IPV4_ADDRESS=$(ip addr show "${SYSTEM_NETWORK_INTERFACE_IPV4}" | grep "inet " | awk '{ print $2;exit }' | cut -d/ -f1)
 fi
 
-## ipv6 depends on how network interface defined (ip vs nickname) ##
+## ipv6 depends on how network interface is setup (ip vs nickname) ##
 if [[ "${SYSTEM_NETWORK_INTERFACE_IPV6}" =~ ^([0-9a-fA-F]{0,4}:){1,7}[0-9a-fA-F]{0,4}$ ]]; then
     SYSTEM_IPV6_ADDRESS="${SYSTEM_NETWORK_INTERFACE_IPV6}"
 else
     SYSTEM_IPV6_ADDRESS=$(ip addr show "${SYSTEM_NETWORK_INTERFACE_IPV6}" | grep "inet6 " | awk '{ print $2;exit }' | cut -d/ -f1)
 fi
-
 
 SYSTEM_HOSTNAME=$(/bin/hostname -f) ## remove -f in future
 # SYSTEM_HOSTNAME_ALL=`/bin/hostname -A`
@@ -1524,10 +1522,13 @@ else
     SITE_DOMAIN_INCLUDING_WWW="www.${SITE_DOMAIN}"
 fi
 
+## from ss-worker and ss-install-wordpress-config ##
+SYSTEM_PHP_VERSION=$(php -v | awk '/^PHP/{print $2}' | awk -F '\\-*' '{print $1""}')
+
+
 ## old stuff ##
 # SS_MYSQL_VERSION=`mysqld --version`
 # SS_MYSQL_SIZE=`ss_mysql_root --execute="SELECT table_schema AS "wordpress", SUM(data_length + index_length) / 1024 / 1024 / 1024 AS "Size (GB)" FROM information_schema.TABLES GROUP BY table_schema";`
-# SS_PHP_VERSION=`php -v | grep ^PHP | cut -d' ' -f2`
 # SS_PHP_EXTENSIONS=`php -r "print_r(implode(', ', get_loaded_extensions()));"`
 
 ####################################################################################################
