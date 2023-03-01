@@ -32,7 +32,8 @@
 ## F. Timestamp File Paths
 ## G. Lock File Paths
 ## H. Linux Software Package Names
-## I. SlickStack Variables
+## I. SlickStack Variables (Static)
+## I. SlickStack Variables (Dynamic)
 ## J. SlickStack Functions
 ## K. Shell Styling
 
@@ -1446,13 +1447,12 @@ PACKAGE_DOS2UNIX="dos2unix"
 PACKAGE_EXIFTOOL="libimage-exiftool-perl"
 
 ####################################################################################################
-#### I. SS-Functions: SlickStack Variables #########################################################
+#### I. SS-Functions: SlickStack Variables (Static) ################################################
 ####################################################################################################
 
 ## these are kind of like enviroment variables that are used within various scripts ##
 ## we keep these variables here for easy reference and better organization ##
 
-## system variables ##
 SYSTEM_CPU_CORES=$(grep -c ^processor /proc/cpuinfo 2>/dev/null || sysctl -n hw.ncpu || echo "${NUMBER_OF_PROCESSORS}")
 SYSTEM_CURRENT_TIME=$(date "+%Y.%b.%d-%H:%M:%S")
 SYSTEM_DISK_TOTAL=$(df | grep '^/dev/' | awk '{s+=$2} END {print s/1048576}')
@@ -1476,12 +1476,25 @@ SYSTEM_RAM_MEMORY=$(echo $(($(getconf _PHYS_PAGES) * $(getconf PAGE_SIZE) / (102
 SYSTEM_RAM_TOTAL=$(free -mh | head -2 | tail -1 | awk '{print $2}' | sed 's/i//')
 SYSTEM_SERVER_SOFTWARE=$(nginx -v |& sed 's#nginx version: nginx/##')
 SYSTEM_SWAP_TOTAL=$(free -mh | tail -1 | awk '{print $2}' | sed 's/i//')
+SYSTEM_UBUNTU_VERSION=$(lsb_release -rs)
 SYSTEM_UPTIME=$(date -d "$(uptime -s)" +%s)
 SYSTEM_VIRTUAL=$(systemd-detect-virt)
 SYSTEM_VIRTUAL_UPPERCASE=${SYSTEM_VIRTUAL^^}
 
 ## older ##
 UBUNTU_VERSION=`lsb_release -rs`
+
+## script variables ##
+SS_EOF="SS_EOF"
+SLEEP_MESSAGE_BEGIN="0s"
+FILLER="################################################################################"
+
+####################################################################################################
+#### I. SS-Functions: SlickStack Variables (Dynamic) ###############################################
+####################################################################################################
+
+## these are kind of like enviroment variables that are used within various scripts ##
+## we keep these variables here for easy reference and better organization ##
 
 if [[ -z "${SYSTEM_SWAP_TOTAL}" ]]; then
     SYSTEM_SWAP_TOTAL_FINAL="N/A"
@@ -1502,11 +1515,6 @@ if [[ "${SYSTEM_NETWORK_INTERFACE_IPV6}" =~ ^([0-9a-fA-F]{0,4}:){1,7}[0-9a-fA-F]
 else
     SYSTEM_IPV6_ADDRESS=$(ip addr show "${SYSTEM_NETWORK_INTERFACE_IPV6}" | grep "inet6 " | awk '{ print $2;exit }' | cut -d/ -f1)
 fi
-
-## script variables ##
-SS_EOF="SS_EOF"
-SLEEP_MESSAGE_BEGIN="0s"
-FILLER="################################################################################"
 
 ## domains ##
 SITE_DOMAIN_EXCLUDING_WWW=$(echo "${SITE_DOMAIN/www./}")
