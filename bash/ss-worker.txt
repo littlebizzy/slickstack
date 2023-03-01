@@ -212,9 +212,6 @@ if [[ -z "${SS_WORDPRESS_ADMIN_DASHBOARD}" ]]; then
 else 
     ss_sed "s/@SS_WORDPRESS_ADMIN_DASHBOARD/${SS_WORDPRESS_ADMIN_DASHBOARD}/g" "${TMP_SS_CONSTANTS_PHP}"
 fi
-    
-SYSTEM_SERVER_SOFTWARE=$(nginx -v |& sed 's#nginx version: nginx/##')
-SYSTEM_MYSQL_SIZE=$(du -sh /var/lib/mysql |& sed 's#/var/lib/mysql##')
 
 if [[ "${UBUNTU_VERSION}" == "22.04" ]]; then
 SYSTEM_MYSQL_VERSION=$(ss_mysql_root --version |& awk '{print $3}' | sed 's/,//g')
@@ -294,8 +291,6 @@ ss_sed "s|@SYSTEM_HOSTNAME|${SYSTEM_HOSTNAME}|g" "${TMP_SS_CONSTANTS_PHP}"
 
 ## nginx version ##
 ss_sed "s|@SYSTEM_SERVER_SOFTWARE|${SYSTEM_SERVER_SOFTWARE}|g" "${TMP_SS_CONSTANTS_PHP}"
-
-SYSTEM_PHP_EXTENSIONS=$(php -m | paste -s -d , | sed -e 's/,/, /g' | awk -F 'zlib' '{print $1"zlib"}' | sed -e 's#\[PHP Modules\], ##g')
 
 ## php version ##
 ss_sed "s|@SYSTEM_PHP_VERSION|${SYSTEM_PHP_VERSION}|g" "${TMP_SS_CONSTANTS_PHP}"
