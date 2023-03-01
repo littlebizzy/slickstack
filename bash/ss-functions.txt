@@ -991,6 +991,9 @@ TMP_XXX_COMMON_PHP="/tmp/xxx-common.php"
 TMP_WP_CLI_PHAR="/tmp/wp-cli.phar"
 TMP_WP_CLI_YML="/tmp/wp-cli.yml"
 TMP_WP_COMPLETION="/tmp/wp-completion.bash"
+TMP_WORDPRESS_CONFIG_PRODUCTION="/tmp/wp-config-production.txt"
+TMP_WORDPRESS_CONFIG_STAGING="/tmp/wp-config-staging.txt"
+TMP_WORDPRESS_CONFIG_DEV="/tmp/wp-config-dev.txt"
 
 ####################################################################################################
 #### X. SS-Functions: Permissions Shorthand ########################################################
@@ -1450,32 +1453,43 @@ PACKAGE_EXIFTOOL="libimage-exiftool-perl"
 ## we keep these variables here for easy reference and better organization ##
 
 ## system variables ##
-SYSTEM_VIRTUAL=$(systemd-detect-virt)
-SYSTEM_VIRTUAL_UPPERCASE=${SYSTEM_VIRTUAL^^}
-SYSTEM_LINUX_KERNEL=$(uname -a)
-SYSTEM_OS_PRETTY_NAME=$(lsb_release -ds)
 SYSTEM_CPU_CORES=$(grep -c ^processor /proc/cpuinfo 2>/dev/null || sysctl -n hw.ncpu || echo "${NUMBER_OF_PROCESSORS}")
+SYSTEM_CURRENT_TIME=$(date "+%Y.%b.%d-%H:%M:%S")
 SYSTEM_DISK_TOTAL=$(df | grep '^/dev/' | awk '{s+=$2} END {print s/1048576}')
 SYSTEM_DISK_FREE=$(df -k --output=avail "${PWD}" | tail -n1)
 SYSTEM_DISK_FREE_HUMAN=$(df -kh --output=avail "${PWD}" | tail -n1)
 SYSTEM_DISK_TOTAL_EASY=$(df -kh . | tail -n1 | awk '{print $2}')
 SYSTEM_DISK_FREE_EASY=$(df -kh . | tail -n1 | awk '{print $4}')
 SYSTEM_DISK_USED_PERCENT=$(df -kh . | tail -n1 | awk '{print $5}')
+SYSTEM_HOSTNAME=$(/bin/hostname -f) ## remove -f in future
+# SYSTEM_HOSTNAME_ALL=`/bin/hostname -A`
+# SYSTEM_HOSTNAME_FQDN=`/bin/hostname -f`
+# SYSTEM_HOSTNAME_TLD=`hostname -d`
+SYSTEM_LINUX_KERNEL=$(uname -a)
+SYSTEM_MYSQL_SIZE=$(du -sh /var/lib/mysql |& sed 's#/var/lib/mysql##')
+SYSTEM_NETWORK_INTERFACE_IPV4=$(ip route get 1.1.1.1 | head -n1 | awk '{print $5}')
+SYSTEM_NETWORK_INTERFACE_IPV6=$(ip -6 route get 2606:4700:4700::1111 | head -n1 | awk '{print $5}')
+SYSTEM_OS_PRETTY_NAME=$(lsb_release -ds)
+SYSTEM_PHP_EXTENSIONS=$(php -m | paste -s -d , | sed -e 's/,/, /g' | awk -F 'zlib' '{print $1"zlib"}' | sed -e 's#\[PHP Modules\], ##g')
+SYSTEM_PHP_VERSION=$(php -v | awk '/^PHP/{print $2}' | awk -F '\\-*' '{print $1""}')
 SYSTEM_RAM_MEMORY=$(echo $(($(getconf _PHYS_PAGES) * $(getconf PAGE_SIZE) / (1024 * 1024))) 2> /dev/null)
 SYSTEM_RAM_TOTAL=$(free -mh | head -2 | tail -1 | awk '{print $2}' | sed 's/i//')
+SYSTEM_SERVER_SOFTWARE=$(nginx -v |& sed 's#nginx version: nginx/##')
 SYSTEM_SWAP_TOTAL=$(free -mh | tail -1 | awk '{print $2}' | sed 's/i//')
 SYSTEM_UPTIME=$(date -d "$(uptime -s)" +%s)
-SYSTEM_CURRENT_TIME=$(date "+%Y.%b.%d-%H:%M:%S")
+SYSTEM_VIRTUAL=$(systemd-detect-virt)
+SYSTEM_VIRTUAL_UPPERCASE=${SYSTEM_VIRTUAL^^}
+
+## older ##
+SS_OS_VERSION=`lsb_release -ds`
+SS_TLD=`hostname -d`
+UBUNTU_VERSION=`lsb_release -rs`
 
 if [[ -z "${SYSTEM_SWAP_TOTAL}" ]]; then
     SYSTEM_SWAP_TOTAL_FINAL="N/A"
 else 
     SYSTEM_SWAP_TOTAL_FINAL="${SYSTEM_SWAP_TOTAL}"
 fi
-
-## network interface ##
-SYSTEM_NETWORK_INTERFACE_IPV4=$(ip route get 1.1.1.1 | head -n1 | awk '{print $5}')
-SYSTEM_NETWORK_INTERFACE_IPV6=$(ip -6 route get 2606:4700:4700::1111 | head -n1 | awk '{print $5}')
 
 ## ipv4 depends on how network interface is setup (ip vs nickname) ##
 if [[ "${SYSTEM_NETWORK_INTERFACE_IPV4}" =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
@@ -1491,28 +1505,10 @@ else
     SYSTEM_IPV6_ADDRESS=$(ip addr show "${SYSTEM_NETWORK_INTERFACE_IPV6}" | grep "inet6 " | awk '{ print $2;exit }' | cut -d/ -f1)
 fi
 
-SYSTEM_HOSTNAME=$(/bin/hostname -f) ## remove -f in future
-# SYSTEM_HOSTNAME_ALL=`/bin/hostname -A`
-# SYSTEM_HOSTNAME_FQDN=`/bin/hostname -f`
-# SYSTEM_HOSTNAME_TLD=`hostname -d`
-# SYSTEM_NETWORK_INTERFACE=`ip route get 1.1.1.1 | head -n1 | awk '{print $5}'`
-SS_OS_VERSION=`lsb_release -ds`
-SS_TLD=`hostname -d`
-UBUNTU_VERSION=`lsb_release -rs`
-
 ## script variables ##
 SS_EOF="SS_EOF"
 SLEEP_MESSAGE_BEGIN="0s"
 FILLER="################################################################################"
-
-## https://linuxize.com/post/how-to-check-if-string-contains-substring-in-bash/
-## https://stackoverflow.com/questions/2440947/how-to-build-a-conditional-assignment-in-bash
-## myvar="default" && [[ <some_condition_is_true> ]]  && myvar="non-default"
-
-## ss-install-wordpress-config variables ##
-TMP_WORDPRESS_CONFIG_PRODUCTION="/tmp/wp-config-production.txt"
-TMP_WORDPRESS_CONFIG_STAGING="/tmp/wp-config-staging.txt"
-TMP_WORDPRESS_CONFIG_DEV="/tmp/wp-config-dev.txt"
 
 ## domains ##
 SITE_DOMAIN_EXCLUDING_WWW=$(echo "${SITE_DOMAIN/www./}")
@@ -1521,15 +1517,6 @@ if [[ "$SITE_DOMAIN" == www.* ]]; then
 else 
     SITE_DOMAIN_INCLUDING_WWW="www.${SITE_DOMAIN}"
 fi
-
-## from ss-worker and ss-install-wordpress-config ##
-SYSTEM_PHP_VERSION=$(php -v | awk '/^PHP/{print $2}' | awk -F '\\-*' '{print $1""}')
-# SYSTEM_PHP_VERSION=$(php -v | awk '/^PHP/{print $2}')
-
-## old stuff ##
-# SS_MYSQL_VERSION=`mysqld --version`
-# SS_MYSQL_SIZE=`ss_mysql_root --execute="SELECT table_schema AS "wordpress", SUM(data_length + index_length) / 1024 / 1024 / 1024 AS "Size (GB)" FROM information_schema.TABLES GROUP BY table_schema";`
-# SS_PHP_EXTENSIONS=`php -r "print_r(implode(', ', get_loaded_extensions()));"`
 
 ####################################################################################################
 #### J. SS-Functions: SlickStack Functions #########################################################
@@ -1980,5 +1967,7 @@ ENDSTAND=$(tput rmso) # end standout
 ## Ref: https://stackoverflow.com/questions/45565521/regex-validate-ipv6-shell-script
 ## Ref: https://1.1.1.1/dns/
 ## Ref: https://askubuntu.com/questions/187888/what-is-the-correct-way-to-completely-remove-an-application
+## Ref: https://linuxize.com/post/how-to-check-if-string-contains-substring-in-bash/
+## Ref: https://stackoverflow.com/questions/2440947/how-to-build-a-conditional-assignment-in-bash
 
 ## SS_EOF
