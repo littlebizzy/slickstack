@@ -4,7 +4,7 @@
 #### mirror: https://mirrors.slickstack.io/modules/nginx/sites/multisite-subdomains.txt ############
 #### path: n/a (boilerplate) #######################################################################
 #### destination: /var/www/sites/production (after install) ########################################
-#### purpose: Nginx server block boilerplate optimized for WordPress Multisite (subdomains) ########
+#### purpose: Nginx server block boilerplate optimized for SlickStack Multisite (subdomains) #######
 #### module version: Nginx 1.18.x ##################################################################
 #### sourced by: nginx.conf ########################################################################
 #### bash aliases: n/a (ss-install-nginx-config) ###################################################
@@ -17,10 +17,12 @@
 #### TABLE OF CONTENTS (Server Block: Multisite Subdomains) ########################################
 ####################################################################################################
 
-## A. 
+## A. Multiple Domains Or Subdomains
+## B. Redirect Any AMP Requests
+## C. Redirect Junk URLs
 
 ####################################################################################################
-#### Server Block (Multisite Subdomains): Multiple Domains Or Subdomains ###########################
+#### A. Server Block (Multisite Subdomains): Multiple Domains Or Subdomains ########################
 ####################################################################################################
 
 ## CloudFlare ignores HTTP/2 from origin server but we enable in case of Lets Encrypt ##
@@ -36,7 +38,7 @@ server {
 	server_name_in_redirect off;
 	
 ####################################################################################################
-#### Server Block (Multisite Subdomains): Redirect Any AMP Requests ################################
+#### B. Server Block (Multisite Subdomains): Redirect Any AMP Requests #############################
 ####################################################################################################
 
 ## this powerful snippet will redirect all the messy URLs created by AMP software ##
@@ -48,6 +50,34 @@ rewrite ^(.*/)amp(.*)$ $1 permanent;
 ## redirect ?amp queries ##
 if ($query_string ~ "^amp(.*)$") {
 	rewrite ^(.*)$ $uri? permanent;
+}
+
+####################################################################################################
+#### C. Server Block (Multisite Subdomains): Redirect Junk URLs ####################################
+####################################################################################################
+
+## trackback ##
+rewrite ^(.*)/trackback/?$ $1 permanent;
+
+## send to parent /feed/ ##
+rewrite ^/(.*)/atom/?$ /$1 permanent;
+
+## send to parent /feed/ ##
+rewrite ^/(.*)/rss2/?$ /$1 permanent;
+
+## comments feeds base ##
+rewrite ^(.*/)comments/?$ $1 permanent;
+
+## feed (preserve master feed) ##
+location = /feed/?$ {
+        try_files $uri $uri/ /index.php?$args;
+        set $robots "noindex, nofollow, nosnippet, noarchive";
+}
+
+## redirect feeds besides bbpress topics feed ##
+## needs better optimization as currently this preserves page feeds with slugs that begin with /topics... ##
+location ~ ^/(?!topics).*/feed/?$ {
+        rewrite ^/(.*)/feed/?$ /$1 permanent;
 }
 
 ####################################################################################################
