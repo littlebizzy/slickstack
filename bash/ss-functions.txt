@@ -1756,8 +1756,6 @@ SYSTEM_HOSTNAME_TLD=$(/bin/hostname -d)
 SYSTEM_LINUX_KERNEL=$(uname -a)
 SYSTEM_MYSQL_SIZE=$(du -sh /var/lib/mysql |& sed 's#/var/lib/mysql##')
 SYSTEM_OS_PRETTY_NAME=$(lsb_release -ds)
-SYSTEM_PHP_EXTENSIONS=$(php -m | paste -s -d , | sed -e 's/,/, /g' | awk -F 'zlib' '{print $1"zlib"}' | sed -e 's#\[PHP Modules\], ##g')
-SYSTEM_PHP_VERSION=$(php -v | awk '/^PHP/{print $2}' | awk -F '\\-*' '{print $1""}')
 SYSTEM_RAM_MEMORY=$(echo $(($(getconf _PHYS_PAGES) * $(getconf PAGE_SIZE) / (1024 * 1024))) 2> /dev/null)
 SYSTEM_RAM_TOTAL=$(free -mh | head -2 | tail -1 | awk '{print $2}' | sed 's/i//')
 SYSTEM_SERVER_SOFTWARE=$(nginx -v |& sed 's#nginx version: nginx/##')
@@ -1816,6 +1814,12 @@ if [[ "$SITE_DOMAIN" == www.* ]]; then
     SITE_DOMAIN_INCLUDING_WWW="${SITE_DOMAIN}"
 else 
     SITE_DOMAIN_INCLUDING_WWW="www.${SITE_DOMAIN}"
+fi
+
+## php stuff ##
+if [[ -d /etc/php ]]; then
+    PHP_EXTENSIONS=$(php -m | paste -s -d , | sed -e 's/,/, /g' | awk -F 'zlib' '{print $1"zlib"}' | sed -e 's#\[PHP Modules\], ##g')
+    PHP_VERSION=$(php -v | awk '/^PHP/{print $2}' | awk -F '\\-*' '{print $1""}')
 fi
 
 ####################################################################################################
