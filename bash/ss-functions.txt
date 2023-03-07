@@ -1467,8 +1467,6 @@ SYSTEM_HOSTNAME=$(/bin/hostname -f) ## remove -f in future
 SYSTEM_HOSTNAME_TLD=$(/bin/hostname -d)
 SYSTEM_LINUX_KERNEL=$(uname -a)
 SYSTEM_MYSQL_SIZE=$(du -sh /var/lib/mysql |& sed 's#/var/lib/mysql##')
-SYSTEM_NETWORK_INTERFACE_IPV4=$(ip route get 1.1.1.1 | head -n1 | awk '{print $5}')
-SYSTEM_NETWORK_INTERFACE_IPV6=$(ip -6 route get 2606:4700:4700::1111 | head -n1 | awk '{print $5}')
 SYSTEM_OS_PRETTY_NAME=$(lsb_release -ds)
 SYSTEM_PHP_EXTENSIONS=$(php -m | paste -s -d , | sed -e 's/,/, /g' | awk -F 'zlib' '{print $1"zlib"}' | sed -e 's#\[PHP Modules\], ##g')
 SYSTEM_PHP_VERSION=$(php -v | awk '/^PHP/{print $2}' | awk -F '\\-*' '{print $1""}')
@@ -1480,6 +1478,14 @@ SYSTEM_UBUNTU_VERSION=$(lsb_release -rs)
 SYSTEM_UPTIME=$(date -d "$(uptime -s)" +%s)
 SYSTEM_VIRTUAL=$(systemd-detect-virt)
 SYSTEM_VIRTUAL_UPPERCASE=${SYSTEM_VIRTUAL^^}
+
+## networking ##
+SYSTEM_DIG_IPV4_ADDRESS=$(dig whoami.cloudflare ch txt @1.1.1.1 +short | awk -F'"' '{print $2}')
+SYSTEM_DIG_IPV6_ADDRESS=$(dig whoami.cloudflare ch txt @2606:4700:4700::1111 +short | awk -F'"' '{print $2}')
+SYSTEM_NETWORK_INTERFACE_IPV4=$(ip route get 1.1.1.1 | head -n1 | awk '{print $5}')
+SYSTEM_NETWORK_INTERFACE_IPV6=$(ip -6 route get 2606:4700:4700::1111 | head -n1 | awk '{print $5}')
+SYSTEM_NETWORK_INTERFACE_IPV4_SHOW=$(ip addr show "${SYSTEM_NETWORK_INTERFACE_IPV4}" | grep "inet " | awk '{ print $2;exit }' | cut -d/ -f1)
+SYSTEM_NETWORK_INTERFACE_IPV6_SHOW=$(ip addr show "${SYSTEM_NETWORK_INTERFACE_IPV6}" | grep "inet6 " | awk '{ print $2;exit }' | cut -d/ -f1)
 
 ## script variables ##
 SS_EOF="SS_EOF"
@@ -1499,18 +1505,29 @@ else
     SYSTEM_SWAP_TOTAL_FINAL="${SYSTEM_SWAP_TOTAL}"
 fi
 
-## ipv4 depends on how network interface is setup (ip vs nickname) ##
-if [[ "${SYSTEM_NETWORK_INTERFACE_IPV4}" =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+## https://stackoverflow.com/questions/14594151/methods-to-detect-public-ip-address-in-bash
+## https://github.com/littlebizzy/slickstack/issues/171
+
+## determine ipv4 with various methods ##
+if [[ "${SYSTEM_DIG_IPV4_ADDRESS}" =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+    SYSTEM_IPV4_ADDRESS="${SYSTEM_DIG_IPV4_ADDRESS}"
+elseif [[ "${SYSTEM_NETWORK_INTERFACE_IPV4}" =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
     SYSTEM_IPV4_ADDRESS="${SYSTEM_NETWORK_INTERFACE_IPV4}"
+elseif [[ "${SYSTEM_NETWORK_INTERFACE_IPV4_SHOW}" =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+    SYSTEM_IPV4_ADDRESS="${SYSTEM_NETWORK_INTERFACE_IPV4_SHOW}"
 else
-    SYSTEM_IPV4_ADDRESS=$(ip addr show "${SYSTEM_NETWORK_INTERFACE_IPV4}" | grep "inet " | awk '{ print $2;exit }' | cut -d/ -f1)
+    SYSTEM_IPV4_ADDRESS="N/A"
 fi
 
-## ipv6 depends on how network interface is setup (ip vs nickname) ##
-if [[ "${SYSTEM_NETWORK_INTERFACE_IPV6}" =~ ^([0-9a-fA-F]{0,4}:){1,7}[0-9a-fA-F]{0,4}$ ]]; then
+## determine ipv6 with various methods ##
+if [[ "${SYSTEM_DIG_IPV6_ADDRESS}" =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+    SYSTEM_IPV6_ADDRESS="${SYSTEM_DIG_IPV6_ADDRESS}"
+elseif [[ "${SYSTEM_NETWORK_INTERFACE_IPV6}" =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
     SYSTEM_IPV6_ADDRESS="${SYSTEM_NETWORK_INTERFACE_IPV6}"
+elseif [[ "${SYSTEM_NETWORK_INTERFACE_IPV6_SHOW}" =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+    SYSTEM_IPV6_ADDRESS="${SYSTEM_NETWORK_INTERFACE_IPV6_SHOW}"
 else
-    SYSTEM_IPV6_ADDRESS=$(ip addr show "${SYSTEM_NETWORK_INTERFACE_IPV6}" | grep "inet6 " | awk '{ print $2;exit }' | cut -d/ -f1)
+    SYSTEM_IPV6_ADDRESS="N/A"
 fi
 
 ## domains ##
