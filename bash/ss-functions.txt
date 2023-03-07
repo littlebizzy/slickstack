@@ -32,9 +32,10 @@
 ## F. Timestamp File Paths
 ## G. Lock File Paths
 ## H. Linux Software Package Names
+
+## J. SlickStack Functions
 ## I. SlickStack Variables (Static)
 ## I. SlickStack Variables (Dynamic)
-## J. SlickStack Functions
 ## K. Shell Styling
 
 ####################################################################################################
@@ -1447,90 +1448,6 @@ PACKAGE_DOS2UNIX="dos2unix"
 PACKAGE_EXIFTOOL="libimage-exiftool-perl"
 
 ####################################################################################################
-#### I. SS-Functions: SlickStack Variables (Static) ################################################
-####################################################################################################
-
-## these are kind of like enviroment variables that are used within various scripts ##
-## we keep these variables here for easy reference and better organization ##
-
-SYSTEM_CPU_CORES=$(grep -c ^processor /proc/cpuinfo 2>/dev/null || sysctl -n hw.ncpu || echo "${NUMBER_OF_PROCESSORS}")
-SYSTEM_CURRENT_TIME=$(date "+%Y.%b.%d-%H:%M:%S")
-SYSTEM_DISK_TOTAL=$(df | grep '^/dev/' | awk '{s+=$2} END {print s/1048576}')
-SYSTEM_DISK_FREE=$(df -k --output=avail "${PWD}" | tail -n1)
-SYSTEM_DISK_FREE_HUMAN=$(df -kh --output=avail "${PWD}" | tail -n1)
-SYSTEM_DISK_TOTAL_EASY=$(df -kh . | tail -n1 | awk '{print $2}')
-SYSTEM_DISK_FREE_EASY=$(df -kh . | tail -n1 | awk '{print $4}')
-SYSTEM_DISK_USED_PERCENT=$(df -kh . | tail -n1 | awk '{print $5}')
-SYSTEM_HOSTNAME=$(/bin/hostname -f) ## remove -f in future
-# SYSTEM_HOSTNAME_ALL=`/bin/hostname -A`
-# SYSTEM_HOSTNAME_FQDN=`/bin/hostname -f`
-SYSTEM_HOSTNAME_TLD=$(/bin/hostname -d)
-SYSTEM_LINUX_KERNEL=$(uname -a)
-SYSTEM_MYSQL_SIZE=$(du -sh /var/lib/mysql |& sed 's#/var/lib/mysql##')
-SYSTEM_OS_PRETTY_NAME=$(lsb_release -ds)
-SYSTEM_PHP_EXTENSIONS=$(php -m | paste -s -d , | sed -e 's/,/, /g' | awk -F 'zlib' '{print $1"zlib"}' | sed -e 's#\[PHP Modules\], ##g')
-SYSTEM_PHP_VERSION=$(php -v | awk '/^PHP/{print $2}' | awk -F '\\-*' '{print $1""}')
-SYSTEM_RAM_MEMORY=$(echo $(($(getconf _PHYS_PAGES) * $(getconf PAGE_SIZE) / (1024 * 1024))) 2> /dev/null)
-SYSTEM_RAM_TOTAL=$(free -mh | head -2 | tail -1 | awk '{print $2}' | sed 's/i//')
-SYSTEM_SERVER_SOFTWARE=$(nginx -v |& sed 's#nginx version: nginx/##')
-SYSTEM_SWAP_TOTAL=$(free -mh | tail -1 | awk '{print $2}' | sed 's/i//')
-SYSTEM_UBUNTU_VERSION=$(lsb_release -rs)
-SYSTEM_UPTIME=$(date -d "$(uptime -s)" +%s)
-SYSTEM_VIRTUAL=$(systemd-detect-virt)
-SYSTEM_VIRTUAL_UPPERCASE=${SYSTEM_VIRTUAL^^}
-
-## networking ##
-SYSTEM_DIG_IPV4_ADDRESS=$(dig whoami.cloudflare ch txt @1.1.1.1 +short | awk -F'"' '{print $2}')
-SYSTEM_DIG_IPV6_ADDRESS=$(dig whoami.cloudflare ch txt @2606:4700:4700::1111 +short | awk -F'"' '{print $2}')
-# SYSTEM_NETWORK_INTERFACE_IPV4=$(ip route get 1.1.1.1 | head -n1 | awk '{print $5}')
-# SYSTEM_NETWORK_INTERFACE_IPV6=$(ip -6 route get 2606:4700:4700::1111 | head -n1 | awk '{print $5}')
-# SYSTEM_NETWORK_INTERFACE_IPV4_SHOW=$(ip addr show "${SYSTEM_NETWORK_INTERFACE_IPV4}" | grep "inet " | awk '{ print $2;exit }' | cut -d/ -f1)
-# SYSTEM_NETWORK_INTERFACE_IPV6_SHOW=$(ip addr show "${SYSTEM_NETWORK_INTERFACE_IPV6}" | grep "inet6 " | awk '{ print $2;exit }' | cut -d/ -f1)
-
-## script variables ##
-SS_EOF="SS_EOF"
-SLEEP_MESSAGE_BEGIN="0s"
-FILLER="################################################################################"
-
-####################################################################################################
-#### I. SS-Functions: SlickStack Variables (Dynamic) ###############################################
-####################################################################################################
-
-## these are kind of like enviroment variables that are used within various scripts ##
-## we keep these variables here for easy reference and better organization ##
-
-if [[ -z "${SYSTEM_SWAP_TOTAL}" ]]; then
-    SYSTEM_SWAP_TOTAL_FINAL="N/A"
-else 
-    SYSTEM_SWAP_TOTAL_FINAL="${SYSTEM_SWAP_TOTAL}"
-fi
-
-## https://stackoverflow.com/questions/14594151/methods-to-detect-public-ip-address-in-bash
-## https://github.com/littlebizzy/slickstack/issues/171
-
-## determine ipv4 with various methods ##
-if [[ "${SYSTEM_DIG_IPV4_ADDRESS}" =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-    SYSTEM_IPV4_ADDRESS="${SYSTEM_DIG_IPV4_ADDRESS}"
-else
-    SYSTEM_IPV4_ADDRESS="N/A"
-fi
-
-## determine ipv6 with various methods ##
-if [[ "${SYSTEM_DIG_IPV6_ADDRESS}" =~ ^([0-9a-fA-F]{0,4}:){1,7}[0-9a-fA-F]{0,4}$ ]]; then
-    SYSTEM_IPV6_ADDRESS="${SYSTEM_DIG_IPV6_ADDRESS}"
-else
-    SYSTEM_IPV6_ADDRESS="N/A"
-fi
-
-## domains ##
-SITE_DOMAIN_EXCLUDING_WWW=$(echo "${SITE_DOMAIN/www./}")
-if [[ "$SITE_DOMAIN" == www.* ]]; then
-    SITE_DOMAIN_INCLUDING_WWW="${SITE_DOMAIN}"
-else 
-    SITE_DOMAIN_INCLUDING_WWW="www.${SITE_DOMAIN}"
-fi
-
-####################################################################################################
 #### J. SS-Functions: SlickStack Functions #########################################################
 ####################################################################################################
 
@@ -1816,6 +1733,90 @@ function ss_untargz {
 function ss_wget {
     command wget --no-check-certificate --no-cache --no-cookies --quiet --inet4-only --tries=30 --timeout=300 --waitretry=15 -O "$@"
 }
+
+####################################################################################################
+#### I. SS-Functions: SlickStack Variables (Static) ################################################
+####################################################################################################
+
+## these are kind of like enviroment variables that are used within various scripts ##
+## we keep these variables here for easy reference and better organization ##
+
+SYSTEM_CPU_CORES=$(grep -c ^processor /proc/cpuinfo 2>/dev/null || sysctl -n hw.ncpu || echo "${NUMBER_OF_PROCESSORS}")
+SYSTEM_CURRENT_TIME=$(date "+%Y.%b.%d-%H:%M:%S")
+SYSTEM_DISK_TOTAL=$(df | grep '^/dev/' | awk '{s+=$2} END {print s/1048576}')
+SYSTEM_DISK_FREE=$(df -k --output=avail "${PWD}" | tail -n1)
+SYSTEM_DISK_FREE_HUMAN=$(df -kh --output=avail "${PWD}" | tail -n1)
+SYSTEM_DISK_TOTAL_EASY=$(df -kh . | tail -n1 | awk '{print $2}')
+SYSTEM_DISK_FREE_EASY=$(df -kh . | tail -n1 | awk '{print $4}')
+SYSTEM_DISK_USED_PERCENT=$(df -kh . | tail -n1 | awk '{print $5}')
+SYSTEM_HOSTNAME=$(/bin/hostname -f) ## remove -f in future
+# SYSTEM_HOSTNAME_ALL=`/bin/hostname -A`
+# SYSTEM_HOSTNAME_FQDN=`/bin/hostname -f`
+SYSTEM_HOSTNAME_TLD=$(/bin/hostname -d)
+SYSTEM_LINUX_KERNEL=$(uname -a)
+SYSTEM_MYSQL_SIZE=$(du -sh /var/lib/mysql |& sed 's#/var/lib/mysql##')
+SYSTEM_OS_PRETTY_NAME=$(lsb_release -ds)
+SYSTEM_PHP_EXTENSIONS=$(php -m | paste -s -d , | sed -e 's/,/, /g' | awk -F 'zlib' '{print $1"zlib"}' | sed -e 's#\[PHP Modules\], ##g')
+SYSTEM_PHP_VERSION=$(php -v | awk '/^PHP/{print $2}' | awk -F '\\-*' '{print $1""}')
+SYSTEM_RAM_MEMORY=$(echo $(($(getconf _PHYS_PAGES) * $(getconf PAGE_SIZE) / (1024 * 1024))) 2> /dev/null)
+SYSTEM_RAM_TOTAL=$(free -mh | head -2 | tail -1 | awk '{print $2}' | sed 's/i//')
+SYSTEM_SERVER_SOFTWARE=$(nginx -v |& sed 's#nginx version: nginx/##')
+SYSTEM_SWAP_TOTAL=$(free -mh | tail -1 | awk '{print $2}' | sed 's/i//')
+SYSTEM_UBUNTU_VERSION=$(lsb_release -rs)
+SYSTEM_UPTIME=$(date -d "$(uptime -s)" +%s)
+SYSTEM_VIRTUAL=$(systemd-detect-virt)
+SYSTEM_VIRTUAL_UPPERCASE=${SYSTEM_VIRTUAL^^}
+
+## networking ##
+SYSTEM_DIG_IPV4_ADDRESS=$(dig whoami.cloudflare ch txt @1.1.1.1 +short | awk -F'"' '{print $2}')
+SYSTEM_DIG_IPV6_ADDRESS=$(dig whoami.cloudflare ch txt @2606:4700:4700::1111 +short | awk -F'"' '{print $2}')
+# SYSTEM_NETWORK_INTERFACE_IPV4=$(ip route get 1.1.1.1 | head -n1 | awk '{print $5}')
+# SYSTEM_NETWORK_INTERFACE_IPV6=$(ip -6 route get 2606:4700:4700::1111 | head -n1 | awk '{print $5}')
+# SYSTEM_NETWORK_INTERFACE_IPV4_SHOW=$(ip addr show "${SYSTEM_NETWORK_INTERFACE_IPV4}" | grep "inet " | awk '{ print $2;exit }' | cut -d/ -f1)
+# SYSTEM_NETWORK_INTERFACE_IPV6_SHOW=$(ip addr show "${SYSTEM_NETWORK_INTERFACE_IPV6}" | grep "inet6 " | awk '{ print $2;exit }' | cut -d/ -f1)
+
+## script variables ##
+SS_EOF="SS_EOF"
+SLEEP_MESSAGE_BEGIN="0s"
+FILLER="################################################################################"
+
+####################################################################################################
+#### I. SS-Functions: SlickStack Variables (Dynamic) ###############################################
+####################################################################################################
+
+## these are kind of like enviroment variables that are used within various scripts ##
+## we keep these variables here for easy reference and better organization ##
+
+if [[ -z "${SYSTEM_SWAP_TOTAL}" ]]; then
+    SYSTEM_SWAP_TOTAL_FINAL="N/A"
+else 
+    SYSTEM_SWAP_TOTAL_FINAL="${SYSTEM_SWAP_TOTAL}"
+fi
+
+## https://stackoverflow.com/questions/14594151/methods-to-detect-public-ip-address-in-bash
+## https://github.com/littlebizzy/slickstack/issues/171
+
+## determine ipv4 with various methods ##
+if [[ "${SYSTEM_DIG_IPV4_ADDRESS}" =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+    SYSTEM_IPV4_ADDRESS="${SYSTEM_DIG_IPV4_ADDRESS}"
+else
+    SYSTEM_IPV4_ADDRESS="N/A"
+fi
+
+## determine ipv6 with various methods ##
+if [[ "${SYSTEM_DIG_IPV6_ADDRESS}" =~ ^([0-9a-fA-F]{0,4}:){1,7}[0-9a-fA-F]{0,4}$ ]]; then
+    SYSTEM_IPV6_ADDRESS="${SYSTEM_DIG_IPV6_ADDRESS}"
+else
+    SYSTEM_IPV6_ADDRESS="N/A"
+fi
+
+## domains ##
+SITE_DOMAIN_EXCLUDING_WWW=$(echo "${SITE_DOMAIN/www./}")
+if [[ "$SITE_DOMAIN" == www.* ]]; then
+    SITE_DOMAIN_INCLUDING_WWW="${SITE_DOMAIN}"
+else 
+    SITE_DOMAIN_INCLUDING_WWW="www.${SITE_DOMAIN}"
+fi
 
 ####################################################################################################
 #### K. SS-Functions: Shell Styling ################################################################
