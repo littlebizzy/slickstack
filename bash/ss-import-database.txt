@@ -54,7 +54,7 @@ ss_echo "${COLOR_INFO}Running ss-import-database... ${COLOR_RESET}"
 #### C. SS-Import-Database: Backup Database Before Proceeding ######################################
 ####################################################################################################
 
-source /var/www/ss-dump-database
+source "${PATH_SS_DUMP_DATABASE}"
 
 ####################################################################################################
 #### D. SS-Import-Database: Import Database (Overwrites Data) ######################################
@@ -64,29 +64,44 @@ source /var/www/ss-dump-database
 ## import.sql is the preferred file format followed by .sql.zip and .sql.gz ##
 
 read -r -p "DATABASE will be completely overwritten, are you sure? [y/N]" response
-if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]]; then
+if [[ "${response}" =~ ^([yY][eE][sS]|[yY])$ ]]; then
 
     if [[ -f "/tmp/import.sql" ]]; then
     
         echo "found import.sql and proceeding to import and overwrite database"
-        chown -R $SFTP_USER:www-data /tmp/import.sql
+        chown -R "${SFTP_USER}":www-data /tmp/import.sql
         chmod 6775 /tmp/import.sql
-        ss_mysql_root "${DB_NAME}" < /tmp/import.sql
+        
+        if [[ "${SS_DATABASE_REMOTE}" == "true" ]]; then
+            ss_mysql_user "${DB_NAME}" < /tmp/import.sql
+        else
+            ss_mysql_root "${DB_NAME}" < /tmp/import.sql
+        fi
         
     elif [[ ! -f "/tmp/import.sql" ]] && [[ -f "/tmp/import.sql.zip" ]]; then
     
         echo "found import.sql.zip and proceeding to import and overwrite database"
-        chown -R $SFTP_USER:www-data /tmp/import.sql.zip
+        chown -R "${SFTP_USER}":www-data /tmp/import.sql.zip
         chmod 6775 /tmp/import.sql.zip
-        ss_mysql_root "${DB_NAME}" < /tmp/import.sql.zip
+        
+        if [[ "${SS_DATABASE_REMOTE}" == "true" ]]; then
+            ss_mysql_user "${DB_NAME}" < /tmp/import.sql.zip
+        else
+            ss_mysql_root "${DB_NAME}" < /tmp/import.sql.zip
+        fi
         
     elif [[ ! -f "/tmp/import.sql" ]] && [[ ! -f "/tmp/import.sql.zip" ]] && [[ -f "/tmp/import.sql.gz" ]]; then
     
         echo "found import.sql.gz and proceeding to import and overwrite database"
-        chown -R $SFTP_USER:www-data /tmp/import.sql.gz
+        chown -R "${SFTP_USER}":www-data /tmp/import.sql.gz
         chmod 6775 /tmp/import.sql.gz
-        ss_mysql_root "${DB_NAME}" < /tmp/import.sql.gz
         
+        if [[ "${SS_DATABASE_REMOTE}" == "true" ]]; then
+            ss_mysql_user "${DB_NAME}" < /tmp/import.sql.gz
+        else
+            ss_mysql_root "${DB_NAME}" < /tmp/import.sql.gz
+        fi
+                
     elif [[ ! -f "/tmp/import.sql" ]] && [[ ! -f "/tmp/import.sql.zip" ]] && [[ ! -f "/tmp/import.sql.gz" ]]; then
     
         echo "No import.sql|.sql.zip|.sql.gz file found, cannot import database"
