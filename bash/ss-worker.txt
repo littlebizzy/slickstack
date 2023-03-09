@@ -364,6 +364,11 @@ if [[ "$STAGING_SITE" != "false" ]]; then
     chown -R "${SFTP_USER}":www-data /var/www/html/staging/.well-known/acme-challenge ## accessed by server for e.g. Cerbot but also by SFTP user for things like Stripe ##
 fi
 
+if [[ -f "/var/www/backups/mysql/production.sql" ]]; then 
+    chown -R "${SFTP_USER}":www-data "${PATH_DUMP_DATABASE_PRODUCTION}"
+    chmod 0440 "${PATH_DUMP_DATABASE_PRODUCTION}"
+fi
+
 ## if dev enabled
 if [[ "$DEV_SITE" != "false" ]]; then 
     mkdir /var/www/html/dev
