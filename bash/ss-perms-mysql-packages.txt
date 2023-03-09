@@ -9,7 +9,7 @@
 #### purpose: Resets file and user permissions for MySQL module core files and folders #############
 #### module version: MySQL 8.0.x ###################################################################
 #### sourced by: ss-install-mysql-packages, ss-perms ###############################################
-#### bash aliases: ss perms mysql core, ss perms mysql packages ####################################
+#### bash aliases: ss perms mysql core|packages ####################################################
 ####################################################################################################
 
 ## source ss-config ##
@@ -93,17 +93,6 @@ if [ ! -f "/var/www/logs/mysql-slow.log" ]; then touch "/var/www/logs/mysql-slow
 
 chown mysql:mysql /var/www/logs/mysql*.log*
 chmod 0644 /var/www/logs/*.log ## 6755 should also work
-
-## not really mysql module related but not sure what script to keep this in ##
-
-## ensure misc files exist (makes things look pretty and suppresses error messages) ##
-if [[ ! -f "/var/www/meta/wp.sql" ]]; then 
-    touch "/var/www/meta/wp.sql"; 
-fi
-
-## SQL dump file (we want SFTP users to be able to access) ##
-chown -R $SFTP_USER:www-data /var/www/meta/wp.sql ## $SFTP_USER:www-data to better support SFTP access
-chmod 0640 /var/www/meta/wp.sql ## 0640 should be enough (or 644)
 
 ## SAFE MODE reset permissions ##
 # mkdir /var/run/mysqld
