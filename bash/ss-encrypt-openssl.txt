@@ -77,8 +77,16 @@ ss_rm "${PATH_OPENSSL_KEY}"
 if [[ "${WP_MULTISITE}" != "true" ]]; then 
     openssl req -x509 -newkey rsa:4096 -sha256 -days 3650 -nodes \
     -keyout /var/www/certs/keys/slickstack.key -out /var/www/certs/slickstack.crt -subj "/CN=${SITE_DOMAIN}" \
-    -addext "subjectAltName=DNS:${SITE_DOMAIN_EXCLUDING_WWW},DNS:${SITE_DOMAIN_INCLUDING_WWW},DNS:staging.${SITE_DOMAIN_EXCLUDING_WWW},DNS:dev.${SITE_DOMAIN_EXCLUDING_WWW},IP:${SYSTEM_IPV4_ADDRESS}" 2> /dev/null
-
+    
+    ## conditional ipv4 and ipv6 certs ##
+    if [[ "${SYSTEM_IPV4_ADDRESS}" != "N/A" ]] && [[ "${SYSTEM_IPV6_ADDRESS}" != "N/A" ]]; then
+        -addext "subjectAltName=DNS:${SITE_DOMAIN_EXCLUDING_WWW},DNS:${SITE_DOMAIN_INCLUDING_WWW},DNS:staging.${SITE_DOMAIN_EXCLUDING_WWW},DNS:dev.${SITE_DOMAIN_EXCLUDING_WWW},IP:${SYSTEM_IPV4_ADDRESS},IP:${SYSTEM_IPV6_ADDRESS}" 2> /dev/null
+    elif [[ "${SYSTEM_IPV4_ADDRESS}" != "N/A" ]] && [[ "${SYSTEM_IPV6_ADDRESS}" == "N/A" ]]; then
+        -addext "subjectAltName=DNS:${SITE_DOMAIN_EXCLUDING_WWW},DNS:${SITE_DOMAIN_INCLUDING_WWW},DNS:staging.${SITE_DOMAIN_EXCLUDING_WWW},DNS:dev.${SITE_DOMAIN_EXCLUDING_WWW},IP:${SYSTEM_IPV4_ADDRESS}" 2> /dev/null
+    elif [[ "${SYSTEM_IPV4_ADDRESS}" == "N/A" ]] && [[ "${SYSTEM_IPV6_ADDRESS}" != "N/A" ]]; then
+        -addext "subjectAltName=DNS:${SITE_DOMAIN_EXCLUDING_WWW},DNS:${SITE_DOMAIN_INCLUDING_WWW},DNS:staging.${SITE_DOMAIN_EXCLUDING_WWW},DNS:dev.${SITE_DOMAIN_EXCLUDING_WWW},IP:${SYSTEM_IPV6_ADDRESS}" 2> /dev/null
+    fi
+    
 elif [[ "${WP_MULTISITE}" == "true" ]] && [[ "${WP_MULTISITE_SUBDOMAINS}" != "false" ]]; then 
     openssl req -x509 -newkey rsa:4096 -sha256 -days 3650 -nodes \
     -keyout /var/www/certs/keys/slickstack.key -out /var/www/certs/slickstack.crt -subj "/CN=${SITE_DOMAIN}" \
@@ -193,5 +201,8 @@ chmod 0700 /var/www/crons/custom/*cron* ## 0700 means only root/sudo can execute
 ## Ref: https://stackoverflow.com/questions/1822268/how-do-i-create-my-own-wildcard-certificate-on-linux/1822279
 ## Ref: https://github.com/openssl/openssl/issues/904
 ## Ref: https://commandlinefanatic.com/cgi-bin/showarticle.cgi?article=art030
+## Ref: https://www.hpe.com/psnow/resources/ebooks/a00110920en_us_v1/GUID-4209D42E-1719-478F-906D-92B966572061.html
+## Ref: https://stackoverflow.com/questions/44438107/trust-ssl-certificate-with-ipv6-address
+## Ref: https://serverfault.com/questions/980071/ipv6-address-in-ssl-certificate
 
 ## SS_EOF
