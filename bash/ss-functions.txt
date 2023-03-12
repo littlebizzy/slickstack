@@ -1478,44 +1478,44 @@ function ss_apt {
     command /usr/bin/apt --yes --quiet --option Dpkg::Options::=--force-confold --option Dpkg::Options::=--force-confdef "$@"
 }
 
+## ss_apt_autoremove ##
+function ss_apt_autoremove {
+    ss_apt autoremove > /dev/null 2>&1
+}
+
 ## ss_apt_clean ##
 function ss_apt_clean {
-    apt clean > /dev/null 2>&1
-}
-
-## ss_apt_update ##
-function ss_apt_update {
-    apt update > /dev/null 2>&1
-}
-
-## ss_apt_upgrade ##
-function ss_apt_upgrade {
-    apt upgrade > /dev/null 2>&1
+    ss_apt clean > /dev/null 2>&1
 }
 
 ## ss_apt_full_upgrade ##
 function ss_apt_full_upgrade {
-    apt full-upgrade > /dev/null 2>&1
-}
-
-## ss_apt_autoremove ##
-function ss_apt_autoremove {
-    apt autoremove > /dev/null 2>&1
+    ss_apt full-upgrade > /dev/null 2>&1
 }
 
 ## ss_apt_install ##
 function ss_apt_install {
-    apt install "$@" > /dev/null 2>&1
+    ss_apt install "$@" > /dev/null 2>&1
 }
 
 ## ss_apt_remove ##
 function ss_apt_remove {
-    apt remove "$@" > /dev/null 2>&1
+    ss_apt remove "$@" > /dev/null 2>&1
 }
 
 ## ss_apt_remove_purge ##
 function ss_apt_remove_purge {
-    apt remove --purge "$@" > /dev/null 2>&1
+    ss_apt remove --purge "$@" > /dev/null 2>&1
+}
+
+## ss_apt_update ##
+function ss_apt_update {
+    ss_apt update > /dev/null 2>&1
+}
+
+## ss_apt_upgrade ##
+function ss_apt_upgrade {
+    ss_apt upgrade > /dev/null 2>&1
 }
 
 ## ss_adduser ##
@@ -1523,14 +1523,19 @@ function ss_adduser {
     adduser --disabled-password --quiet --shell /bin/bash --gecos "" "$@" 2> /dev/null
 }
 
-## ss_dhparam ##
-function ss_dhparam {
-    command openssl dhparam -out "$@" 2048 2> /dev/null
-}
-
 ## ss_certbot ##
 function ss_certbot {
     command certbot certonly --noninteractive --agree-tos --register-unsafely-without-email --cert-name slickstack --webroot -w /var/www/html/ "$@"
+}
+
+## ss_chmod ##
+function ss_chmod {
+    command chmod -R "$@"
+}
+
+## ss_chown ##
+function ss_chown {
+    command chown -R "$@"
 }
 
 ## ss_cp ##
@@ -1543,81 +1548,9 @@ function ss_cp_if_not_exists {
     mkdir -p $(dirname "$2") && cp -n "$1" "$2"
 }
 
-## touch ##
-function touch {
-    command touch -am "$@"
-}
-
-## ss_ln ##
-function ss_ln {
-    command ln -s -f "$@"
-}
-
-## ss_sed ##
-function ss_sed {
-    sed -i "$@"
-}
-
-## ss_null ##
-function ss_null {
-    cat /dev/null > "$@"
-}
-
-## ss_truncate ##
-function ss_truncate {
-    truncate -s 0 "$@" > /dev/null 2>&1
-}
-
-## ss_mkswap ##
-function ss_mkswap {
-    sudo mkswap "$@" 2> /dev/null
-}
-
-## ss_swapon ##
-function ss_swapon {
-    sudo swapon "$@" 2> /dev/null
-}
-
-## ss_fallocate ##
-function ss_fallocate {
-    sudo fallocate -l "$@" 2> /dev/null
-}
-
-## ss_reload ##
-function ss_reload {
-    systemctl reload "$@".service > /dev/null 2>&1
-}
-
-## ss_restart ##
-function ss_restart {
-    /etc/init.d/"$@" restart > /dev/null 2>&1
-}
-
-## ss_mv ##
-function ss_mv {
-    mkdir -p $(dirname "$2") && mv -f "$@"
-    # command mv -f "$@"
-}
-
-## ss_rsync ##
-function ss_rsync {
-    command rsync -aI --no-links --ignore-errors "$@"
-}
-
-## ss_touch ##
-function ss_touch {
-    mkdir -p $(dirname "$1") && touch -am "$@"
-    # command touch -am "$@"
-}
-
-## ss_chown ##
-function ss_chown {
-    command chown -R "$@"
-}
-
-## ss_chmod ##
-function ss_chmod {
-    command chmod -R "$@"
+## ss_dhparam ##
+function ss_dhparam {
+    command openssl dhparam -out "$@" 2048 2> /dev/null
 }
 
 ## ss_echo (interpret) ##
@@ -1630,9 +1563,9 @@ function ss_echo_literal {
     command echo "$@"
 }
 
-## ss_print ##
-function ss_print {
-    command printf "$@"
+## ss_fallocate ##
+function ss_fallocate {
+    sudo fallocate -l "$@" 2> /dev/null
 }
 
 ## ss_grep ##
@@ -1644,6 +1577,71 @@ function ss_grep {
 function ss_grep_boolean {
     command grep --no-messages "$@"
 }
+
+## ss_ln ##
+function ss_ln {
+    command ln -s -f "$@"
+}
+
+## ss_mv ##
+function ss_mv {
+    mkdir -p $(dirname "$2") && mv -f "$@"
+    # command mv -f "$@"
+}
+
+## ss_mkswap ##
+function ss_mkswap {
+    sudo mkswap "$@" 2> /dev/null
+}
+
+## ss_null ##
+function ss_null {
+    cat /dev/null > "$@"
+}
+
+## ss_print ##
+function ss_print {
+    command printf "$@"
+}
+
+## ss_sed ##
+function ss_sed {
+    sed -i "$@"
+}
+
+## ss_truncate ##
+function ss_truncate {
+    truncate -s 0 "$@" > /dev/null 2>&1
+}
+
+## ss_swapon ##
+function ss_swapon {
+    sudo swapon "$@" 2> /dev/null
+}
+
+## ss_reload ##
+function ss_reload {
+    systemctl reload "$@".service > /dev/null 2>&1
+}
+
+## ss_restart ##
+function ss_restart {
+    /etc/init.d/"$@" restart > /dev/null 2>&1
+}
+
+## ss_rsync ##
+function ss_rsync {
+    command rsync -aI --no-links --ignore-errors "$@"
+}
+
+## ss_touch ##
+function ss_touch {
+    mkdir -p $(dirname "$1") && touch -am "$@"
+}
+
+#################
+
+
 
 ## mkdir ##
 function mkdir {
