@@ -1575,15 +1575,51 @@ function ss_ln {
     command ln -s -f "$@"
 }
 
+## ss_mkdir ##
+function ss_mkdir {
+    command mkdir -p "$@"
+}
+
+## ss_mkswap ##
+function ss_mkswap {
+    sudo mkswap "$@" 2> /dev/null
+}
+
 ## ss_mv ##
 function ss_mv {
     mkdir -p $(dirname "$2") && mv -f "$@"
     # command mv -f "$@"
 }
 
-## ss_mkswap ##
-function ss_mkswap {
-    sudo mkswap "$@" 2> /dev/null
+## ss_mysql_admin ##
+function ss_mysql_admin {
+    command mysql --user=admin --password="${DB_PASSWORD_ROOT}" --host="${DB_HOST}" --protocol=tcp --port="${DB_PORT}" --force "$@" 2> /dev/null
+}
+
+## ss_mysql_root ##
+function ss_mysql_root {
+    command mysql --user=root --host=localhost --protocol=socket --port="${DB_PORT}" --force "$@" 2> /dev/null
+}
+
+## ss_mysql_sudo ##
+function ss_mysql_sudo {
+    command mysql --user="${SUDO_USER}" --host=localhost --protocol=socket --port="${DB_PORT}" --force "$@" 2> /dev/null
+}
+
+## ss_mysql_user ##
+## --max_allowed_packet=1GB ... add this after test?
+function ss_mysql_user {
+    command mysql --user="${DB_USER}" --password="${DB_PASSWORD}" --host="${DB_HOST}" --protocol=tcp --port="${DB_PORT}" --force "$@" 2> /dev/null
+}
+
+## ss_mysqldump_admin ##
+function ss_mysqldump_admin {
+    command mysqldump --user=admin --password="${DB_PASSWORD_ROOT}" --host="${DB_HOST}" --protocol=tcp --port="${DB_PORT}" --no-create-db --no-tablespaces --single-transaction --dump-date --force "$@"
+}
+
+## ss_mysqldump_user ##
+function ss_mysqldump_user {
+    command mysqldump --user="${DB_USER}" --password="${DB_PASSWORD}" --host="${DB_HOST}" --protocol=tcp --port="${DB_PORT}" --no-create-db --no-tablespaces --single-transaction --dump-date --force "$@"
 }
 
 ## ss_null ##
@@ -1594,6 +1630,17 @@ function ss_null {
 ## ss_print ##
 function ss_print {
     command printf "$@"
+}
+
+## ss_rm ##
+function ss_rm {
+    command rm -R -f "$@"
+}
+
+## ss_rsync_backup ##
+function ss_rsync_backup {
+    command rsync -acz --mkpath --rsh="sshpass -p ${RSYNC_PASSWORD} ssh -o StrictHostKeyChecking=no -l ${RSYNC_USER}" "$@"
+    # command rsync -acze "ssh -o StrictHostKeyChecking=no" --mkpath --rsh='sshpass -p "${RSYNC_PASSWORD}" -e ssh -l test' "$@"
 }
 
 ## ss_sed ##
@@ -1626,82 +1673,6 @@ function ss_rsync {
     command rsync -aI --no-links --ignore-errors "$@"
 }
 
-## ss_touch ##
-function ss_touch {
-    mkdir -p $(dirname "$1") && touch -am "$@"
-}
-
-#################
-
-
-
-## mkdir ##
-function mkdir {
-    command mkdir -p "$@"
-}
-
-## ss_mkdir ##
-function ss_mkdir {
-    command mkdir -p "$@"
-}
-
-## --max_allowed_packet=1GB ... add this after test?
-## ss_mysql_user ##
-function ss_mysql_user {
-    command mysql --user="${DB_USER}" --password="${DB_PASSWORD}" --host="${DB_HOST}" --protocol=tcp --port="${DB_PORT}" --force "$@" 2> /dev/null
-}
-
-## ss_mysql_admin ##
-function ss_mysql_admin {
-    command mysql --user=admin --password="${DB_PASSWORD_ROOT}" --host="${DB_HOST}" --protocol=tcp --port="${DB_PORT}" --force "$@" 2> /dev/null
-}
-
-## ss_mysql_sudo ##
-function ss_mysql_sudo {
-    command mysql --user="${SUDO_USER}" --host=localhost --protocol=socket --port="${DB_PORT}" --force "$@" 2> /dev/null
-}
-
-## ss_mysql_root ##
-function ss_mysql_root {
-    command mysql --user=root --host=localhost --protocol=socket --port="${DB_PORT}" --force "$@" 2> /dev/null
-}
-
-## ss_mysqldump_user ##
-function ss_mysqldump_user {
-    command mysqldump --user="${DB_USER}" --password="${DB_PASSWORD}" --host="${DB_HOST}" --protocol=tcp --port="${DB_PORT}" --no-create-db --no-tablespaces --single-transaction --dump-date --force "$@"
-}
-
-## ss_mysqldump_admin ##
-function ss_mysqldump_admin {
-    command mysqldump --user=admin --password="${DB_PASSWORD_ROOT}" --host="${DB_HOST}" --protocol=tcp --port="${DB_PORT}" --no-create-db --no-tablespaces --single-transaction --dump-date --force "$@"
-}
-
-## rm ##
-function rm {
-    command rm -R -f "$@"
-}
-
-## ss_rm ##
-function ss_rm {
-    command rm -R -f "$@"
-}
-
-## ss_rsync_backup ##
-function ss_rsync_backup {
-    command rsync -acz --mkpath --rsh="sshpass -p ${RSYNC_PASSWORD} ssh -o StrictHostKeyChecking=no -l ${RSYNC_USER}" "$@"
-    # command rsync -acze "ssh -o StrictHostKeyChecking=no" --mkpath --rsh='sshpass -p "${RSYNC_PASSWORD}" -e ssh -l test' "$@"
-}
-
-## unzip ##
-function unzip {
-    command unzip -q -o "$@"
-}
-
-## ss_unzip ##
-function ss_unzip {
-    command unzip -q -o "$@"
-}
-
 ## ss_tar ##
 function ss_tar {
     command tar -cf "$@"
@@ -1710,6 +1681,11 @@ function ss_tar {
 ## ss_targz ##
 function ss_targz {
     command tar -zcf "$@" ## flags must remain in this order
+}
+
+## ss_touch ##
+function ss_touch {
+    mkdir -p $(dirname "$1") && touch -am "$@"
 }
 
 ## ss_untar ##
@@ -1722,9 +1698,26 @@ function ss_untargz {
     command tar -zxf "$@" ## flags must remain in this order
 }
 
+## ss_unzip ##
+function ss_unzip {
+    command unzip -q -o "$@"
+}
+
 ## ss_wget ##
 function ss_wget {
     command wget --no-check-certificate --no-cache --no-cookies --quiet --inet4-only --tries=30 --timeout=300 --waitretry=15 -O "$@"
+}
+
+#################
+
+## mkdir ##
+function mkdir {
+    command mkdir -p "$@"
+}
+
+## rm ##
+function rm {
+    command rm -R -f "$@"
 }
 
 ####################################################################################################
