@@ -214,10 +214,12 @@ source "${PATH_03_CRON_REGULAR_CUSTOM}"
 ## this snippet will call wp-cron via the server if enabled in your ss-config settings ##
 ## it is useful for sites with low traffic or that need strict cron management ##
 
-if [[ "${WP_CRON_METHOD}" == "server" ]] && [[ "${WP_CRON_INTERVAL}" == "regular" ]]; then 
-    /usr/bin/php /var/www/html/wp-cron.php
-    # wp cron event run --all
-    # wp cron event run --due-now
+if [[ "${WP_CRON_INTERVAL}" == "regular" ]]; then
+    if [[ "${WP_CRON_METHOD}" == "server" ]]; then 
+        /usr/bin/php /var/www/html/wp-cron.php
+    elif [[ "${WP_CRON_METHOD}" == "wpcli" ]]; then
+        cd /var/www/html/; wp cron event run --due-now
+    fi
 fi
 
 ####################################################################################################
