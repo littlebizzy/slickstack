@@ -56,14 +56,6 @@ ss_touch "${TIMESTAMP_SS_INSTALL_MYSQL_PACKAGES}"
 ss_echo "${COLOR_INFO}Running ss-install-mysql-packages... ${COLOR_RESET}"
 
 ####################################################################################################
-#### B. SS-Install-MySQL-Packages:  ##########################################
-####################################################################################################
-
-if [[ "${SS_DATABASE_REMOTE}" != "true" ]]; then
-
-## ADD NEW SECTION for else install mysql client only (if using remote database)
-
-####################################################################################################
 #### C. SS-Install-MySQL-Packages: Update Existing Packages ########################################
 ####################################################################################################
 
@@ -110,6 +102,12 @@ ss_apt_upgrade
 ## this script will install the MySQL packages unless it is set to false in ss-config ##
 ## remote database environments should not require localhost MySQL installed ##
 
+if [[ "${SS_DATABASE_REMOTE}" == "true" ]]; then
+
+    ss_apt_install mysql-client
+
+elif [[ "${SS_DATABASE_REMOTE}" != "true" ]]; then
+
     ## ubuntu 22.04 ##
     if [[ "${SYSTEM_UBUNTU_VERSION}" == "22.04" ]]; then 
         ss_apt_install mysql-server-8.0
@@ -125,6 +123,8 @@ ss_apt_upgrade
         ss_apt_install mysql-server-5.7
     fi
 
+fi
+
 ####################################################################################################
 #### D. SS-Install-MySQL-Packages: Install Database(s) #############################################
 ####################################################################################################
@@ -135,11 +135,7 @@ source "${PATH_SS_INSTALL_MYSQL_DATABASE}"
 #### SS-Install-MySQL-Packages: Reset Permissions (MySQL Core) #####################################
 ####################################################################################################
 
-## run ss-perms-mysql-packages ##
 source "${PATH_SS_PERMS_MYSQL_PACKAGES}"
-
-
-fi
 
 ####################################################################################################
 #### SlickStack: Reset Permissions (SlickStack Scripts) ############################################
