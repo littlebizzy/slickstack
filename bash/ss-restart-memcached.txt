@@ -1,0 +1,87 @@
+#!/bin/bash
+
+####################################################################################################
+#### author: SlickStack ############################################################################
+#### link: https://slickstack.io ###################################################################
+#### mirror: https://mirrors.slickstack.io/bash/ss-restart-memcached.txt ###########################
+#### path: /var/www/ss-restart-memcached ###########################################################
+#### destination: n/a (not a boilerplate) ##########################################################
+#### purpose: Forcefully restarts the Memcached service by using init.d absolute path ##############
+#### module version: Memcached 1.5.x ###############################################################
+#### bash aliases: ss restart memcached ############################################################
+####################################################################################################
+
+## YOU CAN RUN SS-RESTART FOR AN EASY WAY TO RESTART ALL CORE SLICKSTACK (LEMP) MODULES ##
+## THIS DOES NOT INCLUDE ANY CUSTOM UBUNTU PACKAGES THAT YOU MAY HAVE INSTALLED ##
+
+## source ss-config ##
+source /var/www/ss-config
+
+## source ss-functions ##
+source /var/www/ss-functions
+
+## BELOW THIS RELIES ON SS-CONFIG AND SS-FUNCTIONS
+
+####################################################################################################
+#### TABLE OF CONTENTS (SS-Restart-Memcached) ######################################################
+####################################################################################################
+
+## this is a brief summary of the different code snippets you will find in this script ##
+## each section should be commented so you understand what is being accomplished ##
+
+## A. Touch Timestamp File
+## B. Message (Begin Script)
+## C. Forcefully Restart Memcached
+
+####################################################################################################
+#### A. SS-Restart-Memcached: Touch Timestamp File #################################################
+####################################################################################################
+
+## this is a dummy timestamp file that will remember the last time this script was run ##
+## it can be useful for developer reference and is sometimes used by SlickStack ##
+
+ss_touch "${TIMESTAMP_SS_RESTART_MEMCACHED}"
+
+####################################################################################################
+#### B. SS-Restart-Memcached: Message (Begin Script) ###############################################
+####################################################################################################
+
+## this is a simple message that announces to the shell the purpose of this bash script ##
+## it will only be seen by sudo users who manually run this script in the shell ##
+
+ss_echo "${COLOR_INFO}Running ss-restart-memcached... ${COLOR_RESET}"
+
+####################################################################################################
+#### C. SS-Restart-Memcached: Forcefully Restart Memcached #########################################
+####################################################################################################
+
+## this snippet uses init.d instead of systemd shortcuts to allow for absolute paths ##
+## the given service will be forcefully restarted and output sent to /dev/null ##
+
+ss_restart memcached
+
+####################################################################################################
+#### SlickStack: Reset Permissions (SlickStack Scripts) ############################################
+####################################################################################################
+
+## we include this permissions reset in all cron jobs and bash scripts for redundancy ##
+## chmod 0700 means only the root/sudo users can execute any SlickStack scripts ##
+
+## THIS SNIPPET DOES NOT RELY ON SS-CONFIG OR SS-FUNCTIONS
+## SNIPPET: ss bash scripts, ss cron jobs
+## UPDATED: 02JUL2022
+
+chown root:root /var/www/ss* ## must be root:root
+chown root:root /var/www/crons/*cron* ## must be root:root
+chown root:root /var/www/crons/custom/*cron* ## must be root:root
+chmod 0700 /var/www/ss* ## 0700 means only root/sudo can execute
+chmod 0700 /var/www/crons/*cron* ## 0700 means only root/sudo can execute
+chmod 0700 /var/www/crons/custom/*cron* ## 0700 means only root/sudo can execute
+
+####################################################################################################
+#### SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ###############
+####################################################################################################
+
+## Ref: https://www.digitalocean.com/community/tutorials/how-to-install-and-secure-memcached-on-ubuntu-20-04
+
+## SS_EOF
