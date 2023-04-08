@@ -210,10 +210,11 @@ fi
 ## object-cache.php is only installed on production to avoid Redis query conflicts ##
 
 ## retrieve files ##
-ss_wget "${TMP_OBJECT_CACHE_PHP}" "${GITHUB_OBJECT_CACHE_PHP_TILL}"
-
-## for memcached only ##
-# WPORG_MEMCACHED_OBJECT_CACHE_PHP
+if [[ -f "/etc/memcached.conf" ]]; then
+    ss_wget "${TMP_OBJECT_CACHE_PHP}" "${WPORG_MEMCACHED_OBJECT_CACHE_PHP}"
+else 
+    ss_wget "${TMP_OBJECT_CACHE_PHP}" "${GITHUB_OBJECT_CACHE_PHP_TILL}"
+fi
 
 ## delete existing files ##
 ss_rm /var/www/html/wp-content/object-cache*
