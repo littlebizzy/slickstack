@@ -12,7 +12,7 @@ SlickStack is a free LEMP stack automation script written in Bash designed to en
 
 *Last updated: Apr 09, 2023*
 
-| LEMP Module | Mirrors | Version | What does SlickStack optimize? |
+| Module | Mirrors | Version | What does SlickStack optimize? |
 | :------------- | :----------: | :----------: | :----------: |
 | **Ubuntu LTS** | [mirrors](https://mirrors.slickstack.io/modules/ubuntu/) | 22.04 | `crontab` + `gai.conf` + `sshd_config` + `sudoers` + `sysctl.conf` |
 | **Nginx** | [mirrors](https://mirrors.slickstack.io/modules/nginx/) | 1.18.x | `nginx.conf` + server blocks |
@@ -20,8 +20,8 @@ SlickStack is a free LEMP stack automation script written in Bash designed to en
 | **Lets Encrypt** | [mirrors](https://mirrors.slickstack.io/modules/letsencrypt/) | 1.21.x | `cert.perm` + `chain.pem` + `fullchain.pem` + `privkey.pem` |
 | **MySQL** | [mirrors](https://mirrors.slickstack.io/modules/mysql/) | 8.0.x | `my.cnf` |
 | **PHP-FPM** | [mirrors](https://mirrors.slickstack.io/modules/php-fpm/) | 8.1.x | `php.ini` + `php-fpm.conf` + `www.conf` |
-| **Memcached** | [mirrors](https://mirrors.slickstack.io/modules/redis/) | 1.6.x | `redis.conf` + `object-cache.php` |
-| **WordPress** | [mirrors](https://mirrors.slickstack.io/modules/wordpress/) | 6.1.x | some WP Core junk files are removed by `ss-clean` |
+| **Memcached** | [mirrors](https://mirrors.slickstack.io/modules/redis/) | 1.6.x | `memcached.conf` + `object-cache.php` |
+| **WordPress** | [mirrors](https://mirrors.slickstack.io/modules/wordpress/) | 6.2.x | some WP Core junk files are removed by `ss-clean` |
 | **WP-CLI** | [mirrors](https://mirrors.slickstack.io/modules/wordpress/wp-cli/) | 2.7.x | some commands are disabled |
 | **Adminer** | [mirrors](https://mirrors.slickstack.io/modules/adminer/) | 4.8.1 | default config |
 | **Git** | [mirrors](https://mirrors.slickstack.io/modules/git/) | 2.34.x | default config |
