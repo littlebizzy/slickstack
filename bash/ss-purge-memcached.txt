@@ -1,0 +1,92 @@
+#!/bin/bash
+
+####################################################################################################
+#### author: SlickStack ############################################################################
+#### link: https://slickstack.io ###################################################################
+#### mirror: https://mirrors.slickstack.io/bash/ss-purge-memcached.txt #############################
+#### path: /var/www/ss-purge-memcached #############################################################
+#### destination: n/a (not a boilerplate) ##########################################################
+#### purpose: Clears the Memcached server cache by way of the flush_all command ####################
+#### module version: Memcached 1.6.x ###############################################################
+#### sourced by:  ####################################################
+#### bash aliases: ss clear|flush|purge memcached ##################################################
+####################################################################################################
+
+## RUNNING SS-PURGE DURING TRAFFIC SPIKES MIGHT CAUSE SUDDEN STRESS TO SERVER RESOURCES ##
+## KEEP IN MIND THAT FASTCGI CACHE IS DISABLED ALREADY ON STAGING SUBDIRECTORIES ##
+
+## source ss-config ##
+source /var/www/ss-config
+
+## source ss-functions ##
+source /var/www/ss-functions
+
+## BELOW THIS RELIES ON SS-CONFIG AND SS-FUNCTIONS
+
+####################################################################################################
+#### TABLE OF CONTENTS (SS-Purge-Memcached) ########################################################
+####################################################################################################
+
+## this is a brief summary of the different code snippets you will find in this script ##
+## each section should be commented so you understand what is being accomplished ##
+
+## A. Touch Timestamp File
+## B. Message (Begin Script)
+
+####################################################################################################
+#### A. SS-Purge-Memcached: Touch Timestamp File ###################################################
+####################################################################################################
+
+## this is a dummy timestamp file that will remember the last time this script was run ##
+## it can be useful for developer reference and is sometimes used by SlickStack ##
+
+ss_touch "${TIMESTAMP_SS_PURGE_MEMCACHED}"
+
+####################################################################################################
+#### B. SS-Purge-Memcached: Message (Begin Script) #################################################
+####################################################################################################
+
+## this is a simple message that announces to the shell the purpose of this bash script ##
+## it will only be seen by sudo users who manually run this script in the shell ##
+
+ss_echo "${COLOR_INFO}Running ss-purge-memcached... ${COLOR_RESET}"
+
+####################################################################################################
+#### SS-Purge: Flush Redis (Object Cache i.e. Transients) ##########################################
+####################################################################################################
+
+## when a persistent object cache is installed in WordPress it retains all WP transients ##
+## therefore flushing Redis is similar to manually deleting WP transients in MySQL ##
+
+if [[ "${SS_APP}" != "mysql" ]]; then
+
+## flush Redis object cache using redis-cli ##
+redis-cli flushall > /dev/null 2>&1
+
+fi
+
+####################################################################################################
+#### SlickStack: Reset Permissions (SlickStack Scripts) ############################################
+####################################################################################################
+
+## we include this permissions reset in all cron jobs and bash scripts for redundancy ##
+## chmod 0700 means only the root/sudo users can execute any SlickStack scripts ##
+
+## THIS SNIPPET DOES NOT RELY ON SS-CONFIG OR SS-FUNCTIONS
+## SNIPPET: ss bash scripts, ss cron jobs
+## UPDATED: 02JUL2022
+
+chown root:root /var/www/ss* ## must be root:root
+chown root:root /var/www/crons/*cron* ## must be root:root
+chown root:root /var/www/crons/custom/*cron* ## must be root:root
+chmod 0700 /var/www/ss* ## 0700 means only root/sudo can execute
+chmod 0700 /var/www/crons/*cron* ## 0700 means only root/sudo can execute
+chmod 0700 /var/www/crons/custom/*cron* ## 0700 means only root/sudo can execute
+
+####################################################################################################
+#### SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ###############
+####################################################################################################
+
+## Ref: 
+
+## SS_EOF
