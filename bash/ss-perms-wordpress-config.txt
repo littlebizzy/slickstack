@@ -7,9 +7,9 @@
 #### path: /var/www/ss-perms-wordpress-config ######################################################
 #### destination: n/a (not a boilerplate) ##########################################################
 #### purpose: Resets file and user permissions for WordPress (CMS) configuration files #############
-#### module version: WordPress 6.0.x ###############################################################
+#### module version: WordPress 6.2.x ###############################################################
 #### sourced by: ss-perms, ss-install-wordpress-config #############################################
-#### bash aliases: ss perms wordpress config, ss perms wp config, ss perms wp-config ###############
+#### bash aliases: ss perms wordpress|wp-config|wp config ##########################################
 ####################################################################################################
 
 ## source ss-config ##
@@ -58,18 +58,24 @@ ss_echo "${COLOR_INFO}Running ss-perms-wordpress-config... ${COLOR_RESET}"
 
 ## production ##
 ss_chown "${SFTP_USER}":slickstack "${PATH_WP_CONFIG_PHP}"
+ss_chown "${SFTP_USER}":slickstack /var/www/html/wp-content/custom-functions.php
 chmod 0440 "${PATH_WP_CONFIG_PHP}" ## must be 0440
+chmod 0440 "${PATH_WP_CONFIG_PHP}" /var/www/html/wp-content/custom-functions.php
 
 ## staging ##
 if [[ "${STAGING_SITE}" != "false" ]]; then
     ss_chown "${SFTP_USER}":slickstack /var/www/html/staging/wp-config.php
+    ss_chown "${SFTP_USER}":slickstack /var/www/html/staging/wp-content/custom-functions.php
     chmod 0440 /var/www/html/staging/wp-config.php ## must be 0440
+    chmod 0440 /var/www/html/staging/wp-config.php /var/www/html/staging/wp-content/custom-functions.php
 fi
 
 ## development ##
 if [[ "${DEV_SITE}" != "false" ]]; then
     ss_chown "${SFTP_USER}":slickstack /var/www/html/dev/wp-config.php
+    ss_chown "${SFTP_USER}":slickstack /var/www/html/dev/wp-content/custom-functions.php
     chmod 0440 /var/www/html/dev/wp-config.php ## must be 0440
+    chmod 0440 /var/www/html/dev/wp-config.php /var/www/html/dev/wp-content/custom-functions.php
 fi
 
 ####################################################################################################
