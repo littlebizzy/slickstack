@@ -5,8 +5,8 @@
 /** mirror: https://mirrors.slickstack.io/modules/wordpress/wp-config-multisite.txt ************* */
 /** path: n/a (boilerplate) ********************************************************************* */
 /** destination: /var/www/html/wp-config.php (after install) ************************************ */
-/** purpose: WordPress configuration file boilerplate for Multisite installs (prod only) ******** */
-/** module version: WordPress 6.0.x ************************************************************* */
+/** purpose: WordPress configuration file boilerplate for SlickStack Multisite installs ********* */
+/** module version: WordPress 6.2.x ************************************************************* */
 /** sourced by: wp-settings.php ***************************************************************** */
 /** bash aliases: n/a (ss-install-wordpress-config) ********************************************* */
 /** ********************************************************************************************* */
@@ -18,10 +18,9 @@
 /** WP-Config (Multisite): Include SlickStack Constants ***************************************** */
 /** ********************************************************************************************* */
 
-/** below are some general constants that control SlickStack settings and basic features */
-/** they are set here (not functions.php) to prevent clients from changing them */
+/** below are some general PHP constants that show the status of SlickStack modules */
+/** ss-constants.php should never be modified and is outside the public root */
 
-// include ss-constants.php
 include_once('/var/www/meta/ss-constants.php');
 
 /** ********************************************************************************************* */
@@ -29,7 +28,7 @@ include_once('/var/www/meta/ss-constants.php');
 /** ********************************************************************************************* */
 
 /** for stability reasons SlickStack requires Multisite domain to match SITE_DOMAIN */
-/** domain mapping (e.g. for your clients) requires the subdomains approach */
+/** domain mapping (e.g. for child sites) requires the subdomains approach */
 
 define('WP_ALLOW_MULTISITE', true); // ss = true
 
@@ -47,15 +46,15 @@ define('BLOG_ID_CURRENT_SITE', 1); // ss = 1
 /** WP-Config (Multisite): Database Settings **************************************************** */
 /** ********************************************************************************************* */
 
-/** database connection settings stored in ss-config and filled when ss-install runs */
-/** if chosen database/user does not exist yet then ss-install will create it */
+/** database connection settings should only be modified inside the ss-config file */
+/** SlickStack will create the database and user if they do not exist yet */
 
-define('DB_NAME', '@DB_NAME'); // ss = production
-define('DB_USER', '@DB_USER'); // ss = *must be unique*
-define('DB_PASSWORD', '@DB_PASSWORD'); // ss = *must be unique*
-define('DB_HOST', '@DB_HOST:@DB_PORT'); // ss = 127.0.0.1:3306
-define('DB_CHARSET', '@DB_CHARSET'); // ss = utf8mb4
-define('DB_COLLATE', '@DB_COLLATE'); // ss = (blank)
+define( 'DB_NAME', '@DB_NAME' ); // ss = production
+define( 'DB_USER', '@DB_USER' ); // ss = *must be unique*
+define( 'DB_PASSWORD', '@DB_PASSWORD' ); // ss = *must be unique*
+define( 'DB_HOST', '@DB_HOST:@DB_PORT' ); // ss = 127.0.0.1:3306
+define( 'DB_CHARSET', '@DB_CHARSET' ); // ss = utf8mb4
+define( 'DB_COLLATE', '@DB_COLLATE' ); // ss = (blank)
 $table_prefix = '@DB_PREFIX'; // ss = wp_
 
 /** ********************************************************************************************* */
@@ -269,14 +268,24 @@ define('CONCATENATE_SCRIPTS', false); // default = false
 // define('SCRIPT_DEBUG', false); // default = false
 
 /** ********************************************************************************************* */
-/** WP-Config (Production): Require WP-Settings File (MUST APPEAR LAST) ************************* */
+/** WP-Config (Multisite): Include Custom Functions (If Exists) ********************************* */
+/** ********************************************************************************************* */
+
+/** rather than editing your wp-config.php file simply create a custom functions file */
+/** if SlickStack detects this file exists it will load included constants etc */
+
+$custom_functions = '/var/www/html/wp-content/custom-functions.php';
+is_file($custom_functions) AND include $custom_functions;
+
+/** ********************************************************************************************* */
+/** WP-Config (Multisite): Require WP-Settings File (MUST APPEAR LAST) ************************** */
 /** ********************************************************************************************* */
 
 /** the wp-settings.php file is critical to WordPress Core functions and must load last */
-/** below snippet also relies on ABSPATH being properly defined in above section */
+/** below snippet also relies on ABSPATH being properly defined in this section */
 
 if ( !defined('ABSPATH') )
-        define('ABSPATH', dirname(__FILE__) . '/');
+    define('ABSPATH', dirname(__FILE__) . '/');
 
 require_once(ABSPATH . 'wp-settings.php');
 
