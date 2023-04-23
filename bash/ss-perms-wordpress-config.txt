@@ -58,24 +58,35 @@ ss_echo "${COLOR_INFO}Running ss-perms-wordpress-config... ${COLOR_RESET}"
 
 ## production ##
 ss_chown "${SFTP_USER}":slickstack "${PATH_WP_CONFIG_PHP}"
-ss_chown "${SFTP_USER}":slickstack /var/www/html/wp-content/custom-functions.php
 chmod 0440 "${PATH_WP_CONFIG_PHP}" ## must be 0440
-chmod 0440 "${PATH_WP_CONFIG_PHP}" /var/www/html/wp-content/custom-functions.php
+
+if [[ -f "/var/www/html/wp-content/custom-functions.php" ]]; then 
+    ss_chown "${SFTP_USER}":slickstack /var/www/html/wp-content/custom-functions.php
+    chmod 0440 /var/www/html/wp-content/custom-functions.php
+fi
 
 ## staging ##
 if [[ "${STAGING_SITE}" != "false" ]]; then
     ss_chown "${SFTP_USER}":slickstack /var/www/html/staging/wp-config.php
-    ss_chown "${SFTP_USER}":slickstack /var/www/html/staging/wp-content/custom-functions.php
     chmod 0440 /var/www/html/staging/wp-config.php ## must be 0440
-    chmod 0440 /var/www/html/staging/wp-config.php /var/www/html/staging/wp-content/custom-functions.php
+    
+    if [[ -f "/var/www/html/staging/wp-content/custom-functions.php" ]]; then 
+        ss_chown "${SFTP_USER}":slickstack /var/www/html/staging/wp-content/custom-functions.php
+        chmod 0440 /var/www/html/staging/wp-content/custom-functions.php
+    fi
+    
 fi
 
 ## development ##
 if [[ "${DEV_SITE}" != "false" ]]; then
     ss_chown "${SFTP_USER}":slickstack /var/www/html/dev/wp-config.php
-    ss_chown "${SFTP_USER}":slickstack /var/www/html/dev/wp-content/custom-functions.php
     chmod 0440 /var/www/html/dev/wp-config.php ## must be 0440
-    chmod 0440 /var/www/html/dev/wp-config.php /var/www/html/dev/wp-content/custom-functions.php
+    
+    if [[ -f "/var/www/html/dev/wp-content/custom-functions.php" ]]; then 
+        ss_chown "${SFTP_USER}":slickstack /var/www/html/dev/wp-content/custom-functions.php
+        chmod 0440 /var/www/html/dev/wp-content/custom-functions.php
+    fi
+    
 fi
 
 ####################################################################################################
