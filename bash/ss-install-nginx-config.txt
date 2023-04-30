@@ -72,10 +72,6 @@ ss_rm /tmp/letsencrypt.conf*
 ss_rm /tmp/openssl.conf*
 ss_rm /tmp/maintenance.html
 
-
-
-if [[ "${SS_APP}" != "mysql" ]]; then
-
 ## run ss-perms-nginx-ssl ##
 source "${PATH_SS_PERMS_NGINX_SSL}"
 
@@ -97,8 +93,9 @@ fi
 ## here we generate slickstack.crt and slickstack.key as the default SSL for Nginx ##
 ## this approach is extremely stable and works fantastic with CloudFlare ##
 
-## run ss-encrypt-openssl ##
-source "${PATH_SS_ENCRYPT_OPENSSL}"
+if [[ ! -f "${PATH_THIRDPARTY_CONF}" ]]; then 
+    source "${PATH_SS_ENCRYPT_OPENSSL}"
+fi
 
 ####################################################################################################
 #### F. SS-Install-Nginx-Config: Generate Htpasswd File ############################################
@@ -620,11 +617,6 @@ source "${PATH_SS_RESTART_NGINX}"
 
 if [[ "${SS_APP}" == "wordpress" || -z "${SS_APP}"  ]]; then
     source "${PATH_SS_INSTALL_WORDPRESS_CONFIG}"
-fi
-
-
-
-## endif
 fi
 
 ####################################################################################################
