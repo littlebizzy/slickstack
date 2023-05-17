@@ -584,12 +584,13 @@ if [[ -z "${VALIDATE_SUDOERS_FILE}" ]]; then
     source /var/www/ss-install-ubuntu-users
 fi
 
-if [[ -f "/etc/nginx/conf.d/cloudflare.conf" ]] && [[ ! -f "/var/www/sites/includes/cloudflare.conf" ]]; then 
-    ss_cp /etc/nginx/conf.d/cloudflare.conf /var/www/sites/includes/cloudflare.conf
-fi
+## patch to support new cloudflare.conf file if exists ##
+ss_rm /etc/nginx/conf.d/cloudflare.conf
+source /var/www/ss-install-nginx-config
 
 if [[ -f "/etc/nginx/conf.d/featurepolicy.conf" ]] && [[ ! -f "/var/www/sites/includes/featurepolicy.conf" ]]; then 
     ss_cp /etc/nginx/conf.d/featurepolicy.conf /var/www/sites/includes/featurepolicy.conf
+    # ss_rm /etc/nginx/conf.d/featurepolicy.conf
 fi
 
 ## temp patch
