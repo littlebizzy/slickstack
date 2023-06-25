@@ -57,8 +57,7 @@ if [[ "${SS_LOCKDOWN}" == "true" ]]; then
     read -r -p "Your SlickStack server has lockdown enabled, run ss-install-adminer anyways? [y/N]" response
 fi
 
-if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]] || [[ "${SS_LOCKDOWN}" != "true" ]]
-    then
+if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]] || [[ "${SS_LOCKDOWN}" != "true" ]]; then
 
 ####################################################################################################
 #### C. SS-Install-Adminer: Message (Begin Script) #################################################
@@ -86,7 +85,14 @@ fi
 ## install adminer.php ##
 VALIDATE2_TMP_ADMINER_PHP=$(grep 'Jakub Vrana' "${TMP_ADMINER_PHP}" 2> /dev/null)
 if [[ -n "${VALIDATE2_TMP_ADMINER_PHP}" ]]; then
-    ss_mv "${TMP_ADMINER_PHP}" "${PATH_ADMINER_PHP}"
+
+        if [[ "${SS_ADMINER_PUBLIC}" == "false" ]]; then
+            ss_rm "${PATH_ADMINER_PHP}"
+            ss_echo "${COLOR_ERROR}Adminer disabled in ss-config so skipping install... ${COLOR_RESET}"
+        else
+            ss_mv "${TMP_ADMINER_PHP}" "${PATH_ADMINER_PHP}"
+        fi
+
 fi
 
 ####################################################################################################
@@ -129,5 +135,6 @@ chmod 0700 /var/www/crons/custom/*cron* ## 0700 means only root/sudo can execute
 ## Ref: https://sourceforge.net/p/adminer/bugs-and-features/630/
 ## Ref: https://github.com/littlebizzy/slickstack/issues/91
 ## Ref: https://stackoverflow.com/questions/226703/how-do-i-prompt-for-yes-no-cancel-input-in-a-linux-shell-script
+## Ref: https://github.com/littlebizzy/slickstack/issues/196
 
 ## SS_EOF
