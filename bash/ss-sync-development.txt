@@ -25,12 +25,15 @@
 ## A. Source SS-Config + SS-Functions
 ## B. Touch Timestamp File
 ## C. Message (Begin Script)
-## D. Backup Production Database
-## E. Import Production Database To Development Database
-## F. Copy All Files From Production To Development
-## G. Run SS-Install-WordPress-Config (Conditional)
-## H. Run SS-Install-WordPress-MU-Plugins (Conditional)
-## I. Fix Any Hardcoded Links In Development Theme Files
+## D. Dump Production Database
+## E. Install Development Database (Conditional)
+## F. Import Production Database To Development Database
+## G. Copy Relevant Files From Production To Development
+## H. Run SS-Install-WordPress-Config (Conditional)
+## I. Run SS-Install-WordPress-MU-Plugins (Conditional)
+## J. Fix Any Hardcoded Links In Development Theme Files
+## K. Fix Incorrect URLs In Development Database
+## L. Reset Permissions (WordPress Packages)
 
 ####################################################################################################
 #### A. SS-Sync-Development: Source SS-Config + SS-Functions #######################################
@@ -73,21 +76,21 @@ ss_echo "${COLOR_INFO}Running ss-sync-development... ${COLOR_RESET}"
 # ss_options_staging_sync_status=$(ss_mysql_user -BNe "USE staging; SELECT EmployeeName FROM DemoTable WHERE id=1")
 # $sql = "SELECT 'id' FROM Users WHERE username='$name'";
 
+####################################################################################################
 
 if [[ "${SS_SYNC_DEVELOPMENT}" != "false" ]] && [[ "${WP_MULTISITE}" != "true" ]]; then
 
 ####################################################################################################
-#### D. SS-Sync-Development: Backup Production Database ############################################
+#### D. SS-Sync-Development: Dump Production Database ##############################################
 ####################################################################################################
 
-## we must run ss-dump-database now if no database dump file is found under backups ##
-## this ensures that a dump file exists before atempting to sync it to staging ##
+## we run ss-dump-database now to export the latest version of production database ##
+## this ensures the dump is recent before attempting to sync it to staging ##
 
-## run ss-dump-database ##
 source "${PATH_SS_DUMP_DATABASE}"
 
 ####################################################################################################
-#### E. SS-Sync-Development: Import Production Database To Development Database ####################
+#### F. SS-Sync-Development: Import Production Database To Development Database ####################
 ####################################################################################################
 
 ## this snippet duplicates the dumped production database and imports it into MySQL ##
@@ -114,43 +117,46 @@ if [[ "${DEV_SITE}" == "true" ]]; then
     ss_rm /tmp/sync-development.sql
     
 ####################################################################################################
-#### F. SS-Sync-Development: Copy All Files From Production To Development #########################
+#### G. SS-Sync-Development: Copy Relevant Files From Production To Development ####################
 ####################################################################################################
 
 ## here we copy over everything from production to dev including media uploads folder ##
+## very large files e.g. backup archives are always skipped in this snippet ##
 
 ## copy wp-content files over (does not skip uploads) ##
-ss_rsync --max-size=5mb --exclude mu-plugins /var/www/html/wp-content/ /var/www/html/dev/wp-content
-    
+ss_rsync --max-size=25mb --exclude 'blacklist.txt' --exclude 'object-cache.php' --exclude='*/mu-plugins/' --exclude='*/temp/' --exclude='*/upgrade/' /var/www/html/wp-content/ /var/www/html/dev/wp-content
+
 ## delete potential run-on subdirectories ##
 ss_rm /var/www/html/dev/dev*
+ss_rm /var/www/html/dev/wp-content/wp-content*
+
+## remove object-cache.php if exists ##
+ss_rm /var/www/html/dev/wp-content/object-cache.php*
     
 ####################################################################################################
-#### G. SS-Sync-Development: Run SS-Install-WordPress-Config (Conditional) #########################
+#### H. SS-Sync-Development: Run SS-Install-WordPress-Config (Conditional) #########################
 ####################################################################################################
 
-## below snippet will install wp-config.php in case does not exist already in staging ##
-## this is a failsafe in case staging enabled in ss-config post-installation ##
+## below snippet will install wp-config.php in case does not exist already in development ##
+## this is a failsafe in case development enabled in ss-config post-installation ##
 
-## run ss-install-wordpress-config ##
 if [[ ! -f "/var/www/html/dev/wp-config.php" ]]; then
     source "${PATH_SS_INSTALL_WORDPRESS_CONFIG}"
 fi
 
 ####################################################################################################
-#### H. SS-Sync-Development: Run SS-Install-WordPress-MU-Plugins (Conditional) #####################
+#### I. SS-Sync-Development: Run SS-Install-WordPress-MU-Plugins (Conditional) #####################
 ####################################################################################################
 
-## below snippet will install MU plugins in case they do not exist already in staging ##
-## this is a failsafe in case staging enabled in ss-config post-installation ##
+## below snippet will install MU plugins in case they do not exist already in development ##
+## this is a failsafe in case development enabled in ss-config post-installation ##
 
-## run ss-install-wordpress-mu-plugins ##
 if [[ ! -f "/var/www/html/dev/wp-content/mu-plugins/xxx-common.php" ]]; then
     source "${PATH_SS_INSTALL_WORDPRESS_MU_PLUGINS}"
 fi
 
 ####################################################################################################
-#### I. SS-Sync-Development: Fix Any Hardcoded Links In Development Theme Files ####################
+#### J. SS-Sync-Development: Fix Any Hardcoded Links In Development Theme Files ####################
 ####################################################################################################
 
 ## many themes (or custom-coded themes) often contain hardcoded HTML assets and links ##
@@ -162,11 +168,28 @@ find /var/www/html/dev/wp-content/themes/ -type f -exec ss_sed "s#http://${SITE_
 find /var/www/html/dev/wp-content/themes/ -type f -exec ss_sed "s#https://${SITE_DOMAIN_EXCLUDING_WWW}#https://dev.${SITE_DOMAIN_EXCLUDING_WWW}#g" {} +
 find /var/www/html/dev/wp-content/themes/ -type f -exec ss_sed "s#http://${SITE_DOMAIN_EXCLUDING_WWW}#https://dev.${SITE_DOMAIN_EXCLUDING_WWW}#g" {} +
 
-## end parent if ##
+####################################################################################################
+
+## end if DEV_SITE true ##
 fi
 
-## end parent parent if ##
+## end if SS_SYNC_DEVELOPMENT not false ##
 fi
+
+####################################################################################################
+#### K. SS-Sync-Development: Fix Incorrect URLs In Development Database ############################
+####################################################################################################
+
+## needs more testing
+## use WP-CLI to search/replace staging links in production database
+
+# wp search-replace https://"${SITE_DOMAIN}" https://staging."${SITE_DOMAIN_EXCLUDING_WWW}" --all-tables
+
+####################################################################################################
+#### L. SS-Sync-Development: Reset Permissions (WordPress Packages) ################################
+####################################################################################################
+
+source "${PATH_SS_PERMS_WORDPRESS_PACKAGES}"
 
 ####################################################################################################
 #### SlickStack: Reset Permissions (SlickStack Scripts) ############################################
