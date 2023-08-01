@@ -78,6 +78,9 @@ ss_echo "${COLOR_INFO}Running ss-sync-development... ${COLOR_RESET}"
 
 ####################################################################################################
 
+## to sync only one time you must temporarily change to true in ss-config ##
+## this is a safety mechanism to prevent overwriting your work ##
+
 if [[ "${SS_SYNC_DEVELOPMENT}" != "false" ]] && [[ "${WP_MULTISITE}" != "true" ]]; then
 
 ####################################################################################################
@@ -96,7 +99,6 @@ source "${PATH_SS_DUMP_DATABASE}"
 ## this snippet duplicates the dumped production database and imports it into MySQL ##
 ## then it forecfully replaces the home/siteurl options to staging subdomain ##
 
-## only if dev site is enabled ##
 if [[ "${DEV_SITE}" == "true" ]]; then
 
     ## import database ##
@@ -105,9 +107,9 @@ if [[ "${DEV_SITE}" == "true" ]]; then
     chmod 0644 /tmp/sync-development.sql ## does not matter if -L flag used below
     ss_mysql_root development < /tmp/sync-development.sql
     
-    ## fix staging home and siteurl fields (no mass search/replace to avoid potential conflicts) ##
+    ## fix development home and siteurl fields (no mass search/replace to avoid potential conflicts) ##
     if [[ "${SS_APP}" == "wordpress" ]]; then
-        if [[ -n $(ss_mysql_user --execute "SHOW TABLES FROM staging WHERE Tables_in_staging LIKE '${DB_PREFIX}options';" 2> /dev/null) ]]; then
+        if [[ -n $(ss_mysql_user --execute "SHOW TABLES FROM development WHERE Tables_in_development LIKE '${DB_PREFIX}options';" 2> /dev/null) ]]; then
             ss_mysql_user --execute="UPDATE development.${DB_PREFIX}options SET option_value='https://dev.${SITE_DOMAIN_EXCLUDING_WWW}' WHERE option_name='home'";
             ss_mysql_user --execute="UPDATE development.${DB_PREFIX}options SET option_value='https://dev.${SITE_DOMAIN_EXCLUDING_WWW}' WHERE option_name='siteurl'";
         fi
@@ -160,9 +162,8 @@ fi
 ####################################################################################################
 
 ## many themes (or custom-coded themes) often contain hardcoded HTML assets and links ##
-## here we forcefully fix these links to ensure staging sites render properly ##
+## here we forcefully fix these links to ensure development site renders properly ##
 
-## fix hardcoded theme links ##
 find /var/www/html/dev/wp-content/themes/ -type f -exec ss_sed "s#https://${SITE_DOMAIN_INCLUDING_WWW}#https://dev.${SITE_DOMAIN_EXCLUDING_WWW}#g" {} +
 find /var/www/html/dev/wp-content/themes/ -type f -exec ss_sed "s#http://${SITE_DOMAIN_INCLUDING_WWW}#https://dev.${SITE_DOMAIN_EXCLUDING_WWW}#g" {} +
 find /var/www/html/dev/wp-content/themes/ -type f -exec ss_sed "s#https://${SITE_DOMAIN_EXCLUDING_WWW}#https://dev.${SITE_DOMAIN_EXCLUDING_WWW}#g" {} +
