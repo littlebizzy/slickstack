@@ -58,17 +58,19 @@ ss_wget "${TMP_CLOUDFLARE_CONF}" "${GITHUB_CLOUDFLARE_CONF}"
 
 ## ipv4 list ##
 CLOUDFLARE_IPV4_LIST=$(for i in `curl -s -L https://www.cloudflare.com/ips-v4`; do
-    echo "set_real_ip_from $i;"
+    echo "set_real_ip_from $i;" > /tmp/ips-v4.txt;
 done)
 
-ss_sed "s/@CLOUDFLARE_IPV4_LIST/${CLOUDFLARE_IPV4_LIST}/g" "${TMP_CLOUDFLARE_CONF}"
+# ss_sed "s/@CLOUDFLARE_IPV4_LIST/${CLOUDFLARE_IPV4_LIST}/g" "${TMP_CLOUDFLARE_CONF}"
+ss_sed '/@CLOUDFLARE_IPV4_LIST/{r /tmp/ips-v4.txt' -e 'd}' "${TMP_CLOUDFLARE_CONF}"
 
 ## ipv6 list ##
 CLOUDFLARE_IPV6_LIST=$(for i in `curl -s -L https://www.cloudflare.com/ips-v6`; do
-    echo "set_real_ip_from $i;"
+    echo "set_real_ip_from $i;" > /tmp/ips-v6.txt;
 done)
 
-ss_sed "s/@CLOUDFLARE_IPV6_LIST/${CLOUDFLARE_IPV6_LIST}/g" "${TMP_CLOUDFLARE_CONF}"
+# ss_sed "s/@CLOUDFLARE_IPV6_LIST/${CLOUDFLARE_IPV6_LIST}/g" "${TMP_CLOUDFLARE_CONF}"
+ss_sed '/@CLOUDFLARE_IPV6_LIST/{r /tmp/ips-v6.txt' -e 'd}' "${TMP_CLOUDFLARE_CONF}"
 
 ss_mv "${TMP_CLOUDFLARE_CONF}" "${PATH_CLOUDFLARE_CONF}"
 
@@ -83,5 +85,6 @@ ss_mv "${TMP_CLOUDFLARE_CONF}" "${PATH_CLOUDFLARE_CONF}"
 ## Ref: https://github.com/ergin/nginx-cloudflare-real-ip
 ## Ref: https://slickstack.io/forum/topic/when-is-cloudflare-real-ip-actually-needed-for-wordpress
 ## Ref: https://stackoverflow.com/questions/36223802/store-for-loop-results-as-a-variable-in-bash
+## Ref: https://stackoverflow.com/questions/6790631/use-the-contents-of-a-file-to-replace-a-string-using-sed
 
 ## SS_EOF
