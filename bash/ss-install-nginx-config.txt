@@ -32,12 +32,15 @@ source /var/www/ss-functions
 
 ## A. Touch Timestamp File
 ## B. Message (Begin Script)
-## C. Cleanup Temporary Files
-## D. Retrieve Current Maintenance.html
+## C. Reset Permissions (Nginx SSL)
+## D. Generate DH Parameters (Conditional)
 ## E. Run SS-Encrypt-OpenSSL
 ## F. Generate Htpasswd File
 ## G. Install Nginx.conf
 ## H. Delete Old Server Blocks
+## I. Install Server Block (Development)
+## J. Install Server Block (Staging)
+## K. Install Server Block (Production)
 
 ####################################################################################################
 #### A. SS-Install-Nginx-Config: Touch Timestamp File ##############################################
@@ -58,25 +61,13 @@ ss_touch "${TIMESTAMP_SS_INSTALL_NGINX_CONFIG}"
 ss_echo "${COLOR_INFO}Running ss-install-nginx-config... ${COLOR_RESET}"
 
 ####################################################################################################
-#### C. SS-Install-Nginx-Config: Cleanup Temporary Files ###########################################
+#### C. SS-Install-Nginx-Config: Reset Permissions (Nginx SSL) #####################################
 ####################################################################################################
 
-## we briefly cleanup any leftover temporarily files that are relevant to this script ##
-## this is performed before and after associated code runs to avoid conflicts ##
-
-## delete tmp files ##
-ss_rm /tmp/nginx*
-ss_rm /tmp/server-block*
-ss_rm /tmp/default*
-ss_rm /tmp/letsencrypt.conf*
-ss_rm /tmp/openssl.conf*
-ss_rm /tmp/maintenance.html
-
-## run ss-perms-nginx-ssl ##
 source "${PATH_SS_PERMS_NGINX_SSL}"
 
 ####################################################################################################
-#### SS-Encrypt-Certbot: Generate DH Parameters #################################################
+#### D. SS-Install-Nginx-Config: Generate DH Parameters (Conditional) ##############################
 ####################################################################################################
 
 ## this will generate DH parameters using OpenSSL for use by Lets Encrypt certificates ##
@@ -386,7 +377,7 @@ ss_mv "${TMP_NGINX_CONF}" "${PATH_NGINX_CONF}"
 ss_rm /var/www/sites/*
 
 ####################################################################################################
-#### SS-Install-Nginx-Config: Install Nginx Server Block (Dev Site) ################################
+#### I. SS-Install-Nginx-Config: Install Server Block (Development) ################################
 ####################################################################################################
 
 ## here we install the Nginx server block for dev subdomain if enabled in ss-config ##
@@ -440,7 +431,7 @@ if [[ "${DEV_SITE}" == "true" ]]; then
 fi
 
 ####################################################################################################
-#### SS-Install-Nginx-Config: Install Nginx Server Block (Staging Site) ############################
+#### J. SS-Install-Nginx-Config: Install Server Block (Staging) ####################################
 ####################################################################################################
 
 ## here we install the Nginx server block for staging subdomain if enabled in ss-config ##
@@ -493,7 +484,7 @@ if [[ "${STAGING_SITE}" == "true" ]]; then
 fi
 
 ####################################################################################################
-#### SS-Install-Nginx-Config: Install Nginx Server Block (Production) ##############################
+#### K. SS-Install-Nginx-Config: Install Server Block (Production) #################################
 ####################################################################################################
 
 ## here we install the Nginx server block for production (default) site no matter what ##
@@ -561,7 +552,6 @@ fi
 ## here we generate slickstack.crt and slickstack.key as the default SSL for Nginx ##
 ## this approach is extremely stable and works fantastic with CloudFlare ##
 
-## run ss-encrypt-certbot ##
 source "${PATH_SS_ENCRYPT_CERTBOT}"
 
 ####################################################################################################
@@ -626,12 +616,12 @@ fi
 ## we briefly cleanup any leftover temporarily files that are relevant to this script ##
 ## this is performed before and after associated code runs to avoid conflicts ##
 
-## delete tmp files ##
 ss_rm /tmp/nginx*
 ss_rm /tmp/server-block*
 ss_rm /tmp/default*
 ss_rm /tmp/letsencrypt.conf*
 ss_rm /tmp/openssl.conf*
+ss_rm /tmp/maintenance.html
 
 ####################################################################################################
 #### SlickStack: Reset Permissions (SlickStack Scripts) ############################################
