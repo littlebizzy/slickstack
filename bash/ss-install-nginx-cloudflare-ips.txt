@@ -30,6 +30,7 @@ source /var/www/ss-functions
 
 ## A. Touch Timestamp File
 ## B. Message (Begin Script)
+## C. Install Cloudflare.conf
 
 ####################################################################################################
 #### A. SS-Install-Nginx-Cloudflare-IPs: Touch Timestamp File ######################################
@@ -50,6 +51,27 @@ ss_touch "${TIMESTAMP_SS_INSTALL_NGINX_CLOUDFLARE_IPS}"
 ss_echo "${COLOR_INFO}Running ss-install-nginx-cloudflare-ips... ${COLOR_RESET}"
 
 ####################################################################################################
+#### C. SS-Install-Nginx-Cloudflare-IPs: Install Cloudflare.conf ###################################
+####################################################################################################
+
+## ipv4 list ##
+CLOUDFLARE_IPV4_LIST=$(for i in `curl -s -L https://www.cloudflare.com/ips-v4`; do
+    echo "set_real_ip_from $i;"
+done)
+
+ss_sed "s/@CLOUDFLARE_IPV4_LIST/${CLOUDFLARE_IPV4_LIST}/g" "${TMP_CLOUDFLARE_CONF}"
+
+## ipv6 list ##
+CLOUDFLARE_IPV6_LIST=$(for i in `curl -s -L https://www.cloudflare.com/ips-v6`; do
+    echo "set_real_ip_from $i;"
+done)
+
+ss_sed "s/@CLOUDFLARE_IPV6_LIST/${CLOUDFLARE_IPV6_LIST}/g" "${TMP_CLOUDFLARE_CONF}"
+
+ss_mv "${TMP_CLOUDFLARE_CONF}" "${PATH_CLOUDFLARE_CONF}"
+
+
+####################################################################################################
 #### SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ###############
 ####################################################################################################
 
@@ -58,5 +80,6 @@ ss_echo "${COLOR_INFO}Running ss-install-nginx-cloudflare-ips... ${COLOR_RESET}"
 ## Ref: https://www.cloudflare.com/ips/
 ## Ref: https://github.com/ergin/nginx-cloudflare-real-ip
 ## Ref: https://slickstack.io/forum/topic/when-is-cloudflare-real-ip-actually-needed-for-wordpress
+## Ref: https://stackoverflow.com/questions/36223802/store-for-loop-results-as-a-variable-in-bash
 
 ## SS_EOF
