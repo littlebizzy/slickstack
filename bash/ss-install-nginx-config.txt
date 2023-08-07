@@ -42,6 +42,8 @@ source /var/www/ss-functions
 ## J. Install Server Block (Staging)
 ## K. Install Server Block (Production)
 
+## XX. Install Cloudflare.conf For Real IPs (Optional)
+
 ####################################################################################################
 #### A. SS-Install-Nginx-Config: Touch Timestamp File ##############################################
 ####################################################################################################
@@ -570,13 +572,20 @@ source "${PATH_SS_INSTALL_NGINX_SSL}"
 #### SS-Install-Nginx-Config: Enable TMPFS Mount (Optional) ########################################
 ####################################################################################################
 
-## set TMPFS cache storage if enabled ##
-if [[ "$FCGI_CACHE_TMPFS" == "true" ]]; then
+if [[ "${FCGI_CACHE_TMPFS}" == "true" ]]; then
     mount -t tmpfs -o size=${FCGI_CACHE_MEMORY} tmpfs /var/www/cache
     ss_sed '/tmpfs/d' /etc/fstab
     echo "tmpfs /var/www/cache tmpfs defaults,size=${FCGI_CACHE_MEMORY} 0 0" >> /etc/fstab
 else
     ss_sed '/tmpfs/d' /etc/fstab
+fi
+
+####################################################################################################
+#### SS-Install-Nginx-Config: Install Cloudflare.conf For Real IPs (Optional) ######################
+####################################################################################################
+
+if [[ "${NGINX_CLOUDFLARE_IPS}" == "true" ]]; then
+    source "${PATH_SS_INSTALL_NGINX_CLOUDFLARE_IPS}"
 fi
 
 ####################################################################################################
@@ -664,5 +673,7 @@ chmod 0700 /var/www/crons/custom/*cron* ## 0700 means only root/sudo can execute
 ## Ref: https://blog.benpri.me/blog/2019/01/13/why-you-shouldnt-be-using-bcrypt-and-scrypt/
 ## Ref: https://rpartlan.tumblr.com/post/141705066884/bye-bye-bcrypt-hello-openssl
 ## Ref: https://www.openssl.org/docs/manmaster/man1/openssl-passwd.html
+## Ref: https://github.com/littlebizzy/slickstack/issues/198
+## Ref: https://github.com/ergin/nginx-cloudflare-real-ip
 
 ## SS_EOF
