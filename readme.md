@@ -15,7 +15,7 @@ SlickStack is a free LEMP stack automation script written in Bash designed to en
 | Module | Mirrors | Version | What does SlickStack optimize? |
 | :------------- | :----------: | :----------: | :----------: |
 | **Ubuntu LTS** | [mirrors](https://mirrors.slickstack.io/modules/ubuntu/) | 22.04 | `crontab` + `gai.conf` + `sshd_config` + `sudoers` + `sysctl.conf` |
-| **Nginx** | [mirrors](https://mirrors.slickstack.io/modules/nginx/) | 1.18.x | `nginx.conf` + server blocks |
+| **Nginx** | [mirrors](https://mirrors.slickstack.io/modules/nginx/) | 1.18.x | `nginx.conf` + `cloudflare.conf` + server blocks |
 | **OpenSSL** | [mirrors](https://mirrors.slickstack.io/modules/openssl/) | 3.0.x | `slickstack.crt` + `slickstack.key` + `dhparam.pem` |
 | **Lets Encrypt** | [mirrors](https://mirrors.slickstack.io/modules/letsencrypt/) | 1.21.x | `cert.perm` + `chain.pem` + `fullchain.pem` + `privkey.pem` |
 | **MySQL** | [mirrors](https://mirrors.slickstack.io/modules/mysql/) | 8.0.x | `my.cnf` |
