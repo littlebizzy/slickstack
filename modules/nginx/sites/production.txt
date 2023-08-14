@@ -127,6 +127,14 @@ if ($query_string ~ "^lightbox(.*)$") {
         rewrite ^(.*)$ $uri? permanent;
 }
 
+## noindex ?s= queries ##
+## this addresses an apparent bug in WP core / WooCommerce where complex search queries are missing the noindex metatag ##
+## e.g. /?s=shirt&post_type=product is missing it causing mass amount of GSC errors like: Duplicate without user-selected canonical ##
+
+if ($query_string ~ "^s=(.*)$") {
+        set $robots "noindex, nofollow, nosnippet, noarchive";
+}
+
 ####################################################################################################
 #### E. Server Block (Production): Redirect Junk URLs ##############################################
 ####################################################################################################
