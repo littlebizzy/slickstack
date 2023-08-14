@@ -1175,11 +1175,12 @@ fi
 
 VALIDATE_TMP_SS_CONFIG_UPDATE=$(grep "${SS_EOF}" "${TMP_SS_CONFIG_UPDATE}")
 DB_NAME_NOW=$(source "${TMP_SS_CONFIG_UPDATE}"; echo "${DB_NAME}")
+SS_BUILD_ACTIVE=$(source /var/www/ss-config; echo "${SS_BUILD}" 2> /dev/null)
 if [[ -n "${VALIDATE_TMP_SS_CONFIG_UPDATE}" ]] && [[ -n "${DB_NAME_NOW}" ]]; then
     ss_mv "${TMP_SS_CONFIG_UPDATE}" "${PATH_SS_CONFIG}"
     ss_chown root:root "${PATH_SS_CONFIG}" ## must be root:root
     chmod 0700 "${PATH_SS_CONFIG}" ## must be 0700
-    ss_echo "${COLOR_INFO}ss-update-config: Your ss-config was successfully updated to latest version... ${COLOR_RESET}"
+    ss_echo "${COLOR_INFO}ss-update-config: Your ss-config was successfully updated to latest version ${SS_BUILD_ACTIVE}... ${COLOR_RESET}"
 else
     ss_echo "${COLOR_ERROR}ss-update-config: The boilerplate appears corrupt so update was skipped... ${COLOR_RESET}"
 fi
