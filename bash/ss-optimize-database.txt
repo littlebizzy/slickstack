@@ -32,6 +32,9 @@ source /var/www/ss-functions
 
 ## A. Touch Timestamp File
 ## B. Message (Begin Script)
+## C. Backup MySQL Database Before Proceeding (Via SS-Dump)
+## D. Convert Any MyISAM Tables To InnoDB Engine
+## E. Purge Cache (Memcached)
 
 ####################################################################################################
 #### A. SS-Optimize-Database: Touch Timestamp File #################################################
@@ -52,19 +55,17 @@ ss_touch "${TIMESTAMP_SS_OPTIMIZE_DATABASE}"
 ss_echo "${COLOR_INFO}Running ss-optimize-database... ${COLOR_RESET}"
 
 ####################################################################################################
-#### SS-Optimize-Database: Backup MySQL Database Before Proceeding (Via SS-Dump) ###################
+#### C. SS-Optimize-Database: Backup MySQL Database Before Proceeding (Via SS-Dump) ################
 ####################################################################################################
 
 ## here we first dump the live production database to /var/www/meta/ before proceeding ##
 ## this ensures a recent backup exists in case any database corruption occurs ##
 
-## run ss-dump-database ##
-source "$PATH_SS_DUMP_DATABASE"
+source "${PATH_SS_DUMP_DATABASE}"
 
 ####################################################################################################
 #### SS-Optimize-Database: Delete Junk Tables From MySQL Database ##################################
 ####################################################################################################
-
 
 # move to clean-database script
 
@@ -165,11 +166,8 @@ ss_mysql_root "${DB_NAME}" < /var/www/meta/drop_tables.sql
 # eg. Incorrect datetime value: '0000-00-00 00:00:00'
 # Invalid default value for 'date_created'
 
-
-
-
 ####################################################################################################
-#### SS-Optimize-Database: Convert Any MyISAM Tables To InnoDB Engine ##############################
+#### D. SS-Optimize-Database: Convert Any MyISAM Tables To InnoDB Engine ###########################
 ####################################################################################################
 
 ## the InnoDB engine is infinitely more robust for scaling and stability of LEMP stacks ##
@@ -199,10 +197,10 @@ ss_mysql_root --init-command="SET SQL_MODE='ALLOW_INVALID_DATES';" $DB_NAME < /v
 # https://stackoverflow.com/a/52334132/1718491
 
 ####################################################################################################
-#### SS-Optimize-Database: Purge Cache (Redis) #####################################################
+#### E. SS-Optimize-Database: Purge Cache (Memcached) ##############################################
 ####################################################################################################
 
-source "${PATH_SS_PURGE_REDIS}"
+source "${PATH_SS_PURGE_MEMCACHED}"
 
 ####################################################################################################
 #### SlickStack: Reset Permissions (SlickStack Scripts) ############################################
