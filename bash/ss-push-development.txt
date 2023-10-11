@@ -35,6 +35,7 @@ source /var/www/ss-functions
 ## C. Dump Production Database
 ## D. INTERACTIVE PROMPT CONFIRMATION TO PROCEED
 
+## E. Import Development Database To Production Database
 ## F. Copy All Relevant Files From Development To Production
 ## G. Fix Any Hardcoded Links In Production Theme Files
 ## H. Purge Cache (OPcache)
@@ -75,6 +76,29 @@ source "${PATH_SS_DUMP_DATABASE}"
 read -r -p "EXPERIMENTAL... BE CAREFUL... WILL OVERWRITE PRODUCTION... BACKUP FIRST: Push development files (wp-content and database) to production, are you sure? [y/N]" response
 if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]]
 then
+
+####################################################################################################
+#### E. SS-Push-Development: Import Development Database To Production Database ####################
+####################################################################################################
+
+## this snippet duplicates the dumped production database and imports it into MySQL ##
+## then it forecfully replaces the home/siteurl options to staging subdomain ##
+
+## import database ##
+ss_cp /var/www/backups/mysql/development.sql /tmp/development_push.sql
+chown mysql:mysql /tmp/development_push.sql ## does not matter if -L flag used below
+chmod 0644 /tmp/development_push.sql ## does not matter if -L flag used below
+ss_mysql_root "${DB_NAME}" < /tmp/development_push.sql
+
+## fix domain in database ##
+if [[ "${SS_APP}" == "wordpress" ]]; then
+    if [[ -n $(ss_mysql_user --execute "SHOW TABLES FROM ${DB_NAME} WHERE Tables_in_${DB_NAME} LIKE '${DB_PREFIX}options';" 2> /dev/null) ]]; then
+    ss_mysql_user --execute="UPDATE ${DB_NAME}.${DB_PREFIX}options SET option_value='https://${SITE_DOMAIN}' WHERE option_name='home'";
+    ss_mysql_user --execute="UPDATE ${DB_NAME}.${DB_PREFIX}options SET option_value='https://${SITE_DOMAIN}' WHERE option_name='siteurl'";
+    fi
+fi
+
+ss_rm /tmp/development_push.sql
 
 ####################################################################################################
 #### F. SS-Push-Development: Copy All Relevant Files From Development To Production ################
