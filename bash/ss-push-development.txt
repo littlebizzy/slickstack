@@ -35,6 +35,7 @@ source /var/www/ss-functions
 ## C. Dump Production Database
 ## D. INTERACTIVE PROMPT CONFIRMATION TO PROCEED
 
+## G. Fix Any Hardcoded Links In Production Theme Files
 ## H. Purge Cache (OPcache)
 ## I. Purge Cache (Transients)
 ## J. Purge Cache (Memcached)
@@ -70,11 +71,24 @@ source "${PATH_SS_DUMP_DATABASE}"
 #### D. SS-Push-Development: INTERACTIVE PROMPT CONFIRMATION TO PROCEED ############################
 ####################################################################################################
 
-read -r -p "EXPERIMENTAL... BE CAREFUL... WILL OVERWRITE PRODUCTION... BACKUP FIRST: Push staging files (wp-content and database) to production, are you sure? [y/N]" response
+read -r -p "EXPERIMENTAL... BE CAREFUL... WILL OVERWRITE PRODUCTION... BACKUP FIRST: Push development files (wp-content and database) to production, are you sure? [y/N]" response
 if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]]
 then
 
 
+####################################################################################################
+#### G. SS-Sync-Development: Fix Any Hardcoded Links In Production Theme Files #####################
+####################################################################################################
+
+## many themes (or custom-coded themes) often contain hardcoded HTML assets and links ##
+## here we forcefully fix these links to ensure production sites render properly ##
+
+## NEEDS WORK ##
+## fix hardcoded theme links ##
+# find /var/www/html/wp-content/themes/ -type f -exec ss_sed "s#https://dev.${SITE_DOMAIN_INCLUDING_WWW}#https://${SITE_DOMAIN_EXCLUDING_WWW}#g" {} +
+# find /var/www/html/wp-content/themes/ -type f -exec ss_sed "s#http://dev.${SITE_DOMAIN_INCLUDING_WWW}#https://${SITE_DOMAIN_EXCLUDING_WWW}#g" {} +
+# find /var/www/html/wp-content/themes/ -type f -exec ss_sed "s#https://dev.${SITE_DOMAIN_EXCLUDING_WWW}#https://${SITE_DOMAIN_EXCLUDING_WWW}#g" {} +
+# find /var/www/html/wp-content/themes/ -type f -exec ss_sed "s#http://dev.${SITE_DOMAIN_EXCLUDING_WWW}#https://${SITE_DOMAIN_EXCLUDING_WWW}#g" {} +
 
 ## end interactive ##
 else
