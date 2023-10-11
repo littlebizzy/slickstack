@@ -35,6 +35,7 @@ source /var/www/ss-functions
 ## C. Dump Production Database
 ## D. INTERACTIVE PROMPT CONFIRMATION TO PROCEED
 
+## F. Copy All Relevant Files From Development To Production
 ## G. Fix Any Hardcoded Links In Production Theme Files
 ## H. Purge Cache (OPcache)
 ## I. Purge Cache (Transients)
@@ -75,6 +76,18 @@ read -r -p "EXPERIMENTAL... BE CAREFUL... WILL OVERWRITE PRODUCTION... BACKUP FI
 if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]]
 then
 
+####################################################################################################
+#### F. SS-Push-Development: Copy All Relevant Files From Development To Production ################
+####################################################################################################
+
+## here we copy over a limited array of files and folders from development to production ##
+## all of /wp-content/ will be copied over but existing files will not be deleted ##
+
+## copy wp-content files over (includes media uploads) ##
+ss_rsync --max-size=512mb --exclude 'blacklist.txt' --exclude mu-plugins --exclude temp --exclude upgrade /var/www/html/dev/wp-content/ /var/www/html/wp-content
+
+## remove potential run-on subdirectories ##
+ss_rm /var/www/html/wp-content/wp-content*
 
 ####################################################################################################
 #### G. SS-Sync-Development: Fix Any Hardcoded Links In Production Theme Files #####################
