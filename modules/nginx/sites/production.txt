@@ -335,29 +335,34 @@ location ~* \.(asp|aspx|doc|docx|dwf|gpx|hwp|jsp|kml|kmz|log|odp|ods|odt|pdf|ppt
 
 location ~* \.php$ {
 set $ss_session "";
+set $setcookie "Path=/; HttpOnly; Secure";
 if ($http_cookie ~* "wp_woocommerce_session_[^=]*=([^%]+)%7C") {
-	set $ss_session wp_woocommerce_session_$1;
+        set $ss_session wp_woocommerce_session_$1;
 }
 if ($skip_cache = 0 ) {
-	set $ss_session "";
-	more_clear_headers "Set-Cookie*";
+        set $ss_session "";
+        more_clear_headers "Set-Cookie*";
 }
+
+## send .php requests to WordPress for error handling if not found ##
+try_files $uri $uri/ /index.php?$args;
+
+## fastcgi stuff ##
 include /etc/nginx/fastcgi.conf;
-try_files $uri $uri/ /index.php?$args; ## send .php requests to WordPress if not found
 fastcgi_split_path_info ^(.+\.php)(/.+)$;
 fastcgi_pass 127.0.0.1:9000;
 fastcgi_read_timeout 300;
 fastcgi_index index.php;
 fastcgi_cache WORDPRESS;
-fastcgi_cache_valid 200 301 404 @CACHEVALID;
+fastcgi_cache_valid 200 301 404 1440m;
 fastcgi_cache_bypass $skip_cache;
 fastcgi_no_cache $skip_cache;
 
+## universal robots header ##
 more_set_headers "X-Robots-Tag $robots";
-set $cachecontrol "nocache"; ## disable browser caching for dynamic pages
 
-## set-cookie on PHP content ##
-set $setcookie "Path=/; HttpOnly; Secure";
+## disable browser cache ##
+set $cachecontrol "nocache";
 }
 	
 ####################################################################################################
