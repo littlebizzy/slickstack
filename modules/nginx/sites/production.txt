@@ -334,13 +334,13 @@ location ~* \.(asp|aspx|doc|docx|dwf|gpx|hwp|jsp|kml|kmz|log|odp|ods|odt|pdf|ppt
 ## we also have to optimize cookies here too since working with WordPress ##
 
 location ~* \.php$ {
-set $rt_session "";
+set $ss_session "";
 if ($http_cookie ~* "wp_woocommerce_session_[^=]*=([^%]+)%7C") {
-	set $rt_session wp_woocommerce_session_$1;
+	set $ss_session wp_woocommerce_session_$1;
 }
 if ($skip_cache = 0 ) {
+	set $ss_session "";
 	more_clear_headers "Set-Cookie*";
-	set $rt_session "";
 }
 include /etc/nginx/fastcgi.conf;
 try_files $uri $uri/ /index.php?$args; ## send .php requests to WordPress if not found
