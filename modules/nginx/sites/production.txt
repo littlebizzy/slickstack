@@ -334,11 +334,17 @@ location ~* \.(asp|aspx|doc|docx|dwf|gpx|hwp|jsp|kml|kmz|log|odp|ods|odt|pdf|ppt
 ## we also have to optimize cookies here too since working with WordPress ##
 
 location ~* \.php$ {
+
+## default session is blank and cookie is secure ##
 set $ss_session "";
 set $setcookie "Path=/; HttpOnly; Secure";
+
+## unique session (cookie suffix) after users interact with woocommerce ##
 if ($http_cookie ~* "wp_woocommerce_session_[^=]*=([^%]+)%7C") {
         set $ss_session wp_woocommerce_session_$1;
 }
+
+## blank session and strip cookie header if cached page ##
 if ($skip_cache = 0 ) {
         set $ss_session "";
         more_clear_headers "Set-Cookie*";
