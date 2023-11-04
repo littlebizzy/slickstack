@@ -94,7 +94,10 @@ if [[ "${response}" =~ ^([yY][eE][sS]|[yY])$ ]]; then
     
         echo "found import.sql.gz and proceeding to import and overwrite database"
         chown -R "${SFTP_USER}":www-data /tmp/import.sql.gz
-        chmod 6775 /tmp/import.sql.gz
+
+        ## should we gunzip it first, run below commands, and then import.sql to database? ##
+        chmod g-s /tmp/import.sql.gz ## avoids gunzip errors
+        chmod 0777 /tmp/import.sql.gz ## avoids gunzip errors
         
         if [[ "${SS_DATABASE_REMOTE}" == "true" ]]; then
             ss_mysql_user "${DB_NAME}" < /tmp/import.sql.gz
@@ -137,5 +140,7 @@ chmod 0700 /var/www/crons/custom/*cron* ## 0700 means only root/sudo can execute
 
 ## Ref: https://github.com/littlebizzy/slickstack/blob/master/ss-dump.txt
 ## Ref: https://collegetimes.co/lemp-server/
+## Ref: https://unix.stackexchange.com/questions/630495/what-is-set-group-id-on-execution-ignored-and-why-am-i-unable-to-unzip-a-file
+## Ref: https://www.reddit.com/r/Ubuntu/comments/s39uyj/gzip_error_mydbsql_is_setgroupid_on_execution/
 
 ## SS_EOF
