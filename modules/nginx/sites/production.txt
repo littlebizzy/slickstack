@@ -446,7 +446,7 @@ location ~* \.(htm|html)$ {
 ## this snippet controls expiration headers and any other settings for static assets ##
 ## keep in mind that Cloudflare or CDNs will likely overwrite these settings ##
 
-location ~* \.(atom|bmp|bz2|css|doc|docx|eot|gif|gz|ico|jpeg|jpg|js|mid|midi|mp4|ogg|ogv|otf|png|ppt|rar|rss|rtf|svg|svgz|tar|tgz|ttc|ttf|wav|webp|woff|woff2|xls|zip)$ {
+location ~* \.(atom|bmp|bz2|doc|docx|gif|gz|ico|jpeg|jpg|mid|midi|mp4|ogg|ogv|png|ppt|rar|rss|rtf|svgz|tar|tgz|wav|webp|xls|zip)$ {
 	set $cachecontrol "public, max-age=15778476"; ## 6 months
 	set $setcookie "";
 }
@@ -458,8 +458,17 @@ location ~* \.(atom|bmp|bz2|css|doc|docx|eot|gif|gz|ico|jpeg|jpg|js|mid|midi|mp4
 ## avoids render security errors for cross-origin in certain browsers e.g. Firefox/IE ##
 ## this pretty much tells browsers to stop being paranoid and load your fonts ##
 
+####### AVOIDS MATCHING MULTIPLE LOCATION BLOCKS ###########
+
 location ~* \.(css|eot|js|otf|svg|ttc|ttf|woff|woff2)$ {
+	set $cachecontrol "public, max-age=15778476"; ## 6 months
+	set $setcookie "";
 	add_header Access-Control-Allow-Origin "*";
+	try_files $uri @redirect;
+}
+
+location @redirect {
+	return 302 https://@SITE_DOMAIN;
 }
 
 ####################################################################################################
@@ -737,6 +746,7 @@ location = /ads.txt {
 ## Ref: https://serverfault.com/questions/950857/use-include-in-nginx-server-block-but-where-to-save
 ## Ref: https://ashton.codes/set-cache-control-max-age-1-year/
 ## Ref: https://serverfault.com/questions/901761/nginx-redirect-to-a-php-file-with-try-files-if-required-php-file-not-found
+## Ref: https://serverfault.com/questions/411941/nginx-redirect-non-existant-files-on-https-to-http-with-try-files
 
 ## ORGANIZE BLOCKS BETTER PER: ##
 ## Ref: https://stackoverflow.com/questions/38911354/nginx-php-file-extension-does-not-work-with-try-files
