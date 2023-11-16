@@ -319,31 +319,41 @@ location ~ ^/wp-json/ {
 ## we also have to optimize cookies here too since working with WordPress ##
 
 location ~* \.php$ {
-set $rt_session "";
+
+## default session is blank and cookie is secure ##
+set $ss_session "";
+set $setcookie "Path=/; HttpOnly; Secure";
+
+## unique session (cookie suffix) after users interact with woocommerce ##
 if ($http_cookie ~* "wp_woocommerce_session_[^=]*=([^%]+)%7C") {
-	set $rt_session wp_woocommerce_session_$1;
+        set $ss_session wp_woocommerce_session_$1;
 }
+
+## blank session and strip cookie header if cached page ##
 if ($skip_cache = 0 ) {
-	more_clear_headers "Set-Cookie*";
-	set $rt_session "";
+        set $ss_session "";
+        more_clear_headers "Set-Cookie*";
 }
-include /etc/nginx/fastcgi.conf;
-# try_files $uri =404;
+
+## send .php requests to WordPress for error handling if not found ##
 try_files $uri $uri/ /index.php?$args;
+
+## fastcgi stuff ##
+include /etc/nginx/fastcgi.conf;
 fastcgi_split_path_info ^(.+\.php)(/.+)$;
 fastcgi_pass 127.0.0.1:9000;
 fastcgi_read_timeout 300;
 fastcgi_index index.php;
 fastcgi_cache WORDPRESS;
-fastcgi_cache_valid 200 301 404 @CACHEVALID;
+fastcgi_cache_valid 200 301 404 1440m;
 fastcgi_cache_bypass $skip_cache;
 fastcgi_no_cache $skip_cache;
 
+## universal robots header ##
 more_set_headers "X-Robots-Tag $robots";
-set $cachecontrol "nocache"; ## disable browser caching for dynamic pages
 
-## set-cookie on PHP content ##
-set $setcookie "Path=/; HttpOnly; Secure";
+## disable browser cache ##
+set $cachecontrol "nocache";
 }
 
 ####################################################################################################
