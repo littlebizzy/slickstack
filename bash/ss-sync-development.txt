@@ -105,14 +105,16 @@ if [[ "${DEV_SITE}" == "true" ]]; then
     ss_cp /var/www/backups/mysql/production.sql /tmp/sync-development.sql
     chown mysql:mysql /tmp/sync-development.sql ## does not matter if -L flag used below
     chmod 0644 /tmp/sync-development.sql ## does not matter if -L flag used below
-    ss_mysql_root development < /tmp/sync-development.sql
+    ss_mysql_user development < /tmp/sync-development.sql
     
     ## fix development home and siteurl fields (no mass search/replace to avoid potential conflicts) ##
     if [[ "${SS_APP}" == "wordpress" ]]; then
+
         if [[ -n $(ss_mysql_user --execute "SHOW TABLES FROM development WHERE Tables_in_development LIKE '${DB_PREFIX}options';" 2> /dev/null) ]]; then
             ss_mysql_user --execute="UPDATE development.${DB_PREFIX}options SET option_value='https://dev.${SITE_DOMAIN_EXCLUDING_WWW}' WHERE option_name='home'";
             ss_mysql_user --execute="UPDATE development.${DB_PREFIX}options SET option_value='https://dev.${SITE_DOMAIN_EXCLUDING_WWW}' WHERE option_name='siteurl'";
         fi
+
     fi
     
     ## delete tmp files ##
