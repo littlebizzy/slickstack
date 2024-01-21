@@ -8,7 +8,7 @@ SlickStack is a free LEMP stack automation script written in Bash designed to en
 
 [**Become a sponsor**](https://github.com/sponsors/jessuppi) and receive access to our **#perma-lounge** channel on Discord. Your donations and public display of support for SlickStack are what keep this project going. Thank you very much!
 
-## Core Modules
+## Modules
 
 *Last updated: Nov 17, 2023*
 
@@ -20,7 +20,7 @@ SlickStack is a free LEMP stack automation script written in Bash designed to en
 | **Lets Encrypt** | [mirrors](https://mirrors.slickstack.io/modules/letsencrypt/) | 1.21.x | `cert.perm` + `chain.pem` + `fullchain.pem` + `privkey.pem` |
 | **MySQL** | [mirrors](https://mirrors.slickstack.io/modules/mysql/) | 8.0.x | `my.cnf` |
 | **PHP-FPM** | [mirrors](https://mirrors.slickstack.io/modules/php-fpm/) | 8.1.x | `php.ini` + `php-fpm.conf` + `www.conf` |
-| **Memcached** | [mirrors](https://mirrors.slickstack.io/modules/redis/) | 1.6.x | `memcached.conf` + `object-cache.php` |
+| **Memcached** | [mirrors](https://mirrors.slickstack.io/modules/memcached/) | 1.6.x | `memcached.conf` + `object-cache.php` |
 | **WordPress** | [mirrors](https://mirrors.slickstack.io/modules/wordpress/) | 6.4.x | some WP Core junk files are removed by `ss-clean` |
 | **WP-CLI** | [mirrors](https://mirrors.slickstack.io/modules/wordpress/wp-cli/) | 2.9.x | some commands are disabled |
 | **Adminer** | [mirrors](https://mirrors.slickstack.io/modules/adminer/) | 4.8.1 | default config |
