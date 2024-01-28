@@ -125,6 +125,13 @@ else
     ss_sed "/#@NOINDEX# /d" "${TMP_NGINX_CONF}"
 fi
 
+## remove content-security-policy for WP Multisite installations (causes conflict because proper domain can't be determined) ##
+if [[ "${WP_MULTISITE}" == "true" ]]; then 
+    ss_sed "/#@NOT_FOR_MULTISITE# /d" "${TMP_NGINX_CONF}"
+else 
+    ss_sed "s/#@NOT_FOR_MULTISITE# //g" "${TMP_NGINX_CONF}"
+fi
+
 ## access log ##
 ## force enabled for now ##
 # if [[ -z "${NGINX_ACCESS_LOG}" ]]; then 
