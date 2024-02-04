@@ -1,3 +1,5 @@
+<img alt="SlickStack logo" src="https://slickstack.io/wp-content/uploads/2022/11/slickstack-logo-smooth-512x512-1.png" width="100px">
+
 # SlickStack
 
 SlickStack is a free LEMP stack automation script written in Bash designed to enhance and simplify WordPress provisioning, performance, and security.
