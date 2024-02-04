@@ -49,7 +49,9 @@ Because it’s written purely in [Bash](https://en.wikipedia.org/wiki/Bash_(Unix
 
 The below installation steps assume that you've already spun up a dedicated Ubuntu Linux VPS server (KVM) with at least 2GB RAM memory and that you are now logged in via SSH:
 
-`cd /tmp/ && wget -O ss slick.fyi && bash ss`
+```
+cd /tmp/ && wget -O ss slick.fyi/ss && bash ss
+```
 
 **NOTE:** SlickStack [ss] requires CloudFlare to be activated on your domain before SSL (HTTPS) will be recognized as a fully secure and CA-signed domain, because of its self-signed OpenSSL certificate.
 
