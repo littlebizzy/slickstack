@@ -8,7 +8,7 @@ SlickStack is a free LEMP stack automation script written in Bash designed to en
 
 [backamblock](https://github.com/backamblock), [yamanmucahit](https://github.com/yamanmucahit), [maxalerator](https://github.com/maxalerator), [konkova](https://github.com/konkova), [HDBear](https://github.com/HDBear), [Politicalite](https://github.com/politicalite), [liwernyap](https://github.com/liwernyap), [vivdev](https://github.com/vivdev), [hamzah](https://github.com/hamzah), [gingibash](https://github.com/gingibash), [damiafaw](https://github.com/damiafaw), [trevplaig](https://github.com/trevplaig), [hargums](https://github.com/hargums), [volneanschi](https://github/volneanschi), [OSO Electric Equipment](https://github.com/Oso-Electric-Equipment), [vladbejenaru](https://github.com/vladbejenaru), [alexbohariuc](https://github.com/alexbohariuc), [romfeo](https://github/romfeo)
 
-[**Become a sponsor**](https://github.com/sponsors/jessuppi) and receive access to our **#perma-lounge** channel on Discord. Your donations and public display of support for SlickStack are what keep this project going. Thank you very much!
+[**Become a sponsor**](https://github.com/sponsors/jessuppi) and receive access to our **#perma-lounge** channel on Discord. Your donations and public displays of support for SlickStack are what keep this project going. Thank you very much!
 
 ## Modules
 
@@ -28,12 +28,6 @@ SlickStack is a free LEMP stack automation script written in Bash designed to en
 | **Adminer** | [mirrors](https://mirrors.slickstack.io/modules/adminer/) | 4.8.1 | default config |
 | **Git** | [mirrors](https://mirrors.slickstack.io/modules/git/) | 2.34.x | default config |
 | **UFW Firewall** | [mirrors](https://mirrors.slickstack.io/modules/ufw-firewall/) | 0.36.x | `ufw` + `ufw.conf` + `user-rules` |
-
-## Abstract
-
-Most of modern computing history can be traced back to one thing: [Unix](https://en.wikipedia.org/wiki/Unix). Indeed, one of the only things about web servers that hasn't changed much in several decades is the Unix shell (Bash) command language. Keeping the same pragmatism and simplicity in mind that inspired LittleBizzy's managed hosting, SlickStack [ss] is coded entirely in Bash.
-
-While there are [clear benefits](https://medium.com/capital-one-developers/bashing-the-bash-replacing-shell-scripts-with-python-d8d201bc0989) to programming languages like Python or Ruby, provisioning a server with WordPress isn't very complicated, and every Linux machine comes with [Bash built into it](https://www.infoworld.com/article/2893519/linux/perl-python-ruby-are-nice-bash-is-where-its-at.html). Plus, let's not forget [what happens](https://discourse.roots.io/t/updated-to-ansible-2-4-deploys-broken-now-what/10588) when typical web agencies rely on advanced dependencies like Ansible... yikes! Onward, then...
 
 ## Requirements
 
