@@ -512,22 +512,7 @@ else
 fi
 
 ## replace site variables ##
-
 SITE_DOMAIN_EXCLUDING_WWW=$(echo "${SITE_DOMAIN/www./}")
-
-## replace adminer url random string ##
-ss_touch /var/www/meta/dynamic/random_strings
-
-## https://stackoverflow.com/questions/4749330/how-to-test-if-string-exists-in-file-with-bash
-isInFile=$(cat /var/www/meta/dynamic/random_strings | grep -c "ADMINER_URL=")
-if [ $isInFile -eq 0 ]; then
-    echo "ADMINER_URL=@ADMINER_RANDOM_URL" >> /var/www/meta/dynamic/random_strings
-else
-   echo "found Adminer URL already in /var/www/meta/dynamic/random_strings"
-fi
-
-ss_sed "s/@ADMINER_RANDOM_URL/$(openssl rand -hex 12)/g" /var/www/meta/dynamic/random_strings
-
 
 ss_sed "s/@SITE_DOMAIN_EXCLUDING_WWW/${SITE_DOMAIN_EXCLUDING_WWW}/g" "${TMP_NGINX_BLOCK_PRODUCTION}"
 ss_sed "s/@SITE_DOMAIN_INCLUDING_WWW/${SITE_DOMAIN_INCLUDING_WWW}/g" "${TMP_NGINX_BLOCK_PRODUCTION}"
@@ -535,6 +520,9 @@ ss_sed "s/@SITE_DOMAIN/${SITE_DOMAIN}/g" "${TMP_NGINX_BLOCK_PRODUCTION}"
 ss_sed "s/@SITE_TLD/${SITE_TLD}/g" "${TMP_NGINX_BLOCK_PRODUCTION}"
 ss_sed "s/@DOMAIN/${SITE_DOMAIN}/g" "${TMP_NGINX_BLOCK_PRODUCTION}"
 ss_sed "s/@CACHEVALID/${FCGI_CACHE_VALID}/g" "${TMP_NGINX_BLOCK_PRODUCTION}"
+
+## replace adminer url random string ##
+ss_sed "s/@ADMINER_RANDOM_URL/${ADMINER_URL}/g" "${TMP_NGINX_BLOCK_PRODUCTION}"
 
 ## Multisite domain mapping (optional) ##
 if [[ "${WP_MULTISITE_DOMAIN_MAPPING}" == "true" ]]; then 
