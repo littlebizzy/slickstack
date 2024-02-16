@@ -12,9 +12,9 @@ SlickStack is a free LEMP stack automation script written in Bash designed to en
 
 ## Installation
 
-Because it’s written purely in Bash (Unix shell), SlickStack has no dependencies and works on any Ubuntu Linux machine. Unlike heavier provisioning tools like EasyEngine or Ansible, there are no third party languages required such as Python or Docker, meaning a lighter and simpler approach to WordPress servers.
+Because it’s written purely in Bash (Unix shell), SlickStack has no dependencies and works on any Ubuntu LTS machine. Unlike heavier provisioning tools like EasyEngine or Ansible, there are no third party languages required such as Python or Docker, meaning a lighter and simpler approach to WordPress servers.
 
-The below installation steps assume that you've already spun up a KVM cloud server on Ubuntu LTS, with at least 2GB+ RAM, and that you are logged in via SSH as `root`:
+The below installation steps assume that you've already spun up a [KVM cloud server](https://slickstack.io/hosting) on Ubuntu LTS, with at least 2GB+ RAM, and that you are logged in via SSH as `root`:
 
 ```
 cd /tmp/ && wget -O ss slick.fyi/ss && bash ss
@@ -22,9 +22,9 @@ cd /tmp/ && wget -O ss slick.fyi/ss && bash ss
 
 NOTE: SlickStack requires CloudFlare to be activated on your domain before SSL (HTTPS) will be recognized as a fully secure and CA-signed domain, because of its self-signed OpenSSL certificate.
 
-From this point forward, you can manage your SlickStack [ss] server by simply using the `sudo bash` command on any one of the included **ss** scripts located within the `/var/www/` directory, as needed. However, in most cases there shouldn't be any need for much hands-on management as the server will intelligently run various cron jobs which connect to this GitHub repo (or whichever fork of this repo that your team has setup... be sure to modify all `wget` sources).
+From this point forward, you can manage your SlickStack server by simply using the `sudo bash` command on any one of the included **ss** scripts located within the `/var/www/` directory, as needed. However, in most cases there shouldn't be any need for much hands-on management as the server will intelligently run various cron jobs which connect to this GitHub repo.
 
-You can safely re-install SlickStack [ss] anytime via `sudo bash /var/www/ss-install` without causing any conflicts or data loss since the installation process is completely [idempotent](https://en.wikipedia.org/wiki/Idempotence).
+You can safely re-install SlickStack anytime via `sudo bash /var/www/ss-install` without causing any conflicts or data loss since the installation process is completely idempotent.
 
 ## Modules
 
