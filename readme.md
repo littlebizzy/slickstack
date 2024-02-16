@@ -14,7 +14,7 @@ SlickStack is a free LEMP stack automation script written in Bash designed to en
 
 Because it’s written purely in Bash (Unix shell), SlickStack has no dependencies and works on any Ubuntu Linux machine. Unlike heavier provisioning tools like EasyEngine or Ansible, there are no third party languages required such as Python or Docker, meaning a lighter and simpler approach to WordPress servers.
 
-The below installation steps assume that you've already spun up a KVM cloud server with at least 2GB+ RAM memory and that you are logged in via SSH:
+The below installation steps assume that you've already spun up a KVM cloud server on Ubuntu LTS, with at least 2GB+ RAM, and that you are logged in via SSH as `root`:
 
 ```
 cd /tmp/ && wget -O ss slick.fyi/ss && bash ss
