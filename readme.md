@@ -24,14 +24,14 @@ SlickStack is a free LEMP stack automation script written in Bash designed to en
 | **PHP-FPM** | [mirrors](https://mirrors.slickstack.io/modules/php-fpm/) | 8.1.x | `php.ini` + `php-fpm.conf` + `www.conf` |
 | **Memcached** | [mirrors](https://mirrors.slickstack.io/modules/memcached/) | 1.6.x | `memcached.conf` + `object-cache.php` |
 | **WordPress** | [mirrors](https://mirrors.slickstack.io/modules/wordpress/) | 6.4.x | some WP Core junk files removed by `ss-clean-files` |
-| **WP-CLI** | [mirrors](https://mirrors.slickstack.io/modules/wordpress/wp-cli/) | 2.10.x | some commands disabled |
+| **WP-CLI** | [mirrors](https://mirrors.slickstack.io/modules/wordpress/wp-cli/) | 2.10.x | some `wp` commands disabled |
 | **Adminer** | [mirrors](https://mirrors.slickstack.io/modules/adminer/) | 4.8.1 | default config |
 | **Git** | [mirrors](https://mirrors.slickstack.io/modules/git/) | 2.34.x | default config |
 | **UFW Firewall** | [mirrors](https://mirrors.slickstack.io/modules/ufw-firewall/) | 0.36.x | `ufw` + `ufw.conf` + `user-rules` |
 
 ## Requirements
 
-*NOTE: SlickStack [ss] will never support installing multiple TLD domains on a single server. This is to ensure top speed, stability, and security (i.e. technical SEO). We will also never include any type of UI interface, to allow third party applications to integrate SlickStack [ss] with management tools as they best see fit.*
+*NOTE: SlickStack will never support installing multiple TLDs (multi-tenancy) on a single server. This is to ensure top speed, stability, and security (i.e. technical SEO). We will also never include any type of UI, to allow third party applications to integrate SlickStack with management tools as they best see fit.*
 
 SlickStack [ss] works best on cloud servers with KVM virtualization that have at least 2GB RAM from [quality network providers](https://slickstack.io/hosting) such as DigitalOcean, Vultr, Hostwinds, and AWS Lightsail. The underlying LEMP stack configuration is meant primarily for high-traffic single-site WordPress installations, although support for [Multisite](https://codex.wordpress.org/Create_A_Network) installations is being planned. SlickStack [ss] supports WordPress, WooCommerce, bbPress, and BuddyPress "out of the box" with optimized settings that scale -- what this means is that you can upgrade your cloud server to a bigger or better instance, and run `ss-install` again, and most settings will (re)optimize themselves.
 
