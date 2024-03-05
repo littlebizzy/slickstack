@@ -35,15 +35,15 @@ source /var/www/ss-functions
 ## C. Install Ubuntu Utils
 ## D. Retrieve WordPress Core ZIP 
 ## E. Install WordPress Core (Production)
-## F. Install WordPress Core (Staging)
-## G. Install WordPress Core (Development)
-## H. Populate Production Database Options (Conditional)
-## I. Populate Development Database Options (Conditional)
-## J. Modify Site Domains In Database
-## K. Sync Production Database To Staging
-## L. Purge Cache (PHP OPcache)
-## M. Reset Permissions (WordPress Core)
-## N. Cleanup Temporary Files
+## F. Install HoverCraft WordPress Theme (Production)
+## G. Install WordPress Core (Staging)
+## H. Install WordPress Core (Development)
+## I. Populate Production Database Options (Conditional)
+## J. Populate Development Database Options (Conditional)
+## K. Modify Site Domains In Database
+## L. Sync Production Database To Staging
+## M. Purge Cache (PHP OPcache)
+## N. Reset Permissions (WordPress Core)
 
 ####################################################################################################
 #### A. SS-Install-WordPress-Packages: Touch Timestamp File ########################################
@@ -111,24 +111,14 @@ ss_rsync /var/www/html/wordpress/* /var/www/html
 ss_rm /var/www/html/wordpress
 ss_rm /var/www/html/wordpress.zip*
 
-## install hovercraft default theme ##
-ss_rm /tmp/hovercraft*
-ss_rm /tmp/master*.zip*
-ss_wget "${TMP_HOVERCRAFT_ZIP}" "${GITHUB_HOVERCRAFT_ZIP}"
-ss_unzip "${TMP_HOVERCRAFT_ZIP}" -d /tmp
-ss_mv /tmp/hovercraft-master /tmp/hovercraft
-chown -R www-data:slickstack /tmp/hovercraft
-ss_chmod 775 /tmp/hovercraft
-ss_mkdir /var/www/html/wp-content/themes/hovercraft
-ss_rm /var/www/html/wp-content/themes/hovercraft/*
-ss_rsync /tmp/hovercraft/* /var/www/html/wp-content/themes/hovercraft
-chown -R www-data:slickstack /var/www/html/wp-content/themes/hovercraft
-ss_chmod 775 /var/www/html/wp-content/themes/hovercraft
-ss_rm /tmp/hovercraft*
-ss_rm /tmp/master*.zip*
+####################################################################################################
+#### F. SS-Install-WordPress-HoverCraft: Install HoverCraft WordPress Theme (Production) ###########
+####################################################################################################
+
+source "${PATH_SS_INSTALL_WORDPRESS_HOVERCRAFT}"
 
 ####################################################################################################
-#### F. SS-Install-WordPress-Packages: Install WordPress Core (Staging) ############################
+#### G. SS-Install-WordPress-Packages: Install WordPress Core (Staging) ############################
 ####################################################################################################
 
 ## this installation process removes outdated WordPress Core files or potential malware ##
@@ -167,7 +157,7 @@ if [[ "${STAGING_SITE}" == "true" ]]; then
 fi
 
 ####################################################################################################
-#### G. SS-Install-WordPress-Packages: Install WordPress Core (Development) ########################
+#### H. SS-Install-WordPress-Packages: Install WordPress Core (Development) ########################
 ####################################################################################################
 
 ## this installation process removes outdated WordPress Core files or potential malware ##
@@ -206,7 +196,7 @@ if [[ "${DEV_SITE}" == "true" ]]; then
 fi
 
 ####################################################################################################
-#### H. SS-Install-WordPress-Packages: Populate Production Database Options (Conditional) ##########
+#### I. SS-Install-WordPress-Packages: Populate Production Database Options (Conditional) ##########
 ####################################################################################################
 
 ## minimum wp_options required to avoid /wp-admin/install.php redirect are below: ##
@@ -222,7 +212,7 @@ if [[ -z "${GREP_WP_OPTIONS_STRING_PRODUCTION}" ]]; then
 fi
 
 ####################################################################################################
-#### I. SS-Install-WordPress-Packages: Populate Development Database Options (Conditional) #############
+#### J. SS-Install-WordPress-Packages: Populate Development Database Options (Conditional) #############
 ####################################################################################################
 
 ## minimum wp_options required to avoid /wp-admin/install.php redirect are below: ##
@@ -240,7 +230,7 @@ if [[ "${DEV_SITE}" == "true" ]]; then
 fi
 
 ####################################################################################################
-#### J. SS-Install-WordPress-Packages: Modify Site Domains In Database #############################
+#### K. SS-Install-WordPress-Packages: Modify Site Domains In Database #############################
 ####################################################################################################
 
 ## here we manually fix certain fields in the database to ensure proper functionality ##
@@ -286,7 +276,7 @@ fi
 # ss_mysql_root --execute="UPDATE ${DB_NAME}.${DB_PREFIX}sitemeta SET option_value='5000' WHERE option_name='fileupload_maxk'";
 
 ####################################################################################################
-#### K. SS-Install-WordPress-Packages: Sync Production Database To Staging #########################
+#### L. SS-Install-WordPress-Packages: Sync Production Database To Staging #########################
 ####################################################################################################
 
 ## we include the sync to staging while installing WordPress Core to avoid blank sites ##
@@ -296,14 +286,14 @@ fi
 source "${PATH_SS_SYNC_STAGING}"
 
 ####################################################################################################
-#### L. SS-Install-WordPress-Packages: Purge Cache (PHP OPcache) ###################################
+#### M. SS-Install-WordPress-Packages: Purge Cache (PHP OPcache) ###################################
 ####################################################################################################
 
 ## run ss-purge-opcache ##
 source "${PATH_SS_PURGE_OPCACHE}"
 
 ####################################################################################################
-#### M. SS-Install-WordPress-Packages: Reset Permissions (WordPress Packages) ######################
+#### N. SS-Install-WordPress-Packages: Reset Permissions (WordPress Packages) ######################
 ####################################################################################################
 
 ## run ss-perms-wordpress-core ##
