@@ -45,7 +45,7 @@
 ## this build version ensures compatibility with the currently active ss-config file ##
 ## it must match the localhost ss-config otherwise installation will fail ##
 
-SS_INSTALL_BUILD="MAR2024E"
+SS_INSTALL_BUILD="MAR2024F"
 
 ####################################################################################################
 #### B. SS-Install: Validate (Restore) SS-Functions ################################################
@@ -267,6 +267,9 @@ ss_sed "s/@DB_PASSWORD_ROOT/$(openssl rand -hex 12)/g" /tmp/ss-config-wizard
 ## replace user database password field with random string ##
 ss_sed "s/@DB_PASSWORD_USER/$(openssl rand -hex 12)/g" /tmp/ss-config-wizard
 
+## replace database user placeholder with random string ##
+ss_sed "s/@DB_USER/$(openssl rand -hex 12)/g" /tmp/ss-config-wizard
+
 ## random string for Adminer URL ##
 ss_sed "s/@RANDOM_STRING_ADMINER_URL/$(openssl rand -hex 12)/g" /tmp/ss-config-wizard
 
@@ -373,13 +376,6 @@ ss_print "${COLOR_RESET}\n"
 ## PROMPT: choose database name (default = production) ##
 read -t 300 -p "$(ss_echo ${LIGHTGRAY}"Choose database name (single database): "${LIGHTGREEN})" -e -i 'production' ss_var_db_name || ss_var_db_name=production
 ss_sed "s|@DB_NAME|${ss_var_db_name}|g" /tmp/ss-config-wizard
-    
-## new line ##
-ss_print "${COLOR_RESET}\n"
-    
-## PROMPT: choose database user (default = robin) ##
-read -t 300 -p "$(ss_echo ${LIGHTGRAY}"Choose database user (non-root user): "${LIGHTGREEN})" -e -i 'robin' ss_var_db_user || ss_var_db_user=robin
-ss_sed "s|@DB_USER|${ss_var_db_user}|g" /tmp/ss-config-wizard
     
 ## new line ##
 ss_print "${COLOR_RESET}\n"
