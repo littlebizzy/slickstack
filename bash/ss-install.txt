@@ -45,7 +45,7 @@
 ## this build version ensures compatibility with the currently active ss-config file ##
 ## it must match the localhost ss-config otherwise installation will fail ##
 
-SS_INSTALL_BUILD="MAR2024K"
+SS_INSTALL_BUILD="MAR2024L"
 
 ####################################################################################################
 #### B. SS-Install: Validate (Restore) SS-Functions ################################################
@@ -276,6 +276,14 @@ ss_sed "s|@DB_NAME|production|g" /tmp/ss-config-wizard
 ss_sed "s|@SS_ADMINER_PUBLIC|true|g" /tmp/ss-config-wizard
 ss_sed "s|@DB_PREFIX|wp_|g" /tmp/ss-config-wizard
 ss_sed "s|@SS_REMOTE_BACKUPS|none|g" /tmp/ss-config-wizard
+ss_sed "s|@SSH_KEYS|false|g" /tmp/ss-config-wizard
+ss_sed "s|@SS_WORDPRESS_PLUGIN_BLACKLIST|true|g" /tmp/ss-config-wizard
+ss_sed "s|@SITE_NOINDEX|false|g" /tmp/ss-config-wizard
+ss_sed "s|@STAGING_SITE_PROTECT|false|g" /tmp/ss-config-wizard
+ss_sed "s|@DEV_SITE_PROTECT|false|g" /tmp/ss-config-wizard
+ss_sed "s|@NGINX_CLOUDFLARE_IPS|false|g" /tmp/ss-config-wizard
+ss_sed "s|@STAGING_SITE_STATUS|false|g" /tmp/ss-config-wizard
+ss_sed "s|@DEV_SITE_STATUS|false|g" /tmp/ss-config-wizard
 
 ## random string for Adminer URL ##
 ss_sed "s/@RANDOM_STRING_ADMINER_URL/$(openssl rand -hex 12)/g" /tmp/ss-config-wizard
@@ -291,14 +299,7 @@ ss_print "${COLOR_RESET}\n"
 sudopass_random=$(openssl rand -hex 12)
 read -t 300 -p "$(ss_echo ${LIGHTGRAY}"Choose sudo password (should be strong): "${LIGHTGREEN})" -e -i ${sudopass_random} ss_var_sudo_password || ss_var_sudo_password=${sudopass_random}
 ss_sed "s|@SUDO_PASSWORD|${ss_var_sudo_password}|g" /tmp/ss-config-wizard
-    
-## new line ##
-ss_print "${COLOR_RESET}\n"
-    
-## PROMPT: enable SSH keys (default = false) ##
-read -t 300 -p "$(ss_echo ${LIGHTGRAY}"Enable SSH keys (advanced users only): "${LIGHTGREEN})" -e -i 'false' ss_var_ssh_keys || ss_var_ssh_keys=false
-ss_sed "s|@SSH_KEYS|${ss_var_ssh_keys}|g" /tmp/ss-config-wizard
-    
+
 ## new line ##
 ss_print "${COLOR_RESET}\n"
     
@@ -323,13 +324,6 @@ ss_sed "s|@SS_LANGUAGE|${ss_var_language}|g" /tmp/ss-config-wizard
 ## new line ##
 ss_print "${COLOR_RESET}\n"
     
-## PROMPT: enable plugin blacklist (default = true) ##
-read -t 300 -p "$(ss_echo ${LIGHTGRAY}"Enable the WordPress plugin blacklist: "${LIGHTGREEN})" -e -i 'true' ss_var_plugin_blacklist || ss_var_plugin_blacklist=true
-ss_sed "s|@SS_WORDPRESS_PLUGIN_BLACKLIST|${ss_var_plugin_blacklist}|g" /tmp/ss-config-wizard
-    
-## new line ##
-ss_print "${COLOR_RESET}\n"
-    
 ## PROMPT: link your pilot file (default = blank) ##
 read -t 300 -p "$(ss_echo ${LIGHTGRAY}"Link to your pilot file (leave blank if none): "${LIGHTGREEN})" -e -i '' ss_var_pilot_file || ss_var_pilot_file=
 ss_sed "s|@SS_PILOT_FILE|${ss_var_pilot_file}|g" /tmp/ss-config-wizard
@@ -340,13 +334,6 @@ ss_print "${COLOR_RESET}\n"
 ## PROMPT: using a remote database (default = wordpress) ##
 read -t 300 -p "$(ss_echo ${LIGHTGRAY}"Are you using a remote database: "${LIGHTGREEN})" -e -i 'false' ss_var_database_remote || ss_var_database_remote=false
 ss_sed "s|@SS_DATABASE_REMOTE|${ss_var_database_remote}|g" /tmp/ss-config-wizard
-    
-## new line ##
-ss_print "${COLOR_RESET}\n"
-
-## PROMPT: enable Cloudflare real IPs ##
-read -t 300 -p "$(ss_echo ${LIGHTGRAY}"Enable cloudflare.conf (real IP headers)?: "${LIGHTGREEN})" -e -i 'false' ss_var_cloudflare_ips || ss_var_cloudflare_ips=false
-ss_sed "s|@NGINX_CLOUDFLARE_IPS|${ss_var_cloudflare_ips}|g" /tmp/ss-config-wizard
     
 ## new line ##
 ss_print "${COLOR_RESET}\n"
@@ -379,13 +366,6 @@ ss_sed "s|@SITE_DOMAIN|${ss_var_site_domain}|g" /tmp/ss-config-wizard
 ## new line ##
 ss_print "${COLOR_RESET}\n"
     
-## PROMPT: enable noindex server (default = false) ##
-read -t 300 -p "$(ss_echo ${LIGHTGRAY}"Enable site noindexing (block robots): "${LIGHTGREEN})" -e -i 'false' ss_var_site_noindex || ss_var_site_noindex=false
-ss_sed "s|@SITE_NOINDEX|${ss_var_site_noindex}|g" /tmp/ss-config-wizard
-    
-## new line ##
-ss_print "${COLOR_RESET}\n"
-    
 ## PROMPT: enable WP Multisite ##
 read -t 300 -p "$(ss_echo ${LIGHTGRAY}"Enable WordPress Multisite (experimental): "${LIGHTGREEN})" -e -i 'false' ss_var_wp_multisite_status || ss_var_wp_multisite_status=false
 ss_sed "s|@WP_MULTISITE_STATUS|${ss_var_wp_multisite_status}|g" /tmp/ss-config-wizard
@@ -396,34 +376,6 @@ ss_print "${COLOR_RESET}\n"
 ## PROMPT: enable Multisite subdomains ##
 read -t 300 -p "$(ss_echo ${LIGHTGRAY}"Enable subdomains for WP Multisite?: "${LIGHTGREEN})" -e -i 'true' ss_var_wp_multisite_subdomains || ss_var_wp_multisite_subdomains=true
 ss_sed "s|@WP_MULTISITE_SUBDOMAINS|${ss_var_wp_multisite_subdomains}|g" /tmp/ss-config-wizard
-    
-## new line ##
-ss_print "${COLOR_RESET}\n"
-    
-## PROMPT: enable staging site ##
-read -t 300 -p "$(ss_echo ${LIGHTGRAY}"Enable staging site (subdomain): "${LIGHTGREEN})" -e -i 'false' ss_var_staging_site || ss_var_staging_site=false
-ss_sed "s|@STAGING_SITE_STATUS|${ss_var_staging_site}|g" /tmp/ss-config-wizard
-    
-## new line ##
-ss_print "${COLOR_RESET}\n"
-    
-## PROMPT: protect staging site ##
-read -t 300 -p "$(ss_echo ${LIGHTGRAY}"Password protect staging site: "${LIGHTGREEN})" -e -i 'false' ss_var_staging_site_protect || ss_var_staging_site_protect=false
-ss_sed "s|@STAGING_SITE_PROTECT|${ss_var_staging_site_protect}|g" /tmp/ss-config-wizard
-    
-## new line ##
-ss_print "${COLOR_RESET}\n"
-    
-## PROMPT: enable dev site ##
-read -t 300 -p "$(ss_echo ${LIGHTGRAY}"Enable dev site (subdomain): "${LIGHTGREEN})" -e -i 'false' ss_var_dev_site || ss_var_dev_site=false
-ss_sed "s|@DEV_SITE_STATUS|${ss_var_dev_site}|g" /tmp/ss-config-wizard
-    
-## new line ##
-ss_print "${COLOR_RESET}\n"
-    
-## PROMPT: protect dev site ##
-read -t 300 -p "$(ss_echo ${LIGHTGRAY}"Password protect dev site: "${LIGHTGREEN})" -e -i 'false' ss_var_dev_site_protect || ss_var_dev_site_protect=false
-ss_sed "s|@DEV_SITE_PROTECT|${ss_var_dev_site_protect}|g" /tmp/ss-config-wizard
 
 ## new line ##
 ss_print "${COLOR_RESET}\n"
