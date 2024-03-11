@@ -33,7 +33,7 @@ source /var/www/ss-functions
 ## A. Touch Timestamp File
 ## B. Message (Begin Script)
 ## C. Hide Bug In OpenSSL 1.1.1x
-## D. Generate OpenSSL Certificate (Valid 10 Years)
+## D. Generate OpenSSL Certificate (Valid For 10 Years)
 ## E. Validate OpenSSL Certificate
 ## F. Reset Permissions (Nginx SSL)
 
@@ -63,7 +63,7 @@ ss_touch /home/${SUDO_USER}/.rnd
 ss_touch /home/${SFTP_USER}/.rnd
 
 ####################################################################################################
-#### D. SS-Encrypt-OpenSSL: Generate OpenSSL Certificate (Valid 10 Years) ##########################
+#### D. SS-Encrypt-OpenSSL: Generate OpenSSL Certificate (Valid For 10 Years) ######################
 ####################################################################################################
 
 ## this will generate a new self-signed OpenSSL certificate every single time it runs ##
@@ -146,6 +146,12 @@ elif [[ "${WP_MULTISITE}" != "true" ]] && [[ "${OPENSSL_CERT_INCLUDE_DOMAINS} !=
         openssl req -x509 -newkey rsa:4096 -sha256 -days 3650 -nodes \
         -keyout /var/www/certs/keys/slickstack.key -out /var/www/certs/slickstack.crt -subj "/CN=localhost" \
         -addext "subjectAltName=DNS:${SITE_DOMAIN_EXCLUDING_WWW},DNS:${SITE_DOMAIN_INCLUDING_WWW},IP:${SYSTEM_IPV6_ADDRESS}" 2> /dev/null
+
+elif [[ "${WP_MULTISITE}" != "true" ]] && [[ "${OPENSSL_CERT_INCLUDE_DOMAINS} == "false" ]] && [[ "${OPENSSL_CERT_INCLUDE_IPS} != "true" ]] && [[ "${OPENSSL_CERT_INCLUDE_LOCALHOST} == "true" ]]; then
+
+    openssl req -x509 -newkey rsa:4096 -sha256 -days 3650 -nodes \
+    -keyout /var/www/certs/keys/slickstack.key -out /var/www/certs/slickstack.crt -subj "/CN=localhost" \
+    -addext "subjectAltName=DNS:localhost,IP:127.0.0.1" 2> /dev/null
 
 elif [[ "${WP_MULTISITE}" == "true" ]] && [[ "${WP_MULTISITE_SUBDOMAINS}" != "false" ]]; then
 
@@ -289,5 +295,6 @@ chmod 0700 /var/www/crons/custom/*cron* ## 0700 means only root/sudo can execute
 ## Ref: https://stackoverflow.com/questions/44438107/trust-ssl-certificate-with-ipv6-address
 ## Ref: https://serverfault.com/questions/980071/ipv6-address-in-ssl-certificate
 ## Ref: https://stackoverflow.com/questions/10175812/how-to-generate-a-self-signed-ssl-certificate-using-openssl
+## Ref: https://stackoverflow.com/questions/60030906/self-signed-certificate-only-works-with-localhost-not-127-0-0-1
 
 ## SS_EOF
