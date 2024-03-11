@@ -33,9 +33,10 @@ source /var/www/ss-functions
 ## A. Touch Timestamp File
 ## B. Message (Begin Script)
 ## C. Hide Bug In OpenSSL 1.1.1x
-## D. Generate OpenSSL Certificate (Valid For 10 Years)
-## E. Validate OpenSSL Certificate
-## F. Reset Permissions (Nginx SSL)
+## D. Delete Existing OpenSSL Certificate Files
+## E. Generate OpenSSL Certificate (Valid For 10 Years)
+## F. Validate OpenSSL Certificate
+## G. Reset Permissions (Nginx SSL)
 
 ####################################################################################################
 #### A. SS-Encrypt-OpenSSL: Touch Timestamp File ###################################################
@@ -63,15 +64,18 @@ ss_touch /home/${SUDO_USER}/.rnd
 ss_touch /home/${SFTP_USER}/.rnd
 
 ####################################################################################################
-#### D. SS-Encrypt-OpenSSL: Generate OpenSSL Certificate (Valid For 10 Years) ######################
+#### D. SS-Encrypt-OpenSSL: Delete Existing OpenSSL Certificate Files ##############################
+####################################################################################################
+
+ss_rm "${PATH_OPENSSL_CERTIFICATE}"
+ss_rm "${PATH_OPENSSL_KEY}"
+
+####################################################################################################
+#### E. SS-Encrypt-OpenSSL: Generate OpenSSL Certificate (Valid For 10 Years) ######################
 ####################################################################################################
 
 ## this will generate a new self-signed OpenSSL certificate every single time it runs ##
 ## there are no rate-limits and it pairs perfectly with CloudFlare SSL proxy ##
-
-## delete previous files ##
-ss_rm "${PATH_OPENSSL_CERTIFICATE}"
-ss_rm "${PATH_OPENSSL_KEY}"
 
 if [[ "${WP_MULTISITE}" != "true" ]] && [[ "${OPENSSL_CERT_INCLUDE_DOMAINS}" != "false" ]] && [[ "${OPENSSL_CERT_INCLUDE_IPS}" != "true" ]] && [[ "${OPENSSL_CERT_INCLUDE_LOCALHOST}" != "true" ]]; then 
     
@@ -190,13 +194,13 @@ elif [[ "${WP_MULTISITE}" == "true" ]] && [[ "${WP_MULTISITE_SUBDOMAINS}" == "fa
 fi
 
 ####################################################################################################
-#### E. SS-Encrypt-OpenSSL: Validate OpenSSL Certificate ###########################################
+#### F. SS-Encrypt-OpenSSL: Validate OpenSSL Certificate ###########################################
 ####################################################################################################
 
 openssl x509 -noout -text -in "${PATH_OPENSSL_CERTIFICATE}"
 
 ####################################################################################################
-#### F. SS-Encrypt-OpenSSL: Reset Permissions (Nginx SSL) ##########################################
+#### G. SS-Encrypt-OpenSSL: Reset Permissions (Nginx SSL) ##########################################
 ####################################################################################################
 
 source "${PATH_SS_PERMS_NGINX_SSL}"
