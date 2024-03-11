@@ -33,7 +33,7 @@ source /var/www/ss-functions
 ## A. Touch Timestamp File
 ## B. Message (Begin Script)
 ## C. Hide Bug In OpenSSL 1.1.1x
-## D. Generate OpenSSL Certificate
+## D. Generate OpenSSL Certificate (Valid 10 Years)
 ## E. Validate OpenSSL Certificate
 ## F. Reset Permissions (Nginx SSL)
 
@@ -63,7 +63,7 @@ ss_touch /home/${SUDO_USER}/.rnd
 ss_touch /home/${SFTP_USER}/.rnd
 
 ####################################################################################################
-#### D. SS-Encrypt-OpenSSL: Generate OpenSSL Certificate ###########################################
+#### D. SS-Encrypt-OpenSSL: Generate OpenSSL Certificate (Valid 10 Years) ##########################
 ####################################################################################################
 
 ## this will generate a new self-signed OpenSSL certificate every single time it runs ##
@@ -73,8 +73,7 @@ ss_touch /home/${SFTP_USER}/.rnd
 ss_rm "${PATH_OPENSSL_CERTIFICATE}"
 ss_rm "${PATH_OPENSSL_KEY}"
 
-## generate self-signed certificate (valid 10 years) ##
-if [[ "${WP_MULTISITE}" != "true" ]]; then 
+if [[ "${WP_MULTISITE}" != "true" ]] && [[ "${OPENSSL_CERT_INCLUDE_DOMAINS} != "false" ]] && [[ "${OPENSSL_CERT_INCLUDE_IPS} != "true" ]] && [[ "${OPENSSL_CERT_INCLUDE_LOCALHOST} != "true" ]]; then 
     
     if [[ "${STAGING_SITE}" == "true" ]] && [[ "${DEV_SITE}" == "true" ]]; then
         openssl req -x509 -newkey rsa:4096 -sha256 -days 3650 -nodes \
@@ -93,6 +92,60 @@ if [[ "${WP_MULTISITE}" != "true" ]]; then
         -keyout /var/www/certs/keys/slickstack.key -out /var/www/certs/slickstack.crt -subj "/CN=localhost" \
         -addext "subjectAltName=DNS:${SITE_DOMAIN_EXCLUDING_WWW},DNS:${SITE_DOMAIN_INCLUDING_WWW}" 2> /dev/null
     fi
+
+elif [[ "${WP_MULTISITE}" != "true" ]] && [[ "${OPENSSL_CERT_INCLUDE_DOMAINS} != "false" ]] && [[ "${OPENSSL_CERT_INCLUDE_IPS} == "true" ]] && [[ "${OPENSSL_CERT_INCLUDE_LOCALHOST} != "true" ]]; then
+
+    if [[ "${STAGING_SITE}" == "true" ]] && [[ "${DEV_SITE}" == "true" ]] && [[ "${SYSTEM_IPV4_ADDRESS}" != "N/A" ]] && [[ "${SYSTEM_IPV6_ADDRESS}" != "N/A" ]]; then
+        openssl req -x509 -newkey rsa:4096 -sha256 -days 3650 -nodes \
+        -keyout /var/www/certs/keys/slickstack.key -out /var/www/certs/slickstack.crt -subj "/CN=localhost" \
+        -addext "subjectAltName=DNS:${SITE_DOMAIN_EXCLUDING_WWW},DNS:${SITE_DOMAIN_INCLUDING_WWW},DNS:staging.${SITE_DOMAIN_EXCLUDING_WWW},DNS:dev.${SITE_DOMAIN_EXCLUDING_WWW},IP:${SYSTEM_IPV4_ADDRESS},IP:${SYSTEM_IPV6_ADDRESS}" 2> /dev/null
+    elif [[ "${STAGING_SITE}" == "true" ]] && [[ "${DEV_SITE}" == "true" ]] && [[ "${SYSTEM_IPV4_ADDRESS}" != "N/A" ]] && [[ "${SYSTEM_IPV6_ADDRESS}" == "N/A" ]]; then
+        openssl req -x509 -newkey rsa:4096 -sha256 -days 3650 -nodes \
+        -keyout /var/www/certs/keys/slickstack.key -out /var/www/certs/slickstack.crt -subj "/CN=localhost" \
+        -addext "subjectAltName=DNS:${SITE_DOMAIN_EXCLUDING_WWW},DNS:${SITE_DOMAIN_INCLUDING_WWW},DNS:staging.${SITE_DOMAIN_EXCLUDING_WWW},DNS:dev.${SITE_DOMAIN_EXCLUDING_WWW},IP:${SYSTEM_IPV4_ADDRESS}" 2> /dev/null
+    elif [[ "${STAGING_SITE}" == "true" ]] && [[ "${DEV_SITE}" == "true" ]] && [[ "${SYSTEM_IPV4_ADDRESS}" == "N/A" ]] && [[ "${SYSTEM_IPV6_ADDRESS}" != "N/A" ]]; then
+        openssl req -x509 -newkey rsa:4096 -sha256 -days 3650 -nodes \
+        -keyout /var/www/certs/keys/slickstack.key -out /var/www/certs/slickstack.crt -subj "/CN=localhost" \
+        -addext "subjectAltName=DNS:${SITE_DOMAIN_EXCLUDING_WWW},DNS:${SITE_DOMAIN_INCLUDING_WWW},DNS:staging.${SITE_DOMAIN_EXCLUDING_WWW},DNS:dev.${SITE_DOMAIN_EXCLUDING_WWW},IP:${SYSTEM_IPV6_ADDRESS}" 2> /dev/null
+
+    elif [[ "${STAGING_SITE}" == "true" ]] && [[ "${DEV_SITE}" == "false" ]] && [[ "${SYSTEM_IPV4_ADDRESS}" != "N/A" ]] && [[ "${SYSTEM_IPV6_ADDRESS}" != "N/A" ]]; then
+        openssl req -x509 -newkey rsa:4096 -sha256 -days 3650 -nodes \
+        -keyout /var/www/certs/keys/slickstack.key -out /var/www/certs/slickstack.crt -subj "/CN=localhost" \
+        -addext "subjectAltName=DNS:${SITE_DOMAIN_EXCLUDING_WWW},DNS:${SITE_DOMAIN_INCLUDING_WWW},DNS:staging.${SITE_DOMAIN_EXCLUDING_WWW},IP:${SYSTEM_IPV4_ADDRESS},IP:${SYSTEM_IPV6_ADDRESS}" 2> /dev/null
+    elif [[ "${STAGING_SITE}" == "true" ]] && [[ "${DEV_SITE}" == "false" ]] && [[ "${SYSTEM_IPV4_ADDRESS}" != "N/A" ]] && [[ "${SYSTEM_IPV6_ADDRESS}" == "N/A" ]]; then
+        openssl req -x509 -newkey rsa:4096 -sha256 -days 3650 -nodes \
+        -keyout /var/www/certs/keys/slickstack.key -out /var/www/certs/slickstack.crt -subj "/CN=localhost" \
+        -addext "subjectAltName=DNS:${SITE_DOMAIN_EXCLUDING_WWW},DNS:${SITE_DOMAIN_INCLUDING_WWW},DNS:staging.${SITE_DOMAIN_EXCLUDING_WWW},IP:${SYSTEM_IPV4_ADDRESS}" 2> /dev/null
+    elif [[ "${STAGING_SITE}" == "true" ]] && [[ "${DEV_SITE}" == "false" ]] && [[ "${SYSTEM_IPV4_ADDRESS}" == "N/A" ]] && [[ "${SYSTEM_IPV6_ADDRESS}" != "N/A" ]]; then
+        openssl req -x509 -newkey rsa:4096 -sha256 -days 3650 -nodes \
+        -keyout /var/www/certs/keys/slickstack.key -out /var/www/certs/slickstack.crt -subj "/CN=localhost" \
+        -addext "subjectAltName=DNS:${SITE_DOMAIN_EXCLUDING_WWW},DNS:${SITE_DOMAIN_INCLUDING_WWW},DNS:staging.${SITE_DOMAIN_EXCLUDING_WWW},IP:${SYSTEM_IPV6_ADDRESS}" 2> /dev/null
+
+     elif [[ "${STAGING_SITE}" == "false" ]] && [[ "${DEV_SITE}" == "true" ]] && [[ "${SYSTEM_IPV4_ADDRESS}" != "N/A" ]] && [[ "${SYSTEM_IPV6_ADDRESS}" != "N/A" ]]; then
+        openssl req -x509 -newkey rsa:4096 -sha256 -days 3650 -nodes \
+        -keyout /var/www/certs/keys/slickstack.key -out /var/www/certs/slickstack.crt -subj "/CN=localhost" \
+        -addext "subjectAltName=DNS:${SITE_DOMAIN_EXCLUDING_WWW},DNS:${SITE_DOMAIN_INCLUDING_WWW},DNS:dev.${SITE_DOMAIN_EXCLUDING_WWW},IP:${SYSTEM_IPV4_ADDRESS},IP:${SYSTEM_IPV6_ADDRESS}" 2> /dev/null
+    elif [[ "${STAGING_SITE}" == "false" ]] && [[ "${DEV_SITE}" == "true" ]] && [[ "${SYSTEM_IPV4_ADDRESS}" != "N/A" ]] && [[ "${SYSTEM_IPV6_ADDRESS}" == "N/A" ]]; then
+        openssl req -x509 -newkey rsa:4096 -sha256 -days 3650 -nodes \
+        -keyout /var/www/certs/keys/slickstack.key -out /var/www/certs/slickstack.crt -subj "/CN=localhost" \
+        -addext "subjectAltName=DNS:${SITE_DOMAIN_EXCLUDING_WWW},DNS:${SITE_DOMAIN_INCLUDING_WWW},DNS:dev.${SITE_DOMAIN_EXCLUDING_WWW},IP:${SYSTEM_IPV4_ADDRESS}" 2> /dev/null
+    elif [[ "${STAGING_SITE}" == "false" ]] && [[ "${DEV_SITE}" == "true" ]] && [[ "${SYSTEM_IPV4_ADDRESS}" == "N/A" ]] && [[ "${SYSTEM_IPV6_ADDRESS}" != "N/A" ]]; then
+        openssl req -x509 -newkey rsa:4096 -sha256 -days 3650 -nodes \
+        -keyout /var/www/certs/keys/slickstack.key -out /var/www/certs/slickstack.crt -subj "/CN=localhost" \
+        -addext "subjectAltName=DNS:${SITE_DOMAIN_EXCLUDING_WWW},DNS:${SITE_DOMAIN_INCLUDING_WWW},DNS:dev.${SITE_DOMAIN_EXCLUDING_WWW},IP:${SYSTEM_IPV6_ADDRESS}" 2> /dev/null
+
+    elif [[ "${STAGING_SITE}" == "false" ]] && [[ "${DEV_SITE}" == "false" ]] && [[ "${SYSTEM_IPV4_ADDRESS}" != "N/A" ]] && [[ "${SYSTEM_IPV6_ADDRESS}" != "N/A" ]]; then
+        openssl req -x509 -newkey rsa:4096 -sha256 -days 3650 -nodes \
+        -keyout /var/www/certs/keys/slickstack.key -out /var/www/certs/slickstack.crt -subj "/CN=localhost" \
+        -addext "subjectAltName=DNS:${SITE_DOMAIN_EXCLUDING_WWW},DNS:${SITE_DOMAIN_INCLUDING_WWW},IP:${SYSTEM_IPV4_ADDRESS},IP:${SYSTEM_IPV6_ADDRESS}" 2> /dev/null
+    elif [[ "${STAGING_SITE}" == "false" ]] && [[ "${DEV_SITE}" == "false" ]] && [[ "${SYSTEM_IPV4_ADDRESS}" != "N/A" ]] && [[ "${SYSTEM_IPV6_ADDRESS}" == "N/A" ]]; then
+        openssl req -x509 -newkey rsa:4096 -sha256 -days 3650 -nodes \
+        -keyout /var/www/certs/keys/slickstack.key -out /var/www/certs/slickstack.crt -subj "/CN=localhost" \
+        -addext "subjectAltName=DNS:${SITE_DOMAIN_EXCLUDING_WWW},DNS:${SITE_DOMAIN_INCLUDING_WWW},IP:${SYSTEM_IPV4_ADDRESS}" 2> /dev/null
+    elif [[ "${STAGING_SITE}" == "false" ]] && [[ "${DEV_SITE}" == "false" ]] && [[ "${SYSTEM_IPV4_ADDRESS}" == "N/A" ]] && [[ "${SYSTEM_IPV6_ADDRESS}" != "N/A" ]]; then
+        openssl req -x509 -newkey rsa:4096 -sha256 -days 3650 -nodes \
+        -keyout /var/www/certs/keys/slickstack.key -out /var/www/certs/slickstack.crt -subj "/CN=localhost" \
+        -addext "subjectAltName=DNS:${SITE_DOMAIN_EXCLUDING_WWW},DNS:${SITE_DOMAIN_INCLUDING_WWW},IP:${SYSTEM_IPV6_ADDRESS}" 2> /dev/null
 
 elif [[ "${WP_MULTISITE}" == "true" ]] && [[ "${WP_MULTISITE_SUBDOMAINS}" != "false" ]]; then
 
