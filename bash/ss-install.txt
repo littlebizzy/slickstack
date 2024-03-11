@@ -45,7 +45,7 @@
 ## this build version ensures compatibility with the currently active ss-config file ##
 ## it must match the localhost ss-config otherwise installation will fail ##
 
-SS_INSTALL_BUILD="MAR2024J"
+SS_INSTALL_BUILD="MAR2024K"
 
 ####################################################################################################
 #### B. SS-Install: Validate (Restore) SS-Functions ################################################
@@ -270,6 +270,13 @@ ss_sed "s/@SFTP_USER/user-$(openssl rand -hex 3)/g" /tmp/ss-config-wizard
 ss_sed "s/@DB_USER/user-$(openssl rand -hex 3)/g" /tmp/ss-config-wizard
 ss_sed "s/@GUEST_USER/user-$(openssl rand -hex 3)/g" /tmp/ss-config-wizard
 
+## replace other placeholders with default ##
+ss_sed "s|@SS_APP|wordpress|g" /tmp/ss-config-wizard
+ss_sed "s|@DB_NAME|production|g" /tmp/ss-config-wizard
+ss_sed "s|@SS_ADMINER_PUBLIC|true|g" /tmp/ss-config-wizard
+ss_sed "s|@DB_PREFIX|wp_|g" /tmp/ss-config-wizard
+ss_sed "s|@SS_REMOTE_BACKUPS|none|g" /tmp/ss-config-wizard
+
 ## random string for Adminer URL ##
 ss_sed "s/@RANDOM_STRING_ADMINER_URL/$(openssl rand -hex 12)/g" /tmp/ss-config-wizard
 
@@ -309,13 +316,6 @@ ss_sed "s|@SSH_IPV4|${ss_ipv4_ssh_allow}|g" /tmp/ss-config-wizard
 ## new line ##
 ss_print "${COLOR_RESET}\n"
     
-## PROMPT: choose app (default = wordpress) ##
-read -t 300 -p "$(ss_echo ${LIGHTGRAY}"Choose app (only wordpress supported currently): "${LIGHTGREEN})" -e -i 'wordpress' ss_var_app_name || ss_var_app_name=wordpress
-ss_sed "s|@SS_APP|${ss_var_app_name}|g" /tmp/ss-config-wizard
-    
-## new line ##
-ss_print "${COLOR_RESET}\n"
-    
 ## PROMPT: choose language (default = en_US) ##
 read -t 300 -p "$(ss_echo ${LIGHTGRAY}"Choose language (only affects minor features): "${LIGHTGREEN})" -e -i 'en_US' ss_var_language || ss_var_language=en_US
 ss_sed "s|@SS_LANGUAGE|${ss_var_language}|g" /tmp/ss-config-wizard
@@ -343,24 +343,10 @@ ss_sed "s|@SS_DATABASE_REMOTE|${ss_var_database_remote}|g" /tmp/ss-config-wizard
     
 ## new line ##
 ss_print "${COLOR_RESET}\n"
-    
-## PROMPT: enable public adminer link ##
-read -t 300 -p "$(ss_echo ${LIGHTGRAY}"Make the adminer (phpmyadmin) link public?: "${LIGHTGREEN})" -e -i 'true' ss_var_adminer_public || ss_var_adminer_public=true
-ss_sed "s|@SS_ADMINER_PUBLIC|${ss_var_adminer_public}|g" /tmp/ss-config-wizard
-    
-## new line ##
-ss_print "${COLOR_RESET}\n"
 
 ## PROMPT: enable Cloudflare real IPs ##
 read -t 300 -p "$(ss_echo ${LIGHTGRAY}"Enable cloudflare.conf (real IP headers)?: "${LIGHTGREEN})" -e -i 'false' ss_var_cloudflare_ips || ss_var_cloudflare_ips=false
 ss_sed "s|@NGINX_CLOUDFLARE_IPS|${ss_var_cloudflare_ips}|g" /tmp/ss-config-wizard
-    
-## new line ##
-ss_print "${COLOR_RESET}\n"
-    
-## PROMPT: choose database name (default = production) ##
-read -t 300 -p "$(ss_echo ${LIGHTGRAY}"Choose database name (single database): "${LIGHTGREEN})" -e -i 'production' ss_var_db_name || ss_var_db_name=production
-ss_sed "s|@DB_NAME|${ss_var_db_name}|g" /tmp/ss-config-wizard
     
 ## new line ##
 ss_print "${COLOR_RESET}\n"
@@ -375,13 +361,6 @@ ss_print "${COLOR_RESET}\n"
 ## PROMPT: choose database port ##
 read -t 300 -p "$(ss_echo ${LIGHTGRAY}"Choose database port (3306 if using localhost): "${LIGHTGREEN})" -e -i '3306' ss_var_db_port || ss_var_db_port=3306
 ss_sed "s|@DB_PORT|${ss_var_db_port}|g" /tmp/ss-config-wizard
-    
-## new line ##
-ss_print "${COLOR_RESET}\n"
-    
-## PROMPT: choose database prefix ##
-read -t 300 -p "$(ss_echo ${LIGHTGRAY}"Choose database table prefix: "${LIGHTGREEN})" -e -i 'wp_' ss_var_db_prefix || ss_var_db_prefix=wp_
-ss_sed "s|@DB_PREFIX|${ss_var_db_prefix}|g" /tmp/ss-config-wizard
     
 ## new line ##
 ss_print "${COLOR_RESET}\n"
@@ -446,13 +425,6 @@ ss_print "${COLOR_RESET}\n"
 read -t 300 -p "$(ss_echo ${LIGHTGRAY}"Password protect dev site: "${LIGHTGREEN})" -e -i 'false' ss_var_dev_site_protect || ss_var_dev_site_protect=false
 ss_sed "s|@DEV_SITE_PROTECT|${ss_var_dev_site_protect}|g" /tmp/ss-config-wizard
 
-## new line ##
-ss_print "${COLOR_RESET}\n"
-
-## PROMPT: which remote backups do you want ##
-read -t 300 -p "$(ss_echo ${LIGHTGRAY}"Which remote backups do you want? (none|rsync|rclone): "${LIGHTGREEN})" -e -i 'none' ss_var_remote_backups || ss_var_remote_backups=none
-ss_sed "s|@SS_REMOTE_BACKUPS|${ss_var_remote_backups}|g" /tmp/ss-config-wizard
-    
 ## new line ##
 ss_print "${COLOR_RESET}\n"
 
