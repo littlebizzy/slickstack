@@ -41,7 +41,7 @@
 ## this build version ensures compatibility with ss-config boilerplate (from mirrors) ##
 ## it must match the latest ss-config boilerplate otherwise updating will fail ##
 
-SS_UPDATE_CONFIG_BUILD="MAR2024M"
+SS_UPDATE_CONFIG_BUILD="MAR2024P"
 
 ####################################################################################################
 #### B. SS-Update-Config: Source SS-Config + SS-Functions ##########################################
@@ -172,6 +172,10 @@ ss_sed "s|\(^DB_COLLATE=\).*|DB_COLLATE=\"$DB_COLLATE\"|g" "${TMP_SS_CONFIG_UPDA
 ## adminer settings ##
 ss_sed "s|\(^ADMINER_URL=\).*|ADMINER_URL=\"$ADMINER_URL\"|g" "${TMP_SS_CONFIG_UPDATE}"
 
+if [[ -n "${ADMINER_PUBLIC}" ]]; then
+ss_sed "s|\(^ADMINER_PUBLIC=\).*|ADMINER_PUBLIC=\"$ADMINER_PUBLIC\"|g" "${TMP_SS_CONFIG_UPDATE}"
+fi
+
 ## staging/dev settings ##
 if [[ -n "${DEV_SITE}" ]]; then 
 ss_sed "s|\(^DEV_SITE=\).*|DEV_SITE=\"$DEV_SITE\"|g" "${TMP_SS_CONFIG_UPDATE}"
@@ -283,11 +287,6 @@ fi
 
 if [[ -n "${WHITELABEL_BILLING_METHOD}" ]]; then
 ss_sed "s|\(^WHITELABEL_BILLING_METHOD=\).*|WHITELABEL_BILLING_METHOD=\"$WHITELABEL_BILLING_METHOD\"|g" "${TMP_SS_CONFIG_UPDATE}"
-fi
-
-## others general ##
-if [[ -n "${SS_ADMINER_PUBLIC}" ]]; then
-ss_sed "s|\(^SS_ADMINER_PUBLIC=\).*|SS_ADMINER_PUBLIC=\"$SS_ADMINER_PUBLIC\"|g" "${TMP_SS_CONFIG_UPDATE}"
 fi
 
 if [[ -n "${SS_DATABASE_REMOTE}" ]]; then
@@ -1207,7 +1206,7 @@ ss_sed "s|@SS_LANGUAGE|en_US|g" /var/www/ss-config
 ss_sed "s|@SS_PILOT_FILE||g" /var/www/ss-config
 ss_sed "s|@SS_DATABASE_REMOTE|false|g" /var/www/ss-config
 ss_sed "s|@SS_REMOTE_BACKUPS|none|g" /var/www/ss-config
-ss_sed "s|@SS_ADMINER_PUBLIC|true|g" /var/www/ss-config
+ss_sed "s|@ADMINER_PUBLIC|true|g" /var/www/ss-config
 ss_sed "s|@SS_WORDPRESS_ADMIN_DASHBOARD|true|g" /var/www/ss-config
 ss_sed "s|@SS_WORDPRESS_PLUGIN_BLACKLIST|true|g" /var/www/ss-config
 ss_sed "s|@SSL_TYPE|openssl|g" /var/www/ss-config
