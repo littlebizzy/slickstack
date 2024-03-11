@@ -77,6 +77,7 @@ ss_rm "${PATH_OPENSSL_KEY}"
 ## this will generate a new self-signed OpenSSL certificate every single time it runs ##
 ## there are no rate-limits and it pairs perfectly with CloudFlare SSL proxy ##
 
+## single site with domains only ##
 if [[ "${WP_MULTISITE}" != "true" ]] && [[ "${OPENSSL_CERT_INCLUDE_DOMAINS}" != "false" ]] && [[ "${OPENSSL_CERT_INCLUDE_IPS}" != "true" ]] && [[ "${OPENSSL_CERT_INCLUDE_LOCALHOST}" != "true" ]]; then 
     
     if [[ "${STAGING_SITE}" == "true" ]] && [[ "${DEV_SITE}" == "true" ]]; then
@@ -97,8 +98,10 @@ if [[ "${WP_MULTISITE}" != "true" ]] && [[ "${OPENSSL_CERT_INCLUDE_DOMAINS}" != 
         -addext "subjectAltName=DNS:${SITE_DOMAIN_EXCLUDING_WWW},DNS:${SITE_DOMAIN_INCLUDING_WWW}" 2> /dev/null
     fi
 
+## single site with domains and ips only ##
 elif [[ "${WP_MULTISITE}" != "true" ]] && [[ "${OPENSSL_CERT_INCLUDE_DOMAINS}" != "false" ]] && [[ "${OPENSSL_CERT_INCLUDE_IPS}" == "true" ]] && [[ "${OPENSSL_CERT_INCLUDE_LOCALHOST}" != "true" ]]; then
 
+    ## staging and dev sites ##
     if [[ "${STAGING_SITE}" == "true" ]] && [[ "${DEV_SITE}" == "true" ]] && [[ "${SYSTEM_IPV4_ADDRESS}" != "N/A" ]] && [[ "${SYSTEM_IPV6_ADDRESS}" != "N/A" ]]; then
         openssl req -x509 -newkey rsa:4096 -sha256 -days 3650 -nodes \
         -keyout /var/www/certs/keys/slickstack.key -out /var/www/certs/slickstack.crt -subj "/CN=localhost" \
@@ -112,6 +115,7 @@ elif [[ "${WP_MULTISITE}" != "true" ]] && [[ "${OPENSSL_CERT_INCLUDE_DOMAINS}" !
         -keyout /var/www/certs/keys/slickstack.key -out /var/www/certs/slickstack.crt -subj "/CN=localhost" \
         -addext "subjectAltName=DNS:${SITE_DOMAIN_EXCLUDING_WWW},DNS:${SITE_DOMAIN_INCLUDING_WWW},DNS:staging.${SITE_DOMAIN_EXCLUDING_WWW},DNS:dev.${SITE_DOMAIN_EXCLUDING_WWW},IP:${SYSTEM_IPV6_ADDRESS}" 2> /dev/null
 
+    ## staging sites but not dev sites ##
     elif [[ "${STAGING_SITE}" == "true" ]] && [[ "${DEV_SITE}" == "false" ]] && [[ "${SYSTEM_IPV4_ADDRESS}" != "N/A" ]] && [[ "${SYSTEM_IPV6_ADDRESS}" != "N/A" ]]; then
         openssl req -x509 -newkey rsa:4096 -sha256 -days 3650 -nodes \
         -keyout /var/www/certs/keys/slickstack.key -out /var/www/certs/slickstack.crt -subj "/CN=localhost" \
@@ -125,6 +129,7 @@ elif [[ "${WP_MULTISITE}" != "true" ]] && [[ "${OPENSSL_CERT_INCLUDE_DOMAINS}" !
         -keyout /var/www/certs/keys/slickstack.key -out /var/www/certs/slickstack.crt -subj "/CN=localhost" \
         -addext "subjectAltName=DNS:${SITE_DOMAIN_EXCLUDING_WWW},DNS:${SITE_DOMAIN_INCLUDING_WWW},DNS:staging.${SITE_DOMAIN_EXCLUDING_WWW},IP:${SYSTEM_IPV6_ADDRESS}" 2> /dev/null
 
+    ## dev sites but not staging sites ##
      elif [[ "${STAGING_SITE}" == "false" ]] && [[ "${DEV_SITE}" == "true" ]] && [[ "${SYSTEM_IPV4_ADDRESS}" != "N/A" ]] && [[ "${SYSTEM_IPV6_ADDRESS}" != "N/A" ]]; then
         openssl req -x509 -newkey rsa:4096 -sha256 -days 3650 -nodes \
         -keyout /var/www/certs/keys/slickstack.key -out /var/www/certs/slickstack.crt -subj "/CN=localhost" \
@@ -138,6 +143,7 @@ elif [[ "${WP_MULTISITE}" != "true" ]] && [[ "${OPENSSL_CERT_INCLUDE_DOMAINS}" !
         -keyout /var/www/certs/keys/slickstack.key -out /var/www/certs/slickstack.crt -subj "/CN=localhost" \
         -addext "subjectAltName=DNS:${SITE_DOMAIN_EXCLUDING_WWW},DNS:${SITE_DOMAIN_INCLUDING_WWW},DNS:dev.${SITE_DOMAIN_EXCLUDING_WWW},IP:${SYSTEM_IPV6_ADDRESS}" 2> /dev/null
 
+    ## no staging nor dev sites ##
     elif [[ "${STAGING_SITE}" == "false" ]] && [[ "${DEV_SITE}" == "false" ]] && [[ "${SYSTEM_IPV4_ADDRESS}" != "N/A" ]] && [[ "${SYSTEM_IPV6_ADDRESS}" != "N/A" ]]; then
         openssl req -x509 -newkey rsa:4096 -sha256 -days 3650 -nodes \
         -keyout /var/www/certs/keys/slickstack.key -out /var/www/certs/slickstack.crt -subj "/CN=localhost" \
@@ -152,12 +158,14 @@ elif [[ "${WP_MULTISITE}" != "true" ]] && [[ "${OPENSSL_CERT_INCLUDE_DOMAINS}" !
         -addext "subjectAltName=DNS:${SITE_DOMAIN_EXCLUDING_WWW},DNS:${SITE_DOMAIN_INCLUDING_WWW},IP:${SYSTEM_IPV6_ADDRESS}" 2> /dev/null
     fi
 
+## single site with localhost only ##
 elif [[ "${WP_MULTISITE}" != "true" ]] && [[ "${OPENSSL_CERT_INCLUDE_DOMAINS}" == "false" ]] && [[ "${OPENSSL_CERT_INCLUDE_IPS}" != "true" ]] && [[ "${OPENSSL_CERT_INCLUDE_LOCALHOST}" == "true" ]]; then
 
     openssl req -x509 -newkey rsa:4096 -sha256 -days 3650 -nodes \
     -keyout /var/www/certs/keys/slickstack.key -out /var/www/certs/slickstack.crt -subj "/CN=localhost" \
     -addext "subjectAltName=DNS:localhost,IP:127.0.0.1" 2> /dev/null
 
+## multisite with subdomains ##
 elif [[ "${WP_MULTISITE}" == "true" ]] && [[ "${WP_MULTISITE_SUBDOMAINS}" != "false" ]]; then
 
     if [[ "${SYSTEM_IPV4_ADDRESS}" != "N/A" ]] && [[ "${SYSTEM_IPV6_ADDRESS}" != "N/A" ]]; then
@@ -173,7 +181,8 @@ elif [[ "${WP_MULTISITE}" == "true" ]] && [[ "${WP_MULTISITE_SUBDOMAINS}" != "fa
         -keyout /var/www/certs/keys/slickstack.key -out /var/www/certs/slickstack.crt -subj "/CN=localhost" \
         -addext "subjectAltName=DNS:${SITE_DOMAIN_EXCLUDING_WWW},DNS:*.${SITE_DOMAIN_EXCLUDING_WWW},IP:${SYSTEM_IPV6_ADDRESS}" 2> /dev/null
     fi
-    
+
+## multisite with subdirectories ##
 elif [[ "${WP_MULTISITE}" == "true" ]] && [[ "${WP_MULTISITE_SUBDOMAINS}" == "false" ]]; then 
 
     ## conditional ipv4 and ipv6 certs ##
