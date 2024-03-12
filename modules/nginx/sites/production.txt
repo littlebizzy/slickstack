@@ -208,10 +208,20 @@ if ( $query_string ~ "author=([0-9]*)" ) {
 	return 403;
 }
 
-## https://stackoverflow.com/questions/64129297/detect-url-query-parameter-from-request-in-nginx-config-on-virtual-host
-# if ($arg_s) {
-#	limit_req zone=wpsearch burst=1 nodelay;
+## rate limit wp search queries ## 
+## https://stackoverflow.com/questions/46178259/nginx-limit-requests-by-parameter-in-body-or-query
+# map $arg_ctl    $do_limit {
+#    "param1"    $binary_remote_addr;
+#    default     "";
 # }
+# limit_req_zone $do_limit zone=mylimit:10m rate=10r/s;
+# server {
+#    listen       8044;
+#    limit_req_log_level warn;
+#    location /route/{
+#       limit_req zone=mylimit burst=1000;
+#       proxy_pass https://the_Cool_server/;
+# }}
 
 }
 
