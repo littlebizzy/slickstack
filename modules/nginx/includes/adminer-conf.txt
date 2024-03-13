@@ -17,8 +17,26 @@
 ## this is a brief summary of the different code snippets you will find in this script ##
 ## each section should be commented so you understand what is being accomplished ##
 
+## A. Adminer.php Location Block
 
+####################################################################################################
+#### A. Adminer.conf: Adminer.php Location Block ###################################################
+####################################################################################################
 
+## this snippet allows you to load Adminer via the frontend (requires PHP-FPM routing) ##
+## we include some basic rate-limiting rules to prevent attacks on these URLs ##
+
+location ^~ /@ADMINER_RANDOM_URL/ {
+	limit_req zone=adminer burst=1 nodelay;
+	alias /var/www/meta/adminer.php;
+	include /etc/nginx/fastcgi.conf;
+	try_files $uri =404;
+	fastcgi_split_path_info ^(.+\.php)(/.+)$;
+	fastcgi_pass 127.0.0.1:9000;
+	fastcgi_read_timeout 300;
+	fastcgi_index index.php;
+	fastcgi_cache off;
+}
 
 ####################################################################################################
 #### SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ###############
