@@ -3,11 +3,11 @@
 ####################################################################################################
 #### author: SlickStack ############################################################################
 #### link: https://slickstack.io ###################################################################
-#### mirror: https://mirrors.slickstack.io/bash/ss-install-wordpress-packages.txt ##################
+#### mirror: littlebizzy/slickstack/blob/master/bash/ss-install-wordpress-packages.txt #############
 #### path: /var/www/ss-install-wordpress-packages ##################################################
 #### destination: n/a (not a boilerplate) ##########################################################
 #### purpose: Reinstalls the WordPress module package and non-config files (idempotent) ############
-#### module version: WordPress 6.1.x ###############################################################
+#### module version: WordPress 6.4.x ###############################################################
 #### sourced by: ss-install ########################################################################
 #### bash aliases: ss install wordpress|wp core|packages ###########################################
 ####################################################################################################
@@ -33,17 +33,17 @@ source /var/www/ss-functions
 ## A. Touch Timestamp File
 ## B. Message (Begin Script)
 ## C. Install Ubuntu Utils
-## D. Retrieve WordPress Core ZIP 
+## D. Retrieve WordPress Core Zip File
 ## E. Install WordPress Core (Production)
 ## F. Install HoverCraft WordPress Theme (Production)
 ## G. Install WordPress Core (Staging)
 ## H. Install WordPress Core (Development)
-## I. Populate Production Database Options (Conditional)
-## J. Populate Development Database Options (Conditional)
+## I. Populate Production Database (Conditional)
+## J. Populate Development Database (Conditional)
 ## K. Modify Site Domains In Database
 ## L. Sync Production Database To Staging
 ## M. Purge Cache (PHP OPcache)
-## N. Reset Permissions (WordPress Core)
+## N. Reset Permissions (WordPress Packages)
 
 ####################################################################################################
 #### A. SS-Install-WordPress-Packages: Touch Timestamp File ########################################
@@ -67,11 +67,10 @@ ss_echo "${COLOR_INFO}Running ss-install-wordpress-packages... ${COLOR_RESET}"
 #### C. SS-Install-WordPress-Packages: Install Ubuntu Utils ########################################
 ####################################################################################################
 
-## run ss-install-ubuntu-utils ##
 source "${PATH_SS_INSTALL_UBUNTU_UTILS}"
 
 ####################################################################################################
-#### D. SS-Install-WordPress-Packages: Retrieve WordPress Core ZIP #################################
+#### D. SS-Install-WordPress-Packages: Retrieve WordPress Core Zip File ############################
 ####################################################################################################
 
 ## CMS modules are installed by SlickStack via files from our public mirror servers ##
@@ -112,7 +111,7 @@ ss_rm /var/www/html/wordpress
 ss_rm /var/www/html/wordpress.zip*
 
 ####################################################################################################
-#### F. SS-Install-WordPress-HoverCraft: Install HoverCraft WordPress Theme (Production) ###########
+#### F. SS-Install-WordPress-Packages: Install HoverCraft WordPress Theme (Production) #############
 ####################################################################################################
 
 source "${PATH_SS_INSTALL_WORDPRESS_HOVERCRAFT}"
@@ -196,7 +195,7 @@ if [[ "${DEV_SITE}" == "true" ]]; then
 fi
 
 ####################################################################################################
-#### I. SS-Install-WordPress-Packages: Populate Production Database Options (Conditional) ##########
+#### I. SS-Install-WordPress-Packages: Populate Production Database (Conditional) ##################
 ####################################################################################################
 
 ## minimum wp_options required to avoid /wp-admin/install.php redirect are below: ##
@@ -212,7 +211,7 @@ if [[ -z "${GREP_WP_OPTIONS_STRING_PRODUCTION}" ]]; then
 fi
 
 ####################################################################################################
-#### J. SS-Install-WordPress-Packages: Populate Development Database Options (Conditional) #############
+#### J. SS-Install-WordPress-Packages: Populate Development Database (Conditional) #################
 ####################################################################################################
 
 ## minimum wp_options required to avoid /wp-admin/install.php redirect are below: ##
@@ -270,7 +269,7 @@ if [[ "${DEV_SITE}" == "true" ]]; then
 fi
 
 ####################################################################################################
-#### X. SS-Install-WordPress-Packages: Increase File Size Upload Limit (Conditional) #########################
+#### X. SS-Install-WordPress-Packages: Increase File Size Upload Limit (Conditional) ###############
 ####################################################################################################
 
 # ss_mysql_root --execute="UPDATE ${DB_NAME}.${DB_PREFIX}sitemeta SET option_value='5000' WHERE option_name='fileupload_maxk'";
@@ -289,14 +288,12 @@ source "${PATH_SS_SYNC_STAGING}"
 #### M. SS-Install-WordPress-Packages: Purge Cache (PHP OPcache) ###################################
 ####################################################################################################
 
-## run ss-purge-opcache ##
 source "${PATH_SS_PURGE_OPCACHE}"
 
 ####################################################################################################
 #### N. SS-Install-WordPress-Packages: Reset Permissions (WordPress Packages) ######################
 ####################################################################################################
 
-## run ss-perms-wordpress-core ##
 source "${PATH_SS_PERMS_WORDPRESS_PACKAGES}"
 
 ####################################################################################################
