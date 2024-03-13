@@ -85,9 +85,7 @@ ss_wget "${TMP_WORDPRESS_ZIP}" "${GITHUB_WORDPRESS_ZIP}"
 ## this installation process removes outdated WordPress Core files or potential malware ##
 ## it is not foolproof but it should address several common infection targets ##
 
-## cleanup old files ##
-## replace this kinda risky approach with some type of scan of WP core files to see if safe/intact?? after this install and/or regular intervals ##
-
+## delete old files ##
 if [[ -f "${TMP_WORDPRESS_ZIP}" ]]; then
     ss_rm /var/www/html/wp-admin
     ss_rm /var/www/html/wp-includes
@@ -101,7 +99,7 @@ fi
 ss_cp "${TMP_WORDPRESS_ZIP}" /var/www/html
 ss_unzip /var/www/html/wordpress.zip -d /var/www/html
 ss_chown "${SFTP_USER}":slickstack /var/www/html/wordpress
-ss_chmod 775 /var/www/html/wordpress
+ss_chmod 0775 /var/www/html/wordpress
 
 ## install new files ##
 ss_rsync /var/www/html/wordpress/* /var/www/html
@@ -125,33 +123,28 @@ source "${PATH_SS_INSTALL_WORDPRESS_HOVERCRAFT}"
 
 if [[ "${STAGING_SITE}" == "true" ]]; then 
 
-    ## cleanup old files ##
-    ## replace this kinda risky approach with some type of scan of WP core files to see if safe/intact?? after this install and/or regular intervals ##
-    
-    # if [[ -f "${TMP_WORDPRESS_ZIP}" ]]; then
-    #    ss_rm /var/www/html/staging/wp-admin
-    # fi
+## delete old files ##
+if [[ -f "${TMP_WORDPRESS_ZIP}" ]]; then
+    ss_rm /var/www/html/staging/wp-admin
+    ss_rm /var/www/html/staging/wp-includes
+fi
 
-    # if [[ -f "${TMP_WORDPRESS_ZIP}" ]]; then
-    #    ss_rm /var/www/html/staging/wp-includes
-    # fi
+# if [[ -f "${TMP_WORDPRESS_ZIP}" ]] && [[ "${SS_INSTALL_WORDPRESS_PACKAGES_DELETE_PHP_FILES_ROOT}" != "false" ]]; then
+#    find /var/www/html/staging/ -maxdepth 1 -type f ! -name "wp-config.php" -name "*.php" -delete 
+# fi
 
-    # if [[ -f "${TMP_WORDPRESS_ZIP}" ]] && [[ "${SS_INSTALL_WORDPRESS_PACKAGES_DELETE_PHP_FILES_ROOT}" != "false" ]]; then
-    #    find /var/www/html/staging/ -maxdepth 1 -type f ! -name "wp-config.php" -name "*.php" -delete 
-    # fi
-
-    ## prepare new files ##
-    ss_cp "${TMP_WORDPRESS_ZIP}" /var/www/html/staging
-    ss_unzip /var/www/html/staging/wordpress.zip -d /var/www/html/staging
-    chown -R www-data:slickstack /var/www/html/staging/wordpress
-    ss_chmod 775 /var/www/html/staging/wordpress
+## prepare new files ##
+ss_cp "${TMP_WORDPRESS_ZIP}" /var/www/html/staging
+ss_unzip /var/www/html/staging/wordpress.zip -d /var/www/html/staging
+ss_chown "${SFTP_USER}":slickstack /var/www/html/staging/wordpress
+ss_chmod 0775 /var/www/html/staging/wordpress
     
-    ## install new files files ##
-    ss_rsync /var/www/html/staging/wordpress/* /var/www/html/staging
+## install new files files ##
+ss_rsync /var/www/html/staging/wordpress/* /var/www/html/staging
     
-    ## delete tmp files ##
-    ss_rm /var/www/html/staging/wordpress
-    ss_rm /var/www/html/staging/wordpress.zip*
+## delete tmp files ##
+ss_rm /var/www/html/staging/wordpress
+ss_rm /var/www/html/staging/wordpress.zip*
     
 fi
 
@@ -164,33 +157,28 @@ fi
 
 if [[ "${DEV_SITE}" == "true" ]]; then 
 
-    ## cleanup old files ##
-    ## replace this kinda risky approach with some type of scan of WP core files to see if safe/intact?? after this install and/or regular intervals ##
+## delete old files ##
+if [[ -f "${TMP_WORDPRESS_ZIP}" ]]; then
+    ss_rm /var/www/html/dev/wp-admin
+    ss_rm /var/www/html/dev/wp-includes
+fi
 
-    # if [[ -f "${TMP_WORDPRESS_ZIP}" ]] && [[ "${SS_INSTALL_WORDPRESS_PACKAGES_DELETE_WP_ADMIN}" != "false" ]]; then
-     #   ss_rm /var/www/html/dev/wp-admin
-    # fi
+# if [[ -f "${TMP_WORDPRESS_ZIP}" ]] && [[ "${SS_INSTALL_WORDPRESS_PACKAGES_DELETE_PHP_FILES_ROOT}" != "false" ]]; then
+#     find /var/www/html/dev/ -maxdepth 1 -type f ! -name "wp-config.php" -name "*.php" -delete 
+# fi
 
-    # if [[ -f "${TMP_WORDPRESS_ZIP}" ]] && [[ "${SS_INSTALL_WORDPRESS_PACKAGES_DELETE_WP_INCLUDES}" != "false" ]]; then
-     #   ss_rm /var/www/html/dev/wp-includes
-    # fi
-
-    # if [[ -f "${TMP_WORDPRESS_ZIP}" ]] && [[ "${SS_INSTALL_WORDPRESS_PACKAGES_DELETE_PHP_FILES_ROOT}" != "false" ]]; then
-    #     find /var/www/html/dev/ -maxdepth 1 -type f ! -name "wp-config.php" -name "*.php" -delete 
-    # fi
-
-    ## prepare new files ##
-    ss_cp "${TMP_WORDPRESS_ZIP}" /var/www/html/dev
-    ss_unzip /var/www/html/dev/wordpress.zip -d /var/www/html/dev
-    chown -R www-data:slickstack /var/www/html/dev/wordpress
-    ss_chmod 775 /var/www/html/dev/wordpress
+## prepare new files ##
+ss_cp "${TMP_WORDPRESS_ZIP}" /var/www/html/dev
+ss_unzip /var/www/html/dev/wordpress.zip -d /var/www/html/dev
+ss_chown "${SFTP_USER}":slickstack /var/www/html/dev/wordpress
+ss_chmod 0775 /var/www/html/dev/wordpress
     
-    ## install new files ##
-    ss_rsync /var/www/html/dev/wordpress/* /var/www/html/dev
+## install new files ##
+ss_rsync /var/www/html/dev/wordpress/* /var/www/html/dev
     
-    ## delete tmp files ##
-    ss_rm /var/www/html/dev/wordpress
-    ss_rm /var/www/html/dev/wordpress.zip*
+## delete tmp files ##
+ss_rm /var/www/html/dev/wordpress
+ss_rm /var/www/html/dev/wordpress.zip*
     
 fi
 
@@ -275,7 +263,6 @@ fi
 ## we include the sync to staging while installing WordPress Core to avoid blank sites ##
 ## otherwise the staging site files/database would potentially display broken ##
 
-## run ss-sync-staging ##
 source "${PATH_SS_SYNC_STAGING}"
 
 ####################################################################################################
