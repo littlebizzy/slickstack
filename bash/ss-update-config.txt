@@ -41,7 +41,7 @@
 ## this build version ensures compatibility with ss-config boilerplate (from mirrors) ##
 ## it must match the latest ss-config boilerplate otherwise updating will fail ##
 
-SS_UPDATE_CONFIG_BUILD="MAR2024W"
+SS_UPDATE_CONFIG_BUILD="MAR2024X"
 
 ####################################################################################################
 #### B. SS-Update-Config: Source SS-Config + SS-Functions ##########################################
@@ -135,16 +135,36 @@ if [[ "${SS_BUILD_LATEST}" != "${SS_UPDATE_CONFIG_BUILD}" ]]; then
 fi
 
 ####################################################################################################
-#### I. SS-Update-Config: Install Latest SS-Config Boilerplate (Copies Existing Settings) ##########
+#### I. SS-Update-Config: Install Latest SS-Config Boilerplate (Copies Existing Settings) ###ss_#######
 ####################################################################################################
 
 ## this will update the existing ss-config file to latest boilerplate from our mirrors ##
 ## all existing options will be safely transferred to the new boilerplate ##
 
-## ss lockdown ##
+## general settings ##
 ss_sed "s|\(^SS_LOCKDOWN=\).*|SS_LOCKDOWN=\"$SS_LOCKDOWN\"|g" "${TMP_SS_CONFIG_UPDATE}"
+
+if [[ -n "${SS_APP}" ]]; then
+    ss_sed "s|\(^SS_APP=\).*|SS_APP=\"$SS_APP\"|g" "${TMP_SS_CONFIG_UPDATE}"
+fi
+
+if [[ -n "${SS_LANGUAGE}" ]]; then
+    ss_sed "s|\(^SS_LANGUAGE=\).*|SS_LANGUAGE=\"$SS_LANGUAGE\"|g" "${TMP_SS_CONFIG_UPDATE}"
+fi
+
 ss_sed "s|\(^SS_NOINDEX=\).*|SS_NOINDEX=\"$SS_NOINDEX\"|g" "${TMP_SS_CONFIG_UPDATE}"
 
+if [[ -n "${SS_TIMEZONE}" ]]; then
+ss_sed "s|\(^SS_TIMEZONE=\).*|SS_TIMEZONE=\"$SS_TIMEZONE\"|g" "${TMP_SS_CONFIG_UPDATE}"
+fi
+
+if [[ -n "${SS_SYNC_DEVELOPMENT}" ]]; then
+ss_sed "s|\(^SS_SYNC_DEVELOPMENT=\).*|SS_SYNC_DEVELOPMENT=\"$SS_SYNC_DEVELOPMENT\"|g" "${TMP_SS_CONFIG_UPDATE}"
+fi
+
+if [[ -n "${SS_SYNC_STAGING}" ]]; then
+ss_sed "s|\(^SS_SYNC_STAGING=\).*|SS_SYNC_STAGING=\"$SS_SYNC_STAGING\"|g" "${TMP_SS_CONFIG_UPDATE}"
+fi
 
 ## access settings ##
 ss_sed "s|\(^SUDO_USER=\).*|SUDO_USER=\"$SUDO_USER\"|g" "${TMP_SS_CONFIG_UPDATE}"
@@ -158,7 +178,7 @@ ss_sed "s|\(^SFTP_PASSWORD=\).*|SFTP_PASSWORD=\"$SFTP_PASSWORD\"|g" "${TMP_SS_CO
 ## domain settings ##
 ss_sed "s|\(^SITE_TLD=\).*|SITE_TLD=\"$SITE_TLD\"|g" "${TMP_SS_CONFIG_UPDATE}"
 ss_sed "s|\(^SITE_DOMAIN=\).*|SITE_DOMAIN=\"$SITE_DOMAIN\"|g" "${TMP_SS_CONFIG_UPDATE}"
-ss_sed "s|\(^SITE_NOINDEX=\).*|SITE_NOINDEX=\"$SITE_NOINDEX\"|g" "${TMP_SS_CONFIG_UPDATE}"
+ss_sed "s|\(^SITE_NOINDEX=\).*|SITE_NOINDEX=\"$SITE_NOINDEX\"|g" "${TMP_SS_CONFIG_UPDATE}" ## soon to be replaced by SS_NOINDEX
 
 ## database settings ##
 ss_sed "s|\(^DB_NAME=\).*|DB_NAME=\"$DB_NAME\"|g" "${TMP_SS_CONFIG_UPDATE}"
@@ -172,11 +192,11 @@ ss_sed "s|\(^DB_CHARSET=\).*|DB_CHARSET=\"$DB_CHARSET\"|g" "${TMP_SS_CONFIG_UPDA
 ss_sed "s|\(^DB_COLLATE=\).*|DB_COLLATE=\"$DB_COLLATE\"|g" "${TMP_SS_CONFIG_UPDATE}"
 
 ## adminer settings ##
-ss_sed "s|\(^ADMINER_URL=\).*|ADMINER_URL=\"$ADMINER_URL\"|g" "${TMP_SS_CONFIG_UPDATE}"
-
 if [[ -n "${ADMINER_PUBLIC}" ]]; then
 ss_sed "s|\(^ADMINER_PUBLIC=\).*|ADMINER_PUBLIC=\"$ADMINER_PUBLIC\"|g" "${TMP_SS_CONFIG_UPDATE}"
 fi
+
+ss_sed "s|\(^ADMINER_URL=\).*|ADMINER_URL=\"$ADMINER_URL\"|g" "${TMP_SS_CONFIG_UPDATE}"
 
 ## staging/dev settings ##
 if [[ -n "${DEV_SITE}" ]]; then 
@@ -261,15 +281,6 @@ if [[ -n "${RSYNC_PASSWORD}" ]]; then
     ss_sed "s|\(^RSYNC_PASSWORD=\).*|RSYNC_PASSWORD=\"$RSYNC_PASSWORD\"|g" "${TMP_SS_CONFIG_UPDATE}"
 fi
 
-## general settings ##
-if [[ -n "${SS_APP}" ]]; then
-    ss_sed "s|\(^SS_APP=\).*|SS_APP=\"$SS_APP\"|g" "${TMP_SS_CONFIG_UPDATE}"
-fi
-
-if [[ -n "${SS_LANGUAGE}" ]]; then
-    ss_sed "s|\(^SS_LANGUAGE=\).*|SS_LANGUAGE=\"$SS_LANGUAGE\"|g" "${TMP_SS_CONFIG_UPDATE}"
-fi
-
 ## whitelabel settings ##
 if [[ -n "${WHITELABEL_BRAND}" ]]; then
 ss_sed "s|\(^WHITELABEL_BRAND=\).*|WHITELABEL_BRAND=\"$WHITELABEL_BRAND\"|g" "${TMP_SS_CONFIG_UPDATE}"
@@ -291,24 +302,14 @@ if [[ -n "${WHITELABEL_BILLING_METHOD}" ]]; then
 ss_sed "s|\(^WHITELABEL_BILLING_METHOD=\).*|WHITELABEL_BILLING_METHOD=\"$WHITELABEL_BILLING_METHOD\"|g" "${TMP_SS_CONFIG_UPDATE}"
 fi
 
+
+## more general settings ##
 if [[ -n "${SS_DATABASE_REMOTE}" ]]; then
 ss_sed "s|\(^SS_DATABASE_REMOTE=\).*|SS_DATABASE_REMOTE=\"$SS_DATABASE_REMOTE\"|g" "${TMP_SS_CONFIG_UPDATE}"
 fi
 
 if [[ -n "${SS_OBJECT_CACHE}" ]]; then
 ss_sed "s|\(^SS_OBJECT_CACHE=\).*|SS_OBJECT_CACHE=\"$SS_OBJECT_CACHE\"|g" "${TMP_SS_CONFIG_UPDATE}"
-fi
-
-if [[ -n "${SS_SYNC_DEVELOPMENT}" ]]; then
-ss_sed "s|\(^SS_SYNC_DEVELOPMENT=\).*|SS_SYNC_DEVELOPMENT=\"$SS_SYNC_DEVELOPMENT\"|g" "${TMP_SS_CONFIG_UPDATE}"
-fi
-
-if [[ -n "${SS_SYNC_STAGING}" ]]; then
-ss_sed "s|\(^SS_SYNC_STAGING=\).*|SS_SYNC_STAGING=\"$SS_SYNC_STAGING\"|g" "${TMP_SS_CONFIG_UPDATE}"
-fi
-
-if [[ -n "${SS_TIMEZONE}" ]]; then
-ss_sed "s|\(^SS_TIMEZONE=\).*|SS_TIMEZONE=\"$SS_TIMEZONE\"|g" "${TMP_SS_CONFIG_UPDATE}"
 fi
 
 if [[ -n "${SS_REMOTE_BACKUPS}" ]]; then
@@ -376,6 +377,12 @@ if [[ -n "${SSL_BUFFER_SIZE}" ]]; then
 ss_sed "s|\(^SSL_BUFFER_SIZE=\).*|SSL_BUFFER_SIZE=\"$SSL_BUFFER_SIZE\"|g" "${TMP_SS_CONFIG_UPDATE}"
 fi
 
+## openssl stuff ##
+ss_sed "s|\(^OPENSSL_CERT_INCLUDE_DOMAINS=\).*|OPENSSL_CERT_INCLUDE_DOMAINS=\"$OPENSSL_CERT_INCLUDE_DOMAINS\"|g" "${TMP_SS_CONFIG_UPDATE}"
+ss_sed "s|\(^OPENSSL_CERT_INCLUDE_IPS=\).*|OPENSSL_CERT_INCLUDE_IPS=\"$OPENSSL_CERT_INCLUDE_IPS\"|g" "${TMP_SS_CONFIG_UPDATE}"
+ss_sed "s|\(^OPENSSL_CERT_INCLUDE_LOCALHOST=\).*|OPENSSL_CERT_INCLUDE_LOCALHOST=\"$OPENSSL_CERT_INCLUDE_LOCALHOST\"|g" "${TMP_SS_CONFIG_UPDATE}"
+
+## csr stuff ##
 ss_sed "s|\(^CSR_COUNTRY=\).*|CSR_COUNTRY=\"$CSR_COUNTRY\"|g" "${TMP_SS_CONFIG_UPDATE}"
 ss_sed "s|\(^CSR_STATE=\).*|CSR_STATE=\"$CSR_STATE\"|g" "${TMP_SS_CONFIG_UPDATE}"
 ss_sed "s|\(^CSR_CITY=\).*|CSR_CITY=\"$CSR_CITY\"|g" "${TMP_SS_CONFIG_UPDATE}"
@@ -498,9 +505,14 @@ if [[ -n "${NGINX_SEND_TIMEOUT}" ]]; then
 ss_sed "s|\(^NGINX_SEND_TIMEOUT=\).*|NGINX_SEND_TIMEOUT=\"$NGINX_SEND_TIMEOUT\"|g" "${TMP_SS_CONFIG_UPDATE}"
 fi
 
+## cloudflare stuff ##
 if [[ -n "${NGINX_CLOUDFLARE_IPS}" ]]; then
 ss_sed "s|\(^NGINX_CLOUDFLARE_IPS=\).*|NGINX_CLOUDFLARE_IPS=\"$NGINX_CLOUDFLARE_IPS\"|g" "${TMP_SS_CONFIG_UPDATE}"
 fi
+
+ss_sed "s|\(^CLOUDFLARE_REAL_IPS=\).*|CLOUDFLARE_REAL_IPS=\"$CLOUDFLARE_REAL_IPS\"|g" "${TMP_SS_CONFIG_UPDATE}"
+ss_sed "s|\(^CLOUDFLARE_AUTHENTICATED_ORIGIN=\).*|CLOUDFLARE_AUTHENTICATED_ORIGIN=\"$CLOUDFLARE_AUTHENTICATED_ORIGIN\"|g" "${TMP_SS_CONFIG_UPDATE}"
+
 
 ## open file cache settings ##
 if [[ -n "${OPEN_FILE_CACHE_MAX}" ]]; then
@@ -607,6 +619,7 @@ if [[ -n "${SQL_NET_WRITE_TIMEOUT}" ]]; then
 ss_sed "s|\(^SQL_NET_WRITE_TIMEOUT=\).*|SQL_NET_WRITE_TIMEOUT=\"$SQL_NET_WRITE_TIMEOUT\"|g" "${TMP_SS_CONFIG_UPDATE}"
 fi
 
+## innodb settings ##
 if [[ -n "${INNODB_BUFFER_POOL_SIZE}" ]]; then
 ss_sed "s|\(^INNODB_BUFFER_POOL_SIZE=\).*|INNODB_BUFFER_POOL_SIZE=\"$INNODB_BUFFER_POOL_SIZE\"|g" "${TMP_SS_CONFIG_UPDATE}"
 fi
