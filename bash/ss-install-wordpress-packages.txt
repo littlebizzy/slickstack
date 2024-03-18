@@ -35,15 +35,16 @@ source /var/www/ss-functions
 ## C. Install Ubuntu Utils
 ## D. Retrieve WordPress Core Zip File
 ## E. Install WordPress Core (Production)
-## F. Install HoverCraft WordPress Theme (Production)
-## G. Install WordPress Core (Staging)
-## H. Install WordPress Core (Development)
+## F. Install WordPress Core (Staging)
+## G. Install WordPress Core (Development)
+## H. Install HoverCraft WordPress Theme
 ## I. Populate Production Database (Conditional)
 ## J. Populate Development Database (Conditional)
 ## K. Modify Site Domains In Database
 ## L. Sync Production Database To Staging
-## M. Purge Cache (PHP OPcache)
-## N. Reset Permissions (WordPress Packages)
+## M. Cleanup Temporary Files
+## N. Purge Cache (PHP OPcache)
+## O. Reset Permissions (WordPress Packages)
 
 ####################################################################################################
 #### A. SS-Install-WordPress-Packages: Touch Timestamp File ########################################
@@ -113,13 +114,7 @@ fi
 # fi
 
 ####################################################################################################
-#### F. SS-Install-WordPress-Packages: Install HoverCraft WordPress Theme (Production) #############
-####################################################################################################
-
-source "${PATH_SS_INSTALL_WORDPRESS_HOVERCRAFT}"
-
-####################################################################################################
-#### G. SS-Install-WordPress-Packages: Install WordPress Core (Staging) ############################
+#### F. SS-Install-WordPress-Packages: Install WordPress Core (Staging) ############################
 ####################################################################################################
 
 ## this installation process removes outdated WordPress Core files or potential malware ##
@@ -139,7 +134,7 @@ ss_unzip /var/www/html/staging/wordpress.zip -d /var/www/html/staging
 ss_chown "${SFTP_USER}":slickstack /var/www/html/staging/wordpress
 ss_chmod 0775 /var/www/html/staging/wordpress
     
-## install new files files ##
+## install new files ##
 ss_rsync /var/www/html/staging/wordpress/* /var/www/html/staging
     
 ## delete tmp files ##
@@ -158,7 +153,7 @@ fi
 # fi
 
 ####################################################################################################
-#### H. SS-Install-WordPress-Packages: Install WordPress Core (Development) ########################
+#### G. SS-Install-WordPress-Packages: Install WordPress Core (Development) ########################
 ####################################################################################################
 
 ## this installation process removes outdated WordPress Core files or potential malware ##
@@ -195,6 +190,12 @@ fi
 # if [[ -f "${TMP_WORDPRESS_ZIP}" ]] && [[ "${SS_INSTALL_WORDPRESS_PACKAGES_DELETE_PHP_FILES_ROOT}" != "false" ]]; then
 #     find /var/www/html/dev/ -maxdepth 1 -type f ! -name "wp-config.php" -name "*.php" -delete 
 # fi
+
+####################################################################################################
+#### H. SS-Install-WordPress-Packages: Install HoverCraft WordPress Theme ##########################
+####################################################################################################
+
+source "${PATH_SS_INSTALL_WORDPRESS_HOVERCRAFT}"
 
 ####################################################################################################
 #### I. SS-Install-WordPress-Packages: Populate Production Database (Conditional) ##################
@@ -237,8 +238,8 @@ fi
 ## here we manually fix certain fields in the database to ensure proper functionality ##
 ## this fix required for WP Multisite (wp-config.php enough for single sites) ##
 
-## SNIPPET: ss-install-wordpress-config, ss-install-wordpress-core
-## UPDATED: 28MAR2022
+## SNIPPET: ss-install-wordpress-config, ss-install-wordpress-packages
+## UPDATED: 19MAR2024
 
 ## production ##
 if [[ -n $(ss_mysql_root --execute "SHOW TABLES FROM ${DB_NAME} WHERE Tables_in_${DB_NAME} LIKE '${DB_PREFIX}options';" 2> /dev/null) ]]; then
@@ -280,13 +281,19 @@ fi
 source "${PATH_SS_SYNC_STAGING}"
 
 ####################################################################################################
-#### M. SS-Install-WordPress-Packages: Purge Cache (PHP OPcache) ###################################
+#### M. SS-Install-WordPress-Packages: Cleanup Temporary Files #####################################
+####################################################################################################
+
+ss_rm "${TMP_WORDPRESS_ZIP}"
+
+####################################################################################################
+#### N. SS-Install-WordPress-Packages: Purge Cache (PHP OPcache) ###################################
 ####################################################################################################
 
 source "${PATH_SS_PURGE_OPCACHE}"
 
 ####################################################################################################
-#### N. SS-Install-WordPress-Packages: Reset Permissions (WordPress Packages) ######################
+#### O. SS-Install-WordPress-Packages: Reset Permissions (WordPress Packages) ######################
 ####################################################################################################
 
 source "${PATH_SS_PERMS_WORDPRESS_PACKAGES}"
