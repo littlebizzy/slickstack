@@ -56,11 +56,13 @@ ss_echo "${COLOR_INFO}Running ss-install-nginx-cloudflare-authenticated-origin..
 
 if [[ "${CLOUDFLARE_AUTHENTICATED_ORIGIN}" == "true" ]]; then 
 
+ss_wget "${TMP_CLOUDFLARE_PEM}" "${REMOTE_CLOUDFLARE_PEM}"
 ss_wget "${TMP_AUTHENTICATED_ORIGIN_CONF}" "${GITHUB_AUTHENTICATED_ORIGIN_CONF}"
 
 ## install if valid ##
 VALIDATE_TMP_AUTHENTICATED_ORIGIN_CONF=$(grep 'ssl_verify_client' "${TMP_AUTHENTICATED_ORIGIN_CONF}" 2> /dev/null)
 if [[ -n "${VALIDATE_TMP_AUTHENTICATED_ORIGIN_CONF}" ]]; then
+    ss_mv "${TMP_CLOUDFLARE_PEM}" "${PATH_CLOUDFLARE_PEM}"
     ss_mv "${TMP_AUTHENTICATED_ORIGIN_CONF}" "${PATH_AUTHENTICATED_ORIGIN_CONF}"
     ss_reload nginx
     ss_echo "${COLOR_INFO}ss-install-nginx-cloudflare-authenticated-origin: Successfully installed authenticated-origin.conf and reloaded Nginx... ${COLOR_RESET}"
@@ -70,6 +72,7 @@ fi
 
 #### else if cloudflare auth origin false #####
 elif [[ "${CLOUDFLARE_AUTHENTICATED_ORIGIN}" == "false" ]]; then
+    ss_rm "${PATH_CLOUDFLARE_PEM}"
     ss_rm "${PATH_CLOUDFLARE_AUTHENTICATED_ORIGIN}"
     ## no need to reload nginx here... ##
     ss_echo "${COLOR_WARN}ss-install-nginx-cloudflare-authenticated-origin: authenticated-origin.conf is disabled in your ss-config so installation skipped... ${COLOR_RESET}"
@@ -78,6 +81,8 @@ elif [[ "${CLOUDFLARE_AUTHENTICATED_ORIGIN}" == "false" ]]; then
 ## end if parent #####
 fi
 
+## cleanup tmp files #######################
+ss_rm "${TMP_AUTHENTICATED_ORIGIN_CONF}"
 
 ####################################################################################################
 #### SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ###############
