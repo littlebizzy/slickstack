@@ -1,13 +1,13 @@
 ####################################################################################################
 #### author: SlickStack ############################################################################
-#### link: https://slickstack.io ########################################################################
-#### mirror: https://mirrors.slickstack.io/bash/ss-install-nginx-cloudflare-authenticated-origin.txt ####
-#### path: /var/www/ss-install-nginx-cloudflare-ips #####################################################
+#### link: https://slickstack.io #############################################################################
+#### mirror: littlebizzy/slickstack/blob/master/bash/ss-install-nginx-cloudflare-authenticated-origin.txt ####
+#### path: /var/www/ss-install-nginx-cloudflare-authenticated-origin #########################################
 #### destination: n/a ##############################################################################
-#### purpose: Installs the authenticated-origin.conf Nginx submodule ################
+#### purpose: Installs the authenticated-origin.conf Nginx submodule to require Cloudflare #########
 #### module version: Nginx 1.18.x ##################################################################
 #### sourced by: nginx.conf ########################################################################
-#### bash aliases:  #################################################
+#### bash aliases: #################################################
 ####################################################################################################
 
 ## SS-CONFIG MUST BE PROPERLY CONFIGURED AND ON CURRENT BUILD BEFORE RUNNING SS-INSTALL ##
@@ -22,7 +22,7 @@ source /var/www/ss-functions
 ## BELOW THIS RELIES ON SS-CONFIG AND SS-FUNCTIONS
 
 ####################################################################################################
-#### TABLE OF CONTENTS (SS-Install-Nginx-Cloudflare-Authenticated-Origin) ###########################################
+#### TABLE OF CONTENTS (SS-Install-Nginx-Cloudflare-Authenticated-Origin) ##########################
 ####################################################################################################
 
 ## this is a brief summary of the different code snippets you will find in this script ##
@@ -33,7 +33,7 @@ source /var/www/ss-functions
 ## C. Install Cloudflare.conf
 
 ####################################################################################################
-#### A. SS-Install-Nginx-Cloudflare-Authenticated-Origin: Touch Timestamp File ######################################
+#### A. SS-Install-Nginx-Cloudflare-Authenticated-Origin: Touch Timestamp File #####################
 ####################################################################################################
 
 ## this is a dummy timestamp file that will remember the last time this script was run ##
@@ -54,6 +54,29 @@ ss_echo "${COLOR_INFO}Running ss-install-nginx-cloudflare-authenticated-origin..
 #### C. SS-Install-Nginx-Cloudflare-Authenticated-Origin: Install Authenticated-Origin.conf ###################################
 ####################################################################################################
 
+if [[ "${CLOUDFLARE_AUTHENTICATED_ORIGIN}" == "true" ]]; then 
+
+ss_wget "${TMP_AUTHENTICATED_ORIGIN_CONF}" "${GITHUB_AUTHENTICATED_ORIGIN_CONF}"
+
+## install if valid ##
+VALIDATE_TMP_AUTHENTICATED_ORIGIN_CONF=$(grep 'ssl_verify_client' "${TMP_AUTHENTICATED_ORIGIN_CONF}" 2> /dev/null)
+if [[ -n "${VALIDATE_TMP_AUTHENTICATED_ORIGIN_CONF}" ]]; then
+    ss_mv "${TMP_AUTHENTICATED_ORIGIN_CONF}" "${PATH_AUTHENTICATED_ORIGIN_CONF}"
+    ss_reload nginx
+    ss_echo "${COLOR_INFO}ss-install-nginx-cloudflare-authenticated-origin: Successfully installed authenticated-origin.conf and reloaded Nginx... ${COLOR_RESET}"
+elif [[ -z "${VALIDATE_TMP_AUTHENTICATED_ORIGIN_CONF}" ]]; then
+    ss_echo "${COLOR_WARN}ss-install-nginx-cloudflare-authenticated-origin: latest authenticated-origin.conf boilerplate appears corrupt so skipping install (old version remains installed if exists)... ${COLOR_RESET}"
+fi
+
+#### else if cloudflare auth origin false #####
+elif [[ "${CLOUDFLARE_AUTHENTICATED_ORIGIN}" == "false" ]]; then
+    ss_rm "${PATH_CLOUDFLARE_AUTHENTICATED_ORIGIN}"
+    ## no need to reload nginx here... ##
+    ss_echo "${COLOR_WARN}ss-install-nginx-cloudflare-authenticated-origin: authenticated-origin.conf is disabled in your ss-config so installation skipped... ${COLOR_RESET}"
+
+
+## end if parent #####
+fi
 
 
 ####################################################################################################
