@@ -32,7 +32,8 @@
 ## H. Retrieve Latest SS-Config Boilerplate
 ## I. Install Latest SS-Config Boilerplate (Copies Existing Settings)
 ## J. Validate Latest SS-Config Boilerplate
-## K. Replace SS-Config Placeholders (If Exist)
+## K. Replace Option Value Placeholders (If Exist)
+## L. Replace Empty Option Values (If Exist) 
 
 ####################################################################################################
 #### A. SS-Update-Config: Build Version ############################################################
@@ -41,7 +42,7 @@
 ## this build version ensures compatibility with ss-config boilerplate (from mirrors) ##
 ## it must match the latest ss-config boilerplate otherwise updating will fail ##
 
-SS_UPDATE_CONFIG_BUILD="MAR2024JJ"
+SS_UPDATE_CONFIG_BUILD="MAR2024KK"
 
 ####################################################################################################
 #### B. SS-Update-Config: Source SS-Config + SS-Functions ##########################################
@@ -102,7 +103,7 @@ ss_cp /var/www/ss-config /var/www/backups/config/ss-config.bak.${CURRENT_TIME}
 #### G. SS-Update-Config: Validate Active SS-Config Before Proceeding ##############################
 ####################################################################################################
 
-VALIDATE_SS_CONFIG=$(grep 'EOF' "$PATH_SS_CONFIG") ## change to "$SS_EOF" later
+VALIDATE_SS_CONFIG=$(grep 'EOF' "${PATH_SS_CONFIG}" 2> /dev/null) ## change to "$SS_EOF" later
 
 ## validate ss-config ##
 if [[ -z "${VALIDATE_SS_CONFIG}" ]]; then
@@ -1195,13 +1196,12 @@ else
 fi
 
 ####################################################################################################
-#### K. SS-Update-Config: Replace SS-Config Placeholders (If Exist) ################################
+#### K. SS-Update-Config: Replace Option Value Placeholders (If Exist) #############################
 ####################################################################################################
 
 ## here we manually replace any remaining placeholders in ss-config to avoid conflicts ##
 ## this ensures a default value exists in case none has ever been specified ##
 
-## replace placeholders with default values if exist in ss-config ##
 ss_sed "s|@DB_PORT|3306|g" /var/www/ss-config
 ss_sed "s|@SSH_PORT|22|g" /var/www/ss-config ## deprecated
 ss_sed "s|@SSH_KEYS|false|g" /var/www/ss-config
@@ -1231,36 +1231,62 @@ ss_sed "s|@WP_MULTISITE_SUBDOMAINS|true|g" /var/www/ss-config
 ss_sed "s|@NGINX_CLOUDFLARE_IPS|false|g" /var/www/ss-config
 ss_sed "s/@RANDOM_STRING_ADMINER_URL/$(openssl rand -hex 12)/g" /var/www/ss-config
 
-## replace missing values in ss-config ##
-ss_sed 's|CLOUDFLARE_REAL_IPS=""|CLOUDFLARE_REAL_IPS="false"|g' /var/www/ss-config
+####################################################################################################
+#### L. SS-Update-Config: Replace Empty Option Values (If Exist) ###################################
+####################################################################################################
+
+ss_sed 's|ADMINER_PUBLIC=""|ADMINER_PUBLIC="true"|g' /var/www/ss-config
 ss_sed 's|CLOUDFLARE_AUTHENTICATED_ORIGIN=""|CLOUDFLARE_AUTHENTICATED_ORIGIN="false"|g' /var/www/ss-config
-ss_sed 's|SS_LOCKDOWN=""|SS_LOCKDOWN="false"|g' /var/www/ss-config
-ss_sed 's|SSH_KEYS=""|SSH_KEYS="false"|g' /var/www/ss-config
-ss_sed 's|SSH_RESTRICT_IP=""|SSH_RESTRICT_IP="false"|g' /var/www/ss-config
-ss_sed 's|SITE_NOINDEX=""|SITE_NOINDEX="false"|g' /var/www/ss-config
+ss_sed 's|CLOUDFLARE_REAL_IPS=""|CLOUDFLARE_REAL_IPS="false"|g' /var/www/ss-config
+ss_sed 's|DB_NAME=""|DB_NAME="production"|g' /var/www/ss-config
 ss_sed 's|DB_HOST=""|DB_HOST="127.0.0.1"|g' /var/www/ss-config
 ss_sed 's|DB_PORT=""|DB_PORT="3306"|g' /var/www/ss-config
 ss_sed 's|DB_PREFIX=""|DB_PREFIX="wp_"|g' /var/www/ss-config
+ss_sed 's|DB_CHARSET=""|DB_CHARSET="utf8mb4"|g' /var/www/ss-config
 ss_sed 's|DEV_SITE=""|DEV_SITE="false"|g' /var/www/ss-config
 ss_sed 's|DEV_SITE_PROTECT=""|DEV_SITE_PROTECT="false"|g' /var/www/ss-config
-ss_sed 's|STAGING_SITE=""|STAGING_SITE="false"|g' /var/www/ss-config
-ss_sed 's|STAGING_SITE_PROTECT=""|STAGING_SITE_PROTECT="false"|g' /var/www/ss-config
 ss_sed 's|GUEST_USER=""|GUEST_USER="guest"|g' /var/www/ss-config
+ss_sed 's|NGINX_CLOUDFLARE_IPS=""|NGINX_CLOUDFLARE_IPS="false"|g' /var/www/ss-config
+ss_sed 's|OPENSSL_CERT_INCLUDE_DOMAINS=""|OPENSSL_CERT_INCLUDE_DOMAINS="true"|g' /var/www/ss-config
+ss_sed 's|OPENSSL_CERT_INCLUDE_IPS=""|OPENSSL_CERT_INCLUDE_IPS="false"|g' /var/www/ss-config
+ss_sed 's|OPENSSL_CERT_INCLUDE_LOCALHOST=""|OPENSSL_CERT_INCLUDE_LOCALHOST="false"|g' /var/www/ss-config
+ss_sed 's|SITE_NOINDEX=""|SITE_NOINDEX="false"|g' /var/www/ss-config
 ss_sed 's|SS_APP=""|SS_APP="wordpress"|g' /var/www/ss-config
-ss_sed 's|SS_LANGUAGE=""|SS_LANGUAGE="en_US"|g' /var/www/ss-config
-ss_sed 's|SS_ADMINER_PUBLIC=""|ADMINER_PUBLIC="true"|g' /var/www/ss-config
-ss_sed 's|SS_ADMINER_PUBLIC="true"|ADMINER_PUBLIC="true"|g' /var/www/ss-config
-ss_sed 's|SS_ADMINER_PUBLIC="false"|ADMINER_PUBLIC="false"|g' /var/www/ss-config
 ss_sed 's|SS_DATABASE_REMOTE=""|SS_DATABASE_REMOTE="false"|g' /var/www/ss-config
+ss_sed 's|SS_LANGUAGE=""|SS_LANGUAGE="en_US"|g' /var/www/ss-config
+ss_sed 's|SS_LOCKDOWN=""|SS_LOCKDOWN="false"|g' /var/www/ss-config
+ss_sed 's|SS_NOINDEX=""|SS_NOINDEX="false"|g' /var/www/ss-config
 ss_sed 's|SS_OBJECT_CACHE=""|SS_OBJECT_CACHE="true"|g' /var/www/ss-config
+ss_sed 's|SS_TIMEZONE=""|SS_TIMEZONE="UTC"|g' /var/www/ss-config
+ss_sed 's|SS_REBOOT_MIN_UPTIME=""|SS_REBOOT_MIN_UPTIME="1 hour"|g' /var/www/ss-config
+ss_sed 's|SS_REMOTE_BACKUPS=""|SS_REMOTE_BACKUPS="false"|g' /var/www/ss-config
 ss_sed 's|SS_SYNC_DEVELOPMENT=""|SS_SYNC_DEVELOPMENT="false"|g' /var/www/ss-config
 ss_sed 's|SS_SYNC_STAGING=""|SS_SYNC_STAGING="true"|g' /var/www/ss-config
-ss_sed 's|SS_REMOTE_BACKUPS=""|SS_REMOTE_BACKUPS="false"|g' /var/www/ss-config
-ss_sed 's|SS_PILOT_FILE="@SS_PILOT_FILE"|SS_PILOT_FILE=""|g' /var/www/ss-config
+ss_sed 's|SS_WORDPRESS_MU_PLUGINS=""|SS_WORDPRESS_MU_PLUGINS="default"|g' /var/www/ss-config
+ss_sed 's|SSH_KEYS=""|SSH_KEYS="false"|g' /var/www/ss-config
+ss_sed 's|SSH_RESTRICT_IP=""|SSH_RESTRICT_IP="false"|g' /var/www/ss-config
+ss_sed 's|SSH_IPV4=""|SSH_IPV4="192.0.2.1"|g' /var/www/ss-config
+ss_sed 's|SSL_TYPE=""|SSL_TYPE="openssl"|g' /var/www/ss-config
+ss_sed 's|SSL_PROTOCOLS=""|SSL_PROTOCOLS="TLSv1.2 TLSv1.3"|g' /var/www/ss-config
+ss_sed 's|SSL_CIPHERS=""|SSL_CIPHERS="ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384:DHE-RSA-CHACHA20-POLY1305"|g' /var/www/ss-config
+ss_sed 's|SSL_SESSION_TIMEOUT=""|SSL_SESSION_TIMEOUT="1d"|g' /var/www/ss-config
+ss_sed 's|SSL_SESSION_CACHE=""|SSL_SESSION_CACHE="shared:SSL:64m"|g' /var/www/ss-config
+ss_sed 's|SSL_BUFFER_SIZE=""|SSL_BUFFER_SIZE="16k"|g' /var/www/ss-config
+ss_sed 's|STAGING_SITE=""|STAGING_SITE="false"|g' /var/www/ss-config
+ss_sed 's|STAGING_SITE_PROTECT=""|STAGING_SITE_PROTECT="false"|g' /var/www/ss-config
+ss_sed 's|WP_CRON_METHOD=""|WP_CRON_METHOD="wordpress"|g' /var/www/ss-config
+ss_sed 's|WP_CRON_INTERVAL=""|WP_CRON_INTERVAL="quarter-hourly"|g' /var/www/ss-config
 ss_sed 's|WP_MULTISITE=""|WP_MULTISITE="false"|g' /var/www/ss-config
 ss_sed 's|WP_MULTISITE_SUBDOMAINS=""|WP_MULTISITE_SUBDOMAINS="true"|g' /var/www/ss-config
-ss_sed 's|WP_DEFAULT_THEME=""|WP_DEFAULT_THEME="twentytwenty"|g' /var/www/ss-config
+ss_sed 's|WP_POST_REVISIONS=""|WP_POST_REVISIONS="3"|g' /var/www/ss-config
+ss_sed 's|WP_AUTOSAVE_INTERVAL=""|WP_AUTOSAVE_INTERVAL="60"|g' /var/www/ss-config
+ss_sed 's|WP_HTTP_BLOCK_EXTERNAL=""|WP_HTTP_BLOCK_EXTERNAL="false"|g' /var/www/ss-config
+ss_sed 's|WP_ACCESSIBLE_HOSTS=""|WP_ACCESSIBLE_HOSTS="api.wordpress.org"|g' /var/www/ss-config
+ss_sed 's|WP_DISALLOW_FILE_EDIT=""|WP_DISALLOW_FILE_EDIT="false"|g' /var/www/ss-config
+ss_sed 's|WP_DISALLOW_FILE_MODS=""|WP_DISALLOW_FILE_MODS="false"|g' /var/www/ss-config
+ss_sed 's|WP_ALLOW_UNFILTERED_UPLOADS=""|WP_ALLOW_UNFILTERED_UPLOADS="true"|g' /var/www/ss-config
 ss_sed 's|WP_PLUGIN_BLACKLIST=""|WP_PLUGIN_BLACKLIST="true"|g' /var/www/ss-config
+ss_sed 's|WP_PLUGIN_BLACKLIST_SOURCE=""|WP_PLUGIN_BLACKLIST_SOURCE="https://raw.githubusercontent.com/littlebizzy/slickstack/master/modules/wordpress/blacklist.txt"|g' /var/www/ss-config
 
 ####################################################################################################
 #### SlickStack: Reset Permissions (SlickStack Scripts) ############################################
