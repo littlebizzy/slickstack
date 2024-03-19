@@ -14,13 +14,13 @@ Our sponsors: [backamblock](https://github.com/backamblock), [yamanmucahit](http
 
 Because it’s written purely in Bash (Unix shell), SlickStack has no dependencies and works on any Ubuntu LTS machine. Unlike heavier provisioning tools like EasyEngine or Ansible, there are no third party languages required such as Python or Docker, meaning a lighter and simpler approach to WordPress servers.
 
-The below installation steps assume that you've already spun up a [KVM cloud server](https://slickstack.io/hosting) on Ubuntu LTS, with at least 2GB+ RAM, and that you are logged in via SSH as `root`:
+The below installation steps assume that you've already spun up a [KVM cloud server](https://slickstack.io/hosting) on Ubuntu LTS, with at least 1GB+ RAM, and that you are logged in via SSH as `root`:
 
 ```
 cd /tmp/ && wget -O ss slick.fyi/ss && bash ss
 ```
 
-NOTE: SlickStack requires Cloudflare to be activated on your domain before SSL (HTTPS) will be recognized as a fully secure and CA-signed domain, because of its self-signed OpenSSL certificate.
+**Note:** SlickStack requires Cloudflare to be activated on your domain before SSL (HTTPS) will be recognized as fully secure by your browser, because of its default self-signed OpenSSL certificate. If you wish to use Let's Encrypt instead, be sure to change your settings in `ss-config` before running the installation.
 
 From this point forward, you can manage your SlickStack server by simply using the `sudo bash` command on any one of the bundled scripts located within the `/var/www/` directory, as needed. However, in most cases there shouldn't be any need for much hands-on management as the server will intelligently run various cron jobs which connect to this GitHub repo.
 
