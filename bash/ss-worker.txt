@@ -26,9 +26,11 @@
 ## B. Touch Timestamp File
 ## C. Message (Begin Script)
 ## D. Backup Active SS-Config File
-## D. Retrieve Current SS-Check (Bash Script)
-## E. Transfer Pilot File Settings (If Exists)
-## F. Install Current SS-Constants.php Boilerplate
+## E. Backup Custom Cron Jobs
+## F. Update SS-Check (Bash Script)
+## G. Transfer Pilot File Settings (If Exists)
+## H. Install Current SS-Constants.php Boilerplate
+
 ## G. Reset Permissions (SlickStack)
 ## H. Download Current Blacklist.txt File
 ## I. Install Default Robots.txt File (If Not Exists)
@@ -77,23 +79,24 @@ ss_echo "${COLOR_INFO}Running ss-worker... ${COLOR_RESET}"
 ## the oldest .bak files will be cleaned up periodically by ss-clean-files ##
 
 ## SNIPPET: ss-update-config, ss-worker
-## UPDATED: 31MAY2022
+## UPDATED: 20MAR2024
 
-## backup ss-config ##
 ss_cp "${PATH_SS_CONFIG}" /var/www/backups/config/ss-config.bak.${SYSTEM_CURRENT_TIME}
 
 ####################################################################################################
-#### D. SS-Worker: Backup Custom Cron Jobs ####################################################
+#### E. SS-Worker: Backup Custom Cron Jobs #########################################################
 ####################################################################################################
 
-rsync -r /var/www/crons/custom/ /var/www/backups/crons
+## this will backup and overwrite all your custom cron job files to the backups dir ##
+
+ss_rsync /var/www/crons/custom/ /var/www/backups/crons
 
 ####################################################################################################
-#### D. SS-Worker: Retrieve Current SS-Check (Bash Script) #########################################
+#### F. SS-Worker: Update SS-Check (Bash Script) ###################################################
 ####################################################################################################
 
-## here we retrieve the latest ss-check core bash script to improve overall redundancy ##
-## thus ss-check avoids installing itself and no single point of failure (SPOF) ##
+## here we retrieve the latest ss-check bash script to improve SlickStack redundancy ##
+## ss-check thus avoids installing itself and single point of failure (SPOF) ##
 
 ## retrieve ss-check ##
 ss_wget "${TMP_SS_CHECK}" "${GITHUB_SS_CHECK}"
@@ -109,11 +112,11 @@ if [[ -n "${VALIDATE2_TMP_SS_CHECK}" ]]; then
 fi
 
 ####################################################################################################
-#### E. SS-Worker: Transfer Pilot File Settings (If Exists) ########################################
+#### G. SS-Worker: Transfer Pilot File Settings (If Exists) ########################################
 ####################################################################################################
 
 ## this snippet retrieves the remote pilot file defined in ss-config and reads settings ##
-## it will replace old settings with pilot settings for multi-server management ##
+## it replaces ss-config options with these values for multi-server management ##
 
 ## retrieve pilot file if exists ##
 if [[ -n "${SS_PILOT_FILE}" ]]; then 
@@ -195,11 +198,11 @@ if [[ -n "${SS_PILOT_FILE}" ]]; then
 fi 
 
 ####################################################################################################
-#### F. SS-Worker: Install Current SS-Constants.php Boilerplate ####################################
+#### H. SS-Worker: Install Current SS-Constants.php Boilerplate ####################################
 ####################################################################################################
 
 ## here we use some janky magic to convert various system settings into PHP constants ##
-## this allows us to use these handy PHP constants inside PHP scripts etc ##
+## this allows SlickStack to use these handy PHP constants inside PHP scripts ##
 
 ## SNIPPET: ss-install-wordpress-config, ss-worker
 
