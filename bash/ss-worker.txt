@@ -6,8 +6,8 @@
 #### mirror: littlebizzy/slickstack/blob/master/bash/ss-worker.txt #################################
 #### path: /var/www/ss-worker ######################################################################
 #### destination: n/a (not a boilerplate) ##########################################################
-#### purpose: Performs SlickStack maintenance tasks and retrieves the latest ss-check file #########
-#### module version: Ubuntu 22.04 LTS ##############################################################
+#### purpose: Performs SlickStack maintenance tasks and updates the ss-check bash script ###########
+#### module version: Ubuntu 24.04 LTS ##############################################################
 #### sourced by: ss-install, ss-update-modules #####################################################
 #### bash aliases: ss worker #######################################################################
 ####################################################################################################
@@ -25,18 +25,17 @@
 ## A. Source SS-Config + SS-Functions
 ## B. Touch Timestamp File
 ## C. Message (Begin Script)
-## D. Backup Active SS-Config File
+## D. Backup SS-Config
 ## E. Backup Custom Cron Jobs
-## F. Update SS-Check (Bash Script)
+## F. Update SS-Check
 ## G. Transfer Pilot File Settings (If Exists)
-## H. Install Current SS-Constants.php Boilerplate
+## H. Install SS-Constants.php
+## I. Update Blacklist.txt
+## J. Install Default Robots.txt (If Not Exists)
+## K. Delete Object Cache Files (Conditional)
+## L. Temporary Tasks (Urgent Patches)
 
 ## G. Reset Permissions (SlickStack)
-## H. Download Current Blacklist.txt File
-## I. Install Default Robots.txt File (If Not Exists)
-
-## I. Delete Object Cache Files (Conditional)
-## J. Temporary Tasks (Urgent Patches)
 
 ####################################################################################################
 #### A. SS-Worker: Source SS-Config + SS-Functions #################################################
@@ -72,7 +71,7 @@ ss_touch "${TIMESTAMP_SS_WORKER}"
 ss_echo "${COLOR_INFO}Running ss-worker... ${COLOR_RESET}"
 
 ####################################################################################################
-#### D. SS-Worker: Backup Active SS-Config File ####################################################
+#### D. SS-Worker: Backup SS-Config ################################################################
 ####################################################################################################
 
 ## this will replicate your current ss-config file (and settings) to the backups dir ##
@@ -92,7 +91,7 @@ ss_cp "${PATH_SS_CONFIG}" /var/www/backups/config/ss-config.bak.${SYSTEM_CURRENT
 ss_rsync /var/www/crons/custom/ /var/www/backups/crons
 
 ####################################################################################################
-#### F. SS-Worker: Update SS-Check (Bash Script) ###################################################
+#### F. SS-Worker: Update SS-Check #################################################################
 ####################################################################################################
 
 ## here we retrieve the latest ss-check bash script to improve SlickStack redundancy ##
@@ -198,7 +197,7 @@ if [[ -n "${SS_PILOT_FILE}" ]]; then
 fi 
 
 ####################################################################################################
-#### H. SS-Worker: Install Current SS-Constants.php Boilerplate ####################################
+#### H. SS-Worker: Install SS-Constants.php ########################################################
 ####################################################################################################
 
 ## here we use some janky magic to convert various system settings into PHP constants ##
@@ -318,6 +317,71 @@ if [[ -n "${VALIDATE_TMP_SS_CONSTANTS_PHP}" ]]; then
 fi 
 
 ####################################################################################################
+#### I. SS-Worker: Update Blacklist.txt ############################################################
+####################################################################################################
+
+## here we retrieve the latest plugin blacklist file which might contain urgent changes ##
+## maintaining a thoughtful blacklist vastly improves WP performance and security ##
+
+## download latest blacklist (or custom blacklist) ##
+if [[ -z "${WP_PLUGIN_BLACKLIST_SOURCE}" ]]; then 
+    ss_wget "${TMP_BLACKLIST_TXT}" "${GITHUB_BLACKLIST_TXT}"
+else
+    ss_wget "${TMP_BLACKLIST_TXT}" "${WP_PLUGIN_BLACKLIST_SOURCE}"
+fi
+
+## copy file to wp-content directory ##
+ss_mkdir /var/www/html/wp-content/
+ss_cp "${TMP_BLACKLIST_TXT}" /var/www/html/wp-content/blacklist.txt
+
+## reset permissions ##
+chown www-data:slickstack /var/www/html/wp-content/blacklist.txt ## change to www-data:www-data when ss-perms fixed
+chmod 0440 /var/www/html/wp-content/blacklist.txt
+
+## NULL blacklist.txt if ss-config false (allows default SS MU plugin to be installed while still being able to disable plugin blacklist) ##
+if [[ "${WP_PLUGIN_BLACKLIST}" == "false" ]]; then 
+cat /dev/null > /var/www/html/wp-content/blacklist.txt
+    if [[ "${DEV_SITE}" != "false" ]]; then 
+        ss_touch /var/www/html/dev/wp-content/blacklist.txt
+        cat /dev/null > /var/www/html/dev/wp-content/blacklist.txt
+    fi
+    if [[ "${STAGING_SITE}" != "false" ]]; then 
+        ss_touch /var/www/html/staging/wp-content/blacklist.txt
+        cat /dev/null > /var/www/html/staging/wp-content/blacklist.txt
+    fi
+fi
+
+####################################################################################################
+#### J. SS-Worker: Install Default Robots.txt (If Not Exists) ######################################
+####################################################################################################
+
+## here we install a basic robots.txt file in case none exists yet on production site ##
+## by default we allow all URLs to be crawled and block archive.org crawling ##
+
+if [[ ! -f "${PATH_ROBOTS_TXT}" ]]; then 
+    ss_wget "${TMP_ROBOTS_TXT}" "${GITHUB_ROBOTS_TXT}"
+    ss_cp "${TMP_ROBOTS_TXT}" "${PATH_ROBOTS_TXT}"
+    chown www-data:www-data "${PATH_ROBOTS_TXT}"
+    chmod 0644 "${PATH_ROBOTS_TXT}"
+fi
+
+####################################################################################################
+#### K. SS-Worker: Delete Object Cache Files (Conditional) #########################################
+####################################################################################################
+
+## SINCE THIS IS STACK CONFIGURATION PROBABLY SHOULD NOT EXIST IN ss-clean ##
+## in case the object cache is disabled in ss-config settings we delete that file here ##
+
+## delete from staging/dev (always) ##
+ss_rm /var/www/html/staging/wp-content/object-cache.php
+ss_rm /var/www/html/dev/wp-content/object-cache.php
+
+## delete from production (conditional) ##
+if [[ "${SS_OBJECT_CACHE}" == "false" ]]; then
+    ss_rm /var/www/html/wp-content/object-cache.php
+fi
+
+####################################################################################################
 #### G. SS-Worker: Reset Permissions (SlickStack) ##################################################
 ####################################################################################################
 
@@ -434,82 +498,7 @@ chmod 0440 /var/www/meta/ss-constants.php
 chmod 0700 /var/www/ss* ## 0700 means only root can execute
 
 ####################################################################################################
-#### H. SS-Worker: Download Current Blacklist.txt File #############################################
-####################################################################################################
-
-## here we retrieve the latest plugin blacklist file which might contain urgent changes ##
-## maintaining a thoughtful blacklist vastly improves WP performance and security ##
-
-## download latest blacklist (or custom blacklist) ##
-if [[ -z "${WP_PLUGIN_BLACKLIST_SOURCE}" ]]; then 
-    ss_wget "${TMP_BLACKLIST_TXT}" "${GITHUB_BLACKLIST_TXT}"
-else
-    ss_wget "${TMP_BLACKLIST_TXT}" "${WP_PLUGIN_BLACKLIST_SOURCE}"
-fi
-
-## copy file to wp-content directory ##
-ss_mkdir /var/www/html/wp-content/
-ss_cp "${TMP_BLACKLIST_TXT}" /var/www/html/wp-content/blacklist.txt
-
-## reset permissions ##
-chown www-data:slickstack /var/www/html/wp-content/blacklist.txt ## change to www-data:www-data when ss-perms fixed
-chmod 0440 /var/www/html/wp-content/blacklist.txt
-
-## NULL blacklist.txt if ss-config false (allows default SS MU plugin to be installed while still being able to disable plugin blacklist) ##
-if [[ "${WP_PLUGIN_BLACKLIST}" == "false" ]]; then 
-cat /dev/null > /var/www/html/wp-content/blacklist.txt
-    if [[ "${DEV_SITE}" != "false" ]]; then 
-        ss_touch /var/www/html/dev/wp-content/blacklist.txt
-        cat /dev/null > /var/www/html/dev/wp-content/blacklist.txt
-    fi
-    if [[ "${STAGING_SITE}" != "false" ]]; then 
-        ss_touch /var/www/html/staging/wp-content/blacklist.txt
-        cat /dev/null > /var/www/html/staging/wp-content/blacklist.txt
-    fi
-fi
-
-####################################################################################################
-#### I. SS-Worker: Install Default Robots.txt File (If Not Exists) #################################
-####################################################################################################
-
-## here we install a basic robots.txt file in case none exists yet on production site ##
-## by default we allow all URLs to be crawled and block archive.org crawling ##
-
-if [[ ! -f "${PATH_ROBOTS_TXT}" ]]; then 
-    ss_wget "${TMP_ROBOTS_TXT}" "${GITHUB_ROBOTS_TXT}"
-    ss_cp "${TMP_ROBOTS_TXT}" "${PATH_ROBOTS_TXT}"
-    chown www-data:www-data "${PATH_ROBOTS_TXT}"
-    chmod 0644 "${PATH_ROBOTS_TXT}"
-fi
-
-####################################################################################################
-#### I. SS-Clean-Files: Delete Object Cache Files (Conditional) ####################################
-####################################################################################################
-
-## SINCE THIS IS STACK CONFIGURATION PROBABLY SHOULD NOT EXIST IN ss-clean ##
-## in case the object cache is disabled in ss-config settings we delete that file here ##
-
-## delete from staging/dev (always) ##
-ss_rm /var/www/html/staging/wp-content/object-cache.php
-ss_rm /var/www/html/dev/wp-content/object-cache.php
-
-## delete from production (conditional) ##
-if [[ "${SS_OBJECT_CACHE}" == "false" ]]; then
-    ss_rm /var/www/html/wp-content/object-cache.php
-fi
-
-####################################################################################################
-#### J. SS-Worker: Image Assets ################################################
-####################################################################################################
-
-#####
-ss_rm /var/www/meta/assets/*.png
-ss_rm /var/www/meta/assets/images/security-headers.png
-ss_rm /var/www/meta/assets/images/ssl-labs.png
-ss_rm /var/www/meta/assets/images/*.png
-
-####################################################################################################
-#### J. SS-Worker: Temporary Tasks (Urgent Patches) ################################################
+#### L. SS-Worker: Temporary Tasks (Urgent Patches) ################################################
 ####################################################################################################
 
 ## our team uses the below space to occassionally add urgent patches to SlickStack ##
