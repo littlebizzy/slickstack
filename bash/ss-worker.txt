@@ -539,12 +539,16 @@ if [[ ! -f "/var/www/html/wp-content/mu-plugins/ss-icon.svg" ]]; then
     ss_mv "${TMP_SS_ICON_SVG}" "${PATH_SS_ICON_SVG}"
 fi
 
-## convert SITE_NOINDEX to SS_NOINDEX test ##
+## convert SITE_NOINDEX to SS_NOINDEX with previous value ##
 VALIDATE_NOINDEX_STATUS=$(grep 'SITE_NOINDEX="true"' /var/www/ss-config 2> /dev/null)
 if [[ -n "${VALIDATE_NOINDEX_STATUS}" ]]; then
     echo "SITE_NOINDEX is true"
+    ss_sed 's|SS_NOINDEX=""|SS_NOINDEX="true"|g' /var/www/ss-config
+    ss_sed 's|SS_NOINDEX="false"|SS_NOINDEX="true"|g' /var/www/ss-config
 else
     echo "SITE_NOINDEX is false or not found"
+    ss_sed 's|SS_NOINDEX=""|SS_NOINDEX="false"|g' /var/www/ss-config
+    ss_sed 's|SS_NOINDEX="true"|SS_NOINDEX="false"|g' /var/www/ss-config
 fi
 
 ## fix broken sudoers ##
