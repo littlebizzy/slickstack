@@ -258,11 +258,14 @@ limit_req_zone $binary_remote_addr zone=adminer:10m rate=100r/s;
 limit_req_zone $binary_remote_addr zone=phpmyadmin:10m rate=100r/s;
 limit_req_status 444;
 
-## entire server ##
 ## liberal default until ss-config options ##
-limit_req_zone $binary_remote_addr zone=wpall:10m rate=300r/m;
-limit_req zone=wpall;
-    
+limit_req_zone $binary_remote_addr zone=slickstack_server_second:10m rate=1r/s;
+limit_req_zone $binary_remote_addr zone=slickstack_server_minute:10m rate=30r/m;
+
+## entire server zone ##
+limit_req zone=slickstack_server_second burst=3 nodelay;
+limit_req zone=slickstack_server_minute burst=3 nodelay;
+
 ####################################################################################################
 #### Nginx.conf: Indexing Settings #################################################################
 ####################################################################################################
@@ -438,5 +441,7 @@ include /var/www/sites/development[.]conf;
 ## Ref: https://forum.nginx.org/read.php?11,256135
 ## Ref: https://github.com/littlebizzy/slickstack/issues/206
 ## Ref: https://ma.ttias.be/nginx-add_header-not-working-on-404/
+## Ref: https://serverfault.com/questions/247296/nginx-what-is-does-the-nodelay-option-do-when-limiting-requests
+## Ref: https://serverfault.com/questions/976574/nginx-rate-limiting-using-multiple-rate-rules
 
 ## SS_EOF
