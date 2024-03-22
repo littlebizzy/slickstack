@@ -260,8 +260,8 @@ gzip_types
 ## basic rate limiting helps protect the server from small DDOS or brute force attacks ##
 ## it is useful for common targets but an external WAF firewall is recommended ##
 
-limit_req_zone $binary_remote_addr zone=wpsearch:10m rate=1r/s;
 limit_req_zone $binary_remote_addr zone=wplogin:10m rate=1r/s;
+limit_req_zone $binary_remote_addr zone=wpsearch:10m rate=100r/m;
 limit_req_zone $binary_remote_addr zone=adminer:10m rate=100r/s;
 limit_req_status 444;
 
@@ -272,6 +272,10 @@ limit_req_zone $binary_remote_addr zone=slickstack_server_minute:10m rate=@LIMIT
 ## entire server zone ##
 limit_req zone=slickstack_server_second burst=1 nodelay;
 limit_req zone=slickstack_server_minute burst=3 nodelay;
+
+## limit connections ##
+limit_conn_zone $binary_remote_addr zone=slickstack_server_conn:10m;
+limit_conn slickstack_server_conn 100;
 
 ####################################################################################################
 #### Nginx.conf: Indexing Settings #################################################################
@@ -453,5 +457,6 @@ include /var/www/sites/development[.]conf;
 ## Ref: https://serverfault.com/questions/815489/nginx-fastcgi-cache-valid-vs-fastcgi-cache-paths-inactive
 ## Ref: https://serverfault.com/questions/911921/debugging-nginx-cache-misses-hitting-high-number-of-miss-despite-high-proxy-val
 ## Ref: https://gridpane.com/kb/increasing-timeouts-on-gridpane-nginx-servers/
+## Ref: https://gadelkareem.com/2015/01/18/limiting-connections-requests-wordpress-nginx/
 
 ## SS_EOF
