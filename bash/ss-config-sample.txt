@@ -21,7 +21,7 @@
 ## run ss-update-config if outdated (check the public mirror link for current build) ##
 ## lockdown option prevents automatic updates of SlickStack scripts and config ##
 
-SS_BUILD="MAR2024AAA"
+SS_BUILD="MAR2024BBB"
 
 ## SS_LOCKDOWN = [false|true] prevents certain files from being changed by SlickStack ##
 ## SS_APP = [wordpress|etc] which CMS app that you want to install on this server ##
@@ -394,7 +394,7 @@ CLOUDFLARE_AUTHENTICATED_ORIGIN="false"
 ## NGINX_LARGE_CLIENT_HEADER_BUFFERS = [4 64k|etc] yes that space is required ##
 ## NGINX_CLIENT_BODY_TIMEOUT = [5s|10s|15s|etc] be a good boy dont mess with timeouts ##
 ## NGINX_CLIENT_HEADER_TIMEOUT = [5s|10s|15s|etc] be a good boy dont mess with timeouts ##
-## NGINX_KEEPALIVE_TIMEOUT = [90s|etc] be a good boy dont mess with timeouts ##
+## NGINX_KEEPALIVE_TIMEOUT = [60s|90s|etc] be a good boy dont mess with timeouts ##
 ## NGINX_KEEPALIVE_REQUESTS = [65535] our default is the max limit for requests ##
 ## NGINX_SEND_TIMEOUT = [120s|etc] might not do what you think it does ##
 
@@ -409,7 +409,7 @@ NGINX_CLIENT_HEADER_BUFFER_SIZE="4k"
 NGINX_LARGE_CLIENT_HEADER_BUFFERS="4 64k"
 NGINX_CLIENT_BODY_TIMEOUT="10s"
 NGINX_CLIENT_HEADER_TIMEOUT="10s"
-NGINX_KEEPALIVE_TIMEOUT="90s"
+NGINX_KEEPALIVE_TIMEOUT="60s"
 NGINX_KEEPALIVE_REQUESTS="65535"
 NGINX_SEND_TIMEOUT="120s"
 
@@ -444,9 +444,9 @@ LIMIT_REQUESTS_SERVER_SECOND="300"
 ## FCGI_CACHE_QUERIES_SEARCH = 
 ## FCGI_CACHE_TMPFS = [false|true] mount as TMPFS (not recommended) ##
 ## FCGI_CONNECT_TIMEOUT = [60s|etc] usually these timeouts can be about the same ##
-## FCGI_READ_TIMEOUT = [60s|etc] usually these timeouts can be about the same ##
+## FCGI_READ_TIMEOUT = [60s|etc] should usually match PHP_MAX_EXECUTION_TIME ##
 ## FCGI_SEND_TIMEOUT = [60s|etc] usually these timeouts can be about the same ##
-## FCGI_BUFFERS = [32 32k] mess with buffers if you want the sky the fall ##
+## FCGI_BUFFERS = [32 32k] warning: 16 16k not compatible with 256k busy buffers ##
 ## FCGI_BUFFER_SIZE = [32k|etc] in most cases 32k is all you need ##
 ## FCGI_BUSY_BUFFERS_SIZE = [256k|etc] in most cases 256k is all you need ##
 ## FCGI_TEMP_FILE_WRITE_SIZE = [256k|etc] in most cases 256k is all you need ##
@@ -454,15 +454,15 @@ LIMIT_REQUESTS_SERVER_SECOND="300"
 FCGI_CACHE="true"
 FCGI_CACHE_VALID="1440m"
 FCGI_CACHE_INACTIVE="2880m"
-FCGI_CACHE_MEMORY="256m" ## increase on higher RAM servers
+FCGI_CACHE_MEMORY="256m"
 FCGI_CACHE_MAX_SIZE="4096m"
 # FCGI_CACHE_QUERIES="true"
 # FCGI_CACHE_QUERIES_SEARCH="true"
 FCGI_CACHE_TMPFS="false"
 FCGI_CONNECT_TIMEOUT="60s"
-FCGI_READ_TIMEOUT="60s" ## should match PHP_MAX_EXECUTION_TIME
+FCGI_READ_TIMEOUT="60s"
 FCGI_SEND_TIMEOUT="60s"
-FCGI_BUFFERS="32 32k" ## 16 16k not compatible with 256k busy buffers
+FCGI_BUFFERS="32 32k"
 FCGI_BUFFER_SIZE="32k"
 FCGI_BUSY_BUFFERS_SIZE="256k"
 FCGI_TEMP_FILE_WRITE_SIZE="256k"
@@ -529,7 +529,7 @@ INNODB_FLUSH_METHOD="O_DIRECT_NO_FSYNC"
 ## PHP_ALLOW_URL_FOPEN = [true|false] safe for most sites to keep this enabled ##
 ## PHP_DEFAULT_SOCKET_TIMEOUT = [60|etc] not many reasons to change this ##
 
-PHP_EXTENSIONS="" ## comma seperated (no spaces)
+PHP_EXTENSIONS=""
 PHP_PRECISION="14"
 PHP_OUTPUT_BUFFERING="4096"
 PHP_UNSERIALIZE_MAX_DEPTH="4096" ## PHP 7.4+
@@ -581,12 +581,12 @@ FPM_SYSTEMD_INTERVAL="10s"
 
 ## WWW_LISTEN_BACKLOG = [65535|etc] most sites can leave this uncapped (i.e. 65535) ##
 ## WWW_PM_MODE = [ondemand|dynamic] dynamic for extremely high traffic (upgrade your VM) ##
-## WWW_PM_MAX_CHILDREN = [20|etc] really depends on the rest of the settings you choose ##
+## WWW_PM_MAX_CHILDREN = [5|10|20|etc] really depends on the rest of the settings you choose ##
 ## WWW_PM_START_SERVERS = [2|etc] keeping this number small usually makes more sense ##
 ## WWW_PM_MIN_SPARE_SERVERS = [1|etc] keep this at 1 to maximize CPU efficiency ##
 ## WWW_PM_MAX_SPARE_SERVERS = [3|etc] should usually be greater than PM_START_SERVERS ##
 ## WWW_PM_MAX_SPAWN_RATE = [32|etc] play with dynamic spawn rate at your own risk ##
-## WWW_PM_PROCESS_IDLE_TIMEOUT = [10s|etc] keep it small to avoid CPU resource abuse ##
+## WWW_PM_PROCESS_IDLE_TIMEOUT = [5s|10s|etc] keep it small to avoid CPU resource abuse ##
 ## WWW_PM_MAX_REQUESTS = [50|200|500|etc] usually can keep it big if other settings are safe ##
 ## WWW_REQUEST_TERMINATE_TIMEOUT = [60s|etc] backup timeout if IDLE_TIMEOUT not applied ##
 ## WWW_RLIMIT_FILES = [65535|etc] most sites can leave this uncapped (i.e. 65535) ##
@@ -621,7 +621,7 @@ WWW_RLIMIT_CORE="0"
 ## OPCACHE_PRELOAD = [false|true] PHP script that should be included when preloading ##
 ## OPCACHE_BLACKLIST_FILENAME = [*must be unique*] absolute path to blacklist file ##
 
-OPCACHE_MEMORY_CONSUMPTION="256" ## increase on higher RAM servers
+OPCACHE_MEMORY_CONSUMPTION="256"
 OPCACHE_INTERNED_STRINGS_BUFFER="64"
 OPCACHE_MAX_ACCELERATED_FILES="10000"
 OPCACHE_MAX_WASTED_PERCENTAGE="5"
