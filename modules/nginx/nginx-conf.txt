@@ -285,8 +285,10 @@ limit_req_zone $binary_remote_addr zone=wplogin_minute:10m rate=@LIMIT_REQUESTS_
 limit_req_status 444;
 
 ## global limit connections zone ##
-limit_conn_zone $binary_remote_addr zone=slickstack_server_conn:10m;
-limit_conn slickstack_server_conn @LIMIT_CONNECTIONS_SERVER;
+limit_conn_zone $server_name zone=slickstack_server_connections:10m;
+limit_conn_zone $binary_remote_addr zone=slickstack_per_ip_connections:10m;
+limit_conn slickstack_server_connections @LIMIT_CONNECTIONS_PER_IP;
+limit_conn slickstack_per_ip_connections @LIMIT_CONNECTIONS_SERVER;
 
 ####################################################################################################
 #### Nginx.conf: Indexing Settings #################################################################
