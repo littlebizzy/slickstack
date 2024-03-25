@@ -260,32 +260,31 @@ gzip_types
 ## basic rate limiting helps protect the server from small DDOS or brute force attacks ##
 ## it is useful for common targets but an external WAF firewall is recommended ##
 
-## liberal default until ss-config options ##
+## global limit requests zone ##
 limit_req_zone $binary_remote_addr zone=slickstack_server_second:10m rate=@LIMIT_REQUESTS_SERVER_SECONDr/s;
 limit_req_zone $binary_remote_addr zone=slickstack_server_minute:10m rate=@LIMIT_REQUESTS_SERVER_MINUTEr/m;
+limit_req zone=slickstack_server_second burst=1 nodelay;
+limit_req zone=slickstack_server_minute burst=3 nodelay;
 
+## adminer limit requests zone ##
 limit_req_zone $binary_remote_addr zone=adminer:10m rate=100r/s;
 
-## php zone ##
+## php limit requests zone ##
 limit_req_zone $binary_remote_addr zone=php_second:10m rate=@LIMIT_REQUESTS_PHP_SECONDr/s;
 limit_req_zone $binary_remote_addr zone=php_minute:10m rate=@LIMIT_REQUESTS_PHP_MINUTEr/m;
 
-## wpsearch ##
+## wpsearch limit requests zone ##
 limit_req_zone $binary_remote_addr zone=wpsearch_second:10m rate=LIMIT_REQUESTS_WPSEARCH_SECONDr/s;
 limit_req_zone $binary_remote_addr zone=wpsearch_minute:10m rate=LIMIT_REQUESTS_WPSEARCH_MINUTEr/m;
 
-## wplogin ##
+## wplogin limit requests zone ##
 limit_req_zone $binary_remote_addr zone=wplogin_second:10m rate=LIMIT_REQUESTS_WPLOGIN_SECONDr/s;
 limit_req_zone $binary_remote_addr zone=wplogin_minute:10m rate=LIMIT_REQUESTS_WPLOGIN_MINUTEr/m;
-
-## entire server zone ##
-limit_req zone=slickstack_server_second burst=1 nodelay;
-limit_req zone=slickstack_server_minute burst=3 nodelay;
 
 ## limit status ##
 limit_req_status 444;
 
-## global limit zones ##
+## global limit connections zone ##
 limit_conn_zone $binary_remote_addr zone=slickstack_server_conn:10m;
 limit_conn slickstack_server_conn 100;
 
