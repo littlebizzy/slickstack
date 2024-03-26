@@ -281,7 +281,7 @@ limit_req_zone $binary_remote_addr zone=wpsearch_minute:10m rate=@LIMIT_REQUESTS
 limit_req_zone $binary_remote_addr zone=wplogin_second:10m rate=@LIMIT_REQUESTS_WPLOGIN_SECONDr/s;
 limit_req_zone $binary_remote_addr zone=wplogin_minute:10m rate=@LIMIT_REQUESTS_WPLOGIN_MINUTEr/m;
 
-## limit status ##
+## limit request status ##
 limit_req_status 444;
 
 ## global limit connections zone ##
@@ -289,6 +289,9 @@ limit_conn_zone $server_name zone=slickstack_server_connections:10m;
 limit_conn_zone $binary_remote_addr zone=slickstack_per_ip_connections:10m;
 limit_conn slickstack_server_connections @LIMIT_CONNECTIONS_PER_IP;
 limit_conn slickstack_per_ip_connections @LIMIT_CONNECTIONS_SERVER;
+
+## limit connection status ##
+limit_conn_status 503;
 
 ####################################################################################################
 #### Nginx.conf: Indexing Settings #################################################################
@@ -473,5 +476,6 @@ include /var/www/sites/development[.]conf;
 ## Ref: https://gadelkareem.com/2015/01/18/limiting-connections-requests-wordpress-nginx/
 ## Ref: https://stackoverflow.com/questions/32851858/explain-limit-conn-zone-server-name-in-nginx
 ## Ref: https://serverfault.com/questions/763401/cloudflare-nginx-with-limit-req-and-limit-conn
+## Ref: https://github.com/openresty/openresty/issues/278
 
 ## SS_EOF
