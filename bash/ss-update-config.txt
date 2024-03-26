@@ -26,15 +26,16 @@
 ## B. Source SS-Config + SS-Functions
 ## C. Touch Timestamp File
 ## D. Message (Begin Script)
-## E. Cleanup Temporary Files
-## F. Backup SS-Config
-## G. Validate SS-Config Before Proceeding
+## E. Delete Previous Temporary Files
+## F. Backup Active SS-Config
+## G. Validate Active SS-Config Before Proceeding
 ## H. Retrieve Latest SS-Config Boilerplate
-## I. Install Latest SS-Config Boilerplate (Copies Existing Settings)
-## J. Validate Latest SS-Config Boilerplate
-## K. Replace Option Value Placeholders (If Exist)
-## L. Replace Empty Option Values (If Exist) 
-## M. End If (Validate SS-Config)
+## I. Prepare Latest SS-Config Boilerplate (Transfers Settings)
+## J. Miscellaneous Patches To Latest SS-Config Boilerplate
+## K. Validate + Activate Latest SS-Config Boilerplate
+## L. Force Replace Placeholders (If Exist)
+## M. Force Replace Empty Values (If Exist) 
+## N. End If (Validate SS-Config)
 
 ####################################################################################################
 #### A. SS-Update-Config: Build Version ############################################################
@@ -79,15 +80,13 @@ ss_touch "${TIMESTAMP_SS_UPDATE_CONFIG}"
 ss_echo "${COLOR_INFO}Running ss-update-config... ${COLOR_RESET}"
 
 ####################################################################################################
-#### E. SS-Update-Config: Cleanup Temporary Files ##################################################
+#### E. SS-Update-Config: Delete Previous Temporary Files ##########################################
 ####################################################################################################
-
-## avoid outdated leftover files in /tmp/ folder
 
 ss_rm "${TMP_SS_CONFIG_UPDATE}"
 
 ####################################################################################################
-#### F. SS-Update-Config: Backup SS-Config #########################################################
+#### F. SS-Update-Config: Backup Active SS-Config ##################################################
 ####################################################################################################
 
 ## this will replicate your current ss-config file (and settings) to the backups dir ##
@@ -99,7 +98,7 @@ ss_rm "${TMP_SS_CONFIG_UPDATE}"
 ss_cp "${PATH_SS_CONFIG}" /var/www/backups/config/ss-config.bak.${SYSTEM_CURRENT_TIME}
 
 ####################################################################################################
-#### G. SS-Update-Config: Validate SS-Config Before Proceeding #####################################
+#### G. SS-Update-Config: Validate Active SS-Config Before Proceeding ##############################
 ####################################################################################################
 
 VALIDATE_SS_CONFIG=$(grep 'SS_EOF' "${PATH_SS_CONFIG}" 2> /dev/null)
@@ -131,7 +130,7 @@ if [[ "${SS_BUILD_LATEST}" != "${SS_UPDATE_CONFIG_BUILD}" ]]; then
 else
 
 ####################################################################################################
-#### I. SS-Update-Config: Install Latest SS-Config Boilerplate (Copies Existing Settings) ###ss_#######
+#### I. SS-Update-Config: Prepare Latest SS-Config Boilerplate (Transfers Settings) ################
 ####################################################################################################
 
 ## this will update the existing ss-config file to latest boilerplate from our mirrors ##
@@ -1207,7 +1206,7 @@ ss_sed "s|\(^MU_PLUGIN_20_DIR=\).*|MU_PLUGIN_20_DIR=\"$MU_PLUGIN_20_DIR\"|g" "${
 fi
 
 ####################################################################################################
-#### J. SS-Update-Config: Other Fixes Before Finalization ####################################
+#### J. SS-Update-Config: Miscellaneous Patches To Latest SS-Config Boilerplate ####################
 ####################################################################################################
 
 ## innodb flush method fix for mysql 8.0 upgrades from 5.7 (etc) ##
@@ -1220,7 +1219,7 @@ fi
     fi
 
 ####################################################################################################
-#### J. SS-Update-Config: Readiness SS-Config Boilerplate ####################################
+#### K. SS-Update-Config: Validate + Activate Latest SS-Config Boilerplate #########################
 ####################################################################################################
 
 ## this snippet will ensure that the latest ss-config boilerplate appears intact ##
@@ -1239,7 +1238,7 @@ else
 fi
 
 ####################################################################################################
-#### K. SS-Update-Config: Replace Option Value Placeholders (If Exist) #############################
+#### L. SS-Update-Config: Force Replace Placeholders (If Exist) ####################################
 ####################################################################################################
 
 ## here we manually replace any remaining placeholders in ss-config to avoid conflicts ##
@@ -1275,7 +1274,7 @@ ss_sed "s|@NGINX_CLOUDFLARE_IPS|false|g" /var/www/ss-config
 ss_sed "s/@RANDOM_STRING_ADMINER_URL/$(openssl rand -hex 12)/g" /var/www/ss-config
 
 ####################################################################################################
-#### L. SS-Update-Config: Replace Empty Option Values (If Exist) ###################################
+#### M. SS-Update-Config: Force Replace Empty Values (If Exist) ####################################
 ####################################################################################################
 
 ss_sed 's|ADMINER_PUBLIC=""|ADMINER_PUBLIC="true"|g' /var/www/ss-config
@@ -1343,7 +1342,7 @@ ss_sed 's|WP_PLUGIN_BLACKLIST=""|WP_PLUGIN_BLACKLIST="true"|g' /var/www/ss-confi
 ss_sed 's|WP_PLUGIN_BLACKLIST_SOURCE=""|WP_PLUGIN_BLACKLIST_SOURCE="https://raw.githubusercontent.com/littlebizzy/slickstack/master/modules/wordpress/blacklist.txt"|g' /var/www/ss-config
 
 ####################################################################################################
-#### M. SS-Update-Config: End If (Validate SS-Config) ##############################################
+#### N. SS-Update-Config: End If (Validate SS-Config) ##############################################
 ####################################################################################################
 
 ## end if
