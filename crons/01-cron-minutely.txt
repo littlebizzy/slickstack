@@ -29,8 +29,9 @@
 ## E. Run SS-Check + SS-Worker In Case Frozen
 ## F. Touch Timestamp File
 ## G. Run Custom Tasks (EDIT SOURCED FILES)
-## H. Run Scheduled Tasks (DO NOT EDIT)
-## I. Delete Lock File
+## H. Run WP-Cron (Conditional)
+## I. Run Scheduled Tasks (DO NOT EDIT)
+## J. Delete Lock File
 
 ####################################################################################################
 #### A. 01-Cron-Minutely: Validate (Repair) SS-Config ##############################################
@@ -207,7 +208,22 @@ ss_touch "${TIMESTAMP_01_CRON_MINUTELY}"
 source "${PATH_01_CRON_MINUTELY_CUSTOM}"
 
 ####################################################################################################
-#### H. 01-Cron-Minutely: Run Scheduled Tasks (DO NOT EDIT) ########################################
+#### H. 01-Cron-Minutely: Run WP-Cron (Conditional) ################################################
+####################################################################################################
+
+## this snippet will call wp-cron via the server if enabled in your ss-config settings ##
+## it is useful for sites with low traffic or that need strict cron management ##
+
+if [[ "${WP_CRON_INTERVAL}" == "minutely" ]]; then
+    if [[ "${WP_CRON_METHOD}" == "server" ]]; then 
+        /usr/bin/php /var/www/html/wp-cron.php
+    elif [[ "${WP_CRON_METHOD}" == "wpcli" ]]; then
+        cd /var/www/html/; wp cron event run --due-now
+    fi
+fi
+
+####################################################################################################
+#### I. 01-Cron-Minutely: Run Scheduled Tasks (DO NOT EDIT) ########################################
 ####################################################################################################
 
 ## the below tasks will be called if configured to run at this interval in ss-config ##
@@ -216,7 +232,7 @@ source "${PATH_01_CRON_MINUTELY_CUSTOM}"
 ## N/A
 
 ####################################################################################################
-#### I. 01-Cron-Minutely: Delete Lock File #########################################################
+#### J. 01-Cron-Minutely: Delete Lock File #########################################################
 ####################################################################################################
 
 ## here we delete the lock file associated with this cron job to clear the cron queue ##
