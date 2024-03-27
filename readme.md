@@ -28,7 +28,7 @@ You can safely re-install SlickStack anytime via `sudo bash /var/www/ss-install`
 
 ## Modules
 
-*Last updated: Feb 13, 2024*
+*Last updated: Mar 28, 2024*
 
 | Module | Version | What does SlickStack optimize? |
 | :------------- | :----------: | :----------: |
@@ -44,6 +44,7 @@ You can safely re-install SlickStack anytime via `sudo bash /var/www/ss-install`
 | **Adminer** | 4.8.1 | default config |
 | **Git** | 2.34.x | default config |
 | **UFW Firewall** | 0.36.x | `ufw` + `ufw.conf` + `user-rules` |
+| **Fail2ban** | 0.11.x | `jail.local` + custom filters |
 
 ## Requirements
 
