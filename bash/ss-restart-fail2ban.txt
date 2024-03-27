@@ -1,0 +1,98 @@
+#!/bin/bash
+
+####################################################################################################
+#### author: SlickStack ############################################################################
+#### link: https://slickstack.io ###################################################################
+#### mirror: https://mirrors.slickstack.io/bash/ss-restart-fail2ban.txt ###############################
+#### path: /var/www/ss-restart-fail2ban ###############################################################
+#### destination: n/a (not a boilerplate) ##########################################################
+#### purpose:  ##################
+#### module version: ##################################################################
+#### bash aliases: ################################################################
+####################################################################################################
+
+## YOU CAN RUN SS-RESTART FOR AN EASY WAY TO RESTART ALL CORE SLICKSTACK (LEMP) MODULES ##
+## THIS DOES NOT INCLUDE ANY CUSTOM UBUNTU PACKAGES THAT YOU MAY HAVE INSTALLED ##
+
+## source ss-config ##
+source /var/www/ss-config
+
+## source ss-functions ##
+source /var/www/ss-functions
+
+## BELOW THIS RELIES ON SS-CONFIG AND SS-FUNCTIONS
+
+####################################################################################################
+#### TABLE OF CONTENTS (SS-Restart-Nginx) ##########################################################
+####################################################################################################
+
+## this is a brief summary of the different code snippets you will find in this script ##
+## each section should be commented so you understand what is being accomplished ##
+
+## A. Touch Timestamp File
+## B. Message (Begin Script)
+## C. Forcefully Restart Nginx
+
+####################################################################################################
+#### A. SS-Restart-Nginx: Touch Timestamp File #####################################################
+####################################################################################################
+
+## this is a dummy timestamp file that will remember the last time this script was run ##
+## it can be useful for developer reference and is sometimes used by SlickStack ##
+
+ss_touch "${TIMESTAMP_SS_RESTART_FAIL2BAN}"
+
+####################################################################################################
+#### B. SS-Restart-Nginx: Message (Begin Script) ###################################################
+####################################################################################################
+
+## this is a simple message that announces to the shell the purpose of this bash script ##
+## it will only be seen by sudo users who manually run this script in the shell ##
+
+ss_echo "${COLOR_INFO}Running ss-restart-fail2ban... ${COLOR_RESET}"
+
+####################################################################################################
+#### C. SS-Restart-Nginx: Forcefully Restart Nginx #################################################
+####################################################################################################
+
+## this snippet uses init.d instead of systemd shortcuts to allow for absolute paths ##
+## the given service will be forcefully restarted and output sent to /dev/null ##
+
+ss_restart fail2ban
+
+####################################################################################################
+#### SlickStack: Reset Permissions (SlickStack Scripts) ############################################
+####################################################################################################
+
+## we include this permissions reset in all cron jobs and bash scripts for redundancy ##
+## chmod 0700 means only the root/sudo users can execute any SlickStack scripts ##
+
+## THIS SNIPPET DOES NOT RELY ON SS-CONFIG OR SS-FUNCTIONS
+## SNIPPET: ss bash scripts, ss cron jobs
+## UPDATED: 02JUL2022
+
+chown root:root /var/www/ss* ## must be root:root
+chown root:root /var/www/crons/*cron* ## must be root:root
+chown root:root /var/www/crons/custom/*cron* ## must be root:root
+chmod 0700 /var/www/ss* ## 0700 means only root/sudo can execute
+chmod 0700 /var/www/crons/*cron* ## 0700 means only root/sudo can execute
+chmod 0700 /var/www/crons/custom/*cron* ## 0700 means only root/sudo can execute
+
+####################################################################################################
+#### SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ###############
+####################################################################################################
+
+## Ref: https://unix.stackexchange.com/questions/370942/do-you-need-to-reload-after-adding-a-rule-in-ufw/370947
+## Ref: http://blog.jonathanargentiero.com/failed-to-restart-mysql-service-unit-mysql-service-is-masked/
+## Ref: https://support.plesk.com/hc/en-us/articles/360021187734-The-service-fails-to-start-on-a-Linux-server-service-is-masked
+## Ref: https://jira.percona.com/browse/PS-5226
+## Ref: https://blog.ruanbekker.com/blog/2017/12/09/unmask-a-masked-service-in-systemd/
+## Ref: https://askubuntu.com/questions/992464/version-agnostic-php-fpm-restart
+## Ref: https://serverfault.com/questions/189940/how-do-you-restart-php-fpm
+## Ref: https://stackoverflow.com/questions/41319291/ufw-blocks-most-ports-until-disabled-and-re-enabled-after-reboot
+## Ref: https://www.vultr.com/docs/configure-ubuntu-firewall-ufw-on-ubuntu-18-04
+## Ref: https://askubuntu.com/questions/2075/whats-the-difference-between-service-and-etc-init-d
+## Ref: https://www.digitalocean.com/community/tutorials/how-to-use-systemctl-to-manage-systemd-services-and-units
+## Ref: https://stackoverflow.com/questions/10193788/restarting-cron-after-changing-crontab-file
+
+## SS_EOF
