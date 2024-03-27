@@ -9,7 +9,7 @@
 #### purpose: Reinstalls the Fail2ban module config files based on ss-config (idempotent) ##########
 #### module version: Fail2ban 0.11.x ###############################################################
 #### sourced by: ss-install ########################################################################
-#### bash aliases:  #########################################################
+#### bash aliases: ss install fail2ban config ######################################################
 ####################################################################################################
 
 ## SS-CONFIG MUST BE PROPERLY CONFIGURED AND ON CURRENT BUILD BEFORE RUNNING SS-INSTALL ##
@@ -32,6 +32,9 @@ source /var/www/ss-functions
 
 ## A. Touch Timestamp File
 ## B. Message (Begin Script)
+## C. Install Jail.local
+## D. Reset Permissions (Fail2ban Config)
+## E. Restart Fail2ban
 
 ####################################################################################################
 #### A. SS-Install-Fail2ban-Config: Touch Timestamp File ###########################################
@@ -52,7 +55,7 @@ ss_touch "${TIMESTAMP_SS_INSTALL_FAIL2BAN_CONFIG}"
 ss_echo "${COLOR_INFO}Running ss-install-fail2ban-config... ${COLOR_RESET}"
 
 ####################################################################################################
-#### G. SS-Install-Fail2ban-Config: Install Jail.local #############################################
+#### C. SS-Install-Fail2ban-Config: Install Jail.local #############################################
 ####################################################################################################
 
 ## here we install an optimized Nginx config designed for high traffic and CloudFlare ##
@@ -62,12 +65,17 @@ ss_echo "${COLOR_INFO}Running ss-install-fail2ban-config... ${COLOR_RESET}"
 ## temp syntax 
 ss_wget /etc/fail2ban/jail.local https://raw.githubusercontent.com/littlebizzy/slickstack/master/modules/fail2ban/jail-local.txt
 ss_wget /etc/fail2ban/filter.d/nginx-get-dos.conf https://raw.githubusercontent.com/littlebizzy/slickstack/master/modules/fail2ban/filters/nginx-get-dos-conf.txt
+ss_wget /etc/fail2ban/filter.d/nginx-post-dos.conf https://raw.githubusercontent.com/littlebizzy/slickstack/master/modules/fail2ban/filters/nginx-post-dos-conf.txt
 ss_wget /etc/fail2ban/filter.d/nginx-4xx.conf https://raw.githubusercontent.com/littlebizzy/slickstack/master/modules/fail2ban/filters/nginx-4xx-conf.txt
 ss_wget /etc/fail2ban/filter.d/nginx-5xx.conf https://raw.githubusercontent.com/littlebizzy/slickstack/master/modules/fail2ban/filters/nginx-5xx-conf.txt
 
 ss_sed "s/@FAIL2BAN_GET_DOS_FINDTIME/${FAIL2BAN_GET_DOS_FINDTIME}/g" /etc/fail2ban/jail.local
 ss_sed "s/@FAIL2BAN_GET_DOS_MAXRETRY/${FAIL2BAN_GET_DOS_MAXRETRY}/g" /etc/fail2ban/jail.local
 ss_sed "s/@FAIL2BAN_GET_DOS_BANTIME/${FAIL2BAN_GET_DOS_BANTIME}/g" /etc/fail2ban/jail.local
+
+ss_sed "s/@FAIL2BAN_POST_DOS_FINDTIME/${FAIL2BAN_POST_DOS_FINDTIME}/g" /etc/fail2ban/jail.local
+ss_sed "s/@FAIL2BAN_POST_DOS_MAXRETRY/${FAIL2BAN_POST_DOS_MAXRETRY}/g" /etc/fail2ban/jail.local
+ss_sed "s/@FAIL2BAN_POST_DOS_BANTIME/${FAIL2BAN_POST_DOS_BANTIME}/g" /etc/fail2ban/jail.local
 
 ss_sed "s/@FAIL2BAN_4XX_FINDTIME/${FAIL2BAN_4XX_FINDTIME}/g" /etc/fail2ban/jail.local
 ss_sed "s/@FAIL2BAN_4XX_MAXRETRY/${FAIL2BAN_4XX_MAXRETRY}/g" /etc/fail2ban/jail.local
@@ -78,9 +86,14 @@ ss_sed "s/@FAIL2BAN_5XX_MAXRETRY/${FAIL2BAN_5XX_MAXRETRY}/g" /etc/fail2ban/jail.
 ss_sed "s/@FAIL2BAN_5XX_BANTIME/${FAIL2BAN_5XX_BANTIME}/g" /etc/fail2ban/jail.local
 
 ####################################################################################################
+#### D. SS-Install-Fail2ban-Config: Reset Permissions (Fail2ban Config) ############################
 ####################################################################################################
 
 source "${PATH_SS_PERMS_FAIL2BAN_CONFIG}"
+
+####################################################################################################
+#### E. SS-Install-Fail2ban-Config: Restart Fail2ban ###############################################
+####################################################################################################
 
 source "${PATH_SS_RESTART_FAIL2BAN}"
 
