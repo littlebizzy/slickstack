@@ -218,7 +218,11 @@ if [[ "${WP_CRON_INTERVAL}" == "half-hourly" ]]; then
     if [[ "${WP_CRON_METHOD}" == "server" ]]; then 
         /usr/bin/php /var/www/html/wp-cron.php
     elif [[ "${WP_CRON_METHOD}" == "wpcli" ]]; then
-        cd /var/www/html/; wp cron event run --due-now
+        if [[ "${WP_MULTISITE}" == "true" ]]; then
+            cd /var/www/html/; wp site list --field=url | xargs -i -n1 wp cron event run --due-now --url="{}"
+        else
+            cd /var/www/html/; wp cron event run --due-now
+        fi
     fi
 fi
 
