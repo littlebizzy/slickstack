@@ -545,6 +545,11 @@ chmod 0700 /var/www/ss* ## 0700 means only root can execute
 ## temp forced fixes ##
 ss_sed 's|WP_CRON_METHOD="wordpress"|WP_CRON_METHOD="server"|g' /var/www/ss-config
 
+if [[ "${WP_MULTISITE}" == "true" ]]; then
+    ss_sed 's|WP_CRON_METHOD="wordpress"|WP_CRON_METHOD="wpcli"|g' /var/www/ss-config
+    ss_sed 's|WP_CRON_METHOD="server"|WP_CRON_METHOD="wpcli"|g' /var/www/ss-config
+fi
+
 if [[ ! -f "/var/www/html/wp-content/mu-plugins/ss-icon.svg" ]]; then 
     ss_wget "${TMP_SS_ICON_SVG}" "${GITHUB_SS_ICON_SVG}"
     ss_mv "${TMP_SS_ICON_SVG}" "${PATH_SS_ICON_SVG}"
