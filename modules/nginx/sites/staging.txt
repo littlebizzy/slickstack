@@ -1,9 +1,9 @@
 ####################################################################################################
 #### author: SlickStack ############################################################################
 #### link: https://slickstack.io ###################################################################
-#### mirror: https://mirrors.slickstack.io/modules/nginx/sites/staging.txt #########################
+#### mirror: littlebizzy/slickstack/blob/master/modules/nginx/sites/staging.txt ####################
 #### path: n/a (boilerplate) #######################################################################
-#### destination: /var/www/sites/staging (after install) ###########################################
+#### destination: /var/www/sites/staging.conf (after install) ######################################
 #### purpose: Nginx server block boilerplate optimized for SlickStack staging sites ################
 #### module version: Nginx 1.18.x ##################################################################
 #### sourced by: nginx.conf ########################################################################
@@ -20,10 +20,11 @@
 ## this is a brief summary of the different code snippets you will find in this script ##
 ## each section should be commented so you understand what is being accomplished ##
 
-## A. Canonical Staging Subdomain
+## A. Canonical Subdomain (Single Website)
 ## B. Share Production Media Uploads
-## C. Well-Known Directory
-## D. Redirect AMP Requests
+## C. Error Pages
+## D. Well-Known Directory
+## E. Redirect AMP Requests
 
 
 #### for Certbot only ##
@@ -35,7 +36,7 @@ server {
 }
 
 ####################################################################################################
-#### A. Server Block (Staging): Canonical Staging Subdomain ########################################
+#### A. Server Block (Staging): Canonical Subdomain (Single Website) ###############################
 ####################################################################################################
 
 ## CloudFlare ignores HTTP/2 from origin server but we enable in case of Lets Encrypt ##
@@ -55,13 +56,31 @@ more_set_headers "X-Robots-Tag noindex, nofollow, nosnippet, noarchive";
 #### B. Server Block (Staging): Share Production Media Uploads #####################################
 ####################################################################################################
 
-## alias media files ##
+## this little Nginx magic allows your staging site to share Media files from production ##
+## it saves tremendous disk space and makes syncing staging sites a lot faster ##
+
 location ^~ /wp-content/uploads/ {
 	alias /var/www/html/wp-content/uploads/;
 }
 
 ####################################################################################################
-#### C. Server Block (Staging): Well-Known Directory ###############################################
+#### C. Server Block (Staging): Error Pages ########################################################
+####################################################################################################
+
+error_page 404 /error_404.html;
+	location = /error_404.html {
+        root /var/www/sites/error_pages;
+        internal;
+    }
+
+ error_page 500 502 503 504 /error_50x.html;
+    location = /error_50x.html {
+        root /var/www/sites/error_pages;
+        internal;
+    }
+
+####################################################################################################
+#### D. Server Block (Staging): Well-Known Directory ###############################################
 ####################################################################################################
 
 ## the well-known hidden directory is becoming more important for domain verification ##
@@ -193,6 +212,10 @@ if ($query_string ~ "^amp(.*)$") {
 ## we also have to optimize cookies here too since working with WordPress ##
 
 location ~* \.php$ {
+
+limit_req zone=php_second burst=1 nodelay;
+limit_req zone=php_minute burst=3 nodelay;
+
 set $rt_session "";
 if ($http_cookie ~* "wp_woocommerce_session_[^=]*=([^%]+)%7C") {
 	set $rt_session wp_woocommerce_session_$1;
@@ -228,6 +251,10 @@ set $setcookie "Path=/; HttpOnly; Secure";
 ## next we enable rate-limiting to prevent automated brute force hack attempts ##
 
 location = /wp-login.php {
+
+	limit_req zone=wplogin_second burst=1 nodelay;
+	limit_req zone=wplogin_minute burst=3 nodelay;
+
 	include /etc/nginx/fastcgi.conf;
 	try_files $uri =404;
 	fastcgi_split_path_info ^(.+\.php)(/.+)$;
@@ -238,7 +265,6 @@ location = /wp-login.php {
 	fastcgi_cache_valid 200 301 404 @CACHEVALID;
 	fastcgi_cache_bypass $skip_cache;
 	fastcgi_no_cache $skip_cache;
-	limit_req zone=wplogin burst=1 nodelay;
 }
 
 ####################################################################################################
@@ -249,7 +275,9 @@ location = /wp-login.php {
 ## we include some basic rate limiting rules to avoid attacks on these URLs ##
 
 location ^~ /adminer {
+
 	limit_req zone=adminer burst=1 nodelay;
+
 	alias /var/www/meta/adminer.php;
 	include /etc/nginx/fastcgi.conf;
 	try_files $uri =404;
