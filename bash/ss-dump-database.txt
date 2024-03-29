@@ -3,7 +3,7 @@
 ####################################################################################################
 #### author: SlickStack ############################################################################
 #### link: https://slickstack.io ###################################################################
-#### mirror: https://mirrors.slickstack.io/bash/ss-dump-database.txt ###############################
+#### mirror: littlebizzy/slickstack/blob/master/bash/ss-dump-database.txt ##########################
 #### path: /var/www/ss-dump-database ###############################################################
 #### destination: n/a (not a boilerplate) ##########################################################
 #### purpose: Dumps the database(s) to /var/www/backups/mysql/ (SFTP user can access) ##############
@@ -62,23 +62,23 @@ ss_echo "${COLOR_INFO}Running ss-dump-database... ${COLOR_RESET}"
 ## to support remote database servers we force the TCP protocol (not sockets) ##
 
 ## production ##
-if [[ "${SS_DATABASE_REMOTE}" == "true" ]]; then
+if [[ "${DB_REMOTE}" == "true" ]]; then
     ss_mysqldump_user "${DB_NAME}" > "${PATH_DUMP_DATABASE_PRODUCTION}" 2> /dev/null
 else
     ss_mysqldump_admin "${DB_NAME}" > "${PATH_DUMP_DATABASE_PRODUCTION}" 2> /dev/null
 fi
 
 ## staging ##
-if [[ "${STAGING_SITE}" == "true" ]] && [[ "${SS_DATABASE_REMOTE}" == "true" ]]; then
+if [[ "${STAGING_SITE}" == "true" ]] && [[ "${DB_REMOTE}" == "true" ]]; then
     ss_mysqldump_user staging > "${PATH_DUMP_DATABASE_STAGING}" 2> /dev/null
-elif [[ "${STAGING_SITE}" == "true" ]] && [[ "${SS_DATABASE_REMOTE}" != "true" ]]; then
+elif [[ "${STAGING_SITE}" == "true" ]] && [[ "${DB_REMOTE}" != "true" ]]; then
     ss_mysqldump_admin staging > "${PATH_DUMP_DATABASE_STAGING}" 2> /dev/null
 fi
 
 ## development ##
-if [[ "${DEV_SITE}" == "true" ]] && [[ "${SS_DATABASE_REMOTE}" == "true" ]]; then
+if [[ "${DEV_SITE}" == "true" ]] && [[ "${DB_REMOTE}" == "true" ]]; then
     ss_mysqldump_user development > "${PATH_DUMP_DATABASE_DEVELOPMENT}" 2> /dev/null
-elif [[ "${DEV_SITE}" == "true" ]] && [[ "${SS_DATABASE_REMOTE}" != "true" ]]; then
+elif [[ "${DEV_SITE}" == "true" ]] && [[ "${DB_REMOTE}" != "true" ]]; then
     ss_mysqldump_admin development > "${PATH_DUMP_DATABASE_DEVELOPMENT}" 2> /dev/null
 fi
 
