@@ -32,18 +32,30 @@ source /var/www/ss-functions
 
 ## A. Touch Timestamp File
 ## B. Message (Begin Script)
+
 ## C. Reset Permissions (Nginx SSL)
+
 ## D. Generate DH Parameters (Conditional)
 ## E. Run SS-Encrypt-OpenSSL
 ## F. Generate Htpasswd File
 ## G. Install Nginx.conf
+
 ## H. Delete Old Server Blocks
 ## I. Install Server Block (Development)
 ## J. Install Server Block (Staging)
 ## K. Install Server Block (Production)
 
-## XX. Install Cloudflare.conf For Real IPs (Optional)
-## XX. Install Authenticated-Origin.conf (Optional)
+## L. Run SS-Encrypt-Certbot
+
+## M. Run SS-Install-Nginx-SSL
+
+## N. Enable TMPFS Mount (Conditional)
+## O. Install Cloudflare.conf (Conditional)
+## P. Install Authenticated-Origin.conf (Optional)
+## Q. Reset Permissions (Nginx Config)
+## R. Restart Modules (Nginx)
+## S. Install WordPress Config
+## T. Cleanup Temporary Files
 
 ####################################################################################################
 #### A. SS-Install-Nginx-Config: Touch Timestamp File ##############################################
@@ -87,8 +99,8 @@ fi
 #### E. SS-Install-Nginx-Config: Run SS-Encrypt-OpenSSL ############################################
 ####################################################################################################
 
-## here we generate slickstack.crt and slickstack.key as the default SSL for Nginx ##
-## this approach is extremely stable and works fantastic with CloudFlare ##
+## here we generate slickstack.crt and slickstack.key as the backup SSL for Nginx ##
+## this approach is extremely stable and works fantastic with Cloudflare ##
 
 if [[ ! -f "${PATH_THIRDPARTY_CONF}" ]]; then 
     source "${PATH_SS_ENCRYPT_OPENSSL}"
@@ -478,6 +490,7 @@ ss_mv "${TMP_NGINX_CONF}" "${PATH_NGINX_CONF}"
 ## if this step is not performed then Nginx could result in fatal errors ##
 
 ## ADD CHECK FIRST THAT TMP BLOCK FILES VALID? ##
+
 ## delete server blocks ##
 ss_rm /var/www/sites/*
 
@@ -693,7 +706,7 @@ fi
 # source "${PATH_SS_RESTART_NGINX}"
 
 ####################################################################################################
-#### SS-Install-Nginx-Config: Run SS-Encrypt-Certbot ###############################################
+#### L. SS-Install-Nginx-Config: Run SS-Encrypt-Certbot ############################################
 ####################################################################################################
 
 ## here we generate slickstack.crt and slickstack.key as the default SSL for Nginx ##
@@ -702,19 +715,19 @@ fi
 source "${PATH_SS_ENCRYPT_CERTBOT}"
 
 ####################################################################################################
-#### SS-Install-Nginx-Config: Run SS-Install-Nginx-SSL #############################################
+#### M. SS-Install-Nginx-Config: Run SS-Install-Nginx-SSL ##########################################
 ####################################################################################################
 
 ## here we update the Nginx config files to activate either OpenSSL or Lets Encrypt SSL ##
 ## this depends on your ss-config settings (both certs should exist regardless) ##
 
+## MAYBE DELETE THIS SNIPPET and SCRIPT AND PUT INLINE HERE INSTEAD
+
 ## run ss-install-nginx-ssl ##
 source "${PATH_SS_INSTALL_NGINX_SSL}"
 
-## MAYBE DELETE THIS SNIPPET and SCRIPT AND PUT INLINE HERE INSTEAD
-
 ####################################################################################################
-#### SS-Install-Nginx-Config: Enable TMPFS Mount (Optional) ########################################
+#### N. SS-Install-Nginx-Config: Enable TMPFS Mount (Conditional) ##################################
 ####################################################################################################
 
 if [[ "${FCGI_CACHE_TMPFS}" == "true" ]]; then
@@ -726,39 +739,31 @@ else
 fi
 
 ####################################################################################################
-#### SS-Install-Nginx-Config: Install Cloudflare.conf For Real IPs (Optional) ######################
+#### O. SS-Install-Nginx-Config: Install Cloudflare.conf (Conditional) #############################
 ####################################################################################################
 
 source "${PATH_SS_INSTALL_NGINX_CLOUDFLARE_IPS}"
 
 ####################################################################################################
-#### SS-Install-Nginx-Config: Install Authenticated-Origin.conf (Optional) #########################
+#### P. SS-Install-Nginx-Config: Install Authenticated-Origin.conf (Optional) ######################
 ####################################################################################################
 
 source "${PATH_SS_INSTALL_NGINX_CLOUDFLARE_AUTHENTICATED_ORIGIN}"
 
 ####################################################################################################
-#### SS-Install-Nginx-Config: Reset Permissions (Nginx Config) #####################################
+#### Q. SS-Install-Nginx-Config: Reset Permissions (Nginx Config) ##################################
 ####################################################################################################
 
-## run ss-perms-nginx-config ##
 source "${PATH_SS_PERMS_NGINX_CONFIG}"
 
-######## cleanup old files (temp) ##########
-
-ss_rm /var/www/sites/production
-ss_rm /var/www/sites/staging
-ss_rm /var/www/sites/development
-
 ####################################################################################################
-#### SS-Install-Nginx-Config: Restart Modules (Nginx) ##############################################
+#### R. SS-Install-Nginx-Config: Restart Modules (Nginx) ###########################################
 ####################################################################################################
 
-## run ss-restart-nginx ##
 source "${PATH_SS_RESTART_NGINX}"
 
 ####################################################################################################
-#### SS-Install-Nginx-Config: Install WordPress Config (Via SS-Install-WordPress-Config) ###########
+#### S. SS-Install-Nginx-Config: Install WordPress Config ##########################################
 ####################################################################################################
 
 ## ensures that concatenate is disabled in wp-config to support latest nginx server block ##
@@ -768,7 +773,7 @@ if [[ "${SS_APP}" == "wordpress" || -z "${SS_APP}"  ]]; then
 fi
 
 ####################################################################################################
-#### SS-Install-Nginx-Config: Cleanup Temporary Files ##############################################
+#### T. SS-Install-Nginx-Config: Cleanup Temporary Files ###########################################
 ####################################################################################################
 
 ## we briefly cleanup any leftover temporarily files that are relevant to this script ##
