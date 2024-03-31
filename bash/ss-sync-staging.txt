@@ -26,15 +26,17 @@
 ## B. Change To Default Directory
 ## C. Touch Timestamp File
 ## D. Message (Begin Script)
-## E. Dump Production Database
-## F. Install Staging Database (Conditional)
-## G. Import Production Database To Staging Database
-## H. Copy Relevant Files From Production To Staging
-## I. Run SS-Install-WordPress-Config (Conditional)
-## J. Run SS-Install-WordPress-MU-Plugins (Conditional)
-## K. Fix Any Hardcoded Links In Staging Theme Files
-## L. Fix Incorrect URLs In Staging Database
-## M. Reset Permissions (WordPress Packages)
+## E. Begin If
+## F. Dump Production Database
+## G. Install Staging Database (Conditional)
+## H. Import Production Database To Staging Database
+## I. Copy Relevant Files From Production To Staging
+## J. Run SS-Install-WordPress-Config (Conditional)
+## K. Run SS-Install-WordPress-MU-Plugins (Conditional)
+## L. Fix Any Hardcoded Links In Staging Theme Files
+## M. Fix Incorrect URLs In Staging Database
+## N. Reset Permissions (WordPress Packages)
+## O. End If
 
 ####################################################################################################
 #### A. SS-Sync-Staging: Source SS-Config + SS-Functions ###########################################
@@ -79,7 +81,7 @@ ss_touch "${TIMESTAMP_SS_SYNC_STAGING}"
 ss_echo "${COLOR_INFO}Running ss-sync-staging... ${COLOR_RESET}"
 
 ####################################################################################################
-#### Query Settings
+#### XXXXX Query Settings
 ####################################################################################################
 
 ## EXPAND SS DASHBOARD USING MYSQL???
@@ -90,12 +92,13 @@ ss_echo "${COLOR_INFO}Running ss-sync-staging... ${COLOR_RESET}"
 # $sql = "SELECT 'id' FROM Users WHERE username='$name'";
 
 ####################################################################################################
-
+#### E. SS-Sync-Staging: Begin If ##################################################################
+####################################################################################################
 
 if [[ "${STAGING_SITE}" == "true" ]] && [[ "${SS_SYNC_STAGING}" != "false" ]] && [[ "${WP_MULTISITE}" != "true" ]]; then
 
 ####################################################################################################
-#### E. SS-Sync-Staging: Dump Production Database ##################################################
+#### F. SS-Sync-Staging: Dump Production Database ##################################################
 ####################################################################################################
 
 ## we run ss-dump-database now to export the latest version of production database ##
@@ -104,7 +107,7 @@ if [[ "${STAGING_SITE}" == "true" ]] && [[ "${SS_SYNC_STAGING}" != "false" ]] &&
 source "${PATH_SS_DUMP_DATABASE}"
 
 ####################################################################################################
-#### F. SS-Sync-Staging: Install Staging Database (Conditional) ####################################
+#### G. SS-Sync-Staging: Install Staging Database (Conditional) ####################################
 ####################################################################################################
 
 ## here we perform a simple check to see if the staging database exists yet or not ##
@@ -116,7 +119,7 @@ if ! ss_mysql_user -e 'use staging'; then
 fi
 
 ####################################################################################################
-#### G. SS-Sync-Staging: Import Production Database To Staging Database ############################
+#### H. SS-Sync-Staging: Import Production Database To Staging Database ############################
 ####################################################################################################
 
 ## this snippet duplicates the dumped production database and imports it into MySQL ##
@@ -143,7 +146,7 @@ ss_rm /tmp/staging.sql ## old
 ss_rm /tmp/staging_sync.sql
     
 ####################################################################################################
-#### H. SS-Sync-Staging: Copy Relevant Files From Production To Staging ############################
+#### I. SS-Sync-Staging: Copy Relevant Files From Production To Staging ############################
 ####################################################################################################
 
 ## here we copy over all the files from production to staging besides media uploads ##
@@ -160,7 +163,7 @@ ss_rm /var/www/html/staging/wp-content/wp-content*
 ss_rm /var/www/html/staging/wp-content/object-cache.php*
 
 ####################################################################################################
-#### I. SS-Sync-Staging: Run SS-Install-WordPress-Config (Conditional) #############################
+#### J. SS-Sync-Staging: Run SS-Install-WordPress-Config (Conditional) #############################
 ####################################################################################################
 
 ## below snippet will install wp-config.php in case does not exist already in staging ##
@@ -171,7 +174,7 @@ if [[ ! -f "/var/www/html/staging/wp-config.php" ]]; then
 fi
 
 ####################################################################################################
-#### J. SS-Sync-Staging: Run SS-Install-WordPress-MU-Plugins (Conditional) #########################
+#### K. SS-Sync-Staging: Run SS-Install-WordPress-MU-Plugins (Conditional) #########################
 ####################################################################################################
 
 ## below snippet will install MU plugins in case they do not exist already in staging ##
@@ -182,7 +185,7 @@ if [[ ! -f "/var/www/html/staging/wp-content/mu-plugins/xxx-common.php" ]]; then
 fi
 
 ####################################################################################################
-#### K. SS-Sync-Staging: Fix Any Hardcoded Links In Staging Theme Files ############################
+#### L. SS-Sync-Staging: Fix Any Hardcoded Links In Staging Theme Files ############################
 ####################################################################################################
 
 ## many themes (or custom-coded themes) often contain hardcoded HTML assets and links ##
@@ -194,12 +197,7 @@ find /var/www/html/staging/wp-content/themes/ -type f -exec ss_sed "s|https://${
 find /var/www/html/staging/wp-content/themes/ -type f -exec ss_sed "s|http://${SITE_DOMAIN_EXCLUDING_WWW}|https://staging.${SITE_DOMAIN_EXCLUDING_WWW}|g" {} +
 
 ####################################################################################################
-## end if staging site true ##
-
-fi
-
-####################################################################################################
-#### L. SS-Sync-Staging: Fix Incorrect URLs In Staging Database ####################################
+#### M. SS-Sync-Staging: Fix Incorrect URLs In Staging Database ####################################
 ####################################################################################################
 
 ## here we use WP-CLI to search and replace prod domain with staging domain in MySQL ##
@@ -208,10 +206,16 @@ fi
 /usr/local/bin/wp --path=/var/www/html/staging search-replace https://"${SITE_DOMAIN}" https://staging."${SITE_DOMAIN_EXCLUDING_WWW}" --all-tables
 
 ####################################################################################################
-#### M. SS-Sync-Staging: Reset Permissions (WordPress Packages) ####################################
+#### N. SS-Sync-Staging: Reset Permissions (WordPress Packages) ####################################
 ####################################################################################################
 
 source "${PATH_SS_PERMS_WORDPRESS_PACKAGES}"
+
+####################################################################################################
+#### O. SS-Sync-Staging: End If ####################################################################
+####################################################################################################
+
+fi
 
 ####################################################################################################
 #### SlickStack: Reset Permissions (SlickStack Scripts) ############################################
