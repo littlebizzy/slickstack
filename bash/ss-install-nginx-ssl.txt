@@ -102,8 +102,8 @@ if [[ "${SSL_TYPE}" == "letsencrypt" ]] || [[ "${SSL_TYPE}" == "certbot" ]]; the
     
     ## move file ##
     ss_cp "${TMP_LETSENCRYPT_CONF}" "${PATH_LETSENCRYPT_CONF}"
-    ss_rm /etc/nginx/conf.d/openssl.conf*
-    ss_rm /etc/nginx/conf.d/thirdparty.conf*
+    ss_rm "${PATH_OPENSSL_CONF}"
+    ss_rm "${PATH_THIRDPARTY_CONF}"
 
 fi
 
@@ -158,10 +158,10 @@ if [[ "${SSL_TYPE}" == "openssl" ]] || [[ -z "${SSL_TYPE}" ]]; then
 ## here we modify the live Nginx configuration files to activate Lets Encrypt certificates ##
 ## this snippet will only be executed if Lets Encrypt certs appear to be successful ##
 
-    ## copy SSL sub-config file to /etc/nginx/conf.d/ and delete conflicting files ##
-    ss_cp "${TMP_OPENSSL_CONF}" /etc/nginx/conf.d/openssl.conf
-    ss_rm /etc/nginx/conf.d/letsencrypt.conf*
-    ss_rm /etc/nginx/conf.d/thirdparty.conf*
+    ## move over and remove conflicting files ##
+    ss_cp "${TMP_OPENSSL_CONF}" "${PATH_OPENSSL_CONF}"
+    ss_rm "${PATH_LETSENCRYPT_CONF}"
+    ss_rm "${PATH_THIRDPARTY_CONF}"
     
 fi
 
@@ -214,8 +214,8 @@ if [[ "${SSL_TYPE}" == "thirdparty" ]]; then
     
     ## move file ##
     ss_cp "${TMP_THIRDPARTY_CONF}" "${PATH_THIRDPARTY_CONF}"
-    ss_rm /etc/nginx/conf.d/letsencrypt.conf*
-    ss_rm /etc/nginx/conf.d/openssl.conf*
+    ss_rm "${PATH_LETSENCRYPT_CONF}"
+    ss_rm "${PATH_OPENSSL_CONF}"
 
 fi
 
@@ -223,7 +223,6 @@ fi
 #### SS-Install-Nginx-SSL: Reset Permissions (Nginx SSL) ###########################################
 ####################################################################################################
 
-## run ss-perms-nginx-ssl ##
 source "${PATH_SS_PERMS_NGINX_SSL}"
 
 ####################################################################################################
