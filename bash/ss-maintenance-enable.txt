@@ -3,13 +3,13 @@
 ####################################################################################################
 #### author: SlickStack ############################################################################
 #### link: https://slickstack.io ###################################################################
-#### mirror: https://mirrors.slickstack.io/bash/ss-maintenance-enable.txt ##########################
+#### mirror: littlebizzy/slickstack/blob/master/bash/ss-maintenance-enable.txt #####################
 #### path: /var/www/ss-maintenance-enable ##########################################################
 #### destination: n/a (not a boilerplate) ##########################################################
 #### purpose: Activates maintenance.html that Nginx parses to temporarily disable frontend #########
 #### module version: Nginx 1.18.x ##################################################################
 #### sourced by: ss-install ########################################################################
-#### bash aliases: ss main enable|on, ss maintenance enable|on #####################################
+#### bash aliases: ss enable main|maintenance, ss main enable|on, ss maintenance enable|on #########
 ####################################################################################################
 
 ## source ss-config ##
@@ -27,13 +27,23 @@ source /var/www/ss-functions
 ## this is a brief summary of the different code snippets you will find in this script ##
 ## each section should be commented so you understand what is being accomplished ##
 
-## A. Touch Timestamp File
-## B. Message (Begin Script)
-## C. Enable Maintenance Mode (Via Nginx)
-## D. Purge Cache (Nginx)
+## A. Change To Default Directory
+## B. Touch Timestamp File
+## C. Message (Begin Script)
+## D. Enable Maintenance Mode (Via Maintenance.html)
+## E. Purge Cache (Nginx)
 
 ####################################################################################################
-#### A. SS-Maintenance-Enable: Touch Timestamp File ################################################
+#### A. SS-Maintenance-Enable: Change To Default Directory #########################################
+####################################################################################################
+
+## this tells the current script to change to the /var/www directory before proceeding ##
+## it can help avoid random warnings and issues when running ss shortcut commands ##
+
+ss_cd_default
+
+####################################################################################################
+#### B. SS-Maintenance-Enable: Touch Timestamp File ################################################
 ####################################################################################################
 
 ## this is a dummy timestamp file that will remember the last time this script was run ##
@@ -42,7 +52,7 @@ source /var/www/ss-functions
 ss_touch "${TIMESTAMP_SS_MAINTENANCE_ENABLE}"
 
 ####################################################################################################
-#### B. SS-Maintenance-Enable: Message (Begin Script) ##############################################
+#### C. SS-Maintenance-Enable: Message (Begin Script) ##############################################
 ####################################################################################################
 
 ## this is a simple message that announces to the shell the purpose of this bash script ##
@@ -51,13 +61,7 @@ ss_touch "${TIMESTAMP_SS_MAINTENANCE_ENABLE}"
 ss_echo "${COLOR_INFO}Running ss-maintenance-enable... ${COLOR_RESET}"
 
 ####################################################################################################
-#### X. Change To Default Directory #####################################
-####################################################################################################
-
-ss_cd_default
-
-####################################################################################################
-#### C. SS-Maintenance-Enable: Activate Maintenance Mode (Via Nginx) ###############################
+#### D. SS-Maintenance-Enable: Enable Maintenance Mode (Via Maintenance.html) ######################
 ####################################################################################################
 
 ## here is the critical snippet that copies the maintenance.html file to /var/www/html ##
@@ -74,12 +78,6 @@ if [[ ! -f "/var/www/meta/maintenance.html" ]]; then
   chmod 0644 "${PATH_MAINTENANCE_HTML}" ## 0644
 fi
 
-## whitelabel maintenance.html ##
-if [[ -n "${WHITELABEL_BRAND}" ]]; then
-ss_sed "s|https://slickstack.io|${WHITELABEL_HOMEPAGE}|g" "${PATH_MAINTENANCE_HTML}"
-ss_sed "s|SlickStack|${WHITELABEL_BRAND}|g" "${PATH_MAINTENANCE_HTML}"
-fi
-
 ## activate maintenance.html ##
 ss_rm "${PATH_MAINTENANCE_HTML_LIVE}"
 ss_cp "${PATH_MAINTENANCE_HTML}" "${PATH_MAINTENANCE_HTML_LIVE}"
@@ -87,10 +85,9 @@ chown www-data:www-data "${PATH_MAINTENANCE_HTML_LIVE}"
 chmod 0644 "${PATH_MAINTENANCE_HTML_LIVE}" ## 0644
 
 ####################################################################################################
-### D. SS-Maintenance-Enable: Purge Cache (Nginx) ##################################################
+### E. SS-Maintenance-Enable: Purge Cache (Nginx) ##################################################
 ####################################################################################################
 
-## run ss-purge-nginx ##
 source "${PATH_SS_PURGE_NGINX}"
 
 ####################################################################################################
