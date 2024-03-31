@@ -3,13 +3,13 @@
 ####################################################################################################
 #### author: SlickStack ############################################################################
 #### link: https://slickstack.io ###################################################################
-#### mirror: https://mirrors.slickstack.io/bash/ss-install-nginx-letsencrypt.txt ###################
+#### mirror: littlebizzy/slickstack/blob/master/bash/ss-install-nginx-letsencrypt.txt ##############
 #### path: /var/www/ss-install-nginx-letsencrypt ###################################################
 #### destination: n/a (not a boilerplate) ##########################################################
 #### purpose: Reinstalls Lets Encrypt SSL to Nginx (idempotent) ####################################
 #### module version: Nginx 1.18.x ##################################################################
 #### sourced by: ss-install-nginx ##################################################################
-#### bash aliases: ss install letsencrypt, ss install nginx letsencrypt ############################
+#### bash aliases: ss install letsencrypt cert, ss install nginx letsencrypt #######################
 ####################################################################################################
 
 ## SS-CONFIG MUST BE PROPERLY CONFIGURED AND ON CURRENT BUILD BEFORE RUNNING SS-INSTALL ##
@@ -30,13 +30,23 @@ source /var/www/ss-functions
 ## this is a brief summary of the different code snippets you will find in this script ##
 ## each section should be commented so you understand what is being accomplished ##
 
-## A. Touch Timestamp File
-## B. Message (Begin Script)
-## C. Install Letsencrypt Certificate
-## D. Reset Permissions (Nginx SSL)
+## A. Change To Default Directory
+## B. Touch Timestamp File
+## C. Message (Begin Script)
+## D. Install Letsencrypt Cert
+## E. Reset Permissions (Nginx SSL)
 
 ####################################################################################################
-#### A. SS-Install-Nginx-Letsencrypt: Touch Timestamp File #########################################
+#### A. SS-Install-Nginx-Letsencrypt: Change To Default Directory ##################################
+####################################################################################################
+
+## this tells the current script to change to the /var/www directory before proceeding ##
+## it can help avoid random warnings and issues when running ss shortcut commands ##
+
+ss_cd_default
+
+####################################################################################################
+#### B. SS-Install-Nginx-Letsencrypt: Touch Timestamp File #########################################
 ####################################################################################################
 
 ## this is a dummy timestamp file that will remember the last time this script was run ##
@@ -45,7 +55,7 @@ source /var/www/ss-functions
 ss_touch "${TIMESTAMP_SS_INSTALL_NGINX_LETSENCRYPT}"
 
 ####################################################################################################
-#### B. SS-Install-Nginx-Letsencrypt: Message (Begin Script) #######################################
+#### C. SS-Install-Nginx-Letsencrypt: Message (Begin Script) #######################################
 ####################################################################################################
 
 ## this is a simple message that announces to the shell the purpose of this bash script ##
@@ -54,13 +64,7 @@ ss_touch "${TIMESTAMP_SS_INSTALL_NGINX_LETSENCRYPT}"
 ss_echo "${COLOR_INFO}Running ss-install-nginx-letsencrypt... ${COLOR_RESET}"
 
 ####################################################################################################
-#### X. Change To Default Directory #####################################
-####################################################################################################
-
-ss_cd_default
-
-####################################################################################################
-#### C. SS-Install-Nginx-Letsencrypt: Install Letsencrypt Certificate ##############################
+#### D. SS-Install-Nginx-Letsencrypt: Install Letsencrypt Cert #####################################
 ####################################################################################################
 
 ## here we update the Nginx config files to activate either OpenSSL or Lets Encrypt SSL ##
