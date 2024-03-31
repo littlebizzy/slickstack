@@ -30,11 +30,24 @@ source /var/www/ss-functions
 ## this is a brief summary of the different code snippets you will find in this script ##
 ## each section should be commented so you understand what is being accomplished ##
 
-## A. Touch Timestamp File
-## B. Message (Begin Script)
+## A. Change To Default Directory
+## B. Touch Timestamp File
+## C. Message (Begin Script)
+## D. Install OpenSSL Cert (Forced)
+## E. Reset Permissions (Nginx SSL)
+## F. Restart Services (Nginx)
 
 ####################################################################################################
-#### A. SS-Install-Nginx-OpenSSL: Touch Timestamp File #############################################
+#### A. SS-Install-Nginx-OpenSSL: Change To Default Directory ######################################
+####################################################################################################
+
+## this tells the current script to change to the /var/www directory before proceeding ##
+## it can help avoid random warnings and issues when running ss shortcut commands ##
+
+ss_cd_default
+
+####################################################################################################
+#### B. SS-Install-Nginx-OpenSSL: Touch Timestamp File #############################################
 ####################################################################################################
 
 ## this is a dummy timestamp file that will remember the last time this script was run ##
@@ -43,7 +56,7 @@ source /var/www/ss-functions
 ss_touch "${TIMESTAMP_SS_INSTALL_NGINX_OPENSSL}"
 
 ####################################################################################################
-#### B. SS-Install-Nginx-OpenSSL: Message (Begin Script) ###########################################
+#### C. SS-Install-Nginx-OpenSSL: Message (Begin Script) ###########################################
 ####################################################################################################
 
 ## this is a simple message that announces to the shell the purpose of this bash script ##
@@ -52,13 +65,7 @@ ss_touch "${TIMESTAMP_SS_INSTALL_NGINX_OPENSSL}"
 ss_echo "${COLOR_INFO}Running ss-install-nginx-openssl... ${COLOR_RESET}"
 
 ####################################################################################################
-#### X. Change To Default Directory #####################################
-####################################################################################################
-
-ss_cd_default
-
-####################################################################################################
-#### C. SS-Install-Nginx-OpenSSL: Enable OpenSSL Certificate (Nginx Submodule) #####################
+#### D. SS-Install-Nginx-OpenSSL: Install OpenSSL Cert (Forced) ####################################
 ####################################################################################################
 
 ## here we update the Nginx config files to activate either OpenSSL or Lets Encrypt SSL ##
@@ -113,20 +120,15 @@ ss_rm "${PATH_LETSENCRYPT_CONF}"
 ss_rm "${PATH_THIRDPARTY_CONF}"
 
 ####################################################################################################
-#### SS-Install-Nginx-OpenSSL: Reset Permissions (Nginx SSL) #######################################
+#### E. SS-Install-Nginx-OpenSSL: Reset Permissions (Nginx SSL) ####################################
 ####################################################################################################
 
 source "${PATH_SS_PERMS_NGINX_SSL}"
 
 ####################################################################################################
-#### SS-Install-Nginx-OpenSSL: Restart Services (Nginx) ############################################
+#### F. SS-Install-Nginx-OpenSSL: Restart Services (Nginx) #########################################
 ####################################################################################################
 
-## test added here ##
-## run ss-restart-php ##
-source "${PATH_SS_RESTART_PHP}"
-
-## run ss-restart-nginx ##
 source "${PATH_SS_RESTART_NGINX}"
 
 ####################################################################################################
