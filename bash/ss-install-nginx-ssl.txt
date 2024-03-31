@@ -3,10 +3,10 @@
 ####################################################################################################
 #### author: SlickStack ############################################################################
 #### link: https://slickstack.io ###################################################################
-#### mirror: https://mirrors.slickstack.io/bash/ss-install-nginx-ssl.txt ###########################
+#### mirror: littlebizzy/slickstack/blob/master/bash/ss-install-nginx-ssl.txt ######################
 #### path: /var/www/ss-install-nginx-ssl ###########################################################
 #### destination: n/a (not a boilerplate) ##########################################################
-#### purpose: Reinstalls desired SSL cert (OpenSSL vs Lets Encrypt) to Nginx (idempotent) ##########
+#### purpose: Reinstalls desired SSL cert (OpenSSL or Lets Encrypt) to Nginx (idempotent) ##########
 #### module version: Nginx 1.18.x ##################################################################
 #### sourced by: ss-install-nginx ##################################################################
 #### bash aliases: ss install nginx ssl, ss install ssl ############################################
@@ -30,12 +30,25 @@ source /var/www/ss-functions
 ## this is a brief summary of the different code snippets you will find in this script ##
 ## each section should be commented so you understand what is being accomplished ##
 
-## A. Touch Timestamp File
-## B. Message (Begin Script)
-## C. Install Lets Encrypt (Per SS-Config)
+## A. Change To Default Directory
+## B. Touch Timestamp File
+## C. Message (Begin Script)
+## D. Install Lets Encrypt Cert (Conditional)
+## E. Install OpenSSL Cert (Conditional)
+## F. Install Third-Party Cert (Conditional)
+## G. Reset Permissions (Nginx SSL)
 
 ####################################################################################################
-#### A. SS-Install-Nginx-SSL: Touch Timestamp File #################################################
+#### A. SS-Install-Nginx-SSL: Change To Default Directory ##########################################
+####################################################################################################
+
+## this tells the current script to change to the /var/www directory before proceeding ##
+## it can help avoid random warnings and issues when running ss shortcut commands ##
+
+ss_cd_default
+
+####################################################################################################
+#### B. SS-Install-Nginx-SSL: Touch Timestamp File #################################################
 ####################################################################################################
 
 ## this is a dummy timestamp file that will remember the last time this script was run ##
@@ -44,7 +57,7 @@ source /var/www/ss-functions
 ss_touch "${TIMESTAMP_SS_INSTALL_NGINX_SSL}"
 
 ####################################################################################################
-#### B. SS-Install-Nginx-SSL: Message (Begin Script) ###############################################
+#### C. SS-Install-Nginx-SSL: Message (Begin Script) ###############################################
 ####################################################################################################
 
 ## this is a simple message that announces to the shell the purpose of this bash script ##
@@ -53,19 +66,12 @@ ss_touch "${TIMESTAMP_SS_INSTALL_NGINX_SSL}"
 ss_echo "${COLOR_INFO}Running ss-install-nginx-ssl... ${COLOR_RESET}"
 
 ####################################################################################################
-#### X. Change To Default Directory #####################################
-####################################################################################################
-
-ss_cd_default
-
-####################################################################################################
-#### C. SS-Install-Nginx-SSL: Install Lets Encrypt (Per SS-Config) #################################
+#### D. SS-Install-Nginx-SSL: Install Lets Encrypt Cert (Conditional) ##############################
 ####################################################################################################
 
 ## here we update the Nginx config files to activate either OpenSSL or Lets Encrypt SSL ##
 ## this depends on your ss-config settings (both certs should exist regardless) ##
 
-## install letsencrypt.conf (if preferred) ##
 if [[ "${SSL_TYPE}" == "letsencrypt" ]] || [[ "${SSL_TYPE}" == "certbot" ]]; then 
 
     ## retrieve boilerplate ##
@@ -117,10 +123,9 @@ fi
 ## this snippet will only be executed if Lets Encrypt certs appear to be successful ##
   
 ####################################################################################################
-#### SS-Install-Nginx-SSL: Install OpenSSL (Per SS-Config) #########################################
+#### E. SS-Install-Nginx-SSL: Install OpenSSL Cert (Conditional) ###################################
 ####################################################################################################
 
-## install letsencrypt.conf (if preferred) ##
 if [[ "${SSL_TYPE}" == "openssl" ]] || [[ -z "${SSL_TYPE}" ]]; then 
 
     ## retrieve Lets Encrypt and OpenSSL sub-config file ##
@@ -172,12 +177,9 @@ if [[ "${SSL_TYPE}" == "openssl" ]] || [[ -z "${SSL_TYPE}" ]]; then
 fi
 
 ####################################################################################################
-#### SS-Install-Nginx-SSL: Install Third Party SSL (Per SS-Config) #################################
+#### F. SS-Install-Nginx-SSL: Install Third-Party Cert (Conditional) ###############################
 ####################################################################################################
 
-
-
-## install thirdparty.conf ##
 if [[ "${SSL_TYPE}" == "thirdparty" ]]; then 
 
     ## retrieve boilerplate ##
@@ -226,7 +228,7 @@ if [[ "${SSL_TYPE}" == "thirdparty" ]]; then
 fi
 
 ####################################################################################################
-#### SS-Install-Nginx-SSL: Reset Permissions (Nginx SSL) ###########################################
+#### G. SS-Install-Nginx-SSL: Reset Permissions (Nginx SSL) ########################################
 ####################################################################################################
 
 source "${PATH_SS_PERMS_NGINX_SSL}"
