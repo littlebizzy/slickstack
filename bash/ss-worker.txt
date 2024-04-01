@@ -23,19 +23,22 @@
 ## each section should be commented so you understand what is being accomplished ##
 
 ## A. Source SS-Config + SS-Functions
-## B. Touch Timestamp File
-## C. Message (Begin Script)
-## D. Backup SS-Config
-## E. Backup Custom Cron Jobs
-## F. Update SS-Check
-## G. Transfer Pilot File Settings (If Exists)
-## H. Install SS-Constants.php
-## I. Update Blacklist.txt
-## J. Install Default Robots.txt (If Not Exists)
-## K. Delete Object Cache Files (Conditional)
-## L. Temporary Tasks (Urgent Patches)
+## B. Change To Default Directory
+## C. Touch Timestamp File
+## D. Message (Begin Script)
+## E. Backup Active SS-Config
+## F. Backup Custom Cron Jobs
+## G. Update SS-Check
+## H. Transfer Pilot File Settings (If Exists)
+## I. Install SS-Constants.php
+## J. Update Blacklist.txt
+## K. Install Default Robots.txt (If Not Exists)
+## L. Install SS-Icon.svg (If Not Exists)
+## M. Install Nginx Error Pages (If Not Exists)
+## N. Delete Object Cache Files (Conditional)
+## O. Temporary Tasks (Urgent Patches)
 
-## G. Reset Permissions (SlickStack)
+## P. Reset Permissions (SlickStack)
 
 ####################################################################################################
 #### A. SS-Worker: Source SS-Config + SS-Functions #################################################
@@ -53,7 +56,16 @@ source /var/www/ss-functions
 ## BELOW THIS RELIES ON SS-CONFIG AND SS-FUNCTIONS
 
 ####################################################################################################
-#### B. SS-Worker: Touch Timestamp File ############################################################
+#### B. SS-Worker: Change To Default Directory #####################################################
+####################################################################################################
+
+## this tells the current script to change to the /var/www directory before proceeding ##
+## it can help avoid random warnings and issues when running ss shortcut commands ##
+
+ss_cd_default
+
+####################################################################################################
+#### C. SS-Worker: Touch Timestamp File ############################################################
 ####################################################################################################
 
 ## this is a dummy timestamp file that will remember the last time this script was run ##
@@ -62,7 +74,7 @@ source /var/www/ss-functions
 ss_touch "${TIMESTAMP_SS_WORKER}"
 
 ####################################################################################################
-#### C. SS-Worker: Message (Begin Script) ##########################################################
+#### D. SS-Worker: Message (Begin Script) ##########################################################
 ####################################################################################################
 
 ## this is a simple message that announces to the shell the purpose of this bash script ##
@@ -71,7 +83,7 @@ ss_touch "${TIMESTAMP_SS_WORKER}"
 ss_echo "${COLOR_INFO}Running ss-worker... ${COLOR_RESET}"
 
 ####################################################################################################
-#### D. SS-Worker: Backup SS-Config ################################################################
+#### E. SS-Worker: Backup Active SS-Config #########################################################
 ####################################################################################################
 
 ## this will replicate your current ss-config file (and settings) to the backups dir ##
@@ -83,15 +95,16 @@ ss_echo "${COLOR_INFO}Running ss-worker... ${COLOR_RESET}"
 ss_cp "${PATH_SS_CONFIG}" /var/www/backups/config/ss-config.bak.${SYSTEM_CURRENT_TIME}
 
 ####################################################################################################
-#### E. SS-Worker: Backup Custom Cron Jobs #########################################################
+#### F. SS-Worker: Backup Custom Cron Jobs #########################################################
 ####################################################################################################
 
 ## this will backup and overwrite all your custom cron job files to the backups dir ##
+## you can then remotely backup this folder or simply use it for reference ##
 
 ss_rsync /var/www/crons/custom/ /var/www/backups/crons
 
 ####################################################################################################
-#### F. SS-Worker: Update SS-Check #################################################################
+#### G. SS-Worker: Update SS-Check #################################################################
 ####################################################################################################
 
 ## here we retrieve the latest ss-check bash script to improve SlickStack redundancy ##
@@ -111,7 +124,7 @@ if [[ -n "${VALIDATE2_TMP_SS_CHECK}" ]]; then
 fi
 
 ####################################################################################################
-#### G. SS-Worker: Transfer Pilot File Settings (If Exists) ########################################
+#### H. SS-Worker: Transfer Pilot File Settings (If Exists) ########################################
 ####################################################################################################
 
 ## this snippet retrieves the remote pilot file defined in ss-config and reads settings ##
@@ -120,90 +133,91 @@ fi
 ## retrieve pilot file if exists ##
 if [[ -n "${SS_PILOT_FILE}" ]]; then 
 
-    ss_wget "${TMP_SS_PILOT_FILE}" "${SS_PILOT_FILE}"
+ss_wget "${TMP_SS_PILOT_FILE}" "${SS_PILOT_FILE}"
 
-    ## read variables from pilot file ##
-    PILOT_CLOUDFLARE_API_KEY=$(source /tmp/ss-pilot; echo "${CLOUDFLARE_API_KEY}")
-    PILOT_CLOUDFLARE_API_EMAIL=$(source /tmp/ss-pilot; echo "${CLOUDFLARE_API_EMAIL}")
-    PILOT_NGINX_HEADER_POWERED_BY=$(source /tmp/ss-pilot; echo "${NGINX_HEADER_POWERED_BY}")
-    PILOT_PHP_EXTENSIONS=$(source /tmp/ss-pilot; echo "${PHP_EXTENSIONS}")
-    PILOT_WHITELABEL_BRAND=$(source /tmp/ss-pilot; echo "${WHITELABEL_BRAND}")
-    PILOT_WHITELABEL_HOMEPAGE=$(source /tmp/ss-pilot; echo "${WHITELABEL_HOMEPAGE}")
-    PILOT_WHITELABEL_SUPPORT_URL=$(source /tmp/ss-pilot; echo "${WHITELABEL_SUPPORT_URL}")
-    PILOT_WHITELABEL_SUPPORT_EMAIL=$(source /tmp/ss-pilot; echo "${WHITELABEL_SUPPORT_EMAIL}")
-    PILOT_WP_PLUGIN_BLACKLIST=$(source /tmp/ss-pilot; echo "${WP_PLUGIN_BLACKLIST}")
-    PILOT_WP_PLUGIN_BLACKLIST_SOURCE=$(source /tmp/ss-pilot; echo "${WP_PLUGIN_BLACKLIST_SOURCE}")
+## read variables from pilot file ##
+PILOT_CLOUDFLARE_API_KEY=$(source /tmp/ss-pilot; echo "${CLOUDFLARE_API_KEY}")
+PILOT_CLOUDFLARE_API_EMAIL=$(source /tmp/ss-pilot; echo "${CLOUDFLARE_API_EMAIL}")
+PILOT_NGINX_HEADER_POWERED_BY=$(source /tmp/ss-pilot; echo "${NGINX_HEADER_POWERED_BY}")
+PILOT_PHP_EXTENSIONS=$(source /tmp/ss-pilot; echo "${PHP_EXTENSIONS}")
+PILOT_WHITELABEL_BRAND=$(source /tmp/ss-pilot; echo "${WHITELABEL_BRAND}")
+PILOT_WHITELABEL_HOMEPAGE=$(source /tmp/ss-pilot; echo "${WHITELABEL_HOMEPAGE}")
+PILOT_WHITELABEL_SUPPORT_URL=$(source /tmp/ss-pilot; echo "${WHITELABEL_SUPPORT_URL}")
+PILOT_WHITELABEL_SUPPORT_EMAIL=$(source /tmp/ss-pilot; echo "${WHITELABEL_SUPPORT_EMAIL}")
+PILOT_WP_PLUGIN_BLACKLIST=$(source /tmp/ss-pilot; echo "${WP_PLUGIN_BLACKLIST}")
+PILOT_WP_PLUGIN_BLACKLIST_SOURCE=$(source /tmp/ss-pilot; echo "${WP_PLUGIN_BLACKLIST_SOURCE}")
 
-    ## whitelabel brand ##
-    if [[ -n "${PILOT_WHITELABEL_BRAND}" ]]; then 
-        ss_sed "s|\(^WHITELABEL_BRAND=\).*|WHITELABEL_BRAND=\"$PILOT_WHITELABEL_BRAND\"|g" "${PATH_SS_CONFIG}"
-    fi
+## whitelabel brand ##
+if [[ -n "${PILOT_WHITELABEL_BRAND}" ]]; then 
+    ss_sed "s|\(^WHITELABEL_BRAND=\).*|WHITELABEL_BRAND=\"$PILOT_WHITELABEL_BRAND\"|g" "${PATH_SS_CONFIG}"
+fi
 
-    ## whitelabel homepage ##
-    if [[ -n "${PILOT_WHITELABEL_HOMEPAGE}" ]]; then 
-        ss_sed "s|\(^WHITELABEL_HOMEPAGE=\).*|WHITELABEL_HOMEPAGE=\"$PILOT_WHITELABEL_HOMEPAGE\"|g" "${PATH_SS_CONFIG}"
-    fi
-    
-    ## whitelabel support url ##
-    if [[ -n "${PILOT_WHITELABEL_SUPPORT_URL}" ]]; then 
-        ss_sed "s|\(^WHITELABEL_SUPPORT_URL=\).*|WHITELABEL_SUPPORT_URL=\"$PILOT_WHITELABEL_SUPPORT_URL\"|g" "${PATH_SS_CONFIG}"
-    fi
-    
-    ## whitelabel support email ##
-    if [[ -n "${PILOT_WHITELABEL_SUPPORT_EMAIL}" ]]; then 
-        ss_sed "s|\(^WHITELABEL_SUPPORT_EMAIL=\).*|WHITELABEL_SUPPORT_EMAIL=\"$PILOT_WHITELABEL_SUPPORT_EMAIL\"|g" "${PATH_SS_CONFIG}"
-    fi
-    
-    ## nginx header powered by ##
-    if [[ -n "${PILOT_NGINX_HEADER_POWERED_BY}" ]]; then 
-        ss_sed "s|\(^NGINX_HEADER_POWERED_BY=\).*|NGINX_HEADER_POWERED_BY=\"$PILOT_NGINX_HEADER_POWERED_BY\"|g" "${PATH_SS_CONFIG}"
-    fi
-    
-    ## cloudflare api key ##
-    if [[ -n "${PILOT_CLOUDFLARE_API_KEY}" ]]; then 
-        ss_sed "s|\(^CLOUDFLARE_API_KEY=\).*|CLOUDFLARE_API_KEY=\"$PILOT_CLOUDFLARE_API_KEY\"|g" "${PATH_SS_CONFIG}"
-    fi
-    
-    ## cloudflare api email ##
-    if [[ -n "${PILOT_CLOUDFLARE_API_EMAIL}" ]]; then 
-        ss_sed "s|\(^CLOUDFLARE_API_EMAIL=\).*|CLOUDFLARE_API_EMAIL=\"$PILOT_CLOUDFLARE_API_EMAIL\"|g" "${PATH_SS_CONFIG}"
-    fi
-    
-    ## php extensions ##
-    if [[ -n "${PILOT_PHP_EXTENSIONS}" ]]; then 
-        ss_sed "s|\(^PHP_EXTENSIONS=\).*|PHP_EXTENSIONS=\"$PILOT_PHP_EXTENSIONS\"|g" "${PATH_SS_CONFIG}"
-    fi
-    
-    ## plugin blacklist status 1 ##
-    if [[ -n "${PILOT_WP_PLUGIN_BLACKLIST}" ]]; then 
-        ss_sed "s|\(^SS_WORDPRESS_PLUGIN_BLACKLIST=\).*|SS_WORDPRESS_PLUGIN_BLACKLIST=\"$PILOT_WP_PLUGIN_BLACKLIST\"|g" "${PATH_SS_CONFIG}"
-    fi
-    
-    ## plugin blacklist status 2 ##
-    if [[ -n "${PILOT_WP_PLUGIN_BLACKLIST}" ]]; then 
-        ss_sed "s|\(^WP_PLUGIN_BLACKLIST=\).*|WP_PLUGIN_BLACKLIST=\"$PILOT_WP_PLUGIN_BLACKLIST\"|g" "${PATH_SS_CONFIG}"
-    fi
-    
-    ## plugin blacklist source 1 ##
-    if [[ -n "${PILOT_WP_PLUGIN_BLACKLIST_SOURCE}" ]]; then 
-        ss_sed "s|\(^SS_WORDPRESS_PLUGIN_BLACKLIST_SOURCE=\).*|SS_WORDPRESS_PLUGIN_BLACKLIST_SOURCE=\"$PILOT_WP_PLUGIN_BLACKLIST_SOURCE\"|g" "${PATH_SS_CONFIG}"
-    fi
-    
-    ## plugin blacklist source 2 ##
-    if [[ -n "${PILOT_WP_PLUGIN_BLACKLIST_SOURCE}" ]]; then 
-        ss_sed "s|\(^WP_PLUGIN_BLACKLIST_SOURCE=\).*|WP_PLUGIN_BLACKLIST_SOURCE=\"$PILOT_WP_PLUGIN_BLACKLIST_SOURCE\"|g" "${PATH_SS_CONFIG}"
-    fi
+## whitelabel homepage ##
+if [[ -n "${PILOT_WHITELABEL_HOMEPAGE}" ]]; then 
+    ss_sed "s|\(^WHITELABEL_HOMEPAGE=\).*|WHITELABEL_HOMEPAGE=\"$PILOT_WHITELABEL_HOMEPAGE\"|g" "${PATH_SS_CONFIG}"
+fi
+
+## whitelabel support url ##
+if [[ -n "${PILOT_WHITELABEL_SUPPORT_URL}" ]]; then 
+    ss_sed "s|\(^WHITELABEL_SUPPORT_URL=\).*|WHITELABEL_SUPPORT_URL=\"$PILOT_WHITELABEL_SUPPORT_URL\"|g" "${PATH_SS_CONFIG}"
+fi
+
+## whitelabel support email ##
+if [[ -n "${PILOT_WHITELABEL_SUPPORT_EMAIL}" ]]; then 
+    ss_sed "s|\(^WHITELABEL_SUPPORT_EMAIL=\).*|WHITELABEL_SUPPORT_EMAIL=\"$PILOT_WHITELABEL_SUPPORT_EMAIL\"|g" "${PATH_SS_CONFIG}"
+fi
+
+## nginx header powered by ##
+if [[ -n "${PILOT_NGINX_HEADER_POWERED_BY}" ]]; then 
+    ss_sed "s|\(^NGINX_HEADER_POWERED_BY=\).*|NGINX_HEADER_POWERED_BY=\"$PILOT_NGINX_HEADER_POWERED_BY\"|g" "${PATH_SS_CONFIG}"
+fi
+
+## cloudflare api key ##
+if [[ -n "${PILOT_CLOUDFLARE_API_KEY}" ]]; then 
+    ss_sed "s|\(^CLOUDFLARE_API_KEY=\).*|CLOUDFLARE_API_KEY=\"$PILOT_CLOUDFLARE_API_KEY\"|g" "${PATH_SS_CONFIG}"
+fi
+
+## cloudflare api email ##
+if [[ -n "${PILOT_CLOUDFLARE_API_EMAIL}" ]]; then 
+    ss_sed "s|\(^CLOUDFLARE_API_EMAIL=\).*|CLOUDFLARE_API_EMAIL=\"$PILOT_CLOUDFLARE_API_EMAIL\"|g" "${PATH_SS_CONFIG}"
+fi
+
+## php extensions ##
+if [[ -n "${PILOT_PHP_EXTENSIONS}" ]]; then 
+    ss_sed "s|\(^PHP_EXTENSIONS=\).*|PHP_EXTENSIONS=\"$PILOT_PHP_EXTENSIONS\"|g" "${PATH_SS_CONFIG}"
+fi
+
+## plugin blacklist status 1 ##
+if [[ -n "${PILOT_WP_PLUGIN_BLACKLIST}" ]]; then 
+    ss_sed "s|\(^SS_WORDPRESS_PLUGIN_BLACKLIST=\).*|SS_WORDPRESS_PLUGIN_BLACKLIST=\"$PILOT_WP_PLUGIN_BLACKLIST\"|g" "${PATH_SS_CONFIG}"
+fi
+
+## plugin blacklist status 2 ##
+if [[ -n "${PILOT_WP_PLUGIN_BLACKLIST}" ]]; then 
+    ss_sed "s|\(^WP_PLUGIN_BLACKLIST=\).*|WP_PLUGIN_BLACKLIST=\"$PILOT_WP_PLUGIN_BLACKLIST\"|g" "${PATH_SS_CONFIG}"
+fi
+
+## plugin blacklist source 1 ##
+if [[ -n "${PILOT_WP_PLUGIN_BLACKLIST_SOURCE}" ]]; then 
+    ss_sed "s|\(^SS_WORDPRESS_PLUGIN_BLACKLIST_SOURCE=\).*|SS_WORDPRESS_PLUGIN_BLACKLIST_SOURCE=\"$PILOT_WP_PLUGIN_BLACKLIST_SOURCE\"|g" "${PATH_SS_CONFIG}"
+fi
+
+## plugin blacklist source 2 ##
+if [[ -n "${PILOT_WP_PLUGIN_BLACKLIST_SOURCE}" ]]; then 
+    ss_sed "s|\(^WP_PLUGIN_BLACKLIST_SOURCE=\).*|WP_PLUGIN_BLACKLIST_SOURCE=\"$PILOT_WP_PLUGIN_BLACKLIST_SOURCE\"|g" "${PATH_SS_CONFIG}"
+fi
 
 fi 
 
 ####################################################################################################
-#### H. SS-Worker: Install SS-Constants.php ########################################################
+#### I. SS-Worker: Install SS-Constants.php ########################################################
 ####################################################################################################
 
 ## here we use some janky magic to convert various system settings into PHP constants ##
 ## this allows SlickStack to use these handy PHP constants inside PHP scripts ##
 
 ## SNIPPET: ss-install-wordpress-config, ss-worker
+## UPDATED: 01APR2024
 
 ## retrieve current boilerplate ##
 ss_wget "${TMP_SS_CONSTANTS_PHP}" "${GITHUB_SS_CONSTANTS_PHP}"
@@ -317,7 +331,7 @@ if [[ -n "${VALIDATE_TMP_SS_CONSTANTS_PHP}" ]]; then
 fi 
 
 ####################################################################################################
-#### I. SS-Worker: Update Blacklist.txt ############################################################
+#### J. SS-Worker: Update Blacklist.txt ############################################################
 ####################################################################################################
 
 ## here we retrieve the latest plugin blacklist file which might contain urgent changes ##
@@ -352,7 +366,7 @@ cat /dev/null > /var/www/html/wp-content/blacklist.txt
 fi
 
 ####################################################################################################
-#### J. SS-Worker: Install Default Robots.txt (If Not Exists) ######################################
+#### K. SS-Worker: Install Default Robots.txt (If Not Exists) ######################################
 ####################################################################################################
 
 ## here we install a basic robots.txt file in case none exists yet on production site ##
@@ -366,7 +380,7 @@ if [[ ! -f "${PATH_ROBOTS_TXT}" ]]; then
 fi
 
 ####################################################################################################
-#### J. SS-Worker: Install SS-Icon.svg (If Not Exists) #############################################
+#### L. SS-Worker: Install SS-Icon.svg (If Not Exists) #############################################
 ####################################################################################################
 
 if [[ ! -f "${PATH_SS_ICON_SVG}" ]]; then 
@@ -375,7 +389,7 @@ if [[ ! -f "${PATH_SS_ICON_SVG}" ]]; then
 fi
 
 ####################################################################################################
-#### J. SS-Worker: Install Nginx Error Pages (If Not Exists) ##########################################################
+#### M. SS-Worker: Install Nginx Error Pages (If Not Exists) ##########################################################
 ####################################################################################################
 
 if [[ ! -f "${PATH_ERROR_404_HTML}" ]]; then 
@@ -393,7 +407,7 @@ if [[ ! -f "${PATH_ERROR_50X_HTML}" ]]; then
 fi
 
 ####################################################################################################
-#### K. SS-Worker: Delete Object Cache Files (Conditional) #########################################
+#### N. SS-Worker: Delete Object Cache Files (Conditional) #########################################
 ####################################################################################################
 
 ## SINCE THIS IS STACK CONFIGURATION PROBABLY SHOULD NOT EXIST IN ss-clean ##
@@ -409,7 +423,28 @@ if [[ "${SS_OBJECT_CACHE}" == "false" ]]; then
 fi
 
 ####################################################################################################
-#### G. SS-Worker: Reset Permissions (SlickStack) ##################################################
+#### O. SS-Worker: Temporary Tasks (Urgent Patches) ################################################
+####################################################################################################
+
+## our team uses the below space to occassionally add urgent patches to SlickStack ##
+## this is usually easier as it doesnt depend on your interval_ss settings ##
+
+# if [[ "${SS_LOCKDOWN}" != "true" ]]; then
+# source /var/www/ss-install-nginx-config
+# source /var/www/ss-install-wordpress-cli
+# source /var/www/ss-install-wordpress-config
+# source /var/www/ss-install-wordpress-mu-plugins
+# source /var/www/ss-install-ubuntu-bash
+# source /var/www/ss-encrypt-openssl
+# source /var/www/ss-encrypt-certbot
+# source /var/www/ss-update-config
+# fi
+
+## temp forced fixes ##
+ss_sed 's|WP_CRON_METHOD="wordpress"|WP_CRON_METHOD="wpcli"|g' /var/www/ss-config
+
+####################################################################################################
+#### P. SS-Worker: Reset Permissions (SlickStack) ##################################################
 ####################################################################################################
 
 ## we hardcode this permissions reset snippet into some core scripts for redundancy ##
@@ -530,27 +565,6 @@ chmod 0700 /var/www/ss* ## 0700 means only root can execute
 chmod 0755 /var/www/sites ## must be 0755
 chmod 0755 /var/www/sites/includes ## must be 0755
 chmod 0755 /var/www/sites/error_pages
-
-####################################################################################################
-#### L. SS-Worker: Temporary Tasks (Urgent Patches) ################################################
-####################################################################################################
-
-## our team uses the below space to occassionally add urgent patches to SlickStack ##
-## this is usually easier as it doesnt depend on your interval_ss settings ##
-
-# if [[ "${SS_LOCKDOWN}" != "true" ]]; then
-# source /var/www/ss-install-nginx-config
-# source /var/www/ss-install-wordpress-cli
-# source /var/www/ss-install-wordpress-config
-# source /var/www/ss-install-wordpress-mu-plugins
-# source /var/www/ss-install-ubuntu-bash
-# source /var/www/ss-encrypt-openssl
-# source /var/www/ss-encrypt-certbot
-# source /var/www/ss-update-config
-# fi
-
-## temp forced fixes ##
-ss_sed 's|WP_CRON_METHOD="wordpress"|WP_CRON_METHOD="wpcli"|g' /var/www/ss-config
 
 ####################################################################################################
 #### SlickStack: Reset Permissions (SlickStack Scripts) ############################################
