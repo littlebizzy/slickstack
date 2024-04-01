@@ -366,6 +366,15 @@ if [[ ! -f "${PATH_ROBOTS_TXT}" ]]; then
 fi
 
 ####################################################################################################
+#### J. SS-Worker: Install SS-Icon.svg (If Not Exists) #############################################
+####################################################################################################
+
+if [[ ! -f "${PATH_SS_ICON_SVG}" ]]; then 
+    ss_wget "${TMP_SS_ICON_SVG}" "${GITHUB_SS_ICON_SVG}"
+    ss_mv "${TMP_SS_ICON_SVG}" "${PATH_SS_ICON_SVG}"
+fi
+
+####################################################################################################
 #### J. SS-Worker: Install Nginx Error Pages (If Not Exists) ##########################################################
 ####################################################################################################
 
@@ -542,16 +551,6 @@ chmod 0755 /var/www/sites/error_pages
 
 ## temp forced fixes ##
 ss_sed 's|WP_CRON_METHOD="wordpress"|WP_CRON_METHOD="wpcli"|g' /var/www/ss-config
-ss_sed 's|CLOUDFLARE_REAL_IPS="false"|CLOUDFLARE_REAL_IPS="true"|g' /var/www/ss-config ## one-time change to reflect new default
-
-
-if [[ ! -f "/var/www/html/wp-content/mu-plugins/ss-icon.svg" ]]; then 
-    ss_wget "${TMP_SS_ICON_SVG}" "${GITHUB_SS_ICON_SVG}"
-    ss_mv "${TMP_SS_ICON_SVG}" "${PATH_SS_ICON_SVG}"
-fi
-
-## aggressive malware temp patch
-ss_rm /var/www/html/sw.js
 
 ####################################################################################################
 #### SlickStack: Reset Permissions (SlickStack Scripts) ############################################
