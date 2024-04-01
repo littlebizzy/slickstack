@@ -70,14 +70,14 @@ ss_echo "${COLOR_INFO}Running ss-encrypt-certbot... ${COLOR_RESET}"
 #### D. SS-Encrypt-Certbot: Temporarily Activate OpenSSL ###########################################
 ####################################################################################################
 
-## this should work fine even for live sites tha enabled certbot but might want to change it later to avoid potential broken frontends ##
-
 ## here we must temporarily activate OpenSSL in order to avoid fatal errors in Nginx ##
 ## the next step will be running Certbot which requires OpenSSL to be activated ##
 
-## add "if certbot ! true and letsencrypt cert not found ...
+## NEEDS IMPROVEMENT 
 
-if [[ ! -f "${PATH_THIRDPARTY_CONF}" ]]; then 
+if [[ "${SSL_TYPE}" == "certbot" ]] && [[ ! -f "${PATH_LETSENCRYPT_CERT_CERT}" ]] && [[ ! -f "${PATH_THIRDPARTY_CONF}" ]]; then 
+    source "${PATH_SS_INSTALL_NGINX_OPENSSL}"
+elif [[ "${SSL_TYPE}" != "certbot" ]] && [[ ! -f "${PATH_THIRDPARTY_CONF}" ]]; then 
     source "${PATH_SS_INSTALL_NGINX_OPENSSL}"
 fi
 
