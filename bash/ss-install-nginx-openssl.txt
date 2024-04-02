@@ -73,6 +73,10 @@ ss_echo "${COLOR_INFO}Running ss-install-nginx-openssl... ${COLOR_RESET}"
 
 ## retrieve Lets Encrypt and OpenSSL sub-config file ##
 ss_wget "${TMP_OPENSSL_CONF}" "${GITHUB_OPENSSL_CONF}"
+VALIDATE_TMP_OPENSSL_CONF=$(grep 'SS_EOF' "${TMP_OPENSSL_CONF}" 2> /dev/null)
+if [[ -z "${VALIDATE_TMP_OPENSSL_CONF}" ]]; then
+    ss_wget "${TMP_OPENSSL_CONF}" "${GITLAB_OPENSSL_CONF}"
+fi
 
 ## SEARCH AND REPLACE SSL SETTINGS ## 
 
@@ -115,7 +119,7 @@ fi
 ## this snippet will only be executed if Lets Encrypt certs appear to be successful ##
 
 ## enable openssl submodule ##
-ss_cp "${TMP_OPENSSL_CONF}" "${PATH_OPENSSL_CONF}"
+ss_mv "${TMP_OPENSSL_CONF}" "${PATH_OPENSSL_CONF}"
 ss_rm "${PATH_LETSENCRYPT_CONF}"
 ss_rm "${PATH_THIRDPARTY_CONF}"
 
