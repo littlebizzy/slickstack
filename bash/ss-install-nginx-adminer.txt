@@ -54,7 +54,33 @@ ss_echo "${COLOR_INFO}Running ss-install-cloudflare-real-ips... ${COLOR_RESET}"
 #### C. SS-Install-Nginx-Adminer: Install Adminer.conf #############################################
 ####################################################################################################
 
+if [[ "${ADMINER_PUBLIC}" == "true" ]]; then 
 
+ss_wget /tmp/adminer.conf https://raw.githubusercontent.com/littlebizzy/slickstack/master/modules/nginx/includes/adminer-conf.txt
+
+## install if valid ##
+VALIDATE_TMP_ADMINER_CONF=$(grep 'SS_EOF' /tmp/adminer.conf 2> /dev/null)
+if [[ -n "${VALIDATE_TMP_ADMINER_CONF}" ]]; then
+    ss_mv /tmp/adminer.conf /var/www/sites/includes/adminer.conf
+    ss_reload nginx
+    ss_echo "${COLOR_INFO}ss-install-nginx-adminer: Successfully installed adminer.conf and reloaded Nginx... ${COLOR_RESET}"
+elif [[ -z "${VALIDATE_TMP_ADMINER_CONF}" ]]; then
+    ss_echo "${COLOR_WARN}ss-install-nginx-adminer: latest adminer.conf boilerplate appears corrupt so skipping install (old version remains installed if exists)... ${COLOR_RESET}"
+fi
+
+#### else if adminer disabled #####
+elif [[ "${ADMINER_PUBLIC}" == "false" ]]; then
+    ss_rm /var/www/sites/includes/adminer.conf
+    ## no need to reload nginx here... ##
+    ss_echo "${COLOR_WARN}ss-install-nginx-adminer: adminer.conf is disabled in your ss-config so installation skipped... ${COLOR_RESET}"
+
+
+## end if parent #####
+fi
+
+## cleanup tmp files #######################
+
+ss_rm "${TMP_ADMINER_CONF}"
 
 ####################################################################################################
 #### SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ###############
