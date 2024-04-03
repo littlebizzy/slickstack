@@ -1,17 +1,37 @@
 ####################################################################################################
 #### author: SlickStack ############################################################################
 #### link: https://slickstack.io ###################################################################
-#### mirror: littlebizzy/slickstack/blob/master/bash/ss-install-cloudflare-authenticated-origin.txt ####
-#### path: /var/www/ss-install-cloudflare-authenticated-origin #####################################
+#### mirror: littlebizzy/slickstack/blob/master/bash/ss-install-nginx-auth-origin.txt ##############
+#### path: /var/www/ss-install-nginx-auth-origin ###################################################
 #### destination: n/a ##############################################################################
-#### purpose: Installs the authenticated-origin.conf Nginx submodule to require AOP pulls ##########
+#### purpose: Installs the authenticated-origin.conf Nginx submodule for Cloudflare AOP ############
 #### module version: Nginx 1.18.x ##################################################################
 #### sourced by: nginx.conf ########################################################################
-#### bash aliases: ss install cloudflare authenticated origin ######################################
+#### bash aliases: ss install nginx auth origin, ss install nginx aop ##############################
 ####################################################################################################
 
 ## SS-CONFIG MUST BE PROPERLY CONFIGURED AND ON CURRENT BUILD BEFORE RUNNING SS-INSTALL ##
 ## ENSURE YOUR SS-CONFIG BUILD REMAINS CURRENT BY RUNNING SS-UPDATE OCCASIONALLY ##
+
+####################################################################################################
+#### TABLE OF CONTENTS (SS-Install-Nginx-Auth-Origin) ##############################################
+####################################################################################################
+
+## this is a brief summary of the different code snippets you will find in this script ##
+## each section should be commented so you understand what is being accomplished ##
+
+## A. Source SS-Config + SS-Functions
+## B. Touch Timestamp File
+## C. Message (Begin Script)
+## D. Install Cloudflare.conf
+## E. Cleanup Temporary Files
+
+####################################################################################################
+#### A. SS-Install-Nginx-Auth-Origin: Source SS-Config + SS-Functions ##############################
+####################################################################################################
+
+## before anything else we must source the critical variables that power this script ##
+## ss-config is setup during ss-install wizard but ss-functions is hardcoded ##
 
 ## source ss-config ##
 source /var/www/ss-config
@@ -22,18 +42,7 @@ source /var/www/ss-functions
 ## BELOW THIS RELIES ON SS-CONFIG AND SS-FUNCTIONS
 
 ####################################################################################################
-#### TABLE OF CONTENTS (SS-Install-Nginx-Cloudflare-Authenticated-Origin) ##########################
-####################################################################################################
-
-## this is a brief summary of the different code snippets you will find in this script ##
-## each section should be commented so you understand what is being accomplished ##
-
-## A. Touch Timestamp File
-## B. Message (Begin Script)
-## C. Install Cloudflare.conf
-
-####################################################################################################
-#### A. SS-Install-Nginx-Cloudflare-Authenticated-Origin: Touch Timestamp File #####################
+#### B. SS-Install-Nginx-Auth-Origin: Touch Timestamp File #########################################
 ####################################################################################################
 
 ## this is a dummy timestamp file that will remember the last time this script was run ##
@@ -42,28 +51,29 @@ source /var/www/ss-functions
 ss_touch "${TIMESTAMP_SS_INSTALL_NGINX_CLOUDFLARE_AUTHENTICATED_ORIGIN}"
 
 ####################################################################################################
-#### B. SS-Install-Nginx-Cloudflare-Authenticated-Origin: Message (Begin Script) ####################################
+#### C. SS-Install-Nginx-Auth-Origin: Message (Begin Script) #######################################
 ####################################################################################################
 
 ## this is a simple message that announces to the shell the purpose of this bash script ##
 ## it will only be seen by sudo users who manually run this script in the shell ##
 
-ss_echo "${COLOR_INFO}Running ss-install-nginx-cloudflare-authenticated-origin... ${COLOR_RESET}"
+ss_echo "${COLOR_INFO}Running ss-install-nginx-auth-origin... ${COLOR_RESET}"
 
 ####################################################################################################
-#### X. Change To Default Directory #####################################
-####################################################################################################
-
-ss_cd_default
-
-####################################################################################################
-#### C. SS-Install-Nginx-Cloudflare-Authenticated-Origin: Install Authenticated-Origin.conf ###################################
+#### D. SS-Install-Nginx-Auth-Origin: Install Authenticated-Origin.conf ############################
 ####################################################################################################
 
 if [[ "${CLOUDFLARE_AUTHENTICATED_ORIGIN}" == "true" ]]; then 
 
+## retrieve public cloudflare.pem cert ##
 ss_wget "${TMP_CLOUDFLARE_PEM}" "${REMOTE_CLOUDFLARE_PEM}"
+
+## retrieve authenticated-origin.conf boilerplate ##
 ss_wget "${TMP_AUTHENTICATED_ORIGIN_CONF}" "${GITHUB_AUTHENTICATED_ORIGIN_CONF}"
+VALIDATE_TMP_AUTHENTICATED_ORIGIN_CONF=$(grep 'SS_EOF' "${TMP_AUTHENTICATED_ORIGIN_CONF}" 2> /dev/null)
+if [[ -z "${VALIDATE_TMP_AUTHENTICATED_ORIGIN_CONF}" ]]; then
+    ss_wget "${TMP_AUTHENTICATED_ORIGIN_CONF}" "${GITLAB_AUTHENTICATED_ORIGIN_CONF}"
+fi
 
 ## install if valid ##
 VALIDATE_TMP_AUTHENTICATED_ORIGIN_CONF=$(grep 'ssl_verify_client' "${TMP_AUTHENTICATED_ORIGIN_CONF}" 2> /dev/null)
@@ -71,9 +81,9 @@ if [[ -n "${VALIDATE_TMP_AUTHENTICATED_ORIGIN_CONF}" ]]; then
     ss_mv "${TMP_CLOUDFLARE_PEM}" "${PATH_CLOUDFLARE_PEM}"
     ss_mv "${TMP_AUTHENTICATED_ORIGIN_CONF}" "${PATH_AUTHENTICATED_ORIGIN_CONF}"
     ss_reload nginx
-    ss_echo "${COLOR_INFO}ss-install-nginx-cloudflare-authenticated-origin: Successfully installed authenticated-origin.conf and reloaded Nginx... ${COLOR_RESET}"
+    ss_echo "${COLOR_INFO}ss-install-nginx-auth-origin: Successfully installed authenticated-origin.conf and reloaded Nginx... ${COLOR_RESET}"
 elif [[ -z "${VALIDATE_TMP_AUTHENTICATED_ORIGIN_CONF}" ]]; then
-    ss_echo "${COLOR_WARN}ss-install-nginx-cloudflare-authenticated-origin: latest authenticated-origin.conf boilerplate appears corrupt so skipping install (old version remains installed if exists)... ${COLOR_RESET}"
+    ss_echo "${COLOR_WARN}ss-install-nginx-auth-origin: latest authenticated-origin.conf boilerplate appears corrupt so skipping install (old version remains installed if exists)... ${COLOR_RESET}"
 fi
 
 #### else if cloudflare auth origin false #####
@@ -81,13 +91,16 @@ elif [[ "${CLOUDFLARE_AUTHENTICATED_ORIGIN}" == "false" ]]; then
     ss_rm "${PATH_CLOUDFLARE_PEM}"
     ss_rm "${PATH_CLOUDFLARE_AUTHENTICATED_ORIGIN}"
     ## no need to reload nginx here... ##
-    ss_echo "${COLOR_WARN}ss-install-nginx-cloudflare-authenticated-origin: authenticated-origin.conf is disabled in your ss-config so installation skipped... ${COLOR_RESET}"
+    ss_echo "${COLOR_WARN}ss-install-nginx-auth-origin: authenticated-origin.conf is disabled in your ss-config so installation skipped... ${COLOR_RESET}"
 
 
 ## end if parent #####
 fi
 
-## cleanup tmp files #######################
+####################################################################################################
+#### E. SS-Install-Nginx-Auth-Origin: Cleanup Temporary Files ######################################
+####################################################################################################
+
 ss_rm "${TMP_CLOUDFLARE_PEM}"
 ss_rm "${TMP_AUTHENTICATED_ORIGIN_CONF}"
 
