@@ -3,7 +3,7 @@
 ####################################################################################################
 #### author: SlickStack ############################################################################
 #### link: https://slickstack.io ###################################################################
-#### mirror: https://mirrors.slickstack.io/bash/ss-install-php-config.txt ##########################
+#### mirror: littlebizzy/slickstack/blob/master/bash/ss-install-php-config.txt #####################
 #### path: /var/www/ss-install-php-config ##########################################################
 #### destination: n/a (not a boilerplate) ##########################################################
 #### purpose: Reinstalls the PHP-FPM module config files based on ss-config (idempotent) ###########
@@ -15,6 +15,32 @@
 ## SS-CONFIG MUST BE PROPERLY CONFIGURED AND ON CURRENT BUILD BEFORE RUNNING SS-INSTALL ##
 ## ENSURE YOUR SS-CONFIG BUILD REMAINS CURRENT BY RUNNING SS-UPDATE OCCASIONALLY ##
 
+####################################################################################################
+#### TABLE OF CONTENTS (SS-Install-PHP-Config) #####################################################
+####################################################################################################
+
+## this is a brief summary of the different code snippets you will find in this script ##
+## each section should be commented so you understand what is being accomplished ##
+
+## A. Source SS-Config + SS-Functions
+## B. Touch Timestamp File
+## C. Message (Begin Script)
+## D. Retrieve Latest Boilerplates
+## E. Configure PHP.ini Boilerplate
+## F. Configure PHP-FPM.conf Boilerplate
+## G. Configure WWW.conf Boilerplate
+## H. Install PHP Config Files
+## I. Reset Permissions (PHP Config)
+## J. Restart Modules (PHP-FPM)
+## K. Cleanup Temporary Files
+
+####################################################################################################
+#### A. SS-Install-Nginx-Adminer: Source SS-Config + SS-Functions ##################################
+####################################################################################################
+
+## before anything else we must source the critical variables that power this script ##
+## ss-config is setup during ss-install wizard but ss-functions is hardcoded ##
+
 ## source ss-config ##
 source /var/www/ss-config
 
@@ -24,21 +50,7 @@ source /var/www/ss-functions
 ## BELOW THIS RELIES ON SS-CONFIG AND SS-FUNCTIONS
 
 ####################################################################################################
-#### TABLE OF CONTENTS (SS-Install-PHP-Config) #####################################################
-####################################################################################################
-
-## this is a brief summary of the different code snippets you will find in this script ##
-## each section should be commented so you understand what is being accomplished ##
-
-## A. Touch Timestamp File
-## B. Message (Begin Script)
-## C. Retrieve Current Boilerplates
-
-## E. Install PHP-FPM.conf
-## F. Install WWW.conf
-
-####################################################################################################
-#### A. SS-Install-PHP-Config: Touch Timestamp File ################################################
+#### B. SS-Install-PHP-Config: Touch Timestamp File ################################################
 ####################################################################################################
 
 ## this is a dummy timestamp file that will remember the last time this script was run ##
@@ -47,7 +59,7 @@ source /var/www/ss-functions
 ss_touch "${TIMESTAMP_SS_INSTALL_PHP_CONFIG}"
 
 ####################################################################################################
-#### B. SS-Install-PHP-Config: Message (Begin Script) ##############################################
+#### C. SS-Install-PHP-Config: Message (Begin Script) ##############################################
 ####################################################################################################
 
 ## this is a simple message that announces to the shell the purpose of this bash script ##
@@ -56,40 +68,83 @@ ss_touch "${TIMESTAMP_SS_INSTALL_PHP_CONFIG}"
 ss_echo "${COLOR_INFO}Running ss-install-php-config... ${COLOR_RESET}"
 
 ####################################################################################################
-#### X. Change To Default Directory #####################################
-####################################################################################################
-
-ss_cd_default
-
-####################################################################################################
-#### C. SS-Install-PHP-Config: Retrieve Current Boilerplates #######################################
+#### D. SS-Install-PHP-Config: Retrieve Latest Boilerplates ########################################
 ####################################################################################################
 
 ## next we optimize the PHP-FPM configuration files based on settings from ss-config ##
 ## several common PHP settings are hardcoded to improve LEMP server stability ##
 
-## download latest versions ##
-
+## ubuntu 22.04 (php 8.1) ##
 if [[ "${SYSTEM_UBUNTU_VERSION}" == "22.04" ]]; then
+
     ss_wget "${TMP_PHP_FPM_CONF}" "${GITHUB_PHP_FPM_CONF_81}"
+    VALIDATE_TMP_PHP_FPM_CONF=$(grep 'SS_EOF' "${TMP_PHP_FPM_CONF}" 2> /dev/null)
+    if [[ -z "${VALIDATE_TMP_PHP_FPM_CONF}" ]]; then
+        ss_wget "${TMP_PHP_FPM_CONF}" "${GITLAB_PHP_FPM_CONF_81}"
+    fi
+
     ss_wget "${TMP_PHP_INI}" "${GITHUB_PHP_INI_81}"
+    VALIDATE_TMP_PHP_INI=$(grep 'SS_EOF' "${TMP_PHP_INI}" 2> /dev/null)
+    if [[ -z "${VALIDATE_TMP_PHP_INI}" ]]; then
+        ss_wget "${TMP_PHP_INI}" "${GITLAB_PHP_INI_81}"
+    fi
+
     ss_wget "${TMP_WWW_CONF}" "${GITHUB_WWW_CONF_81}"
+    VALIDATE_TMP_WWW_CONF=$(grep 'SS_EOF' "${TMP_WWW_CONF}" 2> /dev/null)
+    if [[ -z "${VALIDATE_TMP_WWW_CONF}" ]]; then
+        ss_wget "${TMP_WWW_CONF}" "${GITLAB_WWW_CONF_81}"
+    fi
+
 fi
 
+## ubuntu 20.04 (php 7.4) ##
 if [[ "${SYSTEM_UBUNTU_VERSION}" == "20.04" ]]; then
+
     ss_wget "${TMP_PHP_FPM_CONF}" "${GITHUB_PHP_FPM_CONF}"
+    VALIDATE_TMP_PHP_FPM_CONF=$(grep 'SS_EOF' "${TMP_PHP_FPM_CONF}" 2> /dev/null)
+    if [[ -z "${VALIDATE_TMP_PHP_FPM_CONF}" ]]; then
+        ss_wget "${TMP_PHP_FPM_CONF}" "${GITLAB_PHP_FPM_CONF}"
+    fi
+
     ss_wget "${TMP_PHP_INI}" "${GITHUB_PHP_INI}"
+    VALIDATE_TMP_PHP_INI=$(grep 'SS_EOF' "${TMP_PHP_INI}" 2> /dev/null)
+    if [[ -z "${VALIDATE_TMP_PHP_INI}" ]]; then
+        ss_wget "${TMP_PHP_INI}" "${GITLAB_PHP_INI}"
+    fi
+
     ss_wget "${TMP_WWW_CONF}" "${GITHUB_WWW_CONF}"
+    VALIDATE_TMP_WWW_CONF=$(grep 'SS_EOF' "${TMP_WWW_CONF}" 2> /dev/null)
+    if [[ -z "${VALIDATE_TMP_WWW_CONF}" ]]; then
+        ss_wget "${TMP_WWW_CONF}" "${GITLAB_WWW_CONF}"
+    fi
+
 fi
 
+## ubuntu 18.04 (php 7.2) ##
 if [[ "${SYSTEM_UBUNTU_VERSION}" == "18.04" ]]; then
+
     ss_wget "${TMP_PHP_FPM_CONF}" "${GITHUB_PHP_FPM_CONF_72}"
+    VALIDATE_TMP_PHP_FPM_CONF=$(grep 'SS_EOF' "${TMP_PHP_FPM_CONF}" 2> /dev/null)
+    if [[ -z "${VALIDATE_TMP_PHP_FPM_CONF}" ]]; then
+        ss_wget "${TMP_PHP_FPM_CONF}" "${GITLAB_PHP_FPM_CONF_72}"
+    fi
+
     ss_wget "${TMP_PHP_INI}" "${GITHUB_PHP_INI_72}"
+    VALIDATE_TMP_PHP_INI=$(grep 'SS_EOF' "${TMP_PHP_INI}" 2> /dev/null)
+    if [[ -z "${VALIDATE_TMP_PHP_INI}" ]]; then
+        ss_wget "${TMP_PHP_INI}" "${GITLAB_PHP_INI_72}"
+    fi
+
     ss_wget "${TMP_WWW_CONF}" "${GITHUB_WWW_CONF_72}"
+    VALIDATE_TMP_WWW_CONF=$(grep 'SS_EOF' "${TMP_WWW_CONF}" 2> /dev/null)
+    if [[ -z "${VALIDATE_TMP_WWW_CONF}" ]]; then
+        ss_wget "${TMP_WWW_CONF}" "${GITLAB_WWW_CONF_72}"
+    fi
+
 fi
 
 ####################################################################################################
-#### SS-Install-PHP-Config: Configure PHP.ini Boilerplate (Per Ubuntu Version) #####################
+#### E. SS-Install-PHP-Config: Configure PHP.ini Boilerplate #######################################
 ####################################################################################################
 
 ## max execution time ##
@@ -277,7 +332,7 @@ fi
 
 
 ####################################################################################################
-#### SS-Install-PHP-Config: Configure PHP-FPM.conf Boilerplate (Per Ubuntu Version) ################
+#### F. SS-Install-PHP-Config: Configure PHP-FPM.conf Boilerplate ##################################
 ####################################################################################################
 
 ## emerg restart threshold ##
@@ -337,7 +392,7 @@ else
 fi
 
 ####################################################################################################
-#### SS-Install-PHP-Config: Configure WWW.conf Boilerplate (Per Ubuntu Version) ####################
+#### G. SS-Install-PHP-Config: Configure WWW.conf Boilerplate ######################################
 ####################################################################################################
 
 ## pool listen backlog ##
@@ -425,50 +480,56 @@ else
 fi
 
 ####################################################################################################
-#### SS-Install-PHP-Config: Copy Configuration Files To Destination (PHP-FPM) ######################
+#### H. SS-Install-PHP-Config: Install PHP Config Files ############################################
 ####################################################################################################
 
 if [[ "${SS_APP}" != "mysql" ]]; then
 
-## ubuntu 22.04 ##
+## ubuntu 22.04 (php 8.1) ##
 if [[ "${SYSTEM_UBUNTU_VERSION}" == "22.04" ]]; then
     ss_mv "${TMP_PHP_FPM_CONF}" "${PATH_PHP_FPM_CONF_81}"
-    ss_cp "${TMP_PHP_INI}" "${PATH_PHP_INI_FPM_81}"
-    ss_cp "${TMP_PHP_INI}" "${PATH_PHP_INI_CLI_81}"
+    ss_mv "${TMP_PHP_INI}" "${PATH_PHP_INI_FPM_81}"
+    ss_mv "${TMP_PHP_INI}" "${PATH_PHP_INI_CLI_81}"
     ss_mv "${TMP_WWW_CONF}" "${PATH_WWW_CONF_81}"
 fi
 
-## ubuntu 20.04 ##
+## ubuntu 20.04 (php 7.4) ##
 if [[ "${SYSTEM_UBUNTU_VERSION}" == "20.04" ]]; then
     ss_mv "${TMP_PHP_FPM_CONF}" "${PATH_PHP_FPM_CONF_74}"
-    ss_cp "${TMP_PHP_INI}" "${PATH_PHP_INI_FPM_74}"
-    ss_cp "${TMP_PHP_INI}" "${PATH_PHP_INI_CLI_74}"
+    ss_mv "${TMP_PHP_INI}" "${PATH_PHP_INI_FPM_74}"
+    ss_mv "${TMP_PHP_INI}" "${PATH_PHP_INI_CLI_74}"
     ss_mv "${TMP_WWW_CONF}" "${PATH_WWW_CONF_74}"
 fi
 
-## ubuntu 18.04 ##
+## ubuntu 18.04 (php 7.2) ##
 if [[ "${SYSTEM_UBUNTU_VERSION}" == "18.04" ]]; then
     ss_mv "${TMP_PHP_FPM_CONF}" "${PATH_PHP_FPM_CONF_72}"
-    ss_cp "${TMP_PHP_INI}" "${PATH_PHP_INI_FPM_72}"
-    ss_cp "${TMP_PHP_INI}" "${PATH_PHP_INI_CLI_72}"
+    ss_mv "${TMP_PHP_INI}" "${PATH_PHP_INI_FPM_72}"
+    ss_mv "${TMP_PHP_INI}" "${PATH_PHP_INI_CLI_72}"
     ss_mv "${TMP_WWW_CONF}" "${PATH_WWW_CONF_72}"
 fi
 
 fi
 
 ####################################################################################################
-#### SS-Install-PHP-Config: Reset Permissions (PHP-FPM) ############################################
+#### I. SS-Install-PHP-Config: Reset Permissions (PHP Config) ######################################
 ####################################################################################################
 
-## run ss-perms-php-config ##
 source "${PATH_SS_PERMS_PHP_CONFIG}"
 
 ####################################################################################################
-#### SS-Install-PHP-Config: Restart Services (PHP-FPM) #############################################
+#### J. SS-Install-PHP-Config: Restart Modules (PHP-FPM) ###########################################
 ####################################################################################################
 
-## run ss-restart-php ##
 source "${PATH_SS_RESTART_PHP}"
+
+####################################################################################################
+#### K. SS-Install-PHP-Config: Cleanup Temporary Files #############################################
+####################################################################################################
+
+ss_rm "${TMP_PHP_FPM_CONF}"
+ss_rm "${TMP_PHP_INI}"
+ss_rm "${TMP_WWW_CONF}"
 
 ####################################################################################################
 #### SlickStack: Reset Permissions (SlickStack Scripts) ############################################
