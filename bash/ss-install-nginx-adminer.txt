@@ -13,6 +13,26 @@
 ## SS-CONFIG MUST BE PROPERLY CONFIGURED AND ON CURRENT BUILD BEFORE RUNNING SS-INSTALL ##
 ## ENSURE YOUR SS-CONFIG BUILD REMAINS CURRENT BY RUNNING SS-UPDATE OCCASIONALLY ##
 
+####################################################################################################
+#### TABLE OF CONTENTS (SS-Install-Nginx-Adminer) ##################################################
+####################################################################################################
+
+## this is a brief summary of the different code snippets you will find in this script ##
+## each section should be commented so you understand what is being accomplished ##
+
+## A. Source SS-Config + SS-Functions 
+## B. Touch Timestamp File
+## C. Message (Begin Script)
+## D. Install Adminer.conf
+## E. Cleanup Temporary Files
+
+####################################################################################################
+#### A. SS-Install-Nginx-Adminer: Source SS-Config + SS-Functions ##################################
+####################################################################################################
+
+## before anything else we must source the critical variables that power this script ##
+## ss-config is setup during ss-install wizard but ss-functions is hardcoded ##
+
 ## source ss-config ##
 source /var/www/ss-config
 
@@ -22,18 +42,7 @@ source /var/www/ss-functions
 ## BELOW THIS RELIES ON SS-CONFIG AND SS-FUNCTIONS
 
 ####################################################################################################
-#### TABLE OF CONTENTS (SS-Install-Nginx-Adminer) ##################################################
-####################################################################################################
-
-## this is a brief summary of the different code snippets you will find in this script ##
-## each section should be commented so you understand what is being accomplished ##
-
-## A. Touch Timestamp File
-## B. Message (Begin Script)
-## C. Install Adminer.conf
-
-####################################################################################################
-#### A. SS-Install-Nginx-Adminer: Touch Timestamp File #############################################
+#### B. SS-Install-Nginx-Adminer: Touch Timestamp File #############################################
 ####################################################################################################
 
 ## this is a dummy timestamp file that will remember the last time this script was run ##
@@ -42,7 +51,7 @@ source /var/www/ss-functions
 ss_touch "${TIMESTAMP_SS_INSTALL_NGINX_ADMINER}"
 
 ####################################################################################################
-#### B. SS-Install-Nginx-Adminer: Message (Begin Script) ###########################################
+#### C. SS-Install-Nginx-Adminer: Message (Begin Script) ###########################################
 ####################################################################################################
 
 ## this is a simple message that announces to the shell the purpose of this bash script ##
@@ -51,12 +60,16 @@ ss_touch "${TIMESTAMP_SS_INSTALL_NGINX_ADMINER}"
 ss_echo "${COLOR_INFO}Running ss-install-cloudflare-real-ips... ${COLOR_RESET}"
 
 ####################################################################################################
-#### C. SS-Install-Nginx-Adminer: Install Adminer.conf #############################################
+#### D. SS-Install-Nginx-Adminer: Install Adminer.conf #############################################
 ####################################################################################################
 
 if [[ "${ADMINER_PUBLIC}" == "true" ]]; then 
 
 ss_wget "${TMP_ADMINER_CONF}" "${GITHUB_ADMINER_CONF}"
+VALIDATE_TMP_ADMINER_CONF=$(grep 'SS_EOF' "${TMP_ADMINER_CONF}" 2> /dev/null)
+if [[ -z "${VALIDATE_TMP_ADMINER_CONF}" ]]; then
+    ss_wget "${TMP_ADMINER_CONF}" "${GITLAB_SS_ADMINER_CONF}"
+fi
 
 ## install if valid ##
 VALIDATE_TMP_ADMINER_CONF=$(grep 'SS_EOF' "${TMP_ADMINER_CONF}" 2> /dev/null)
@@ -79,7 +92,9 @@ elif [[ "${ADMINER_PUBLIC}" == "false" ]]; then
 ## end if parent #####
 fi
 
-## cleanup tmp files #######################
+####################################################################################################
+#### E. SS-Install-Nginx-Adminer: Cleanup Temporary Files ##########################################
+####################################################################################################
 
 ss_rm "${TMP_ADMINER_CONF}"
 
