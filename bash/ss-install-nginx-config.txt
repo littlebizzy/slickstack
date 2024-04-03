@@ -23,29 +23,21 @@
 ## each section should be commented so you understand what is being accomplished ##
 
 ## A. Source SS-Config + SS-Functions
-
-## A. Touch Timestamp File
-## B. Message (Begin Script)
-
-## C. Reset Permissions (Nginx SSL)
-
-## D. Generate DH Parameters (Conditional)
-## E. Run SS-Encrypt-OpenSSL
-## F. Generate Htpasswd File
-## G. Install Nginx.conf
-
-## H. Delete Old Server Blocks
+## B. Touch Timestamp File
+## C. Message (Begin Script)
+## D. Reset Permissions (Nginx Config)
+## E. Generate DH Parameters (Conditional)
+## F. Run SS-Encrypt-OpenSSL
+## G. Generate Htpasswd File
+## H. Install Nginx.conf
 ## I. Install Server Block (Development)
 ## J. Install Server Block (Staging)
 ## K. Install Server Block (Production)
-
 ## L. Run SS-Encrypt-Certbot
-
 ## M. Run SS-Install-Nginx-SSL
-
-## N. Enable TMPFS Mount (Conditional)
-## O. Install Cloudflare.conf (Conditional)
-## P. Install Authenticated-Origin.conf (Optional)
+## N. Install Cloudflare.conf (Conditional)
+## O. Install Authenticated-Origin.conf (Optional)
+## P. Enable TMPFS Mount (Conditional)
 ## Q. Reset Permissions (Nginx Config)
 ## R. Restart Modules (Nginx)
 ## S. Install WordPress Config
@@ -67,7 +59,7 @@ source /var/www/ss-functions
 ## BELOW THIS RELIES ON SS-CONFIG AND SS-FUNCTIONS
 
 ####################################################################################################
-#### A. SS-Install-Nginx-Config: Touch Timestamp File ##############################################
+#### B. SS-Install-Nginx-Config: Touch Timestamp File ##############################################
 ####################################################################################################
 
 ## this is a dummy timestamp file that will remember the last time this script was run ##
@@ -76,7 +68,7 @@ source /var/www/ss-functions
 ss_touch "${TIMESTAMP_SS_INSTALL_NGINX_CONFIG}"
 
 ####################################################################################################
-#### B. SS-Install-Nginx-Config: Message (Begin Script) ############################################
+#### C. SS-Install-Nginx-Config: Message (Begin Script) ############################################
 ####################################################################################################
 
 ## this is a simple message that announces to the shell the purpose of this bash script ##
@@ -85,13 +77,7 @@ ss_touch "${TIMESTAMP_SS_INSTALL_NGINX_CONFIG}"
 ss_echo "${COLOR_INFO}Running ss-install-nginx-config... ${COLOR_RESET}"
 
 ####################################################################################################
-#### X. Change To Default Directory #####################################
-####################################################################################################
-
-ss_cd_default
-
-####################################################################################################
-#### C. SS-Install-Nginx-Config: Reset Permissions (Nginx SSL) #####################################
+#### D. SS-Install-Nginx-Config: Reset Permissions (Nginx SSL) #####################################
 ####################################################################################################
 
 ## ensures folders exist first ... improve this later? ##
@@ -100,7 +86,7 @@ source "${PATH_SS_PERMS_NGINX_CONFIG}"
 source "${PATH_SS_PERMS_NGINX_SSL}"
 
 ####################################################################################################
-#### D. SS-Install-Nginx-Config: Generate DH Parameters (Conditional) ##############################
+#### E. SS-Install-Nginx-Config: Generate DH Parameters (Conditional) ##############################
 ####################################################################################################
 
 ## this will generate DH parameters using OpenSSL for use by Lets Encrypt certificates ##
@@ -111,7 +97,7 @@ if [[ ! -f "${PATH_DHPARAM_PEM}" ]]; then
 fi
 
 ####################################################################################################
-#### E. SS-Install-Nginx-Config: Run SS-Encrypt-OpenSSL ############################################
+#### F. SS-Install-Nginx-Config: Run SS-Encrypt-OpenSSL ############################################
 ####################################################################################################
 
 ## here we generate slickstack.crt and slickstack.key as the backup SSL for Nginx ##
@@ -122,7 +108,7 @@ if [[ ! -f "${PATH_THIRDPARTY_CONF}" ]]; then
 fi
 
 ####################################################################################################
-#### F. SS-Install-Nginx-Config: Generate Htpasswd File ############################################
+#### G. SS-Install-Nginx-Config: Generate Htpasswd File ############################################
 ####################################################################################################
 
 ## null file contents ##
@@ -133,7 +119,7 @@ ENCRYPTED_GUEST_PASSWORD=$(openssl passwd -apr1 "${GUEST_PASSWORD}")
 printf "${GUEST_USER}:${ENCRYPTED_GUEST_PASSWORD}\n" >> "${PATH_HTPASSWD}"
 
 ####################################################################################################
-#### G. SS-Install-Nginx-Config: Install Nginx.conf ################################################
+#### H. SS-Install-Nginx-Config: Install Nginx.conf ################################################
 ####################################################################################################
 
 ## here we install an optimized Nginx config designed for high traffic and CloudFlare ##
@@ -502,18 +488,6 @@ fi
 ss_mv "${TMP_NGINX_CONF}" "${PATH_NGINX_CONF}"
 
 ####################################################################################################
-#### H. SS-Install-Nginx-Config: Delete Old Server Blocks ##########################################
-####################################################################################################
-
-## here we delete any existing previous server blocks to avoid conflicts with Nginx ##
-## if this step is not performed then Nginx could result in fatal errors ##
-
-## ADD CHECK FIRST THAT TMP BLOCK FILES VALID? ##
-
-## delete server blocks ##
-ss_rm /var/www/sites/*
-
-####################################################################################################
 #### I. SS-Install-Nginx-Config: Install Server Block (Development) ################################
 ####################################################################################################
 
@@ -766,7 +740,19 @@ source "${PATH_SS_ENCRYPT_CERTBOT}"
 source "${PATH_SS_INSTALL_NGINX_SSL}"
 
 ####################################################################################################
-#### N. SS-Install-Nginx-Config: Enable TMPFS Mount (Conditional) ##################################
+#### N. SS-Install-Nginx-Config: Install Cloudflare.conf (Conditional) #############################
+####################################################################################################
+
+source "${PATH_SS_INSTALL_NGINX_CLOUDFLARE_IPS}"
+
+####################################################################################################
+#### O. SS-Install-Nginx-Config: Install Authenticated-Origin.conf (Optional) ######################
+####################################################################################################
+
+source "${PATH_SS_INSTALL_NGINX_CLOUDFLARE_AUTHENTICATED_ORIGIN}"
+
+####################################################################################################
+#### P. SS-Install-Nginx-Config: Enable TMPFS Mount (Conditional) ##################################
 ####################################################################################################
 
 if [[ "${FCGI_CACHE_TMPFS}" == "true" ]]; then
@@ -776,18 +762,6 @@ if [[ "${FCGI_CACHE_TMPFS}" == "true" ]]; then
 else
     ss_sed '/tmpfs/d' /etc/fstab
 fi
-
-####################################################################################################
-#### O. SS-Install-Nginx-Config: Install Cloudflare.conf (Conditional) #############################
-####################################################################################################
-
-source "${PATH_SS_INSTALL_NGINX_CLOUDFLARE_IPS}"
-
-####################################################################################################
-#### P. SS-Install-Nginx-Config: Install Authenticated-Origin.conf (Optional) ######################
-####################################################################################################
-
-source "${PATH_SS_INSTALL_NGINX_CLOUDFLARE_AUTHENTICATED_ORIGIN}"
 
 ####################################################################################################
 #### Q. SS-Install-Nginx-Config: Reset Permissions (Nginx Config) ##################################
@@ -820,7 +794,6 @@ fi
 
 ss_rm /tmp/nginx*
 ss_rm /tmp/server-block*
-ss_rm /tmp/default*
 ss_rm /tmp/letsencrypt.conf*
 ss_rm /tmp/openssl.conf*
 ss_rm /tmp/maintenance.html
