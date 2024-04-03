@@ -3,13 +3,13 @@
 ####################################################################################################
 #### author: SlickStack ############################################################################
 #### link: https://slickstack.io ###################################################################
-#### mirror: https://mirrors.slickstack.io/bash/ss-install-php-packages.txt ########################
+#### mirror: littlebizzy/slickstack/blob/master/bash/ss-install-php-packages.txt ###################
 #### path: /var/www/ss-install-php-packages ########################################################
 #### destination: n/a (not a boilerplate) ##########################################################
 #### purpose: Reinstalls the PHP-FPM module Ubuntu packages and extensions (idempotent) ############
 #### module version: PHP-FPM 8.1.x #################################################################
 #### sourced by: ss-install ########################################################################
-#### bash aliases: ss install php core|packages ####################################################
+#### bash aliases: ss install php packages #########################################################
 ####################################################################################################
 
 ## SS-CONFIG MUST BE PROPERLY CONFIGURED AND ON CURRENT BUILD BEFORE RUNNING SS-INSTALL ##
@@ -26,13 +26,12 @@
 ## B. Touch Timestamp File
 ## C. Message (Begin Script)
 ## D. Update Existing Packages
-## E. Purge Any Existing PHP Packages (Optional)
-## F. Install PHP-FPM + PHP Extensions
-## G. Install PHP-Memcache(d) Extension (Required)
-## H. Set Default PHP Version
-## I. Reset Permissions (PHP Packages)
-## J. Purge Cache (PHP OPcache)
-## K. Restart Services (PHP-FPM)
+## E. Install PHP-FPM + PHP Extensions
+## F. Install PHP-Memcached Extension (Required)
+## G. Set Default PHP Version
+## H. Reset Permissions (PHP Packages)
+## I. Purge Cache (PHP OPcache)
+## J. Restart Services (PHP-FPM)
 
 ####################################################################################################
 #### A. SS-Install-PHP-Packages: Source SS-Config + SS-Functions ###################################
@@ -65,12 +64,6 @@ ss_touch "${TIMESTAMP_SS_INSTALL_PHP_PACKAGES}"
 ss_echo "${COLOR_INFO}Running ss-install-php-packages... ${COLOR_RESET}"
 
 ####################################################################################################
-#### X. Change To Default Directory #####################################
-####################################################################################################
-
-ss_cd_default
-
-####################################################################################################
 #### D. SS-Install-PHP-Packages: Update Existing Packages ##########################################
 ####################################################################################################
 
@@ -87,27 +80,7 @@ ss_apt_update
 ss_apt_upgrade
 
 ####################################################################################################
-#### E. SS-Install-PHP-Packages: Purge Any Existing PHP Packages (Optional) ########################
-####################################################################################################
-
-## DEPRECATED
-
-## here we first purge any existing PHP packages and then reinstall PHP-FPM from scratch ##
-## this approach is safe and helps avoid any conflicts between package versions ##
-
-# if [[ "${SS_INSTALL_PHP_PACKAGES_PURGE_FIRST}" == "true" ]]; then
-
-    ## purge packages ##
-    # ss_apt_remove_purge ^php
-
-    ## delete any leftover PHP files (disable for now because apt will not create ##
-    ## these files if it notices the php directory exists already) ##
-    # ss_rm /etc/php*
-    
-# fi
-
-####################################################################################################
-#### F. SS-Install-PHP-Packages: Install PHP-FPM + PHP Extensions ##################################
+#### E. SS-Install-PHP-Packages: Install PHP-FPM + PHP Extensions ##################################
 ####################################################################################################
 
 ## here PHP-FPM will be installed along with any custom PHP extensions in your ss-config ##
@@ -203,7 +176,7 @@ if [[ "${SYSTEM_UBUNTU_VERSION}" == "18.04" ]]; then
 fi 
 
 ####################################################################################################
-#### G. SS-Install-PHP-Packages: Install PHP-Redis Extension (Required) ############################
+#### F. SS-Install-PHP-Packages: Install PHP-Memcached Extension (Required) ########################
 ####################################################################################################
 
 ## we force install the php-redis extension to ensure it exists on SlickStack servers ##
@@ -228,7 +201,7 @@ if [[ "${SYSTEM_UBUNTU_VERSION}" == "18.04" ]]; then
 fi
 
 ####################################################################################################
-#### H. SS-Install-PHP-Packages: Set Default PHP Version ###########################################
+#### G. SS-Install-PHP-Packages: Set Default PHP Version ###########################################
 ####################################################################################################
 
 ## here we set the default PHP version depending on the version of Ubuntu LTS detected ##
@@ -250,19 +223,19 @@ if [[ "${SYSTEM_UBUNTU_VERSION}" == "18.04" ]] && [[ "${SS_APP}" != "mysql" ]]; 
 fi
 
 ####################################################################################################
-#### I. SS-Install-PHP-Packages: Reset Permissions (PHP Packages) ##################################
+#### H. SS-Install-PHP-Packages: Reset Permissions (PHP Packages) ##################################
 ####################################################################################################
 
 source "${PATH_SS_PERMS_PHP_PACKAGES}"
 
 ####################################################################################################
-#### J. SS-Install-PHP-Packages: Purge Cache (PHP OPcache) #########################################
+#### I. SS-Install-PHP-Packages: Purge Cache (PHP OPcache) #########################################
 ####################################################################################################
 
 source "${PATH_SS_PURGE_OPCACHE}"
 
 ####################################################################################################
-#### K. SS-Install-PHP-Packages: Restart Services (PHP-FPM) ########################################
+#### J. SS-Install-PHP-Packages: Restart Services (PHP-FPM) ########################################
 ####################################################################################################
 
 source "${PATH_SS_RESTART_PHP}"
