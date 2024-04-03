@@ -3,17 +3,39 @@
 ####################################################################################################
 #### author: SlickStack ############################################################################
 #### link: https://slickstack.io ###################################################################
-#### mirror: https://mirrors.slickstack.io/bash/ss-install-nginx-packages.txt ######################
+#### mirror: littlebizzy/slickstack/blob/master/bash/ss-install-nginx-packages.txt #################
 #### path: /var/www/ss-install-nginx-packages ######################################################
 #### destination: n/a (not a boilerplate) ##########################################################
 #### purpose: Reinstalls the Nginx module Ubuntu packages and extensions (idempotent) ##############
 #### module version: Nginx 1.18.x ##################################################################
 #### sourced by: ss-install ########################################################################
-#### bash aliases: ss install nginx core, ss install nginx packages ################################
+#### bash aliases: ss install nginx packages #######################################################
 ####################################################################################################
 
 ## SS-CONFIG MUST BE PROPERLY CONFIGURED AND ON CURRENT BUILD BEFORE RUNNING SS-INSTALL ##
 ## ENSURE YOUR SS-CONFIG BUILD REMAINS CURRENT BY RUNNING SS-UPDATE OCCASIONALLY ##
+
+####################################################################################################
+#### TABLE OF CONTENTS (SS-Install-Nginx-Packages) #################################################
+####################################################################################################
+
+## this is a brief summary of the different code snippets you will find in this script ##
+## each section should be commented so you understand what is being accomplished ##
+
+## A. Source SS-Config + SS-Functions
+## B. Touch Timestamp File
+## C. Message (Begin Script)
+## D. Update Existing Packages
+## E. Install Nginx-Extras
+## F. Reset Permissions (Nginx Packages)
+## G. Restart Services (Nginx)
+
+####################################################################################################
+#### A. SS-Install-Nginx-Packages: Source SS-Config + SS-Functions #################################
+####################################################################################################
+
+## before anything else we must source the critical variables that power this script ##
+## ss-config is setup during ss-install wizard but ss-functions is hardcoded ##
 
 ## source ss-config ##
 source /var/www/ss-config
@@ -24,21 +46,7 @@ source /var/www/ss-functions
 ## BELOW THIS RELIES ON SS-CONFIG AND SS-FUNCTIONS
 
 ####################################################################################################
-#### TABLE OF CONTENTS (SS-Install-Nginx-Packages) #################################################
-####################################################################################################
-
-## this is a brief summary of the different code snippets you will find in this script ##
-## each section should be commented so you understand what is being accomplished ##
-
-## A. Touch Timestamp File
-## B. Message (Begin Script)
-## C. Update Existing Packages
-## D. Install Nginx-Extras
-## E. Reset Permissions (Nginx Packages)
-## F. Restart Services (Nginx)
-
-####################################################################################################
-#### A. SS-Install-Nginx-Packages: Touch Timestamp File ############################################
+#### B. SS-Install-Nginx-Packages: Touch Timestamp File ############################################
 ####################################################################################################
 
 ## this is a dummy timestamp file that will remember the last time this script was run ##
@@ -47,7 +55,7 @@ source /var/www/ss-functions
 ss_touch "${TIMESTAMP_SS_INSTALL_NGINX_PACKAGES}"
 
 ####################################################################################################
-#### B. SS-Install-Nginx-Packages: Message (Begin Script) ##########################################
+#### C. SS-Install-Nginx-Packages: Message (Begin Script) ##########################################
 ####################################################################################################
 
 ## this is a simple message that announces to the shell the purpose of this bash script ##
@@ -56,13 +64,7 @@ ss_touch "${TIMESTAMP_SS_INSTALL_NGINX_PACKAGES}"
 ss_echo "${COLOR_INFO}Running ss-install-nginx-packages... ${COLOR_RESET}"
 
 ####################################################################################################
-#### X. Change To Default Directory #####################################
-####################################################################################################
-
-ss_cd_default
-
-####################################################################################################
-#### C. SS-Install-Nginx-Packages: Update Existing Packages ########################################
+#### D. SS-Install-Nginx-Packages: Update Existing Packages ########################################
 ####################################################################################################
 
 ## we must include the standard apt update/upgrade in case script is called directly ##
@@ -78,10 +80,14 @@ ss_apt_update
 ss_apt_upgrade
 
 ####################################################################################################
-#### D. SS-Install-Nginx-Packages: Install Nginx-Extras ############################################
+#### E. SS-Install-Nginx-Packages: Install Nginx-Extras ############################################
 ####################################################################################################
 
-if [[ "${SS_APP}" != "mysql" ]]; then
+## ubuntu 24.04 ##
+# if [[ "${SYSTEM_UBUNTU_VERSION}" = "22.04" ]]; then 
+#    ss_apt_install certbot
+#    ss_apt_install python3-certbot-nginx
+# fi
 
 ## ubuntu 22.04 ##
 if [[ "${SYSTEM_UBUNTU_VERSION}" = "22.04" ]]; then 
@@ -106,21 +112,16 @@ fi
 ss_apt_install nginx-extras
 
 ####################################################################################################
-#### E. SS-Install-Nginx-Packages: Reset Permissions (Nginx Packages) ##############################
+#### F. SS-Install-Nginx-Packages: Reset Permissions (Nginx Packages) ##############################
 ####################################################################################################
 
-## run ss-perms-nginx-packages ##
 source "${PATH_SS_PERMS_NGINX_PACKAGES}"
 
 ####################################################################################################
-#### F. SS-Install-Nginx-Packages: Restart Services (Nginx) ########################################
+#### G. SS-Install-Nginx-Packages: Restart Services (Nginx) ########################################
 ####################################################################################################
 
-## run-ss-restart-nginx ##
 source "${PATH_SS_RESTART_NGINX}"
-
-## endif
-fi
 
 ####################################################################################################
 #### SlickStack: Reset Permissions (SlickStack Scripts) ############################################
