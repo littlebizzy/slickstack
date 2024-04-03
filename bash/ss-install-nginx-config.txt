@@ -37,11 +37,12 @@
 ## M. Run SS-Install-Nginx-SSL
 ## N. Install Cloudflare.conf (Conditional)
 ## O. Install Authenticated-Origin.conf (Optional)
-## P. Enable TMPFS Mount (Conditional)
-## Q. Reset Permissions (Nginx Config)
-## R. Restart Modules (Nginx)
-## S. Install WordPress Config
-## T. Cleanup Temporary Files
+## P. Install Adminer.conf (Optional)
+## Q. Enable TMPFS Mount (Conditional)
+## R. Reset Permissions (Nginx Config)
+## S. Restart Modules (Nginx)
+## T. Install WordPress Config
+## TU. Cleanup Temporary Files
 
 ####################################################################################################
 #### A. SS-Install-Nginx-Config: Source SS-Config + SS-Functions ###################################
@@ -752,7 +753,13 @@ source "${PATH_SS_INSTALL_NGINX_CLOUDFLARE_IPS}"
 source "${PATH_SS_INSTALL_NGINX_CLOUDFLARE_AUTHENTICATED_ORIGIN}"
 
 ####################################################################################################
-#### P. SS-Install-Nginx-Config: Enable TMPFS Mount (Conditional) ##################################
+#### P. SS-Install-Nginx-Config: Install Adminer.conf (Optional) ###################################
+####################################################################################################
+
+source "${PATH_SS_INSTALL_NGINX_ADMINER}"
+
+####################################################################################################
+#### Q. SS-Install-Nginx-Config: Enable TMPFS Mount (Conditional) ##################################
 ####################################################################################################
 
 if [[ "${FCGI_CACHE_TMPFS}" == "true" ]]; then
@@ -764,19 +771,19 @@ else
 fi
 
 ####################################################################################################
-#### Q. SS-Install-Nginx-Config: Reset Permissions (Nginx Config) ##################################
+#### R. SS-Install-Nginx-Config: Reset Permissions (Nginx Config) ##################################
 ####################################################################################################
 
 source "${PATH_SS_PERMS_NGINX_CONFIG}"
 
 ####################################################################################################
-#### R. SS-Install-Nginx-Config: Restart Modules (Nginx) ###########################################
+#### S. SS-Install-Nginx-Config: Restart Modules (Nginx) ###########################################
 ####################################################################################################
 
 source "${PATH_SS_RESTART_NGINX}"
 
 ####################################################################################################
-#### S. SS-Install-Nginx-Config: Install WordPress Config ##########################################
+#### T. SS-Install-Nginx-Config: Install WordPress Config ##########################################
 ####################################################################################################
 
 ## ensures that concatenate is disabled in wp-config to support latest nginx server block ##
@@ -786,7 +793,7 @@ if [[ "${SS_APP}" == "wordpress" || -z "${SS_APP}"  ]]; then
 fi
 
 ####################################################################################################
-#### T. SS-Install-Nginx-Config: Cleanup Temporary Files ###########################################
+#### U. SS-Install-Nginx-Config: Cleanup Temporary Files ###########################################
 ####################################################################################################
 
 ## we briefly cleanup any leftover temporarily files that are relevant to this script ##
