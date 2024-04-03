@@ -61,9 +61,9 @@ ss_wget "${TMP_ADMINER_CONF}" "${GITHUB_ADMINER_CONF}"
 ## install if valid ##
 VALIDATE_TMP_ADMINER_CONF=$(grep 'SS_EOF' "${TMP_ADMINER_CONF}" 2> /dev/null)
 if [[ -n "${VALIDATE_TMP_ADMINER_CONF}" ]]; then
+    ss_sed "s/@ADMINER_RANDOM_URL/${ADMINER_URL}/g" "${TMP_ADMINER_CONF}"
     ss_mv "${TMP_ADMINER_CONF}" "${PATH_ADMINER_CONF}"
     ss_reload nginx
-    ss_sed "s/@ADMINER_RANDOM_URL/${ADMINER_URL}/g" "${TMP_ADMINER_CONF}"
     ss_echo "${COLOR_INFO}ss-install-nginx-adminer: Successfully installed adminer.conf and reloaded Nginx... ${COLOR_RESET}"
 elif [[ -z "${VALIDATE_TMP_ADMINER_CONF}" ]]; then
     ss_echo "${COLOR_WARN}ss-install-nginx-adminer: latest adminer.conf boilerplate appears corrupt so skipping install (old version remains installed if exists)... ${COLOR_RESET}"
