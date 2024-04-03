@@ -56,13 +56,14 @@ ss_echo "${COLOR_INFO}Running ss-install-cloudflare-real-ips... ${COLOR_RESET}"
 
 if [[ "${ADMINER_PUBLIC}" == "true" ]]; then 
 
-ss_wget /tmp/adminer.conf https://raw.githubusercontent.com/littlebizzy/slickstack/master/modules/nginx/includes/adminer-conf.txt
+ss_wget "${TMP_ADMINER_CONF}" https://raw.githubusercontent.com/littlebizzy/slickstack/master/modules/nginx/includes/adminer-conf.txt
 
 ## install if valid ##
-VALIDATE_TMP_ADMINER_CONF=$(grep 'SS_EOF' /tmp/adminer.conf 2> /dev/null)
+VALIDATE_TMP_ADMINER_CONF=$(grep 'SS_EOF' "${TMP_ADMINER_CONF}" 2> /dev/null)
 if [[ -n "${VALIDATE_TMP_ADMINER_CONF}" ]]; then
-    ss_mv /tmp/adminer.conf /var/www/sites/includes/adminer.conf
+    ss_mv "${TMP_ADMINER_CONF}" /var/www/sites/includes/adminer.conf
     ss_reload nginx
+    ss_sed "s/@ADMINER_RANDOM_URL/${ADMINER_URL}/g" "${TMP_ADMINER_CONF}"
     ss_echo "${COLOR_INFO}ss-install-nginx-adminer: Successfully installed adminer.conf and reloaded Nginx... ${COLOR_RESET}"
 elif [[ -z "${VALIDATE_TMP_ADMINER_CONF}" ]]; then
     ss_echo "${COLOR_WARN}ss-install-nginx-adminer: latest adminer.conf boilerplate appears corrupt so skipping install (old version remains installed if exists)... ${COLOR_RESET}"
