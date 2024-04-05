@@ -32,8 +32,9 @@
 ## H. Install WordPress Core (Development)
 ## I. Install HoverCraft WordPress Theme
 
-## I. Populate Production Database (Conditional)
-## J. Populate Development Database (Conditional)
+## J. Populate Production Database (Conditional)
+## K. Populate Development Database (Conditional)
+
 ## K. Modify Site Domains In Database
 ## L. Sync Production Database To Staging
 ## M. Cleanup Temporary Files
@@ -201,36 +202,58 @@ fi
 source "${PATH_SS_INSTALL_WORDPRESS_HOVERCRAFT}"
 
 ####################################################################################################
-#### I. SS-Install-WordPress-Packages: Populate Production Database (Conditional) ##################
+#### J. SS-Install-WordPress-Packages: Populate Production Database (Conditional) ##################
 ####################################################################################################
 
 ## minimum wp_options required to avoid /wp-admin/install.php redirect are below: ##
 ## home/siteurl, blogname, admin_user, admin_email, admin_password ##
 
-QUERY_PRODUCTION_WP_OPTIONS_EXIST=$(ss_mysql_root --execute "SHOW TABLES FROM ${DB_NAME} WHERE Tables_in_${DB_NAME} LIKE '${DB_PREFIX}options';")
-GREP_WP_OPTIONS_STRING_PRODUCTION=$(echo "${QUERY_PRODUCTION_WP_OPTIONS_EXIST}" | ss_grep_boolean "${DB_PREFIX}"options)
+# QUERY_PRODUCTION_WP_OPTIONS_EXIST=$(ss_mysql_root --execute "SHOW TABLES FROM ${DB_NAME} WHERE Tables_in_${DB_NAME} LIKE '${DB_PREFIX}options';")
+# GREP_WP_OPTIONS_STRING_PRODUCTION=$(echo "${QUERY_PRODUCTION_WP_OPTIONS_EXIST}" | ss_grep_boolean "${DB_PREFIX}"options)
 
 ## populate wp_options if not exists ##
-if [[ -z "${GREP_WP_OPTIONS_STRING_PRODUCTION}" ]]; then
-    /usr/bin/php -qCr "include '/var/www/html/wp-admin/install.php'; wp_install('SlickStack', '\"${SFTP_USER}\"', '\"${SFTP_USER}\"@\"${SITE_DOMAIN_EXCLUDING_WWW}\"', 1, '', \"${SFTP_PASSWORD}\", 'en_US');"
-    ss_mysql_root --execute="UPDATE ${DB_PREFIX}options SET option_value='Lightning-fast WordPress on Nginx' WHERE option_name='blogdescription';"
+# if [[ -z "${GREP_WP_OPTIONS_STRING_PRODUCTION}" ]]; then
+#    /usr/bin/php -qCr "include '/var/www/html/wp-admin/install.php'; wp_install('SlickStack', '\"${SFTP_USER}\"', '\"${SFTP_USER}\"@\"${SITE_DOMAIN_EXCLUDING_WWW}\"', 1, '', \"${SFTP_PASSWORD}\", 'en_US');"
+#    ss_mysql_root --execute="UPDATE ${DB_PREFIX}options SET option_value='Lightning-fast WordPress on Nginx' WHERE option_name='blogdescription';"
+# fi
+
+## https://developer.wordpress.org/cli/commands/core/is-installed/
+## https://developer.wordpress.org/cli/commands/core/install/
+## https://wordpress.stackexchange.com/questions/424412/which-wp-cli-commands-can-be-safely-run-with-allow-root-flag
+## https://wordpress.stackexchange.com/questions/376682/how-can-i-use-wp-cli-commands-without-allow-root/424586#424586
+## https://johnkpaul.tumblr.com/post/19841381351/su-vs-sudo-su-vs-sudo-u-i
+
+if ! sudo -u "${SFTP_USER}" /usr/local/bin/wp core is-installed --path=/var/www/html 2>/dev/null; then
+    sudo -u "${SFTP_USER}" /usr/local/bin/wp core install --path=/var/www/html --url="${SITE_DOMAIN}" --title=SlickStack --admin_user="${SFTP_USER}" --admin_password="${SFTP_PASSWORD}" --admin_email="${SFTP_USER}"@"${SITE_DOMAIN_EXCLUDING_WWW}" --locale="${SS_LANGUAGE}" --skip-packages --skip-email 
 fi
 
 ####################################################################################################
-#### J. SS-Install-WordPress-Packages: Populate Development Database (Conditional) #################
+#### K. SS-Install-WordPress-Packages: Populate Development Database (Conditional) #################
 ####################################################################################################
 
 ## minimum wp_options required to avoid /wp-admin/install.php redirect are below: ##
 ## home/siteurl, blogname, admin_user, admin_email, admin_password ##
 
 ## populate wp_options if not exists ##
+# if [[ "${DEV_SITE}" == "true" ]]; then
+#    QUERY_DEVELOPMENT_WP_OPTIONS_EXIST=$(ss_mysql_root --execute "SHOW TABLES FROM development WHERE Tables_in_development LIKE '${DB_PREFIX}options';" 2> /dev/null)
+#    GREP_WP_OPTIONS_STRING_DEVELOPMENT=$(echo "${QUERY_DEVELOPMENT_WP_OPTIONS_EXIST}" | ss_grep_boolean "${DB_PREFIX}"options)
+#    ## populate wp_options if not exists ##
+#    if [[ -z "${GREP_WP_OPTIONS_STRING_DEVELOPMENT}" ]]; then
+#        /usr/bin/php -qCr "include '/var/www/html/dev/wp-admin/install.php'; wp_install('SlickStack', '\"${SFTP_USER}\"', '\"${SFTP_USER}\"@\"${SITE_DOMAIN_EXCLUDING_WWW}\"', 1, '', \"${SFTP_PASSWORD}\", 'en_US');"
+#        ss_mysql_root --execute="UPDATE ${DB_PREFIX}options SET option_value='Lightning-fast WordPress on Nginx' WHERE option_name='blogdescription';"
+#    fi
+# fi
+
+## https://developer.wordpress.org/cli/commands/core/is-installed/
+## https://developer.wordpress.org/cli/commands/core/install/
+## https://wordpress.stackexchange.com/questions/424412/which-wp-cli-commands-can-be-safely-run-with-allow-root-flag
+## https://wordpress.stackexchange.com/questions/376682/how-can-i-use-wp-cli-commands-without-allow-root/424586#424586
+## https://johnkpaul.tumblr.com/post/19841381351/su-vs-sudo-su-vs-sudo-u-i
+
 if [[ "${DEV_SITE}" == "true" ]]; then
-    QUERY_DEVELOPMENT_WP_OPTIONS_EXIST=$(ss_mysql_root --execute "SHOW TABLES FROM development WHERE Tables_in_development LIKE '${DB_PREFIX}options';" 2> /dev/null)
-    GREP_WP_OPTIONS_STRING_DEVELOPMENT=$(echo "${QUERY_DEVELOPMENT_WP_OPTIONS_EXIST}" | ss_grep_boolean "${DB_PREFIX}"options)
-    ## populate wp_options if not exists ##
-    if [[ -z "${GREP_WP_OPTIONS_STRING_DEVELOPMENT}" ]]; then
-        /usr/bin/php -qCr "include '/var/www/html/dev/wp-admin/install.php'; wp_install('SlickStack', '\"${SFTP_USER}\"', '\"${SFTP_USER}\"@\"${SITE_DOMAIN_EXCLUDING_WWW}\"', 1, '', \"${SFTP_PASSWORD}\", 'en_US');"
-        ss_mysql_root --execute="UPDATE ${DB_PREFIX}options SET option_value='Lightning-fast WordPress on Nginx' WHERE option_name='blogdescription';"
+    if ! sudo -u "${SFTP_USER}" /usr/local/bin/wp core is-installed --path=/var/www/html/dev 2>/dev/null; then
+        sudo -u "${SFTP_USER}" /usr/local/bin/wp core install --path=/var/www/html/dev --url=dev."${SITE_DOMAIN_EXCLUDING_WWW}" --title=SlickStack --admin_user="${SFTP_USER}" --admin_password="${SFTP_PASSWORD}" --admin_email="${SFTP_USER}"@"${SITE_DOMAIN_EXCLUDING_WWW}" --locale="${SS_LANGUAGE}" --skip-packages --skip-email 
     fi
 fi
 
