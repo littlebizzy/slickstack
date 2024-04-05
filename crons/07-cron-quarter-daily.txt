@@ -29,9 +29,8 @@
 ## E. Run SS-Check + SS-Worker In Case Frozen
 ## F. Touch Timestamp File
 ## G. Run Custom Tasks (EDIT SOURCED FILES)
-## H. Run WP-Cron (Conditional)
-## I. Run Scheduled Tasks (DO NOT EDIT)
-## J. Delete Lock File
+## H. Run Scheduled Tasks (DO NOT EDIT)
+## I. Delete Lock File
 
 ####################################################################################################
 #### A. 07-Cron-Quarter-Daily: Validate (Repair) SS-Config #########################################
@@ -208,26 +207,7 @@ ss_touch "${TIMESTAMP_07_CRON_QUARTER_DAILY}"
 source "${PATH_07_CRON_QUARTER_DAILY_CUSTOM}"
 
 ####################################################################################################
-#### H. 07-Cron-Quarter-Daily: Run WP-Cron (Conditional) ###########################################
-####################################################################################################
-
-## this snippet will call wp-cron via the server if enabled in your ss-config settings ##
-## it is useful for sites with low traffic or that need strict cron management ##
-
-if [[ "${WP_CRON_INTERVAL}" == "quarter-daily" ]]; then
-    if [[ "${WP_CRON_METHOD}" == "server" ]]; then 
-        /usr/bin/php /var/www/html/wp-cron.php
-    elif [[ "${WP_CRON_METHOD}" == "wpcli" ]]; then
-        if [[ "${WP_MULTISITE}" == "true" ]]; then
-            /usr/local/bin/wp --path=/var/www/html --allow-root site list --field=url | xargs -i -n1 /usr/local/bin/wp --path=/var/www/html --allow-root cron event run --due-now --url="{}"
-        else
-            /usr/local/bin/wp --path=/var/www/html --allow-root cron event run --due-now
-        fi
-    fi
-fi
-
-####################################################################################################
-#### I. 07-Cron-Quarter-Daily: Run Scheduled Tasks (DO NOT EDIT) ###################################
+#### H. 07-Cron-Quarter-Daily: Run Scheduled Tasks (DO NOT EDIT) ###################################
 ####################################################################################################
 
 ## the below tasks will be called if configured to run at this interval in ss-config ##
@@ -299,7 +279,7 @@ if [[ "${INTERVAL_SS_EMPTY_LOGS}" == "quarter-daily" ]]; then
 fi
 
 ####################################################################################################
-#### J. 07-Cron-Quarter-Daily: Delete Lock File ####################################################
+#### I. 07-Cron-Quarter-Daily: Delete Lock File ####################################################
 ####################################################################################################
 
 ## here we delete the lock file associated with this cron job to clear the cron queue ##
