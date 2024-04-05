@@ -219,9 +219,9 @@ if [[ "${WP_CRON_INTERVAL}" == "half-hourly" ]]; then
         /usr/bin/php /var/www/html/wp-cron.php
     elif [[ "${WP_CRON_METHOD}" == "wpcli" ]]; then
         if [[ "${WP_MULTISITE}" == "true" ]]; then
-            /usr/local/bin/wp --path=/var/www/html --allow-root site list --field=url | xargs -i -n1 /usr/local/bin/wp --path=/var/www/html --allow-root cron event run --due-now --url="{}"
+            sudo -u "${SFTP_USER}" /usr/local/bin/wp --path=/var/www/html site list --field=url | sudo -u "${SFTP_USER}" xargs -i -n1 /usr/local/bin/wp --path=/var/www/html cron event run --due-now --url="{}"
         else
-            /usr/local/bin/wp --path=/var/www/html --allow-root cron event run --due-now
+            sudo -u "${SFTP_USER}" /usr/local/bin/wp --path=/var/www/html cron event run --due-now
         fi
     fi
 fi
