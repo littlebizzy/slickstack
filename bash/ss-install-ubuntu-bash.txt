@@ -3,17 +3,35 @@
 ####################################################################################################
 #### author: SlickStack ############################################################################
 #### link: https://slickstack.io ###################################################################
-#### mirror: https://mirrors.slickstack.io/bash/ss-install-ubuntu-bash.txt #########################
+#### mirror: littlebizzy/slickstack/blob/master/bash/ss-install-ubuntu-bash.txt ####################
 #### path: /var/www/ss-install-ubuntu-bash #########################################################
 #### destination: n/a (not a boilerplate) ##########################################################
-#### purpose: Reinstalls the Ubuntu (OS) bash commands for SlickStack servers (idempotent) #########
+#### purpose: Reinstalls the Ubuntu bashrc settings for SlickStack servers (idempotent) ############
 #### module version: Ubuntu 22.04 LTS ##############################################################
 #### sourced by: ss-install ########################################################################
-#### bash aliases: ss install aliases, ss install bash, ss install ubuntu bash #####################
+#### bash aliases: ss install bash, ss install ubuntu bash #########################################
 ####################################################################################################
 
 ## SS-CONFIG MUST BE PROPERLY CONFIGURED AND ON CURRENT BUILD BEFORE RUNNING SS-INSTALL ##
 ## ENSURE YOUR SS-CONFIG BUILD REMAINS CURRENT BY RUNNING SS-UPDATE OCCASIONALLY ##
+
+####################################################################################################
+#### TABLE OF CONTENTS (SS-Install-Ubuntu-Bash) ####################################################
+####################################################################################################
+
+## this is a brief summary of the different code snippets you will find in this script ##
+## each section should be commented so you understand what is being accomplished ##
+
+## A. Source SS-Config + SS-Functions
+## B. Touch Timestamp File
+## C. Message (Begin Script)
+
+####################################################################################################
+#### A. SS-Install-Ubuntu-Bash: Source SS-Config + SS-Functions ####################################
+####################################################################################################
+
+## before anything else we must source the critical variables that power this script ##
+## ss-config is setup during ss-install wizard but ss-functions is hardcoded ##
 
 ## source ss-config ##
 source /var/www/ss-config
@@ -24,17 +42,7 @@ source /var/www/ss-functions
 ## BELOW THIS RELIES ON SS-CONFIG AND SS-FUNCTIONS
 
 ####################################################################################################
-#### TABLE OF CONTENTS (SS-Install-Ubuntu-Bash) ####################################################
-####################################################################################################
-
-## this is a brief summary of the different code snippets you will find in this script ##
-## each section should be commented so you understand what is being accomplished ##
-
-## A. Touch Timestamp File
-## B. Message (Begin Script)
-
-####################################################################################################
-#### A. SS-Install-Ubuntu-Bash: Touch Timestamp File ###############################################
+#### B. SS-Install-Ubuntu-Bash: Touch Timestamp File ###############################################
 ####################################################################################################
 
 ## this is a dummy timestamp file that will remember the last time this script was run ##
@@ -43,7 +51,7 @@ source /var/www/ss-functions
 ss_touch "${TIMESTAMP_SS_INSTALL_UBUNTU_BASH}"
 
 ####################################################################################################
-#### B. SS-Install-Ubuntu-Bash: Message (Begin Script) #############################################
+#### C. SS-Install-Ubuntu-Bash: Message (Begin Script) #############################################
 ####################################################################################################
 
 ## this is a simple message that announces to the shell the purpose of this bash script ##
@@ -52,13 +60,7 @@ ss_touch "${TIMESTAMP_SS_INSTALL_UBUNTU_BASH}"
 ss_echo "${COLOR_INFO}Running ss-install-ubuntu-bash... ${COLOR_RESET}"
 
 ####################################################################################################
-#### X. Change To Default Directory #####################################
-####################################################################################################
-
-ss_cd_default
-
-####################################################################################################
-### SS-Install-Ubuntu-Bash: Cleanup ######################################
+### D. SS-Install-Ubuntu-Bash: Cleanup ######################################
 ####################################################################################################
 
 ## delete ##
@@ -74,6 +76,10 @@ ss_sed '\:var/www/meta:d' "${PATH_ROOT_BASHRC}"
 ## uninstall (sudo user) ##
 ss_sed '/include Bash aliases/d' "${PATH_SUDO_BASHRC}"
 ss_sed '\:var/www/meta:d' "${PATH_SUDO_BASHRC}"
+
+## uninstall (sftp user) ##
+ss_sed '/include Bash aliases/d' "${PATH_SFTP_BASHRC}"
+ss_sed '\:var/www/meta:d' "${PATH_SFTP_BASHRC}"
 
 ####################################################################################################
 ### SS-Install-Ubuntu-Bash: Install Bash Aliases (SlickStack) ######################################
@@ -95,6 +101,11 @@ echo '
 ## include Bash aliases ##
 source /var/www/meta/.bashrc' >> "${PATH_SUDO_BASHRC}"
 
+## modify .bashrc file (sftp user) ##
+echo '
+## include Bash aliases ##
+source /var/www/meta/.bashrc' >> "${PATH_SFTP_BASHRC}"
+
 ####################################################################################################
 #### SS-Install-Ubuntu-Bash: Reset Permissions (Ubuntu Bash) #######################################
 ####################################################################################################
@@ -108,6 +119,7 @@ source "${PATH_SS_PERMS_UBUNTU_BASH}"
 ## reload .bashrc settings ##
 source "${PATH_ROOT_BASHRC}"
 source "${PATH_SUDO_BASHRC}"
+source "${PATH_SFTP_BASHRC}"
 
 ####################################################################################################
 #### SlickStack: Reset Permissions (SlickStack Scripts) ############################################
