@@ -87,7 +87,7 @@ source "${PATH_SS_INSTALL_UBUNTU_UTILS}"
 ## CMS modules are installed by SlickStack via files from our public mirror servers ##
 ## we always install the latest stable minor version (never major versions) ##
 
-# ss_wget "${TMP_WORDPRESS_ZIP}" "${REMOTE_WORDPRESS_ZIP}"
+ss_wget "${TMP_WORDPRESS_ZIP}" "${REMOTE_WORDPRESS_ZIP}"
 
 ####################################################################################################
 #### F. SS-Install-WordPress-Packages: Install WordPress Core (Production) #########################
@@ -96,7 +96,7 @@ source "${PATH_SS_INSTALL_UBUNTU_UTILS}"
 ## this installation process removes outdated WordPress Core files or potential malware ##
 ## it is not foolproof but it should address several common infection targets ##
 
-# if [[ -f "${TMP_WORDPRESS_ZIP}" ]]; then
+if [[ -f "${TMP_WORDPRESS_ZIP}" ]]; then
 
 ## delete old files ##
 ss_rm /var/www/html/wp-admin
@@ -104,22 +104,23 @@ ss_rm /var/www/html/wp-includes
 # find /var/www/html/ -maxdepth 1 -type f ! -name "wp-config.php" -name "*.php" -delete 
 
 ## prepare new files ##
-# ss_cp "${TMP_WORDPRESS_ZIP}" /var/www/html
-# ss_unzip /var/www/html/wordpress.zip -d /var/www/html
-# ss_chown "${SFTP_USER}":slickstack /var/www/html/wordpress
-# ss_chmod 0775 /var/www/html/wordpress
+ss_cp "${TMP_WORDPRESS_ZIP}" /var/www/html
+ss_unzip /var/www/html/wordpress.zip -d /var/www/html
+ss_chown "${SFTP_USER}":slickstack /var/www/html/wordpress
+ss_chmod 0775 /var/www/html/wordpress
 
 ## install new files ##
-# ss_rsync /var/www/html/wordpress/* /var/www/html
+ss_rsync /var/www/html/wordpress/* /var/www/html
 
 ## delete tmp files ##
-# ss_rm /var/www/html/wordpress
-# ss_rm /var/www/html/wordpress.zip*
+ss_rm /var/www/html/wordpress
+ss_rm /var/www/html/wordpress.zip*
 
 ## end if ##
-# fi
+fi
 
-sudo -u "${SFTP_USER}" /usr/local/bin/wp core download --path=/var/www/html --locale="${SS_LANGUAGE}" --skip-content --force
+## unreliable 
+## sudo -u "${SFTP_USER}" /usr/local/bin/wp core download --path=/var/www/html --locale="${SS_LANGUAGE}" --skip-content --force
 
 ####################################################################################################
 #### G. SS-Install-WordPress-Packages: Install WordPress Core (Staging) ############################
@@ -130,7 +131,7 @@ sudo -u "${SFTP_USER}" /usr/local/bin/wp core download --path=/var/www/html --lo
 
 if [[ "${STAGING_SITE}" == "true" ]]; then 
 
-# if [[ -f "${TMP_WORDPRESS_ZIP}" ]]; then
+if [[ -f "${TMP_WORDPRESS_ZIP}" ]]; then
 
 ## delete old files ##
 ss_rm /var/www/html/staging/wp-admin
@@ -138,22 +139,23 @@ ss_rm /var/www/html/staging/wp-includes
 # find /var/www/html/staging/ -maxdepth 1 -type f ! -name "wp-config.php" -name "*.php" -delete 
 
 ## prepare new files ##
-# ss_cp "${TMP_WORDPRESS_ZIP}" /var/www/html/staging
-# ss_unzip /var/www/html/staging/wordpress.zip -d /var/www/html/staging
-# ss_chown "${SFTP_USER}":slickstack /var/www/html/staging/wordpress
-# ss_chmod 0775 /var/www/html/staging/wordpress
+ss_cp "${TMP_WORDPRESS_ZIP}" /var/www/html/staging
+ss_unzip /var/www/html/staging/wordpress.zip -d /var/www/html/staging
+ss_chown "${SFTP_USER}":slickstack /var/www/html/staging/wordpress
+ss_chmod 0775 /var/www/html/staging/wordpress
     
 ## install new files ##
-# ss_rsync /var/www/html/staging/wordpress/* /var/www/html/staging
+ss_rsync /var/www/html/staging/wordpress/* /var/www/html/staging
     
 ## delete tmp files ##
-# ss_rm /var/www/html/staging/wordpress
-# ss_rm /var/www/html/staging/wordpress.zip*
+ss_rm /var/www/html/staging/wordpress
+ss_rm /var/www/html/staging/wordpress.zip*
 
 ## end if ##
-# fi
+fi
 
-sudo -u "${SFTP_USER}" /usr/local/bin/wp core download --path=/var/www/html/staging --locale="${SS_LANGUAGE}" --skip-content --force
+## unreliable
+## sudo -u "${SFTP_USER}" /usr/local/bin/wp core download --path=/var/www/html/staging --locale="${SS_LANGUAGE}" --skip-content --force
     
 ## end parent if ##
 fi
@@ -167,7 +169,7 @@ fi
 
 if [[ "${DEV_SITE}" == "true" ]]; then 
 
-# if [[ -f "${TMP_WORDPRESS_ZIP}" ]]; then
+if [[ -f "${TMP_WORDPRESS_ZIP}" ]]; then
 
 ## delete old files ##
 ss_rm /var/www/html/dev/wp-admin
@@ -175,22 +177,23 @@ ss_rm /var/www/html/dev/wp-includes
 # find /var/www/html/dev/ -maxdepth 1 -type f ! -name "wp-config.php" -name "*.php" -delete 
 
 ## prepare new files ##
-# ss_cp "${TMP_WORDPRESS_ZIP}" /var/www/html/dev
-# ss_unzip /var/www/html/dev/wordpress.zip -d /var/www/html/dev
-# ss_chown "${SFTP_USER}":slickstack /var/www/html/dev/wordpress
-# ss_chmod 0775 /var/www/html/dev/wordpress
+ss_cp "${TMP_WORDPRESS_ZIP}" /var/www/html/dev
+ss_unzip /var/www/html/dev/wordpress.zip -d /var/www/html/dev
+ss_chown "${SFTP_USER}":slickstack /var/www/html/dev/wordpress
+ss_chmod 0775 /var/www/html/dev/wordpress
     
 ## install new files ##
-# ss_rsync /var/www/html/dev/wordpress/* /var/www/html/dev
+ss_rsync /var/www/html/dev/wordpress/* /var/www/html/dev
     
 ## delete tmp files ##
-# ss_rm /var/www/html/dev/wordpress
-# ss_rm /var/www/html/dev/wordpress.zip*
+ss_rm /var/www/html/dev/wordpress
+ss_rm /var/www/html/dev/wordpress.zip*
     
 ## end if ##
-# fi
+fi
 
-sudo -u "${SFTP_USER}" /usr/local/bin/wp core download --path=/var/www/html/dev --locale="${SS_LANGUAGE}" --skip-content --force
+## unreliable
+## sudo -u "${SFTP_USER}" /usr/local/bin/wp core download --path=/var/www/html/dev --locale="${SS_LANGUAGE}" --skip-content --force
     
 ## end parent if ##
 fi
