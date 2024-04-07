@@ -217,49 +217,46 @@ fi
 ## this allows SlickStack to use these handy PHP constants inside PHP scripts ##
 
 ## SNIPPET: ss-install-wordpress-config, ss-worker
-## UPDATED: 01APR2024
+## UPDATED: 07APR2024
 
-## retrieve current boilerplate ##
+## download latest boilerplate ##
 ss_wget "${TMP_SS_CONSTANTS_PHP}" "${GITHUB_SS_CONSTANTS_PHP}"
-
-## set SlickStack dashboard ##
-if [[ -z "${SS_WORDPRESS_ADMIN_DASHBOARD}" ]]; then 
-    ss_sed "s/@SS_WORDPRESS_ADMIN_DASHBOARD/true/g" "${TMP_SS_CONSTANTS_PHP}"
-else 
-    ss_sed "s/@SS_WORDPRESS_ADMIN_DASHBOARD/${SS_WORDPRESS_ADMIN_DASHBOARD}/g" "${TMP_SS_CONSTANTS_PHP}"
+VALIDATE_TMP_SS_CONSTANTS_PHP=$(grep 'SS_EOF' "${TMP_SS_CONSTANTS_PHP}" 2> /dev/null)
+if [[ -z "${VALIDATE_TMP_SS_CONSTANTS_PHP}" ]]; then
+    ss_wget "${TMP_SS_CONSTANTS_PHP}" "${GITLAB_SS_CONSTANTS_PHP}"
 fi
-
-## ss build ##
-ss_sed "s|@SS_BUILD|${SS_BUILD}|g" "${TMP_SS_CONSTANTS_PHP}"
-
-## deprecated ##
-## wp plugin blacklist ##
-ss_sed "s|@SS_WORDPRESS_PLUGIN_BLACKLIST_SOURCE|${WP_PLUGIN_BLACKLIST_SOURCE}|g" "${TMP_SS_CONSTANTS_PHP}"
-ss_sed "s|@SS_WORDPRESS_PLUGIN_BLACKLIST_STATUS|${WP_PLUGIN_BLACKLIST}|g" "${TMP_SS_CONSTANTS_PHP}"
 
 ## wp cron ##
 ss_sed "s|@WP_CRON_METHOD|${WP_CRON_METHOD}|g" "${TMP_SS_CONSTANTS_PHP}"
 ss_sed "s|@WP_CRON_INTERVAL|${WP_CRON_INTERVAL}|g" "${TMP_SS_CONSTANTS_PHP}"
 
-## server info ##
+## system information ##
 ss_sed "s|@SYSTEM_VIRTUAL|${SYSTEM_VIRTUAL}|g" "${TMP_SS_CONSTANTS_PHP}"
 ss_sed "s|@SYSTEM_LINUX_KERNEL|${SYSTEM_LINUX_KERNEL}|g" "${TMP_SS_CONSTANTS_PHP}"
-ss_sed "s|@SYSTEM_CPU_CORES|${SYSTEM_CPU_CORES}|g" "${TMP_SS_CONSTANTS_PHP}"
 ss_sed "s|@SYSTEM_OS_PRETTY_NAME|${SYSTEM_OS_PRETTY_NAME}|g" "${TMP_SS_CONSTANTS_PHP}"
-
-if [[ "${SYSTEM_UBUNTU_VERSION}" == "22.04" ]]; then
-SYSTEM_MYSQL_VERSION=$(ss_mysql_root --version |& awk '{print $3}' | sed 's/,//g')
-fi
-
-if [[ "${SYSTEM_UBUNTU_VERSION}" == "20.04" ]]; then
-SYSTEM_MYSQL_VERSION=$(ss_mysql_root --version |& awk '{print $3}' | sed 's/,//g')
-fi
-
-if [[ "${SYSTEM_UBUNTU_VERSION}" == "18.04" ]]; then
-SYSTEM_MYSQL_VERSION=$(ss_mysql_root --version |& awk '{print $5}' | sed 's/,//g')
-fi
+ss_sed "s|@SYSTEM_CPU_CORES|${SYSTEM_CPU_CORES}|g" "${TMP_SS_CONSTANTS_PHP}"
+ss_sed "s|@SYSTEM_DISK_FREE_EASY|${SYSTEM_DISK_FREE_EASY}|g" "${TMP_SS_CONSTANTS_PHP}"
+ss_sed "s|@SYSTEM_DISK_FREE|${SYSTEM_DISK_FREE}|g" "${TMP_SS_CONSTANTS_PHP}"
+ss_sed "s|@SYSTEM_DISK_TOTAL_EASY|${SYSTEM_DISK_TOTAL_EASY}|g" "${TMP_SS_CONSTANTS_PHP}"
+ss_sed "s|@SYSTEM_DISK_TOTAL|${SYSTEM_DISK_TOTAL}|g" "${TMP_SS_CONSTANTS_PHP}"
+ss_sed "s|@SYSTEM_DISK_USED_PERCENT|${SYSTEM_DISK_USED_PERCENT}|g" "${TMP_SS_CONSTANTS_PHP}"
+ss_sed "s|@SYSTEM_IPV4_ADDRESS|${SYSTEM_IPV4_ADDRESS}|g" "${TMP_SS_CONSTANTS_PHP}"
+ss_sed "s|@SYSTEM_IPV6_ADDRESS|${SYSTEM_IPV6_ADDRESS}|g" "${TMP_SS_CONSTANTS_PHP}"
+ss_sed "s|@SYSTEM_HOSTNAME|${SYSTEM_HOSTNAME}|g" "${TMP_SS_CONSTANTS_PHP}"
+ss_sed "s|@SYSTEM_PHP_VERSION|${SYSTEM_PHP_VERSION}|g" "${TMP_SS_CONSTANTS_PHP}"
+ss_sed "s|@SYSTEM_PHP_EXTENSIONS|${SYSTEM_PHP_EXTENSIONS}|g" "${TMP_SS_CONSTANTS_PHP}"
+ss_sed "s|@SYSTEM_SERVER_SOFTWARE|${SYSTEM_SERVER_SOFTWARE}|g" "${TMP_SS_CONSTANTS_PHP}"
 
 ## mysql version ##
+if [[ "${SYSTEM_UBUNTU_VERSION}" == "22.04" ]]; then
+    SYSTEM_MYSQL_VERSION=$(ss_mysql_root --version |& awk '{print $3}' | sed 's/,//g')
+elif [[ "${SYSTEM_UBUNTU_VERSION}" == "20.04" ]]; then
+    SYSTEM_MYSQL_VERSION=$(ss_mysql_root --version |& awk '{print $3}' | sed 's/,//g')
+elif [[ "${SYSTEM_UBUNTU_VERSION}" == "18.04" ]]; then
+    SYSTEM_MYSQL_VERSION=$(ss_mysql_root --version |& awk '{print $5}' | sed 's/,//g')
+fi
+
+## mysql version (more) ##
 if [[ "${SS_DATABASE_REMOTE}" != "false" ]]; then
     ss_sed "s|@SYSTEM_MYSQL_VERSION|Unavailable|g" "${TMP_SS_CONSTANTS_PHP}"
 else
@@ -274,34 +271,6 @@ else
     ss_sed "s|@SYSTEM_MYSQL_SIZE|${SYSTEM_MYSQL_SIZE}|g" "${TMP_SS_CONSTANTS_PHP}"
 fi
 
-## disk free space ##
-ss_sed "s|@SYSTEM_DISK_FREE_EASY|${SYSTEM_DISK_FREE_EASY}|g" "${TMP_SS_CONSTANTS_PHP}"
-ss_sed "s|@SYSTEM_DISK_FREE|${SYSTEM_DISK_FREE}|g" "${TMP_SS_CONSTANTS_PHP}"
-
-## disk total space ##
-ss_sed "s|@SYSTEM_DISK_TOTAL_EASY|${SYSTEM_DISK_TOTAL_EASY}|g" "${TMP_SS_CONSTANTS_PHP}"
-ss_sed "s|@SYSTEM_DISK_TOTAL|${SYSTEM_DISK_TOTAL}|g" "${TMP_SS_CONSTANTS_PHP}"
-
-ss_sed "s|@SYSTEM_DISK_USED_PERCENT|${SYSTEM_DISK_USED_PERCENT}|g" "${TMP_SS_CONSTANTS_PHP}"
-
-## ipv4 address ##
-ss_sed "s|@SYSTEM_IPV4_ADDRESS|${SYSTEM_IPV4_ADDRESS}|g" "${TMP_SS_CONSTANTS_PHP}"
-
-## ipv6 address ##
-ss_sed "s|@SYSTEM_IPV6_ADDRESS|${SYSTEM_IPV6_ADDRESS}|g" "${TMP_SS_CONSTANTS_PHP}"
-
-## server hostname ##
-ss_sed "s|@SYSTEM_HOSTNAME|${SYSTEM_HOSTNAME}|g" "${TMP_SS_CONSTANTS_PHP}"
-
-## nginx version ##
-ss_sed "s|@SYSTEM_SERVER_SOFTWARE|${SYSTEM_SERVER_SOFTWARE}|g" "${TMP_SS_CONSTANTS_PHP}"
-
-## php version ##
-ss_sed "s|@SYSTEM_PHP_VERSION|${SYSTEM_PHP_VERSION}|g" "${TMP_SS_CONSTANTS_PHP}"
-
-## php extensions ##
-ss_sed "s|@SYSTEM_PHP_EXTENSIONS|${SYSTEM_PHP_EXTENSIONS}|g" "${TMP_SS_CONSTANTS_PHP}"
-
 ## sftp details ##
 ss_sed "s|@SFTP_USER|${SFTP_USER}|g" "${TMP_SS_CONSTANTS_PHP}"
 ss_sed "s|@SFTP_PASSWORD|${SFTP_PASSWORD}|g" "${TMP_SS_CONSTANTS_PHP}"
@@ -309,10 +278,6 @@ ss_sed "s|@SFTP_PORT|${SSH_PORT}|g" "${TMP_SS_CONSTANTS_PHP}"
 
 ## adminer ##
 ss_sed "s|@ADMINER_PUBLIC|${ADMINER_PUBLIC}|g" "${TMP_SS_CONSTANTS_PHP}"
-
-## cloudflare api ##
-ss_sed "s|@CLOUDFLARE_API_KEY|${CLOUDFLARE_API_KEY}|g" "${TMP_SS_CONSTANTS_PHP}"
-ss_sed "s|@CLOUDFLARE_API_EMAIL|${CLOUDFLARE_API_EMAIL}|g" "${TMP_SS_CONSTANTS_PHP}"
 
 ## whitelabel ##
 ss_sed "s|@WHITELABEL_BRAND|${WHITELABEL_BRAND}|g" "${TMP_SS_CONSTANTS_PHP}"
@@ -326,11 +291,12 @@ ss_sed "s|@DEV_SITE_STATUS|${DEV_SITE}|g" "${TMP_SS_CONSTANTS_PHP}"
 ss_sed "s|@SYNC_STAGING_SITE_STATUS|${SS_SYNC_STAGING}|g" "${TMP_SS_CONSTANTS_PHP}"
 
 ## validate and reinstall ##
-VALIDATE_TMP_SS_CONSTANTS_PHP=$(grep 'SS_EOF' "$TMP_SS_CONSTANTS_PHP")
-if [[ -n "${VALIDATE_TMP_SS_CONSTANTS_PHP}" ]]; then
+## future: if fails add dummy values to avoid fatal errors ##
+VALIDATE2_TMP_SS_CONSTANTS_PHP=$(grep 'SS_EOF' "${TMP_SS_CONSTANTS_PHP}")
+if [[ -n "${VALIDATE2_TMP_SS_CONSTANTS_PHP}" ]]; then
     ss_mv "${TMP_SS_CONSTANTS_PHP}" "${PATH_SS_CONSTANTS_PHP}"
     chown www-data:www-data "${PATH_SS_CONSTANTS_PHP}"
-    chmod 0440 "${PATH_SS_CONSTANTS_PHP}" ## 0440 (read-only)
+    chmod 0440 "${PATH_SS_CONSTANTS_PHP}" ## should be 0440 (read-only)
 fi 
 
 ####################################################################################################
