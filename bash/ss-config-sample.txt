@@ -21,7 +21,7 @@
 ## run ss-update-config if outdated (check the public mirror link for current build) ##
 ## lockdown option prevents automatic updates of SlickStack scripts and config ##
 
-SS_BUILD="APR2024Q"
+SS_BUILD="APR2024R"
 
 ## SS_LOCKDOWN = [false|true] stops dev site from being overwritten... and more soon ##
 ## SS_APP = [wordpress|etc] only wordpress is supported currently (feedback welcome) ##
@@ -171,127 +171,14 @@ GUEST_USER="@GUEST_USER"
 GUEST_PASSWORD="@GUEST_PASSWORD"
 
 ####################################################################################################
-#### SS-Config: Remote Backup Settings #############################################################
+#### SS-Config: Cloudflare Settings ################################################################
 ####################################################################################################
 
-## BE SURE TO ENABLE YOUR PREFERRED SERVICE USING SS_REMOTE_BACKUPS OPTION IN SS-CONFIG ##
+## CLOUDFLARE_REAL_IPS = [true|false] allows your server logs to see the real client IPs ##
+## CLOUDFLARE_AUTHENTICATED_ORIGIN = [false|true] allows only Cloudflare to connect ##
 
-## not to be confused with the ss-dump scripts which create temporary local archives ##
-## remote backups push your SlickStack data to cloud storage using rsync/rclone ##
-
-## RCLONE_TYPE = [b2|dropbox|etc] choose a supported rclone cloud storage provider ##
-## RCLONE_MODE = [copy|sync] copy avoids data loss but complicates restores ##
-## RCLONE_REMOTE_PATH = [*must be unique*] storage path on your remote service ##
-## RCLONE_CLIENT_ID = [*must be unique*] might be account key ID or application key ID ##
-## RCLONE_CLIENT_SECRET = [*must be unique*] might be master key or application key ##
-## RCLONE_USER = [*must be unique*] some services want to know your username ##
-## RCLONE_PASSWORD = [*must be unique*] some services want to know your password ##
-## RCLONE_TOKEN = [*must be unique*] usually a one-time token you must generate ##
-## RCLONE_BACKUP_PATH = [/var/www/backups/|etc] directory tree that you want to rclone ##
-## RCLONE_PARALLEL_TRANSFERS = [15|100|...] number of parallel transfers (more is faster) ##
-
-## about parallel transfers: 1000 on 2c VPS = 200% CPU, 500 = 120% CPU, 100 = 10% CPU ##
-## WARNING: when you set parallel transfers high and have files that are big, it could crash your VPS. ##
-## when you have files over 5GB, it will chunk that data to 96MB and stores them in RAM. 96MB*transfers=RAM Usage ##
-## WARNING: /var/www/ will exceed the free limit of 2500 daily Class C Transactions! 1 file/chunk makes 2 API calls ##
-## /var/www/backups/ and SS_DUMP_FILES recommended ##
-## b2 Application key must have read and write permissions ##
-
-RCLONE_TYPE="b2" ## only b2 supported for now
-RCLONE_MODE="copy" ## recommended to leave "copy" and use b2 lifecycle rules
-RCLONE_REMOTE_PATH="/bucketname/@SITE_DOMAIN"  ## for b2 use /bucketname/ and then subfolder
-RCLONE_CLIENT_ID="" ## fill with b2 key ID
-RCLONE_CLIENT_SECRET="" ## fill with b2 key
-RCLONE_USER=""
-RCLONE_PASSWORD=""
-RCLONE_TOKEN=""
-RCLONE_BACKUP_PATH="/var/www/backups/" ## enable SS_DUMP_FILES first
-RCLONE_PARALLEL_TRANSFERS="15" ## default 15 (recommended lower for big files)
-
-## RSYNC_REMOTE_HOST = [192.0.2.1|example.rsync.net|etc] remote host address for rsync ##
-## RSYNC_BACKUP_PATH = [/var/www/html/|etc] best to backup html directory for rsync ##
-## RSYNC_USER = [*must be unique*] username is assigned by services like rsync.net ##
-## RSYNC_PASSWORD = [*must be unique*] password is assigned by services like rsync.net ##
-
-RSYNC_REMOTE_HOST="192.0.2.1"
-RSYNC_BACKUP_PATH="/var/www/html/" ## hardcoded for now in ss-remote-backups
-RSYNC_USER=""
-RSYNC_PASSWORD=""
-
-####################################################################################################
-#### SS-Config: Whitelabel Settings ################################################################
-####################################################################################################
-
-## whitelabeling allows agencies to replace some LittleBizzy branding with their own ##
-## this is useful for running your own web hosting business or otherwise ##
-
-## WHITELABEL_BRAND = [*must be unique*] the agency name you want customers to see ##
-## WHITELABEL_HOMEPAGE = [*must be unique*] generic website homepage for your agency ##
-## WHITELABEL_SUPPORT_URL = [*must be unique*] link to open new support requests ##
-## WHITELABEL_SUPPORT_EMAIL = [*must be unique*] direct email address customers can use ##
-## WHITELABEL_BILLING_METHOD = [paypal] allows hosting payments directly in WP Admin ##
-
-WHITELABEL_BRAND="SlickStack"
-WHITELABEL_HOMEPAGE="https://slickstack.io"
-WHITELABEL_SUPPORT_URL="https://slickstack.io/forum"
-WHITELABEL_SUPPORT_EMAIL="example@slickstack.io"
-WHITELABEL_BILLING_METHOD="paypal" ## not supported yet
-
-####################################################################################################
-#### deleting below soon ###########################################################################
-####################################################################################################
-
-## ss-clean-files ##
-SS_CLEAN_FILES_ROOT_PUBLIC="true" ## public dir
-SS_CLEAN_FILES_ROOT_PRIVATE="true" ## root dir
-
-## coming soon ##
-# SS_CLEAN_FILES_PHP_HACKS="true"
-# SS_CLEAN_FILES_BACKUPS="true"
-
-####################################################################################################
-#### SS-Config: SSL Settings (CSR Optional) ########################################################
-####################################################################################################
-
-## some of these settings only apply to OpenSSL or Lets Encrypt / third-party certs ##
-## to avoid confusion we maintain all SSL related settings in the same place ##
-
-## SSL_TYPE = [certbot|openssl|thirdparty] for Cloudflare Full (strict) choose certbot ##
-## SSL_PROTOCOLS = [TLSv1.2 TLSv1.3] nearly all servers should be using 1.2 and 1.3 ##
-## SSL_CIPHERS = [*changes regularly*] the Mozilla cipher list is one of the best ##
-## SSL_SESSION_TIMEOUT = [120m|360m|1d|etc] less sensitive sites can use a higher setting ##
-## SSL_SESSION_CACHE = [shared:SSL:64m] there should be no reason to use other settings ##
-## SSL_BUFFER_SIZE = [16k|8k|4k] smaller is better but less than 16k can cause errors ##
-
-SSL_TYPE="certbot"
-SSL_PROTOCOLS="TLSv1.2 TLSv1.3"
-SSL_CIPHERS="ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384:DHE-RSA-CHACHA20-POLY1305"
-SSL_SESSION_TIMEOUT="1d"
-SSL_SESSION_CACHE="shared:SSL:64m"
-SSL_BUFFER_SIZE="16k"
-
-## OPENSSL_CERT_INCLUDE_DOMAINS = [true|false] required for any web-facing domains ##
-## OPENSSL_CERT_INCLUDE_IPS = [false|true] strongly discouraged to avoid doxxing origin ##
-## OPENSSL_CERT_INCLUDE_LOCALHOST = [false|true] might help during local development ##
-
-OPENSSL_CERT_INCLUDE_DOMAINS="true"
-OPENSSL_CERT_INCLUDE_IPS="false"
-OPENSSL_CERT_INCLUDE_LOCALHOST="false"
-
-## the CSR settings below are not required and exist only in case of future needs ##
-## Certbot does not use this CSR data (only OpenSSL uses it currently) ##
-
-## CSR_COUNTRY = [US|etc] country to be used with your SSL CSR request data ##
-## CSR_STATE = [Nevada|etc] state or province to be used with your SSL CSR request data ##
-## CSR_CITY = [Las Vegas|etc] city or town to be used with your SSL CSR request data ##
-## CSR_COMPANY = [Example, LLC|etc] company name to be used with your SSL CSR request data ##
-## CSR_DEPT = [DevOps|etc] department to be used with your SSL CSR request data ##
-
-CSR_COUNTRY="US"
-CSR_STATE="Nevada"
-CSR_CITY="Las Vegas"
-CSR_COMPANY="Example, LLC"
-CSR_DEPT="DevOps"
+CLOUDFLARE_REAL_IPS="true"
+CLOUDFLARE_AUTHENTICATED_ORIGIN="false"
 
 ####################################################################################################
 #### SS-Config: WordPress Settings #################################################################
@@ -354,11 +241,127 @@ WP_PLUGIN_BLACKLIST="true"
 WP_PLUGIN_BLACKLIST_SOURCE="https://raw.githubusercontent.com/littlebizzy/slickstack/master/modules/wordpress/blacklist.txt"
 
 ####################################################################################################
-#### SS-Config: Cloudflare Settings ################################################################
+#### SS-Config: Whitelabel Settings ################################################################
 ####################################################################################################
 
-CLOUDFLARE_REAL_IPS="true"
-CLOUDFLARE_AUTHENTICATED_ORIGIN="false"
+## whitelabeling allows agencies to replace some LittleBizzy branding with their own ##
+## this is useful for running your own web hosting business or otherwise ##
+
+## WHITELABEL_BRAND = [*must be unique*] the agency name you want customers to see ##
+## WHITELABEL_HOMEPAGE = [*must be unique*] generic website homepage for your agency ##
+## WHITELABEL_SUPPORT_URL = [*must be unique*] link to open new support requests ##
+## WHITELABEL_SUPPORT_EMAIL = [*must be unique*] direct email address customers can use ##
+## WHITELABEL_BILLING_METHOD = [paypal] allows hosting payments directly in WP Admin ##
+
+WHITELABEL_BRAND="SlickStack"
+WHITELABEL_HOMEPAGE="https://slickstack.io"
+WHITELABEL_SUPPORT_URL="https://slickstack.io/forum"
+WHITELABEL_SUPPORT_EMAIL="example@slickstack.io"
+WHITELABEL_BILLING_METHOD="paypal" ## not supported yet
+
+####################################################################################################
+#### SS-Config: Remote Backup Settings #############################################################
+####################################################################################################
+
+## BE SURE TO ENABLE YOUR PREFERRED SERVICE USING SS_REMOTE_BACKUPS OPTION IN SS-CONFIG ##
+
+## not to be confused with the ss-dump scripts which create temporary local archives ##
+## remote backups push your SlickStack data to cloud storage using rsync/rclone ##
+
+## RCLONE_TYPE = [b2|dropbox|etc] choose a supported rclone cloud storage provider ##
+## RCLONE_MODE = [copy|sync] copy avoids data loss but complicates restores ##
+## RCLONE_REMOTE_PATH = [*must be unique*] storage path on your remote service ##
+## RCLONE_CLIENT_ID = [*must be unique*] might be account key ID or application key ID ##
+## RCLONE_CLIENT_SECRET = [*must be unique*] might be master key or application key ##
+## RCLONE_USER = [*must be unique*] some services want to know your username ##
+## RCLONE_PASSWORD = [*must be unique*] some services want to know your password ##
+## RCLONE_TOKEN = [*must be unique*] usually a one-time token you must generate ##
+## RCLONE_BACKUP_PATH = [/var/www/backups/|etc] directory tree that you want to rclone ##
+## RCLONE_PARALLEL_TRANSFERS = [15|100|...] number of parallel transfers (more is faster) ##
+
+## about parallel transfers: 1000 on 2c VPS = 200% CPU, 500 = 120% CPU, 100 = 10% CPU ##
+## WARNING: when you set parallel transfers high and have files that are big, it could crash your VPS. ##
+## when you have files over 5GB, it will chunk that data to 96MB and stores them in RAM. 96MB*transfers=RAM Usage ##
+## WARNING: /var/www/ will exceed the free limit of 2500 daily Class C Transactions! 1 file/chunk makes 2 API calls ##
+## /var/www/backups/ and SS_DUMP_FILES recommended ##
+## b2 Application key must have read and write permissions ##
+
+RCLONE_TYPE="b2" ## only b2 supported for now
+RCLONE_MODE="copy" ## recommended to leave "copy" and use b2 lifecycle rules
+RCLONE_REMOTE_PATH="/bucketname/@SITE_DOMAIN"  ## for b2 use /bucketname/ and then subfolder
+RCLONE_CLIENT_ID="" ## fill with b2 key ID
+RCLONE_CLIENT_SECRET="" ## fill with b2 key
+RCLONE_USER=""
+RCLONE_PASSWORD=""
+RCLONE_TOKEN=""
+RCLONE_BACKUP_PATH="/var/www/backups/" ## enable SS_DUMP_FILES first
+RCLONE_PARALLEL_TRANSFERS="15" ## default 15 (recommended lower for big files)
+
+## RSYNC_REMOTE_HOST = [192.0.2.1|example.rsync.net|etc] remote host address for rsync ##
+## RSYNC_BACKUP_PATH = [/var/www/html/|etc] best to backup html directory for rsync ##
+## RSYNC_USER = [*must be unique*] username is assigned by services like rsync.net ##
+## RSYNC_PASSWORD = [*must be unique*] password is assigned by services like rsync.net ##
+
+RSYNC_REMOTE_HOST="192.0.2.1"
+RSYNC_BACKUP_PATH="/var/www/html/" ## hardcoded for now in ss-remote-backups
+RSYNC_USER=""
+RSYNC_PASSWORD=""
+
+####################################################################################################
+#### deleting below soon ###########################################################################
+####################################################################################################
+
+## ss-clean-files ##
+SS_CLEAN_FILES_ROOT_PUBLIC="true" ## public dir
+SS_CLEAN_FILES_ROOT_PRIVATE="true" ## root dir
+
+## coming soon ##
+# SS_CLEAN_FILES_PHP_HACKS="true"
+# SS_CLEAN_FILES_BACKUPS="true"
+
+####################################################################################################
+#### SS-Config: SSL Settings (CSR Optional) ########################################################
+####################################################################################################
+
+## some of these settings only apply to OpenSSL or Lets Encrypt / third-party certs ##
+## to avoid confusion we maintain all SSL related settings in the same place ##
+
+## SSL_TYPE = [certbot|openssl|thirdparty] for Cloudflare Full (strict) choose certbot ##
+## SSL_PROTOCOLS = [TLSv1.2 TLSv1.3] nearly all servers should be using 1.2 and 1.3 ##
+## SSL_CIPHERS = [*changes regularly*] the Mozilla cipher list is one of the best ##
+## SSL_SESSION_TIMEOUT = [120m|360m|1d|etc] less sensitive sites can use a higher setting ##
+## SSL_SESSION_CACHE = [shared:SSL:64m] there should be no reason to use other settings ##
+## SSL_BUFFER_SIZE = [16k|8k|4k] smaller is better but less than 16k can cause errors ##
+
+SSL_TYPE="certbot"
+SSL_PROTOCOLS="TLSv1.2 TLSv1.3"
+SSL_CIPHERS="ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384:DHE-RSA-CHACHA20-POLY1305"
+SSL_SESSION_TIMEOUT="1d"
+SSL_SESSION_CACHE="shared:SSL:64m"
+SSL_BUFFER_SIZE="16k"
+
+## OPENSSL_CERT_INCLUDE_DOMAINS = [true|false] required for any web-facing domains ##
+## OPENSSL_CERT_INCLUDE_IPS = [false|true] strongly discouraged to avoid doxxing origin ##
+## OPENSSL_CERT_INCLUDE_LOCALHOST = [false|true] might help during local development ##
+
+OPENSSL_CERT_INCLUDE_DOMAINS="true"
+OPENSSL_CERT_INCLUDE_IPS="false"
+OPENSSL_CERT_INCLUDE_LOCALHOST="false"
+
+## the CSR settings below are not required and exist only in case of future needs ##
+## Certbot does not use this CSR data (only OpenSSL uses it currently) ##
+
+## CSR_COUNTRY = [US|etc] country to be used with your SSL CSR request data ##
+## CSR_STATE = [Nevada|etc] state or province to be used with your SSL CSR request data ##
+## CSR_CITY = [Las Vegas|etc] city or town to be used with your SSL CSR request data ##
+## CSR_COMPANY = [Example, LLC|etc] company name to be used with your SSL CSR request data ##
+## CSR_DEPT = [DevOps|etc] department to be used with your SSL CSR request data ##
+
+CSR_COUNTRY="US"
+CSR_STATE="Nevada"
+CSR_CITY="Las Vegas"
+CSR_COMPANY="Example, LLC"
+CSR_DEPT="DevOps"
 
 ####################################################################################################
 #### SS-Config: Nginx Settings #####################################################################
