@@ -30,6 +30,8 @@
 ## F. Configure PHP-FPM.conf Boilerplate
 ## G. Configure WWW.conf Boilerplate
 ## H. Install PHP Config Files
+## I. Install Adminer.php
+
 ## I. Reset Permissions (PHP Config)
 ## J. Restart Modules (PHP-FPM)
 ## K. Cleanup Temporary Files
@@ -507,6 +509,33 @@ if [[ "${SYSTEM_UBUNTU_VERSION}" == "18.04" ]]; then
     ss_cp "${TMP_PHP_INI}" "${PATH_PHP_INI_FPM_72}"
     ss_cp "${TMP_PHP_INI}" "${PATH_PHP_INI_CLI_72}"
     ss_mv "${TMP_WWW_CONF}" "${PATH_WWW_CONF_72}"
+fi
+
+####################################################################################################
+#### I. SS-Install-PHP-Config: Install Adminer.php #################################################
+####################################################################################################
+
+## here we retrieve the latest version of adminer.php from our mirrors and install it ##
+## note that adminer.php cannot be converted to UTF-8 or else it will break ##
+
+## retrieve adminer.php ##
+ss_wget "${TMP_ADMINER_PHP}" "${GITHUB_ADMINER_PHP}"
+VALIDATE_TMP_ADMINER_PHP=$(grep 'Jakub Vrana' "${TMP_ADMINER_PHP}" 2> /dev/null)
+if [[ -z "${VALIDATE_TMP_ADMINER_PHP}" ]]; then
+    ss_wget "${TMP_ADMINER_PHP}" "${GITLAB_ADMINER_PHP}"
+fi
+
+## install adminer.php ##
+VALIDATE2_TMP_ADMINER_PHP=$(grep 'Jakub Vrana' "${TMP_ADMINER_PHP}" 2> /dev/null)
+if [[ -n "${VALIDATE2_TMP_ADMINER_PHP}" ]]; then
+
+        if [[ "${ADMINER_PUBLIC}" == "false" ]]; then
+            ss_rm "${PATH_ADMINER_PHP}"
+            ss_echo "${COLOR_WARN}Adminer disabled in ss-config so skipping install... ${COLOR_RESET}"
+        else
+            ss_mv "${TMP_ADMINER_PHP}" "${PATH_ADMINER_PHP}"
+        fi
+
 fi
 
 ####################################################################################################
