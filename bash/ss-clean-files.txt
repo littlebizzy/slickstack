@@ -27,11 +27,11 @@
 ## C. Message (Begin Script)
 ## D. Null Bash Command History
 ## E. Delete SSH Private Key (If Exists) 
-## F. Delete Staging Site Files (Conditional)
+## F. Delete Oldest SS-Config Backups
+## G. Delete Staging Site Files (Conditional)
 
-## G. Delete MySQL Data Folder Backups
+## H. Delete MySQL Data Folder Backups
 
-## H. Delete Oldest SS-Config Backups
 ## I. Delete Deprecated WordPress MU Plugins
 ## J. Delete Deprecated Bash Scripts
 
@@ -107,7 +107,17 @@ if [[ -n $(find "${PATH_SSH_PRIVATE_KEY_FILE}" -amin +720 2> /dev/null) ]]; then
 fi
 
 ####################################################################################################
-#### F. SS-Clean-Files: Delete Staging Site Files (Conditional) ####################################
+#### F. SS-Clean-Files: Delete Oldest SS-Config Backups ############################################
+####################################################################################################
+
+## in order to rotate ss-config file backups we delete the oldest versions to clear space ##
+## the newest intact backup of ss-config is auto-restored by SlickStack when needed ##
+
+find /var/www/backups/config -maxdepth 1 -name "ss-config.bak*" -type f -mtime +3 -delete
+
+
+####################################################################################################
+#### G. SS-Clean-Files: Delete Staging Site Files (Conditional) ####################################
 ####################################################################################################
 
 ## this will delete any staging files and folders in case STAGING_SITE is set to false ##
@@ -118,7 +128,7 @@ if [[ "${STAGING_SITE}" == "false" ]]; then
 fi
 
 ####################################################################################################
-#### G. SS-Clean-Files: Delete MySQL Data Folder Backups ###########################################
+#### H. SS-Clean-Files: Delete MySQL Data Folder Backups ###########################################
 ####################################################################################################
 
 ## IS THIS STILL RELEVANT???
@@ -129,16 +139,6 @@ fi
 if [[ "${SS_DUMP_DATABASE_FILES}" != "true" ]]; then 
     ss_rm /var/www/backups/mysql/data
 fi
-
-####################################################################################################
-#### H. SS-Clean-Files: Delete Oldest SS-Config Backups ############################################
-####################################################################################################
-
-## in order to rotate ss-config file backups we delete the oldest versions to clear space ##
-## the newest intact backup of ss-config is auto-restored by SlickStack when needed ##
-
-## delete oldest ss-config backups ##
-find /var/www/backups/config -maxdepth 1 -name "ss-config.bak*" -type f -mtime +3 -delete
 
 ####################################################################################################
 #### I. SS-Clean-Files: Delete Deprecated WordPress MU Plugins #####################################
