@@ -3,14 +3,34 @@
 ####################################################################################################
 #### author: SlickStack ############################################################################
 #### link: https://slickstack.io ###################################################################
-#### mirror: https://mirrors.slickstack.io/bash/ss-clean-database.txt ##############################
+#### mirror: littlebizzy/slickstack/blob/master/bash/ss-clean-database.txt #########################
 #### path: /var/www/ss-clean-database ##############################################################
 #### destination: n/a (not a boilerplate) ##########################################################
 #### purpose: Cleans up a specific list of junk tables and data from the MySQL database ############
-#### module version: Ubuntu 22.04 LTS ##############################################################
+#### module version: MySQL 8.0.x ###################################################################
 #### sourced by: n/a ###############################################################################
 #### bash aliases: ss clean database|db ############################################################
 ####################################################################################################
+
+####################################################################################################
+#### TABLE OF CONTENTS (SS-Clean-Database) #########################################################
+####################################################################################################
+
+## this is a brief summary of the different code snippets you will find in this script ##
+## each section should be commented so you understand what is being accomplished ##
+
+## A. Source SS-Config + SS-Functions
+## B. Touch Timestamp File
+## C. Message (Begin Script)
+## D. Run SS-Dump-Database
+## E. Delete Junk Database Tables
+
+####################################################################################################
+#### A. SS-Clean-Database: Source SS-Config + SS-Functions #########################################
+####################################################################################################
+
+## before anything else we must source the critical variables that power this script ##
+## ss-config is setup during ss-install wizard but ss-functions is hardcoded ##
 
 ## source ss-config ##
 source /var/www/ss-config
@@ -21,18 +41,7 @@ source /var/www/ss-functions
 ## BELOW THIS RELIES ON SS-CONFIG AND SS-FUNCTIONS
 
 ####################################################################################################
-#### TABLE OF CONTENTS (SS-Clean-Database) #########################################################
-####################################################################################################
-
-## this is a brief summary of the different code snippets you will find in this script ##
-## each section should be commented so you understand what is being accomplished ##
-
-## A. Touch Timestamp File
-## B. Message (Begin Script)
-## C. Delete Junk Database Tables
-
-####################################################################################################
-#### A. SS-Clean-Database: Touch Timestamp File ####################################################
+#### B. SS-Clean-Database: Touch Timestamp File ####################################################
 ####################################################################################################
 
 ## this is a dummy timestamp file that will remember the last time this script was run ##
@@ -41,7 +50,7 @@ source /var/www/ss-functions
 ss_touch "${TIMESTAMP_SS_CLEAN_DATABASE}"
 
 ####################################################################################################
-#### B. SS-Clean-Database: Message (Begin Script) ##################################################
+#### C. SS-Clean-Database: Message (Begin Script) ##################################################
 ####################################################################################################
 
 ## this is a simple message that announces to the shell the purpose of this bash script ##
@@ -50,7 +59,16 @@ ss_touch "${TIMESTAMP_SS_CLEAN_DATABASE}"
 ss_echo "${COLOR_INFO}Running ss-clean-database... ${COLOR_RESET}"
 
 ####################################################################################################
-#### C. SS-Clean-Database: Delete Junk Database Tables #############################################
+#### D. SS-Clean-Database: Run SS-Dump-Database ####################################################
+####################################################################################################
+
+## we run ss-dump-database now to backup the live database(s) from all environments ##
+## this ensures the database can be restored if cleanup causes any problems ##
+
+source "${PATH_SS_DUMP_DATABASE}"
+
+####################################################################################################
+#### E. SS-Clean-Database: Delete Junk Database Tables #############################################
 ####################################################################################################
 
 ## wordfence ##
