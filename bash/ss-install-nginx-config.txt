@@ -749,6 +749,19 @@ source "${PATH_SS_INSTALL_NGINX_CLOUDFLARE_IPS}"
 source "${PATH_SS_INSTALL_NGINX_CLOUDFLARE_AUTHENTICATED_ORIGIN}"
 
 ####################################################################################################
+#### P. SS-Install-Nginx-Config: Install Perms-Policy.conf (Optional) ##############################
+####################################################################################################
+
+VALIDATE_ACTIVE_PERMS_POLICY_CONF=$(grep 'add_header Permissions-Policy' /var/www/sites/includes/perms-policy.conf 2> /dev/null)
+if [[ -z "${VALIDATE_ACTIVE_PERMS_POLICY_CONF}" ]]; then
+    ss_wget /tmp/perms-policy.conf https://raw.githubusercontent.com/littlebizzy/slickstack/master/modules/nginx/includes/perms-policy-conf.txt
+    ss_cp_if_not_exists /tmp/perms-policy.conf /var/www/sites/includes/perms-policy.conf
+fi
+
+## cleanup tmp files ##
+ss_rm /tmp/perms-policy.conf
+
+####################################################################################################
 #### P. SS-Install-Nginx-Config: Install Adminer.conf (Optional) ###################################
 ####################################################################################################
 
