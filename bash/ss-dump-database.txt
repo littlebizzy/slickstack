@@ -33,7 +33,6 @@ source /var/www/ss-functions
 ## A. Touch Timestamp File
 ## B. Message (Begin Script)
 ## C. Dump MySQL Database(s)
-## D. Dump MySQL Files (Conditional)
 ## E. Reset Permissions (Database Dump Files)
 
 ####################################################################################################
@@ -80,21 +79,6 @@ if [[ "${DEV_SITE}" == "true" ]] && [[ "${DB_REMOTE}" == "true" ]]; then
     ss_mysqldump_user development > "${PATH_DUMP_DATABASE_DEVELOPMENT}" 2> /dev/null
 elif [[ "${DEV_SITE}" == "true" ]] && [[ "${DB_REMOTE}" != "true" ]]; then
     ss_mysqldump_admin development > "${PATH_DUMP_DATABASE_DEVELOPMENT}" 2> /dev/null
-fi
-
-####################################################################################################
-#### D. SS-Dump-Database: Dump MySQL Files (Conditional) ###########################################
-####################################################################################################
-
-## DO NOT ENABLE THIS IN SS-CONFIG UNLESS YOUR SERVER HAS A TON OF EXTRA DISK SPACE ##
-## (also in future should stop mysql-server here before ss-dump to avoid corrupted mysql data files) ##
-## also should check if enough disk space before doing this ##
-if [[ "${SS_DUMP_DATABASE_FILES}" == "true" ]]; then 
-    ss_cp "${PATH_DATABASE_FILES_01}" "${PATH_DUMP_DATABASE_FILES_01}"
-    ss_cp "${PATH_DATABASE_FILES_02}" "${PATH_DUMP_DATABASE_FILES_02}"
-    ss_cp "${PATH_DATABASE_FILES_03}" "${PATH_DUMP_DATABASE_FILES_03}"
-    ss_cp "${PATH_DATABASE_FILES_04}" "${PATH_DUMP_DATABASE_FILES_04}"
-    ss_cp "${PATH_DATABASE_FILES_05}" "${PATH_DUMP_DATABASE_FILES_05}"
 fi
 
 ####################################################################################################
