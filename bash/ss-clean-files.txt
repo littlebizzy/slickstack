@@ -32,24 +32,18 @@
 
 ## H. Delete MySQL Data Folder Backups
 
-## I. Delete Deprecated WordPress MU Plugins
-## J. Delete Deprecated Bash Scripts
+## I. Delete Outdated WordPress MU Plugins
+## J. Delete Outdated Bash Scripts
 
 ## K. Delete Disabled SlickStack Files
-
 ## K. Delete Deprecated SlickStack Files
 ## L. Delete Unused WordPress Core Files
-
 ## J. Delete Junk Linux System Files
-
 ## L. Delete Certain Files Throughout Public Web Root (Required) 
-
 ## L. Delete Certain Files In WordPress Content Directory
 ## L. Delete Certain WordPress Plugins (Required)
 ## M. Delete Junk Files In WordPress Plugins Directory
 ## N. Delete Junk Files In WordPress Themes Directory
-
-## Purge Cache (PHP OPcache)
 
 ####################################################################################################
 #### A. SS-Clean-Files: Source SS-Config + SS-Functions ############################################
@@ -115,7 +109,6 @@ fi
 
 find /var/www/backups/config -maxdepth 1 -name "ss-config.bak*" -type f -mtime +3 -delete
 
-
 ####################################################################################################
 #### G. SS-Clean-Files: Delete Staging Site Files (Conditional) ####################################
 ####################################################################################################
@@ -141,10 +134,13 @@ if [[ "${SS_DUMP_DATABASE_FILES}" != "true" ]]; then
 fi
 
 ####################################################################################################
-#### I. SS-Clean-Files: Delete Deprecated WordPress MU Plugins #####################################
+#### I. SS-Clean-Files: Delete Outdated WordPress MU Plugins #######################################
 ####################################################################################################
 
-## deleted deprecated mu plugins (production) ##
+## over the years SlickStack has included various MU plugins that are not longer used ##
+## here we ensure they do not exist but ss-install-wordpress-mu-plugins does too ##
+
+## production ##
 ss_rm /var/www/html/wp-content/mu-plugins/dashboard-cleanup*
 ss_rm /var/www/html/wp-content/mu-plugins/delete-expired-transients*
 ss_rm /var/www/html/wp-content/mu-plugins/disable-attachment-pages*
@@ -165,7 +161,7 @@ ss_rm /var/www/html/wp-content/mu-plugins/xxx-dev*
 ss_rm /var/www/html/wp-content/mu-plugins/xxx-notices*
 ss_rm /var/www/html/wp-content/mu-plugins/xxx-staging*
 
-## deleted deprecated mu plugins (staging) ##
+## staging ##
 ss_rm /var/www/html/staging/wp-content/mu-plugins/dashboard-cleanup*
 ss_rm /var/www/html/staging/wp-content/mu-plugins/delete-expired-transients*
 ss_rm /var/www/html/staging/wp-content/mu-plugins/disable-attachment-pages*
@@ -186,7 +182,7 @@ ss_rm /var/www/html/staging/wp-content/mu-plugins/xxx-dev*
 ss_rm /var/www/html/staging/wp-content/mu-plugins/xxx-notices*
 ss_rm /var/www/html/staging/wp-content/mu-plugins/xxx-staging*
 
-## deleted deprecated mu plugins (developement) ##
+## development ##
 ss_rm /var/www/html/dev/wp-content/mu-plugins/dashboard-cleanup*
 ss_rm /var/www/html/dev/wp-content/mu-plugins/delete-expired-transients*
 ss_rm /var/www/html/dev/wp-content/mu-plugins/disable-attachment-pages*
@@ -208,10 +204,12 @@ ss_rm /var/www/html/dev/wp-content/mu-plugins/xxx-notices*
 ss_rm /var/www/html/dev/wp-content/mu-plugins/xxx-staging*
 
 ####################################################################################################
-#### J. SS-Clean-Files: Delete Deprecated Bash Scripts #############################################
+#### J. SS-Clean-Files: Delete Outdated Bash Scripts ###############################################
 ####################################################################################################
 
-## delete deprecated bash scripts ##
+## many of the SlickStack bash scripts have changed names or been removed after a while ##
+## this ensures those old scripts are properly deleted to avoid any confusion ##
+
 ss_rm /var/www/0-crontab
 ss_rm /var/www/1-cron-often
 ss_rm /var/www/2-cron-regular
@@ -311,11 +309,6 @@ ss_rm /var/www/ss-purge
 ss_rm /var/www/ss-update
 ss_rm /var/www/ss-update-packages
 
-## old names without .conf ##
-ss_rm /var/www/sites/production
-ss_rm /var/www/sites/staging
-ss_rm /var/www/sites/development
-
 ####################################################################################################
 #### K. SS-Clean-Files: Delete Deprecated SlickStack Files #########################################
 ####################################################################################################
@@ -325,6 +318,11 @@ ss_rm /var/www/sites/development
 
 ## temp fix to delete files generated from empty variables in ss-config MU plugins ##
 ss_rm /var/www/html/wp-content/mu-plugins/tmp* ## junk folder from before
+
+## old names without .conf ##
+ss_rm /var/www/sites/production
+ss_rm /var/www/sites/staging
+ss_rm /var/www/sites/development
 
 ## delete deprecated log files ##
 ss_rm /var/www/logs/cron.log ## deprecated
@@ -1680,13 +1678,6 @@ ss_rm /var/www/html/wp-content/uploads/snapshots*
 ss_rm /var/www/html/wp-content/uploads/fw-backup*
 # ss_rm /var/www/html/wp-content/uploads/ithemes-security*
 ss_rm /var/www/html/wp-content/uploads/cache* ## improper cache path
-
-####################################################################################################
-#### SS-Clean-Files: Purge Cache (PHP OPcache) #####################################################
-####################################################################################################
-
-## run ss-purge-opcache ##
-source "${PATH_SS_PURGE_OPCACHE}"
 
 ####################################################################################################
 #### SlickStack: Reset Permissions (SlickStack Scripts) ############################################
