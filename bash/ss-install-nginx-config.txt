@@ -719,6 +719,61 @@ source "${PATH_SS_INSTALL_NGINX_SSL}"
 source "${PATH_SS_INSTALL_NGINX_CLOUDFLARE_IPS}"
 
 ####################################################################################################
+#### N. SS-Install-Nginx-Config: Install Allowed-IPs.conf (Conditional) ############################
+####################################################################################################
+
+if [[ "${CLOUDFLARE_IPS_ONLY}" == "true" ]]; then 
+
+## retrieve allowed-ips.conf boilerplate ##
+ss_wget /tmp/allowed-ips.conf https://raw.githubusercontent.com/littlebizzy/slickstack/master/modules/nginx/includes/allowed-ips-conf.txt
+
+ss_touch /tmp/ips-v4.txt
+ss_null /tmp/ips-v4.txt
+
+ss_touch /tmp/ips-v6.txt
+ss_null /tmp/ips-v6.txt
+
+## ipv4 list ##
+CLOUDFLARE_IPV4_LIST=$(for i in `curl -s -L https://www.cloudflare.com/ips-v4`; do
+    echo "allow $i;" >> /tmp/ips-v4.txt;
+done)
+
+sed -i -e '/@CLOUDFLARE_IPV4_LIST/{r /tmp/ips-v4.txt' -e 'd' -e '}' /tmp/allowed-ips.conf
+
+## ipv6 list ##
+CLOUDFLARE_IPV6_LIST=$(for i in `curl -s -L https://www.cloudflare.com/ips-v6`; do
+    echo "allow $i;" >> /tmp/ips-v6.txt;
+done)
+
+sed -i -e '/@CLOUDFLARE_IPV6_LIST/{r /tmp/ips-v6.txt' -e 'd' -e '}' /tmp/allowed-ips.conf
+
+## install allowed-ips.conf if valid ##
+VALIDATE_TMP_ALLOWED_IPS_CONF=$(grep 'allow ' /tmp/allowed-ips.conf 2> /dev/null)
+if [[ -n "${VALIDATE_TMP_ALLOWED_IPS_CONF}" ]]; then
+    ss_mv /tmp/allowed-ips.conf /var/www/sites/includes/allowed-ips.conf
+    ss_reload nginx
+    ss_echo "${COLOR_INFO}Successfully allowed-ips.conf and reloaded Nginx... ${COLOR_RESET}"
+elif [[ -z "${VALIDATE_TMP_ALLOWED_IPS_CONF}" ]]; then
+    ss_echo "${COLOR_WARN}Latest allowed-ips.conf boilerplate appears corrupt so skipping install (old version remains installed if exists)... ${COLOR_RESET}"
+fi
+
+
+#### else if cloudflare ips false #####
+elif [[ "${CLOUDFLARE_IPS_ONLY}" != "true" ]]; then
+    ss_rm /var/www/sites/includes/allowed-ips.conf
+    ## no need to reload nginx here... ##
+    ss_echo "${COLOR_WARN}CLOUDFLARE_IPS_ONLY set to false in your ss-config so allowed-ips.conf removed and disabled... ${COLOR_RESET}"
+
+
+## end if parent #####
+fi
+
+## temp cleanup ##
+ss_rm /tmp/allowed-ips.conf
+# ss_rm /tmp/ips-v4.txt
+# ss_rm /tmp/ips-v6.txt
+
+####################################################################################################
 #### O. SS-Install-Nginx-Config: Install Authenticated-Origin.conf (Optional) ######################
 ####################################################################################################
 
