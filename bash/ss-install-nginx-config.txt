@@ -725,7 +725,11 @@ source "${PATH_SS_INSTALL_NGINX_CLOUDFLARE_IPS}"
 if [[ "${CLOUDFLARE_IPS_ONLY}" == "true" ]]; then 
 
 ## retrieve allowed-ips.conf boilerplate ##
-ss_wget "${TMP_ALLOWED_IPS_CONF}" https://raw.githubusercontent.com/littlebizzy/slickstack/master/modules/nginx/includes/allowed-ips-conf.txt
+ss_wget "${TMP_ALLOWED_IPS_CONF}" "${GITHUB_ALLOWED_IPS_CONF}"
+VALIDATE_TMP_ALLOWED_IPS_CONF=$(grep 'SS_EOF' "${TMP_ALLOWED_IPS_CONF}" 2> /dev/null)
+if [[ -z "${VALIDATE_TMP_ALLOWED_IPS_CONF}" ]]; then
+    ss_wget "${TMP_ALLOWED_IPS_CONF}" "${GITLAB_ALLOWED_IPS_CONF}"
+fi
 
 ss_touch /tmp/ips-v4.txt
 ss_null /tmp/ips-v4.txt
@@ -737,14 +741,12 @@ ss_null /tmp/ips-v6.txt
 CLOUDFLARE_IPV4_LIST=$(for i in `curl -s -L https://www.cloudflare.com/ips-v4`; do
     echo "allow $i;" >> /tmp/ips-v4.txt;
 done)
-
 sed -i -e '/@CLOUDFLARE_IPV4_LIST/{r /tmp/ips-v4.txt' -e 'd' -e '}' "${TMP_ALLOWED_IPS_CONF}"
 
 ## ipv6 list ##
 CLOUDFLARE_IPV6_LIST=$(for i in `curl -s -L https://www.cloudflare.com/ips-v6`; do
     echo "allow $i;" >> /tmp/ips-v6.txt;
 done)
-
 sed -i -e '/@CLOUDFLARE_IPV6_LIST/{r /tmp/ips-v6.txt' -e 'd' -e '}' "${TMP_ALLOWED_IPS_CONF}"
 
 ## install allowed-ips.conf if valid ##
