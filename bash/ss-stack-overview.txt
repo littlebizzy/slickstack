@@ -3,11 +3,11 @@
 ####################################################################################################
 #### author: SlickStack ############################################################################
 #### link: https://slickstack.io ###################################################################
-#### mirror: https://mirrors.slickstack.io/bash/ss-stack-overview.txt ##############################
+#### mirror: littlebizzy/slickstack/blob/master/bash/ss-stack-overview.txt #########################
 #### path: /var/www/ss-stack-overview ##############################################################
 #### destination: n/a (not a boilerplate) ##########################################################
 #### purpose: Displays a summary of critical SlickStack settings (passwords, domains, etc) #########
-#### module version: Ubuntu 22.04 LTS ##############################################################
+#### module version: Ubuntu 24.04 LTS ##############################################################
 #### sourced by: ss-install, ss-update-modules #####################################################
 #### bash aliases: ss info, ss overview, ss status, ss summary #####################################
 ####################################################################################################
@@ -27,13 +27,29 @@ source /var/www/ss-functions
 ## this is a brief summary of the different code snippets you will find in this script ##
 ## each section should be commented so you understand what is being accomplished ##
 
-## A. Touch Timestamp File
-## B. Message (Begin Script)
-## C. Display Critical SlickStack Settings
-## D. Display SSH Key (One Time Only)
+## A. Source SS-Config + SS-Functions
+## B. Touch Timestamp File
+## C. Message (Begin Script)
+## D. Display Critical SlickStack Settings
+## E. Display SSH Key (One Time Only)
 
 ####################################################################################################
-#### A. SS-Stack-Overview: Touch Timestamp File ####################################################
+#### A. SS-Stack-Overview: Source SS-Config + SS-Functions #########################################
+####################################################################################################
+
+## before anything else we must source the critical variables that power this script ##
+## ss-config is setup during ss-install wizard but ss-functions is hardcoded ##
+
+## source ss-config ##
+source /var/www/ss-config
+
+## source ss-functions ##
+source /var/www/ss-functions
+
+## BELOW THIS RELIES ON SS-CONFIG AND SS-FUNCTIONS
+
+####################################################################################################
+#### B. SS-Stack-Overview: Touch Timestamp File ####################################################
 ####################################################################################################
 
 ## this is a dummy timestamp file that will remember the last time this script was run ##
@@ -42,7 +58,7 @@ source /var/www/ss-functions
 ss_touch "${TIMESTAMP_SS_STACK_OVERVIEW}"
 
 ####################################################################################################
-#### B. SS-Stack-Overview: Message (Begin Script) ##################################################
+#### C. SS-Stack-Overview: Message (Begin Script) ##################################################
 ####################################################################################################
 
 ## this is a simple message that announces to the shell the purpose of this bash script ##
@@ -51,7 +67,7 @@ ss_touch "${TIMESTAMP_SS_STACK_OVERVIEW}"
 ss_echo "${COLOR_INFO}Running ss-stack-overview... ${COLOR_RESET}"
 
 ####################################################################################################
-#### C. SS-Stack-Overview: Display Critical SlickStack Settings ####################################
+#### D. SS-Stack-Overview: Display Critical SlickStack Settings ####################################
 ####################################################################################################
 
 ## the shell will echo the most important ss-config settings (and beyond) currently used ##
@@ -79,12 +95,6 @@ fi
 
 ## add more checks like block files exist, which ssl is active etc
 
-#############
-## clean this up and use for health check of SITE_DOMAIN
-## move to ss-stack-overview?
-## for compatibility and stability reasons SlickStack does not support sub-subdomains ##
-## this ensures that your SSL and Cloudflare especially will function properly ##
-
 ## calculate how many dots in chosen site domain ##
 CALC_DOMAIN=${SITE_DOMAIN//$SITE_TLD/}
 CALC_DOMAIN_SUB=$(echo "${CALC_DOMAIN}" | grep -o "\." | wc -l)
@@ -98,7 +108,6 @@ if [[ "${CALC_DOMAIN_SUB}" -gt 1 ]]; then
 fi
 ###############
 
-## display critical settings ##
 ss_echo ""
 ss_echo "${COLOR_INFO}################################################################################${COLOR_RESET}"
 ss_echo "${COLOR_INFO}#### Here are your SlickStack settings (SS-Stack-Overview) #####################${COLOR_RESET}"
@@ -113,7 +122,7 @@ ss_echo "${COLOR_INFO}IPv4 Address: ${LIGHTGREEN}${SYSTEM_IPV4_ADDRESS} ${COLOR_
 ss_echo "${COLOR_INFO}IPv6 Address: ${LIGHTGREEN}${SYSTEM_IPV6_ADDRESS} ${COLOR_RESET}"
 ss_echo "${COLOR_INFO}Site TLD: ${LIGHTGREEN}${SITE_TLD} ${COLOR_RESET}"
 ss_echo "${COLOR_INFO}Site Domain: ${LIGHTGREEN}${SITE_DOMAIN} ${COLOR_RESET}"
-ss_echo "${COLOR_INFO}Adminer (phpMyAdmin) URL: ${LIGHTGREEN}https://${SITE_DOMAIN}/${ADMINER_URL}/ ${COLOR_RESET}"
+ss_echo "${COLOR_INFO}Adminer URL: ${LIGHTGREEN}https://${SITE_DOMAIN}/${ADMINER_URL}/ ${COLOR_RESET}"
 ss_echo "${COLOR_INFO}Server Noindex: ${LIGHTGREEN}${SS_NOINDEX} ${COLOR_RESET}"
 ss_echo "${COLOR_INFO}Sudo User: ${LIGHTGREEN}${SUDO_USER} ${COLOR_RESET}"
 ss_echo "${COLOR_INFO}Sudo Password: ${LIGHTGREEN}${SUDO_PASSWORD} ${COLOR_RESET}"
@@ -145,7 +154,7 @@ ss_echo "${COLOR_INFO}Lets Encrypt status: ${LIGHTGREEN}${LETSENCRYPT_STATUS} ${
 ss_echo ""
 
 ####################################################################################################
-#### D. SS-Stack-Overview: Display SSH Key (One Time Only) #########################################
+#### E. SS-Stack-Overview: Display SSH Key (One Time Only) #########################################
 ####################################################################################################
 
 ## for ease of use this snippet will diplay the generated SSH private key one time only ##
