@@ -65,7 +65,7 @@
 ## this build version ensures compatibility with the currently active ss-config file ##
 ## it must match the localhost ss-config otherwise installation will fail ##
 
-SS_INSTALL_BUILD="APR2024HH"
+SS_INSTALL_BUILD="APR2024JJ"
 
 ####################################################################################################
 #### B. SS-Install: Validate (Repair) SS-Functions #################################################
@@ -282,6 +282,8 @@ ss_echo "${COLOR_INFO}##########################################################
 ss_echo ""
 
 ## replace placeholders with random strings ##
+ss_sed "s|@SUDO_USER|sudo-$(openssl rand -hex 3)|g" /tmp/ss-config-wizard
+ss_sed "s|@SUDO_PASSWORD|pass-$(openssl rand -hex 10)|g" /tmp/ss-config-wizard
 ss_sed "s/@DB_PASSWORD_ROOT/pass-$(openssl rand -hex 10)/g" /tmp/ss-config-wizard
 ss_sed "s/@DB_PASSWORD_USER/pass-$(openssl rand -hex 10)/g" /tmp/ss-config-wizard
 ss_sed "s/@SFTP_PASSWORD/pass-$(openssl rand -hex 10)/g" /tmp/ss-config-wizard
@@ -289,30 +291,8 @@ ss_sed "s/@GUEST_PASSWORD/pass-$(openssl rand -hex 10)/g" /tmp/ss-config-wizard
 ss_sed "s/@SFTP_USER/sftp-$(openssl rand -hex 3)/g" /tmp/ss-config-wizard
 ss_sed "s/@DB_USER/mysql-$(openssl rand -hex 3)/g" /tmp/ss-config-wizard
 ss_sed "s/@GUEST_USER/guest-$(openssl rand -hex 3)/g" /tmp/ss-config-wizard
-
-## random string for Adminer URL ##
 ss_sed "s/@RANDOM_STRING_ADMINER_URL/$(openssl rand -hex 12)/g" /tmp/ss-config-wizard
 
-## removing most of this soon!! ##
-## replace other placeholders with default ##
-ss_sed "s|@SS_PILOT_FILE||g" /tmp/ss-config-wizard
-
-## PROMPT: choose sudo username (default = random) ##
-sudouser_random="sudo-$(openssl rand -hex 3)"
-read -t 300 -p "$(ss_echo ${LIGHTGRAY}"Choose sudo username (for SSH):" ${LIGHTGREEN})" -e -i ${sudouser_random} ss_var_sudo_user || ss_var_sudo_user=${sudouser_random}
-ss_sed "s|@SUDO_USER|${ss_var_sudo_user}|g" /tmp/ss-config-wizard
-    
-## new line ##
-ss_print "${COLOR_RESET}\n"
-    
-## PROMPT: choose sudo password (default = random) ##
-sudopass_random=$(openssl rand -hex 12)
-read -t 300 -p "$(ss_echo ${LIGHTGRAY}"Choose sudo password (should be strong): "${LIGHTGREEN})" -e -i ${sudopass_random} ss_var_sudo_password || ss_var_sudo_password=${sudopass_random}
-ss_sed "s|@SUDO_PASSWORD|${ss_var_sudo_password}|g" /tmp/ss-config-wizard
-
-## new line ##
-ss_print "${COLOR_RESET}\n"
-    
 ## PROMPT: choose site TLD (otherwise example.com) ##
 read -t 300 -p "$(ss_echo ${LIGHTGRAY}"Choose site TLD (subdomains not allowed): "${LIGHTGREEN})" -e -i ${SYSTEM_HOSTNAME_TLD} ss_var_site_tld || ss_var_site_tld=${SYSTEM_HOSTNAME_TLD}
 ss_sed "s|@SITE_TLD|${ss_var_site_tld}|g" /tmp/ss-config-wizard
