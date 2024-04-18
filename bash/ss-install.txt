@@ -65,7 +65,7 @@
 ## this build version ensures compatibility with the currently active ss-config file ##
 ## it must match the localhost ss-config otherwise installation will fail ##
 
-SS_INSTALL_BUILD="APR2024FF"
+SS_INSTALL_BUILD="APR2024GG"
 
 ####################################################################################################
 #### B. SS-Install: Validate (Repair) SS-Functions #################################################
@@ -321,7 +321,7 @@ ss_sed "s|@SITE_TLD|${ss_var_site_tld}|g" /tmp/ss-config-wizard
 ss_print "${COLOR_RESET}\n"
     
 ## PROMPT: choose site domain (otherwise www.example.com) ##
-read -t 300 -p "$(ss_echo ${LIGHTGRAY}"Choose site domain (subdirectories not allowed): "${LIGHTGREEN})" -e -i 'www.example.com' ss_var_site_domain || ss_var_site_tld=www.${SYSTEM_HOSTNAME_TLD}
+read -t 300 -p "$(ss_echo ${LIGHTGRAY}"Choose site domain (subdirectories not allowed): "${LIGHTGREEN})" -e -i 'www.example.com' ss_var_site_domain || ss_var_site_tld=${SYSTEM_HOSTNAME}
 ss_sed "s|@SITE_DOMAIN|${ss_var_site_domain}|g" /tmp/ss-config-wizard
     
 ## new line ##
@@ -438,7 +438,6 @@ fi
 ## here we must source ss-config again after the setup wizard has completed generation ##
 ## this is different than the conditional sourcing at the top of this script ##
 
-## source ss-config ##
 source /var/www/ss-config
 
 ####################################################################################################
@@ -448,7 +447,6 @@ source /var/www/ss-config
 ## here we run ss-check after ss-config exists so that we can continue with installation ##
 ## whether or not user has exited the wizard to review ss-config it should work fine ##
 
-## source ss-check ##
 source "${PATH_SS_CHECK}"
 
 ####################################################################################################
@@ -628,26 +626,6 @@ if [[ "${SS_APP}" == "wordpress" ]]; then
 
 fi
 
-if [[ "${SS_APP}" == "prestashop" ]]; then
-
-    ## run ss-install-prestashop-packages ##
-    source "${PATH_SS_INSTALL_PRESTASHOP_PACKAGES}"
-    
-    ## run ss-install-prestashop-config ##
-    source "${PATH_SS_INSTALL_PRESTASHOP_CONFIG}"
-    
-fi
-
-if [[ "${SS_APP}" == "mediawiki" ]]; then
-
-    ## run ss-install-prestashop-packages ##
-    source "${PATH_SS_INSTALL_MEDIAWIKI_PACKAGES}"
-    
-    ## run ss-install-prestashop-config ##
-    source "${PATH_SS_INSTALL_MEDIAWIKI_CONFIG}"
-    
-fi
-
 ####################################################################################################
 #### X. SS-Install: Sync Staging Site ##############################################################
 ####################################################################################################
@@ -765,7 +743,6 @@ source "${PATH_SS_RESTART_UFW}"
 ## this is a final check to ensure the root crontab was installed properly by ss-install ##
 ## otherwise it will attempt to reinstall the crontab one more time here ##
 
-## validate crontab ##
 VALIDATE_CRONTAB=$(ss_grep_boolean 'SS_EOF' /var/spool/cron/crontabs/root)
 if [[ -z "${VALIDATE_CRONTAB}" ]]; then
     source "${PATH_SS_INSTALL_UBUNTU_CRONTAB}"
