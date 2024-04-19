@@ -49,22 +49,13 @@
 ## here we force redirect any non-canonical requests to the canonical server block below ##
 ## this vastly improves security, prevents IP snooping, SEO problems, and beyond ##
 
-server {
-	# listen 80 default_server;
-	listen 443 ssl default_server;
-	# listen [::]:80 default_server;
-	listen [::]:443 ssl default_server;
-	server_name _;
-	return 301 https://@SITE_DOMAIN$request_uri;
-}
-
 #### for Certbot only ##
 server {
-    listen 80 default_server;
-	listen [::]:80 default_server;
+    listen 80;
+	listen [::]:80;
     server_name @SITE_DOMAIN_INCLUDING_WWW @SITE_DOMAIN_EXCLUDING_WWW;
 
-	location /.well-known/acme-challenge/ {
+	location ^~ /.well-known/ {
 	allow all;
 	auth_basic off;
 	default_type "text/plain";
@@ -75,6 +66,15 @@ server {
     	return 301	https://@SITE_DOMAIN$request_uri;
     }
 
+}
+
+server {
+	# listen 80 default_server;
+	listen 443 ssl default_server;
+	# listen [::]:80 default_server;
+	listen [::]:443 ssl default_server;
+	server_name _;
+	return 301 https://@SITE_DOMAIN$request_uri;
 }
 
 ####################################################################################################
