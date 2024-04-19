@@ -50,9 +50,9 @@
 ## this vastly improves security, prevents IP snooping, SEO problems, and beyond ##
 
 server {
-	listen 80 default_server;
+	# listen 80 default_server;
 	listen 443 ssl default_server;
-	listen [::]:80 default_server;
+	# listen [::]:80 default_server;
 	listen [::]:443 ssl default_server;
 	server_name _;
 	return 301 https://@SITE_DOMAIN$request_uri;
@@ -60,10 +60,21 @@ server {
 
 #### for Certbot only ##
 server {
-    listen 80;
-	listen [::]:80;
+    listen 80 default_server;
+	listen [::]:80 default_server;
     server_name @SITE_DOMAIN_INCLUDING_WWW @SITE_DOMAIN_EXCLUDING_WWW;
-	return 301 https://@SITE_DOMAIN$request_uri;
+
+	location /.well-known/acme-challenge/ {
+	allow all;
+	auth_basic off;
+	default_type "text/plain";
+	try_files $uri =404;
+	}
+
+	location / {
+    	return 301	https://@SITE_DOMAIN$request_uri;
+    }
+
 }
 
 ####################################################################################################
