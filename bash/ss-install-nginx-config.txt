@@ -716,7 +716,60 @@ source "${PATH_SS_INSTALL_NGINX_SSL}"
 #### N. SS-Install-Nginx-Config: Install Cloudflare.conf (Conditional) #############################
 ####################################################################################################
 
-source "${PATH_SS_INSTALL_NGINX_CLOUDFLARE_IPS}"
+## if cloudflare ips true ##
+if [[ "${CLOUDFLARE_REAL_IPS}" != "false" ]]; then 
+
+## retrieve cloudflare.conf boilerplate ##
+ss_wget "${TMP_CLOUDFLARE_CONF}" "${GITHUB_CLOUDFLARE_CONF}"
+VALIDATE_TMP_CLOUDFLARE_CONF=$(grep 'SS_EOF' "${TMP_CLOUDFLARE_CONF}" 2> /dev/null)
+if [[ -z "${VALIDATE_TMP_CLOUDFLARE_CONF}" ]]; then
+    ss_wget "${TMP_CLOUDFLARE_CONF}" "${GITLAB_CLOUDFLARE_CONF}"
+fi
+
+ss_touch /tmp/ips-v4.txt
+ss_null /tmp/ips-v4.txt
+
+ss_touch /tmp/ips-v6.txt
+ss_null /tmp/ips-v6.txt
+
+## ipv4 list ##
+CLOUDFLARE_IPV4_LIST=$(for i in `curl -s -L https://www.cloudflare.com/ips-v4`; do
+    echo "set_real_ip_from $i;" >> /tmp/ips-v4.txt;
+done)
+
+sed -i -e '/@CLOUDFLARE_IPV4_LIST/{r /tmp/ips-v4.txt' -e 'd' -e '}' "${TMP_CLOUDFLARE_CONF}"
+
+## ipv6 list ##
+CLOUDFLARE_IPV6_LIST=$(for i in `curl -s -L https://www.cloudflare.com/ips-v6`; do
+    echo "set_real_ip_from $i;" >> /tmp/ips-v6.txt;
+done)
+
+sed -i -e '/@CLOUDFLARE_IPV6_LIST/{r /tmp/ips-v6.txt' -e 'd' -e '}' "${TMP_CLOUDFLARE_CONF}"
+
+## install cloudflare.conf if valid ##
+VALIDATE_TMP_CLOUDFLARE_CONF=$(grep 'set_real_ip_from' "${TMP_CLOUDFLARE_CONF}" 2> /dev/null)
+if [[ -n "${VALIDATE_TMP_CLOUDFLARE_CONF}" ]]; then
+    ss_mv "${TMP_CLOUDFLARE_CONF}" "${PATH_CLOUDFLARE_CONF}"
+    ss_reload nginx
+    ss_echo "${COLOR_INFO}ss-install-nginx-cloudflare-ips: Successfully installed cloudflare.conf and reloaded Nginx... ${COLOR_RESET}"
+elif [[ -z "${VALIDATE_TMP_CLOUDFLARE_CONF}" ]]; then
+    ss_echo "${COLOR_WARN}ss-install-nginx-cloudflare-ips: latest cloudflare.conf boilerplate appears corrupt so skipping install (old version remains installed if exists)... ${COLOR_RESET}"
+fi
+
+
+#### else if cloudflare ips false #####
+elif [[ "${NGINX_CLOUDFLARE_IPS}" == "false" ]]; then
+    ss_rm "${PATH_CLOUDFLARE_CONF}"
+    ## no need to reload nginx here... ##
+    ss_echo "${COLOR_WARN}ss-install-nginx-cloudflare-ips: cloudflare.conf is disabled in your ss-config so installation skipped... ${COLOR_RESET}"
+
+
+## end if parent #####
+fi
+
+ss_rm "${TMP_CLOUDFLARE_CONF}"
+ss_rm /tmp/ips-v4.txt
+ss_rm /tmp/ips-v6.txt
 
 ####################################################################################################
 #### N. SS-Install-Nginx-Config: Install Allowed-IPs.conf (Conditional) ############################
@@ -956,5 +1009,12 @@ chmod 0700 /var/www/crons/custom/*cron* ## 0700 means only root/sudo can execute
 ## Ref: https://serverfault.com/questions/950857/use-include-in-nginx-server-block-but-where-to-save
 ## Ref: https://serverfault.com/questions/1126212/block-bad-bot-based-on-a-query-param-signature
 ## Ref: https://developers.cloudflare.com/ssl/origin-configuration/authenticated-origin-pull/set-up/zone-level/
+## Ref: https://github.com/littlebizzy/slickstack/issues/198
+## Ref: https://developers.cloudflare.com/support/troubleshooting/restoring-visitor-ips/restoring-original-visitor-ips/
+## Ref: https://www.cloudflare.com/ips/
+## Ref: https://github.com/ergin/nginx-cloudflare-real-ip
+## Ref: https://slickstack.io/forum/topic/when-is-cloudflare-real-ip-actually-needed-for-wordpress
+## Ref: https://stackoverflow.com/questions/36223802/store-for-loop-results-as-a-variable-in-bash
+## Ref: https://stackoverflow.com/questions/6790631/use-the-contents-of-a-file-to-replace-a-string-using-sed
 
 ## SS_EOF
