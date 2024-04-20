@@ -798,7 +798,36 @@ ss_rm /tmp/perms-policy.conf
 #### P. SS-Install-Nginx-Config: Install Adminer.conf (Optional) ###################################
 ####################################################################################################
 
-source "${PATH_SS_INSTALL_NGINX_ADMINER}"
+if [[ "${ADMINER_PUBLIC}" == "true" ]]; then 
+
+ss_wget "${TMP_ADMINER_CONF}" "${GITHUB_ADMINER_CONF}"
+VALIDATE_TMP_ADMINER_CONF=$(grep 'SS_EOF' "${TMP_ADMINER_CONF}" 2> /dev/null)
+if [[ -z "${VALIDATE_TMP_ADMINER_CONF}" ]]; then
+    ss_wget "${TMP_ADMINER_CONF}" "${GITLAB_ADMINER_CONF}"
+fi
+
+## install if valid ##
+VALIDATE_TMP_ADMINER_CONF=$(grep 'SS_EOF' "${TMP_ADMINER_CONF}" 2> /dev/null)
+if [[ -n "${VALIDATE_TMP_ADMINER_CONF}" ]]; then
+    ss_sed "s/@ADMINER_RANDOM_URL/${ADMINER_URL}/g" "${TMP_ADMINER_CONF}"
+    ss_mv "${TMP_ADMINER_CONF}" "${PATH_ADMINER_CONF}"
+    ss_reload nginx
+    ss_echo "${COLOR_INFO}ss-install-nginx-adminer: Successfully installed adminer.conf and reloaded Nginx... ${COLOR_RESET}"
+elif [[ -z "${VALIDATE_TMP_ADMINER_CONF}" ]]; then
+    ss_echo "${COLOR_WARN}ss-install-nginx-adminer: latest adminer.conf boilerplate appears corrupt so skipping install (old version remains installed if exists)... ${COLOR_RESET}"
+fi
+
+#### else if adminer disabled #####
+elif [[ "${ADMINER_PUBLIC}" == "false" ]]; then
+    ss_rm "${PATH_ADMINER_CONF}"
+    ## no need to reload nginx here... ##
+    ss_echo "${COLOR_WARN}ss-install-nginx-adminer: adminer.conf is disabled in your ss-config so installation skipped... ${COLOR_RESET}"
+
+
+## end if parent #####
+fi
+
+ss_rm "${TMP_ADMINER_CONF}"
 
 ####################################################################################################
 #### Q. SS-Install-Nginx-Config: Enable TMPFS Mount (Conditional) ##################################
@@ -889,5 +918,6 @@ chmod 0700 /var/www/crons/custom/*cron* ## 0700 means only root/sudo can execute
 ## Ref: https://www.openssl.org/docs/manmaster/man1/openssl-passwd.html
 ## Ref: https://github.com/littlebizzy/slickstack/issues/198
 ## Ref: https://github.com/ergin/nginx-cloudflare-real-ip
+## Ref: https://serverfault.com/questions/950857/use-include-in-nginx-server-block-but-where-to-save
 
 ## SS_EOF
