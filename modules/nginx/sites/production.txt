@@ -76,8 +76,22 @@
 server {
 	listen 80;
 	listen [::]:80;
-	server_name @SITE_DOMAIN;
-	return 301 https://@SITE_DOMAIN$request_uri;
+	server_name @SITE_DOMAIN_INCLUDING_WWW @SITE_DOMAIN_EXCLUDING_WWW;
+
+	location /.well-known/acme-challenge/ {
+	allow all;
+	auth_basic off;
+	default_type "text/plain";
+	try_files $uri =404;
+	## https://serverfault.com/questions/1061262/nginx-lets-encrypt-https-redirect
+	## https://medium.com/@hugodelatte/configuring-an-https-server-with-nginx-and-certbot-d3abe6121af7
+	root /tmp;
+	}
+
+	location / {
+ 		return 301 https://@SITE_DOMAIN$request_uri;
+	}
+
 }
 
 server {
