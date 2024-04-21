@@ -795,9 +795,18 @@ if [[ "${SSL_TYPE}" == "letsencrypt" ]] || [[ "${SSL_TYPE}" == "certbot" ]]; the
     fi
     
     ## move file ##
-    ss_mv "${TMP_LETSENCRYPT_CONF}" "${PATH_LETSENCRYPT_CONF}"
-    ss_rm "${PATH_OPENSSL_CONF}"
-    ss_rm "${PATH_THIRDPARTY_CONF}"
+
+    if [[ -f "${PATH_LETSENCRYPT_CERT_CERT}" ]]; then
+        ss_mv "${TMP_LETSENCRYPT_CONF}" "${PATH_LETSENCRYPT_CONF}"
+        ss_rm "${PATH_OPENSSL_CONF}"
+        ss_rm "${PATH_THIRDPARTY_CONF}"
+        echo "lets encrypt cert found so installing letsencrypt.conf"
+    elif [[ ! -f "${PATH_LETSENCRYPT_CERT_CERT}" ]]; then
+        ss_mv "${TMP_OPENSSL_CONF}" "${PATH_OPENSSL_CONF}"
+        ss_rm "${PATH_LETSENCRYPT_CONF}"
+        ss_rm "${PATH_THIRDPARTY_CONF}"
+        echo "SSL_TYPE set to letsencrypt but cert file not found so reverting to openssl.conf instead"
+    fi
 
 fi
 
@@ -846,8 +855,6 @@ if [[ "${SSL_TYPE}" == "openssl" ]] || [[ -z "${SSL_TYPE}" ]]; then
         ss_sed "s/@SSL_BUFFER_SIZE/${SSL_BUFFER_SIZE}/g" "${TMP_OPENSSL_CONF}"
     fi
 
-## here we modify the live Nginx configuration files to activate Lets Encrypt certificates ##
-## this snippet will only be executed if Lets Encrypt certs appear to be successful ##
 
     ## move over and remove conflicting files ##
     ss_mv "${TMP_OPENSSL_CONF}" "${PATH_OPENSSL_CONF}"
