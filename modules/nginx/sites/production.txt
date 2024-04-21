@@ -71,10 +71,19 @@
 
 # }
 
+## https://serverfault.com/questions/1017545/unable-to-use-letsencrypt-certbot-when-http-to-https-redirect-is-setup
+
 server {
-	listen 80 default_server;
+	listen 80;
+	listen [::]:80;
+	server_name @SITE_DOMAIN;
+	return 301 https://@SITE_DOMAIN$request_uri;
+}
+
+server {
+	# listen 80 default_server;
 	listen 443 ssl default_server;
-	listen [::]:80 default_server;
+	# listen [::]:80 default_server;
 	listen [::]:443 ssl default_server;
 	server_name _;
 	return 301 https://@SITE_DOMAIN$request_uri;
