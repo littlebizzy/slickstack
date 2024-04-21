@@ -76,6 +76,13 @@ sudo ufw --force disable > /dev/null 2>&1
 ss_wget /tmp/ufw "${GITHUB_UFW_UFW}"
 ss_wget /tmp/ufw.conf "${GITHUB_UFW_CONF}"
 
+## prepare ##
+if [[ -n "${SYSTEM_DIG_IPV6_ADDRESS}" ]]; then
+    ss_sed "s|\(^IPV6=\).*|IPV6=yes|g" /tmp/ufw
+else 
+    ss_sed "s|\(^IPV6=\).*|IPV6=no|g" /tmp/ufw
+fi
+
 ## copy files to their destinations ##
 ss_cp /tmp/ufw /etc/default/ufw
 ss_cp /tmp/ufw.conf /etc/ufw/ufw.conf
