@@ -50,26 +50,26 @@
 ## this vastly improves security, prevents IP snooping, SEO problems, and beyond ##
 
 #### for Certbot only ##
-server {
-    listen 80;
-	listen [::]:80;
-    server_name @SITE_DOMAIN_INCLUDING_WWW @SITE_DOMAIN_EXCLUDING_WWW;
+# server {
+#    listen 80;
+#	listen [::]:80;
+#    server_name @SITE_DOMAIN_INCLUDING_WWW @SITE_DOMAIN_EXCLUDING_WWW;
 
-	location /.well-known/ {
-	allow all;
-	auth_basic off;
-	default_type "text/plain";
-	try_files $uri =404;
-	## https://serverfault.com/questions/1061262/nginx-lets-encrypt-https-redirect
-	## https://medium.com/@hugodelatte/configuring-an-https-server-with-nginx-and-certbot-d3abe6121af7
-	root /var/www/html;
-	}
+#	location /.well-known/ {
+#	allow all;
+#	auth_basic off;
+#	default_type "text/plain";
+#	try_files $uri =404;
+#	## https://serverfault.com/questions/1061262/nginx-lets-encrypt-https-redirect
+#	## https://medium.com/@hugodelatte/configuring-an-https-server-with-nginx-and-certbot-d3abe6121af7
+#	root /var/www/html;
+#	}
+#
+#	location / {
+ #   	return 301 https://@SITE_DOMAIN$request_uri;
+  #  }
 
-	location / {
-    	return 301 https://@SITE_DOMAIN$request_uri;
-    }
-
-}
+# }
 
 server {
 	listen 80 default_server;
@@ -121,11 +121,14 @@ error_page 404 /error_404.html;
 ## the well-known hidden directory is becoming more important for domain verification ##
 ## we implement an abundance of rules to improve functionality and stability ##
 
-location ^~ /.well-known/ {
+location /.well-known/ {
 	allow all;
 	auth_basic off;
 	default_type "text/plain";
 	try_files $uri =404;
+	## https://serverfault.com/questions/1061262/nginx-lets-encrypt-https-redirect
+	## https://medium.com/@hugodelatte/configuring-an-https-server-with-nginx-and-certbot-d3abe6121af7
+	root /var/www/html;
 }
     
 ####################################################################################################
