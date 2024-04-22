@@ -20,8 +20,9 @@
 ## this is a brief summary of the different code snippets you will find in this script ##
 ## each section should be commented so you understand what is being accomplished ##
 
-## A. Catch-All Redirect To Canonical Domain
-## B. Canonical Domain (Single Website)
+## A. Port 80 Server (Certbot Only + Redirect All Others)
+## B. Port 443 Server (Canonical + Redirect Non-Matching) 
+
 ## C. Well-Known (Domain Verification)
 ## D. Redirect Any AMP Requests
 ## E. Redirect Junk URLs
@@ -43,68 +44,38 @@
 ## R. Deny Access To Unsafe SlickStack Files
 
 ####################################################################################################
-#### A. Server Block (Production): Catch-All Redirect To Canonical Domain ##########################
+#### A. Server Block (Production): Port 80 Server (Certbot Only + Redirect All Others) #############
 ####################################################################################################
 
 ## here we force redirect any non-canonical requests to the canonical server block below ##
 ## this vastly improves security, prevents IP snooping, SEO problems, and beyond ##
 
-#### for Certbot only ##
-# server {
-#    listen 80;
-#	listen [::]:80;
-#    server_name @SITE_DOMAIN_INCLUDING_WWW @SITE_DOMAIN_EXCLUDING_WWW;
-
-#	location /.well-known/ {
-#	allow all;
-#	auth_basic off;
-#	default_type "text/plain";
-#	try_files $uri =404;
-#	## https://serverfault.com/questions/1061262/nginx-lets-encrypt-https-redirect
-#	## https://medium.com/@hugodelatte/configuring-an-https-server-with-nginx-and-certbot-d3abe6121af7
-#	root /var/www/html;
-#	}
-#
-#	location / {
- #   	return 301 https://@SITE_DOMAIN$request_uri;
-  #  }
-
-# }
-
 ## https://serverfault.com/questions/1017545/unable-to-use-letsencrypt-certbot-when-http-to-https-redirect-is-setup
+## https://serverfault.com/questions/1061262/nginx-lets-encrypt-https-redirect
+## https://medium.com/@hugodelatte/configuring-an-https-server-with-nginx-and-certbot-d3abe6121af7
 
 server {
-	listen 80;
-	listen [::]:80;
-	server_name @SITE_DOMAIN_INCLUDING_WWW @SITE_DOMAIN_EXCLUDING_WWW;
 
-	location /.well-known/acme-challenge/ {
+listen 80;
+listen [::]:80;
+server_name @SITE_DOMAIN_INCLUDING_WWW @SITE_DOMAIN_EXCLUDING_WWW;
+
+location /.well-known/acme-challenge/ {
 	allow all;
 	auth_basic off;
 	default_type "text/plain";
 	try_files $uri =404;
-	## https://serverfault.com/questions/1061262/nginx-lets-encrypt-https-redirect
-	## https://medium.com/@hugodelatte/configuring-an-https-server-with-nginx-and-certbot-d3abe6121af7
 	root /var/www/html;
-	}
+}
 
-	location / {
- 		return 301 https://@SITE_DOMAIN$request_uri;
-	}
+# location / {
+#  	return 301 https://@SITE_DOMAIN$request_uri;
+# }
 
 }
 
-# server {
-	## listen 80 default_server;
-	# listen 443 ssl default_server;
-	## listen [::]:80 default_server;
-	# listen [::]:443 ssl default_server;
-	# server_name _;
-	# return 301 https://@SITE_DOMAIN$request_uri;
-# }
-
 ####################################################################################################
-#### B. Server Block (Production): Canonical Domain (Single Website) ###############################
+#### B. Server Block (Production): Port 443 Server (Canonical + Redirect Non-Matching) #############
 ####################################################################################################
 
 ## CloudFlare ignores HTTP/2 from origin server but we enable in case of Lets Encrypt ##
@@ -144,13 +115,11 @@ error_page 404 /error_404.html;
 ## the well-known hidden directory is becoming more important for domain verification ##
 ## we implement an abundance of rules to improve functionality and stability ##
 
-location /.well-known/ {
+location /.well-known/acme-challenge/ {
 	allow all;
 	auth_basic off;
 	default_type "text/plain";
 	try_files $uri =404;
-	## https://serverfault.com/questions/1061262/nginx-lets-encrypt-https-redirect
-	## https://medium.com/@hugodelatte/configuring-an-https-server-with-nginx-and-certbot-d3abe6121af7
 	root /var/www/html;
 }
     
