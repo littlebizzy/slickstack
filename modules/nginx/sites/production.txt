@@ -50,23 +50,18 @@
 ## here we force redirect any non-canonical requests to the canonical server block below ##
 ## this vastly improves security, prevents IP snooping, SEO problems, and beyond ##
 
-## https://serverfault.com/questions/1017545/unable-to-use-letsencrypt-certbot-when-http-to-https-redirect-is-setup
-## https://serverfault.com/questions/1061262/nginx-lets-encrypt-https-redirect
-## https://medium.com/@hugodelatte/configuring-an-https-server-with-nginx-and-certbot-d3abe6121af7
-
 server {
+	listen 80;
+	listen [::]:80;
+	server_name @SITE_DOMAIN_INCLUDING_WWW @SITE_DOMAIN_EXCLUDING_WWW;
 
-listen 80;
-listen [::]:80;
-server_name @SITE_DOMAIN_INCLUDING_WWW @SITE_DOMAIN_EXCLUDING_WWW;
-
-location /.well-known/acme-challenge/ {
-	allow all;
-	auth_basic off;
-	default_type "text/plain";
-	try_files $uri =404;
-	root /var/www/html;
-}
+	location /.well-known/acme-challenge/ {
+		allow all;
+		auth_basic off;
+		default_type "text/plain";
+		try_files $uri =404;
+		root /var/www/html;
+	}
 
 # location / {
 #  	return 301 https://@SITE_DOMAIN$request_uri;
@@ -86,7 +81,7 @@ server {
 	listen [::]:443 ssl http2;
 	server_name @SITE_DOMAIN;
 	root /var/www/html;
-	
+
 	## redirect any requests that do not match server blocks ##
 	if ($http_host !~ "@SITE_DOMAIN|staging.@SITE_DOMAIN_EXCLUDING_WWW|dev.@SITE_DOMAIN_EXCLUDING_WWW") {
 	return 301        https://@SITE_DOMAIN$request_uri;
@@ -798,9 +793,11 @@ location = /ads.txt {
 ## Ref: https://serverfault.com/questions/411941/nginx-redirect-non-existant-files-on-https-to-http-with-try-files
 ## Ref: https://www.digitalocean.com/community/tutorials/how-to-configure-nginx-to-use-custom-error-pages-on-ubuntu-22-04
 ## Ref: https://stackoverflow.com/questions/50979541/direct-access-to-wp-cron-php
+## https://serverfault.com/questions/1017545/unable-to-use-letsencrypt-certbot-when-http-to-https-redirect-is-setup
+## https://serverfault.com/questions/1061262/nginx-lets-encrypt-https-redirect
+## https://medium.com/@hugodelatte/configuring-an-https-server-with-nginx-and-certbot-d3abe6121af7
 
 ## Ref: https://stackoverflow.com/questions/72516213/how-to-rewrite-wordpress-default-search-url-slug-to-clean-search-nginx
-
 ## ORGANIZE BLOCKS BETTER PER: ##
 ## Ref: https://stackoverflow.com/questions/38911354/nginx-php-file-extension-does-not-work-with-try-files
 
