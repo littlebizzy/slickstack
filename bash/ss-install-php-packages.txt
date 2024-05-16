@@ -7,7 +7,7 @@
 #### path: /var/www/ss-install-php-packages ########################################################
 #### destination: n/a (not a boilerplate) ##########################################################
 #### purpose: Reinstalls the PHP-FPM module Ubuntu packages and extensions (idempotent) ############
-#### module version: PHP-FPM 8.1.x #################################################################
+#### module version: PHP-FPM 8.3.x #################################################################
 #### sourced by: ss-install ########################################################################
 #### bash aliases: ss install php packages #########################################################
 ####################################################################################################
@@ -208,6 +208,12 @@ fi
 ## we force install the php-redis extension to ensure it exists on SlickStack servers ##
 ## this is because Redis is a core module and required for i.e. object caching ##
 
+## ubuntu 24.04 ##
+if [[ "${SYSTEM_UBUNTU_VERSION}" == "24.04" ]]; then
+    ss_apt_install php-memcached
+    ss_apt_install php-memcache
+fi
+
 ## ubuntu 22.04 ##
 if [[ "${SYSTEM_UBUNTU_VERSION}" == "22.04" ]]; then
     ss_apt_install php-memcached
@@ -233,18 +239,23 @@ fi
 ## here we set the default PHP version depending on the version of Ubuntu LTS detected ##
 ## in most cases this step is not necessary but we do it anyway for consistency ##
 
+## ubuntu 24.04 ##
+if [[ "${SYSTEM_UBUNTU_VERSION}" == "24.04" ]]; then
+    update-alternatives --set php /usr/bin/php8.3
+fi
+
 ## ubuntu 22.04 ##
-if [[ "${SYSTEM_UBUNTU_VERSION}" == "22.04" ]] && [[ "${SS_APP}" != "mysql" ]]; then
+if [[ "${SYSTEM_UBUNTU_VERSION}" == "22.04" ]]; then
     update-alternatives --set php /usr/bin/php8.1
 fi
 
 ## ubuntu 20.04 ##
-if [[ "${SYSTEM_UBUNTU_VERSION}" == "20.04" ]] && [[ "${SS_APP}" != "mysql" ]]; then
+if [[ "${SYSTEM_UBUNTU_VERSION}" == "20.04" ]]; then
     update-alternatives --set php /usr/bin/php7.4
 fi
 
 ## ubuntu 18.04 ##
-if [[ "${SYSTEM_UBUNTU_VERSION}" == "18.04" ]] && [[ "${SS_APP}" != "mysql" ]]; then
+if [[ "${SYSTEM_UBUNTU_VERSION}" == "18.04" ]]; then
     update-alternatives --set php /usr/bin/php7.2
 fi
 
