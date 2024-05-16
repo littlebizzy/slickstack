@@ -86,6 +86,32 @@ ss_apt_upgrade
 ## here PHP-FPM will be installed along with any custom PHP extensions in your ss-config ##
 ## remember to check version compatibility of PHP extensions if you modify them ##
 
+## ubuntu 24.04 ##
+if [[ "${SYSTEM_UBUNTU_VERSION}" == "24.04" ]]; then
+    PHP_EXTENSIONS_NOW=$(source /var/www/ss-config; echo "${PHP_EXTENSIONS}")
+    
+        ss_apt_install php8.3-fpm
+        ss_apt_install php8.3-bcmath
+        ss_apt_install php8.3-curl
+        ss_apt_install php8.3-gd
+        ss_apt_install php8.3-imagick
+        ss_apt_install php8.3-intl
+        ss_apt_install php8.3-mbstring
+        ss_apt_install php8.3-mysql
+        ss_apt_install php8.3-soap
+        ss_apt_install php8.3-sqlite3
+        ss_apt_install php8.3-xml
+        ss_apt_install php8.3-zip
+    
+        ## https://stackoverflow.com/questions/27702452/loop-through-a-comma-separated-shell-variable
+    if [[ -n "${PHP_EXTENSIONS_NOW}" ]]; then
+        for i in ${PHP_EXTENSIONS_NOW//,/ }
+            do
+            ss_apt_install php8.3-"$i"
+        done
+    fi
+fi
+
 ## ubuntu 22.04 ##
 if [[ "${SYSTEM_UBUNTU_VERSION}" == "22.04" ]]; then
     PHP_EXTENSIONS_NOW=$(source /var/www/ss-config; echo "${PHP_EXTENSIONS}")
@@ -95,7 +121,7 @@ if [[ "${SYSTEM_UBUNTU_VERSION}" == "22.04" ]]; then
         ss_apt_install php8.1-curl
         ss_apt_install php8.1-gd
         ss_apt_install php8.1-imagick
-        ss_apt_install php8.1-intl ## re-added June 2023
+        ss_apt_install php8.1-intl
         ss_apt_install php8.1-mbstring
         ss_apt_install php8.1-mysql
         ss_apt_install php8.1-soap
