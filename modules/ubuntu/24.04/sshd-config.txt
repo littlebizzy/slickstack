@@ -31,6 +31,128 @@
 ## H. SFTP User Settings
 
 ####################################################################################################
+#### A. SSHD_Config: Port/Listen Settings ##########################################################
+####################################################################################################
+
+## we only allow IPv4 connections and disable DNS lookups to speed up SSH connections ##
+## to ensure SSH usability we hardcode port 22 for better vendor compatibility ##
+
+Port 22
+AddressFamily inet
+ListenAddress 0.0.0.0
+# ListenAddress ::
+
+####################################################################################################
+#### B. SSHD_Config: Fingerprint Settings ##########################################################
+####################################################################################################
+
+## these are the default fingerprint keys that modern OpenSSH servers recommend using ##
+## generally speaking you should select RSA such as when using a new SSH app ##
+
+HostKey /etc/ssh/ssh_host_rsa_key
+HostKey /etc/ssh/ssh_host_ecdsa_key
+HostKey /etc/ssh/ssh_host_ed25519_key
+
+####################################################################################################
+#### C. SSHD_Config: Ciphers/Keying Settings #######################################################
+####################################################################################################
+
+# RekeyLimit default none
+
+####################################################################################################
+#### D. SSHD_Config: Logging Settings ##############################################################
+####################################################################################################
+
+SyslogFacility AUTH
+LogLevel INFO
+
+####################################################################################################
+#### E. SSHD_Config: Authentication Settings #######################################################
+####################################################################################################
+
+## the root user cannot access SSH after the first ss-install setup process is completed ##
+## ensure that you remember your sudo user and password (set in your ss-config) ##
+
+AllowUsers @SUDO_USER@SSH_IPV4 @SFTP_USER
+LoginGraceTime 1m
+PermitRootLogin no ## never
+StrictModes no
+MaxAuthTries 6
+MaxSessions 10
+PubkeyAuthentication yes
+AuthorizedKeysFile @PATH_SSH_AUTHORIZED_KEYS_FILE
+# AuthorizedPrincipalsFile none
+# AuthorizedKeysCommand none
+# AuthorizedKeysCommandUser nobody
+# HostbasedAuthentication no ## never
+# IgnoreUserKnownHosts yes
+# IgnoreRhosts yes
+PasswordAuthentication @SSH_PASSWORD_AUTHENTICATION
+PermitEmptyPasswords no ## never
+KbdInteractiveAuthentication no ## Ubuntu 22.04+ (replaced ChallengeResponseAuthentication)
+
+####################################################################################################
+#### F. SSHD_Config: Kerberos/GSSAPI Settings ######################################################
+####################################################################################################
+
+# KerberosAuthentication no
+# KerberosOrLocalPasswd yes
+# KerberosTicketCleanup yes
+# KerberosGetAFSToken no
+
+# GSSAPIAuthentication yes
+# GSSAPICleanupCredentials no
+# GSSAPIStrictAcceptorCheck yes
+# GSSAPIKeyExchange no
+
+####################################################################################################
+#### G. SSHD_Config: Misc Settings #################################################################
+####################################################################################################
+
+## below are a bunch of other SSH settings in the same order they are found by default ##
+## some of these affect authentication above and change a bit between versions ##
+
+UsePAM yes
+# AllowAgentForwarding yes
+AllowTcpForwarding yes ## unfortunately required by CodeGuard (and maybe other apps)
+# GatewayPorts no
+X11Forwarding yes
+# X11DisplayOffset 10
+# X11UseLocalhost yes
+# PermitTTY yes
+PrintMotd no
+# PrintLastLog yes
+TCPKeepAlive yes
+# PermitUserEnvironment no
+# Compression delayed
+ClientAliveInterval 0
+ClientAliveCountMax 3
+UseDNS no
+# PidFile /var/run/sshd.pid
+# MaxStartups 10:30:100
+# PermitTunnel no
+# ChrootDirectory none
+# VersionAddendum none
+# Banner none
+
+# AcceptEnv LANG LC_*
+
+####################################################################################################
+#### H. SSHD_Config: SFTP User Settings ############################################################
+####################################################################################################
+
+## the SFTP user must be different than your sudo user and has limited (jailed) access ##
+## you can share this login with trusted developers or remote backup services ##
+
+Subsystem sftp internal-sftp
+Match User @SFTP_USER
+ChrootDirectory /var/www
+ForceCommand internal-sftp
+AllowTcpForwarding no
+X11Forwarding no
+# PermitTTY no
+
+####################################################################################################
 #### External References Used By SlickStack To Improve This Script (Thanks, Interwebz) #############
 ####################################################################################################
 
