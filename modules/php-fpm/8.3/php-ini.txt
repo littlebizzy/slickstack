@@ -449,6 +449,50 @@ ldap.max_links = -1
 ;; ffi.preload=
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;; PHP.ini: OPcache Module ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; for stability reasons certain OPcache settings like validate_timestamps are hardcoded ;;
+;; RAM is better than OPcache file cache (only used as fallback in SlickStack) ;;
+
+[opcache]
+opcache.enable=1 ;; ss = 1
+opcache.enable_cli=1 ;; ss = 1
+opcache.memory_consumption=@OPCACHE_MEMORY_CONSUMPTION ;; ss = 256
+opcache.interned_strings_buffer=@OPCACHE_INTERNED_STRINGS_BUFFER ;; ss = 64
+opcache.max_accelerated_files=@OPCACHE_MAX_ACCELERATED_FILES ;; ss = 10000
+opcache.max_wasted_percentage=@OPCACHE_MAX_WASTED_PERCENTAGE ;; ss = 5
+opcache.use_cwd=1 ;; ss = 1 (avoids filename collisions)
+opcache.validate_timestamps=1 ;; ss = 1 (avoids having to manually purge OPcache)
+opcache.revalidate_freq=@OPCACHE_REVALIDATE_FREQUENCY ;; ss = 2
+opcache.revalidate_path=0 ;; ss = 0
+opcache.save_comments=1 ;; ss = 1
+opcache.record_warnings=0 ;; = 0 (PHP 8.0+)
+opcache.enable_file_override=1 ;; ss = 1 (faster)
+;; opcache.optimization_level=0x7FFFBFFF
+opcache.dups_fix=0 ;; ss = 0
+opcache.blacklist_filename=@OPCACHE_BLACKLIST_FILENAME ;; ss = (blank)
+opcache.max_file_size=32 ;; ss = 32
+opcache.force_restart_timeout=180 ;; ss = 180
+opcache.error_log=/var/www/logs/error.log ;; ss = /var/www/logs/error.log
+opcache.log_verbosity_level=1 ;; ss = 1
+opcache.preferred_memory_model= ;; ss = (blank)
+opcache.protect_memory=0 ;; ss = 0
+opcache.restrict_api= ;; ss = (blank)
+opcache.mmap_base= ;; ss = (blank)
+opcache.file_cache=/var/www/cache/opcache ;; ss = /var/www/cache/opcache
+opcache.file_cache_only=0 ;; ss = 0 (PHP-FPM pool should use OPcache file cache as a fallback only)
+opcache.file_cache_consistency_checks=1 ;; ss = 1 (in case of malicious file uploads)
+opcache.huge_code_pages=@OPCACHE_HUGE_CODE_PAGES ;; ss = 0
+opcache.validate_permission=0 ;; ss = 0 (not a shared hosting environment)
+opcache.validate_root=0 ;; ss = 0 (not a shared hosting environment)
+opcache.opt_debug_level=0 ;; ss = 0 (PHP 7.1+)
+;; opcache.preload=@OPCACHE_PRELOAD ;; ss = 0 (PHP 7.4+)
+;; opcache.preload_user=www-data ;; ss = www-data (PHP 7.4+)
+opcache.file_update_protection=2 ;; ss = 2 (PHP 7.4+)
+opcache.lockfile_path=/tmp ;; ss = /tmp (PHP 7.4+)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
