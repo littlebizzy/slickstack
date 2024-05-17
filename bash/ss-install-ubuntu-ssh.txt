@@ -3,17 +3,40 @@
 ####################################################################################################
 #### author: SlickStack ############################################################################
 #### link: https://slickstack.io ###################################################################
-#### mirror: https://mirrors.slickstack.io/bash/ss-install-ubuntu-ssh.txt ##########################
+#### mirror: littlebizzy/slickstack/blob/master/bash/ss-install-ubuntu-ssh.txt #####################
 #### path: /var/www/ss-install-ubuntu-ssh ##########################################################
 #### destination: n/a (not a boilerplate) ##########################################################
 #### purpose: Reinstalls the Ubuntu (OS) SSH daemon for SlickStack servers (idempotent) ############
-#### module version: Ubuntu 22.04 LTS ##############################################################
+#### module version: Ubuntu 24.04 LTS ##############################################################
 #### sourced by: ss-install ########################################################################
 #### bash aliases: ss install ubuntu ssh, ss install ssh ###########################################
 ####################################################################################################
 
 ## SS-CONFIG MUST BE PROPERLY CONFIGURED AND ON CURRENT BUILD BEFORE RUNNING SS-INSTALL ##
 ## ENSURE YOUR SS-CONFIG BUILD REMAINS CURRENT BY RUNNING SS-UPDATE OCCASIONALLY ##
+
+####################################################################################################
+#### TABLE OF CONTENTS (SS-Install-Ubuntu-SSH) #####################################################
+####################################################################################################
+
+## this is a brief summary of the different code snippets you will find in this script ##
+## each section should be commented so you understand what is being accomplished ##
+
+## A. Source SS-Config + SS-Functions
+## B. Touch Timestamp File
+## C. Message (Begin Script)
+
+## C. Install SSH Daemon
+## D. Generate Key Pair (If Not Exists)
+## E. Reset Permissions (SSH)
+## F. Restart Modules (SSH)
+
+####################################################################################################
+#### A. SS-Install-Ubuntu-SSH: Source SS-Config + SS-Functions #####################################
+####################################################################################################
+
+## before anything else we must source the critical variables that power this script ##
+## ss-config is setup during ss-install wizard but ss-functions is hardcoded ##
 
 ## source ss-config ##
 source /var/www/ss-config
@@ -24,21 +47,7 @@ source /var/www/ss-functions
 ## BELOW THIS RELIES ON SS-CONFIG AND SS-FUNCTIONS
 
 ####################################################################################################
-#### TABLE OF CONTENTS (SS-Install-Ubuntu-SSH) #####################################################
-####################################################################################################
-
-## this is a brief summary of the different code snippets you will find in this script ##
-## each section should be commented so you understand what is being accomplished ##
-
-## A. Touch Timestamp File
-## B. Message (Begin Script)
-## C. Install SSH Daemon
-## D. Generate Key Pair (If Not Exists)
-## E. Reset Permissions (SSH)
-## F. Restart Modules (SSH)
-
-####################################################################################################
-#### A. SS-Install-Ubuntu-SSH: Touch Timestamp File ################################################
+#### B. SS-Install-Ubuntu-SSH: Touch Timestamp File ################################################
 ####################################################################################################
 
 ## this is a dummy timestamp file that will remember the last time this script was run ##
@@ -47,7 +56,7 @@ source /var/www/ss-functions
 ss_touch "${TIMESTAMP_SS_INSTALL_UBUNTU_SSH}"
 
 ####################################################################################################
-#### B. SS-Install-Ubuntu-SSH: Message (Begin Script) ##############################################
+#### C. SS-Install-Ubuntu-SSH: Message (Begin Script) ##############################################
 ####################################################################################################
 
 ## this is a simple message that announces to the shell the purpose of this bash script ##
@@ -56,43 +65,40 @@ ss_touch "${TIMESTAMP_SS_INSTALL_UBUNTU_SSH}"
 ss_echo "${COLOR_INFO}Running ss-install-ubuntu-ssh... ${COLOR_RESET}"
 
 ####################################################################################################
-#### X. Change To Default Directory #####################################
-####################################################################################################
-
-ss_cd_default
-
-####################################################################################################
-#### C. SS-Install-Ubuntu-SSH: Install SSH Daemon ##################################################
+#### D. SS-Install-Ubuntu-SSH: Install SSH Daemon ##################################################
 ####################################################################################################
 
 ## here we use an optimized boilerplate to reinstall the SSH/SFTP daemon to your server ##
 ## keep in mind that the port number will change (and root disabled) after this ##
 
-## download latest versions ##
+## ubuntu 22.04 ##
+if [[ "${SYSTEM_UBUNTU_VERSION}" == "24.04" ]]; then 
+     ss_wget "${TMP_SSHD_CONFIG}" "${GITHUB_SSHD_CONFIG_2404}"
+fi
 
-    ## ubuntu 22.04 ##
-    if [[ "${SYSTEM_UBUNTU_VERSION}" == "22.04" ]]; then 
-        ss_wget "${TMP_SSHD_CONFIG}" "${GITHUB_SSHD_CONFIG_2204}"
-    fi
+## ubuntu 22.04 ##
+if [[ "${SYSTEM_UBUNTU_VERSION}" == "22.04" ]]; then 
+    ss_wget "${TMP_SSHD_CONFIG}" "${GITHUB_SSHD_CONFIG_2204}"
+fi
     
-    ## ubuntu 20.04 ##
-    if [[ "${SYSTEM_UBUNTU_VERSION}" == "20.04" ]]; then 
-        ss_wget "${TMP_SSHD_CONFIG}" "${GITHUB_SSHD_CONFIG_2004}"
-    fi
+## ubuntu 20.04 ##
+if [[ "${SYSTEM_UBUNTU_VERSION}" == "20.04" ]]; then 
+    ss_wget "${TMP_SSHD_CONFIG}" "${GITHUB_SSHD_CONFIG_2004}"
+fi
     
-    ## ubuntu 18.04 ##
-    if [[ "${SYSTEM_UBUNTU_VERSION}" == "18.04" ]]; then
-        ss_wget "${TMP_SSHD_CONFIG}" "${GITHUB_SSHD_CONFIG_1804}"
-    fi
+## ubuntu 18.04 ##
+if [[ "${SYSTEM_UBUNTU_VERSION}" == "18.04" ]]; then
+    ss_wget "${TMP_SSHD_CONFIG}" "${GITHUB_SSHD_CONFIG_1804}"
+fi
 
 ## replace variables ##
-ss_sed "s/@SUDO_USER/${SUDO_USER}/g" "$TMP_SSHD_CONFIG"
-ss_sed "s/@SFTP_USER/${SFTP_USER}/g" "$TMP_SSHD_CONFIG"
+ss_sed "s/@SUDO_USER/${SUDO_USER}/g" "${TMP_SSHD_CONFIG}"
+ss_sed "s/@SFTP_USER/${SFTP_USER}/g" "${TMP_SSHD_CONFIG}"
 
 ## set SSH port number (optional) ##
-ss_sed "s/@SSH_PORT/22/g" "$TMP_SSHD_CONFIG"
+ss_sed "s/@SSH_PORT/22/g" "${TMP_SSHD_CONFIG}"
 
-ss_sed "s|@PATH_SSH_AUTHORIZED_KEYS_FILE|${PATH_SSH_AUTHORIZED_KEYS_FILE}|g" "$TMP_SSHD_CONFIG"
+ss_sed "s|@PATH_SSH_AUTHORIZED_KEYS_FILE|${PATH_SSH_AUTHORIZED_KEYS_FILE}|g" "${TMP_SSHD_CONFIG}"
 
 ## restrict sudo ip address if desired (we do not use hosts.allow file in case SFTP user wants to login from anywhere) ##
 if [[ "${SSH_RESTRICT_IP}" == "true" ]]; then
@@ -103,21 +109,21 @@ fi
 
 ## enable/disable password authentication (depending on if SSH_KEYS is enabled) ##
 if [[ "$SSH_KEYS" == "true" ]]; then 
-    ss_sed "s/@SSH_PASSWORD_AUTHENTICATION/no/g" "$TMP_SSHD_CONFIG"
+    ss_sed "s/@SSH_PASSWORD_AUTHENTICATION/no/g" "${TMP_SSHD_CONFIG}"
 else 
-    ss_sed "s/@SSH_PASSWORD_AUTHENTICATION/yes/g" "$TMP_SSHD_CONFIG"
+    ss_sed "s/@SSH_PASSWORD_AUTHENTICATION/yes/g" "${TMP_SSHD_CONFIG}"
 fi
 
 ## enable/disable public key authentication (depending on if SSH_KEYS is enabled) ##
 if [[ "$SSH_KEYS" == "true" ]]; then 
-    ss_sed "s/@SSH_PUBKEY_AUTHENTICATION/yes/g" "$TMP_SSHD_CONFIG"
+    ss_sed "s/@SSH_PUBKEY_AUTHENTICATION/yes/g" "${TMP_SSHD_CONFIG}"
 else 
-    ss_sed "s/@SSH_PUBKEY_AUTHENTICATION/no/g" "$TMP_SSHD_CONFIG"
+    ss_sed "s/@SSH_PUBKEY_AUTHENTICATION/no/g" "${TMP_SSHD_CONFIG}"
 fi
 
 ## allow IPv6 SSH sessions (any) if no IPv4 address is detected on the server ##
 # if [[ CURRENT IP ADDRESS IS IPV6 ONLY ]]; then 
-#    ss_sed "s/AddressFamily inet/AddressFamily any/g" /tmp/sshd_config
+#    ss_sed "s/AddressFamily inet/AddressFamily any/g" "${TMP_SSHD_CONFIG}"
 # fi
 ## Ref: https://stackoverflow.com/questions/5281341/get-local-network-interface-addresses-using-only-proc
 ## Ref: https://stackoverflow.com/questions/39983121/how-to-detect-if-system-has-ipv6-enabled-in-a-unix-shell-script
@@ -147,14 +153,12 @@ fi
 #### E. SS-Install-Ubuntu-SSH: Reset Permissions (SSH) #############################################
 ####################################################################################################
 
-## run ss-perms-ubuntu-ssh ##
 source "${PATH_SS_PERMS_UBUNTU_SSH}"
 
 ####################################################################################################
 #### F. SS-Install-Ubuntu-SSH: Restart Modules (SSH) ###############################################
 ####################################################################################################
 
-## restart ssh service ##
 ss_restart ssh
 
 ####################################################################################################
