@@ -15,6 +15,28 @@
 ## SS-CONFIG MUST BE PROPERLY CONFIGURED AND ON CURRENT BUILD BEFORE RUNNING SS-INSTALL ##
 ## ENSURE YOUR SS-CONFIG BUILD REMAINS CURRENT BY RUNNING SS-UPDATE OCCASIONALLY ##
 
+####################################################################################################
+#### TABLE OF CONTENTS (SS-Install-MySQL-Config) ###################################################
+####################################################################################################
+
+## this is a brief summary of the different code snippets you will find in this script ##
+## each section should be commented so you understand what is being accomplished ##
+
+## A. Source SS-Config + SS-Functions
+## B. Touch Timestamp File
+## C. Message (Begin Script)
+## D. Install My.conf
+## E. Remove Version-Specific Settings
+## F. Restart Modules (MySQL)
+## G. Reset Permissions (MySQL Config)
+
+####################################################################################################
+#### A. SS-Install-MySQL-Config: Source SS-Config + SS-Functions ###################################
+####################################################################################################
+
+## before anything else we must source the critical variables that power this script ##
+## ss-config is setup during ss-install wizard but ss-functions is hardcoded ##
+
 ## source ss-config ##
 source /var/www/ss-config
 
@@ -24,17 +46,7 @@ source /var/www/ss-functions
 ## BELOW THIS RELIES ON SS-CONFIG AND SS-FUNCTIONS
 
 ####################################################################################################
-#### TABLE OF CONTENTS (SS-Install-MySQL-Config) ###################################################
-####################################################################################################
-
-## this is a brief summary of the different code snippets you will find in this script ##
-## each section should be commented so you understand what is being accomplished ##
-
-## A. Touch Timestamp File
-## B. Message (Begin Script)
-
-####################################################################################################
-#### A. SS-Install-MySQL-Config: Touch Timestamp File ##############################################
+#### B. SS-Install-MySQL-Config: Touch Timestamp File ##############################################
 ####################################################################################################
 
 ## this is a dummy timestamp file that will remember the last time this script was run ##
@@ -43,7 +55,7 @@ source /var/www/ss-functions
 ss_touch "${TIMESTAMP_SS_INSTALL_MYSQL_CONFIG}"
 
 ####################################################################################################
-#### B. SS-Install-MySQL-Config: Message (Begin Script) ############################################
+#### C. SS-Install-MySQL-Config: Message (Begin Script) ############################################
 ####################################################################################################
 
 ## this is a simple message that announces to the shell the purpose of this bash script ##
@@ -56,7 +68,7 @@ ss_echo "${COLOR_INFO}Running ss-install-mysql-config... ${COLOR_RESET}"
 if [[ "${DB_REMOTE}" != "true" ]]; then
 
 ####################################################################################################
-#### SS-Install-MySQL-Config: Install MySQL Config #################################################
+#### D. SS-Install-MySQL-Config: Install My.conf ###################################################
 ####################################################################################################
 
 ## here we overwrite the default my.cnf with an optimized version (sub-config disabled) ##
@@ -173,7 +185,7 @@ else
 fi
 
 ####################################################################################################
-#### SS-Install-MySQL-Config: Remove Version-Specific Settings #####################################
+#### E. SS-Install-MySQL-Config: Remove Version-Specific Settings ##################################
 ####################################################################################################
 
 ## delete incompatible settings if running mysql 8.0 ##
@@ -190,17 +202,15 @@ fi
 ss_cp "${TMP_MY_CNF}" "${PATH_MY_CNF}"
 
 ####################################################################################################
-#### SS-Install-MySQL-COnfig: Restart Modules (MySQL) ##############################################
+#### F. SS-Install-MySQL-Config: Restart Modules (MySQL) ###########################################
 ####################################################################################################
 
-## run ss-restart-mysql ##
 source "${PATH_SS_RESTART_MYSQL}"
 
 ####################################################################################################
-#### SS-Install-MySQL-COnfig: Reset Permissions (MySQL Config) #####################################
+#### G. SS-Install-MySQL-Config: Reset Permissions (MySQL Config) ##################################
 ####################################################################################################
 
-## run ss-perms-mysql-config ##
 source "${PATH_SS_PERMS_MYSQL_CONFIG}"
 
 fi
