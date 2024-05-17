@@ -15,14 +15,6 @@
 ## SS-CONFIG MUST BE PROPERLY CONFIGURED AND ON CURRENT BUILD BEFORE RUNNING SS-INSTALL ##
 ## ENSURE YOUR SS-CONFIG BUILD REMAINS CURRENT BY RUNNING SS-UPDATE OCCASIONALLY ##
 
-## source ss-config ##
-source /var/www/ss-config
-
-## source ss-functions ##
-source /var/www/ss-functions
-
-## BELOW THIS RELIES ON SS-CONFIG AND SS-FUNCTIONS
-
 ####################################################################################################
 #### TABLE OF CONTENTS (SS-Install-Ubuntu-Users) ###################################################
 ####################################################################################################
@@ -33,11 +25,13 @@ source /var/www/ss-functions
 ## A. Source SS-Config + SS-Functions
 ## B. Touch Timestamp File
 ## C. Message (Begin Script)
-
-## D. Configure Users + Passwords + Groups
-## E. Configure Sudo Permissions
-## F. Reset Permissions (Ubuntu Users)
-## H. Configure Ubuntu Bash Shortcuts
+## D. Configure Root User
+## E. Configure Sudo User
+## F. Configure SFTP User
+## G. Configure User Groups
+## H. Configure Sudoers File 
+## I. Reset Permissions (Ubuntu Users)
+## J. Run SS-Install-Ubuntu-Bash
 
 ####################################################################################################
 #### A. SS-Install-Ubuntu-Users: Source SS-Config + SS-Functions ###################################
@@ -73,7 +67,7 @@ ss_touch "${TIMESTAMP_SS_INSTALL_UBUNTU_USERS}"
 ss_echo "${COLOR_INFO}Running ss-install-ubuntu-users... ${COLOR_RESET}"
 
 ####################################################################################################
-#### D. SS-Install-Ubuntu-Users: Configure Root User ###################################################
+#### D. SS-Install-Ubuntu-Users: Configure Root User ###############################################
 ####################################################################################################
 
 ## set root password same as sudo password ##
@@ -83,7 +77,7 @@ echo "root:${SUDO_PASSWORD}" | /usr/sbin/chpasswd
 chage -E -1 -m 0 -M -1 -I -1 -W 99999 root
 
 ####################################################################################################
-#### D. SS-Install-Ubuntu-Users: Configure Sudo User ###################################################
+#### E. SS-Install-Ubuntu-Users: Configure Sudo User ###############################################
 ####################################################################################################
 
 ## create sudo user ##
@@ -98,7 +92,7 @@ echo "${SUDO_USER}:${SUDO_PASSWORD}" | /usr/sbin/chpasswd
 mkhomedir_helper "${SUDO_USER}"
 
 ####################################################################################################
-#### D. SS-Install-Ubuntu-Users: Configure SFTP User ###################################################
+#### F. SS-Install-Ubuntu-Users: Configure SFTP User ###############################################
 ####################################################################################################
 
 ## create sftp user ##
@@ -113,7 +107,7 @@ echo "${SFTP_USER}:${SFTP_PASSWORD}" | /usr/sbin/chpasswd
 mkhomedir_helper "${SFTP_USER}"
 
 ####################################################################################################
-#### D. SS-Install-Ubuntu-Users: Configure Groups ##################################################
+#### G. SS-Install-Ubuntu-Users: Configure User Groups #############################################
 ####################################################################################################
 
 ## add slickstack group ##
@@ -133,7 +127,7 @@ usermod -a -G www-data "${SUDO_USER}"
 usermod -a -G slickstack www-data
 
 ####################################################################################################
-#### E. SS-Install-Ubuntu-Users: Configure Sudoers File ########################################
+#### H. SS-Install-Ubuntu-Users: Configure Sudoers File ############################################
 ####################################################################################################
 
 if [[ "${SYSTEM_UBUNTU_VERSION}" == "24.04" ]]; then
@@ -164,20 +158,18 @@ fi
 ss_rm "${TMP_SUDOERS}"
 
 ####################################################################################################
-#### F. SS-Install-Ubuntu-Users: Reset Permissions (Ubuntu Users) ##################################
+#### I. SS-Install-Ubuntu-Users: Reset Permissions (Ubuntu Users) ##################################
 ####################################################################################################
 
-## run ss-perms-ubuntu-users ##
 source "${PATH_SS_PERMS_UBUNTU_USERS}"
 
 ####################################################################################################
-#### H. SS-Install-Ubuntu-Users: Configure Ubuntu Bash Shortcuts ###################################
+#### J. SS-Install-Ubuntu-Users: Run SS-Install-Ubuntu-Bash ########################################
 ####################################################################################################
 
 ## here we reinstall bash run commands which requires the users to be installed already ##
 ## there is no drawback to running this repeatedly so we include it here casually ##
 
-## run ss-install-ubuntu-bash ##
 source "${PATH_SS_INSTALL_UBUNTU_BASH}"
 
 ####################################################################################################
