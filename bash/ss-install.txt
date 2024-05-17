@@ -7,7 +7,7 @@
 #### path: /var/www/ss-install #####################################################################
 #### destination: n/a (not a boilerplate) ##########################################################
 #### purpose: Reinstalls the entire SlickStack LEMP environment and all modules (idempotent) #######
-#### module version: Ubuntu 22.04 LTS ##############################################################
+#### module version: Ubuntu 24.04 LTS ##############################################################
 #### sourced by: n/a (wget -O ss slick.fyi/ss && bash ss) ##########################################
 #### bash aliases: ss install ######################################################################
 ####################################################################################################
@@ -65,7 +65,7 @@
 ## this build version ensures compatibility with the currently active ss-config file ##
 ## it must match the localhost ss-config otherwise installation will fail ##
 
-SS_INSTALL_BUILD="MAY2024C"
+SS_INSTALL_BUILD="MAY2024D"
 
 ####################################################################################################
 #### B. SS-Install: Validate (Repair) SS-Functions #################################################
@@ -145,8 +145,8 @@ if [[ -f "/var/www/ss-config" ]] && [[ "${SS_BUILD}" != "${SS_INSTALL_BUILD}" ]]
 fi
 
 ## verify supported ubuntu version ##
-if [[ "${SYSTEM_UBUNTU_VERSION}" != @(22.04|20.04|18.04) ]]; then
-    ss_echo "${COLOR_WARN}Exiting ss-install: SlickStack is designed for Ubuntu LTS (but this VPS is running ${SYSTEM_UBUNTU_VERSION})... ${COLOR_RESET}"
+if [[ "${SYSTEM_UBUNTU_VERSION}" != @(24.04|22.04|20.04|18.04) ]]; then
+    ss_echo "${COLOR_WARN}Exiting ss-install: SlickStack is designed for Ubuntu LTS only (but this VPS is running ${SYSTEM_UBUNTU_VERSION})... ${COLOR_RESET}"
     exit 1
 fi
 
@@ -249,6 +249,11 @@ ss_echo "${EIGHT_LINE_TRIM}"
 ss_echo "${NINE_LINE_TRIM}"
 ss_echo "${COLOR_INFO}################################################################################ ${COLOR_RESET}"
 ss_echo ""
+
+if [[ "${SYSTEM_UBUNTU_VERSION}" == @(24.04) ]]; then
+    ss_echo "${COLOR_WARN}Exiting ss-install: SlickStack is currently testing Ubuntu 24.04 and PHP 8.3 and bugs are expected... you might want to use Ubuntu 22.04 for now! ${COLOR_RESET}"
+    exit 1
+fi
     
 ss_echo "${COLOR_WARN}Welcome to SlickStack! It appears your /var/www/ss-config file has not been ${COLOR_RESET}"
 ss_echo "${COLOR_WARN}setup yet and/or this is a new installation. Before proceeding, please ensure ${COLOR_RESET}"
