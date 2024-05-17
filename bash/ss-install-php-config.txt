@@ -7,7 +7,7 @@
 #### path: /var/www/ss-install-php-config ##########################################################
 #### destination: n/a (not a boilerplate) ##########################################################
 #### purpose: Reinstalls the PHP-FPM module config files based on ss-config (idempotent) ###########
-#### module version: PHP-FPM 8.1.x #################################################################
+#### module version: PHP-FPM 8.3.x #################################################################
 #### sourced by: ss-install ########################################################################
 #### bash aliases: ss install php config ###########################################################
 ####################################################################################################
@@ -75,6 +75,29 @@ ss_echo "${COLOR_INFO}Running ss-install-php-config... ${COLOR_RESET}"
 
 ## next we optimize the PHP-FPM configuration files based on settings from ss-config ##
 ## several common PHP settings are hardcoded to improve LEMP server stability ##
+
+## ubuntu 24.04 (php 8.3) ##
+if [[ "${SYSTEM_UBUNTU_VERSION}" == "24.04" ]]; then
+
+    ss_wget "${TMP_PHP_FPM_CONF}" "${GITHUB_PHP_FPM_CONF_83}"
+    VALIDATE_TMP_PHP_FPM_CONF=$(grep 'SS_EOF' "${TMP_PHP_FPM_CONF}" 2> /dev/null)
+    if [[ -z "${VALIDATE_TMP_PHP_FPM_CONF}" ]]; then
+        ss_wget "${TMP_PHP_FPM_CONF}" "${GITLAB_PHP_FPM_CONF_83}"
+    fi
+
+    ss_wget "${TMP_PHP_INI}" "${GITHUB_PHP_INI_83}"
+    VALIDATE_TMP_PHP_INI=$(grep 'SS_EOF' "${TMP_PHP_INI}" 2> /dev/null)
+    if [[ -z "${VALIDATE_TMP_PHP_INI}" ]]; then
+        ss_wget "${TMP_PHP_INI}" "${GITLAB_PHP_INI_83}"
+    fi
+
+    ss_wget "${TMP_WWW_CONF}" "${GITHUB_WWW_CONF_83}"
+    VALIDATE_TMP_WWW_CONF=$(grep 'SS_EOF' "${TMP_WWW_CONF}" 2> /dev/null)
+    if [[ -z "${VALIDATE_TMP_WWW_CONF}" ]]; then
+        ss_wget "${TMP_WWW_CONF}" "${GITLAB_WWW_CONF_83}"
+    fi
+
+fi
 
 ## ubuntu 22.04 (php 8.1) ##
 if [[ "${SYSTEM_UBUNTU_VERSION}" == "22.04" ]]; then
@@ -486,6 +509,14 @@ fi
 ####################################################################################################
 
 ## note: ss_cp must be used for the ini files because ss_mv not working for some reason ##
+
+## ubuntu 24.04 (php 8.3) ##
+if [[ "${SYSTEM_UBUNTU_VERSION}" == "24.04" ]]; then
+    ss_mv "${TMP_PHP_FPM_CONF}" "${PATH_PHP_FPM_CONF_83}"
+    ss_cp "${TMP_PHP_INI}" "${PATH_PHP_INI_FPM_83}"
+    ss_cp "${TMP_PHP_INI}" "${PATH_PHP_INI_CLI_83}"
+    ss_mv "${TMP_WWW_CONF}" "${PATH_WWW_CONF_83}"
+fi
 
 ## ubuntu 22.04 (php 8.1) ##
 if [[ "${SYSTEM_UBUNTU_VERSION}" == "22.04" ]]; then
