@@ -28,21 +28,21 @@ You can safely re-install SlickStack anytime via `sudo bash /var/www/ss-install`
 
 ## Modules
 
-*Last updated: Mar 28, 2024*
+*Last updated: May 18, 2024*
 
 | Module | Version | What does SlickStack optimize? |
 | :------------- | :----------: | :----------: |
-| **Ubuntu LTS** | 22.04 | `crontab` + `gai.conf` + `sshd_config` + `sudoers` + `sysctl.conf` |
+| **Ubuntu LTS** | 24.04 | `crontab` + `gai.conf` + `sshd_config` + `sudoers` + `sysctl.conf` |
 | **Nginx** | 1.18.x | `nginx.conf` + `cloudflare.conf` + server blocks |
 | **OpenSSL** | 3.0.x | `slickstack.crt` + `slickstack.key` + `dhparam.pem` |
-| **Lets Encrypt** | 1.21.x | `cert.perm` + `chain.pem` + `fullchain.pem` + `privkey.pem` |
+| **Certbot** | 2.9.x | `cert.perm` + `chain.pem` + `fullchain.pem` + `privkey.pem` |
 | **MySQL** | 8.0.x | `my.cnf` |
-| **PHP-FPM** | 8.1.x | `php.ini` + `php-fpm.conf` + `www.conf` |
+| **PHP-FPM** | 8.3.x | `php.ini` + `php-fpm.conf` + `www.conf` |
 | **Memcached** | 1.6.x | `memcached.conf` + `object-cache.php` |
-| **WordPress** | 6.4.x | some WP Core junk files removed by `ss-clean-files` |
+| **WordPress** | 6.5.x | some WP Core junk files removed by `ss-clean-files` |
 | **WP-CLI** | 2.10.x | some `wp` commands disabled |
 | **Adminer** | 4.8.1 | default config |
-| **Git** | 2.34.x | default config |
+| **Git** | 2.43.x | default config |
 | **UFW Firewall** | 0.36.x | `ufw` + `ufw.conf` + `user-rules` |
 | **Fail2ban** | 0.11.x | `jail.local` + custom filters |
 
