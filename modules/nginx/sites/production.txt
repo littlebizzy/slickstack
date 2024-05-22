@@ -51,8 +51,8 @@
 ## this vastly improves security, prevents IP snooping, SEO problems, and beyond ##
 
 server {
-	listen 80 default_server;
-	listen [::]:80 default_server;
+	listen 80;
+	listen [::]:80;
 	server_name @SITE_DOMAIN_INCLUDING_WWW @SITE_DOMAIN_EXCLUDING_WWW;
 
 	location /.well-known/acme-challenge/ {
@@ -63,10 +63,23 @@ server {
 		root /var/www/html;
 	}
 
-# location / {
-#  	return 301 https://@SITE_DOMAIN$request_uri;
-# }
+	location / {
+		return 301 https://@SITE_DOMAIN$request_uri;
+	}
 
+}
+
+####################################################################################################
+#### new catch-all testing
+####################################################################################################
+
+server {
+	listen 80 default_server;
+	listen 443 ssl default_server;
+	listen [::]:80 default_server;
+	listen [::]:443 ssl default_server;
+	server_name _;
+	return 301 https://@SITE_DOMAIN$request_uri;
 }
 
 ####################################################################################################
@@ -77,8 +90,8 @@ server {
 ## because SlickStack is HTTPS-only the canonical block is port 443 (SSL) only ##
 
 server {
-	listen 443 ssl http2 default_server;
-	listen [::]:443 ssl http2 default_server;
+	listen 443 ssl http2;
+	listen [::]:443 ssl http2;
 	server_name @SITE_DOMAIN;
 	root /var/www/html;
 
