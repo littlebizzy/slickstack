@@ -426,49 +426,50 @@ ss_sed "s|@SITE_FULL_DOMAIN|${SITE_DOMAIN}|g" /var/www/ss-config
 ## we hardcode this permissions reset snippet into some core scripts for redundancy ##
 ## this ensures permissions are regularly fixed without any dependencies ##
 
+## NOT TRUE ANYMORE SHOULD USE SS-CONFIG... UPDATE THISSSSSSSS .... May 2024 note ##
 ## THIS SNIPPET DOES NOT RELY ON SS-CONFIG OR SS-FUNCTIONS ##
 
 ## SNIPPET: ss-worker, ss core cron jobs
 ## UPDATED: 05APR2024
 
 ## make directories ##
-mkdir /var/www
-mkdir /var/www/auth
-mkdir /var/www/backups
-mkdir /var/www/backups/config
-mkdir /var/www/backups/crons
-mkdir /var/www/backups/html
-mkdir /var/www/backups/mysql
-mkdir /var/www/backups/mysql/data
-mkdir /var/www/backups/nginx
-mkdir /var/www/backups/private ## create only if does not exist yet (this folder is for the sudo user to save random files he desires)
-mkdir /var/www/cache
-mkdir /var/www/cache/nginx
-mkdir /var/www/cache/opcache
-mkdir /var/www/cache/system
-mkdir /var/www/cache/wp-cli
-mkdir /var/www/certs
-mkdir /var/www/certs/keys
-mkdir /var/www/crons
-mkdir /var/www/crons/custom
-mkdir /var/www/html
-mkdir /var/www/html/.well-known
-mkdir /var/www/html/.well-known/acme-challenge
-mkdir /var/www/logs
-mkdir /var/www/meta
-mkdir /var/www/meta/assets
-mkdir /var/www/meta/assets/images
-mkdir /var/www/meta/dynamic
-mkdir /var/www/meta/timestamps
-mkdir /var/www/sites
-mkdir /var/www/sites/includes
-mkdir /var/www/sites/error_pages
+ss_mkdir /var/www
+ss_mkdir /var/www/auth
+ss_mkdir /var/www/backups
+ss_mkdir /var/www/backups/config
+ss_mkdir /var/www/backups/crons
+ss_mkdir /var/www/backups/html
+ss_mkdir /var/www/backups/mysql
+ss_mkdir /var/www/backups/mysql/data
+ss_mkdir /var/www/backups/nginx
+ss_mkdir /var/www/backups/private ## create only if does not exist yet (this folder is for the sudo user to save random files he desires)
+ss_mkdir /var/www/cache
+ss_mkdir /var/www/cache/nginx
+ss_mkdir /var/www/cache/opcache
+ss_mkdir /var/www/cache/system
+ss_mkdir /var/www/cache/wp-cli
+ss_mkdir /var/www/certs
+ss_mkdir /var/www/certs/keys
+ss_mkdir /var/www/crons
+ss_mkdir /var/www/crons/custom
+ss_mkdir /var/www/html
+ss_mkdir /var/www/html/.well-known
+ss_mkdir /var/www/html/.well-known/acme-challenge
+ss_mkdir /var/www/logs
+ss_mkdir /var/www/meta
+ss_mkdir /var/www/meta/assets
+ss_mkdir /var/www/meta/assets/images
+ss_mkdir /var/www/meta/dynamic
+ss_mkdir /var/www/meta/timestamps
+ss_mkdir /var/www/sites
+ss_mkdir /var/www/sites/includes
+ss_mkdir /var/www/sites/error_pages
 
 ## if staging enabled
 if [[ "$STAGING_SITE" != "false" ]]; then 
-    mkdir /var/www/html/staging
-    mkdir /var/www/html/staging/.well-known
-    mkdir /var/www/html/staging/.well-known/acme-challenge
+    ss_mkdir /var/www/html/staging
+    ss_mkdir /var/www/html/staging/.well-known
+    ss_mkdir /var/www/html/staging/.well-known/acme-challenge
     chown -R "${SFTP_USER}":www-data /var/www/html/staging/.well-known ## accessed by server for e.g. Cerbot but also by SFTP user for things like Stripe ##
     chown -R "${SFTP_USER}":www-data /var/www/html/staging/.well-known/acme-challenge ## accessed by server for e.g. Cerbot but also by SFTP user for things like Stripe ##
 fi
@@ -480,9 +481,9 @@ fi
 
 ## if dev enabled
 if [[ "$DEV_SITE" != "false" ]]; then 
-    mkdir /var/www/html/dev
-    mkdir /var/www/html/dev/.well-known
-    mkdir /var/www/html/dev/.well-known/acme-challenge
+    ss_mkdir /var/www/html/dev
+    ss_mkdir /var/www/html/dev/.well-known
+    ss_mkdir /var/www/html/dev/.well-known/acme-challenge
     chown -R "${SFTP_USER}":www-data /var/www/html/dev/.well-known ## accessed by server for e.g. Cerbot but also by SFTP user for things like Stripe ##
     chown -R "${SFTP_USER}":www-data /var/www/html/dev/.well-known/acme-challenge ## accessed by server for e.g. Cerbot but also by SFTP user for things like Stripe ##
 fi
