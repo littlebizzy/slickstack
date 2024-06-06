@@ -3,17 +3,47 @@
 ####################################################################################################
 #### author: SlickStack ############################################################################
 #### link: https://slickstack.io ###################################################################
-#### mirror: https://mirrors.slickstack.io/bash/ss-push-staging.txt ################################
+#### mirror: littlebizzy/slickstack/blob/master/bash/ss-push-staging.txt ###########################
 #### path: /var/www/ss-push-staging ################################################################
 #### destination: n/a (not a boilerplate) ##########################################################
 #### purpose: Pushes /wp-content/ and database from staging site to the production site ############
-#### module version: WordPress 6.3.x + MySQL 8.0.x #################################################
+#### module version: WordPress 6.5.x + MySQL 8.0.x #################################################
 #### sourced by: n/a ###############################################################################
 #### bash aliases: ss push staging #################################################################
 ####################################################################################################
 
 ## SS-PUSH-STAGING OVERWRITES PRODUCTION FILES AND DATABASE WITH THOSE FROM STAGING ##
 ## ENSURE YOU HAVE BOTH LOCAL AND OFF-SERVER BACKUPS BEFORE RUNNING THIS ##
+
+####################################################################################################
+#### TABLE OF CONTENTS (SS-Push-Staging) ###########################################################
+####################################################################################################
+
+## this is a brief summary of the different code snippets you will find in this script ##
+## each section should be commented so you understand what is being accomplished ##
+
+## A. Source SS-Config + SS-Functions
+## B. Touch Timestamp File
+## C. Message (Begin Script)
+## D. Run SS-Dump-Database
+
+## E. INTERACTIVE PROMPT CONFIRMATION TO PROCEED
+
+## F. Import Staging Database To Production Database
+## G. Copy All Relevant Files From Staging To Production
+## H. Fix Wrong URLs in Staging Database
+## I. Fix Any Hardcoded Links In Production Theme Files
+## J. Purge Cache (OPcache)
+## K. Purge Cache (Transients)
+## L. Purge Cache (Memcached)
+## M. Purge Cache (Nginx)
+
+####################################################################################################
+#### A. SS-Push-Staging: Source SS-Config + SS-Functions ###########################################
+####################################################################################################
+
+## before anything else we must source the critical variables that power this script ##
+## ss-config is setup during ss-install wizard but ss-functions is hardcoded ##
 
 ## source ss-config ##
 source /var/www/ss-config
@@ -24,26 +54,7 @@ source /var/www/ss-functions
 ## BELOW THIS RELIES ON SS-CONFIG AND SS-FUNCTIONS
 
 ####################################################################################################
-#### TABLE OF CONTENTS (SS-Push-Staging) ###########################################################
-####################################################################################################
-
-## this is a brief summary of the different code snippets you will find in this script ##
-## each section should be commented so you understand what is being accomplished ##
-
-## A. Touch Timestamp File
-## B. Message (Begin Script)
-## C. Dump Production Database
-## D. INTERACTIVE PROMPT CONFIRMATION TO PROCEED
-
-## E. Import Staging Database To Production Database
-## F. Copy All Relevant Files From Staging To Production
-## G. Fix Any Hardcoded Links In Production Theme Files
-## H. Purge Cache (OPcache)
-## I. Purge Cache (Transients)
-## J. Purge Cache (Memcached)
-
-####################################################################################################
-#### A. SS-Push-Staging: Touch Timestamp File ######################################################
+#### B. SS-Push-Staging: Touch Timestamp File ######################################################
 ####################################################################################################
 
 ## this is a dummy timestamp file that will remember the last time this script was run ##
@@ -52,7 +63,7 @@ source /var/www/ss-functions
 ss_touch "${TIMESTAMP_SS_PUSH_STAGING}"
 
 ####################################################################################################
-#### B. SS-Push-Staging: Message (Begin Script) ####################################################
+#### C. SS-Push-Staging: Message (Begin Script) ####################################################
 ####################################################################################################
 
 ## this is a simple message that announces to the shell the purpose of this bash script ##
@@ -61,7 +72,7 @@ ss_touch "${TIMESTAMP_SS_PUSH_STAGING}"
 ss_echo "${COLOR_INFO}Running ss-push-staging... ${COLOR_RESET}"
 
 ####################################################################################################
-#### C. SS-Push-Staging: Dump Production Database ##################################################
+#### D. SS-Push-Staging: Run SS-Dump-Database ######################################################
 ####################################################################################################
 
 ## first we need to dump the production database locally in case anything goes wrong ##
@@ -70,7 +81,7 @@ ss_echo "${COLOR_INFO}Running ss-push-staging... ${COLOR_RESET}"
 source "${PATH_SS_DUMP_DATABASE}"
 
 ####################################################################################################
-#### D. SS-Push-Staging: INTERACTIVE PROMPT CONFIRMATION TO PROCEED ################################
+#### E. SS-Push-Staging: INTERACTIVE PROMPT CONFIRMATION TO PROCEED ################################
 ####################################################################################################
 
 read -r -p "EXPERIMENTAL... BE CAREFUL... WILL OVERWRITE PRODUCTION... BACKUP FIRST: Push staging files (wp-content and database) to production, are you sure? [y/N]" response
@@ -80,7 +91,7 @@ then
 
 
 ####################################################################################################
-#### E. SS-Push-Staging: Import Staging Database To Production Database ############################
+#### F. SS-Push-Staging: Import Staging Database To Production Database ############################
 ####################################################################################################
 
 ## this snippet duplicates the dumped production database and imports it into MySQL ##
@@ -103,7 +114,7 @@ fi
 ss_rm /tmp/staging_push.sql
 
 ####################################################################################################
-#### F. SS-Push-Staging: Copy All Relevant Files From Staging To Production ########################
+#### G. SS-Push-Staging: Copy All Relevant Files From Staging To Production ########################
 ####################################################################################################
 
 ## here we copy over a limited array of files and folders from staging to production ##
@@ -116,7 +127,7 @@ ss_rsync --max-size=5mb --exclude 'blacklist.txt' --exclude mu-plugins --exclude
 ss_rm /var/www/html/wp-content/wp-content*
 
 ####################################################################################################
-#### G. SS-Sync-Staging: Fix Wrong URLs in Staging Database #########################
+#### H. SS-Sync-Staging: Fix Wrong URLs in Staging Database #########################
 ####################################################################################################
 
 ## needs more testing
@@ -125,7 +136,7 @@ ss_rm /var/www/html/wp-content/wp-content*
 # wp search-replace https://staging."${SITE_DOMAIN_EXCLUDING_WWW}" https://"${SITE_DOMAIN}" --all-tables
 
 ####################################################################################################
-#### G. SS-Sync-Staging: Fix Any Hardcoded Links In Production Theme Files #########################
+#### I. SS-Sync-Staging: Fix Any Hardcoded Links In Production Theme Files #########################
 ####################################################################################################
 
 ## many themes (or custom-coded themes) often contain hardcoded HTML assets and links ##
@@ -145,22 +156,28 @@ else
 fi
 
 ####################################################################################################
-#### H. SS-Sync-Staging: Purge Cache (OPcache) #####################################################
+#### J. SS-Sync-Staging: Purge Cache (OPcache) #####################################################
 ####################################################################################################
 
 source "${PATH_SS_PURGE_OPCACHE}"
 
 ####################################################################################################
-#### I. SS-Sync-Staging: Purge Cache (Transients) ##################################################
+#### K. SS-Sync-Staging: Purge Cache (Transients) ##################################################
 ####################################################################################################
 
 source "${PATH_SS_PURGE_TRANSIENTS}"
 
 ####################################################################################################
-#### J. SS-Sync-Staging: Purge Cache (Memcached) ###################################################
+#### L. SS-Sync-Staging: Purge Cache (Memcached) ###################################################
 ####################################################################################################
 
 source "${PATH_SS_PURGE_MEMCACHED}"
+
+####################################################################################################
+#### M. SS-Sync-Staging: Purge Cache (Nginx) #######################################################
+####################################################################################################
+
+source "${PATH_SS_PURGE_NGINX}"
 
 ####################################################################################################
 #### SlickStack: Reset Permissions (SlickStack Scripts) ############################################
