@@ -3,13 +3,34 @@
 ####################################################################################################
 #### author: SlickStack ############################################################################
 #### link: https://slickstack.io ###################################################################
-#### mirror: https://mirrors.slickstack.io/bash/ss-remote-backup.txt ###############################
+#### mirror: littlebizzy/slickstack/blob/master/bash/ss-remote-backup.txt ##########################
 #### path: /var/www/ss-remote-backup ###############################################################
 #### destination: n/a (not a boilerplate) ##########################################################
 #### purpose: Syncs local production server data to preferred remote cloud storage service #########
 #### module version: Rsync 3.2.x, Rclone 1.55.x ####################################################
 #### bash aliases: ss backup, ss remote backup #####################################################
 ####################################################################################################
+
+####################################################################################################
+#### TABLE OF CONTENTS (SS-Remote-Backup) ##########################################################
+####################################################################################################
+
+## this is a brief summary of the different code snippets you will find in this script ##
+## each section should be commented so you understand what is being accomplished ##
+
+## A. Source SS-Config + SS-Functions
+## B. Touch Timestamp File
+## C. Message (Begin Script)
+## D. Install SSHPASS (Required For Rsync)
+## E. Run Rclone Backup (Conditional)
+## F. Run Rsync Backup (Conditional)
+
+####################################################################################################
+#### A. SS-Remote-Backup: Source SS-Config + SS-Functions ##########################################
+####################################################################################################
+
+## before anything else we must source the critical variables that power this script ##
+## ss-config is setup during ss-install wizard but ss-functions is hardcoded ##
 
 ## source ss-config ##
 source /var/www/ss-config
@@ -20,21 +41,7 @@ source /var/www/ss-functions
 ## BELOW THIS RELIES ON SS-CONFIG AND SS-FUNCTIONS
 
 ####################################################################################################
-#### TABLE OF CONTENTS (SS-Remote-Backup) ##########################################################
-####################################################################################################
-
-## this is a brief summary of the different code snippets you will find in this script ##
-## each section should be commented so you understand what is being accomplished ##
-
-## A. Touch Timestamp File
-## B. Message (Begin Script)
-
-## C. Install SSHPASS (Required For Rsync)
-## D. Run Rclone Backup (If Preferred)
-## E. Run Rsync Backup (If Preferred)
-
-####################################################################################################
-#### A. SS-Remote-Backup: Touch Timestamp File #####################################################
+#### B. SS-Remote-Backup: Touch Timestamp File #####################################################
 ####################################################################################################
 
 ## this is a dummy timestamp file that will remember the last time this script was run ##
@@ -43,7 +50,7 @@ source /var/www/ss-functions
 ss_touch "${TIMESTAMP_SS_REMOTE_BACKUP}"
 
 ####################################################################################################
-#### B. SS-Remote-Backup: Message (Begin Script) ###################################################
+#### C. SS-Remote-Backup: Message (Begin Script) ###################################################
 ####################################################################################################
 
 ## this is a simple message that announces to the shell the purpose of this bash script ##
@@ -52,7 +59,7 @@ ss_touch "${TIMESTAMP_SS_REMOTE_BACKUP}"
 ss_echo "${COLOR_INFO}Running ss-remote-backup... ${COLOR_RESET}"
 
 ####################################################################################################
-#### C. SS-Remote-Backup: Install SSHPASS (Required For Rsync) #####################################
+#### D. SS-Remote-Backup: Install SSHPASS (Required For Rsync) #####################################
 ####################################################################################################
 
 ## since this script uses rsync over ssh (not daemonized) we use sshpass to automate it ##
@@ -61,7 +68,7 @@ ss_echo "${COLOR_INFO}Running ss-remote-backup... ${COLOR_RESET}"
 ss_apt_install sshpass > /dev/null 2>&1
 
 ####################################################################################################
-#### D. SS-Remote-Backup: Run Rclone Backup (If Preferred) #########################################
+#### E. SS-Remote-Backup: Run Rclone Backup (Conditional) ##########################################
 ####################################################################################################
 
 ## this will rclone all desired files to your remote cloud without removing anything ##
@@ -75,7 +82,7 @@ if [[ -n "${RCLONE_USER}" ]] || [[ "${SS_REMOTE_BACKUPS}" == "rclone" ]]; then
 fi
 
 ####################################################################################################
-#### E. SS-Remote-Backup: Run Rsync Backup (If Preferred) ##########################################
+#### F. SS-Remote-Backup: Run Rsync Backup (Conditional) ###########################################
 ####################################################################################################
 
 ## this will rsync all desired files to your remote cloud without removing anything ##
