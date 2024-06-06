@@ -3,10 +3,10 @@
 ####################################################################################################
 #### author: SlickStack ############################################################################
 #### link: https://slickstack.io ###################################################################
-#### mirror: https://mirrors.slickstack.io/bash/ss-purge-memcached.txt #############################
+#### mirror: littlebizzy/slickstack/blob/master/bash/ss-purge-memcached.txt ########################
 #### path: /var/www/ss-purge-memcached #############################################################
 #### destination: n/a (not a boilerplate) ##########################################################
-#### purpose: Clears the Memcached server cache by way of the flush_all command ####################
+#### purpose: Purges the Memcached server cache by way of flush_all and memcflush ##################
 #### module version: Memcached 1.6.x ###############################################################
 #### sourced by:  ####################################################
 #### bash aliases: ss clear|flush|purge memcached ##################################################
@@ -14,6 +14,25 @@
 
 ## RUNNING SS-PURGE DURING TRAFFIC SPIKES MIGHT CAUSE SUDDEN STRESS TO SERVER RESOURCES ##
 ## KEEP IN MIND THAT FASTCGI CACHE IS DISABLED ALREADY ON STAGING SUBDIRECTORIES ##
+
+####################################################################################################
+#### TABLE OF CONTENTS (SS-Purge-Memcached) ########################################################
+####################################################################################################
+
+## this is a brief summary of the different code snippets you will find in this script ##
+## each section should be commented so you understand what is being accomplished ##
+
+## A. Source SS-Config + SS-Functions
+## B. Touch Timestamp File
+## C. Message (Begin Script)
+## D. Purge Memcached Via Flush_All And Memcflush
+
+####################################################################################################
+#### A. SS-Purge-Memcached: Source SS-Config + SS-Functions ########################################
+####################################################################################################
+
+## before anything else we must source the critical variables that power this script ##
+## ss-config is setup during ss-install wizard but ss-functions is hardcoded ##
 
 ## source ss-config ##
 source /var/www/ss-config
@@ -24,17 +43,7 @@ source /var/www/ss-functions
 ## BELOW THIS RELIES ON SS-CONFIG AND SS-FUNCTIONS
 
 ####################################################################################################
-#### TABLE OF CONTENTS (SS-Purge-Memcached) ########################################################
-####################################################################################################
-
-## this is a brief summary of the different code snippets you will find in this script ##
-## each section should be commented so you understand what is being accomplished ##
-
-## A. Touch Timestamp File
-## B. Message (Begin Script)
-
-####################################################################################################
-#### A. SS-Purge-Memcached: Touch Timestamp File ###################################################
+#### B. SS-Purge-Memcached: Touch Timestamp File ###################################################
 ####################################################################################################
 
 ## this is a dummy timestamp file that will remember the last time this script was run ##
@@ -43,7 +52,7 @@ source /var/www/ss-functions
 ss_touch "${TIMESTAMP_SS_PURGE_MEMCACHED}"
 
 ####################################################################################################
-#### B. SS-Purge-Memcached: Message (Begin Script) #################################################
+#### C. SS-Purge-Memcached: Message (Begin Script) #################################################
 ####################################################################################################
 
 ## this is a simple message that announces to the shell the purpose of this bash script ##
@@ -52,7 +61,7 @@ ss_touch "${TIMESTAMP_SS_PURGE_MEMCACHED}"
 ss_echo "${COLOR_INFO}Running ss-purge-memcached... ${COLOR_RESET}"
 
 ####################################################################################################
-#### SS-Purge: Flush Redis (Object Cache i.e. Transients) ##########################################
+#### D. SS-Purge-Memcached: Purge Memcached Via Flush_All And Memcflush ############################
 ####################################################################################################
 
 ## when a persistent object cache is installed in WordPress it retains all WP transients ##
