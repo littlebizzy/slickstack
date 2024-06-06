@@ -6,22 +6,14 @@
 #### mirror: littlebizzy/slickstack/blob/master/bash/ss-maintenance-disable.txt ####################
 #### path: /var/www/ss-maintenance-disable #########################################################
 #### destination: n/a (not a boilerplate) ##########################################################
-#### purpose: Disables maintenance.html that Nginx parses to reallow access to the frontend ########
+#### purpose: Deletes /var/www/html/maintenance.html to reallow access to the frontend #############
 #### module version: Nginx 1.18.x ##################################################################
 #### sourced by: n/a ###############################################################################
-#### bash aliases: ss disable main|maintenance, ss main disable|off, ss maintenance disable|off ####
+#### bash aliases: ss main disable|off, ss maintenance disable|off #################################
 ####################################################################################################
 
 ## SS-CONFIG MUST BE PROPERLY CONFIGURED AND ON CURRENT BUILD BEFORE RUNNING SS-INSTALL ##
 ## ENSURE YOUR SS-CONFIG BUILD REMAINS CURRENT BY RUNNING SS-UPDATE OCCASIONALLY ##
-
-## source ss-config ##
-source /var/www/ss-config
-
-## source ss-functions ##
-source /var/www/ss-functions
-
-## BELOW THIS RELIES ON SS-CONFIG AND SS-FUNCTIONS
 
 ####################################################################################################
 #### TABLE OF CONTENTS (SS-Maintenance-Disable) ####################################################
@@ -30,20 +22,26 @@ source /var/www/ss-functions
 ## this is a brief summary of the different code snippets you will find in this script ##
 ## each section should be commented so you understand what is being accomplished ##
 
-## A. Change To Default Directory
+## A. Source SS-Config + SS-Functions
 ## B. Touch Timestamp File
 ## C. Message (Begin Script)
-## D. Disable Maintenance Mode (Via Maintenance.html)
+## D. Disable Maintenance Mode (Delete Maintenance.html)
 ## E. Purge Cache (Nginx)
 
 ####################################################################################################
-#### A. SS-Maintenance-Disable: Change To Default Directory ########################################
+#### A. SS-Maintenance-Disable: Source SS-Config + SS-Functions ####################################
 ####################################################################################################
 
-## this tells the current script to change to the /var/www directory before proceeding ##
-## it can help avoid random warnings and issues when running ss shortcut commands ##
+## before anything else we must source the critical variables that power this script ##
+## ss-config is setup during ss-install wizard but ss-functions is hardcoded ##
 
-ss_cd_default
+## source ss-config ##
+source /var/www/ss-config
+
+## source ss-functions ##
+source /var/www/ss-functions
+
+## BELOW THIS RELIES ON SS-CONFIG AND SS-FUNCTIONS
 
 ####################################################################################################
 #### B. SS-Maintenance-Disable: Touch Timestamp File ###############################################
@@ -64,7 +62,7 @@ ss_touch "${TIMESTAMP_SS_MAINTENANCE_DISABLE}"
 ss_echo "${COLOR_INFO}Running ss-maintenance-disable... ${COLOR_RESET}"
 
 ####################################################################################################
-#### D. SS-Maintenance-Disable: Disable Maintenance Mode (Via Maintenance.html) ####################
+#### D. SS-Maintenance-Disable: Disable Maintenance Mode (Delete Maintenance.html) #################
 ####################################################################################################
 
 ## here we delete the active maintenance.html file (if exists) under /var/www/html ##
