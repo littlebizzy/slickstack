@@ -3,13 +3,13 @@
 ####################################################################################################
 #### author: SlickStack ############################################################################
 #### link: https://slickstack.io ###################################################################
-#### mirror: https://mirrors.slickstack.io/bash/ss-purge-transients.txt ############################
+#### mirror: littlebizzy/slickstack/blob/master/bash/ss-purge-transients.txt #######################
 #### path: /var/www/ss-purge-transients ############################################################
 #### destination: n/a (not a boilerplate) ##########################################################
 #### purpose: Manually deletes all transients data from the WordPress wp_options table #############
 #### module version: MySQL 8.0.x ###################################################################
 #### sourced by: ss-install ########################################################################
-#### bash aliases: ss clear transients, ss delete transients, ss purge transients ##################
+#### bash aliases: ss purge transients #############################################################
 ####################################################################################################
 
 ## need to communicate better that this script is more relevant when object cache (Redis) has been disabled, otherwise its cleaning ##
@@ -17,6 +17,25 @@
 
 ## RUNNING SS-PURGE DURING TRAFFIC SPIKES MIGHT CAUSE SUDDEN STRESS TO SERVER RESOURCES ##
 ## KEEP IN MIND THAT PAGE CACHING IS DISABLED ALREADY ON DEV/STAGING WEBSITES ##
+
+####################################################################################################
+#### TABLE OF CONTENTS (SS-Purge-Transients) #######################################################
+####################################################################################################
+
+## this is a brief summary of the different code snippets you will find in this script ##
+## each section should be commented so you understand what is being accomplished ##
+
+## A. Source SS-Config + SS-Functions
+## B. Touch Timestamp File
+## C. Message (Begin Script)
+## D. Delete Transients From Database
+
+####################################################################################################
+#### A. SS-Purge-Transients: Source SS-Config + SS-Functions #######################################
+####################################################################################################
+
+## before anything else we must source the critical variables that power this script ##
+## ss-config is setup during ss-install wizard but ss-functions is hardcoded ##
 
 ## source ss-config ##
 source /var/www/ss-config
@@ -27,18 +46,7 @@ source /var/www/ss-functions
 ## BELOW THIS RELIES ON SS-CONFIG AND SS-FUNCTIONS
 
 ####################################################################################################
-#### TABLE OF CONTENTS (SS-Purge-Transients) #######################################################
-####################################################################################################
-
-## this is a brief summary of the different code snippets you will find in this script ##
-## each section should be commented so you understand what is being accomplished ##
-
-## A. Touch Timestamp File
-## B. Message (Begin Script)
-## C. Delete Transients From Database
-
-####################################################################################################
-#### A. SS-Purge-Transients: Touch Timestamp File ##################################################
+#### B. SS-Purge-Transients: Touch Timestamp File ##################################################
 ####################################################################################################
 
 ## this is a dummy timestamp file that will remember the last time this script was run ##
@@ -47,7 +55,7 @@ source /var/www/ss-functions
 ss_touch "${TIMESTAMP_SS_PURGE_TRANSIENTS}"
 
 ####################################################################################################
-#### B. SS-Purge-Transients: Message (Begin Script) ################################################
+#### C. SS-Purge-Transients: Message (Begin Script) ################################################
 ####################################################################################################
 
 ## this is a simple message that announces to the shell the purpose of this bash script ##
@@ -56,51 +64,54 @@ ss_touch "${TIMESTAMP_SS_PURGE_TRANSIENTS}"
 ss_echo "${COLOR_INFO}Running ss-purge-transients... ${COLOR_RESET}"
 
 ####################################################################################################
-#### C. SS-Purge-Transients: Delete Transients From Database #######################################
+#### D. SS-Purge-Transients: Delete Transients From Database #######################################
 ####################################################################################################
-
-if [[ "${SS_APP}" == "wordpress" ]]; then
 
 ## manually deletes all transients (temporary query cache data) from WordPress database ##
 ## this is a more forceful approach than simply purging the Redis object cache ##
 
-    ## ubuntu 22.04 ##
-    if [[ "${SYSTEM_UBUNTU_VERSION}" = "22.04" ]] || [[ -z "${SYSTEM_UBUNTU_VERSION}" ]]; then 
+## ubuntu 24.04 ##
+if [[ "${SYSTEM_UBUNTU_VERSION}" = "24.04" ]] || [[ -z "${SYSTEM_UBUNTU_VERSION}" ]]; then 
 
-        if [[ -n $(ss_mysql_user --execute "SHOW TABLES FROM ${DB_NAME} WHERE Tables_in_${DB_NAME} LIKE '${DB_PREFIX}options';") ]]; then
+    if [[ -n $(ss_mysql_user --execute "SHOW TABLES FROM ${DB_NAME} WHERE Tables_in_${DB_NAME} LIKE '${DB_PREFIX}options';") ]]; then
     
-            ss_mysql_user --execute="DELETE FROM ${DB_NAME}.${DB_PREFIX}options WHERE option_name LIKE ('%\_transient\_%');"
-    
-        fi
+        ss_mysql_user --execute="DELETE FROM ${DB_NAME}.${DB_PREFIX}options WHERE option_name LIKE ('%\_transient\_%');"
     
     fi
-
-    ## ubuntu 20.04 ##
-    if [[ "${SYSTEM_UBUNTU_VERSION}" = "20.04" ]]; then 
-
-        if [[ -n $(ss_mysql_user --execute "SHOW TABLES FROM ${DB_NAME} WHERE Tables_in_${DB_NAME} LIKE '${DB_PREFIX}options';") ]]; then
     
-            ss_mysql_user --execute="DELETE FROM ${DB_NAME}.${DB_PREFIX}options WHERE option_name LIKE ('%\_transient\_%');"
+fi
+
+## ubuntu 22.04 ##
+if [[ "${SYSTEM_UBUNTU_VERSION}" = "22.04" ]] || [[ -z "${SYSTEM_UBUNTU_VERSION}" ]]; then 
+
+    if [[ -n $(ss_mysql_user --execute "SHOW TABLES FROM ${DB_NAME} WHERE Tables_in_${DB_NAME} LIKE '${DB_PREFIX}options';") ]]; then
     
-        fi
+        ss_mysql_user --execute="DELETE FROM ${DB_NAME}.${DB_PREFIX}options WHERE option_name LIKE ('%\_transient\_%');"
     
     fi
-
-    ## ubuntu 18.04 ##
-    if [[ "${SYSTEM_UBUNTU_VERSION}" = "18.04" ]]; then
-
-        if [[ -n $(ss_mysql_user --execute "SHOW TABLES FROM ${DB_NAME} WHERE Tables_in_${DB_NAME} LIKE '${DB_PREFIX}options';") ]]; then
     
-            ss_mysql_user --execute="DELETE FROM ${DB_NAME}.${DB_PREFIX}options WHERE option_name LIKE ('%\_transient\_%');"
+fi
+
+## ubuntu 20.04 ##
+if [[ "${SYSTEM_UBUNTU_VERSION}" = "20.04" ]]; then 
+
+    if [[ -n $(ss_mysql_user --execute "SHOW TABLES FROM ${DB_NAME} WHERE Tables_in_${DB_NAME} LIKE '${DB_PREFIX}options';") ]]; then
+    
+        ss_mysql_user --execute="DELETE FROM ${DB_NAME}.${DB_PREFIX}options WHERE option_name LIKE ('%\_transient\_%');"
+    
+    fi
+    
+fi
+
+## ubuntu 18.04 ##
+if [[ "${SYSTEM_UBUNTU_VERSION}" = "18.04" ]]; then
+
+    if [[ -n $(ss_mysql_user --execute "SHOW TABLES FROM ${DB_NAME} WHERE Tables_in_${DB_NAME} LIKE '${DB_PREFIX}options';") ]]; then
+    
+        ss_mysql_user --execute="DELETE FROM ${DB_NAME}.${DB_PREFIX}options WHERE option_name LIKE ('%\_transient\_%');"
      
-        fi
-     
     fi
-
-####################################################################################################
-#### end if #################################################
-####################################################################################################
-
+     
 fi
 
 ####################################################################################################
