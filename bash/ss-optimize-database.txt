@@ -3,17 +3,38 @@
 ####################################################################################################
 #### author: SlickStack ############################################################################
 #### link: https://slickstack.io ###################################################################
-#### mirror: https://mirrors.slickstack.io/bash/ss-optimize-database.txt ###########################
+#### mirror: littlebizzy/slickstack/blob/master/bash/ss-optimize-database.txt ######################
 #### path: /var/www/ss-optimize-database ###########################################################
 #### destination: n/a (not a boilerplate) ##########################################################
-#### purpose: Removes junk SQL data, converts MyISAM to InnoDB, and optimizes the database #########
+#### purpose: Force converts any MyISAM tables to InnoDB and optimizes the database ################
 #### module version: MySQL 8.0.x ###################################################################
 #### sourced by: n/a ###############################################################################
-#### bash aliases: ss optimize, ss optimize database|db ############################################
+#### bash aliases: ss optimize database|db #########################################################
 ####################################################################################################
 
 ## WE RECOMMEND RUNNING SS-OPTIMIZE MANUALLY OR NOT OFTEN IN CASE RESTORATION IS NEEDED ##
 ## UNLIKE SS-CLEAN (PHYSICAL FILES) THIS SCRIPT IS FOCUSED ONLY ON THE DATABASE ##
+
+####################################################################################################
+#### TABLE OF CONTENTS (SS-Optimize-Database) ######################################################
+####################################################################################################
+
+## this is a brief summary of the different code snippets you will find in this script ##
+## each section should be commented so you understand what is being accomplished ##
+
+## A. Source SS-Config + SS-Functions
+## B. Touch Timestamp File
+## C. Message (Begin Script)
+## D. Run SS-Dump-Database
+## E. Convert Any MyISAM Tables To InnoDB Engine
+## F. Purge Cache (Memcached)
+
+####################################################################################################
+#### A. SS-Optimize-Database: Source SS-Config + SS-Functions ######################################
+####################################################################################################
+
+## before anything else we must source the critical variables that power this script ##
+## ss-config is setup during ss-install wizard but ss-functions is hardcoded ##
 
 ## source ss-config ##
 source /var/www/ss-config
@@ -24,20 +45,7 @@ source /var/www/ss-functions
 ## BELOW THIS RELIES ON SS-CONFIG AND SS-FUNCTIONS
 
 ####################################################################################################
-#### TABLE OF CONTENTS (SS-Optimize-Database) ######################################################
-####################################################################################################
-
-## this is a brief summary of the different code snippets you will find in this script ##
-## each section should be commented so you understand what is being accomplished ##
-
-## A. Touch Timestamp File
-## B. Message (Begin Script)
-## C. Backup MySQL Database Before Proceeding (Via SS-Dump)
-## D. Convert Any MyISAM Tables To InnoDB Engine
-## E. Purge Cache (Memcached)
-
-####################################################################################################
-#### A. SS-Optimize-Database: Touch Timestamp File #################################################
+#### B. SS-Optimize-Database: Touch Timestamp File #################################################
 ####################################################################################################
 
 ## this is a dummy timestamp file that will remember the last time this script was run ##
@@ -46,7 +54,7 @@ source /var/www/ss-functions
 ss_touch "${TIMESTAMP_SS_OPTIMIZE_DATABASE}"
 
 ####################################################################################################
-#### B. SS-Optimize-Database: Message (Begin Script) ###############################################
+#### C. SS-Optimize-Database: Message (Begin Script) ###############################################
 ####################################################################################################
 
 ## this is a simple message that announces to the shell the purpose of this bash script ##
@@ -55,13 +63,7 @@ ss_touch "${TIMESTAMP_SS_OPTIMIZE_DATABASE}"
 ss_echo "${COLOR_INFO}Running ss-optimize-database... ${COLOR_RESET}"
 
 ####################################################################################################
-#### X. Change To Default Directory #####################################
-####################################################################################################
-
-ss_cd_default
-
-####################################################################################################
-#### C. SS-Optimize-Database: Backup MySQL Database Before Proceeding (Via SS-Dump) ################
+#### D. SS-Optimize-Database: Run SS-Dump-Database #################################################
 ####################################################################################################
 
 ## here we first dump the live production database to /var/www/meta/ before proceeding ##
@@ -82,9 +84,6 @@ source "${PATH_SS_DUMP_DATABASE}"
 
 # coming soon (depends on ss-config settings to avoid data loss)
 
-####################################################################################################
-#### SS-Optimize-Database: Drop Unused Staging Site Tables From MySQL Database #####################
-####################################################################################################
 
 ## cleans up various erroneous and junk tables from staging due to past testing (etc) ##
 ## also a cool example of batch table cleanup that we might use in the future ##
@@ -173,7 +172,7 @@ ss_mysql_root "${DB_NAME}" < /var/www/meta/drop_tables.sql
 # Invalid default value for 'date_created'
 
 ####################################################################################################
-#### D. SS-Optimize-Database: Convert Any MyISAM Tables To InnoDB Engine ###########################
+#### E. SS-Optimize-Database: Convert Any MyISAM Tables To InnoDB Engine ###########################
 ####################################################################################################
 
 ## the InnoDB engine is infinitely more robust for scaling and stability of LEMP stacks ##
@@ -203,7 +202,7 @@ ss_mysql_root --init-command="SET SQL_MODE='ALLOW_INVALID_DATES';" $DB_NAME < /v
 # https://stackoverflow.com/a/52334132/1718491
 
 ####################################################################################################
-#### E. SS-Optimize-Database: Purge Cache (Memcached) ##############################################
+#### F. SS-Optimize-Database: Purge Cache (Memcached) ##############################################
 ####################################################################################################
 
 source "${PATH_SS_PURGE_MEMCACHED}"
