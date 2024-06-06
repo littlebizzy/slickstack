@@ -3,17 +3,36 @@
 ####################################################################################################
 #### author: SlickStack ############################################################################
 #### link: https://slickstack.io ###################################################################
-#### mirror: https://mirrors.slickstack.io/bash/ss-purge-nginx.txt #################################
+#### mirror: littlebizzy/slickstack/blob/master/bash/ss-purge-nginx.txt ############################
 #### path: /var/www/ss-purge-nginx #################################################################
 #### destination: n/a (not a boilerplate) ##########################################################
 #### purpose: Clears the Nginx FastCGI cache by deleting files under /var/www/cache/nginx/ #########
 #### module version: Nginx 1.18.x ##################################################################
-#### sourced by: ss-purge, ss core bash scripts ####################################################
-#### bash aliases: ss purge [clear] nginx, ss purge [clear] caches nginx ###########################
+#### sourced by: ss-purge ##########################################################################
+#### bash aliases: ss purge nginx ##################################################################
 ####################################################################################################
 
 ## RUNNING SS-PURGE DURING TRAFFIC SPIKES MIGHT CAUSE SUDDEN STRESS TO SERVER RESOURCES ##
 ## KEEP IN MIND THAT PAGE CACHING IS DISABLED ALREADY ON DEV/STAGING WEBSITES ##
+
+####################################################################################################
+#### TABLE OF CONTENTS (SS-Purge-Nginx) ############################################################
+####################################################################################################
+
+## this is a brief summary of the different code snippets you will find in this script ##
+## each section should be commented so you understand what is being accomplished ##
+
+## A. Source SS-Config + SS-Functions
+## B. Touch Timestamp File
+## C. Message (Begin Script)
+## D. Purge Nginx Cache
+
+####################################################################################################
+#### A. SS-Purge-Nginx: Source SS-Config + SS-Functions ############################################
+####################################################################################################
+
+## before anything else we must source the critical variables that power this script ##
+## ss-config is setup during ss-install wizard but ss-functions is hardcoded ##
 
 ## source ss-config ##
 source /var/www/ss-config
@@ -24,17 +43,7 @@ source /var/www/ss-functions
 ## BELOW THIS RELIES ON SS-CONFIG AND SS-FUNCTIONS
 
 ####################################################################################################
-#### TABLE OF CONTENTS (SS-Purge-Nginx) ############################################################
-####################################################################################################
-
-## this is a brief summary of the different code snippets you will find in this script ##
-## each section should be commented so you understand what is being accomplished ##
-
-## A. Touch Timestamp File
-## B. Message (Begin Script)
-
-####################################################################################################
-#### A. SS-Purge-Nginx: Touch Timestamp File #######################################################
+#### B. SS-Purge-Nginx: Touch Timestamp File #######################################################
 ####################################################################################################
 
 ## this is a dummy timestamp file that will remember the last time this script was run ##
@@ -43,7 +52,7 @@ source /var/www/ss-functions
 ss_touch "${TIMESTAMP_SS_PURGE_NGINX}"
 
 ####################################################################################################
-#### B. SS-Purge-Nginx: Message (Begin Script) #####################################################
+#### C. SS-Purge-Nginx: Message (Begin Script) #####################################################
 ####################################################################################################
 
 ## this is a simple message that announces to the shell the purpose of this bash script ##
@@ -52,7 +61,7 @@ ss_touch "${TIMESTAMP_SS_PURGE_NGINX}"
 ss_echo "${COLOR_INFO}Running ss-purge-nginx... ${COLOR_RESET}"
 
 ####################################################################################################
-### SS-Purge-Nginx: Clear Cache (Nginx FastCGI Cache) ##############################################
+### D. SS-Purge-Nginx: Purge Nginx Cache ###########################################################
 ####################################################################################################
 
 ## here we manually delete all FastCGI cache files without touching OPcache file cache ##
