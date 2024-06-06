@@ -8,9 +8,30 @@
 #### destination: n/a (not a boilerplate) ##########################################################
 #### purpose: Converts any DOS files in the SlickStack directory tree to Unix file format ##########
 #### module version: Ubuntu 24.04 LTS ##############################################################
-#### sourced by: ss core cron jobs, ss-update ###########################################################
+#### sourced by: ###########################################################
 #### bash aliases: ss optimize files ###############################################################
 ####################################################################################################
+
+####################################################################################################
+#### TABLE OF CONTENTS (SS-Optimize-Files) #########################################################
+####################################################################################################
+
+## this is a brief summary of the different code snippets you will find in this script ##
+## each section should be commented so you understand what is being accomplished ##
+
+## A. Source SS-Config + SS-Functions
+## B. Touch Timestamp File
+## C. Message (Begin Script)
+## D. Install Dos2Unix Package If Not Exists
+## E. Convert Any DOS Files To Unix Files
+## F. Strip Any EXIF Metadata
+
+####################################################################################################
+#### A. SS-Optimize-Files: Source SS-Config + SS-Functions #########################################
+####################################################################################################
+
+## before anything else we must source the critical variables that power this script ##
+## ss-config is setup during ss-install wizard but ss-functions is hardcoded ##
 
 ## source ss-config ##
 source /var/www/ss-config
@@ -21,17 +42,7 @@ source /var/www/ss-functions
 ## BELOW THIS RELIES ON SS-CONFIG AND SS-FUNCTIONS
 
 ####################################################################################################
-#### TABLE OF CONTENTS (SS-Optimize-Files) #########################################################
-####################################################################################################
-
-## this is a brief summary of the different code snippets you will find in this script ##
-## each section should be commented so you understand what is being accomplished ##
-
-## A. Touch Timestamp File
-## B. Message (Begin Script)
-
-####################################################################################################
-#### A. SS-Optimize-Files: Touch Timestamp File ####################################################
+#### B. SS-Optimize-Files: Touch Timestamp File ####################################################
 ####################################################################################################
 
 ## this is a dummy timestamp file that will remember the last time this script was run ##
@@ -40,13 +51,7 @@ source /var/www/ss-functions
 ss_touch "${TIMESTAMP_SS_OPTIMIZE_FILES}"
 
 ####################################################################################################
-#### X. Change To Default Directory #####################################
-####################################################################################################
-
-ss_cd_default
-
-####################################################################################################
-#### B. SS-Optimize-Files: Message (Begin Script) ##################################################
+#### C. SS-Optimize-Files: Message (Begin Script) ##################################################
 ####################################################################################################
 
 ## this is a simple message that announces to the shell the purpose of this bash script ##
@@ -55,7 +60,7 @@ ss_cd_default
 ss_echo "${COLOR_INFO}Running ss-optimize-files... ${COLOR_RESET}"
 
 ####################################################################################################
-#### SS-DOS2Unix-Files: Install Ubuntu Package If Not Exists (dos2unix) ############################
+#### D. SS-Optimize-Files: Install Dos2Unix Package If Not Exists ##################################
 ####################################################################################################
 
 ## here is a brief script to install dos2unix package if does not exist already on server ##
@@ -63,13 +68,13 @@ ss_echo "${COLOR_INFO}Running ss-optimize-files... ${COLOR_RESET}"
 
 PACKAGE_DOS2UNIX_EXISTS=$(dpkg-query -W --showformat='${Status}\n' $PACKAGE_DOS2UNIX|grep "install ok installed")
 echo Checking for $PACKAGE_DOS2UNIX: $PACKAGE_DOS2UNIX_EXISTS
-if [ "" = "$PACKAGE_DOS2UNIX_EXISTS" ]; then
-    echo "$PACKAGE_DOS2UNIX package not found. We will install the package before proceeding."
+if [ "" = "${PACKAGE_DOS2UNIX_EXISTS}" ]; then
+    ss_echo "${PACKAGE_DOS2UNIX} package not found. We will install the package before proceeding."
     ss_apt_install "${PACKAGE_DOS2UNIX}"
 fi
 
 ####################################################################################################
-#### SS-DOS2Unix-Files: Convert DOS Files To Unix Files ############################################
+#### E. SS-Optimize-Files: Convert Any DOS Files To Unix Files #####################################
 ####################################################################################################
 
 ## this utility will search the SlickStack directories for any DOS files and conver them ##
@@ -78,7 +83,7 @@ fi
 find /var/www/html/ -type f -exec dos2unix --quiet --keepdate --oldfile --safe {} \;
 
 ####################################################################################################
-#### SS-Optimize-Files: Strip All EXIF Metadata ####################################################
+#### F. SS-Optimize-Files: Strip Any EXIF Metadata #################################################
 ####################################################################################################
 
 ## for better file and image security run exiftool to remove any EXIF data from files ##
