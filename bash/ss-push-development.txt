@@ -3,17 +3,46 @@
 ####################################################################################################
 #### author: SlickStack ############################################################################
 #### link: https://slickstack.io ###################################################################
-#### mirror: https://mirrors.slickstack.io/bash/ss-push-development.txt ############################
+#### mirror: littlebizzy/slickstack/blob/master/bash/ss-push-development.txt #######################
 #### path: /var/www/ss-push-development ############################################################
 #### destination: n/a (not a boilerplate) ##########################################################
 #### purpose: Pushes /wp-content/ and database from dev site to the production site ################
-#### module version: WordPress 6.3.x + MySQL 8.0.x #################################################
+#### module version: WordPress 6.5.x + MySQL 8.0.x #################################################
 #### sourced by: n/a ###############################################################################
 #### bash aliases: ss push dev|development #########################################################
 ####################################################################################################
 
 ## SS-SYNC DUPLICATES ALL RELEVANT FILES FROM PRODUCTION TO STAGING (BUT NOT UPLOADS) ##
 ## STAGING SITES WILL MIRROR (NGINX ALIAS) ALL MEDIA UPLOADS FROM PRODUCTION ##
+
+####################################################################################################
+#### TABLE OF CONTENTS (SS-Push-Development) #######################################################
+####################################################################################################
+
+## this is a brief summary of the different code snippets you will find in this script ##
+## each section should be commented so you understand what is being accomplished ##
+
+## A. Source SS-Config + SS-Functions
+## B. Touch Timestamp File
+## C. Message (Begin Script)
+## D. Run SS-Dump-Database
+
+## E. INTERACTIVE PROMPT CONFIRMATION TO PROCEED
+
+## F. Import Development Database To Production Database
+## G. Copy All Relevant Files From Development To Production
+## H. Fix Any Hardcoded Links In Production Theme Files
+## I. Purge Cache (OPcache)
+## J. Purge Cache (Transients)
+## K. Purge Cache (Memcached)
+## L. Purge Cache (Nginx)
+
+####################################################################################################
+#### A. SS-Push-Development: Source SS-Config + SS-Functions #######################################
+####################################################################################################
+
+## before anything else we must source the critical variables that power this script ##
+## ss-config is setup during ss-install wizard but ss-functions is hardcoded ##
 
 ## source ss-config ##
 source /var/www/ss-config
@@ -24,26 +53,7 @@ source /var/www/ss-functions
 ## BELOW THIS RELIES ON SS-CONFIG AND SS-FUNCTIONS
 
 ####################################################################################################
-#### TABLE OF CONTENTS (SS-Push-Development) #######################################################
-####################################################################################################
-
-## this is a brief summary of the different code snippets you will find in this script ##
-## each section should be commented so you understand what is being accomplished ##
-
-## A. Touch Timestamp File
-## B. Message (Begin Script)
-## C. Dump Production Database
-## D. INTERACTIVE PROMPT CONFIRMATION TO PROCEED
-
-## E. Import Development Database To Production Database
-## F. Copy All Relevant Files From Development To Production
-## G. Fix Any Hardcoded Links In Production Theme Files
-## H. Purge Cache (OPcache)
-## I. Purge Cache (Transients)
-## J. Purge Cache (Memcached)
-
-####################################################################################################
-#### A. SS-Push-Development: Touch Timestamp File ##################################################
+#### B. SS-Push-Development: Touch Timestamp File ##################################################
 ####################################################################################################
 
 ## this is a dummy timestamp file that will remember the last time this script was run ##
@@ -52,7 +62,7 @@ source /var/www/ss-functions
 ss_touch "${TIMESTAMP_SS_PUSH_DEVELOPMENT}"
 
 ####################################################################################################
-#### B. SS-Push-Development: Message (Begin Script) ################################################
+#### C. SS-Push-Development: Message (Begin Script) ################################################
 ####################################################################################################
 
 ## this is a simple message that announces to the shell the purpose of this bash script ##
@@ -61,7 +71,7 @@ ss_touch "${TIMESTAMP_SS_PUSH_DEVELOPMENT}"
 ss_echo "${COLOR_INFO}Running ss-push-development... ${COLOR_RESET}"
 
 ####################################################################################################
-#### C. SS-Push-Development: Dump Production Database ##############################################
+#### D. SS-Push-Development: Run SS-Dump-Database ##################################################
 ####################################################################################################
 
 ## first we need to dump the production database locally in case anything goes wrong ##
@@ -70,7 +80,7 @@ ss_echo "${COLOR_INFO}Running ss-push-development... ${COLOR_RESET}"
 source "${PATH_SS_DUMP_DATABASE}"
 
 ####################################################################################################
-#### D. SS-Push-Development: INTERACTIVE PROMPT CONFIRMATION TO PROCEED ############################
+#### E. SS-Push-Development: INTERACTIVE PROMPT CONFIRMATION TO PROCEED ############################
 ####################################################################################################
 
 read -r -p "EXPERIMENTAL... BE CAREFUL... WILL OVERWRITE PRODUCTION... BACKUP FIRST: Push development files (wp-content and database) to production, are you sure? [y/N]" response
@@ -78,7 +88,7 @@ if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]]
 then
 
 ####################################################################################################
-#### E. SS-Push-Development: Import Development Database To Production Database ####################
+#### F. SS-Push-Development: Import Development Database To Production Database ####################
 ####################################################################################################
 
 ## this snippet duplicates the dumped production database and imports it into MySQL ##
@@ -101,7 +111,7 @@ fi
 ss_rm /tmp/development_push.sql
 
 ####################################################################################################
-#### F. SS-Push-Development: Copy All Relevant Files From Development To Production ################
+#### G. SS-Push-Development: Copy All Relevant Files From Development To Production ################
 ####################################################################################################
 
 ## here we copy over a limited array of files and folders from development to production ##
@@ -114,7 +124,7 @@ ss_rsync --max-size=512mb --exclude 'blacklist.txt' --exclude mu-plugins --exclu
 ss_rm /var/www/html/wp-content/wp-content*
 
 ####################################################################################################
-#### G. SS-Sync-Development: Fix Any Hardcoded Links In Production Theme Files #####################
+#### H. SS-Sync-Development: Fix Any Hardcoded Links In Production Theme Files #####################
 ####################################################################################################
 
 ## many themes (or custom-coded themes) often contain hardcoded HTML assets and links ##
@@ -133,31 +143,28 @@ else
 fi
 
 ####################################################################################################
-#### H. SS-Sync-Staging: Purge Cache (OPcache) #####################################################
+#### I. SS-Sync-Development: Purge Cache (OPcache) #################################################
 ####################################################################################################
 
 source "${PATH_SS_PURGE_OPCACHE}"
 
 ####################################################################################################
-#### I. SS-Sync-Staging: Purge Cache (Transients) ##################################################
+#### J. SS-Sync-Development: Purge Cache (Transients) ##############################################
 ####################################################################################################
 
 source "${PATH_SS_PURGE_TRANSIENTS}"
 
 ####################################################################################################
-#### J. SS-Sync-Staging: Purge Cache (Memcached) ###################################################
+#### K. SS-Sync-Development: Purge Cache (Memcached) ###############################################
 ####################################################################################################
 
 source "${PATH_SS_PURGE_MEMCACHED}"
 
 ####################################################################################################
-#### B. SS-Push-Development: Message (Begin Script) ################################################
+#### L. SS-Sync-Development: Purge Cache (Nginx) ###################################################
 ####################################################################################################
 
-## this is a simple message that announces to the shell the purpose of this bash script ##
-## it will only be seen by sudo users who manually run this script in the shell ##
-
-ss_echo "${COLOR_INFO}Running ss-push-development... ${COLOR_RESET}"
+source "${PATH_SS_PURGE_NGINX}"
 
 ####################################################################################################
 #### SlickStack: Reset Permissions (SlickStack Scripts) ############################################
