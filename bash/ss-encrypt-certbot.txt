@@ -6,8 +6,8 @@
 #### mirror: littlebizzy/slickstack/blob/master/bash/ss-encrypt-certbot.txt ########################
 #### path: /var/www/ss-encrypt-certbot #############################################################
 #### destination: n/a (not a boilerplate) ##########################################################
-#### purpose: Regenerates Letsencrypt certs and relevant symlinks ##################################
-#### module version: Certbot 1.21.x ################################################################
+#### purpose: Regenerates Lets Encrypt certs via Certbot and configures relevant symlinks ##########
+#### module version: Certbot 2.9.x #################################################################
 #### sourced by: ss-install-nginx-config ###########################################################
 #### bash aliases: ss certbot, ss encrypt certbot|letsencrypt ######################################
 ####################################################################################################
@@ -25,11 +25,11 @@
 ## A. Source SS-Config + SS-Functions
 ## B. Touch Timestamp File
 ## C. Message (Begin Script)
-## D. Temporarily Activate OpenSSL.conf (Conditional)
-## E. Request Certs From Lets Encrypt Servers
-## F. Create Lets Encrypt Symlinks
-
-## G. Reset Permissions (Nginx SSL)
+## D. Run SS-Perms-Nginx-Config
+## E. Temporarily Activate OpenSSL.conf (Conditional)
+## F. Request Certs From Lets Encrypt Servers
+## G. Configure Lets Encrypt Symlinks
+## H. Run SS-Perms-Nginx-Config
 
 ####################################################################################################
 #### A. SS-Encrypt-Certbot: Source SS-Config + SS-Functions ########################################
@@ -64,11 +64,14 @@ ss_touch "${TIMESTAMP_SS_ENCRYPT_CERTBOT}"
 
 ss_echo "${COLOR_INFO}Running ss-encrypt-certbot... ${COLOR_RESET}"
 
+####################################################################################################
+#### D. SS-Encrypt-Certbot: Run SS-Perms-Nginx-Config ##############################################
+####################################################################################################
 
 source "${PATH_SS_PERMS_NGINX_CONFIG}"
 
 ####################################################################################################
-#### D. SS-Encrypt-Certbot: Temporarily Activate OpenSSL.conf (Conditional) ########################
+#### E. SS-Encrypt-Certbot: Temporarily Activate OpenSSL.conf (Conditional) ########################
 ####################################################################################################
 
 ## here we must temporarily activate OpenSSL in order to avoid fatal errors in Nginx ##
@@ -135,7 +138,7 @@ ss_echo "lets encrypt cert file not found during ss-encrypt-certbot so installin
 fi
 
 ####################################################################################################
-#### E. SS-Encrypt-Certbot: Request Certs From Lets Encrypt Servers ################################
+#### F. SS-Encrypt-Certbot: Request Certs From Lets Encrypt Servers ################################
 ####################################################################################################
 
 ## NOTICE: SLICKSTACK DOES NOT SUPPORT SUB-SUBDOMAINS LIKE WWW.BLOG.EXAMPLE.COM ##
@@ -281,7 +284,7 @@ else
 fi
 
 ####################################################################################################
-#### F. SS-Encrypt-Certbot: Create Lets Encrypt Symlinks ###########################################
+#### G. SS-Encrypt-Certbot: Configure Lets Encrypt Symlinks ########################################
 ####################################################################################################
 
 ## here we create symlinks in the /var/www/certs/ directory that point to Lets Encrypt ##
@@ -291,6 +294,12 @@ ss_ln "${PATH_LETSENCRYPT_CERT_CERT}" "${SYMLINK_LETSENCRYPT_CERT}"
 ss_ln "${PATH_LETSENCRYPT_CERT_CHAIN}" "${SYMLINK_LETSENCRYPT_CHAIN}"
 ss_ln "${PATH_LETSENCRYPT_CERT_FULLCHAIN}" "${SYMLINK_LETSENCRYPT_FULLCHAIN}"
 ss_ln "${PATH_LETSENCRYPT_CERT_PRIVKEY}" "${SYMLINK_LETSENCRYPT_PRIVKEY}"
+
+####################################################################################################
+#### H. SS-Encrypt-Certbot: Run SS-Perms-Nginx-Config ##############################################
+####################################################################################################
+
+source "${PATH_SS_PERMS_NGINX_CONFIG}"
 
 ####################################################################################################
 #### SlickStack: Reset Permissions (SlickStack Scripts) ############################################
