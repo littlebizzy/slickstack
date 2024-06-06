@@ -6,10 +6,10 @@
 #### mirror: littlebizzy/slickstack/blob/master/bash/ss-encrypt-openssl.txt ########################
 #### path: /var/www/ss-encrypt-openssl #############################################################
 #### destination: n/a (not a boilerplate) ##########################################################
-#### purpose: Regenerates free self-signed OpenSSL certificate for use by Nginx (idempotent) #######
+#### purpose: Regenerates free self-signed OpenSSL certificate for use by Nginx ####################
 #### module version: OpenSSL 3.0.x #################################################################
 #### sourced by: ss-install-nginx-config ###########################################################
-#### bash aliases: ss encrypt|generate openssl #####################################################
+#### bash aliases: ss encrypt openssl ##############################################################
 ####################################################################################################
 
 ## SS-ENCRYPT PERFORMS BASIC NGINX CONFIG MODIFICATION REGARDLESS OF SS-INSTALL-NGINX ##
@@ -29,8 +29,7 @@
 ## E. Delete Existing OpenSSL Cert Files
 ## F. Generate OpenSSL Certificate (Valid For 10 Years)
 ## G. Validate OpenSSL Certificate (Verbose)
-
-## H. Reset Permissions (Nginx SSL)
+## H. Run SS-Perms-Nginx-Config
 
 ####################################################################################################
 #### A. SS-Encrypt-OpenSSL: Source SS-Config + SS-Functions ########################################
@@ -68,6 +67,9 @@ ss_echo "${COLOR_INFO}Running ss-encrypt-openssl... ${COLOR_RESET}"
 ####################################################################################################
 #### D. SS-Encrypt-OpenSSL: Hide Bug In OpenSSL 1.1.1x #############################################
 ####################################################################################################
+
+## this .rnd bug is no longer relevant to newer versions of Ubuntu LTS and OpenSSL ##
+## however we retain this snippet for backwards compatibility of SlickStack ##
 
 ss_touch /home/${SUDO_USER}/.rnd
 ss_touch /home/${SFTP_USER}/.rnd
@@ -216,6 +218,12 @@ fi
 ####################################################################################################
 
 openssl x509 -noout -text -in "${PATH_OPENSSL_CERTIFICATE}"
+
+####################################################################################################
+#### H. SS-Encrypt-OpenSSL: Run SS-Perms-Nginx-Config ##############################################
+####################################################################################################
+
+source "${PATH_SS_PERMS_NGINX_CONFIG}"
 
 ####################################################################################################
 #### SlickStack: Reset Permissions (SlickStack Scripts) ############################################
