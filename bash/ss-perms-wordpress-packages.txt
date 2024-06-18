@@ -62,8 +62,11 @@ chmod 0775 /var/www/html ## must be 0775 (0755 not enough)
 find /var/www/html/ -type d -exec chmod 0775 {} \; ## must be 0775 (0755 not enough)
 
 ## only reset perms for ALL public files if website is not massive ##
+## https://unix.stackexchange.com/questions/376075/explain-finds-path-and-prune-options ##
 if [[ "${SS_MASSIVE_SITE}" != "true" ]]; then 
     find /var/www/html/ -type f -exec chmod 0664 {} \; ## must be 0664 (0644 not enough)
+else 
+    find /var/www/html/ -path /var/www/html/wp-content/ -prune -o -type f -exec chmod 0664 {} \; ## must be 0664 (0644 not enough)
 fi
 
 ## production ##
@@ -124,5 +127,6 @@ chmod 0700 /var/www/crons/custom/*cron* ## 0700 means only root/sudo can execute
 ## Ref: https://stackoverflow.com/questions/10062513/install-wordpress-using-bash-shell-without-visiting-wp-admin-install-php
 ## Ref: https://github.com/littlebizzy/throwaway-theme/blob/master/functions.php
 ## Ref: https://docs.bitnami.com/ibm/apps/wordpress-pro/administration/understand-file-permissions/
+## Ref: https://unix.stackexchange.com/questions/376075/explain-finds-path-and-prune-options
 
 ## SS_EOF
