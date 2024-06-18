@@ -60,7 +60,11 @@ ss_echo "${COLOR_INFO}Running ss-perms-wordpress-packages... ${COLOR_RESET}"
 ss_chown "${SFTP_USER}":slickstack /var/www/html
 chmod 0775 /var/www/html ## must be 0775 (0755 not enough)
 find /var/www/html/ -type d -exec chmod 0775 {} \; ## must be 0775 (0755 not enough)
-find /var/www/html/ -type f -exec chmod 0664 {} \; ## must be 0664 (0644 not enough)
+
+## only reset perms for ALL public files if website is not massive ##
+if [[ "${SS_MASSIVE_SITE}" != "true" ]]; then 
+    find /var/www/html/ -type f -exec chmod 0664 {} \; ## must be 0664 (0644 not enough)
+fi
 
 ## production ##
 ss_mkdir /var/www/html/wp-content
