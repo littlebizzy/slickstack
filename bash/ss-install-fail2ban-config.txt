@@ -15,6 +15,27 @@
 ## SS-CONFIG MUST BE PROPERLY CONFIGURED AND ON CURRENT BUILD BEFORE RUNNING SS-INSTALL ##
 ## ENSURE YOUR SS-CONFIG BUILD REMAINS CURRENT BY RUNNING SS-UPDATE OCCASIONALLY ##
 
+####################################################################################################
+#### TABLE OF CONTENTS (SS-Install-Fail2ban-Config) ################################################
+####################################################################################################
+
+## this is a brief summary of the different code snippets you will find in this script ##
+## each section should be commented so you understand what is being accomplished ##
+
+## A. Source SS-Config + SS-Functions
+## B. Touch Timestamp File
+## C. Message (Begin Script)
+## D. Install Jail.local
+## E. Reset Permissions (Fail2ban Config)
+## F. Restart Fail2ban
+
+####################################################################################################
+#### A. SS-Install-Fail2ban-Config: Source SS-Config + SS-Functions ################################
+####################################################################################################
+
+## before anything else we must source the critical variables that power this script ##
+## ss-config is setup during ss-install wizard but ss-functions is hardcoded ##
+
 ## source ss-config ##
 source /var/www/ss-config
 
@@ -24,20 +45,7 @@ source /var/www/ss-functions
 ## BELOW THIS RELIES ON SS-CONFIG AND SS-FUNCTIONS
 
 ####################################################################################################
-#### TABLE OF CONTENTS (SS-Install-Fail2ban-Config) ################################################
-####################################################################################################
-
-## this is a brief summary of the different code snippets you will find in this script ##
-## each section should be commented so you understand what is being accomplished ##
-
-## A. Touch Timestamp File
-## B. Message (Begin Script)
-## C. Install Jail.local
-## D. Reset Permissions (Fail2ban Config)
-## E. Restart Fail2ban
-
-####################################################################################################
-#### A. SS-Install-Fail2ban-Config: Touch Timestamp File ###########################################
+#### B. SS-Install-Fail2ban-Config: Touch Timestamp File ###########################################
 ####################################################################################################
 
 ## this is a dummy timestamp file that will remember the last time this script was run ##
@@ -46,7 +54,7 @@ source /var/www/ss-functions
 ss_touch "${TIMESTAMP_SS_INSTALL_FAIL2BAN_CONFIG}"
 
 ####################################################################################################
-#### B. SS-Install-Fail2ban-Config: Message (Begin Script) #########################################
+#### C. SS-Install-Fail2ban-Config: Message (Begin Script) #########################################
 ####################################################################################################
 
 ## this is a simple message that announces to the shell the purpose of this bash script ##
@@ -55,7 +63,7 @@ ss_touch "${TIMESTAMP_SS_INSTALL_FAIL2BAN_CONFIG}"
 ss_echo "${COLOR_INFO}Running ss-install-fail2ban-config... ${COLOR_RESET}"
 
 ####################################################################################################
-#### C. SS-Install-Fail2ban-Config: Install Jail.local #############################################
+#### D. SS-Install-Fail2ban-Config: Install Jail.local #############################################
 ####################################################################################################
 
 ## here we install an optimized Nginx config designed for high traffic and CloudFlare ##
@@ -86,13 +94,13 @@ ss_sed "s/@FAIL2BAN_5XX_MAXRETRY/${FAIL2BAN_5XX_MAXRETRY}/g" /etc/fail2ban/jail.
 ss_sed "s/@FAIL2BAN_5XX_BANTIME/${FAIL2BAN_5XX_BANTIME}/g" /etc/fail2ban/jail.local
 
 ####################################################################################################
-#### D. SS-Install-Fail2ban-Config: Reset Permissions (Fail2ban Config) ############################
+#### E. SS-Install-Fail2ban-Config: Reset Permissions (Fail2ban Config) ############################
 ####################################################################################################
 
 source "${PATH_SS_PERMS_FAIL2BAN_CONFIG}"
 
 ####################################################################################################
-#### E. SS-Install-Fail2ban-Config: Restart Fail2ban ###############################################
+#### F. SS-Install-Fail2ban-Config: Restart Fail2ban ###############################################
 ####################################################################################################
 
 source "${PATH_SS_RESTART_FAIL2BAN}"
