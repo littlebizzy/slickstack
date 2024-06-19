@@ -55,12 +55,6 @@ ss_touch "${TIMESTAMP_SS_INSTALL_FAIL2BAN_PACKAGES}"
 ss_echo "${COLOR_INFO}Running ss-install-fail2ban-packages... ${COLOR_RESET}"
 
 ####################################################################################################
-#### X. Change To Default Directory #####################################
-####################################################################################################
-
-ss_cd_default
-
-####################################################################################################
 #### C. SS-Install-Fail2ban-Packages: Update Existing Packages #####################################
 ####################################################################################################
 
@@ -79,6 +73,16 @@ ss_apt_upgrade
 ####################################################################################################
 #### D. SS-Install-Fail2ban-Packages: Install Fail2ban #############################################
 ####################################################################################################
+
+## https://bugs.launchpad.net/ubuntu/+source/fail2ban/+bug/2055114
+## https://github.com/fail2ban/fail2ban/issues/3755
+## https://support.plesk.com/hc/en-us/articles/23560932208535-Fail2ban-does-not-start-on-a-Plesk-server-with-Ubuntu-24-No-module-named-asynchat
+## asynchat module missing on 24.04
+
+if [[ "${SYSTEM_UBUNTU_VERSION}" == "24.04" ]]; then
+  ss_apt_install python3-pip
+  python3 -m pip install pyasynchat --break-system-packages
+fi
 
 ss_apt_install fail2ban
 
