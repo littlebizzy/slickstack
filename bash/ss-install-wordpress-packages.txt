@@ -244,7 +244,7 @@ source "${PATH_SS_INSTALL_WORDPRESS_HOVERCRAFT}"
 ## https://johnkpaul.tumblr.com/post/19841381351/su-vs-sudo-su-vs-sudo-u-i
 
 if ! sudo -u "${SFTP_USER}" /usr/local/bin/wp core is-installed --path=/var/www/html 2>/dev/null; then
-    sudo -u "${SFTP_USER}" /usr/local/bin/wp core install --path=/var/www/html --url="${SITE_DOMAIN}" --title=SlickStack --admin_user="${SFTP_USER}" --admin_password="${SFTP_PASSWORD}" --admin_email="${SFTP_USER}"@"${SITE_DOMAIN_EXCLUDING_WWW}" --locale="${SS_LANGUAGE}" --skip-email 
+    sudo -u "${SFTP_USER}" /usr/local/bin/wp core install --path=/var/www/html --url="${SITE_FULL_DOMAIN}" --title=SlickStack --admin_user="${SFTP_USER}" --admin_password="${SFTP_PASSWORD}" --admin_email="${SFTP_USER}"@"${SITE_DOMAIN_EXCLUDING_WWW}" --locale="${SS_LANGUAGE}" --skip-email 
 fi
 
 ####################################################################################################
@@ -290,8 +290,8 @@ fi
 ## production ##
 if [[ -n $(ss_mysql_root --execute "SHOW TABLES FROM ${DB_NAME} WHERE Tables_in_${DB_NAME} LIKE '${DB_PREFIX}options';" 2> /dev/null) ]]; then
     
-    ss_mysql_root --execute="UPDATE ${DB_NAME}.${DB_PREFIX}options SET option_value='https://${SITE_DOMAIN}' WHERE option_name='home'";
-    ss_mysql_root --execute="UPDATE ${DB_NAME}.${DB_PREFIX}options SET option_value='https://${SITE_DOMAIN}' WHERE option_name='siteurl'";
+    ss_mysql_root --execute="UPDATE ${DB_NAME}.${DB_PREFIX}options SET option_value='https://${SITE_FULL_DOMAIN}' WHERE option_name='home'";
+    ss_mysql_root --execute="UPDATE ${DB_NAME}.${DB_PREFIX}options SET option_value='https://${SITE_FULL_DOMAIN}' WHERE option_name='siteurl'";
     
 fi
 
