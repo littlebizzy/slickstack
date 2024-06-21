@@ -7,9 +7,9 @@
 #### path: /var/www/ss-install-wordpress-config ####################################################
 #### destination: n/a (not a boilerplate) ##########################################################
 #### purpose: Reinstalls WordPress module (CMS) config files based on ss-config (idempotent) #######
-#### module version: WordPress 6.4.x ###############################################################
+#### module version: WordPress 6.5.x ###############################################################
 #### sourced by: ss-install, ss-install-nginx-config ###############################################
-#### bash aliases: ss install [wordpress|wp] config ################################################
+#### bash aliases: ss install wordpress|wp config ##################################################
 ####################################################################################################
 
 ## SS-CONFIG MUST BE PROPERLY CONFIGURED AND ON CURRENT BUILD BEFORE RUNNING SS-INSTALL ##
@@ -139,8 +139,8 @@ fi
 
 ## set domains ##
 ss_sed "s/@SITE_DOMAIN_EXCLUDING_WWW/${SITE_DOMAIN_EXCLUDING_WWW}/g" "${TMP_WP_CONFIG_PHP}" ## must be first
-ss_sed "s/@SITE_DOMAIN/${SITE_DOMAIN}/g" "${TMP_WP_CONFIG_PHP}"
-ss_sed "s/@SITE_TLD/${SITE_TLD}/g" "${TMP_WP_CONFIG_PHP}"
+ss_sed "s/@SITE_FULL_DOMAIN/${SITE_FULL_DOMAIN}/g" "${TMP_WP_CONFIG_PHP}"
+ss_sed "s/@SITE_ROOT_DOMAIN/${SITE_ROOT_DOMAIN}/g" "${TMP_WP_CONFIG_PHP}"
 
 ## set SFTP ##
 ss_sed "s/@SFTP_USER/${SFTP_USER}/g" "${TMP_WP_CONFIG_PHP}"
@@ -293,8 +293,8 @@ ss_sed "s/@OBJECT_CACHE/false/g" "${TMP_WORDPRESS_CONFIG_STAGING}"
 
 ## replace domain placeholders ##
 ss_sed "s/@SITE_DOMAIN_EXCLUDING_WWW/${SITE_DOMAIN_EXCLUDING_WWW}/g" "${TMP_WORDPRESS_CONFIG_STAGING}" ## must be first
-ss_sed "s#@SITE_DOMAIN#${SITE_DOMAIN_EXCLUDING_WWW}#g" "${TMP_WORDPRESS_CONFIG_STAGING}"
-ss_sed "s/@SITE_TLD/${SITE_TLD}/g" "${TMP_WORDPRESS_CONFIG_STAGING}"
+ss_sed "s#@SITE_FULL_DOMAIN#${SITE_DOMAIN_EXCLUDING_WWW}#g" "${TMP_WORDPRESS_CONFIG_STAGING}"
+ss_sed "s/@SITE_ROOT_DOMAIN/${SITE_ROOT_DOMAIN}/g" "${TMP_WORDPRESS_CONFIG_STAGING}"
 
 ## replace SFTP Details placeholders ##
 ss_sed "s/@SFTP_USER/${SFTP_USER}/g" "${TMP_WORDPRESS_CONFIG_STAGING}"
@@ -433,8 +433,8 @@ ss_sed "s/@OBJECT_CACHE/false/g" "${TMP_WORDPRESS_CONFIG_DEV}"
 
 ## replace domain placeholders ##
 ss_sed "s/@SITE_DOMAIN_EXCLUDING_WWW/${SITE_DOMAIN_EXCLUDING_WWW}/g" "${TMP_WORDPRESS_CONFIG_DEV}" ## must be first
-ss_sed "s#@SITE_DOMAIN#${SITE_DOMAIN}#g" "${TMP_WORDPRESS_CONFIG_DEV}"
-ss_sed "s/@SITE_TLD/${SITE_TLD}/g" "${TMP_WORDPRESS_CONFIG_DEV}"
+ss_sed "s#@SITE_FULL_DOMAIN#${SITE_FULL_DOMAIN}#g" "${TMP_WORDPRESS_CONFIG_DEV}"
+ss_sed "s/@SITE_ROOT_DOMAIN/${SITE_ROOT_DOMAIN}/g" "${TMP_WORDPRESS_CONFIG_DEV}"
 
 ## replace SFTP Details placeholders ##
 ss_sed "s/@SFTP_USER/${SFTP_USER}/g" "${TMP_WORDPRESS_CONFIG_DEV}"
@@ -531,8 +531,8 @@ fi
 ## production ##
 if [[ -n $(ss_mysql_root --execute "SHOW TABLES FROM ${DB_NAME} WHERE Tables_in_${DB_NAME} LIKE '${DB_PREFIX}options';" 2> /dev/null) ]]; then
     
-    ss_mysql_root --execute="UPDATE ${DB_NAME}.${DB_PREFIX}options SET option_value='https://${SITE_DOMAIN}' WHERE option_name='home'";
-    ss_mysql_root --execute="UPDATE ${DB_NAME}.${DB_PREFIX}options SET option_value='https://${SITE_DOMAIN}' WHERE option_name='siteurl'";
+    ss_mysql_root --execute="UPDATE ${DB_NAME}.${DB_PREFIX}options SET option_value='https://${SITE_FULL_DOMAIN}' WHERE option_name='home'";
+    ss_mysql_root --execute="UPDATE ${DB_NAME}.${DB_PREFIX}options SET option_value='https://${SITE_FULL_DOMAIN}' WHERE option_name='siteurl'";
     
 fi
 
