@@ -65,7 +65,7 @@ server {
 	}
 
 	location / {
-		return 301 https://@SITE_DOMAIN$request_uri;
+		return 301 https://@SITE_FULL_DOMAIN$request_uri;
 	}
 
 }
@@ -80,7 +80,7 @@ server {
 	listen [::]:80 default_server;
 	listen [::]:443 ssl default_server;
 	server_name _;
-	return 301 https://@SITE_DOMAIN$request_uri;
+	return 301 https://@SITE_FULL_DOMAIN$request_uri;
 }
 
 ####################################################################################################
@@ -93,7 +93,7 @@ server {
 server {
 	listen 443 ssl http2;
 	listen [::]:443 ssl http2;
-	server_name @SITE_DOMAIN;
+	server_name @SITE_FULL_DOMAIN;
 	root /var/www/html;
 
 ####################################################################################################
@@ -174,10 +174,10 @@ if ($query_string ~ "^s=(.*)$") {
 ####################################################################################################
 
 ## redirect /home/ using absolute URL less conflicts with complex TLDs ##
-rewrite ^/home/?$ https://@SITE_DOMAIN permanent;
+rewrite ^/home/?$ https://@SITE_FULL_DOMAIN permanent;
 
 ## redirect /homepage/ using absolute URL less conflicts with complex TLDs  ##
-rewrite ^/homepage/?$ https://@SITE_DOMAIN permanent;
+rewrite ^/homepage/?$ https://@SITE_FULL_DOMAIN permanent;
 
 ## trackback ##
 rewrite ^(.*)/trackback/?$ $1 permanent;
@@ -466,11 +466,11 @@ include /var/www/sites/includes/adminer[.]conf;
 ## therefore any staging WordPress plugins cannot use these reserved paths ##
 
 location /staging/ {
-	return 301 https://@SITE_DOMAIN;
+	return 301 https://@SITE_FULL_DOMAIN;
 }
 
 location /dev/ {
-	return 301 https://@SITE_DOMAIN;
+	return 301 https://@SITE_FULL_DOMAIN;
 }
 
 ####################################################################################################
@@ -516,7 +516,7 @@ location ~* \.(css|eot|js|otf|svg|ttc|ttf|woff|woff2)$ {
 
 ## stupid idea lets disable for now ##
 # location @redirect {
-#	return 302 https://@SITE_DOMAIN;
+#	return 302 https://@SITE_FULL_DOMAIN;
 # }
 
 ####################################################################################################
