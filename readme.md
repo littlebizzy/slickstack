@@ -1,4 +1,4 @@
-<img alt="SlickStack logo" src="https://slickstack.io/wp-content/uploads/2022/11/slickstack-logo-smooth-512x512-1.png" width="100px">
+<img src="https://repository-images.githubusercontent.com/104382627/49a17307-d8e9-49f3-a320-b3bd9c0f5e70" />
 
 # SlickStack
 
