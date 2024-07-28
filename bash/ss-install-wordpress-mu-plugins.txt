@@ -7,13 +7,43 @@
 #### path: /var/www/ss-install-wordpress-mu-plugins ################################################
 #### destination: n/a (not a boilerplate) ##########################################################
 #### purpose: Reinstalls all the WordPress MU plugins for SlickStack servers (idempotent) ##########
-#### module version: WordPress 6.5.x ###############################################################
+#### module version: WordPress 6.6.x ###############################################################
 #### sourced by: ss-install ########################################################################
 #### bash aliases: ss install mu plugins, ss install wordpress|wp mu plugins #######################
 ####################################################################################################
 
 ## SS-CONFIG MUST BE PROPERLY CONFIGURED AND ON CURRENT BUILD BEFORE RUNNING SS-INSTALL ##
 ## ENSURE YOUR SS-CONFIG BUILD REMAINS CURRENT BY RUNNING SS-UPDATE OCCASIONALLY ##
+
+####################################################################################################
+#### TABLE OF CONTENTS (SS-Install-WordPress-MU-Plugins) ###########################################
+####################################################################################################
+
+## this is a brief summary of the different code snippets you will find in this script ##
+## each section should be commented so you understand what is being accomplished ##
+
+## A. Source SS-Config + SS-Functions
+## B. Touch Timestamp File
+## C. Message (Begin Script)
+## D. Run SS-Install-Ubuntu-Utils
+## E. Delete MU Plugins Directory Contents
+## F. Install 000-Common.php
+## G. Install Autoloader.php
+## H. Install Object-Cache.php
+## I. Install Required Staging/Dev MU Plugins
+## J. Install Custom MU Plugins Specified In SS-Config
+
+## K. Run SS-Worker
+## L. Reset Permissions (WordPress MU Plugins)
+## M. Purge Cache (PHP OPcache)
+## N. Cleanup Temporary Files
+
+####################################################################################################
+#### A. SS-Install-WordPress-MU-Plugins: Source SS-Config + SS-Functions ###########################
+####################################################################################################
+
+## before anything else we must source the critical variables that power this script ##
+## ss-config is setup during ss-install wizard but ss-functions is hardcoded ##
 
 ## source ss-config ##
 source /var/www/ss-config
@@ -24,27 +54,7 @@ source /var/www/ss-functions
 ## BELOW THIS RELIES ON SS-CONFIG AND SS-FUNCTIONS
 
 ####################################################################################################
-#### TABLE OF CONTENTS (SS-Install-WordPress-MU-Plugins) ###########################################
-####################################################################################################
-
-## this is a brief summary of the different code snippets you will find in this script ##
-## each section should be commented so you understand what is being accomplished ##
-
-## A. Touch Timestamp File
-## B. Message (Begin Script)
-## C. Run SS-Install-Ubuntu-Utils
-
-## D. Delete MU Plugins Directory Contents
-## E. Install 000-Common.php
-## F. Install Autoloader.php
-## G. Install Object-Cache.php
-## H. Install Required Staging/Dev MU Plugins
-## I. Install Specified MU Plugins
-## J. Reset Permissions (WordPress MU Plugins)
-## K. Purge Cache (PHP OPcache)
-
-####################################################################################################
-#### A. SS-Install-WordPress-MU-Plugins: Touch Timestamp File ######################################
+#### B. SS-Install-WordPress-MU-Plugins: Touch Timestamp File ######################################
 ####################################################################################################
 
 ## this is a dummy timestamp file that will remember the last time this script was run ##
@@ -53,7 +63,7 @@ source /var/www/ss-functions
 ss_touch "${TIMESTAMP_SS_INSTALL_WORDPRESS_MU_PLUGINS}"
 
 ####################################################################################################
-#### B. SS-Install-WordPress-MU-Plugins: Message (Begin Script) ####################################
+#### C. SS-Install-WordPress-MU-Plugins: Message (Begin Script) ####################################
 ####################################################################################################
 
 ## this is a simple message that announces to the shell the purpose of this bash script ##
@@ -62,13 +72,13 @@ ss_touch "${TIMESTAMP_SS_INSTALL_WORDPRESS_MU_PLUGINS}"
 ss_echo "${COLOR_INFO}Running ss-install-wordpress-mu-plugins... ${COLOR_RESET}"
 
 ####################################################################################################
-#### C. SS-Install-WordPress-MU-Plugins: Run SS-Install-Ubuntu-Utils ###############################
+#### D. SS-Install-WordPress-MU-Plugins: Run SS-Install-Ubuntu-Utils ###############################
 ####################################################################################################
 
 source "${PATH_SS_INSTALL_UBUNTU_UTILS}"
 
 ####################################################################################################
-#### D. SS-Install-WordPress-MU-Plugins: Delete MU Plugins Directory Contents ######################
+#### E. SS-Install-WordPress-MU-Plugins: Delete MU Plugins Directory Contents ######################
 ####################################################################################################
 
 ## first we must ensure that the mu-plugins directory exists and delete existing contents ##
@@ -91,7 +101,7 @@ if [[ "${STAGING_SITE}" == "true" ]]; then
 fi
 
 ####################################################################################################
-#### E. SS-Install-WordPress-MU-Plugins: Install 000-Common.php ####################################
+#### F. SS-Install-WordPress-MU-Plugins: Install 000-Common.php ####################################
 ####################################################################################################
 
 ## 000-common is a critical MU plugin for SlickStack that provides WP Admin features ##
@@ -106,18 +116,15 @@ ss_wget "${TMP_000_COMMON_PHP}" "${GITHUB_000_COMMON_PHP}"
 
 ## delete potentially conflicting normal plugins (with required MU plugins) ##
 ss_rm /var/www/html/wp-content/plugins/000-common*
-ss_rm /var/www/html/wp-content/plugins/xxx-common*
 
 ## and from staging ##
 if [[ "${STAGING_SITE}" == "true" ]]; then
     ss_rm /var/www/html/staging/wp-content/plugins/000-common*
-    ss_rm /var/www/html/staging/wp-content/plugins/xxx-common*
 fi
 
 ## and from dev ##
 if [[ "${DEV_SITE}" == "true" ]]; then
     ss_rm /var/www/html/dev/wp-content/plugins/000-common*
-    ss_rm /var/www/html/dev/wp-content/plugins/xxx-common*
 fi
 
 ## site tld ##
@@ -191,7 +198,7 @@ if [[ "${DEV_SITE}" == "true" ]]; then
 fi
 
 ####################################################################################################
-#### F. SS-Install-WordPress-MU-Plugins: Install Autoloader.php ####################################
+#### G. SS-Install-WordPress-MU-Plugins: Install Autoloader.php ####################################
 ####################################################################################################
 
 ## retrieve files ##
@@ -209,7 +216,7 @@ if [[ "${DEV_SITE}" == "true" ]]; then
 fi
 
 ####################################################################################################
-#### G. SS-Install-WordPress-MU-Plugins: Install Object-Cache.php ##################################
+#### H. SS-Install-WordPress-MU-Plugins: Install Object-Cache.php ##################################
 ####################################################################################################
 
 ## object-cache.php is only installed on production to avoid Redis query conflicts ##
@@ -231,7 +238,7 @@ elif [[ "${WP_OBJECT_CACHE}" == "false" ]]; then
 fi
 
 ####################################################################################################
-#### H. SS-Install-WordPress-MU-Plugins: Install Required Staging/Dev MU Plugins ###################
+#### I. SS-Install-WordPress-MU-Plugins: Install Required Staging/Dev MU Plugins ###################
 ####################################################################################################
 
 ## staging site ##
@@ -268,7 +275,7 @@ if [[ "${DEV_SITE}" == "true" ]]; then
 fi
 
 ####################################################################################################
-#### I. SS-Install-WordPress-MU-Plugins: Install Specified MU Plugins ##############################
+#### J. SS-Install-WordPress-MU-Plugins: Install Custom MU Plugins Specified In SS-Config ##########
 ####################################################################################################
 
 ## below MU plugins are distinct from the required MU plugins that are always included ##
@@ -474,7 +481,7 @@ source "${PATH_SS_PERMS_WORDPRESS_MU_PLUGINS}"
 source "${PATH_SS_PURGE_OPCACHE}"
 
 ####################################################################################################
-#### SS-Install-WordPress-MU-Plugins: Cleanup Temporary Files ######################################
+#### N. SS-Install-WordPress-MU-Plugins: Cleanup Temporary Files ###################################
 ####################################################################################################
 
 ## delete tmp files ##
