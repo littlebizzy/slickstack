@@ -6,14 +6,37 @@
 #### mirror: littlebizzy/slickstack/blob/master/bash/ss-install-ubuntu-utils.txt ###################
 #### path: /var/www/ss-install-ubuntu-utils ########################################################
 #### destination: n/a (not a boilerplate) ##########################################################
-#### purpose: Reinstalls the Ubuntu (OS) utilities for SlickStack servers (idempotent) #############
-#### module version: Ubuntu 22.04 LTS ##############################################################
+#### purpose: Reinstalls various Linux utilities (etc) for SlickStack servers (idempotent) #########
+#### module version: Ubuntu 24.04 LTS ##############################################################
 #### sourced by: ss-install ########################################################################
 #### bash aliases: ss install ubuntu utils, ss install utils #######################################
 ####################################################################################################
 
 ## SS-CONFIG MUST BE PROPERLY CONFIGURED AND ON CURRENT BUILD BEFORE RUNNING SS-INSTALL ##
 ## ENSURE YOUR SS-CONFIG BUILD REMAINS CURRENT BY RUNNING SS-UPDATE OCCASIONALLY ##
+
+####################################################################################################
+#### TABLE OF CONTENTS (SS-Install-Ubuntu-Utils) ###################################################
+####################################################################################################
+
+## this is a brief summary of the different code snippets you will find in this script ##
+## each section should be commented so you understand what is being accomplished ##
+
+## A. Source SS-Config + SS-Functions
+## B. Touch Timestamp File
+## C. Message (Begin Script)
+## D. Prettify The Shell Prompt
+## E. Update Existing Packages
+## F. Update System Timezone
+## G. Install Various Linux Utilities
+## H. Reset Permissions (Ubuntu Utils)
+
+####################################################################################################
+#### A. SS-Install-Nginx-Config: Source SS-Config + SS-Functions ###################################
+####################################################################################################
+
+## before anything else we must source the critical variables that power this script ##
+## ss-config is setup during ss-install wizard but ss-functions is hardcoded ##
 
 ## source ss-config ##
 source /var/www/ss-config
@@ -24,20 +47,7 @@ source /var/www/ss-functions
 ## BELOW THIS RELIES ON SS-CONFIG AND SS-FUNCTIONS
 
 ####################################################################################################
-#### TABLE OF CONTENTS (SS-Install-Ubuntu-Utils) ###################################################
-####################################################################################################
-
-## this is a brief summary of the different code snippets you will find in this script ##
-## each section should be commented so you understand what is being accomplished ##
-
-## A. Touch Timestamp File
-## B. Message (Begin Script)
-## C. Prettify The Shell Prompt
-## D. Update Existing Packages
-## E. Update System Timezone
-
-####################################################################################################
-#### A. SS-Install-Ubuntu-Utils: Touch Timestamp File ##############################################
+#### B. SS-Install-Ubuntu-Utils: Touch Timestamp File ##############################################
 ####################################################################################################
 
 ## this is a dummy timestamp file that will remember the last time this script was run ##
@@ -46,7 +56,7 @@ source /var/www/ss-functions
 ss_touch "${TIMESTAMP_SS_INSTALL_UBUNTU_UTILS}"
 
 ####################################################################################################
-#### B. SS-Install-Ubuntu-Utils: Message (Begin Script) ############################################
+#### C. SS-Install-Ubuntu-Utils: Message (Begin Script) ############################################
 ####################################################################################################
 
 ## this is a simple message that announces to the shell the purpose of this bash script ##
@@ -55,13 +65,7 @@ ss_touch "${TIMESTAMP_SS_INSTALL_UBUNTU_UTILS}"
 ss_echo "${COLOR_INFO}Running ss-install-ubuntu-utils... ${COLOR_RESET}"
 
 ####################################################################################################
-#### X. Change To Default Directory #####################################
-####################################################################################################
-
-ss_cd_default
-
-####################################################################################################
-#### C. SS-Install-Ubuntu-Utils: Prettify The Shell Prompt #########################################
+#### D. SS-Install-Ubuntu-Utils: Prettify The Shell Prompt #########################################
 ####################################################################################################
 
 ## download latest versions ##
@@ -74,7 +78,7 @@ ss_rm /etc/profile.d/custom-shell-prompt
 ss_cp /tmp/custom-shell-prompt /etc/profile.d/custom-shell-prompt.sh
 
 ####################################################################################################
-#### D. SS-Install-Ubuntu-Utils: Update Existing Packages ##########################################
+#### E. SS-Install-Ubuntu-Utils: Update Existing Packages ##########################################
 ####################################################################################################
 
 ## SNIPPET: ss-install-*-packages bash scripts
@@ -90,7 +94,7 @@ ss_apt_update
 ss_apt_upgrade
 
 ####################################################################################################
-#### E. SS-Install-Ubuntu-Utils: Update System Timezone ############################################
+#### F. SS-Install-Ubuntu-Utils: Update System Timezone ############################################
 ####################################################################################################
 
 ## set timezone ##
@@ -101,7 +105,7 @@ else
 fi
 
 ####################################################################################################
-#### SS-Install-Ubuntu-Utils: Install Various Linux Utilities  #####################################
+#### G. SS-Install-Ubuntu-Utils: Install Various Linux Utilities ###################################
 ####################################################################################################
 
 ## https://unix.stackexchange.com/questions/493187/systemd-under-ubuntu-18-04-1-fails-with-failed-to-create-user-slice-serv
@@ -131,9 +135,6 @@ ss_apt_install tar
 ## install rsync (some cloud networks apparently remove it from Ubuntu ISO for some reason as per GitHub issues) ##
 ss_apt_install rsync
 
-## install Git ##
-ss_apt_install git
-
 ## magento ##
 ss_apt_install bash
 ss_apt_install curl
@@ -157,7 +158,7 @@ ss_apt_install sshpass
 # https://www.makeuseof.com/best-networking-tools-replace-old-net-tools-linux/
 
 ####################################################################################################
-#### SS-Install-Ubuntu-Utils: Reset Permissions (Ubuntu Utils) #####################################
+#### H. SS-Install-Ubuntu-Utils: Reset Permissions (Ubuntu Utils) ##################################
 ####################################################################################################
 
 source "${PATH_SS_PERMS_UBUNTU_UTILS}"
