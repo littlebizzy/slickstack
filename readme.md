@@ -28,7 +28,7 @@ You can safely re-install SlickStack anytime via `sudo bash /var/www/ss-install`
 
 ## Modules
 
-*Last updated: May 18, 2024*
+*Last updated: Aug 08, 2024*
 
 | Module | Version | What does SlickStack optimize? |
 | :------------- | :----------: | :----------: |
@@ -39,8 +39,8 @@ You can safely re-install SlickStack anytime via `sudo bash /var/www/ss-install`
 | **MySQL** | 8.0.x | `my.cnf` |
 | **PHP-FPM** | 8.3.x | `php.ini` + `php-fpm.conf` + `www.conf` |
 | **Memcached** | 1.6.x | `memcached.conf` + `object-cache.php` |
-| **WordPress** | 6.5.x | some WP Core junk files removed by `ss-clean-files` |
-| **WP-CLI** | 2.10.x | some `wp` commands disabled |
+| **WordPress** | 6.6.x | some WP Core junk files removed by `ss-clean-files` |
+| **WP-CLI** | 2.11.x | some `wp` commands disabled |
 | **Adminer** | 4.8.1 | default config |
 | **Git** | 2.43.x | default config |
 | **UFW Firewall** | 0.36.x | `ufw` + `ufw.conf` + `user-rules` |
