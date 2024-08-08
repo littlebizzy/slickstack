@@ -42,7 +42,6 @@ You can safely re-install SlickStack anytime via `sudo bash /var/www/ss-install`
 | **WordPress** | 6.6.x | some WP Core junk files removed by `ss-clean-files` |
 | **WP-CLI** | 2.11.x | some `wp` commands disabled |
 | **Adminer** | 4.8.1 | default config |
-| **Git** | 2.43.x | default config |
 | **UFW Firewall** | 0.36.x | `ufw` + `ufw.conf` + `user-rules` |
 | **Fail2ban** | 0.11.x | `jail.local` + custom filters |
 
