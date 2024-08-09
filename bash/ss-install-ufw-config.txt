@@ -9,11 +9,34 @@
 #### purpose: Reinstalls the UFW firewall module for SlickStack servers (idempotent) ###############
 #### module version: UFW 0.36.x ####################################################################
 #### sourced by: ss-install ########################################################################
-#### bash aliases: ss install ufw|ufw firewall #####################################################
+#### bash aliases: ss install ufw config ###########################################################
 ####################################################################################################
 
 ## SS-CONFIG MUST BE PROPERLY CONFIGURED AND ON CURRENT BUILD BEFORE RUNNING SS-INSTALL ##
 ## ENSURE YOUR SS-CONFIG BUILD REMAINS CURRENT BY RUNNING SS-UPDATE OCCASIONALLY ##
+
+####################################################################################################
+#### TABLE OF CONTENTS (SS-Install-UFW-Config) #####################################################
+####################################################################################################
+
+## this is a brief summary of the different code snippets you will find in this script ##
+## each section should be commented so you understand what is being accomplished ##
+
+## A. Source SS-Config + SS-Functions
+## B. Touch Timestamp File
+## C. Message (Begin Script)
+## D. Force Disable UFW
+## E. Configure UFW Settings
+## F. Configure UFW User Rules
+## G. Reset Permissions (UFW)
+## H. Enable UFW
+
+####################################################################################################
+#### A. SS-Install-UFW-Config: Source SS-Config + SS-Functions #####################################
+####################################################################################################
+
+## before anything else we must source the critical variables that power this script ##
+## ss-config is setup during ss-install wizard but ss-functions is hardcoded ##
 
 ## source ss-config ##
 source /var/www/ss-config
@@ -24,21 +47,7 @@ source /var/www/ss-functions
 ## BELOW THIS RELIES ON SS-CONFIG AND SS-FUNCTIONS
 
 ####################################################################################################
-#### TABLE OF CONTENTS (SS-Install-UFW-Config) #####################################################
-####################################################################################################
-
-## this is a brief summary of the different code snippets you will find in this script ##
-## each section should be commented so you understand what is being accomplished ##
-
-## A. Touch Timestamp File
-## B. Message (Begin Script)
-## C. Force Disable UFW
-## D. Configure UFW Settings
-## E. Configure UFW User Rules
-## F. Reset Permissions (UFW)
-
-####################################################################################################
-#### A. SS-Install-UFW-Config: Touch Timestamp File ################################################
+#### B. SS-Install-UFW-Config: Touch Timestamp File ################################################
 ####################################################################################################
 
 ## this is a dummy timestamp file that will remember the last time this script was run ##
@@ -47,7 +56,7 @@ source /var/www/ss-functions
 ss_touch "${TIMESTAMP_SS_INSTALL_UFW_CONFIG}"
 
 ####################################################################################################
-#### B. SS-Install-UFW-Config: Message (Begin Script) ##############################################
+#### C. SS-Install-UFW-Config: Message (Begin Script) ##############################################
 ####################################################################################################
 
 ## this is a simple message that announces to the shell the purpose of this bash script ##
@@ -56,14 +65,13 @@ ss_touch "${TIMESTAMP_SS_INSTALL_UFW_CONFIG}"
 ss_echo "${COLOR_INFO}Running ss-install-ufw-config... ${COLOR_RESET}"
 
 ####################################################################################################
-#### C. SS-Install-UFW-Config: Force Disable UFW ###################################################
+#### D. SS-Install-UFW-Config: Force Disable UFW ###################################################
 ####################################################################################################
 
-## disable UFW before proceeding with new install ##
 sudo ufw --force disable > /dev/null 2>&1
 
 ####################################################################################################
-#### D. SS-Install-UFW-Config: Configure UFW Settings ##############################################
+#### E. SS-Install-UFW-Config: Configure UFW Settings ##############################################
 ####################################################################################################
 
 # retrieve latest versions ##
@@ -84,7 +92,7 @@ ss_cp /tmp/ufw /etc/default/ufw
 ss_cp /tmp/ufw.conf /etc/ufw/ufw.conf
 
 ####################################################################################################
-#### E. SS-Install-UFW-Config: Configure UFW User Rules ############################################
+#### F. SS-Install-UFW-Config: Configure UFW User Rules ############################################
 ####################################################################################################
 
 # retrieve latest versions ##
@@ -96,13 +104,13 @@ ss_cp /tmp/user.rules /etc/ufw/user.rules
 ss_cp /tmp/user6.rules /etc/ufw/user6.rules
 
 ####################################################################################################
-#### F. SS-Install-UFW-Config: Reset Permissions (UFW) #############################################
+#### G. SS-Install-UFW-Config: Reset Permissions (UFW) #############################################
 ####################################################################################################
 
 source "${PATH_SS_PERMS_UFW_CONFIG}"
 
 ####################################################################################################
-#### SS-Install-UFW: Enable UFW ####################################################################
+#### H. SS-Install-UFW-Config: Enable UFW ##########################################################
 ####################################################################################################
 
 ## CONSIDER not enabling ufw in this script and letting ss-worker do it or something cuz 
