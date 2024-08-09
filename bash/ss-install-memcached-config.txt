@@ -3,17 +3,39 @@
 ####################################################################################################
 #### author: SlickStack ############################################################################
 #### link: https://slickstack.io ###################################################################
-#### mirror: https://mirrors.slickstack.io/bash/ss-install-memcached-config.txt ####################
+#### mirror: littlebizzy/slickstack/blob/master/bash/ss-install-memcached-config.txt ###############
 #### path: /var/www/ss-install-memcached-config ####################################################
 #### destination: n/a (not a boilerplate) ##########################################################
 #### purpose: Reinstalls the Memcached module config files based on ss-config (idempotent) #########
-#### module version: Memcached 1.5.x ###############################################################
+#### module version: Memcached 1.6.x ###############################################################
 #### sourced by: ss-install ########################################################################
 #### bash aliases: ss install memcached config #####################################################
 ####################################################################################################
 
 ## SS-CONFIG MUST BE PROPERLY CONFIGURED AND ON CURRENT BUILD BEFORE RUNNING SS-INSTALL ##
 ## ENSURE YOUR SS-CONFIG BUILD REMAINS CURRENT BY RUNNING SS-UPDATE OCCASIONALLY ##
+
+####################################################################################################
+#### TABLE OF CONTENTS (SS-Install-Memcached-Config) ###############################################
+####################################################################################################
+
+## this is a brief summary of the different code snippets you will find in this script ##
+## each section should be commented so you understand what is being accomplished ##
+
+## A. Source SS-Config + SS-Functions
+## B. Touch Timestamp File
+## C. Message (Begin Script)
+## D. Retrieve Memcached.conf Boilerplates
+## E. Install Memcached.conf
+## F. Reset Permissions (Memcached Config)
+## G. Restart Services (Memcached)
+
+####################################################################################################
+#### A. SS-Install-Memcached-Config: Source SS-Config + SS-Functions ###############################
+####################################################################################################
+
+## before anything else we must source the critical variables that power this script ##
+## ss-config is setup during ss-install wizard but ss-functions is hardcoded ##
 
 ## source ss-config ##
 source /var/www/ss-config
@@ -24,21 +46,7 @@ source /var/www/ss-functions
 ## BELOW THIS RELIES ON SS-CONFIG AND SS-FUNCTIONS
 
 ####################################################################################################
-#### TABLE OF CONTENTS (SS-Install-Memcached-Config) ###############################################
-####################################################################################################
-
-## this is a brief summary of the different code snippets you will find in this script ##
-## each section should be commented so you understand what is being accomplished ##
-
-## A. Touch Timestamp File
-## B. Message (Begin Script)
-## C. Retrieve Current Boilerplates
-## D. Install Memcached.conf
-## E. Reset Permissions (Memcached Config)
-## F. Restart Services (Memcached)
-
-####################################################################################################
-#### A. SS-Install-Memcached-Config: Touch Timestamp File ##########################################
+#### B. SS-Install-Memcached-Config: Touch Timestamp File ##########################################
 ####################################################################################################
 
 ## this is a dummy timestamp file that will remember the last time this script was run ##
@@ -47,7 +55,7 @@ source /var/www/ss-functions
 ss_touch "${TIMESTAMP_SS_INSTALL_MEMCACHED_CONFIG}"
 
 ####################################################################################################
-#### B. SS-Install-Memcached-Config: Message (Begin Script) ########################################
+#### C. SS-Install-Memcached-Config: Message (Begin Script) ########################################
 ####################################################################################################
 
 ## this is a simple message that announces to the shell the purpose of this bash script ##
@@ -56,13 +64,7 @@ ss_touch "${TIMESTAMP_SS_INSTALL_MEMCACHED_CONFIG}"
 ss_echo "${COLOR_INFO}Running ss-install-memcached-config... ${COLOR_RESET}"
 
 ####################################################################################################
-#### X. Change To Default Directory #####################################
-####################################################################################################
-
-ss_cd_default
-
-####################################################################################################
-#### C. SS-Install-Memcached-Config: Retrieve Current Boilerplates #################################
+#### D. SS-Install-Memcached-Config: Retrieve Memcached.conf Boilerplates ##########################
 ####################################################################################################
 
 if [[ "${SYSTEM_UBUNTU_VERSION}" == "22.04" ]]; then
@@ -72,19 +74,19 @@ else
 fi
 
 ####################################################################################################
-#### D. SS-Install-Memcached-Config: Install Memcached.conf ########################################
+#### E. SS-Install-Memcached-Config: Install Memcached.conf ########################################
 ####################################################################################################
 
 ss_mv "${TMP_MEMCACHED_CONF}" "${PATH_MEMCACHED_CONF}"
 
 ####################################################################################################
-#### E. SS-Install-Memcached-Config: Reset Permissions (Memcached Config) ##########################
+#### F. SS-Install-Memcached-Config: Reset Permissions (Memcached Config) ##########################
 ####################################################################################################
 
 source "${PATH_SS_PERMS_MEMCACHED_CONFIG}"
 
 ####################################################################################################
-#### F. SS-Install-Memcached-Config: Restart Services (Memcached) ##################################
+#### G. SS-Install-Memcached-Config: Restart Services (Memcached) ##################################
 ####################################################################################################
 
 source "${PATH_SS_RESTART_MEMCACHED}"
