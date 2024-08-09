@@ -3,7 +3,7 @@
 ####################################################################################################
 #### author: SlickStack ############################################################################
 #### link: https://slickstack.io ###################################################################
-#### mirror: https://mirrors.slickstack.io/bash/ss-install-memcached-packages.txt ##################
+#### mirror: littlebizzy/slickstack/blob/master/bash/ss-install-memcached-packages.txt #############
 #### path: /var/www/ss-install-memcached-packages ##################################################
 #### destination: n/a (not a boilerplate) ##########################################################
 #### purpose: Reinstalls the Memcached module Ubuntu packages and extensions (idempotent) ##########
@@ -15,6 +15,28 @@
 ## SS-CONFIG MUST BE PROPERLY CONFIGURED AND ON CURRENT BUILD BEFORE RUNNING SS-INSTALL ##
 ## ENSURE YOUR SS-CONFIG BUILD REMAINS CURRENT BY RUNNING SS-UPDATE OCCASIONALLY ##
 
+####################################################################################################
+#### TABLE OF CONTENTS (SS-Install-Memcached-Packages) #############################################
+####################################################################################################
+
+## this is a brief summary of the different code snippets you will find in this script ##
+## each section should be commented so you understand what is being accomplished ##
+
+## A. Source SS-Config + SS-Functions
+## B. Touch Timestamp File
+## C. Message (Begin Script)
+## D. Update Existing Packages
+## E. Install Memcached
+## F. Reset Permissions (Memcached Packages)
+## G. Restart Services (Memcached)
+
+####################################################################################################
+#### A. SS-Install-Memcached-Packages: Source SS-Config + SS-Functions #############################
+####################################################################################################
+
+## before anything else we must source the critical variables that power this script ##
+## ss-config is setup during ss-install wizard but ss-functions is hardcoded ##
+
 ## source ss-config ##
 source /var/www/ss-config
 
@@ -24,21 +46,7 @@ source /var/www/ss-functions
 ## BELOW THIS RELIES ON SS-CONFIG AND SS-FUNCTIONS
 
 ####################################################################################################
-#### TABLE OF CONTENTS (SS-Install-Memcached-Packages) #############################################
-####################################################################################################
-
-## this is a brief summary of the different code snippets you will find in this script ##
-## each section should be commented so you understand what is being accomplished ##
-
-## A. Touch Timestamp File
-## B. Message (Begin Script)
-## C. Update Existing Packages
-## D. Install Memcached
-## E. Reset Permissions (Memcached Packages)
-## F. Restart Services (Memcached)
-
-####################################################################################################
-#### A. SS-Install-Memcached-Packages: Touch Timestamp File ########################################
+#### B. SS-Install-Memcached-Packages: Touch Timestamp File ########################################
 ####################################################################################################
 
 ## this is a dummy timestamp file that will remember the last time this script was run ##
@@ -47,7 +55,7 @@ source /var/www/ss-functions
 ss_touch "${TIMESTAMP_SS_INSTALL_MEMCACHED_PACKAGES}"
 
 ####################################################################################################
-#### B. SS-Install-Memcached-Packages: Message (Begin Script) ######################################
+#### C. SS-Install-Memcached-Packages: Message (Begin Script) ######################################
 ####################################################################################################
 
 ## this is a simple message that announces to the shell the purpose of this bash script ##
@@ -56,13 +64,7 @@ ss_touch "${TIMESTAMP_SS_INSTALL_MEMCACHED_PACKAGES}"
 ss_echo "${COLOR_INFO}Running ss-install-memcached-packages... ${COLOR_RESET}"
 
 ####################################################################################################
-#### X. Change To Default Directory #####################################
-####################################################################################################
-
-ss_cd_default
-
-####################################################################################################
-#### C. SS-Install-Memcached-Packages: Update Existing Packages ####################################
+#### D. SS-Install-Memcached-Packages: Update Existing Packages ####################################
 ####################################################################################################
 
 ## we must include the standard apt update/upgrade in case script is called directly ##
@@ -78,7 +80,7 @@ ss_apt_update
 ss_apt_upgrade
 
 ####################################################################################################
-#### D. SS-Install-Memcached-Packages: Install Memcached ###########################################
+#### E. SS-Install-Memcached-Packages: Install Memcached ###########################################
 ####################################################################################################
 
 ss_apt_install memcached
@@ -87,13 +89,13 @@ ss_apt_install php-memcached
 ss_apt_install php-memcache
 
 ####################################################################################################
-#### E. SS-Install-Memcached-Packages: Reset Permissions (Memcached Packages) ######################
+#### F. SS-Install-Memcached-Packages: Reset Permissions (Memcached Packages) ######################
 ####################################################################################################
 
 source "${PATH_SS_PERMS_MEMCACHED_PACKAGES}"
 
 ####################################################################################################
-#### F. SS-Install-Memcached-Packages: Restart Services (Memcached) ################################
+#### G. SS-Install-Memcached-Packages: Restart Services (Memcached) ################################
 ####################################################################################################
 
 source "${PATH_SS_RESTART_MEMCACHED}"
