@@ -35,9 +35,9 @@
 ## K. Install Default Robots.txt (If Not Exists)
 ## L. Install SS-Icon.svg (If Not Exists)
 ## M. Install Nginx Error Pages (If Not Exists)
-## N. Delete Object Cache Files (Conditional)
-## O. Temporary Tasks (Urgent Patches)
 
+## N. Delete Object-Cache.php (Conditional)
+## O. Urgent SlickStack Patches
 ## P. Reset Permissions (SlickStack)
 
 ####################################################################################################
@@ -367,24 +367,29 @@ if [[ ! -f "${PATH_ERROR_50X_HTML}" ]]; then
 fi
 
 ####################################################################################################
-#### N. SS-Worker: Delete Object Cache Files (Conditional) #########################################
+#### N. SS-Worker: Delete Object-Cache.php (Conditional) ###########################################
 ####################################################################################################
 
-## SINCE THIS IS STACK CONFIGURATION PROBABLY SHOULD NOT EXIST IN ss-clean ##
 ## in case the object cache is disabled in ss-config settings we delete that file here ##
+## you can also reinstall SlickStack to achieve this but here for redundancy ##
 
-## delete from staging/dev (always) ##
-ss_rm /var/www/html/staging/wp-content/object-cache.php
-ss_rm /var/www/html/dev/wp-content/object-cache.php
+## delete from dev (always) ##
+if [[ "${DEV_SITE}" == "true" ]]; then 
+    ss_rm /var/www/html/dev/wp-content/object-cache.php
+fi
 
-## not sure if we should keep this here... ##
+## delete from staging (always) ##
+if [[ "${STAGING_SITE}" == "true" ]]; then 
+    ss_rm /var/www/html/staging/wp-content/object-cache.php
+fi
+
 ## delete from production (conditional) ##
 if [[ "${WP_OBJECT_CACHE}" == "false" ]]; then
     ss_rm /var/www/html/wp-content/object-cache.php
 fi
 
 ####################################################################################################
-#### O. SS-Worker: Temporary Tasks (Urgent Patches) ################################################
+#### O. SS-Worker: Urgent SlickStack Patches #######################################################
 ####################################################################################################
 
 ## our team uses the below space to occassionally add urgent patches to SlickStack ##
