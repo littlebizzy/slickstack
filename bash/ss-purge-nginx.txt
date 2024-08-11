@@ -12,8 +12,8 @@
 #### bash aliases: ss purge nginx ##################################################################
 ####################################################################################################
 
-## RUNNING SS-PURGE DURING TRAFFIC SPIKES MIGHT CAUSE SUDDEN STRESS TO SERVER RESOURCES ##
-## KEEP IN MIND THAT PAGE CACHING IS DISABLED ALREADY ON DEV/STAGING WEBSITES ##
+## PURGING CACHES DURING TRAFFIC SPIKES MIGHT CAUSE SUDDEN STRESS TO SERVER RESOURCES ##
+## KEEP IN MIND THAT PAGE CACHING IS FORCED DISABLED ON DEV/STAGING WEBSITES ##
 
 ####################################################################################################
 #### TABLE OF CONTENTS (SS-Purge-Nginx) ############################################################
@@ -67,14 +67,10 @@ ss_echo "${COLOR_INFO}Running ss-purge-nginx... ${COLOR_RESET}"
 ## here we manually delete all FastCGI cache files without touching OPcache file cache ##
 ## when running TMPFS this script clears the FastCGI cache files from RAM memory ##
 
-if [[ "${SS_APP}" != "mysql" ]]; then
-
 find /var/www/cache/* -not -path "*opcache*" -not -path "*nginx*" -not -path "*system*" -not -path "*swapfile*" -type f,d -delete
 ss_rm /var/www/cache/nginx/*
 
 # ss_rm "$PATH_CACHE_NGINX"*
-
-fi
 
 ####################################################################################################
 #### SlickStack: Reset Permissions (SlickStack Scripts) ############################################
