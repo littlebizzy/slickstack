@@ -7,13 +7,13 @@
 #### path: /var/www/ss-push-development ############################################################
 #### destination: n/a (not a boilerplate) ##########################################################
 #### purpose: Pushes /wp-content/ and database from dev site to the production site ################
-#### module version: WordPress 6.5.x + MySQL 8.0.x #################################################
+#### module version: WordPress 6.6.x + MySQL 8.0.x #################################################
 #### sourced by: n/a ###############################################################################
 #### bash aliases: ss push dev|development #########################################################
 ####################################################################################################
 
-## SS-SYNC DUPLICATES ALL RELEVANT FILES FROM PRODUCTION TO STAGING (BUT NOT UPLOADS) ##
-## STAGING SITES WILL MIRROR (NGINX ALIAS) ALL MEDIA UPLOADS FROM PRODUCTION ##
+## SS-PUSH-DEVELOPMENT OVERWRITES PRODUCTION FILES AND DATABASE WITH THOSE FROM DEV ##
+## ENSURE YOU HAVE BOTH LOCAL AND OFF-SERVER BACKUPS BEFORE RUNNING THIS ##
 
 ####################################################################################################
 #### TABLE OF CONTENTS (SS-Push-Development) #######################################################
@@ -25,17 +25,17 @@
 ## A. Source SS-Config + SS-Functions
 ## B. Touch Timestamp File
 ## C. Message (Begin Script)
-## D. Run SS-Dump-Database
-
-## E. INTERACTIVE PROMPT CONFIRMATION TO PROCEED
-
+## D. INTERACTIVE PROMPT CONFIRMATION
+## E. Run SS-Dump-Database
 ## F. Import Development Database To Production Database
 ## G. Copy All Relevant Files From Development To Production
-## H. Fix Any Hardcoded Links In Production Theme Files
-## I. Purge Cache (OPcache)
-## J. Purge Cache (Transients)
-## K. Purge Cache (Memcached)
-## L. Purge Cache (Nginx)
+## H. Fix Incorrect URLs in Production Database
+## I. Fix Any Hardcoded Links In Production Theme Files
+## J. Purge Cache (OPcache)
+## K. Purge Cache (Transients)
+## L. Purge Cache (Memcached)
+## M. Purge Cache (Nginx)
+## N. INTERACTIVE PROMPT EXIT
 
 ####################################################################################################
 #### A. SS-Push-Development: Source SS-Config + SS-Functions #######################################
@@ -71,21 +71,21 @@ ss_touch "${TIMESTAMP_SS_PUSH_DEVELOPMENT}"
 ss_echo "${COLOR_INFO}Running ss-push-development... ${COLOR_RESET}"
 
 ####################################################################################################
-#### D. SS-Push-Development: Run SS-Dump-Database ##################################################
+#### D. SS-Push-Development: INTERACTIVE PROMPT CONFIRMATION #######################################
+####################################################################################################
+
+read -r -p "EXPERIMENTAL... BE CAREFUL... WILL OVERWRITE PRODUCTION... BACKUP FIRST: Push development files (wp-content and database) to production, are you sure? [y/N]" response
+if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]]
+then
+
+####################################################################################################
+#### E. SS-Push-Development: Run SS-Dump-Database ##################################################
 ####################################################################################################
 
 ## first we need to dump the production database locally in case anything goes wrong ##
 ## in case of emergency you can restore this dump to your live production site ##
 
 source "${PATH_SS_DUMP_DATABASE}"
-
-####################################################################################################
-#### E. SS-Push-Development: INTERACTIVE PROMPT CONFIRMATION TO PROCEED ############################
-####################################################################################################
-
-read -r -p "EXPERIMENTAL... BE CAREFUL... WILL OVERWRITE PRODUCTION... BACKUP FIRST: Push development files (wp-content and database) to production, are you sure? [y/N]" response
-if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]]
-then
 
 ####################################################################################################
 #### F. SS-Push-Development: Import Development Database To Production Database ####################
@@ -124,7 +124,16 @@ ss_rsync --max-size=512mb --exclude 'blacklist.txt' --exclude mu-plugins --exclu
 ss_rm /var/www/html/wp-content/wp-content*
 
 ####################################################################################################
-#### H. SS-Sync-Development: Fix Any Hardcoded Links In Production Theme Files #####################
+#### H. SS-Push-Development: Fix Incorrect URLs in Production Database #############################
+####################################################################################################
+
+## needs more testing
+## use WP-CLI to search/replace staging links in production database
+
+# wp search-replace https://dev."${SITE_DOMAIN_EXCLUDING_WWW}" https://"${SITE_FULL_DOMAIN}" --all-tables
+
+####################################################################################################
+#### I. SS-Sync-Development: Fix Any Hardcoded Links In Production Theme Files #####################
 ####################################################################################################
 
 ## many themes (or custom-coded themes) often contain hardcoded HTML assets and links ##
@@ -137,34 +146,37 @@ ss_rm /var/www/html/wp-content/wp-content*
 # find /var/www/html/wp-content/themes/ -type f -exec ss_sed "s#https://dev.${SITE_DOMAIN_EXCLUDING_WWW}#https://${SITE_DOMAIN_EXCLUDING_WWW}#g" {} +
 # find /var/www/html/wp-content/themes/ -type f -exec ss_sed "s#http://dev.${SITE_DOMAIN_EXCLUDING_WWW}#https://${SITE_DOMAIN_EXCLUDING_WWW}#g" {} +
 
-## end interactive ##
-else
-    exit 1
-fi
-
 ####################################################################################################
-#### I. SS-Sync-Development: Purge Cache (OPcache) #################################################
+#### J. SS-Sync-Development: Purge Cache (OPcache) #################################################
 ####################################################################################################
 
 source "${PATH_SS_PURGE_OPCACHE}"
 
 ####################################################################################################
-#### J. SS-Sync-Development: Purge Cache (Transients) ##############################################
+#### K. SS-Sync-Development: Purge Cache (Transients) ##############################################
 ####################################################################################################
 
 source "${PATH_SS_PURGE_TRANSIENTS}"
 
 ####################################################################################################
-#### K. SS-Sync-Development: Purge Cache (Memcached) ###############################################
+#### L. SS-Sync-Development: Purge Cache (Memcached) ###############################################
 ####################################################################################################
 
 source "${PATH_SS_PURGE_MEMCACHED}"
 
 ####################################################################################################
-#### L. SS-Sync-Development: Purge Cache (Nginx) ###################################################
+#### M. SS-Sync-Development: Purge Cache (Nginx) ###################################################
 ####################################################################################################
 
 source "${PATH_SS_PURGE_NGINX}"
+
+####################################################################################################
+#### N. SS-Push-Development: INTERACTIVE PROMPT EXIT ###############################################
+####################################################################################################
+
+else
+    ss_echo "${COLOR_WARN}Exited and skipped ss-push-development because no confirmation... ${COLOR_RESET}"
+fi
 
 ####################################################################################################
 #### SlickStack: Reset Permissions (SlickStack Scripts) ############################################
