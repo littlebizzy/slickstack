@@ -8,12 +8,12 @@
 #### destination: n/a (not a boilerplate) ##########################################################
 #### purpose: Clears the PHP-FPM OPcache by deleting files under /var/www/cache/opcache/ ###########
 #### module version: PHP-FPM 8.3.x #################################################################
-#### sourced by: ss-purge ##########################################################################
+#### sourced by: n/a ###############################################################################
 #### bash aliases: ss purge opcache ################################################################
 ####################################################################################################
 
-## RUNNING SS-PURGE DURING TRAFFIC SPIKES MIGHT CAUSE SUDDEN STRESS TO SERVER RESOURCES ##
-## KEEP IN MIND THAT PAGE CACHING IS DISABLED ALREADY ON DEV/STAGING WEBSITES ##
+## PURGING CACHES DURING TRAFFIC SPIKES MIGHT CAUSE SUDDEN STRESS TO SERVER RESOURCES ##
+## KEEP IN MIND THAT MOST CACHING IS FORCE-DISABLED ON DEV/STAGING WEBSITES ##
 
 ####################################################################################################
 #### TABLE OF CONTENTS (SS-Purge-OPcache) ##########################################################
@@ -67,18 +67,10 @@ ss_echo "${COLOR_INFO}Running ss-purge-opcache... ${COLOR_RESET}"
 ## by default OPcache only caches PHP files for a few seconds but we clear it to be sure ##
 ## this snippet will also clear physical OPcache files if the feature is enabled ##
 
-## manually delete OPcache file cache (after opcache file cache works better) ##
-# ss_rm /var/www/cache/opcache/*
-
-## creative way to reset OPcache using temporary PHP script ##
 RANDOM_RESET_OPCACHE=$(openssl rand -hex 12)
 echo "<?php opcache_reset(); ?>" > /var/www/html/purge-"${RANDOM_RESET_OPCACHE}".php
 /usr/bin/php /var/www/html/purge-"${RANDOM_RESET_OPCACHE}".php
 ss_rm /var/www/html/purge-*.php
-
-## manually delete OPcache file cache (again) ##
-# ss_rm /var/www/cache/opcache/*
-# ss_rm "${PATH_CACHE_OPCACHE}"
 
 ####################################################################################################
 #### SlickStack: Reset Permissions (SlickStack Scripts) ############################################
