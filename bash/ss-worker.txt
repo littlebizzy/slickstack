@@ -352,18 +352,44 @@ fi
 #### M. SS-Worker: Install Nginx Error Pages (If Not Exists) #######################################
 ####################################################################################################
 
+## error_404.html ##
 if [[ ! -f "${PATH_ERROR_404_HTML}" ]]; then 
+
+    ## retrieve error_404.html ##
     ss_wget "${TMP_ERROR_404_HTML}" "${GITHUB_ERROR_404_HTML}"
-    ss_cp "${TMP_ERROR_404_HTML}" "${PATH_ERROR_404_HTML}"
-    ss_chown root:root "${PATH_ERROR_404_HTML}"
-    chmod 0644 "${PATH_ERROR_404_HTML}"
+    VALIDATE_TMP_ERROR_404_HTML=$(grep 'h1' "${TMP_ERROR_404_HTML}" 2> /dev/null)
+    if [[ -z "${VALIDATE_TMP_ERROR_404_HTML}" ]]; then
+        ss_wget "${TMP_ERROR_404_HTML}" "${GITLAB_ERROR_404_HTML}"
+    fi
+
+    ## install error_404.html ##
+    VALIDATE2_TMP_ERROR_404_HTML=$(grep 'h1' "${TMP_ERROR_404_HTML}" 2> /dev/null)
+    if [[ -n "${VALIDATE2_TMP_ERROR_404_HTML}" ]]; then
+        ss_cp "${TMP_ERROR_404_HTML}" "${PATH_ERROR_404_HTML}"
+        ss_chown root:root "${PATH_ERROR_404_HTML}"
+        chmod 0644 "${PATH_ERROR_404_HTML}"
+    fi
+
 fi
 
+## error_50x.html ##
 if [[ ! -f "${PATH_ERROR_50X_HTML}" ]]; then 
+
+    ## retrieve error_50x.html ##
     ss_wget "${TMP_ERROR_50X_HTML}" "${GITHUB_ERROR_50X_HTML}"
-    ss_cp "${TMP_ERROR_50X_HTML}" "${PATH_ERROR_50X_HTML}"
-    ss_chown root:root "${PATH_ERROR_50X_HTML}"
-    chmod 0644 "${PATH_ERROR_50X_HTML}"
+    VALIDATE_TMP_ERROR_50X_HTML=$(grep 'h1' "${TMP_ERROR_50X_HTML}" 2> /dev/null)
+    if [[ -z "${VALIDATE_TMP_ERROR_50X_HTML}" ]]; then
+        ss_wget "${TMP_ERROR_50X_HTML}" "${GITLAB_ERROR_50X_HTML}"
+    fi
+
+    ## install error_50x.html ##
+    VALIDATE2_TMP_ERROR_50X_HTML=$(grep 'h1' "${TMP_ERROR_50X_HTML}" 2> /dev/null)
+    if [[ -n "${VALIDATE2_TMP_ERROR_50X_HTML}" ]]; then
+        ss_cp "${TMP_ERROR_50X_HTML}" "${PATH_ERROR_50X_HTML}"
+        ss_chown root:root "${PATH_ERROR_50X_HTML}"
+        chmod 0644 "${PATH_ERROR_50X_HTML}"
+    fi
+
 fi
 
 ####################################################################################################
