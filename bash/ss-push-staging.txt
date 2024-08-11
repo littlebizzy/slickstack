@@ -25,8 +25,8 @@
 ## A. Source SS-Config + SS-Functions
 ## B. Touch Timestamp File
 ## C. Message (Begin Script)
-## D. Run SS-Dump-Database
-## E. INTERACTIVE PROMPT CONFIRMATION
+## D. INTERACTIVE PROMPT CONFIRMATION
+## E. Run SS-Dump-Database
 ## F. Import Staging Database To Production Database
 ## G. Copy All Relevant Files From Staging To Production
 ## H. Fix Incorrect URLs in Staging Database
@@ -71,21 +71,21 @@ ss_touch "${TIMESTAMP_SS_PUSH_STAGING}"
 ss_echo "${COLOR_INFO}Running ss-push-staging... ${COLOR_RESET}"
 
 ####################################################################################################
-#### D. SS-Push-Staging: Run SS-Dump-Database ######################################################
+#### D. SS-Push-Staging: INTERACTIVE PROMPT CONFIRMATION ###########################################
+####################################################################################################
+
+read -r -p "EXPERIMENTAL... BE CAREFUL... WILL OVERWRITE PRODUCTION... BACKUP FIRST: Push staging files (wp-content and database) to production, are you sure? [y/N]" response
+if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]]
+then
+
+####################################################################################################
+#### E. SS-Push-Staging: Run SS-Dump-Database ######################################################
 ####################################################################################################
 
 ## first we need to dump the production database locally in case anything goes wrong ##
 ## in case of emergency you can restore this dump to your live production site ##
 
 source "${PATH_SS_DUMP_DATABASE}"
-
-####################################################################################################
-#### E. SS-Push-Staging: INTERACTIVE PROMPT CONFIRMATION ###########################################
-####################################################################################################
-
-read -r -p "EXPERIMENTAL... BE CAREFUL... WILL OVERWRITE PRODUCTION... BACKUP FIRST: Push staging files (wp-content and database) to production, are you sure? [y/N]" response
-if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]]
-then
 
 ####################################################################################################
 #### F. SS-Push-Staging: Import Staging Database To Production Database ############################
