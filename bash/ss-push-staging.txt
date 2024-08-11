@@ -7,7 +7,7 @@
 #### path: /var/www/ss-push-staging ################################################################
 #### destination: n/a (not a boilerplate) ##########################################################
 #### purpose: Pushes /wp-content/ and database from staging site to the production site ############
-#### module version: WordPress 6.5.x + MySQL 8.0.x #################################################
+#### module version: WordPress 6.6.x + MySQL 8.0.x #################################################
 #### sourced by: n/a ###############################################################################
 #### bash aliases: ss push staging #################################################################
 ####################################################################################################
@@ -26,17 +26,16 @@
 ## B. Touch Timestamp File
 ## C. Message (Begin Script)
 ## D. Run SS-Dump-Database
-
-## E. INTERACTIVE PROMPT CONFIRMATION TO PROCEED
-
+## E. INTERACTIVE PROMPT CONFIRMATION
 ## F. Import Staging Database To Production Database
 ## G. Copy All Relevant Files From Staging To Production
-## H. Fix Wrong URLs in Staging Database
+## H. Fix Incorrect URLs in Staging Database
 ## I. Fix Any Hardcoded Links In Production Theme Files
 ## J. Purge Cache (OPcache)
 ## K. Purge Cache (Transients)
 ## L. Purge Cache (Memcached)
 ## M. Purge Cache (Nginx)
+## N. INTERACTIVE PROMPT EXIT
 
 ####################################################################################################
 #### A. SS-Push-Staging: Source SS-Config + SS-Functions ###########################################
@@ -81,14 +80,12 @@ ss_echo "${COLOR_INFO}Running ss-push-staging... ${COLOR_RESET}"
 source "${PATH_SS_DUMP_DATABASE}"
 
 ####################################################################################################
-#### E. SS-Push-Staging: INTERACTIVE PROMPT CONFIRMATION TO PROCEED ################################
+#### E. SS-Push-Staging: INTERACTIVE PROMPT CONFIRMATION ###########################################
 ####################################################################################################
 
 read -r -p "EXPERIMENTAL... BE CAREFUL... WILL OVERWRITE PRODUCTION... BACKUP FIRST: Push staging files (wp-content and database) to production, are you sure? [y/N]" response
 if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]]
 then
-
-
 
 ####################################################################################################
 #### F. SS-Push-Staging: Import Staging Database To Production Database ############################
@@ -127,7 +124,7 @@ ss_rsync --max-size=5mb --exclude 'blacklist.txt' --exclude mu-plugins --exclude
 ss_rm /var/www/html/wp-content/wp-content*
 
 ####################################################################################################
-#### H. SS-Push-Staging: Fix Wrong URLs in Staging Database #########################
+#### H. SS-Push-Staging: Fix Incorrect URLs in Staging Database ####################################
 ####################################################################################################
 
 ## needs more testing
@@ -148,12 +145,6 @@ ss_rm /var/www/html/wp-content/wp-content*
 # find /var/www/html/wp-content/themes/ -type f -exec ss_sed "s#http://staging.${SITE_DOMAIN_INCLUDING_WWW}#https://${SITE_DOMAIN_EXCLUDING_WWW}#g" {} +
 # find /var/www/html/wp-content/themes/ -type f -exec ss_sed "s#https://staging.${SITE_DOMAIN_EXCLUDING_WWW}#https://${SITE_DOMAIN_EXCLUDING_WWW}#g" {} +
 # find /var/www/html/wp-content/themes/ -type f -exec ss_sed "s#http://staging.${SITE_DOMAIN_EXCLUDING_WWW}#https://${SITE_DOMAIN_EXCLUDING_WWW}#g" {} +
-
-
-## end interactive ##
-else
-    exit 1
-fi
 
 ####################################################################################################
 #### J. SS-Push-Staging: Purge Cache (OPcache) #####################################################
@@ -178,6 +169,14 @@ source "${PATH_SS_PURGE_MEMCACHED}"
 ####################################################################################################
 
 source "${PATH_SS_PURGE_NGINX}"
+
+####################################################################################################
+#### N. SS-Push-Staging: INTERACTIVE PROMPT EXIT ###################################################
+####################################################################################################
+
+else
+    ss_echo "exited script because no confirmation"
+fi
 
 ####################################################################################################
 #### SlickStack: Reset Permissions (SlickStack Scripts) ############################################
