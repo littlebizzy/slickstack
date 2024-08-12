@@ -3,17 +3,40 @@
 ####################################################################################################
 #### author: SlickStack ############################################################################
 #### link: https://slickstack.io ###################################################################
-#### mirror: https://mirrors.slickstack.io/bash/ss-install-ubuntu-crontab.txt ######################
+#### mirror: littlebizzy/slickstack/blob/master/bash/ss-install-ubuntu-crontab.txt #################
 #### path: /var/www/ss-install-ubuntu-crontab ######################################################
 #### destination: n/a (not a boilerplate) ##########################################################
-#### purpose: Reinstalls the Ubuntu (OS) root crontab for SlickStack servers (idempotent) ##########
-#### module version: Ubuntu 22.04 LTS ##############################################################
+#### purpose: Reinstalls the Ubuntu root crontab file for SlickStack servers (idempotent) ##########
+#### module version: Ubuntu 24.04 LTS ##############################################################
 #### sourced by: ss-install ########################################################################
 #### bash aliases: ss install ubuntu crontab, ss install crontab ###################################
 ####################################################################################################
 
 ## SS-CONFIG MUST BE PROPERLY CONFIGURED AND ON CURRENT BUILD BEFORE RUNNING SS-INSTALL ##
 ## ENSURE YOUR SS-CONFIG BUILD REMAINS CURRENT BY RUNNING SS-UPDATE OCCASIONALLY ##
+
+####################################################################################################
+#### TABLE OF CONTENTS (SS-Install-Ubuntu-Crontab) #################################################
+####################################################################################################
+
+## this is a brief summary of the different code snippets you will find in this script ##
+## each section should be commented so you understand what is being accomplished ##
+
+## A. Source SS-Config + SS-Functions
+## B. Touch Timestamp File
+## C. Message (Begin Script)
+## D. Install Cron Utility (If Not Exists)
+## E. Install SlickStack (Root) Crontab
+## F. Reset Permissions (Ubuntu Crontab)
+## G. Restart Modules (Cron)
+## H. Cleanup Temporary Files
+
+####################################################################################################
+#### A. SS-Install-Ubuntu-Crontab: Source SS-Config + SS-Functions #################################
+####################################################################################################
+
+## before anything else we must source the critical variables that power this script ##
+## ss-config is setup during ss-install wizard but ss-functions is hardcoded ##
 
 ## source ss-config ##
 source /var/www/ss-config
@@ -24,23 +47,7 @@ source /var/www/ss-functions
 ## BELOW THIS RELIES ON SS-CONFIG AND SS-FUNCTIONS
 
 ####################################################################################################
-#### TABLE OF CONTENTS (SS-Install-Ubuntu-Crontab) #################################################
-####################################################################################################
-
-## this is a brief summary of the different code snippets you will find in this script ##
-## each section should be commented so you understand what is being accomplished ##
-
-## A. Touch Timestamp File
-## B. Message (Begin Script)
-## C. Cleanup Temporary Files
-## D. Install Cron (If Not Exists)
-## E. Install SlickStack (Root) Crontab
-## F. Reset Permissions (Ubuntu Crontab)
-## G. Restart Services (Cron)
-## H. Cleanup Temporary Files
-
-####################################################################################################
-#### A. SS-Install-Ubuntu-Crontab: Touch Timestamp File ############################################
+#### B. SS-Install-Ubuntu-Crontab: Touch Timestamp File ############################################
 ####################################################################################################
 
 ## this is a dummy timestamp file that will remember the last time this script was run ##
@@ -49,7 +56,7 @@ source /var/www/ss-functions
 ss_touch "${TIMESTAMP_SS_INSTALL_UBUNTU_CRONTAB}"
 
 ####################################################################################################
-#### B. SS-Install-Ubuntu-Crontab: Message (Begin Script) ##########################################
+#### C. SS-Install-Ubuntu-Crontab: Message (Begin Script) ##########################################
 ####################################################################################################
 
 ## this is a simple message that announces to the shell the purpose of this bash script ##
@@ -58,20 +65,7 @@ ss_touch "${TIMESTAMP_SS_INSTALL_UBUNTU_CRONTAB}"
 ss_echo "${COLOR_INFO}Running ss-install-ubuntu-crontab... ${COLOR_RESET}"
 
 ####################################################################################################
-#### X. Change To Default Directory #####################################
-####################################################################################################
-
-ss_cd_default
-
-####################################################################################################
-#### C. SS-Install-Ubuntu-Crontab: Cleanup Temporary Files #########################################
-####################################################################################################
-
-## delete tmp files ##
-ss_rm "${TMP_00_CRONTAB}"
-
-####################################################################################################
-#### D. SS-Install-Ubuntu-Crontab: Install Cron (If Not Exists) ####################################
+#### D. SS-Install-Ubuntu-Crontab: Install Cron Utility (If Not Exists) ############################
 ####################################################################################################
 
 ## the cron package should already be installed by default if you are using Ubuntu Linux ##
@@ -86,6 +80,7 @@ ss_apt_install cron > /dev/null 2>&1
 ## here we forcefully reinstall the crontab based on the SlickStack boilerplate file ##
 ## the random string generated helps Linux to realize the file has been modifed ##
 
+ss_rm "${TMP_00_CRONTAB}"
 ss_cp "${PATH_00_CRONTAB}" "${TMP_00_CRONTAB}"
 ss_sed "s/@RANDOM_STRING/$(openssl rand -hex 12)/g" "${TMP_00_CRONTAB}"
 sudo crontab "${TMP_00_CRONTAB}"
@@ -94,21 +89,18 @@ sudo crontab "${TMP_00_CRONTAB}"
 #### F. SS-Install-Ubuntu-Crontab: Reset Permissions (Ubuntu Crontab) ##############################
 ####################################################################################################
 
-## run ss-perms-ubuntu-crontab ##
 source "${PATH_SS_PERMS_UBUNTU_CRONTAB}"
 
 ####################################################################################################
-#### G. SS-Install-Ubuntu-Crontab: Restart Services (Cron) #########################################
+#### G. SS-Install-Ubuntu-Crontab: Restart Modules (Cron) ##########################################
 ####################################################################################################
 
-## reload cron ##
 /etc/init.d/cron reload > /dev/null 2>&1 ## reload better than restart
 
 ####################################################################################################
 #### H. SS-Install-Ubuntu-Crontab: Cleanup Temporary Files #########################################
 ####################################################################################################
 
-## delete tmp files ##
 ss_rm "${TMP_00_CRONTAB}"
 
 ####################################################################################################
