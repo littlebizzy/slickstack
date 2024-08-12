@@ -107,14 +107,14 @@ else
 fi
 
 ## enable/disable password authentication (depending on if SSH_KEYS is enabled) ##
-if [[ "$SSH_KEYS" == "true" ]]; then 
+if [[ "${SSH_KEYS}" == "true" ]]; then 
     ss_sed "s/@SSH_PASSWORD_AUTHENTICATION/no/g" "${TMP_SSHD_CONFIG}"
 else 
     ss_sed "s/@SSH_PASSWORD_AUTHENTICATION/yes/g" "${TMP_SSHD_CONFIG}"
 fi
 
 ## enable/disable public key authentication (depending on if SSH_KEYS is enabled) ##
-if [[ "$SSH_KEYS" == "true" ]]; then 
+if [[ "${SSH_KEYS}" == "true" ]]; then 
     ss_sed "s/@SSH_PUBKEY_AUTHENTICATION/yes/g" "${TMP_SSHD_CONFIG}"
 else 
     ss_sed "s/@SSH_PUBKEY_AUTHENTICATION/no/g" "${TMP_SSHD_CONFIG}"
@@ -139,13 +139,13 @@ ss_mv "${TMP_SSHD_CONFIG}" "${PATH_SSHD_CONFIG}"
 ## if you already have a preferred key pair then you must manually append it ##
 
 ## generate key pair (if not exists) ##
-if [[ "$SSH_KEYS" == "true" ]] && [[ ! -f "$PATH_SSH_PUBLIC_KEY_FILE" ]]; then
-    ssh-keygen -f "$PATH_SSH_PRIVATE_KEY_FILE" -b 4096 -t rsa -q -N ""
+if [[ "${SSH_KEYS}" == "true" ]] && [[ ! -f "${PATH_SSH_PUBLIC_KEY_FILE}" ]]; then
+    ssh-keygen -f "${PATH_SSH_PRIVATE_KEY_FILE}" -b 4096 -t rsa -q -N ""
 fi
 
 ## append any public key found to authorized_keys list ##
-if [[ "$SSH_KEYS" == "true" ]] && [[ -f "$PATH_SSH_PUBLIC_KEY_FILE" ]]; then
-    cat "$PATH_SSH_PUBLIC_KEY_FILE" >> "$PATH_SSH_AUTHORIZED_KEYS_FILE"
+if [[ "${SSH_KEYS}" == "true" ]] && [[ -f "${PATH_SSH_PUBLIC_KEY_FILE}" ]]; then
+    cat "${PATH_SSH_PUBLIC_KEY_FILE}" >> "${PATH_SSH_AUTHORIZED_KEYS_FILE}"
 fi
 
 ####################################################################################################
