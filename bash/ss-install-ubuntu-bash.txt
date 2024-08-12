@@ -6,8 +6,8 @@
 #### mirror: littlebizzy/slickstack/blob/master/bash/ss-install-ubuntu-bash.txt ####################
 #### path: /var/www/ss-install-ubuntu-bash #########################################################
 #### destination: n/a (not a boilerplate) ##########################################################
-#### purpose: Reinstalls the Ubuntu bashrc settings for SlickStack servers (idempotent) ############
-#### module version: Ubuntu 22.04 LTS ##############################################################
+#### purpose: Reinstalls the Ubuntu .bashrc settings for SlickStack servers (idempotent) ###########
+#### module version: Ubuntu 24.04 LTS ##############################################################
 #### sourced by: ss-install ########################################################################
 #### bash aliases: ss install bash, ss install ubuntu bash #########################################
 ####################################################################################################
@@ -25,6 +25,10 @@
 ## A. Source SS-Config + SS-Functions
 ## B. Touch Timestamp File
 ## C. Message (Begin Script)
+## D. Cleanup Existing .Bashrc Configuration
+## E. Install .Bashrc For All SlickStack Users
+## F. Reset Permissions (Ubuntu Bash)
+## G. Restart Modules (Ubuntu Bash)
 
 ####################################################################################################
 #### A. SS-Install-Ubuntu-Bash: Source SS-Config + SS-Functions ####################################
@@ -60,10 +64,13 @@ ss_touch "${TIMESTAMP_SS_INSTALL_UBUNTU_BASH}"
 ss_echo "${COLOR_INFO}Running ss-install-ubuntu-bash... ${COLOR_RESET}"
 
 ####################################################################################################
-### D. SS-Install-Ubuntu-Bash: Cleanup ######################################
+### D. SS-Install-Ubuntu-Bash: Cleanup Existing .Bashrc Configuration ##############################
 ####################################################################################################
 
-## delete ##
+## installing .bashrc is a bit janky and requires inserting lines into Linux files ##
+## therefore we must first remove previous lines and files to avoid conflicts ##
+
+## delete (what is this? from long time ago me thinks... move it to ss-clean-files) ##
 ss_rm /var/www/meta/.bash-aliases
 ss_rm /var/www/meta/.bashrc_slickstack
 
@@ -82,7 +89,7 @@ ss_sed '/include Bash aliases/d' "${PATH_SFTP_BASHRC}"
 ss_sed '\:var/www/meta:d' "${PATH_SFTP_BASHRC}"
 
 ####################################################################################################
-### SS-Install-Ubuntu-Bash: Install Bash Aliases (SlickStack) ######################################
+### E. SS-Install-Ubuntu-Bash: Install .Bashrc For All SlickStack Users ############################
 ####################################################################################################
 
 ## retrieve latest files ##
@@ -107,14 +114,16 @@ echo '
 source /var/www/meta/.bashrc' >> "${PATH_SFTP_BASHRC}"
 
 ####################################################################################################
-#### SS-Install-Ubuntu-Bash: Reset Permissions (Ubuntu Bash) #######################################
+#### F. SS-Install-Ubuntu-Bash: Reset Permissions (Ubuntu Bash) ####################################
 ####################################################################################################
 
 source "${PATH_SS_PERMS_UBUNTU_BASH}"
 
 ####################################################################################################
-#### SS-Install-Ubuntu-Bash: Restart Modules (Ubuntu Bash) #########################################
+#### G. SS-Install-Ubuntu-Bash: Restart Modules (Ubuntu Bash) ######################################
 ####################################################################################################
+
+## not sure this is effective... more testing needed ##
 
 ## reload .bashrc settings ##
 source "${PATH_ROOT_BASHRC}"
