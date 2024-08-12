@@ -3,17 +3,37 @@
 ####################################################################################################
 #### author: SlickStack ############################################################################
 #### link: https://slickstack.io ###################################################################
-#### mirror: https://mirrors.slickstack.io/bash/ss-install-ubuntu-kernel.txt #######################
+#### mirror: littlebizzy/slickstack/blob/master/bash/ss-install-ubuntu-kernel.txt ##################
 #### path: /var/www/ss-install-ubuntu-kernel #######################################################
 #### destination: n/a (not a boilerplate) ##########################################################
-#### purpose: Reinstalls the Ubuntu (OS) Linux kernel for SlickStack servers (idempotent) ##########
-#### module version: Ubuntu 22.04 LTS ##############################################################
+#### purpose: Reinstalls the Ubuntu Linux kernel for SlickStack servers (idempotent) ###############
+#### module version: Ubuntu 24.04 LTS ##############################################################
 #### sourced by: ss-install ########################################################################
-#### bash aliases: ss install ubuntu kernel, ss install kernel #####################################
+#### bash aliases: ss install kernel, ss install ubuntu kernel #####################################
 ####################################################################################################
 
 ## SS-CONFIG MUST BE PROPERLY CONFIGURED AND ON CURRENT BUILD BEFORE RUNNING SS-INSTALL ##
 ## ENSURE YOUR SS-CONFIG BUILD REMAINS CURRENT BY RUNNING SS-UPDATE OCCASIONALLY ##
+
+####################################################################################################
+#### TABLE OF CONTENTS (SS-Install-Ubuntu-Kernel) ##################################################
+####################################################################################################
+
+## this is a brief summary of the different code snippets you will find in this script ##
+## each section should be commented so you understand what is being accomplished ##
+
+## A. Source SS-Config + SS-Functions
+## B. Touch Timestamp File
+## C. Message (Begin Script)
+## D. Install (Optimize) Ubuntu Linux Kernel
+## E. Reset Permissions (Ubuntu Kernel)
+
+####################################################################################################
+#### A. SS-Install-Ubuntu-Kernel: Source SS-Config + SS-Functions ##################################
+####################################################################################################
+
+## before anything else we must source the critical variables that power this script ##
+## ss-config is setup during ss-install wizard but ss-functions is hardcoded ##
 
 ## source ss-config ##
 source /var/www/ss-config
@@ -24,17 +44,7 @@ source /var/www/ss-functions
 ## BELOW THIS RELIES ON SS-CONFIG AND SS-FUNCTIONS
 
 ####################################################################################################
-#### TABLE OF CONTENTS (SS-Install-Ubuntu-Kernel) ##################################################
-####################################################################################################
-
-## this is a brief summary of the different code snippets you will find in this script ##
-## each section should be commented so you understand what is being accomplished ##
-
-## A. Touch Timestamp File
-## B. Message (Begin Script)
-
-####################################################################################################
-#### A. SS-Install-Ubuntu-Kernel: Touch Timestamp File #############################################
+#### B. SS-Install-Ubuntu-Kernel: Touch Timestamp File #############################################
 ####################################################################################################
 
 ## this is a dummy timestamp file that will remember the last time this script was run ##
@@ -43,7 +53,7 @@ source /var/www/ss-functions
 ss_touch "${TIMESTAMP_SS_INSTALL_UBUNTU_KERNEL}"
 
 ####################################################################################################
-#### B. SS-Install-Ubuntu-Kernel: Message (Begin Script) ###########################################
+#### C. SS-Install-Ubuntu-Kernel: Message (Begin Script) ###########################################
 ####################################################################################################
 
 ## this is a simple message that announces to the shell the purpose of this bash script ##
@@ -52,30 +62,24 @@ ss_touch "${TIMESTAMP_SS_INSTALL_UBUNTU_KERNEL}"
 ss_echo "${COLOR_INFO}Running ss-install-ubuntu-kernel... ${COLOR_RESET}"
 
 ####################################################################################################
-#### X. Change To Default Directory #####################################
-####################################################################################################
-
-ss_cd_default
-
-####################################################################################################
-#### SS-Install-Ubuntu-Kernel: Install (Optimize) The Ubuntu Linux Kernel ##########################
+#### D. SS-Install-Ubuntu-Kernel: Install (Optimize) Ubuntu Linux Kernel ###########################
 ####################################################################################################
 
 ## backup current Ubunt kernel file ##
-ss_cp /etc/sysctl.conf /etc/sysctl.conf.bak
+ss_cp "${PATH_SYSCTL_CONF}" /etc/sysctl.conf.bak
 
 ## download latest versions ##
-ss_wget /tmp/sysctl.conf "$GITHUB_LINUX_KERNEL"
+ss_wget "${TMP_SYSCTL_CONF}" "${GITHUB_LINUX_KERNEL}"
 
 ## copy files to their destinations ##
-ss_cp /tmp/sysctl.conf /etc/sysctl.conf
+ss_cp "${TMP_SYSCTL_CONF}" "${PATH_SYSCTL_CONF}"
 
 ## reset permissions ##
-chown root:root /etc/sysctl.conf
-chmod 0664 /etc/sysctl.conf
+chown root:root "${PATH_SYSCTL_CONF}"
+chmod 0664 "${PATH_SYSCTL_CONF}"
 
 ####################################################################################################
-#### SS-Install-Ubuntu-Kernel: Reset Permissions (Ubuntu Kernel) ###################################
+#### E. SS-Install-Ubuntu-Kernel: Reset Permissions (Ubuntu Kernel) ################################
 ####################################################################################################
 
 source "${PATH_SS_PERMS_UBUNTU_KERNEL}"
