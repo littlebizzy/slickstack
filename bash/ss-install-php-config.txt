@@ -26,15 +26,17 @@
 ## B. Touch Timestamp File
 ## C. Message (Begin Script)
 ## D. Retrieve Latest Boilerplates
+
 ## E. Configure PHP.ini Boilerplate
 ## F. Configure PHP-FPM.conf Boilerplate
 ## G. Configure WWW.conf Boilerplate
-## H. Install PHP Config Files
-## I. Install Adminer.php
 
-## I. Reset Permissions (PHP Config)
-## J. Restart Modules (PHP-FPM)
-## K. Cleanup Temporary Files
+## H. Configure Opcache.ini Boilerplate
+## I. Install PHP Config Files
+## J. Install Adminer.php
+## K. Reset Permissions (PHP Config)
+## L. Restart Modules (PHP-FPM)
+## M. Cleanup Temporary Files
 
 ####################################################################################################
 #### A. SS-Install-Nginx-Adminer: Source SS-Config + SS-Functions ##################################
@@ -515,23 +517,28 @@ else
 fi
 
 ####################################################################################################
-#### G. SS-Install-PHP-Config: Configure Opcache.ini Boilerplate ######################################
+#### H. SS-Install-PHP-Config: Configure Opcache.ini Boilerplate ###################################
 ####################################################################################################
 
-if [[ -z "${OPCACHE_JIT_CRTO}" ]]; then 
-    ss_sed "s/@OPCACHE_JIT_CRTO/1255/g" "${TMP_OPCACHE_INI}"
-else 
-    ss_sed "s/@OPCACHE_JIT_CRTO/${OPCACHE_JIT_CRTO}/g" "${TMP_OPCACHE_INI}"
-fi
+## ubuntu 24.04 (php 8.3) ##
+if [[ "${SYSTEM_UBUNTU_VERSION}" == "24.04" ]]; then
 
-if [[ -z "${OPCACHE_JIT_BUFFER_SIZE}" ]]; then 
-    ss_sed "s/@OPCACHE_JIT_BUFFER_SIZE/0/g" "${TMP_OPCACHE_INI}"
-else 
-    ss_sed "s/@OPCACHE_JIT_BUFFER_SIZE/${OPCACHE_JIT_BUFFER_SIZE}/g" "${TMP_OPCACHE_INI}"
+    if [[ -z "${OPCACHE_JIT_CRTO}" ]]; then 
+        ss_sed "s/@OPCACHE_JIT_CRTO/1255/g" "${TMP_OPCACHE_INI}"
+    else 
+        ss_sed "s/@OPCACHE_JIT_CRTO/${OPCACHE_JIT_CRTO}/g" "${TMP_OPCACHE_INI}"
+    fi
+
+    if [[ -z "${OPCACHE_JIT_BUFFER_SIZE}" ]]; then 
+        ss_sed "s/@OPCACHE_JIT_BUFFER_SIZE/0/g" "${TMP_OPCACHE_INI}"
+    else 
+        ss_sed "s/@OPCACHE_JIT_BUFFER_SIZE/${OPCACHE_JIT_BUFFER_SIZE}/g" "${TMP_OPCACHE_INI}"
+    fi
+
 fi
 
 ####################################################################################################
-#### H. SS-Install-PHP-Config: Install PHP Config Files ############################################
+#### I. SS-Install-PHP-Config: Install PHP Config Files ############################################
 ####################################################################################################
 
 ## note: ss_cp must be used for the ini files because ss_mv not working for some reason ##
@@ -543,6 +550,7 @@ if [[ "${SYSTEM_UBUNTU_VERSION}" == "24.04" ]]; then
     ss_cp "${TMP_PHP_INI}" "${PATH_PHP_INI_CLI_83}"
     ss_mv "${TMP_WWW_CONF}" "${PATH_WWW_CONF_83}"
 
+    ## php 8.3 only ##
     ss_mv "${TMP_OPCACHE_INI}" /etc/php/8.3/mods-available/opcache.ini
 
 fi
@@ -572,7 +580,7 @@ if [[ "${SYSTEM_UBUNTU_VERSION}" == "18.04" ]]; then
 fi
 
 ####################################################################################################
-#### I. SS-Install-PHP-Config: Install Adminer.php #################################################
+#### J. SS-Install-PHP-Config: Install Adminer.php #################################################
 ####################################################################################################
 
 ## here we retrieve the latest version of adminer.php from our mirrors and install it ##
@@ -591,7 +599,7 @@ if [[ -n "${VALIDATE2_TMP_ADMINER_PHP}" ]]; then
 
         if [[ "${ADMINER_PUBLIC}" == "false" ]]; then
             ss_rm "${PATH_ADMINER_PHP}"
-            ss_echo "${COLOR_WARN}ADMINER_PUBLIC set to false in ss-config so skipping install of adminer.php... ${COLOR_RESET}"
+            ss_echo "${COLOR_WARN}Skipping install of adminer.php because ADMINER_PUBLIC set to false... ${COLOR_RESET}"
         else
             ss_mv "${TMP_ADMINER_PHP}" "${PATH_ADMINER_PHP}"
         fi
@@ -599,19 +607,19 @@ if [[ -n "${VALIDATE2_TMP_ADMINER_PHP}" ]]; then
 fi
 
 ####################################################################################################
-#### I. SS-Install-PHP-Config: Reset Permissions (PHP Config) ######################################
+#### K. SS-Install-PHP-Config: Reset Permissions (PHP Config) ######################################
 ####################################################################################################
 
 source "${PATH_SS_PERMS_PHP_CONFIG}"
 
 ####################################################################################################
-#### J. SS-Install-PHP-Config: Restart Modules (PHP-FPM) ###########################################
+#### L. SS-Install-PHP-Config: Restart Modules (PHP-FPM) ###########################################
 ####################################################################################################
 
 source "${PATH_SS_RESTART_PHP}"
 
 ####################################################################################################
-#### K. SS-Install-PHP-Config: Cleanup Temporary Files #############################################
+#### M. SS-Install-PHP-Config: Cleanup Temporary Files #############################################
 ####################################################################################################
 
 ss_rm "${TMP_PHP_FPM_CONF}"
