@@ -730,36 +730,7 @@ add_action('admin_menu', 'ss_menu');
 		<br class="clear" />
 		<div style="overflow-x: scroll;background: rgba(0,0,0,.07);"><pre style="padding: 3px 5px 2px;margin: 0 1px;">';
 
-    function lastLines($file, $lines) {
-    	$size = filesize($file);
-		$fd=fopen($file, 'r+');
-		$pos = $size;
-		$n=0;
-		
-        while ( $n < $lines+1 && $pos > 0) {
-        fseek($fd, $pos);
-        $a = fread($fd, 1);
-                if ($a === "\n") {
-                        ++$n;
-                };
-        $pos--;
-        }
-        // $array = array_reverse($array);                      
-        $ret = array();
-                for ($i=0; $i<$lines; $i++) {
-                array_push($ret, fgets($fd));
-                }
-				
-	$retrev = array_reverse($ret);
-	return $retrev;
-    }
-    
-    print_r(implode(lastLines('/var/www/logs/php-error.log', 999)));
-    echo '</pre></div> 
-    <br class="clear" />
-    <p><form action="#" method="post"><button type="submit" name="clearlog" class="button">Clear Error Log</button></form></p>';
-
-	// Check if the form has been submitted
+// Check if the form has been submitted
 	if (isset($_POST['clearlog'])) {
     // Ensure the user has the necessary capability to clear the log
     if (current_user_can('manage_options')) {
@@ -775,6 +746,47 @@ add_action('admin_menu', 'ss_menu');
         echo '<div class="error"><p>You do not have permission to clear the log.</p></div>';
     }
 }
+
+// Display the form to clear the log
+?>
+<p>
+    <!-- The form action is the same page, so it will reload after submission -->
+    <form action="" method="post">
+        <button type="submit" name="clearlog" class="button">Clear Error Log</button>
+    </form>
+</p>
+
+<?php
+
+// Function to read the last lines of the error log
+function lastLines($file, $lines) {
+    $size = filesize($file);
+    $fd = fopen($file, 'r+');
+    $pos = $size;
+    $n = 0;
+
+    while ($n < $lines + 1 && $pos > 0) {
+        fseek($fd, $pos);
+        $a = fread($fd, 1);
+        if ($a === "\n") {
+            ++$n;
+        }
+        $pos--;
+    }
+
+    $ret = array();
+    for ($i = 0; $i < $lines; $i++) {
+        array_push($ret, fgets($fd));
+    }
+
+    $retrev = array_reverse($ret);
+    return $retrev;
+}
+
+// Display the log contents
+print_r(implode(lastLines('/var/www/logs/php-error.log', 999)));
+echo '</pre></div> 
+<br class="clear" />';
 
 	break;
 
