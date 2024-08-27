@@ -595,10 +595,63 @@ add_action('admin_menu', 'ss_menu');
 
 
 	case 'opcache':
-	
-		echo '<br class="clear" />
-		<p>Coming soon... lightweight PHP OPcache monitoring panel.</p>';
-        
+
+// inspired by ChatGPT and https://gitlab.com/gnombat/opcachetuner
+// Function to render the OPcache Tuner content
+function render_opcache_tuner_content() {
+    if (!function_exists('opcache_get_status')) {
+        echo '<div class="notice notice-error"><p>' . esc_html__('OPcache is not enabled on this server.', 'opcache-tuner') . '</p></div>';
+        return;
+    }
+
+    // Get OPcache status and configuration
+    $opcache_status = opcache_get_status(false);
+    $opcache_config = opcache_get_configuration();
+
+    if (!$opcache_status || !$opcache_config) {
+        echo '<div class="notice notice-error"><p>' . esc_html__('Failed to retrieve OPcache status or configuration.', 'opcache-tuner') . '</p></div>';
+        return;
+    }
+
+    // Basic OPcache statistics
+    $memory_usage = $opcache_status['memory_usage'];
+    $opcache_statistics = $opcache_status['opcache_statistics'];
+
+    echo '<div class="wrap">';
+    echo '<h1>' . esc_html__('OPcache Tuner', 'opcache-tuner') . '</h1>';
+    
+    // General Information
+    echo '<h2>' . esc_html__('General Information', 'opcache-tuner') . '</h2>';
+    echo '<table class="widefat striped">';
+    echo '<tr><th>' . esc_html__('Directive', 'opcache-tuner') . '</th><th>' . esc_html__('Value', 'opcache-tuner') . '</th></tr>';
+    echo '<tr><td>' . esc_html__('OPcache Enabled', 'opcache-tuner') . '</td><td>' . ($opcache_config['directives']['opcache.enable'] ? esc_html__('Yes', 'opcache-tuner') : esc_html__('No', 'opcache-tuner')) . '</td></tr>';
+    echo '<tr><td>' . esc_html__('Cache Full', 'opcache-tuner') . '</td><td>' . ($opcache_status['cache_full'] ? esc_html__('Yes', 'opcache-tuner') : esc_html__('No', 'opcache-tuner')) . '</td></tr>';
+    echo '</table>';
+    
+    // Memory Usage
+    echo '<h2>' . esc_html__('Memory Usage', 'opcache-tuner') . '</h2>';
+    echo '<table class="widefat striped">';
+    echo '<tr><th>' . esc_html__('Used Memory', 'opcache-tuner') . '</th><td>' . esc_html(size_format($memory_usage['used_memory'])) . '</td></tr>';
+    echo '<tr><th>' . esc_html__('Free Memory', 'opcache-tuner') . '</th><td>' . esc_html(size_format($memory_usage['free_memory'])) . '</td></tr>';
+    echo '<tr><th>' . esc_html__('Wasted Memory', 'opcache-tuner') . '</th><td>' . esc_html(size_format($memory_usage['wasted_memory'])) . '</td></tr>';
+    echo '</table>';
+
+    // Statistics
+    echo '<h2>' . esc_html__('Statistics', 'opcache-tuner') . '</h2>';
+    echo '<table class="widefat striped">';
+    echo '<tr><th>' . esc_html__('Cached Scripts', 'opcache-tuner') . '</th><td>' . esc_html($opcache_statistics['num_cached_scripts']) . '</td></tr>';
+    echo '<tr><th>' . esc_html__('Hits', 'opcache-tuner') . '</th><td>' . esc_html($opcache_statistics['hits']) . '</td></tr>';
+    echo '<tr><th>' . esc_html__('Misses', 'opcache-tuner') . '</th><td>' . esc_html($opcache_statistics['misses']) . '</td></tr>';
+    echo '<tr><th>' . esc_html__('Blacklist Misses', 'opcache-tuner') . '</th><td>' . esc_html($opcache_statistics['blacklist_misses']) . '</td></tr>';
+    echo '<tr><th>' . esc_html__('Blacklist Miss Ratio', 'opcache-tuner') . '</th><td>' . esc_html($opcache_statistics['blacklist_miss_ratio']) . '</td></tr>';
+    echo '</table>';
+
+    echo '</div>'; // .wrap
+}
+
+// Directly call the function to render OPcache information
+render_opcache_tuner_content();
+
 	break;
 
 
