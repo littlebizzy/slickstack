@@ -757,12 +757,24 @@ add_action('admin_menu', 'ss_menu');
     print_r(implode(lastLines('/var/www/logs/php-error.log', 999)));
     echo '</pre></div> 
     <br class="clear" />
-    <p><form action="#" method="post"><button name="clearlog" class="button">Clear Error Log</button></form></p>';
+    <p><form action="#" method="post"><button type="submit" name="clearlog" class="button">Clear Error Log</button></form></p>';
 
-	if(isset($_POST['clearlog'])) {
-    	$logpath = "/var/www/logs/php-error.log";
-    	file_put_contents($logpath, "");
-	}
+	// Check if the form has been submitted
+	if (isset($_POST['clearlog'])) {
+    // Ensure the user has the necessary capability to clear the log
+    if (current_user_can('manage_options')) {
+        $logpath = "/var/www/logs/php-error.log";
+
+        // Clear the error log file
+        file_put_contents($logpath, "");
+
+        // Optionally add an admin notice to confirm the log was cleared
+        echo '<div class="updated"><p>Error log cleared successfully!</p></div>';
+    } else {
+        // If the user doesn't have the correct permissions
+        echo '<div class="error"><p>You do not have permission to clear the log.</p></div>';
+    }
+}
 
 	break;
 
