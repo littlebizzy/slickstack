@@ -773,70 +773,113 @@ render_opcache_tuner_content();
         
 	break;
 	
-	
-	case 'error-log':
-		
+case 'error-log':
+
     echo '<br class="clear" />
-		<h2>Error Log</h2>
-		<p>Below are the most recent (<em>E_ERROR</em>, <em>E_WARNING</em>, <em>E_PARSE</em>) lines from the PHP-FPM error log: <code>/var/www/logs/php-error.log</code></p>
-		<p>Keep in mind that production, staging, and development all share the same error log, which can be helpful if one if your environments has a fatal error or white screen of death (WSOD). However, only staging and development have <code>WP_DEBUG_LOG</code> enabled, meaning you can find a verbose (<em>E_ALL</em>) debug log under <code>/wp-content/debug.log</code> on both of those environments.</p>';
+        <h2>Error Log</h2>
+        <p>Below are the most recent (<em>E_ERROR</em>, <em>E_WARNING</em>, <em>E_PARSE</em>) lines from the PHP-FPM error log: <code>/var/www/logs/php-error.log</code></p>
+        <p>Keep in mind that production, staging, and development all share the same error log, which can be helpful if one of your environments has a fatal error or white screen of death (WSOD). However, only staging and development have <code>WP_DEBUG_LOG</code> enabled, meaning you can find a verbose (<em>E_ALL</em>) debug log under <code>/wp-content/debug.log</code> on both of those environments.</p>';
 
-// Check if the form has been submitted
-	if (isset($_POST['clearlog'])) {
-    // Ensure the user has the necessary capability to clear the log
-    if (current_user_can('manage_options')) {
-        $logpath = "/var/www/logs/php-error.log";
+    // Check if the form has been submitted to clear the log
+    if (isset($_POST['clearlog'])) {
+        if (current_user_can('manage_options')) {
+            $logpath = '/var/www/logs/php-error.log';
 
-        // Clear the error log file
-        file_put_contents($logpath, "");
+            if (file_exists($logpath)) {
+                // Clear the error log file
+                file_put_contents($logpath, '');
 
-        // Optionally add an admin notice to confirm the log was cleared
-        echo '<div class="updated"><p>Error log cleared successfully!</p></div>';
-    } else {
-        // If the user doesn't have the correct permissions
-        echo '<div class="error"><p>You do not have permission to clear the log.</p></div>';
-    }
-}
-
-?>
-
-<br class="clear" />
-<div style="overflow-x: scroll;background: rgba(0,0,0,.07);"><pre style="padding: 3px 5px 2px;margin: 0 1px;"><?php // Function to read the last lines of the error log
-function lastLines($file, $lines) {
-    $size = filesize($file);
-    $fd = fopen($file, 'r+');
-    $pos = $size;
-    $n = 0;
-
-    while ($n < $lines + 1 && $pos > 0) {
-        fseek($fd, $pos);
-        $a = fread($fd, 1);
-        if ($a === "\n") {
-            ++$n;
+                // Confirm the log was cleared
+                echo '<div class="notice notice-success"><p>Error log cleared successfully!</p></div>';
+            } else {
+                echo '<div class="notice notice-error"><p>Error log file not found.</p></div>';
+            }
+        } else {
+            // If the user doesn't have the correct permissions
+            echo '<div class="notice notice-error"><p>You do not have permission to clear the log.</p></div>';
         }
-        $pos--;
     }
 
-    $ret = array();
-    for ($i = 0; $i < $lines; $i++) {
-        array_push($ret, fgets($fd));
+    // Function to read the last lines of the error log
+    function last_lines($file, $lines) {
+        $size = filesize($file);
+        $fd = fopen($file, 'r');
+        $pos = $size;
+        $n = 0;
+
+        while ($n < $lines + 1 && $pos > 0) {
+            fseek($fd, $pos);
+            $a = fread($fd, 1);
+            if ($a === "\n") {
+                ++$n;
+            }
+            $pos--;
+        }
+
+        $ret = [];
+        while (($line = fgets($fd)) !== false) {
+            $ret[] = $line;
+        }
+
+        fclose($fd);
+
+        return array_reverse($ret);
     }
 
-    $retrev = array_reverse($ret);
-    return $retrev;
-}
+    // Handle the Download Error Log button functionality
+    if (isset($_POST['download_php_error_log'])) {
+        if (current_user_can('manage_options')) {
+            $error_log_file = ini_get('error_log');
 
-// Display the log contents
-print_r(implode(lastLines('/var/www/logs/php-error.log', 999)));
-echo '</pre></div> 
-<br class="clear" />
-<p><!-- The form action is the same page, so it will reload after submission -->
-    <form action="" method="post">
-        <button type="submit" name="clearlog" class="button">Clear Error Log</button>
-    </form>
-</p>';
+            if (file_exists($error_log_file)) {
+                // Set headers for the download
+                header('Content-Type: text/plain');
+                header('Content-Disposition: attachment; filename="php_error_log.txt"');
+                header('Content-Length: ' . filesize($error_log_file));
 
-	break;
+                // Clear output buffer
+                ob_clean();
+                flush();
+
+                // Read the file and output to browser
+                readfile($error_log_file);
+                exit;
+            } else {
+                echo '<div class="notice notice-error"><p>Error log file not found.</p></div>';
+            }
+        } else {
+            echo '<div class="notice notice-error"><p>You do not have permission to download the log.</p></div>';
+        }
+    }
+
+    // Display the log contents
+    $logpath = '/var/www/logs/php-error.log';
+    if (file_exists($logpath)) {
+        echo '<div style="overflow-x: auto; background: rgba(0,0,0,.07);"><pre style="padding: 3px 5px 2px; margin: 0 1px;">';
+        echo esc_html(implode('', last_lines($logpath, 999)));
+        echo '</pre></div>';
+    } else {
+        echo '<div class="notice notice-error"><p>Error log file not found.</p></div>';
+    }
+    ?>
+
+    <br class="clear" />
+    <p>
+        <!-- The form action is the same page, so it will reload after submission -->
+        <form action="" method="post" style="display: inline;">
+            <button type="submit" name="clearlog" class="button">Clear Error Log</button>
+        </form>
+
+        <!-- Add HTML for the Download Error Log button -->
+        <form method="post" style="display: inline;">
+            <input type="hidden" name="download_php_error_log" value="1">
+            <input type="submit" class="button" value="Download Error Log">
+        </form>
+    </p>
+    
+    <?php
+
+    break;
 
 
 	default:
