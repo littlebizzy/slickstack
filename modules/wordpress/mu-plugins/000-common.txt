@@ -706,72 +706,70 @@ render_opcache_tuner_content();
         $sftp_user = esc_html(SFTP_USER);
         $sftp_port = esc_html(SFTP_PORT);
 
-        // Combine SFTP details into a single string for the QR code
-        $sftp_details = "Host: $ip_server\nUser: $sftp_user\nPassword: $sftp_pass\nPort: $sftp_port\nRoot Directory: /var/www\nPublic Directory: /var/www/html";
-
-        // URL encode the SFTP details for the QR code
-        $qr_code_data = urlencode($sftp_details);
-        $qr_code_url = "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=$qr_code_data";
-
         echo '<br class="clear" />
         <h2>SFTP Details</h2>
         <p>You can use the below credentials to connect to your SlickStack server using SFTP, an encrypted protocol that is powered by SSH. Be sure that you select port 22 and/or SFTP in your client software, and not FTP, FTPS, or otherwise. Although you should not need SFTP for many things, it can be useful for taking backups or to connect third-party backup services, or to disable a WordPress theme or plugin in case of fatal errors.</p>
         <br class="clear" />
         
-        <table class="form-table">
+        <table class="form-table" role="presentation">
             <tr>
-                <th scope="row">SFTP Host:</th>
+                <th scope="row"><label for="sftp-host">SFTP Host:</label></th>
                 <td>
-                    <input type="text" id="sftp-host" value="' . $ip_server . '" readonly style="width: 200px;">
-                    <button type="button" class="button" onclick="copyToClipboard(\'sftp-host\')">Copy</button>
-                </td>
-                <td rowspan="6" style="text-align: center;">
-                    <p><strong>Scan QR Code for SFTP Details:</strong></p>
-                    <img src="' . esc_url($qr_code_url) . '" alt="SFTP QR Code">
+                    <input type="text" id="sftp-host" value="' . esc_attr($ip_server) . '" readonly style="width: 200px;" aria-label="SFTP Host">
+                    <button type="button" class="button" onclick="copyToClipboard(\'sftp-host\')" aria-label="Copy SFTP Host">Copy</button>
                 </td>
             </tr>
             <tr>
-                <th scope="row">SFTP User:</th>
+                <th scope="row"><label for="sftp-user">SFTP User:</label></th>
                 <td>
-                    <input type="text" id="sftp-user" value="' . $sftp_user . '" readonly style="width: 200px;">
-                    <button type="button" class="button" onclick="copyToClipboard(\'sftp-user\')">Copy</button>
+                    <input type="text" id="sftp-user" value="' . esc_attr($sftp_user) . '" readonly style="width: 200px;" aria-label="SFTP User">
+                    <button type="button" class="button" onclick="copyToClipboard(\'sftp-user\')" aria-label="Copy SFTP User">Copy</button>
                 </td>
             </tr>
             <tr>
-                <th scope="row">SFTP Password:</th>
+                <th scope="row"><label for="sftp-password">SFTP Password:</label></th>
                 <td>
-                    <input type="password" id="sftp-password" value="' . $sftp_pass . '" readonly style="width: 200px;">
-                    <button type="button" class="button" onclick="togglePasswordVisibility()">Show/Hide</button>
-                    <button type="button" class="button" onclick="copyToClipboard(\'sftp-password\')">Copy</button>
+                    <input type="password" id="sftp-password" value="' . esc_attr($sftp_pass) . '" readonly style="width: 200px;" aria-label="SFTP Password">
+                    <button type="button" class="button" onclick="togglePasswordVisibility()" aria-label="Show or Hide Password">Show/Hide</button>
+                    <button type="button" class="button" onclick="copyToClipboard(\'sftp-password\')" aria-label="Copy SFTP Password">Copy</button>
                 </td>
             </tr>
             <tr>
-                <th scope="row">SFTP Port:</th>
+                <th scope="row"><label for="sftp-port">SFTP Port:</label></th>
                 <td>
-                    <input type="text" id="sftp-port" value="' . $sftp_port . '" readonly style="width: 200px;">
-                    <button type="button" class="button" onclick="copyToClipboard(\'sftp-port\')">Copy</button>
+                    <input type="text" id="sftp-port" value="' . esc_attr($sftp_port) . '" readonly style="width: 200px;" aria-label="SFTP Port">
+                    <button type="button" class="button" onclick="copyToClipboard(\'sftp-port\')" aria-label="Copy SFTP Port">Copy</button>
                 </td>
             </tr>
             <tr>
-                <th scope="row">Root Directory:</th>
+                <th scope="row"><label for="root-directory">Root Directory:</label></th>
                 <td>
-                    <input type="text" id="root-directory" value="/var/www" readonly style="width: 200px;">
-                    <button type="button" class="button" onclick="copyToClipboard(\'root-directory\')">Copy</button>
+                    <input type="text" id="root-directory" value="/var/www" readonly style="width: 200px;" aria-label="Root Directory">
+                    <button type="button" class="button" onclick="copyToClipboard(\'root-directory\')" aria-label="Copy Root Directory">Copy</button>
                 </td>
             </tr>
             <tr>
-                <th scope="row">Public Directory:</th>
+                <th scope="row"><label for="public-directory">Public Directory:</label></th>
                 <td>
-                    <input type="text" id="public-directory" value="/var/www/html" readonly style="width: 200px;">
-                    <button type="button" class="button" onclick="copyToClipboard(\'public-directory\')">Copy</button>
+                    <input type="text" id="public-directory" value="/var/www/html" readonly style="width: 200px;" aria-label="Public Directory">
+                    <button type="button" class="button" onclick="copyToClipboard(\'public-directory\')" aria-label="Copy Public Directory">Copy</button>
                 </td>
             </tr>
         </table>
         
         <br class="clear" />
         <p>
-            <a class="button" href="#" rel="noopener noreferrer">Reset SFTP Password</a>
+            <!-- Reset SFTP Password Button -->
+            <a class="button" href="#" rel="noopener noreferrer" style="display: inline;">Reset SFTP Password</a>
+
+            <!-- Test Connection Button -->
             <form method="post" style="display: inline;">
+                ';
+        
+        // Output a nonce for form security
+        wp_nonce_field('test_sftp_connection_action', 'test_sftp_connection_nonce');
+
+        echo '
                 <input type="hidden" name="test_sftp_connection" value="1">
                 <input type="submit" class="button" value="Test SFTP Connection">
             </form>
@@ -782,6 +780,9 @@ render_opcache_tuner_content();
             var passwordField = document.getElementById("sftp-password");
             if (passwordField.type === "password") {
                 passwordField.type = "text";
+                setTimeout(function() {
+                    passwordField.type = "password";
+                }, 10000); // Hide password after 10 seconds for better security
             } else {
                 passwordField.type = "password";
             }
@@ -802,22 +803,28 @@ render_opcache_tuner_content();
 
         // Handle Test Connection button click
         if (isset($_POST['test_sftp_connection'])) {
-            if (current_user_can('manage_options')) {
-                $connection = @ssh2_connect($ip_server, $sftp_port);
+            // Verify nonce for security
+            if (isset($_POST['test_sftp_connection_nonce']) && wp_verify_nonce($_POST['test_sftp_connection_nonce'], 'test_sftp_connection_action')) {
+                if (current_user_can('manage_options')) {
+                    // Handle errors more explicitly rather than suppressing them
+                    $connection = ssh2_connect($ip_server, $sftp_port);
+                    if (!$connection) {
+                        echo '<div class="notice notice-error"><p>Unable to establish connection. Please check your server settings.</p></div>';
+                    } else if (ssh2_auth_password($connection, $sftp_user, SFTP_PASSWORD)) {
+                        echo '<div class="notice notice-success"><p>SFTP connection successful!</p></div>';
+                    } else {
+                        echo '<div class="notice notice-error"><p>Failed to authenticate. Please check your credentials and try again.</p></div>';
+                    }
 
-                if ($connection && @ssh2_auth_password($connection, $sftp_user, SFTP_PASSWORD)) {
-                    echo '<div class="notice notice-success"><p>SFTP connection successful!</p></div>';
+                    // Close the connection if it was established
+                    if ($connection) {
+                        unset($connection); // No explicit ssh2_disconnect() function
+                    }
                 } else {
-                    echo '<div class="notice notice-error"><p>Failed to connect to SFTP server. Please check your credentials and try again.</p></div>';
-                }
-
-                // Close the connection if it was established
-                if ($connection) {
-                    // ssh2_disconnect() does not exist; connection will close automatically at the end of the script execution
-                    unset($connection);
+                    echo '<div class="notice notice-error"><p>You do not have permission to test the SFTP connection.</p></div>';
                 }
             } else {
-                echo '<div class="notice notice-error"><p>You do not have permission to test the SFTP connection.</p></div>';
+                echo '<div class="notice notice-error"><p>Security check failed. Please try again.</p></div>';
             }
         }
 
