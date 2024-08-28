@@ -695,50 +695,137 @@ render_opcache_tuner_content();
 		<br class="clear" />';
         
 	break;
-	
-	
+
+
 	case 'sftp':
-	
-	if(MULTISITE != 'true'){
-	
-		$ip_server = $_SERVER['SERVER_ADDR'];
-		$sftp_pass = SFTP_PASSWORD;
-        $sftp_pass_chars = strlen( $sftp_pass );
 
-		echo '<br class="clear" />
-		<h2>SFTP Details</h2>
-		<p>You can use the below credentials to connect to your SlickStack server using SFTP, an encrypted protocol that is powered by SSH. Be sure that you select port 22 and/or SFTP in your client software, and not FTP, FTPS, or otherwise. Although you should not need SFTP for many things, it can be useful for taking backups or to connect third-party backup services, or to disable a WordPress theme or plugin in case of fatal errors.</p>
-		<br class="clear" />
-		<p><strong>SFTP Host:</strong> <code>' . $ip_server . '</code></p>
-		<p><strong>SFTP User:</strong> <code>' . SFTP_USER . '</code></p>
-		<p><strong>SFTP Password:</strong> <code><span class="password blur">' . $sftp_pass . '</span></code><span style="margin-left:2px" class="toggle-password showme dashicons dashicons-visibility"></span></p>
-		<p><strong>SFTP Port:</strong> <code>' . SFTP_PORT . '</code></p>
-		<p><strong>Root Directory:</strong> <code>/var/www</code></p>
-		<p><strong>Public Directory:</strong> <code>/var/www/html</code></p>
-		<br class="clear" />
-		<p><a class="button" href="#" rel="noopener noreferrer">Reset SFTP Password</a></p>
+    if (MULTISITE !== 'true') {
 
-		<style>
-		.blur {
-			filter: blur(3px);
-		}
-		.unblur {
-			filter: blur(0);
-		}
-		</style>
+        $ip_server = esc_html($_SERVER['SERVER_ADDR']);
+        $sftp_pass = esc_html(SFTP_PASSWORD);
+        $sftp_user = esc_html(SFTP_USER);
+        $sftp_port = esc_html(SFTP_PORT);
 
-		<script>(function($) {
-		$(".toggle-password").click(function() {
-  		$(".showme").toggleClass("dashicons-visibility dashicons-hidden");
- 		$(".password").toggleClass("blur unblur");
-		});
-		})( jQuery );</script>';
-		
-	} // end if
+        // Combine SFTP details into a single string for the QR code
+        $sftp_details = "Host: $ip_server\nUser: $sftp_user\nPassword: $sftp_pass\nPort: $sftp_port\nRoot Directory: /var/www\nPublic Directory: /var/www/html";
+
+        // URL encode the SFTP details for the QR code
+        $qr_code_data = urlencode($sftp_details);
+        $qr_code_url = "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=$qr_code_data";
+
+        echo '<br class="clear" />
+        <h2>SFTP Details</h2>
+        <p>You can use the below credentials to connect to your SlickStack server using SFTP, an encrypted protocol that is powered by SSH. Be sure that you select port 22 and/or SFTP in your client software, and not FTP, FTPS, or otherwise. Although you should not need SFTP for many things, it can be useful for taking backups or to connect third-party backup services, or to disable a WordPress theme or plugin in case of fatal errors.</p>
+        <br class="clear" />
         
-	break;
-	
-	
+        <table class="form-table">
+            <tr>
+                <th scope="row">SFTP Host:</th>
+                <td>
+                    <input type="text" id="sftp-host" value="' . $ip_server . '" readonly style="width: 200px;">
+                    <button type="button" class="button" onclick="copyToClipboard(\'sftp-host\')">Copy</button>
+                </td>
+                <td rowspan="6" style="text-align: center;">
+                    <p><strong>Scan QR Code for SFTP Details:</strong></p>
+                    <img src="' . esc_url($qr_code_url) . '" alt="SFTP QR Code">
+                </td>
+            </tr>
+            <tr>
+                <th scope="row">SFTP User:</th>
+                <td>
+                    <input type="text" id="sftp-user" value="' . $sftp_user . '" readonly style="width: 200px;">
+                    <button type="button" class="button" onclick="copyToClipboard(\'sftp-user\')">Copy</button>
+                </td>
+            </tr>
+            <tr>
+                <th scope="row">SFTP Password:</th>
+                <td>
+                    <input type="password" id="sftp-password" value="' . $sftp_pass . '" readonly style="width: 200px;">
+                    <button type="button" class="button" onclick="togglePasswordVisibility()">Show/Hide</button>
+                    <button type="button" class="button" onclick="copyToClipboard(\'sftp-password\')">Copy</button>
+                </td>
+            </tr>
+            <tr>
+                <th scope="row">SFTP Port:</th>
+                <td>
+                    <input type="text" id="sftp-port" value="' . $sftp_port . '" readonly style="width: 200px;">
+                    <button type="button" class="button" onclick="copyToClipboard(\'sftp-port\')">Copy</button>
+                </td>
+            </tr>
+            <tr>
+                <th scope="row">Root Directory:</th>
+                <td>
+                    <input type="text" id="root-directory" value="/var/www" readonly style="width: 200px;">
+                    <button type="button" class="button" onclick="copyToClipboard(\'root-directory\')">Copy</button>
+                </td>
+            </tr>
+            <tr>
+                <th scope="row">Public Directory:</th>
+                <td>
+                    <input type="text" id="public-directory" value="/var/www/html" readonly style="width: 200px;">
+                    <button type="button" class="button" onclick="copyToClipboard(\'public-directory\')">Copy</button>
+                </td>
+            </tr>
+        </table>
+        
+        <br class="clear" />
+        <p>
+            <a class="button" href="#" rel="noopener noreferrer">Reset SFTP Password</a>
+            <form method="post" style="display: inline;">
+                <input type="hidden" name="test_sftp_connection" value="1">
+                <input type="submit" class="button" value="Test SFTP Connection">
+            </form>
+        </p>
+
+        <script>
+        function togglePasswordVisibility() {
+            var passwordField = document.getElementById("sftp-password");
+            if (passwordField.type === "password") {
+                passwordField.type = "text";
+            } else {
+                passwordField.type = "password";
+            }
+        }
+
+        function copyToClipboard(elementId) {
+            var copyText = document.getElementById(elementId);
+            copyText.select();
+            copyText.setSelectionRange(0, 99999); // For mobile devices
+
+            navigator.clipboard.writeText(copyText.value).then(function() {
+                alert(elementId.replace(/-/g, " ") + " copied to clipboard!");
+            }).catch(function(error) {
+                alert("Failed to copy " + elementId.replace(/-/g, " ") + ": " + error);
+            });
+        }
+        </script>';
+
+        // Handle Test Connection button click
+        if (isset($_POST['test_sftp_connection'])) {
+            if (current_user_can('manage_options')) {
+                $connection = @ssh2_connect($ip_server, $sftp_port);
+
+                if ($connection && @ssh2_auth_password($connection, $sftp_user, SFTP_PASSWORD)) {
+                    echo '<div class="notice notice-success"><p>SFTP connection successful!</p></div>';
+                } else {
+                    echo '<div class="notice notice-error"><p>Failed to connect to SFTP server. Please check your credentials and try again.</p></div>';
+                }
+
+                // Close the connection if it was established
+                if ($connection) {
+                    // ssh2_disconnect() does not exist; connection will close automatically at the end of the script execution
+                    unset($connection);
+                }
+            } else {
+                echo '<div class="notice notice-error"><p>You do not have permission to test the SFTP connection.</p></div>';
+            }
+        }
+
+    } // end if
+
+    break;
+
+
 	case 'database':
 		
     	echo '<br class="clear" />
