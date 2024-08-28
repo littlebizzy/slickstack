@@ -759,10 +759,19 @@ render_opcache_tuner_content();
         
         <br class="clear" />
         <p>
-            <!-- Reset SFTP Password Button -->
-            <a class="button" href="#" rel="noopener noreferrer" style="display: inline;">Reset SFTP Password</a>
+            <!-- Reset SFTP Password Form -->
+            <form method="post" style="display: inline;">
+                ';
+        
+        // Output a nonce for form security
+        wp_nonce_field('reset_sftp_password_action', 'reset_sftp_password_nonce');
 
-            <!-- Test Connection Button -->
+        echo '
+                <input type="hidden" name="reset_sftp_password" value="1">
+                <input type="submit" class="button" value="Reset SFTP Password">
+            </form>
+
+            <!-- Test Connection Form -->
             <form method="post" style="display: inline;">
                 ';
         
@@ -800,6 +809,17 @@ render_opcache_tuner_content();
             });
         }
         </script>';
+
+        // Handle Reset SFTP Password button click
+        if (isset($_POST['reset_sftp_password'])) {
+            // Verify nonce for security
+            if (isset($_POST['reset_sftp_password_nonce']) && wp_verify_nonce($_POST['reset_sftp_password_nonce'], 'reset_sftp_password_action')) {
+                // Dummy action, just display a success message
+                echo '<div class="notice notice-success"><p>SFTP password reset request submitted (dummy action).</p></div>';
+            } else {
+                echo '<div class="notice notice-error"><p>Security check failed. Please try again.</p></div>';
+            }
+        }
 
         // Handle Test Connection button click
         if (isset($_POST['test_sftp_connection'])) {
