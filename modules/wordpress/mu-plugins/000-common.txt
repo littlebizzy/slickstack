@@ -760,7 +760,7 @@ render_opcache_tuner_content();
         <br class="clear" />
         <p>
             <!-- Reset SFTP Password Form -->
-            <form method="post" style="display: inline;">
+            <form method="post" action="" style="display: inline;">
                 ';
         
         // Output a nonce for form security
@@ -772,7 +772,7 @@ render_opcache_tuner_content();
             </form>
 
             <!-- Test Connection Form -->
-            <form method="post" style="display: inline;">
+            <form method="post" action="" style="display: inline;">
                 ';
         
         // Output a nonce for form security
@@ -814,10 +814,37 @@ render_opcache_tuner_content();
         if (isset($_POST['reset_sftp_password'])) {
             // Verify nonce for security
             if (isset($_POST['reset_sftp_password_nonce']) && wp_verify_nonce($_POST['reset_sftp_password_nonce'], 'reset_sftp_password_action')) {
-                // Dummy action, just display a success message
-                echo '<div class="notice notice-success"><p>SFTP password reset request submitted (dummy action).</p></div>';
+                
+                // Define the FIFO file path
+                $fifo_file = '/var/www/meta/command_queue.fifo';
+
+                // Ensure the FIFO file exists and is writable
+                if (file_exists($fifo_file) && is_writable($fifo_file)) {
+                    // Check if the FIFO file is a named pipe
+                    if (posix_mkfifo($fifo_file, 0600) || filetype($fifo_file) == 'fifo') {
+                        // Command to reset the SFTP password
+                        $command = '/bin/bash /var/www/ss-reset-password-sftp';
+
+                        // Open the FIFO file in write mode
+                        if ($fifo = fopen($fifo_file, 'w')) {
+                            // Write the command to the FIFO queue
+                            fwrite($fifo, $command . PHP_EOL);
+                            fclose($fifo);
+
+                            // Display success message
+                            echo '<div class="notice notice-success is-dismissible"><p>SFTP password reset command added to the queue.</p></div>';
+                        } else {
+                            echo '<div class="notice notice-error is-dismissible"><p>Failed to open FIFO file for writing.</p></div>';
+                        }
+                    } else {
+                        echo '<div class="notice notice-error is-dismissible"><p>The specified file is not a FIFO file.</p></div>';
+                    }
+                } else {
+                    echo '<div class="notice notice-error is-dismissible"><p>FIFO file is not writable or does not exist.</p></div>';
+                }
+
             } else {
-                echo '<div class="notice notice-error"><p>Security check failed. Please try again.</p></div>';
+                echo '<div class="notice notice-error is-dismissible"><p>Security check failed. Please try again.</p></div>';
             }
         }
 
@@ -829,11 +856,11 @@ render_opcache_tuner_content();
                     // Handle errors more explicitly rather than suppressing them
                     $connection = ssh2_connect($ip_server, $sftp_port);
                     if (!$connection) {
-                        echo '<div class="notice notice-error"><p>Unable to establish connection. Please check your server settings.</p></div>';
+                        echo '<div class="notice notice-error is-dismissible"><p>Unable to establish connection. Please check your server settings.</p></div>';
                     } else if (ssh2_auth_password($connection, $sftp_user, SFTP_PASSWORD)) {
-                        echo '<div class="notice notice-success"><p>SFTP connection successful!</p></div>';
+                        echo '<div class="notice notice-success is-dismissible"><p>SFTP connection successful!</p></div>';
                     } else {
-                        echo '<div class="notice notice-error"><p>Failed to authenticate. Please check your credentials and try again.</p></div>';
+                        echo '<div class="notice notice-error is-dismissible"><p>Failed to authenticate. Please check your credentials and try again.</p></div>';
                     }
 
                     // Close the connection if it was established
@@ -841,10 +868,10 @@ render_opcache_tuner_content();
                         unset($connection); // No explicit ssh2_disconnect() function
                     }
                 } else {
-                    echo '<div class="notice notice-error"><p>You do not have permission to test the SFTP connection.</p></div>';
+                    echo '<div class="notice notice-error is-dismissible"><p>You do not have permission to test the SFTP connection.</p></div>';
                 }
             } else {
-                echo '<div class="notice notice-error"><p>Security check failed. Please try again.</p></div>';
+                echo '<div class="notice notice-error is-dismissible"><p>Security check failed. Please try again.</p></div>';
             }
         }
 
