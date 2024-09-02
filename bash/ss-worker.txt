@@ -446,7 +446,7 @@ ss_sed 's|WP_CRON_METHOD="wordpress"|WP_CRON_METHOD="wpcli"|g' /var/www/ss-confi
 ## THIS SNIPPET DOES NOT RELY ON SS-CONFIG OR SS-FUNCTIONS ##
 
 ## SNIPPET: ss-worker, ss core cron jobs
-## UPDATED: 10JUN2024
+## UPDATED: 03SEP2024
 
 ## make directories ##
 ss_mkdir /var/www
@@ -478,6 +478,13 @@ ss_mkdir /var/www/meta/timestamps
 ss_mkdir /var/www/sites
 ss_mkdir /var/www/sites/includes
 ss_mkdir /var/www/sites/error_pages
+
+## FIFO ##
+if [[ ! -p "${PATH_FIFO}" ]]; then
+    sudo mkfifo "${PATH_FIFO}"
+    sudo chown "${SFTP_USER}":www-data "${PATH_FIFO}"
+    sudo chmod 600 "${PATH_FIFO}"
+fi
 
 ## if staging enabled
 if [[ "$STAGING_SITE" != "false" ]]; then 
