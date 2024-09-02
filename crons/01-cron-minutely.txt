@@ -29,9 +29,10 @@
 ## E. Run SS-Check + SS-Worker In Case Frozen
 ## F. Touch Timestamp File
 ## G. Run Custom Tasks (EDIT SOURCED FILES)
-## H. Run WP-Cron (Conditional)
-## I. Run Scheduled Tasks (DO NOT EDIT)
-## J. Delete Lock File
+## H. Run FIFO Command Queue
+## I. Run WP-Cron (Conditional)
+## J. Run Scheduled Tasks (DO NOT EDIT)
+## K. Delete Lock File
 
 ####################################################################################################
 #### A. 01-Cron-Minutely: Validate (Repair) SS-Config ##############################################
@@ -208,7 +209,18 @@ ss_touch "${TIMESTAMP_01_CRON_MINUTELY}"
 source "${PATH_01_CRON_MINUTELY_CUSTOM}"
 
 ####################################################################################################
-#### H. 01-Cron-Minutely: Run WP-Cron (Conditional) ################################################
+#### H. 01-Cron-Minutely: Run FIFO Command Queue ###################################################
+####################################################################################################
+
+if [[ -p "${PATH_FIFO}" ]]; then
+  # Read from the FIFO file and execute each command (non-blocking)
+  while read -r command < "${PATH_FIFO}"; do
+    eval "${command}"
+  done
+fi
+
+####################################################################################################
+#### I. 01-Cron-Minutely: Run WP-Cron (Conditional) ################################################
 ####################################################################################################
 
 ## this snippet will call wp-cron via the server if enabled in your ss-config settings ##
@@ -227,7 +239,7 @@ if [[ "${WP_CRON_INTERVAL}" == "minutely" ]]; then
 fi
 
 ####################################################################################################
-#### I. 01-Cron-Minutely: Run Scheduled Tasks (DO NOT EDIT) ########################################
+#### J. 01-Cron-Minutely: Run Scheduled Tasks (DO NOT EDIT) ########################################
 ####################################################################################################
 
 ## the below tasks will be called if configured to run at this interval in ss-config ##
@@ -236,7 +248,7 @@ fi
 ## N/A
 
 ####################################################################################################
-#### J. 01-Cron-Minutely: Delete Lock File #########################################################
+#### K. 01-Cron-Minutely: Delete Lock File #########################################################
 ####################################################################################################
 
 ## here we delete the lock file associated with this cron job to clear the cron queue ##
