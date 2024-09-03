@@ -393,16 +393,22 @@ if [[ "${WP_MU_PLUGINS}" == "custom" ]] && [[ -n "${MU_PLUGIN_01_SOURCE}" ]] && 
     ss_cp /tmp/"${MU_PLUGIN_20_DIR}" /var/www/html/dev/wp-content/mu-plugins/"${MU_PLUGIN_20_DIR}"
     
 else
+
+## cleanup to avoid conflicts ##
+ss_rm /tmp/disable-empty-trash*
+ss_rm /tmp/plugin-blacklist*
+
 ## otherwise download default LittleBizzy MU plugins ##
 ss_wget /tmp/clear-caches.zip "${GITHUB_CLEAR_CACHES_ZIP}"
+ss_wget /tmp/disable-xml-rpc.zip "${GITHUB_DISABLE_EMPTY_TRASH_ZIP}"
 ss_wget /tmp/disable-image-compression.zip "${GITHUB_DISABLE_IMAGE_COMPRESSION_ZIP}"
 ss_wget /tmp/disable-xml-rpc.zip "${GITHUB_DISABLE_XML_RPC_ZIP}"
 ss_wget /tmp/force-https.zip "${GITHUB_FORCE_HTTPS_ZIP}"
+ss_wget /tmp/plugin-blacklist.zip "${GITHUB_PLUGIN_BLACKLIST_ZIP}"
 
-ss_rm /tmp/disable-empty-trash*
-ss_rm /tmp/plugin-blacklist*
-ss_wget /tmp/disable-empty-trash.zip "${GITHUB_DISABLE_EMPTY_TRASH_DOWNLOAD_URL}"
-ss_wget /tmp/plugin-blacklist.zip "${GITHUB_PLUGIN_BLACKLIST_DOWNLOAD_URL}"
+## new approach but unreliable due to GitHub API rate-limits ##
+# ss_wget /tmp/disable-empty-trash.zip "${GITHUB_DISABLE_EMPTY_TRASH_DOWNLOAD_URL}"
+# ss_wget /tmp/plugin-blacklist.zip "${GITHUB_PLUGIN_BLACKLIST_DOWNLOAD_URL}"
 
 ## unzip them all ##
 ss_unzip /tmp/clear-caches.zip -d /tmp
