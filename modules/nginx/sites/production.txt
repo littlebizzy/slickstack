@@ -309,6 +309,14 @@ location ~* \.(asp|aspx|doc|docx|dwf|gpx|hwp|jsp|kml|kmz|log|odp|ods|odt|pdf|ppt
 
 ####################################################################################################
 
+
+## disabled until new zone added to nginx.conf
+# location ~ ^/wp-json/wp/v2/ {
+#    limit_req zone=api_minute burst=10 nodelay;
+#    limit_req_status 429;
+# }
+
+
     ## fixes potential 403 denied issues with WP-JSON ##
     location ~ ^/wp-json/ {
         ## if permalinks not enabled or not loaded properly in the browser ##
@@ -349,11 +357,6 @@ location ~* \.(asp|aspx|doc|docx|dwf|gpx|hwp|jsp|kml|kmz|log|odp|ods|odt|pdf|ppt
     if ($request_uri ~* "index.php|/konto.*|/koszyk.*|/zamowienie.*|/kontakt.*|/dashboard.*|/login.*|/moje-.*|/zamowienie.*|/profil.*|/register.*|/ustawienia.*|/view.*|/wc-api.*|/wp-admin.*|wp-.*.php") {
     	set $skip_cache 1;
     }
-
-    ## do not cache RSS feeds or sitemaps (special 5 minute cache rule or something would be better in the future) ##
-    if ($request_uri ~* "/feed/|sitemap(_index)?.xml") {
-        set $skip_cache 1;
-    }
     
     ## certain cookies (logged in users or recent commenters etc) should always skip the cache
     if ($http_cookie ~* "wordpress_logged_in|wp-postpass|woocommerce_items_in_cart|woocommerce_cart_hash|comment_author") {
@@ -374,6 +377,20 @@ location ~* \.(asp|aspx|doc|docx|dwf|gpx|hwp|jsp|kml|kmz|log|odp|ods|odt|pdf|ppt
     # if ($cookie_woocommerce_items_in_cart != "0") {
     #    set $skip_cache 1;
     # }
+
+
+# Cache XML sitemaps for 5 minutes
+location ~* /sitemap(_index)?.xml$ {
+    fastcgi_cache_valid 200 5m;
+    set $skip_cache 0;  # Enable caching for this location
+}
+
+# Cache RSS feeds for 5 minutes
+location ~* /feed/(.*)$ {
+    fastcgi_cache_valid 200 5m;
+    set $skip_cache 0;  # Enable caching for this location
+}
+
 
 ####################################################################################################
 #### G. Server Block (Production): PHP-FPM Routing #################################################
