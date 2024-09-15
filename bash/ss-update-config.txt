@@ -44,7 +44,7 @@
 ## this build version ensures compatibility with ss-config boilerplate (from mirrors) ##
 ## it must match the latest ss-config boilerplate otherwise updating will fail ##
 
-SS_UPDATE_CONFIG_BUILD="SEP2024R"
+SS_UPDATE_CONFIG_BUILD="SEP2024S"
 
 ####################################################################################################
 #### B. SS-Update-Config: Source SS-Config + SS-Functions ##########################################
@@ -183,9 +183,31 @@ ss_sed "s|\(^SSH_IPV4=\).*|SSH_IPV4=\"$SSH_IPV4\"|g" "${TMP_SS_CONFIG_UPDATE}"
 ss_sed "s|\(^SFTP_USER=\).*|SFTP_USER=\"$SFTP_USER\"|g" "${TMP_SS_CONFIG_UPDATE}"
 ss_sed "s|\(^SFTP_PASSWORD=\).*|SFTP_PASSWORD=\"$SFTP_PASSWORD\"|g" "${TMP_SS_CONFIG_UPDATE}"
 
+## pilot file settings ##
+if [[ -n "${SS_PILOT_FILE}" ]]; then
+    ss_sed "s|\(^SS_PILOT_FILE=\).*|SS_PILOT_FILE=\"$SS_PILOT_FILE\"|g" "${TMP_SS_CONFIG_UPDATE}"
+fi
+
+
+
 ## domain settings ##
 ss_sed "s|\(^SITE_ROOT_DOMAIN=\).*|SITE_ROOT_DOMAIN=\"$SITE_ROOT_DOMAIN\"|g" "${TMP_SS_CONFIG_UPDATE}"
 ss_sed "s|\(^SITE_FULL_DOMAIN=\).*|SITE_FULL_DOMAIN=\"$SITE_FULL_DOMAIN\"|g" "${TMP_SS_CONFIG_UPDATE}"
+
+
+## cloudflare stuff ##
+if [[ -n "${CLOUDFLARE_REAL_IPS}" ]]; then
+ss_sed "s|\(^CLOUDFLARE_REAL_IPS=\).*|CLOUDFLARE_REAL_IPS=\"$CLOUDFLARE_REAL_IPS\"|g" "${TMP_SS_CONFIG_UPDATE}"
+fi
+
+if [[ -n "${CLOUDFLARE_AUTHENTICATED_ORIGIN}" ]]; then
+ss_sed "s|\(^CLOUDFLARE_AUTHENTICATED_ORIGIN=\).*|CLOUDFLARE_AUTHENTICATED_ORIGIN=\"$CLOUDFLARE_AUTHENTICATED_ORIGIN\"|g" "${TMP_SS_CONFIG_UPDATE}"
+fi
+
+if [[ -n "${CLOUDFLARE_IPS_ONLY}" ]]; then
+ss_sed "s|\(^CLOUDFLARE_IPS_ONLY=\).*|CLOUDFLARE_IPS_ONLY=\"$CLOUDFLARE_IPS_ONLY\"|g" "${TMP_SS_CONFIG_UPDATE}"
+fi
+
 
 ## database settings ##
 
@@ -210,15 +232,7 @@ fi
 
 ss_sed "s|\(^ADMINER_URL=\).*|ADMINER_URL=\"$ADMINER_URL\"|g" "${TMP_SS_CONFIG_UPDATE}"
 
-## staging/dev settings ##
-if [[ -n "${DEV_SITE}" ]]; then 
-ss_sed "s|\(^DEV_SITE=\).*|DEV_SITE=\"$DEV_SITE\"|g" "${TMP_SS_CONFIG_UPDATE}"
-fi
-
-if [[ -n "${DEV_SITE_PROTECT}" ]]; then 
-ss_sed "s|\(^DEV_SITE_PROTECT=\).*|DEV_SITE_PROTECT=\"$DEV_SITE_PROTECT\"|g" "${TMP_SS_CONFIG_UPDATE}"
-fi
-
+## staging site settings ##
 if [[ -n "${STAGING_SITE}" ]]; then 
 ss_sed "s|\(^STAGING_SITE=\).*|STAGING_SITE=\"$STAGING_SITE\"|g" "${TMP_SS_CONFIG_UPDATE}"
 fi
@@ -227,6 +241,16 @@ if [[ -n "${STAGING_SITE_PROTECT}" ]]; then
 ss_sed "s|\(^STAGING_SITE_PROTECT=\).*|STAGING_SITE_PROTECT=\"$STAGING_SITE_PROTECT\"|g" "${TMP_SS_CONFIG_UPDATE}"
 fi
 
+## dev site settings ##
+if [[ -n "${DEV_SITE}" ]]; then 
+ss_sed "s|\(^DEV_SITE=\).*|DEV_SITE=\"$DEV_SITE\"|g" "${TMP_SS_CONFIG_UPDATE}"
+fi
+
+if [[ -n "${DEV_SITE_PROTECT}" ]]; then 
+ss_sed "s|\(^DEV_SITE_PROTECT=\).*|DEV_SITE_PROTECT=\"$DEV_SITE_PROTECT\"|g" "${TMP_SS_CONFIG_UPDATE}"
+fi
+
+## guest user ##
 if [[ -n "${GUEST_USER}" ]]; then 
 ss_sed "s|\(^GUEST_USER=\).*|GUEST_USER=\"$GUEST_USER\"|g" "${TMP_SS_CONFIG_UPDATE}"
 fi
@@ -234,141 +258,6 @@ fi
 if [[ -n "${GUEST_PASSWORD}" ]]; then 
 ss_sed "s|\(^GUEST_PASSWORD=\).*|GUEST_PASSWORD=\"$GUEST_PASSWORD\"|g" "${TMP_SS_CONFIG_UPDATE}"
 fi
-
-## remote backup settings ##
-if [[ -n "${RCLONE_TYPE}" ]]; then 
-ss_sed "s|\(^RCLONE_TYPE=\).*|RCLONE_TYPE=\"$RCLONE_TYPE\"|g" "${TMP_SS_CONFIG_UPDATE}"
-fi
-
-if [[ -n "${RCLONE_MODE}" ]]; then 
-ss_sed "s|\(^RCLONE_MODE=\).*|RCLONE_MODE=\"$RCLONE_MODE\"|g" "${TMP_SS_CONFIG_UPDATE}"
-fi
-
-if [[ -n "${RCLONE_REMOTE_PATH}" ]]; then 
-ss_sed "s|\(^RCLONE_REMOTE_PATH=\).*|RCLONE_REMOTE_PATH=\"$RCLONE_REMOTE_PATH\"|g" "${TMP_SS_CONFIG_UPDATE}"
-fi
-
-if [[ -n "${RCLONE_CLIENT_ID}" ]]; then 
-ss_sed "s|\(^RCLONE_CLIENT_ID=\).*|RCLONE_CLIENT_ID=\"$RCLONE_CLIENT_ID\"|g" "${TMP_SS_CONFIG_UPDATE}"
-fi
-
-if [[ -n "${RCLONE_CLIENT_SECRET}" ]]; then 
-ss_sed "s|\(^RCLONE_CLIENT_SECRET=\).*|RCLONE_CLIENT_SECRET=\"$RCLONE_CLIENT_SECRET\"|g" "${TMP_SS_CONFIG_UPDATE}"
-fi
-
-if [[ -n "${RCLONE_USER}" ]]; then 
-ss_sed "s|\(^RCLONE_USER=\).*|RCLONE_USER=\"$RCLONE_USER\"|g" "${TMP_SS_CONFIG_UPDATE}"
-fi
-
-if [[ -n "${RCLONE_PASSWORD}" ]]; then 
-ss_sed "s|\(^RCLONE_PASSWORD=\).*|RCLONE_PASSWORD=\"$RCLONE_PASSWORD\"|g" "${TMP_SS_CONFIG_UPDATE}"
-fi
-
-if [[ -n "${RCLONE_TOKEN}" ]]; then 
-ss_sed "s|\(^RCLONE_TOKEN=\).*|RCLONE_TOKEN=\"$RCLONE_TOKEN\"|g" "${TMP_SS_CONFIG_UPDATE}"
-fi
-
-if [[ -n "${RCLONE_BACKUP_PATH}" ]]; then 
-ss_sed "s|\(^RCLONE_BACKUP_PATH=\).*|RCLONE_BACKUP_PATH=\"$RCLONE_BACKUP_PATH\"|g" "${TMP_SS_CONFIG_UPDATE}"
-fi
-
-if [[ -n "${RCLONE_PARALLEL_TRANSFERS}" ]]; then 
-ss_sed "s|\(^RCLONE_PARALLEL_TRANSFERS=\).*|RCLONE_PARALLEL_TRANSFERS=\"$RCLONE_PARALLEL_TRANSFERS\"|g" "${TMP_SS_CONFIG_UPDATE}"
-fi
-
-## rsync stuff ##
-if [[ -n "${RSYNC_REMOTE_HOST}" ]]; then 
-    ss_sed "s|\(^RSYNC_REMOTE_HOST=\).*|RSYNC_REMOTE_HOST=\"$RSYNC_REMOTE_HOST\"|g" "${TMP_SS_CONFIG_UPDATE}"
-fi
-
-if [[ -n "${RSYNC_BACKUP_PATH}" ]]; then 
-    ss_sed "s|\(^RSYNC_BACKUP_PATH=\).*|RSYNC_BACKUP_PATH=\"$RSYNC_BACKUP_PATH\"|g" "${TMP_SS_CONFIG_UPDATE}"
-fi
-
-if [[ -n "${RSYNC_USER}" ]]; then 
-    ss_sed "s|\(^RSYNC_USER=\).*|RSYNC_USER=\"$RSYNC_USER\"|g" "${TMP_SS_CONFIG_UPDATE}"
-fi
-
-if [[ -n "${RSYNC_PASSWORD}" ]]; then 
-    ss_sed "s|\(^RSYNC_PASSWORD=\).*|RSYNC_PASSWORD=\"$RSYNC_PASSWORD\"|g" "${TMP_SS_CONFIG_UPDATE}"
-fi
-
-## whitelabel settings ##
-if [[ -n "${WHITELABEL_BRAND}" ]]; then
-ss_sed "s|\(^WHITELABEL_BRAND=\).*|WHITELABEL_BRAND=\"$WHITELABEL_BRAND\"|g" "${TMP_SS_CONFIG_UPDATE}"
-fi
-
-if [[ -n "${WHITELABEL_HOMEPAGE}" ]]; then
-ss_sed "s|\(^WHITELABEL_HOMEPAGE=\).*|WHITELABEL_HOMEPAGE=\"$WHITELABEL_HOMEPAGE\"|g" "${TMP_SS_CONFIG_UPDATE}"
-fi
-
-if [[ -n "${WHITELABEL_SUPPORT_URL}" ]]; then
-ss_sed "s|\(^WHITELABEL_SUPPORT_URL=\).*|WHITELABEL_SUPPORT_URL=\"$WHITELABEL_SUPPORT_URL\"|g" "${TMP_SS_CONFIG_UPDATE}"
-fi
-
-if [[ -n "${WHITELABEL_SUPPORT_EMAIL}" ]]; then
-ss_sed "s|\(^WHITELABEL_SUPPORT_EMAIL=\).*|WHITELABEL_SUPPORT_EMAIL=\"$WHITELABEL_SUPPORT_EMAIL\"|g" "${TMP_SS_CONFIG_UPDATE}"
-fi
-
-if [[ -n "${WHITELABEL_BILLING_METHOD}" ]]; then
-ss_sed "s|\(^WHITELABEL_BILLING_METHOD=\).*|WHITELABEL_BILLING_METHOD=\"$WHITELABEL_BILLING_METHOD\"|g" "${TMP_SS_CONFIG_UPDATE}"
-fi
-
-
-## pilot file settings ##
-
-if [[ -n "${SS_PILOT_FILE}" ]]; then
-    ss_sed "s|\(^SS_PILOT_FILE=\).*|SS_PILOT_FILE=\"$SS_PILOT_FILE\"|g" "${TMP_SS_CONFIG_UPDATE}"
-fi
-
-
-## bash script settings ##
-
-if [[ -n "${SS_CLEAN_FILES_ROOT_PUBLIC}" ]]; then
-ss_sed "s|\(^SS_CLEAN_FILES_ROOT_PUBLIC=\).*|SS_CLEAN_FILES_ROOT_PUBLIC=\"$SS_CLEAN_FILES_ROOT_PUBLIC\"|g" "${TMP_SS_CONFIG_UPDATE}"
-fi
-
-if [[ -n "${SS_CLEAN_FILES_ROOT_PRIVATE}" ]]; then
-ss_sed "s|\(^SS_CLEAN_FILES_ROOT_PRIVATE=\).*|SS_CLEAN_FILES_ROOT_PRIVATE=\"$SS_CLEAN_FILES_ROOT_PRIVATE\"|g" "${TMP_SS_CONFIG_UPDATE}"
-fi
-
-
-## ssl settings ##
-if [[ -n "${SSL_TYPE}" ]]; then 
-ss_sed "s|\(^SSL_TYPE=\).*|SSL_TYPE=\"$SSL_TYPE\"|g" "${TMP_SS_CONFIG_UPDATE}"
-fi
-
-if [[ -n "${SSL_PROTOCOLS}" ]]; then 
-ss_sed "s|\(^SSL_PROTOCOLS=\).*|SSL_PROTOCOLS=\"$SSL_PROTOCOLS\"|g" "${TMP_SS_CONFIG_UPDATE}"
-fi
-
-if [[ -n "${SSL_CIPHERS}" ]]; then 
-ss_sed "s|\(^SSL_CIPHERS=\).*|SSL_CIPHERS=\"$SSL_CIPHERS\"|g" "${TMP_SS_CONFIG_UPDATE}"
-fi
-
-if [[ -n "${SSL_SESSION_TIMEOUT}" ]]; then
-ss_sed "s|\(^SSL_SESSION_TIMEOUT=\).*|SSL_SESSION_TIMEOUT=\"$SSL_SESSION_TIMEOUT\"|g" "${TMP_SS_CONFIG_UPDATE}"
-fi
-
-if [[ -n "${SSL_SESSION_CACHE}" ]]; then
-ss_sed "s|\(^SSL_SESSION_CACHE=\).*|SSL_SESSION_CACHE=\"$SSL_SESSION_CACHE\"|g" "${TMP_SS_CONFIG_UPDATE}"
-fi
-
-if [[ -n "${SSL_BUFFER_SIZE}" ]]; then
-ss_sed "s|\(^SSL_BUFFER_SIZE=\).*|SSL_BUFFER_SIZE=\"$SSL_BUFFER_SIZE\"|g" "${TMP_SS_CONFIG_UPDATE}"
-fi
-
-## openssl stuff ##
-ss_sed "s|\(^OPENSSL_CERT_INCLUDE_DOMAINS=\).*|OPENSSL_CERT_INCLUDE_DOMAINS=\"$OPENSSL_CERT_INCLUDE_DOMAINS\"|g" "${TMP_SS_CONFIG_UPDATE}"
-ss_sed "s|\(^OPENSSL_CERT_INCLUDE_IPS=\).*|OPENSSL_CERT_INCLUDE_IPS=\"$OPENSSL_CERT_INCLUDE_IPS\"|g" "${TMP_SS_CONFIG_UPDATE}"
-ss_sed "s|\(^OPENSSL_CERT_INCLUDE_LOCALHOST=\).*|OPENSSL_CERT_INCLUDE_LOCALHOST=\"$OPENSSL_CERT_INCLUDE_LOCALHOST\"|g" "${TMP_SS_CONFIG_UPDATE}"
-
-## csr stuff ##
-ss_sed "s|\(^CSR_COUNTRY=\).*|CSR_COUNTRY=\"$CSR_COUNTRY\"|g" "${TMP_SS_CONFIG_UPDATE}"
-ss_sed "s|\(^CSR_STATE=\).*|CSR_STATE=\"$CSR_STATE\"|g" "${TMP_SS_CONFIG_UPDATE}"
-ss_sed "s|\(^CSR_CITY=\).*|CSR_CITY=\"$CSR_CITY\"|g" "${TMP_SS_CONFIG_UPDATE}"
-ss_sed "s|\(^CSR_COMPANY=\).*|CSR_COMPANY=\"$CSR_COMPANY\"|g" "${TMP_SS_CONFIG_UPDATE}"
-ss_sed "s|\(^CSR_DEPT=\).*|CSR_DEPT=\"$CSR_DEPT\"|g" "${TMP_SS_CONFIG_UPDATE}"
 
 
 ## wordpress settings ##
@@ -437,6 +326,144 @@ ss_sed "s|\(^WP_PLUGIN_BLACKLIST_SOURCE=\).*|WP_PLUGIN_BLACKLIST_SOURCE=\"$WP_PL
 fi
 
 
+
+## whitelabel settings ##
+if [[ -n "${WHITELABEL_BRAND}" ]]; then
+ss_sed "s|\(^WHITELABEL_BRAND=\).*|WHITELABEL_BRAND=\"$WHITELABEL_BRAND\"|g" "${TMP_SS_CONFIG_UPDATE}"
+fi
+
+if [[ -n "${WHITELABEL_HOMEPAGE}" ]]; then
+ss_sed "s|\(^WHITELABEL_HOMEPAGE=\).*|WHITELABEL_HOMEPAGE=\"$WHITELABEL_HOMEPAGE\"|g" "${TMP_SS_CONFIG_UPDATE}"
+fi
+
+if [[ -n "${WHITELABEL_SUPPORT_URL}" ]]; then
+ss_sed "s|\(^WHITELABEL_SUPPORT_URL=\).*|WHITELABEL_SUPPORT_URL=\"$WHITELABEL_SUPPORT_URL\"|g" "${TMP_SS_CONFIG_UPDATE}"
+fi
+
+if [[ -n "${WHITELABEL_SUPPORT_EMAIL}" ]]; then
+ss_sed "s|\(^WHITELABEL_SUPPORT_EMAIL=\).*|WHITELABEL_SUPPORT_EMAIL=\"$WHITELABEL_SUPPORT_EMAIL\"|g" "${TMP_SS_CONFIG_UPDATE}"
+fi
+
+if [[ -n "${WHITELABEL_BILLING_METHOD}" ]]; then
+ss_sed "s|\(^WHITELABEL_BILLING_METHOD=\).*|WHITELABEL_BILLING_METHOD=\"$WHITELABEL_BILLING_METHOD\"|g" "${TMP_SS_CONFIG_UPDATE}"
+fi
+
+
+
+
+## remote backup settings ##
+if [[ -n "${RCLONE_TYPE}" ]]; then 
+ss_sed "s|\(^RCLONE_TYPE=\).*|RCLONE_TYPE=\"$RCLONE_TYPE\"|g" "${TMP_SS_CONFIG_UPDATE}"
+fi
+
+if [[ -n "${RCLONE_MODE}" ]]; then 
+ss_sed "s|\(^RCLONE_MODE=\).*|RCLONE_MODE=\"$RCLONE_MODE\"|g" "${TMP_SS_CONFIG_UPDATE}"
+fi
+
+if [[ -n "${RCLONE_REMOTE_PATH}" ]]; then 
+ss_sed "s|\(^RCLONE_REMOTE_PATH=\).*|RCLONE_REMOTE_PATH=\"$RCLONE_REMOTE_PATH\"|g" "${TMP_SS_CONFIG_UPDATE}"
+fi
+
+if [[ -n "${RCLONE_CLIENT_ID}" ]]; then 
+ss_sed "s|\(^RCLONE_CLIENT_ID=\).*|RCLONE_CLIENT_ID=\"$RCLONE_CLIENT_ID\"|g" "${TMP_SS_CONFIG_UPDATE}"
+fi
+
+if [[ -n "${RCLONE_CLIENT_SECRET}" ]]; then 
+ss_sed "s|\(^RCLONE_CLIENT_SECRET=\).*|RCLONE_CLIENT_SECRET=\"$RCLONE_CLIENT_SECRET\"|g" "${TMP_SS_CONFIG_UPDATE}"
+fi
+
+if [[ -n "${RCLONE_USER}" ]]; then 
+ss_sed "s|\(^RCLONE_USER=\).*|RCLONE_USER=\"$RCLONE_USER\"|g" "${TMP_SS_CONFIG_UPDATE}"
+fi
+
+if [[ -n "${RCLONE_PASSWORD}" ]]; then 
+ss_sed "s|\(^RCLONE_PASSWORD=\).*|RCLONE_PASSWORD=\"$RCLONE_PASSWORD\"|g" "${TMP_SS_CONFIG_UPDATE}"
+fi
+
+if [[ -n "${RCLONE_TOKEN}" ]]; then 
+ss_sed "s|\(^RCLONE_TOKEN=\).*|RCLONE_TOKEN=\"$RCLONE_TOKEN\"|g" "${TMP_SS_CONFIG_UPDATE}"
+fi
+
+if [[ -n "${RCLONE_BACKUP_PATH}" ]]; then 
+ss_sed "s|\(^RCLONE_BACKUP_PATH=\).*|RCLONE_BACKUP_PATH=\"$RCLONE_BACKUP_PATH\"|g" "${TMP_SS_CONFIG_UPDATE}"
+fi
+
+if [[ -n "${RCLONE_PARALLEL_TRANSFERS}" ]]; then 
+ss_sed "s|\(^RCLONE_PARALLEL_TRANSFERS=\).*|RCLONE_PARALLEL_TRANSFERS=\"$RCLONE_PARALLEL_TRANSFERS\"|g" "${TMP_SS_CONFIG_UPDATE}"
+fi
+
+## rsync stuff ##
+if [[ -n "${RSYNC_REMOTE_HOST}" ]]; then 
+    ss_sed "s|\(^RSYNC_REMOTE_HOST=\).*|RSYNC_REMOTE_HOST=\"$RSYNC_REMOTE_HOST\"|g" "${TMP_SS_CONFIG_UPDATE}"
+fi
+
+if [[ -n "${RSYNC_BACKUP_PATH}" ]]; then 
+    ss_sed "s|\(^RSYNC_BACKUP_PATH=\).*|RSYNC_BACKUP_PATH=\"$RSYNC_BACKUP_PATH\"|g" "${TMP_SS_CONFIG_UPDATE}"
+fi
+
+if [[ -n "${RSYNC_USER}" ]]; then 
+    ss_sed "s|\(^RSYNC_USER=\).*|RSYNC_USER=\"$RSYNC_USER\"|g" "${TMP_SS_CONFIG_UPDATE}"
+fi
+
+if [[ -n "${RSYNC_PASSWORD}" ]]; then 
+    ss_sed "s|\(^RSYNC_PASSWORD=\).*|RSYNC_PASSWORD=\"$RSYNC_PASSWORD\"|g" "${TMP_SS_CONFIG_UPDATE}"
+fi
+
+
+
+
+
+
+## bash script settings ##
+
+if [[ -n "${SS_CLEAN_FILES_ROOT_PUBLIC}" ]]; then
+ss_sed "s|\(^SS_CLEAN_FILES_ROOT_PUBLIC=\).*|SS_CLEAN_FILES_ROOT_PUBLIC=\"$SS_CLEAN_FILES_ROOT_PUBLIC\"|g" "${TMP_SS_CONFIG_UPDATE}"
+fi
+
+if [[ -n "${SS_CLEAN_FILES_ROOT_PRIVATE}" ]]; then
+ss_sed "s|\(^SS_CLEAN_FILES_ROOT_PRIVATE=\).*|SS_CLEAN_FILES_ROOT_PRIVATE=\"$SS_CLEAN_FILES_ROOT_PRIVATE\"|g" "${TMP_SS_CONFIG_UPDATE}"
+fi
+
+
+## ssl settings ##
+if [[ -n "${SSL_TYPE}" ]]; then 
+ss_sed "s|\(^SSL_TYPE=\).*|SSL_TYPE=\"$SSL_TYPE\"|g" "${TMP_SS_CONFIG_UPDATE}"
+fi
+
+if [[ -n "${SSL_PROTOCOLS}" ]]; then 
+ss_sed "s|\(^SSL_PROTOCOLS=\).*|SSL_PROTOCOLS=\"$SSL_PROTOCOLS\"|g" "${TMP_SS_CONFIG_UPDATE}"
+fi
+
+if [[ -n "${SSL_CIPHERS}" ]]; then 
+ss_sed "s|\(^SSL_CIPHERS=\).*|SSL_CIPHERS=\"$SSL_CIPHERS\"|g" "${TMP_SS_CONFIG_UPDATE}"
+fi
+
+if [[ -n "${SSL_SESSION_TIMEOUT}" ]]; then
+ss_sed "s|\(^SSL_SESSION_TIMEOUT=\).*|SSL_SESSION_TIMEOUT=\"$SSL_SESSION_TIMEOUT\"|g" "${TMP_SS_CONFIG_UPDATE}"
+fi
+
+if [[ -n "${SSL_SESSION_CACHE}" ]]; then
+ss_sed "s|\(^SSL_SESSION_CACHE=\).*|SSL_SESSION_CACHE=\"$SSL_SESSION_CACHE\"|g" "${TMP_SS_CONFIG_UPDATE}"
+fi
+
+if [[ -n "${SSL_BUFFER_SIZE}" ]]; then
+ss_sed "s|\(^SSL_BUFFER_SIZE=\).*|SSL_BUFFER_SIZE=\"$SSL_BUFFER_SIZE\"|g" "${TMP_SS_CONFIG_UPDATE}"
+fi
+
+## openssl stuff ##
+ss_sed "s|\(^OPENSSL_CERT_INCLUDE_DOMAINS=\).*|OPENSSL_CERT_INCLUDE_DOMAINS=\"$OPENSSL_CERT_INCLUDE_DOMAINS\"|g" "${TMP_SS_CONFIG_UPDATE}"
+ss_sed "s|\(^OPENSSL_CERT_INCLUDE_IPS=\).*|OPENSSL_CERT_INCLUDE_IPS=\"$OPENSSL_CERT_INCLUDE_IPS\"|g" "${TMP_SS_CONFIG_UPDATE}"
+ss_sed "s|\(^OPENSSL_CERT_INCLUDE_LOCALHOST=\).*|OPENSSL_CERT_INCLUDE_LOCALHOST=\"$OPENSSL_CERT_INCLUDE_LOCALHOST\"|g" "${TMP_SS_CONFIG_UPDATE}"
+
+## csr stuff ##
+ss_sed "s|\(^CSR_COUNTRY=\).*|CSR_COUNTRY=\"$CSR_COUNTRY\"|g" "${TMP_SS_CONFIG_UPDATE}"
+ss_sed "s|\(^CSR_STATE=\).*|CSR_STATE=\"$CSR_STATE\"|g" "${TMP_SS_CONFIG_UPDATE}"
+ss_sed "s|\(^CSR_CITY=\).*|CSR_CITY=\"$CSR_CITY\"|g" "${TMP_SS_CONFIG_UPDATE}"
+ss_sed "s|\(^CSR_COMPANY=\).*|CSR_COMPANY=\"$CSR_COMPANY\"|g" "${TMP_SS_CONFIG_UPDATE}"
+ss_sed "s|\(^CSR_DEPT=\).*|CSR_DEPT=\"$CSR_DEPT\"|g" "${TMP_SS_CONFIG_UPDATE}"
+
+
+
 ## nginx settings ##
 if [[ -n "${NGINX_WORKER_RLIMIT_NOFILE}" ]]; then
 ss_sed "s|\(^NGINX_WORKER_RLIMIT_NOFILE=\).*|NGINX_WORKER_RLIMIT_NOFILE=\"$NGINX_WORKER_RLIMIT_NOFILE\"|g" "${TMP_SS_CONFIG_UPDATE}"
@@ -498,18 +525,14 @@ if [[ -n "${NGINX_SEND_TIMEOUT}" ]]; then
 ss_sed "s|\(^NGINX_SEND_TIMEOUT=\).*|NGINX_SEND_TIMEOUT=\"$NGINX_SEND_TIMEOUT\"|g" "${TMP_SS_CONFIG_UPDATE}"
 fi
 
-## cloudflare stuff ##
-if [[ -n "${CLOUDFLARE_REAL_IPS}" ]]; then
-ss_sed "s|\(^CLOUDFLARE_REAL_IPS=\).*|CLOUDFLARE_REAL_IPS=\"$CLOUDFLARE_REAL_IPS\"|g" "${TMP_SS_CONFIG_UPDATE}"
+if [[ -n "${NGINX_VARIABLES_HASH_MAX_SIZE}" ]]; then
+ss_sed "s|\(^NGINX_VARIABLES_HASH_MAX_SIZE=\).*|NGINX_VARIABLES_HASH_MAX_SIZE=\"$NGINX_VARIABLES_HASH_MAX_SIZE\"|g" "${TMP_SS_CONFIG_UPDATE}"
 fi
 
-if [[ -n "${CLOUDFLARE_AUTHENTICATED_ORIGIN}" ]]; then
-ss_sed "s|\(^CLOUDFLARE_AUTHENTICATED_ORIGIN=\).*|CLOUDFLARE_AUTHENTICATED_ORIGIN=\"$CLOUDFLARE_AUTHENTICATED_ORIGIN\"|g" "${TMP_SS_CONFIG_UPDATE}"
+if [[ -n "${NGINX_VARIABLES_HASH_BUCKET_SIZE}" ]]; then
+ss_sed "s|\(^NGINX_VARIABLES_HASH_BUCKET_SIZE=\).*|NGINX_VARIABLES_HASH_BUCKET_SIZE=\"$NGINX_VARIABLES_HASH_BUCKET_SIZE\"|g" "${TMP_SS_CONFIG_UPDATE}"
 fi
 
-if [[ -n "${CLOUDFLARE_IPS_ONLY}" ]]; then
-ss_sed "s|\(^CLOUDFLARE_IPS_ONLY=\).*|CLOUDFLARE_IPS_ONLY=\"$CLOUDFLARE_IPS_ONLY\"|g" "${TMP_SS_CONFIG_UPDATE}"
-fi
 
 ## open file cache settings ##
 if [[ -n "${OPEN_FILE_CACHE_MAX}" ]]; then
@@ -531,6 +554,8 @@ fi
 if [[ -n "${OPEN_FILE_CACHE_ERRORS}" ]]; then
 ss_sed "s|\(^OPEN_FILE_CACHE_ERRORS=\).*|OPEN_FILE_CACHE_ERRORS=\"$OPEN_FILE_CACHE_ERRORS\"|g" "${TMP_SS_CONFIG_UPDATE}"
 fi
+
+
 
 ### limit requests ###
 if [[ -n "${LIMIT_REQUESTS_SERVER_SECOND_BURST}" ]]; then
@@ -665,6 +690,9 @@ fi
 if [[ -n "${LIMIT_CONNECTIONS_SERVER}" ]]; then
 ss_sed "s|\(^LIMIT_CONNECTIONS_SERVER=\).*|LIMIT_CONNECTIONS_SERVER=\"$LIMIT_CONNECTIONS_SERVER\"|g" "${TMP_SS_CONFIG_UPDATE}"
 fi
+
+
+
 
 ## fastcgi cache settings ##
 if [[ -n "${FCGI_CACHE}" ]]; then
