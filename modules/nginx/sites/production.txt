@@ -174,35 +174,32 @@ server {
 #### H. Server Block (Production): Redirect Junk URLs ##############################################
 ####################################################################################################
 
-## redirect /home/ using absolute URL less conflicts with complex TLDs ##
-rewrite ^/home/?$ https://@SITE_FULL_DOMAIN permanent;
+    #### redirect home to absolute URL to avoid conflicts with complex TLDs ####
+    rewrite ^/home/?$ https://@SITE_FULL_DOMAIN permanent;
+    rewrite ^/homepage/?$ https://@SITE_FULL_DOMAIN permanent;
 
-## redirect /homepage/ using absolute URL less conflicts with complex TLDs  ##
-rewrite ^/homepage/?$ https://@SITE_FULL_DOMAIN permanent;
+    #### redirect trackback URLs ####
+    rewrite ^(.*)/trackback/?$ $1 permanent;
 
-## trackback ##
-rewrite ^(.*)/trackback/?$ $1 permanent;
+    #### redirect atom feeds to parent URL ####
+    rewrite ^/(.*)/atom/?$ /$1 permanent;
 
-## send to parent /feed/ ##
-rewrite ^/(.*)/atom/?$ /$1 permanent;
+    #### redirect rss2 feeds to parent URL ####
+    rewrite ^/(.*)/rss2/?$ /$1 permanent;
 
-## send to parent /feed/ ##
-rewrite ^/(.*)/rss2/?$ /$1 permanent;
+    #### redirect comment feeds to parent URL ####
+    rewrite ^(.*/)comments/?$ $1 permanent;
 
-## comments feeds base ##
-rewrite ^(.*/)comments/?$ $1 permanent;
-
-## feed (preserve master feed) ##
-location = /feed/?$ {
+    #### preserve the master WordPress RSS feed and set noindex headers ####
+    location ~ ^/feed/?$ {
         try_files $uri $uri/ /index.php?$args;
         set $robots "noindex, nofollow, nosnippet, noarchive";
-}
+    }
 
-## redirect feeds besides bbpress topics feed ##
-## needs better optimization as currently this preserves page feeds with slugs that begin with /topics... ##
-location ~ ^/(?!topics).*/feed/?$ {
+    #### redirect all feeds except for the master WordPress and bbPress topic feeds ####
+    location ~ ^/(?!topics/feed/?$|feed/?$).*/feed/?$ {
         rewrite ^/(.*)/feed/?$ /$1 permanent;
-}
+    }
 
 ####################################################################################################
 #### Server Block (Production): Root Location Block ################################################
