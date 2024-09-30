@@ -26,23 +26,23 @@
 ## D. Error Pages
 ## E. Well-Known (Domain Verification)
 ## F. Redirect Any AMP Requests
+## G. Cleanup Junk Query Strings
+## H. Redirect Junk URLs
 
-## E. Redirect Junk URLs
-## E. Noindex Thin Content (Regex)
-## E. Noindex Certain File Types
-## F. FastCGI Cache Settings
-## G. PHP-FPM Routing
-## H. WP-Login (Rate Limiting)
-## I. Adminer Settings
-## J. Redirect Staging/Dev Subdirectories
-## K. Static Resource Expiration
-## L. Browser Rendering Settings
-## M. Favicon Settings
-## N. Robots.txt Settings
-## O. Ads.txt Settings
-## P. Git Configuration
-## Q. Deny Access To Unsafe WordPress Files
-## R. Deny Access To Unsafe SlickStack Files
+## H. Noindex Thin Content (Regex)
+## I. Noindex Certain File Types
+## J. FastCGI Cache Settings
+## K. PHP-FPM Routing
+## L. WP-Login (Rate Limiting)
+## M. Adminer Settings
+## N. Redirect Staging/Dev Subdirectories
+## O. Static Resource Expiration
+## P. Browser Rendering Settings
+## Q. Favicon Settings
+## R. Robots.txt & Ads.txt Settings
+## S. Git Configuration
+## T. Deny Access To Unsafe WordPress Files
+## U. Deny Access To Unsafe SlickStack Files
 
 ####################################################################################################
 #### A. Server Block (Production): Port 80 Server (Certbot Only + Redirect All Others) #############
@@ -52,22 +52,21 @@
 ## this vastly improves security, prevents IP snooping, SEO problems, and beyond ##
 
 server {
-	listen 80;
-	listen [::]:80;
-	server_name @SITE_DOMAIN_INCLUDING_WWW @SITE_DOMAIN_EXCLUDING_WWW;
+    listen 80;
+    listen [::]:80;
+    server_name @SITE_DOMAIN_INCLUDING_WWW @SITE_DOMAIN_EXCLUDING_WWW;
 
-	location /.well-known/acme-challenge/ {
-		allow all;
-		auth_basic off;
-		default_type "text/plain";
-		try_files $uri =404;
-		root /var/www/html;
-	}
+    location /.well-known/acme-challenge/ {
+        allow all;
+        auth_basic off;
+        default_type "text/plain";
+        try_files $uri =404;
+        root /var/www/html;
+    }
 
-	location / {
-		return 301 https://@SITE_FULL_DOMAIN$request_uri;
-	}
-
+    location / {
+        return 301 https://@SITE_FULL_DOMAIN$request_uri;
+    }
 }
 
 ####################################################################################################
@@ -75,12 +74,12 @@ server {
 ####################################################################################################
 
 server {
-	listen 80 default_server;
-	listen 443 ssl default_server;
-	listen [::]:80 default_server;
-	listen [::]:443 ssl default_server;
-	server_name _;
-	return 301 https://@SITE_FULL_DOMAIN$request_uri;
+    listen 80 default_server;
+    listen 443 ssl default_server;
+    listen [::]:80 default_server;
+    listen [::]:443 ssl default_server;
+    server_name _;
+    return 301 https://@SITE_FULL_DOMAIN$request_uri;
 }
 
 ####################################################################################################
@@ -91,22 +90,24 @@ server {
 ## because SlickStack is HTTPS-only the canonical block is port 443 (SSL) only ##
 
 server {
-	listen 443 ssl http2;
-	listen [::]:443 ssl http2;
-	server_name @SITE_FULL_DOMAIN;
-	root /var/www/html;
+    listen 443 ssl http2;
+    listen [::]:443 ssl http2;
+    server_name @SITE_FULL_DOMAIN;
+    root /var/www/html;
 
 ####################################################################################################
 #### D. Server Block (Production): Error Pages #####################################################
 ####################################################################################################
 
-error_page 404 /error_404.html;
+    ## custom 404 error page
+    error_page 404 /error_404.html;
     location = /error_404.html {
         root /var/www/sites/error_pages;
         internal;
     }
 
- error_page 500 502 503 504 /error_50x.html;
+    ## custom 50x error pages
+    error_page 500 502 503 504 /error_50x.html;
     location = /error_50x.html {
         root /var/www/sites/error_pages;
         internal;
@@ -119,13 +120,13 @@ error_page 404 /error_404.html;
 ## the well-known hidden directory is becoming more important for domain verification ##
 ## we implement an abundance of rules to improve functionality and stability ##
 
-location /.well-known/acme-challenge/ {
-	allow all;
-	auth_basic off;
-	default_type "text/plain";
-	try_files $uri =404;
-	root /var/www/html;
-}
+    location /.well-known/acme-challenge/ {
+        allow all;
+        auth_basic off;
+        default_type "text/plain";
+        try_files $uri =404;
+        root /var/www/html;
+    }
     
 ####################################################################################################
 #### F. Server Block (Production): Redirect Any AMP Requests #######################################
@@ -134,43 +135,40 @@ location /.well-known/acme-challenge/ {
 ## this powerful snippet will redirect all the messy URLs created by AMP software ##
 ## SlickStack does not support AMP for both stability and political reasons ##
 
-## redirect /amp queries ##
+## redirect /amp in URLs
 rewrite ^(.*/)amp(.*)$ $1 permanent;
-	
-## redirect ?amp queries ##
+
+## redirect ?amp query strings
 if ($query_string ~ "^amp(.*)$") {
-	rewrite ^(.*)$ $uri? permanent;
+    rewrite ^(.*)$ $uri? permanent;
 }
 
 ####################################################################################################
-#### D. Server Block (Production): Redirect Other Junk Query Strings #######################################
+#### G. Server Block (Production): Cleanup Junk Query Strings ######################################
 ####################################################################################################
 
-## redirect /?attachment_id=xxx queries ##
+## redirect attachment_id queries
 if ($query_string ~ "^attachment_id(.*)$") {
-	rewrite ^(.*)$ $uri? permanent;
+    rewrite ^(.*)$ $uri? permanent;
 }
 
-## redirect ?format queries ##
+## redirect format queries
 if ($query_string ~ "^format(.*)$") {
-        rewrite ^(.*)$ $uri? permanent;
+    rewrite ^(.*)$ $uri? permanent;
 }
 
-## redirect ?lightbox queries ##
+## redirect lightbox queries
 if ($query_string ~ "^lightbox(.*)$") {
-        rewrite ^(.*)$ $uri? permanent;
+    rewrite ^(.*)$ $uri? permanent;
 }
 
-## noindex ?s= queries ##
-## this addresses an apparent bug in WP core / WooCommerce where complex search queries are missing the noindex metatag ##
-## e.g. /?s=shirt&post_type=product is missing it causing mass amount of GSC errors like: Duplicate without user-selected canonical ##
-
+## noindex for search queries
 if ($query_string ~ "^s=(.*)$") {
-        set $robots "noindex, nofollow, nosnippet, noarchive";
+    set $robots "noindex, nofollow, nosnippet, noarchive";
 }
 
 ####################################################################################################
-#### E. Server Block (Production): Redirect Junk URLs ##############################################
+#### H. Server Block (Production): Redirect Junk URLs ##############################################
 ####################################################################################################
 
 ## redirect /home/ using absolute URL less conflicts with complex TLDs ##
