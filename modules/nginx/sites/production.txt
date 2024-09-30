@@ -135,37 +135,40 @@ server {
 ## this powerful snippet will redirect all the messy URLs created by AMP software ##
 ## SlickStack does not support AMP for both stability and political reasons ##
 
-## redirect /amp in URLs
-rewrite ^(.*/)amp(.*)$ $1 permanent;
+    ## redirect /amp in URLs
+    rewrite ^(.*/)amp(.*)$ $1 permanent;
 
-## redirect ?amp query strings
-if ($query_string ~ "^amp(.*)$") {
-    rewrite ^(.*)$ $uri? permanent;
-}
+    ## redirect ?amp query strings
+    if ($query_string ~ "^amp(.*)$") {
+        rewrite ^(.*)$ $uri? permanent;
+    }
 
 ####################################################################################################
 #### G. Server Block (Production): Cleanup Junk Query Strings ######################################
 ####################################################################################################
 
-## redirect attachment_id queries
-if ($query_string ~ "^attachment_id(.*)$") {
-    rewrite ^(.*)$ $uri? permanent;
-}
+## redirect unwanted query strings like attachment_id, format, and lightbox for cleaner URLs ##
+## and apply noindex to search queries to prevent SEO issues and duplicate content ##
 
-## redirect format queries
-if ($query_string ~ "^format(.*)$") {
-    rewrite ^(.*)$ $uri? permanent;
-}
+    ## redirect attachment_id queries
+    if ($query_string ~ "^attachment_id(.*)$") {
+        rewrite ^(.*)$ $uri? permanent;
+    }
 
-## redirect lightbox queries
-if ($query_string ~ "^lightbox(.*)$") {
-    rewrite ^(.*)$ $uri? permanent;
-}
+    ## redirect format queries
+    if ($query_string ~ "^format(.*)$") {
+        rewrite ^(.*)$ $uri? permanent;
+    }
 
-## noindex for search queries
-if ($query_string ~ "^s=(.*)$") {
-    set $robots "noindex, nofollow, nosnippet, noarchive";
-}
+    ## redirect lightbox queries
+    if ($query_string ~ "^lightbox(.*)$") {
+        rewrite ^(.*)$ $uri? permanent;
+    }
+
+    ## noindex for search queries
+    if ($query_string ~ "^s=(.*)$") {
+        set $robots "noindex, nofollow, nosnippet, noarchive";
+    }
 
 ####################################################################################################
 #### H. Server Block (Production): Redirect Junk URLs ##############################################
