@@ -65,7 +65,7 @@
 ## this build version ensures compatibility with the currently active ss-config file ##
 ## it must match the localhost ss-config otherwise installation will fail ##
 
-SS_INSTALL_BUILD="OCT2024G"
+SS_INSTALL_BUILD="OCT2024H"
 
 ####################################################################################################
 #### B. SS-Install: Validate (Repair) SS-Functions #################################################
@@ -167,16 +167,27 @@ if [[ "${SYSTEM_UBUNTU_VERSION}" != @(24.04|22.04|20.04|18.04) ]]; then
     exit 1
 fi
 
-## REDUCE THIS to be like 500mb or something
-## verify at least 5GB free disk space remains ##
-# if [[ "${SYSTEM_DISK_FREE}" -lt 5242880 ]]; then ## 10G = 10485760 / 5GB = 5242880
-#    ss_echo "${COLOR_WARN}Exiting ss-install: It looks like your server has less than 5GB free space available, please upgrade your server and then run ss-install again. ${COLOR_RESET}"
-#    exit 1
-# fi
+## verify at least 1GB free disk space remains ##
+if [[ "${SYSTEM_DISK_FREE}" -lt 1048576 ]]; then ## 1GB = 1048576
+    ss_echo "${COLOR_WARN}Exiting ss-install: It looks like your server has less than 1GB free space available. Please free up some space or upgrade your server and then run ss-install again. ${COLOR_RESET}"
+    exit 1
+fi
 
-## very not in docker/lxc container ##
-if [[ -f "/.dockerenv" ]] || grep -Eq '(lxc|docker)' /proc/1/cgroup; then 
-    ss_echo "${COLOR_WARN}Exiting ss-install: It appears your server is running Docker or another container... but SlickStack requires normal Ubuntu LTS without containers. ${COLOR_RESET}"
+## verify not running in container environment ##
+if [[ $(grep -Eq '(lxc|docker|kubepods|containerd|systemd|rkt|podman|openvz|openshift)' /proc/1/cgroup) ]] || 
+   [[ -f "/.dockerenv" ]] || 
+   [[ -d "/var/lib/lxc" ]] || 
+   [[ -d "/proc/vz" ]] || 
+   [[ -d "/var/lib/lxd" ]] || 
+   [[ -d "/run/rkt" ]] || 
+   [[ -d "/sys/fs/cgroup/systemd" ]] || 
+   [[ -d "/run/overlay" ]] || 
+   [[ -f "/.podmanenv" ]] || 
+   [[ -f "/.containerenv" ]] || 
+   [[ -d "/run/systemd/nspawn" ]] || 
+   [[ -f "/proc/1/sched" ]] || 
+   [[ -f "/.container" ]]; then 
+    ss_echo "${COLOR_WARN}Exiting ss-install: It appears your server is running in a containerized environment (Docker, LXC, OpenVZ, systemd-nspawn, LXD, Rkt, OpenShift, Podman, etc.). SlickStack requires a standard Ubuntu LTS installation on a real machine. Please run this script on a physical or virtual machine. ${COLOR_RESET}"
     exit 1
 fi
 
