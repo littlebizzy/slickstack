@@ -221,7 +221,9 @@ SS_BUILD_CURRENT=$(source /tmp/ss-config-wizard; echo "${SS_BUILD}" 2> /dev/null
 ## pad lines with exactly 80 characters ##
 pad_line() {
     local line="$1"
-    local line_length=${#line}
+    # Strip ANSI escape codes to measure visible length
+    local clean_line=$(echo "$line" | sed -r "s/\x1B\[[0-9;]*m//g")
+    local line_length=${#clean_line}
     
     # If the line length is greater than 80, trim it to 80 characters
     if (( line_length > 80 )); then
@@ -232,9 +234,14 @@ pad_line() {
     # Calculate the number of fillers needed to reach 80 characters
     local filler_length=$((80 - line_length))
     
-    # Create the filler with '#' characters and concatenate
-    # This adds '#' characters only for the trailing space
-    printf '%s%s\n' "$line" "$(printf '%0.s#' $(seq 1 $filler_length))"
+    # Create the filler with '#' characters
+    local filler=""
+    if (( filler_length > 0 )); then
+        filler=$(printf '%0.s#' $(seq 1 $filler_length))
+    fi
+    
+    # Concatenate line with filler
+    echo "${line}${filler}"
 }
 
 ## intro variables ##
