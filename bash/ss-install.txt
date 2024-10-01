@@ -220,20 +220,21 @@ SS_BUILD_CURRENT=$(source /tmp/ss-config-wizard; echo "${SS_BUILD}" 2> /dev/null
 
 ## pad lines with exactly 80 characters ##
 pad_line() {
-  local line="$1"
-  local line_length=${#line}
-  
-  # If the line length is greater than 80, trim it to 80 characters
-  if (( line_length > 80 )); then
-    echo "${line:0:80}"
-    return
-  fi
-  
-  # Calculate the number of fillers needed to reach 80 characters
-  local filler_length=$((80 - line_length))
-  
-  # Create the filler with '#' characters and concatenate
-  printf '%s%*s\n' "$line" "$filler_length" '' | tr ' ' '#'
+    local line="$1"
+    local line_length=${#line}
+    
+    # If the line length is greater than 80, trim it to 80 characters
+    if (( line_length > 80 )); then
+        echo "${line:0:80}"
+        return
+    fi
+    
+    # Calculate the number of fillers needed to reach 80 characters
+    local filler_length=$((80 - line_length))
+    
+    # Create the filler with '#' characters and concatenate
+    # This adds '#' characters only for the trailing space
+    printf '%s%s\n' "$line" "$(printf '%0.s#' $(seq 1 $filler_length))"
 }
 
 ## intro variables ##
@@ -435,24 +436,6 @@ ss_echo "${COLOR_INFO}Running ss-install... ${COLOR_RESET}"
 ## you can run the ss-install script as many times as you want without conflicts ##
 
 else
-
-## pad lines with exactly 80 characters ##
-pad_line() {
-  local line="$1"
-  local line_length=${#line}
-  
-  # If the line length is greater than 80, trim it to 80 characters
-  if (( line_length > 80 )); then
-    echo "${line:0:80}"
-    return
-  fi
-  
-  # Calculate the number of fillers needed to reach 80 characters
-  local filler_length=$((80 - line_length))
-  
-  # Create the filler with '#' characters and concatenate
-  printf '%s%*s\n' "$line" "$filler_length" '' | tr ' ' '#'
-}
 
 ss_echo "$(pad_line "")"
 ss_echo "$(pad_line "${FIRST_LINE}")"
