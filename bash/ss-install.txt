@@ -218,12 +218,25 @@ clear -x
 ## check build version ##
 SS_BUILD_CURRENT=$(source /tmp/ss-config-wizard; echo "${SS_BUILD}" 2> /dev/null)
 
-## pad lines with 80 characters ##
+## pad lines with exactly 80 characters ##
 pad_line() {
   local line="$1"
   local line_length=${#line}
+  
+  # Calculate the number of fillers needed
   local filler_length=$((80 - line_length))
+  
+  # If the line is already 80 characters, return it as is
+  if (( filler_length <= 0 )); then
+    # If longer than 80 characters, trim it to 80 characters
+    echo "${line:0:80}"
+    return
+  fi
+  
+  # Create the filler with '#' characters
   local filler=$(printf '%0.s#' $(seq 1 $filler_length))
+  
+  # Concatenate line with filler
   echo "${line}${filler}"
 }
 
