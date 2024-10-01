@@ -222,31 +222,29 @@ SS_BUILD_CURRENT=$(source /tmp/ss-config-wizard; echo "${SS_BUILD}" 2> /dev/null
 pad_line() {
     local line="$1"
 
-    # Strip ANSI escape codes using ANSI-C quoting
+    # Strip ANSI escape codes for effective length calculation
     local clean_line
-    clean_line=$(echo -e "$line" | sed -r 's/\x1B\[[0-9;]*[mK]//g; s/[[:cntrl:]]//g; s/^[[:space:]]+|[[:space:]]+$//g')
+    clean_line=$(echo -e "$line" | sed -r 's/\x1B\[[0-9;]*[mK]//g')
 
     # Calculate the length of the clean line
     local line_length=${#clean_line}
 
     # If the line length is greater than 80, trim it to 80 characters
     if (( line_length > 80 )); then
-        line="${line:0:80}"
-        # Recalculate length after trimming
-        clean_line=$(echo -e "$line" | sed -r 's/\x1B\[[0-9;]*[mK]//g')
-        line_length=${#clean_line}
+        line="${line:0:80}"  # Trimming the original line
+        line_length=80  # Resetting the length to 80
     fi
-    
-    # Calculate the number of fillers needed to reach 80 characters
+
+    # Calculate the number of fillers needed to reach exactly 80 characters
     local filler_length=$((80 - line_length))
-    
+
     # Create the filler with '#' characters
     local filler=""
     if (( filler_length > 0 )); then
         filler=$(printf '%0.s#' $(seq 1 $filler_length))
     fi
-    
-    # Concatenate line with filler and return
+
+    # Concatenate the line with the filler and ensure trailing spaces are preserved
     echo -e "${line}${filler}"
 }
 
