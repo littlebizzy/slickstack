@@ -222,14 +222,15 @@ SS_BUILD_CURRENT=$(source /tmp/ss-config-wizard; echo "${SS_BUILD}" 2> /dev/null
 pad_line() {
     local line="$1"
 
-    # Strip ANSI escape codes, backslashes, cursor control sequences, and control characters
-    local clean_line=$(echo "$line" | sed -r 's/\\//g; s/\x1B\[[0-9;]*[mK]//g; s/[[:cntrl:]]//g; s/^[[:space:]]+|[[:space:]]+$//g')
+    # Strip ANSI escape codes and control characters after variable expansion
+    local clean_line
+    clean_line=$(echo -e "$line" | sed -r 's/\x1B\[[0-9;]*[mK]//g; s/[[:cntrl:]]//g; s/^[[:space:]]+|[[:space:]]+$//g')
 
     local line_length=${#clean_line}
-    
+
     # If the line length is greater than 80, trim it to 80 characters
     if (( line_length > 80 )); then
-        echo "${line:0:80}"
+        echo -e "${line:0:80}"
         return
     fi
     
@@ -243,7 +244,7 @@ pad_line() {
     fi
     
     # Concatenate line with filler
-    echo "${line}${filler}"
+    echo -e "${line}${filler}"
 }
 
 ## intro variables ##
