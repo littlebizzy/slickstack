@@ -65,7 +65,7 @@
 ## this build version ensures compatibility with the currently active ss-config file ##
 ## it must match the localhost ss-config otherwise installation will fail ##
 
-SS_INSTALL_BUILD="OCT2024F"
+SS_INSTALL_BUILD="OCT2024G"
 
 ####################################################################################################
 #### B. SS-Install: Validate (Repair) SS-Functions #################################################
@@ -224,7 +224,7 @@ pad_line() {
 
     # Strip ANSI escape codes for effective length calculation
     local clean_line
-    clean_line=$(echo -e "$line" | sed -r 's/\x1B\[[0-9;]*[mK]//g')
+    clean_line=$(printf '%b' "$line" | sed -r 's/\x1B\[[0-9;]*[mK]//g')
 
     # Calculate the length of the clean line
     local line_length=${#clean_line}
@@ -238,14 +238,11 @@ pad_line() {
     # Calculate the number of fillers needed to reach exactly 80 characters
     local filler_length=$((80 - line_length))
 
-    # Create the filler with '#' characters
-    local filler=""
-    if (( filler_length > 0 )); then
-        filler=$(printf '%0.s#' $(seq 1 $filler_length))
-    fi
+    # Create the filler with '#' characters, preserving trailing spaces
+    local filler=$(printf '%*s' "$filler_length" '' | tr ' ' '#')
 
-    # Concatenate the line with the filler and ensure trailing spaces are preserved
-    echo -e "${line}${filler}"
+    # Concatenate the line with the filler
+    printf '%b\n' "${line}${filler}"
 }
 
 ## intro variables ##
