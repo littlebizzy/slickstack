@@ -222,16 +222,19 @@ SS_BUILD_CURRENT=$(source /tmp/ss-config-wizard; echo "${SS_BUILD}" 2> /dev/null
 pad_line() {
     local line="$1"
 
-    # Strip ANSI escape codes and control characters after variable expansion
+    # Strip ANSI escape codes using ANSI-C quoting
     local clean_line
     clean_line=$(echo -e "$line" | sed -r 's/\x1B\[[0-9;]*[mK]//g; s/[[:cntrl:]]//g; s/^[[:space:]]+|[[:space:]]+$//g')
 
+    # Calculate the length of the clean line
     local line_length=${#clean_line}
 
     # If the line length is greater than 80, trim it to 80 characters
     if (( line_length > 80 )); then
-        echo -e "${line:0:80}"
-        return
+        line="${line:0:80}"
+        # Recalculate length after trimming
+        clean_line=$(echo -e "$line" | sed -r 's/\x1B\[[0-9;]*[mK]//g')
+        line_length=${#clean_line}
     fi
     
     # Calculate the number of fillers needed to reach 80 characters
@@ -243,7 +246,7 @@ pad_line() {
         filler=$(printf '%0.s#' $(seq 1 $filler_length))
     fi
     
-    # Concatenate line with filler
+    # Concatenate line with filler and return
     echo -e "${line}${filler}"
 }
 
