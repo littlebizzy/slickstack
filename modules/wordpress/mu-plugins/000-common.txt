@@ -304,6 +304,38 @@ function ss_menu() {
 
 add_action('admin_menu', 'ss_menu', 5); // lower priority to load earlier
 
+
+// add class to the correct submenu for highlighting
+function ss_highlight_active_submenu( $parent_file ) {
+    global $submenu_file;
+
+    // check if we are on the slickstack page
+    if ( isset( $_GET['page'] ) && $_GET['page'] == 'slickstack' && isset( $_GET['tab'] ) ) {
+        $tab = $_GET['tab'];
+
+        // highlight based on the tab parameter
+        switch ( $tab ) {
+            case 'sftp':
+                $submenu_file = 'admin.php?page=slickstack&tab=sftp';
+                break;
+            case 'database':
+                $submenu_file = 'admin.php?page=slickstack&tab=database';
+                break;
+            case 'opcache':
+                $submenu_file = 'admin.php?page=slickstack&tab=opcache';
+                break;
+            case 'error-log':
+                $submenu_file = 'admin.php?page=slickstack&tab=error-log';
+                break;
+        }
+    }
+
+    return $parent_file;
+}
+
+add_filter( 'parent_file', 'ss_highlight_active_submenu' );
+
+
 // generate slickstack dashboard content
  function ss_menu_content() {
     echo '<div class="wrap">
