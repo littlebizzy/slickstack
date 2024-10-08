@@ -1325,29 +1325,51 @@ function ss_environment_menu( $admin_bar ) {
 /** J. 000-Common: WP Admin Toolbar Menu ******************************************************** */
 /** ********************************************************************************************* */
 
-add_action( 'admin_bar_menu', 'slickstack_menu', 25 );
+add_action( 'admin_bar_menu', 'slickstack_menu', 20 ); // Set a lower priority to load earlier
 
 function slickstack_menu() {
     if ( current_user_can( 'manage_options' ) ) {
         global $wp_admin_bar;
-        $ss_menu = 'slickstack-menu';
 
-        // Adding the top-level menu under 'top-secondary' for the right-hand side
+        // Top-level menu: Review SlickStack
         $wp_admin_bar->add_menu( array(
-            'parent' => 'top-secondary',
+            'parent' => 'top-secondary', // Adds it to the right side, near user profile
             'id'     => 'ss-menu-reviews',
             'title'  => 'Review SlickStack',
-            'href'   => false
+            'href'   => false,
+            'meta'   => array( 'class' => 'slickstack-menu' ), // Optional: Custom CSS class for styling
+        ) );
+
+        // Add SlickStack Dashboard Tabs
+        $wp_admin_bar->add_menu( array(
+            'parent' => 'ss-menu-reviews',
+            'id'     => 'ss-menu-sftp',
+            'title'  => 'SFTP',
+            'href'   => admin_url( 'admin.php?page=slickstack&tab=sftp' ),
         ) );
 
         $wp_admin_bar->add_menu( array(
             'parent' => 'ss-menu-reviews',
-            'id'     => 'ss-menu-reviews-facebook',
-            'title'  => 'Review on Facebook',
-            'href'   => 'https://www.facebook.com/slickstack/reviews',
-            'meta'   => array( 'target' => '_blank' )
+            'id'     => 'ss-menu-database',
+            'title'  => 'Database',
+            'href'   => admin_url( 'admin.php?page=slickstack&tab=database' ),
         ) );
 
+        $wp_admin_bar->add_menu( array(
+            'parent' => 'ss-menu-reviews',
+            'id'     => 'ss-menu-opcache',
+            'title'  => 'OPcache',
+            'href'   => admin_url( 'admin.php?page=slickstack&tab=opcache' ),
+        ) );
+
+        $wp_admin_bar->add_menu( array(
+            'parent' => 'ss-menu-reviews',
+            'id'     => 'ss-menu-error-log',
+            'title'  => 'Error Log',
+            'href'   => admin_url( 'admin.php?page=slickstack&tab=error-log' ),
+        ) );
+
+        // Existing review links
         $wp_admin_bar->add_menu( array(
             'parent' => 'ss-menu-reviews',
             'id'     => 'ss-menu-reviews-producthunt',
@@ -1366,57 +1388,9 @@ function slickstack_menu() {
 
         $wp_admin_bar->add_menu( array(
             'parent' => 'ss-menu-reviews',
-            'id'     => 'ss-menu-reviews-stackshare',
-            'title'  => 'Review on StackShare',
-            'href'   => 'https://stackshare.io/slickstack',
-            'meta'   => array( 'target' => '_blank' )
-        ) );
-
-        $wp_admin_bar->add_menu( array(
-            'parent' => 'ss-menu-reviews',
-            'id'     => 'ss-menu-reviews-saashub',
-            'title'  => 'Review on SaaSHub',
-            'href'   => 'https://www.saashub.com/slickstack-alternatives',
-            'meta'   => array( 'target' => '_blank' )
-        ) );
-
-        $wp_admin_bar->add_menu( array(
-            'parent' => 'ss-menu-reviews',
             'id'     => 'ss-menu-reviews-g2-crowd',
             'title'  => 'Review on G2 Crowd',
             'href'   => 'https://www.g2.com/products/slickstack/reviews',
-            'meta'   => array( 'target' => '_blank' )
-        ) );
-
-        $wp_admin_bar->add_menu( array(
-            'parent' => 'ss-menu-reviews',
-            'id'     => 'ss-menu-reviews-alternativeme',
-            'title'  => 'Review on Alternative.me',
-            'href'   => 'https://alternative.me/slickstack',
-            'meta'   => array( 'target' => '_blank' )
-        ) );
-
-        $wp_admin_bar->add_menu( array(
-            'parent' => 'ss-menu-reviews',
-            'id'     => 'ss-menu-reviews-alternativeto',
-            'title'  => 'Review on AlternativeTo',
-            'href'   => 'https://alternativeto.net/software/slickstack',
-            'meta'   => array( 'target' => '_blank' )
-        ) );
-
-        $wp_admin_bar->add_menu( array(
-            'parent' => 'ss-menu-reviews',
-            'id'     => 'ss-menu-reviews-wappalyzer',
-            'title'  => 'Review on Wappalyzer',
-            'href'   => 'https://www.wappalyzer.com/technologies/development/slickstack',
-            'meta'   => array( 'target' => '_blank' )
-        ) );
-
-        $wp_admin_bar->add_menu( array(
-            'parent' => 'ss-menu-reviews',
-            'id'     => 'ss-menu-reviews-slant',
-            'title'  => 'Review on Slant',
-            'href'   => 'https://www.slant.co/improve/options/35681/~slickstack-review',
             'meta'   => array( 'target' => '_blank' )
         ) );
     }
