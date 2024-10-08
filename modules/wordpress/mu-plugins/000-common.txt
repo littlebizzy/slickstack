@@ -30,8 +30,8 @@ Prefix: SSCOMM
 // F. SlickStack Dashboard
 
 // G. Disk Space Warning (WP Admin Notice)
-
 // H. PHP Hacks Warning (WP Admin Notice)
+
 // I. Switch Environment Menu
 
 /** ********************************************************************************************* */
@@ -1184,10 +1184,9 @@ function ss_notices_disk_space_85() {
 }
 
 /** ********************************************************************************************* */
-/** G. 000-Common: PHP Hacks Warning (WP Admin Notice) ****************************************** */
+/** H. 000-Common: PHP Hacks Warning (WP Admin Notice) ****************************************** */
 /** ********************************************************************************************* */
 
-/** SlickStack Admin Notices */
 // if plugin or theme files found to be hacking PHP ini or error handling settings
 
 /** ********************************************************************************************* */
@@ -1220,138 +1219,137 @@ function slickstack_menu() {
         // $wp_admin_bar->add_menu(array('parent' => $menu_id, 'title' => __('User Guide'), 'id' => 'slickstack-guide', 'href' => 'https://www.littlebizzy.com/guide', 'meta' => array('target' => '_blank')));
 
 /** ********************************************************************************************* */
-/** H. 000-Common: Switch Environment Menu ****************************************************** */
+/** I. 000-Common: Switch Environment Menu ****************************************************** */
 /** ********************************************************************************************* */
 
 /** this small drop-down menu lets you easily switch between enabled environments */
 /** links will be hidden in case certain environments have been disabled */
 
 // add action
-add_action('admin_bar_menu', 'ss_environment_menu', 25);
+add_action( 'admin_bar_menu', 'ss_environment_menu', 25 );
 
-## ss_environment_menu function
-function ss_environment_menu($admin_bar) {
-    
-    $current_user = wp_get_current_user();
-    $ss_production_link = '@SITE_FULL_DOMAIN';
-    $ss_staging_link = 'staging.@SITE_DOMAIN_EXCLUDING_WWW';
-    $ss_dev_link = 'dev.@SITE_DOMAIN_EXCLUDING_WWW';
-	$actual_link = "https://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
-	$actual_link_staging_to_production = str_replace($ss_staging_link, $ss_production_link, $actual_link);
-	$actual_link_staging_to_dev = str_replace($ss_staging_link, $ss_dev_link, $actual_link);
-	$actual_link_dev_to_production = str_replace($ss_dev_link, $ss_production_link, $actual_link);
-	$actual_link_dev_to_staging = str_replace($ss_dev_link, $ss_staging_link, $actual_link);
-	$actual_link_production_to_dev = str_replace($ss_production_link, $ss_dev_link, $actual_link);
-	$actual_link_production_to_staging = str_replace($ss_production_link, $ss_staging_link, $actual_link);
-    
-    if(current_user_can('manage_options')) {
-	
-		// staging site drop-down menu
-        if(WP_ENVIRONMENT_TYPE == 'staging') {
-		
+// ss_environment_menu function
+function ss_environment_menu( $admin_bar ) {
+
+    $current_user                = wp_get_current_user();
+    $ss_production_link          = '@SITE_FULL_DOMAIN';
+    $ss_staging_link             = 'staging.@SITE_DOMAIN_EXCLUDING_WWW';
+    $ss_dev_link                 = 'dev.@SITE_DOMAIN_EXCLUDING_WWW';
+    $actual_link                 = "https://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
+    $actual_link_staging_to_production = str_replace( $ss_staging_link, $ss_production_link, $actual_link );
+    $actual_link_staging_to_dev       = str_replace( $ss_staging_link, $ss_dev_link, $actual_link );
+    $actual_link_dev_to_production    = str_replace( $ss_dev_link, $ss_production_link, $actual_link );
+    $actual_link_dev_to_staging       = str_replace( $ss_dev_link, $ss_staging_link, $actual_link );
+    $actual_link_production_to_dev    = str_replace( $ss_production_link, $ss_dev_link, $actual_link );
+    $actual_link_production_to_staging = str_replace( $ss_production_link, $ss_staging_link, $actual_link );
+
+    if ( current_user_can( 'manage_options' ) ) {
+
+        // staging site drop-down menu
+        if ( WP_ENVIRONMENT_TYPE == 'staging' ) {
+
             // current environment
             $admin_bar->add_menu( array(
                 'parent' => 'top-secondary',
-                'id'    => 'ss_environment_current',
-                'title' => '<span style="color:#FFBA00;">STAGING ONLY</span>',
-                'href'  => false
+                'id'     => 'ss_environment_current',
+                'title'  => '<span style="color:#FFBA00;">STAGING ONLY</span>',
+                'href'   => false,
+            ) );
+
+            // production (required)
+            $admin_bar->add_menu( array(
+                'parent' => 'ss_environment_current',
+                'id'     => 'ss_environment_toggle_production',
+                'title'  => 'Switch To Production',
+                'href'   => $actual_link_staging_to_production,
+                'meta'   => array( 'target' => '_blank' ),
+            ) );
+
+            // dev (if enabled)
+            if ( DEV_SITE_STATUS == 'true' ) {
+                $admin_bar->add_menu( array(
+                    'parent' => 'ss_environment_current',
+                    'id'     => 'ss_environment_toggle_dev',
+                    'title'  => 'Switch To Dev',
+                    'href'   => $actual_link_staging_to_dev,
+                    'meta'   => array( 'target' => '_blank' ),
                 ) );
-				
-        // production (required)
-        $admin_bar->add_menu( array(
-            'parent' => 'ss_environment_current', 
-            'id' => 'ss_environment_toggle_production',
-            'title' => 'Switch To Production', 
-            'href' => $actual_link_staging_to_production, 
-            'meta' => array('target' => '_blank')
-            ) );
-			
-        // dev (if enabled)
-		if(DEV_SITE_STATUS == 'true') {
-        $admin_bar->add_menu( array(
-            'parent' => 'ss_environment_current', 
-            'id' => 'ss_environment_toggle_dev',
-            'title' => 'Switch To Dev', 
-            'href' => $actual_link_staging_to_dev, 
-            'meta' => array('target' => '_blank')
-            ) );
-		}
-            
+            }
+
         } // end staging site drop-down menu
-        
-		
-		// dev site drop-down menu
-        elseif(WP_ENVIRONMENT_TYPE == 'development') {
-                
-        // current environment
-        $admin_bar->add_menu( array(
-            'parent' => 'top-secondary',
-            'id'    => 'ss_environment_current',
-            'title' => '<span style="color:#FFBA00;">DEVELOPMENT</span>',
-            'href'  => false
+
+
+        // dev site drop-down menu
+        elseif ( WP_ENVIRONMENT_TYPE == 'development' ) {
+
+            // current environment
+            $admin_bar->add_menu( array(
+                'parent' => 'top-secondary',
+                'id'     => 'ss_environment_current',
+                'title'  => '<span style="color:#FFBA00;">DEVELOPMENT</span>',
+                'href'   => false,
             ) );
-            
-        // production (required)
-        $admin_bar->add_menu( array(
-            'parent' => 'ss_environment_current', 
-            'id' => 'ss_environment_toggle_production',
-            'title' => 'Switch To Production', 
-            'href' => $actual_link_dev_to_production, 
-            'meta' => array('target' => '_blank')
+
+            // production (required)
+            $admin_bar->add_menu( array(
+                'parent' => 'ss_environment_current',
+                'id'     => 'ss_environment_toggle_production',
+                'title'  => 'Switch To Production',
+                'href'   => $actual_link_dev_to_production,
+                'meta'   => array( 'target' => '_blank' ),
             ) );
-            
-        // staging (if enabled)
-		if(STAGING_SITE_STATUS == 'true') {
-        $admin_bar->add_menu( array(
-            'parent' => 'ss_environment_current', 
-            'id' => 'ss_environment_toggle_dev',
-            'title' => 'Switch To Staging', 
-            'href' => $actual_link_dev_to_staging, 
-            'meta' => array('target' => '_blank')
-            ) );
-		}
-            
+
+            // staging (if enabled)
+            if ( STAGING_SITE_STATUS == 'true' ) {
+                $admin_bar->add_menu( array(
+                    'parent' => 'ss_environment_current',
+                    'id'     => 'ss_environment_toggle_dev',
+                    'title'  => 'Switch To Staging',
+                    'href'   => $actual_link_dev_to_staging,
+                    'meta'   => array( 'target' => '_blank' ),
+                ) );
+            }
+
         } // end dev site drop-down menu
-        
-		
-		// production site drop-down menu
+
+
+        // production site drop-down menu
         else {
-        
-        // current environment
-        $admin_bar->add_menu( array(
-            'parent' => 'top-secondary',
-            'id'    => 'ss_environment_current',
-            'title' => '<span style="color:#3CB54C;">PRODUCTION</span>',
-            'href'  => false
+
+            // current environment
+            $admin_bar->add_menu( array(
+                'parent' => 'top-secondary',
+                'id'     => 'ss_environment_current',
+                'title'  => '<span style="color:#3CB54C;">PRODUCTION</span>',
+                'href'   => false,
             ) );
-            
-        // staging (if enabled)
-		if(STAGING_SITE_STATUS == 'true') {
-        $admin_bar->add_menu( array(
-            'parent' => 'ss_environment_current', 
-            'id' => 'ss_environment_toggle_staging',
-            'title' => 'Switch To Staging', 
-            'href' => $actual_link_production_to_staging, 
-            'meta' => array('target' => '_blank')
-            ) );
-		}
-            
-        // dev (if enabled)
-		if(DEV_SITE_STATUS == 'true') {
-        $admin_bar->add_menu( array(
-            'parent' => 'ss_environment_current', 
-            'id' => 'ss_environment_toggle_dev',
-            'title' => 'Switch To Dev', 
-            'href' => $actual_link_production_to_dev, 
-            'meta' => array('target' => '_blank')
-            ) );
-		}
-            
+
+            // staging (if enabled)
+            if ( STAGING_SITE_STATUS == 'true' ) {
+                $admin_bar->add_menu( array(
+                    'parent' => 'ss_environment_current',
+                    'id'     => 'ss_environment_toggle_staging',
+                    'title'  => 'Switch To Staging',
+                    'href'   => $actual_link_production_to_staging,
+                    'meta'   => array( 'target' => '_blank' ),
+                ) );
+            }
+
+            // dev (if enabled)
+            if ( DEV_SITE_STATUS == 'true' ) {
+                $admin_bar->add_menu( array(
+                    'parent' => 'ss_environment_current',
+                    'id'     => 'ss_environment_toggle_dev',
+                    'title'  => 'Switch To Dev',
+                    'href'   => $actual_link_production_to_dev,
+                    'meta'   => array( 'target' => '_blank' ),
+                ) );
+            }
+
         } // end production site drop-down menu
-        
+
     } else { }
 }
-
 
 /** ********************************************************************************************* */
 /** SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ************* */
