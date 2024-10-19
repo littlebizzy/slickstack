@@ -27,7 +27,8 @@
 ## A. Use Bash Instead Of Sh
 ## B. Set Default Linux System Path
 ## C. Run Cron Jobs (DO NOT EDIT)
-## D. Self-Healing Functions (Repairs Cron Jobs)
+## D. Cleanup Stale Lock Files
+## E. Self-Healing Functions (Repairs Cron Jobs)
 
 ####################################################################################################
 #### A. Crontab: Use Bash Instead Of Sh ############################################################
@@ -74,7 +75,20 @@ MAILTO=""
 ## new line to avoid conflicts ##
 
 ####################################################################################################
-#### D. Crontab: Self-Healing Functions (Repairs Cron Jobs) ########################################
+#### D. Crontab: Cleanup Stale Lock Files ##########################################################
+####################################################################################################
+
+## this will cleanup any stale lock files in the case they become frozen or otherwise ##
+## it is set to remove lock files that are 6 hours old which is pretty safe ##
+
+MAILTO=""
+
+*/30 * * * * find /tmp/*.lock -mmin +360 -delete > /dev/null 2>&1
+
+## new line to avoid conflicts ##
+
+####################################################################################################
+#### E. Crontab: Self-Healing Functions (Repairs Cron Jobs) ########################################
 ####################################################################################################
 
 ## this will reinstall SlickStack cron job files in case they are missing or damaged ##
