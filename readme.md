@@ -4,6 +4,8 @@
 
 SlickStack is a free LEMP stack automation script written in Bash designed to enhance and simplify WordPress provisioning, performance, and security.
 
+<a href="https://www.g2.com/products/slickstack/reviews">G2 Crowd</a> | <a href="https://www.capterra.com/p/211436/SlickStack">Capterra</a> | <a href="https://www.producthunt.com/posts/slickstack">Product Hunt</a> | <a href="https://sourceforge.net/software/product/SlickStack/">SourceForge</a>
+
 ## Thank you to our generous sponsors!
 
 [**Become a sponsor**](https://github.com/sponsors/jessuppi) and receive access to our **#perma-lounge** channel on Discord. Your donations and public displays of support for SlickStack are what keep this project going. Thank you very much!
