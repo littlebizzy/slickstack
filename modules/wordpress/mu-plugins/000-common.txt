@@ -755,9 +755,59 @@ render_opcache_tuner_content();
 		echo '<br class="clear" />
 		<h2>Backup Settings</h2>
 		<p>Coming soon... powered by Rclone! Choose from Backblaze, Dropbox, Amazon S3, Google Drive, and more...</p>
+
+
+            <!-- Remote Backup Form -->
+            <form method="post" action="" style="display: inline;">';
+        
+        	// Output a nonce for form security
+        	wp_nonce_field('remote_backup_action', 'remote_backup_nonce');
+
+        	echo '<input type="hidden" name="remote_backup" value="1">
+                <input type="submit" class="button" value="Run Remote Backup">
+            </form>
+
 		<br class="clear" />
 		<h3>Recent Local Backups</h3>
 		<br class="clear" />';
+
+        // Handle Run Remote Backup button click
+        if (isset($_POST['remote_backup'])) {
+            // Verify nonce for security
+            if (isset($_POST['remote_backup_nonce']) && wp_verify_nonce($_POST['remote_backup_nonce'], 'remote_backup_action')) {
+                
+                // Define the FIFO file path
+                $fifo_file = '/var/www/meta/command_queue.fifo';
+
+                // Ensure the FIFO file exists and is writable
+                if (file_exists($fifo_file) && is_writable($fifo_file)) {
+                    // Check if the FIFO file is a named pipe
+                    if (posix_mkfifo($fifo_file, 0600) || filetype($fifo_file) == 'fifo') {
+                        // Command to run the remote backup
+                        $command = '/bin/bash /var/www/ss-remote-backup';
+
+                        // Open the FIFO file in write mode
+                        if ($fifo = fopen($fifo_file, 'w')) {
+                            // Write the command to the FIFO queue
+                            fwrite($fifo, $command . PHP_EOL);
+                            fclose($fifo);
+
+                            // Display success message
+                            echo '<div class="notice notice-success is-dismissible"><p>Remote backup command added to the queue.</p></div>';
+                        } else {
+                            echo '<div class="notice notice-error is-dismissible"><p>Failed to open FIFO file for writing.</p></div>';
+                        }
+                    } else {
+                        echo '<div class="notice notice-error is-dismissible"><p>The specified file is not a FIFO file.</p></div>';
+                    }
+                } else {
+                    echo '<div class="notice notice-error is-dismissible"><p>FIFO file is not writable or does not exist.</p></div>';
+                }
+
+            } else {
+                echo '<div class="notice notice-error is-dismissible"><p>Security check failed. Please try again.</p></div>';
+            }
+        }
         
 	break;
 	
