@@ -83,28 +83,37 @@ ss_apt_upgrade
 #### E. SS-Install-Nginx-Packages: Install Nginx-Extras ############################################
 ####################################################################################################
 
+## here we install various packages to support Certbot webroot and Cloudflare validation ##
+## note that Ubuntu 18.04 does not support Cloudflare and thus WordPress Multisite ##
+
 ## ubuntu 24.04 ##
 if [[ "${SYSTEM_UBUNTU_VERSION}" = "24.04" ]]; then 
     ss_apt_install certbot
+    ss_apt_install python3-certbot-dns-cloudflare
 fi
 
 ## ubuntu 22.04 ##
 if [[ "${SYSTEM_UBUNTU_VERSION}" = "22.04" ]]; then 
     ss_apt_install certbot
     ss_apt_install python3-certbot-nginx
+    ss_apt_install python3-certbot-dns-cloudflare
 fi
 
 ## ubuntu 20.04 ##
 if [[ "${SYSTEM_UBUNTU_VERSION}" = "20.04" ]]; then 
     ss_apt_install certbot
     ss_apt_install python3-certbot-nginx
+    ss_apt_install python3-certbot-dns-cloudflare
 fi
 
-## ubuntu 18.04 ##
+## ubuntu 18.04 (does not support python3-certbot-dns-cloudflare) ##
 if [[ "${SYSTEM_UBUNTU_VERSION}" = "18.04" ]]; then
     ss_apt_install software-properties-common
     ss_add_apt_repository universe > /dev/null 2>&1
     ss_add_apt_repository ppa:certbot/certbot > /dev/null 2>&1
+    ss_apt_update
+    ss_apt_install certbot
+    ss_apt_install python3-certbot-nginx
 fi
 
 ## install nginx-extras ##
@@ -144,6 +153,7 @@ chmod 0700 /var/www/crons/custom/*cron* ## 0700 means only root/sudo can execute
 #### SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ###############
 ####################################################################################################
 
+## Ref: ChatGPT
 ## Ref: https://serverfault.com/questions/527630/difference-in-sites-available-vs-sites-enabled-vs-conf-d-directories-nginx
 ## Ref: https://www.digitalocean.com/community/tutorials/how-to-set-up-nginx-server-blocks-virtual-hosts-on-ubuntu-16-04
 ## Ref: https://ar.al/2018/07/05/nginx-remember-to-remove-the-default-site/
