@@ -75,24 +75,18 @@ source "${PATH_SS_PERMS_NGINX_CONFIG}"
 #### E. SS-Encrypt-Certbot: Generate Cloudflare.ini (Conditional) ##################################
 ####################################################################################################
 
-## Check if Cloudflare credentials are set in ss-config and create file if not exists ##
+## check if Cloudflare creds are set in ss-config and force regenerate cloudflare.ini ##
 
 if [[ -n "${CLOUDFLARE_EMAIL}" && -n "${CLOUDFLARE_API_KEY}" ]]; then
-    if [[ ! -f "/var/www/meta/cloudflare.ini" ]]; then
-        cat <<EOF > /var/www/meta/cloudflare.ini
+    cat <<EOF > /var/www/meta/cloudflare.ini
 dns_cloudflare_email = ${CLOUDFLARE_EMAIL}
 dns_cloudflare_api_key = ${CLOUDFLARE_API_KEY}
 EOF
-## do not indent above ##
+    ## set required perms (must be exactly 600) ##
+    chmod 600 /var/www/meta/cloudflare.ini
+    chown root:root /var/www/meta/cloudflare.ini
 
-        ## set required perms (must be exactly 600) ##
-        chmod 600 /var/www/meta/cloudflare.ini
-        chown root:root /var/www/meta/cloudflare.ini
-
-        ss_echo "${COLOR_INFO}Cloudflare credentials file created successfully at /var/www/meta/cloudflare.ini${COLOR_RESET}"
-    else
-        ss_echo "${COLOR_INFO}Cloudflare credentials file already exists at /var/www/meta/cloudflare.ini${COLOR_RESET}"
-    fi
+    ss_echo "${COLOR_INFO}Cloudflare credentials file created successfully at /var/www/meta/cloudflare.ini${COLOR_RESET}"
 else
     ss_echo "${COLOR_WARNING}Cloudflare credentials are missing in ss-config. Please ensure CLOUDFLARE_EMAIL and CLOUDFLARE_API_KEY are set.${COLOR_RESET}"
 fi
