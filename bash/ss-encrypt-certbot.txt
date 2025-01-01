@@ -26,10 +26,11 @@
 ## B. Touch Timestamp File
 ## C. Message (Begin Script)
 ## D. Run SS-Perms-Nginx-Config
-## E. Temporarily Activate OpenSSL.conf (Conditional)
-## F. Request Certs From Lets Encrypt Servers
-## G. Configure Lets Encrypt Symlinks
-## H. Run SS-Perms-Nginx-Config
+## E. Generate Cloudflare.ini (Conditional)
+## F. Temporarily Activate OpenSSL.conf (Conditional)
+## G. Request Certs From Lets Encrypt Servers
+## H. Configure Lets Encrypt Symlinks
+## I. Run SS-Perms-Nginx-Config
 
 ####################################################################################################
 #### A. SS-Encrypt-Certbot: Source SS-Config + SS-Functions ########################################
@@ -71,7 +72,33 @@ ss_echo "${COLOR_INFO}Running ss-encrypt-certbot... ${COLOR_RESET}"
 source "${PATH_SS_PERMS_NGINX_CONFIG}"
 
 ####################################################################################################
-#### E. SS-Encrypt-Certbot: Temporarily Activate OpenSSL.conf (Conditional) ########################
+#### E. SS-Encrypt-Certbot: Generate Cloudflare.ini (Conditional) ##################################
+####################################################################################################
+
+## Check if Cloudflare credentials are set in ss-config and create file if not exists ##
+
+if [[ -n "${CLOUDFLARE_EMAIL}" && -n "${CLOUDFLARE_API_KEY}" ]]; then
+    if [[ ! -f "/var/www/meta/cloudflare.ini" ]]; then
+        cat <<EOF > /var/www/meta/cloudflare.ini
+dns_cloudflare_email = ${CLOUDFLARE_EMAIL}
+dns_cloudflare_api_key = ${CLOUDFLARE_API_KEY}
+EOF
+## do not indent above ##
+
+        ## set required perms (must be exactly 600) ##
+        chmod 600 /var/www/meta/cloudflare.ini
+        chown root:root /var/www/meta/cloudflare.ini
+
+        ss_echo "${COLOR_INFO}Cloudflare credentials file created successfully at /var/www/meta/cloudflare.ini${COLOR_RESET}"
+    else
+        ss_echo "${COLOR_INFO}Cloudflare credentials file already exists at /var/www/meta/cloudflare.ini${COLOR_RESET}"
+    fi
+else
+    ss_echo "${COLOR_WARNING}Cloudflare credentials are missing in ss-config. Please ensure CLOUDFLARE_EMAIL and CLOUDFLARE_API_KEY are set.${COLOR_RESET}"
+fi
+
+####################################################################################################
+#### F. SS-Encrypt-Certbot: Temporarily Activate OpenSSL.conf (Conditional) ########################
 ####################################################################################################
 
 ## here we must temporarily activate OpenSSL in order to avoid fatal errors in Nginx ##
@@ -138,7 +165,7 @@ ss_echo "lets encrypt cert file not found during ss-encrypt-certbot so installin
 fi
 
 ####################################################################################################
-#### F. SS-Encrypt-Certbot: Request Certs From Lets Encrypt Servers ################################
+#### G. SS-Encrypt-Certbot: Request Certs From Lets Encrypt Servers ################################
 ####################################################################################################
 
 ## NOTICE: SLICKSTACK DOES NOT SUPPORT SUB-SUBDOMAINS LIKE WWW.BLOG.EXAMPLE.COM ##
@@ -288,7 +315,7 @@ else
 fi
 
 ####################################################################################################
-#### G. SS-Encrypt-Certbot: Configure Lets Encrypt Symlinks ########################################
+#### H. SS-Encrypt-Certbot: Configure Lets Encrypt Symlinks ########################################
 ####################################################################################################
 
 ## here we create symlinks in the /var/www/certs/ directory that point to Lets Encrypt ##
@@ -302,7 +329,7 @@ ss_ln "${PATH_LETSENCRYPT_CERT_FULLCHAIN}" "${SYMLINK_LETSENCRYPT_FULLCHAIN}"
 ss_ln "${PATH_LETSENCRYPT_CERT_PRIVKEY}" "${SYMLINK_LETSENCRYPT_PRIVKEY}"
 
 ####################################################################################################
-#### H. SS-Encrypt-Certbot: Run SS-Perms-Nginx-Config ##############################################
+#### I. SS-Encrypt-Certbot: Run SS-Perms-Nginx-Config ##############################################
 ####################################################################################################
 
 source "${PATH_SS_PERMS_NGINX_CONFIG}"
