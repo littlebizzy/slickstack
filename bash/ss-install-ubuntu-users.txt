@@ -86,10 +86,14 @@ ss_adduser "${SUDO_USER}"
 ## assign password to sudo user ##
 echo "${SUDO_USER}:${SUDO_PASSWORD}" | /usr/sbin/chpasswd
 
-# chage -E -1 -m 0 -M -1 -I -1 -W 99999 ${SUDO_USER}
+## disable password expiration ##
+chage -m 0 -M 99999 -I -1 -E -1 "${SUDO_USER}"
 
 ## ensure home directory exists ##
 mkhomedir_helper "${SUDO_USER}"
+
+## force user shell to bash ##
+usermod -s /bin/bash "${SUDO_USER}"
 
 ####################################################################################################
 #### F. SS-Install-Ubuntu-Users: Configure SFTP User ###############################################
@@ -101,10 +105,14 @@ ss_adduser "${SFTP_USER}"
 ## assign password to sftp user ##
 echo "${SFTP_USER}:${SFTP_PASSWORD}" | /usr/sbin/chpasswd
 
-# chage -E -1 -m 0 -M -1 -I -1 -W 99999 ${SFTP_USER}
+## disable password expiration ##
+chage -m 0 -M 99999 -I -1 -E -1 "${SFTP_USER}"
 
 ## ensure home directory exists ##
 mkhomedir_helper "${SFTP_USER}"
+
+## lockdown to non-interactive shell ##
+usermod -s /usr/sbin/nologin "${SFTP_USER}"
 
 ####################################################################################################
 #### G. SS-Install-Ubuntu-Users: Configure User Groups #############################################
