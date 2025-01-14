@@ -42,11 +42,11 @@
 
 ## THIS SNIPPET DOES NOT RELY ON SS-CONFIG OR SS-FUNCTIONS
 ## SNIPPET: ss cron jobs
-## UPDATED: 10FEB2023
+## UPDATED: 15JAN2025
 
 VALIDATE_SS_CONFIG=$(grep 'SS_BUILD' /var/www/ss-config)
 if [[ -z "${VALIDATE_SS_CONFIG}" ]]; then
-    SS_CONFIG_RECENT_BACKUPS=$(ls -1rta /var/www/backups/config/ss-config.bak* | tail -n1)
+    SS_CONFIG_RECENT_BACKUPS=$(find /var/www/backups/config/ -maxdepth 1 -name 'ss-config.bak*' -type f -printf '%T@ %p\n' | sort -n | tail -n1 | cut -d' ' -f2-)
     SS_CONFIG_BEST_MATCH=$(grep -il 'SS_BUILD' "${SS_CONFIG_RECENT_BACKUPS}")
     rm -rf /tmp/ss-config
     mv -f "${SS_CONFIG_BEST_MATCH}" /tmp/ss-config
