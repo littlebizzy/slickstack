@@ -43,21 +43,21 @@
 
 ## THIS SNIPPET DOES NOT RELY ON SS-CONFIG OR SS-FUNCTIONS
 ## SNIPPET: ss cron jobs
-## UPDATED: 10FEB2023
+## UPDATED: 15JAN2025
 
-VALIDATE_SS_CONFIG=$(grep 'SS_BUILD' /var/www/ss-config)
+VALIDATE_SS_CONFIG=$(/usr/bin/grep 'SS_BUILD' /var/www/ss-config)
 if [[ -z "${VALIDATE_SS_CONFIG}" ]]; then
-    SS_CONFIG_RECENT_BACKUPS=$(ls -1rta /var/www/backups/config/ss-config.bak* | tail -n1)
-    SS_CONFIG_BEST_MATCH=$(grep -il 'SS_BUILD' "${SS_CONFIG_RECENT_BACKUPS}")
-    rm -rf /tmp/ss-config
-    mv -f "${SS_CONFIG_BEST_MATCH}" /tmp/ss-config
-    VALIDATE_TMP_SS_CONFIG=$(grep 'SS_BUILD' /tmp/ss-config)
+    SS_CONFIG_RECENT_BACKUPS=$(/bin/ls -1rta /var/www/backups/config/ss-config.bak* | /usr/bin/tail -n1)
+    SS_CONFIG_BEST_MATCH=$(/usr/bin/grep -il 'SS_BUILD' "${SS_CONFIG_RECENT_BACKUPS}")
+    /bin/rm -rf /tmp/ss-config
+    /bin/mv -f "${SS_CONFIG_BEST_MATCH}" /tmp/ss-config
+    VALIDATE_TMP_SS_CONFIG=$(/usr/bin/grep 'SS_BUILD' /tmp/ss-config)
     if [[ -n "${VALIDATE_TMP_SS_CONFIG}" ]]; then
-        mv -f /tmp/ss-config /var/www/ss-config
-        chown root:root /var/www/ss-config ## must be root:root
-        chmod 0700 /var/www/ss-config ## 0700 means only root can execute
+        /bin/mv -f /tmp/ss-config /var/www/ss-config
+        /bin/chown root:root /var/www/ss-config ## must be root:root
+        /bin/chmod 0700 /var/www/ss-config ## 0700 means only root can execute
     fi
-    rm -rf /tmp/ss-config
+    /bin/rm -rf /tmp/ss-config
 fi
 
 ####################################################################################################
