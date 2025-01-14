@@ -47,7 +47,7 @@
 
 VALIDATE_SS_CONFIG=$(/usr/bin/grep 'SS_BUILD' /var/www/ss-config)
 if [[ -z "${VALIDATE_SS_CONFIG}" ]]; then
-    SS_CONFIG_RECENT_BACKUPS=$(/bin/ls -1rta /var/www/backups/config/ss-config.bak* | /usr/bin/tail -n1)
+    SS_CONFIG_RECENT_BACKUPS=$(/usr/bin/find /var/www/backups/config/ -maxdepth 1 -name 'ss-config.bak*' -type f -printf '%T@ %p\n' | /usr/bin/sort -n | /usr/bin/tail -n1 | /usr/bin/cut -d' ' -f2-)
     SS_CONFIG_BEST_MATCH=$(/usr/bin/grep -il 'SS_BUILD' "${SS_CONFIG_RECENT_BACKUPS}")
     /bin/rm -rf /tmp/ss-config
     /bin/mv -f "${SS_CONFIG_BEST_MATCH}" /tmp/ss-config
