@@ -46,17 +46,24 @@
 ## UPDATED: 15JAN2025
 
 VALIDATE_SS_CONFIG=$(grep 'SS_BUILD' /var/www/ss-config)
+
+## find most recent backup ##
 if [[ -z "${VALIDATE_SS_CONFIG}" ]]; then
     SS_CONFIG_RECENT_BACKUPS=$(find /var/www/backups/config/ -maxdepth 1 -name 'ss-config.bak*' -type f -printf '%T@ %p\n' | sort -n | tail -n1 | cut -d' ' -f2-)
     SS_CONFIG_BEST_MATCH=$(grep -il 'SS_BUILD' "${SS_CONFIG_RECENT_BACKUPS}")
-    rm -rf /tmp/ss-config
+
+    ## validate best match backup ##
     mv -f "${SS_CONFIG_BEST_MATCH}" /tmp/ss-config
     VALIDATE_TMP_SS_CONFIG=$(grep 'SS_BUILD' /tmp/ss-config)
+
+    ## replace ss-config if valid ##
     if [[ -n "${VALIDATE_TMP_SS_CONFIG}" ]]; then
         mv -f /tmp/ss-config /var/www/ss-config
-        chown root:root /var/www/ss-config ## must be root:root
-        chmod 0700 /var/www/ss-config ## 0700 means only root can execute
+        chown root:root /var/www/ss-config
+        chmod 0700 /var/www/ss-config
     fi
+
+    ## cleanup temp files ##
     rm -rf /tmp/ss-config
 fi
 
@@ -104,6 +111,7 @@ if [[ -z "${VALIDATE_SS_FUNCTIONS}" ]] || [[ -n "${OUTDATED_SS_FUNCTIONS}" ]]; t
         false
     fi
 
+    ## cleanup temp files ##
     rm -f /tmp/ss-functions
 fi
 
