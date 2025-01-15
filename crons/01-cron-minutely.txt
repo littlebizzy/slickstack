@@ -230,13 +230,16 @@ source "${PATH_01_CRON_MINUTELY_CUSTOM}"
 #### H. 01-Cron-Minutely: Run FIFO Command Queue ###################################################
 ####################################################################################################
 
+## here we read the FIFO queue to run SlickStack scripts from the WP Admin dashboard ##
+## Admin users in WordPress can send commands to the FIFO for safe execution ##
+
 if [[ -p "${PATH_FIFO}" ]]; then
-    # Read from the FIFO file and execute each command (non-blocking)
-    while read -r command < "${PATH_FIFO}"; do
-        # Define an array of approved commands
+    ## read the FIFO file and execute each command (non-blocking) ##
+    while read -r -t 2 command < "${PATH_FIFO}"; do
+        ## list of allowed commands ##
         approved_commands=("command1" "command2" "/bin/bash /var/www/ss-reset-password-sftp")
 
-        # Check if the command is in the approved list
+        ## check if command is allowed ##
         if [[ " ${approved_commands[*]} " =~ " ${command} " ]]; then
             eval "${command}"
         fi
