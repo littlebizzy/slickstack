@@ -26,7 +26,7 @@
 ## B. Validate (Restore) SS-Functions
 ## C. Validate (Restore) SS-Check + SS-Worker
 ## D. Source SS-Config + SS-Functions (After Validated)
-## E. Run SS-Check + SS-Worker In Case Frozen
+## E. Run SS-Check + SS-Worker In Case Overdue
 ## F. Touch Timestamp File
 ## G. Run Custom Tasks (EDIT SOURCED FILES)
 ## H. Run WP-Cron (Conditional)
@@ -215,30 +215,30 @@ source /var/www/ss-functions
 ## BELOW THIS RELIES ON SS-CONFIG AND SS-FUNCTIONS
 
 ####################################################################################################
-#### E. 04-Cron-Quarter-Hourly: Run SS-Check + SS-Worker In Case Frozen ############################
+#### E. 04-Cron-Quarter-Hourly: Run SS-Check + SS-Worker In Case Overdue ###########################
 ####################################################################################################
 
 ## SlickStack crontab and cron jobs can self-heal but that is not enough to recover ##
-## this snippet ensures that ss-check and ss-worker are run in case inactive ##
+## this snippet ensures that ss-check and ss-worker are run in case overdue ##
 
 ## SNIPPET: ss cron jobs
-## UPDATED: 21FEB2023
+## UPDATED: 15JAN2025
 
-OUTDATED_SECONDS="900" ## 15 mins
+OUTDATED_SECONDS=900 ## 15 minutes
 CURRENT_TIME=$(date +%s)
-MODIFIED_TIMESTAMP_SS_CHECK=$(stat "${TIMESTAMP_SS_CHECK}" -c %Y)
-MODIFIED_TIMESTAMP_SS_WORKER=$(stat "${TIMESTAMP_SS_WORKER}" -c %Y)
-TIME_DIFFERENCE_SS_CHECK=$(expr "${CURRENT_TIME}" - "${MODIFIED_TIMESTAMP_SS_CHECK}")
-TIME_DIFFERENCE_SS_WORKER=$(expr "${CURRENT_TIME}" - "${MODIFIED_TIMESTAMP_SS_WORKER}")
 
-## run ss-check if frozen ##
+## run ss-check if overdue ##
+MODIFIED_TIMESTAMP_SS_CHECK=$(stat -c %Y "${TIMESTAMP_SS_CHECK}")
+TIME_DIFFERENCE_SS_CHECK=$(( "${CURRENT_TIME}" - "${MODIFIED_TIMESTAMP_SS_CHECK}" ))
 if [[ "${TIME_DIFFERENCE_SS_CHECK}" -gt "${OUTDATED_SECONDS}" ]]; then
-   source /var/www/ss-check
+    source "${PATH_SS_CHECK}"
 fi
 
-## run ss-worker if frozen ##
+## run ss-worker if overdue ##
+MODIFIED_TIMESTAMP_SS_WORKER=$(stat -c %Y "${TIMESTAMP_SS_WORKER}")
+TIME_DIFFERENCE_SS_WORKER=$(( "${CURRENT_TIME}" - "${MODIFIED_TIMESTAMP_SS_WORKER}" ))
 if [[ "${TIME_DIFFERENCE_SS_WORKER}" -gt "${OUTDATED_SECONDS}" ]]; then
-   source /var/www/ss-worker
+    source "${PATH_SS_WORKER}"
 fi
 
 ####################################################################################################
