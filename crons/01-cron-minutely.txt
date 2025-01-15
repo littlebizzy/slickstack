@@ -126,44 +126,78 @@ fi
 ## SNIPPET: ss cron jobs
 ## UPDATED: 15JAN2025
 
-## validate ss-check ##
 VALIDATE_SS_CHECK=$(grep 'SS_EOF' /var/www/ss-check)
 OUTDATED_SS_CHECK=$(find "/var/www/ss-check" -maxdepth 1 -type f -mmin +720)
 
+## recover from github ##
 if [[ -z "${VALIDATE_SS_CHECK}" ]] || [[ -n "${OUTDATED_SS_CHECK}" ]]; then
-    wget --no-cache --no-cookies --quiet --inet4-only --tries=1 --timeout=5 -O /tmp/ss-check https://raw.githubusercontent.com/littlebizzy/slickstack/master/bash/ss-check.txt
+    wget --no-cache --no-cookies --quiet --inet4-only --tries=2 --timeout=3 --waitretry=2 -O /tmp/ss-check https://raw.githubusercontent.com/littlebizzy/slickstack/master/bash/ss-check.txt || \
+    wget --no-cache --no-cookies --quiet --inet6-only --tries=2 --timeout=3 --waitretry=2 -O /tmp/ss-check https://raw.githubusercontent.com/littlebizzy/slickstack/master/bash/ss-check.txt
     VALIDATE_TMP_SS_CHECK=$(grep 'SS_EOF' /tmp/ss-check)
-    if [[ -n "${VALIDATE_TMP_SS_CHECK}" ]]; then
-        mv -f /tmp/ss-check /var/www/ss-check
-        chown root:root /var/www/ss-check ## must be root:root
-        chmod 0700 /var/www/ss-check ## 0700 means only root can execute
-    else
-        wget --no-cache --no-cookies --quiet --inet4-only --tries=1 --timeout=5 -O /tmp/ss-check https://gitlab.com/littlebizzy/slickstack/-/raw/master/bash/ss-check.txt
-        mv -f /tmp/ss-check /var/www/ss-check
-        chown root:root /var/www/ss-check ## must be root:root
-        chmod 0700 /var/www/ss-check ## 0700 means only root can execute
+
+    ## recover from gitlab ##
+    if [[ -z "${VALIDATE_TMP_SS_CHECK}" ]]; then
+        wget --no-cache --no-cookies --quiet --inet4-only --tries=1 --timeout=2 -O /tmp/ss-check https://gitlab.com/littlebizzy/slickstack/-/raw/master/bash/ss-check.txt || \
+        wget --no-cache --no-cookies --quiet --inet6-only --tries=1 --timeout=2 -O /tmp/ss-check https://gitlab.com/littlebizzy/slickstack/-/raw/master/bash/ss-check.txt
+        VALIDATE_TMP_SS_CHECK=$(grep 'SS_EOF' /tmp/ss-check)
+
+        ## recover from sourceforge ##
+        if [[ -z "${VALIDATE_TMP_SS_CHECK}" ]]; then
+            wget --no-cache --no-cookies --quiet --inet4-only --tries=1 --timeout=1 -O /tmp/ss-check https://sourceforge.net/p/slickstack/code/ci/master/tree/bash/ss-check.txt?format=raw || \
+            wget --no-cache --no-cookies --quiet --inet6-only --tries=1 --timeout=1 -O /tmp/ss-check https://sourceforge.net/p/slickstack/code/ci/master/tree/bash/ss-check.txt?format=raw
+            VALIDATE_TMP_SS_CHECK=$(grep 'SS_EOF' /tmp/ss-check)
+        fi
     fi
-    rm -rf /tmp/ss-check
+
+    ## replace ss-check if valid ##
+    if [[ -n "${VALIDATE_TMP_SS_CHECK}" ]]; then
+        mkdir -p /var/www
+        mv -f /tmp/ss-check /var/www/ss-check
+        chown root:root /var/www/ss-check
+        chmod 0700 /var/www/ss-check
+    else
+        false
+    fi
+
+    ## cleanup temp files ##
+    rm -f /tmp/ss-check
 fi
 
-## validate ss-worker ##
 VALIDATE_SS_WORKER=$(grep 'SS_EOF' /var/www/ss-worker)
 OUTDATED_SS_WORKER=$(find "/var/www/ss-worker" -maxdepth 1 -type f -mmin +720)
 
+## recover from github ##
 if [[ -z "${VALIDATE_SS_WORKER}" ]] || [[ -n "${OUTDATED_SS_WORKER}" ]]; then
-    wget --no-cache --no-cookies --quiet --inet4-only --tries=1 --timeout=5 -O /tmp/ss-worker https://raw.githubusercontent.com/littlebizzy/slickstack/master/bash/ss-worker.txt
+    wget --no-cache --no-cookies --quiet --inet4-only --tries=2 --timeout=3 --waitretry=2 -O /tmp/ss-worker https://raw.githubusercontent.com/littlebizzy/slickstack/master/bash/ss-worker.txt || \
+    wget --no-cache --no-cookies --quiet --inet6-only --tries=2 --timeout=3 --waitretry=2 -O /tmp/ss-worker https://raw.githubusercontent.com/littlebizzy/slickstack/master/bash/ss-worker.txt
     VALIDATE_TMP_SS_WORKER=$(grep 'SS_EOF' /tmp/ss-worker)
-    if [[ -n "${VALIDATE_TMP_SS_WORKER}" ]]; then
-        mv -f /tmp/ss-worker /var/www/ss-worker
-        chown root:root /var/www/ss-worker ## must be root:root
-        chmod 0700 /var/www/ss-worker ## 0700 means only root can execute
-    else
-        wget --no-cache --no-cookies --quiet --inet4-only --tries=1 --timeout=5 -O /tmp/ss-worker https://gitlab.com/littlebizzy/slickstack/-/raw/master/bash/ss-worker.txt
-        mv -f /tmp/ss-worker /var/www/ss-worker
-        chown root:root /var/www/ss-worker ## must be root:root
-        chmod 0700 /var/www/ss-worker ## 0700 means only root can execute
+
+    ## recover from gitlab ##
+    if [[ -z "${VALIDATE_TMP_SS_WORKER}" ]]; then
+        wget --no-cache --no-cookies --quiet --inet4-only --tries=1 --timeout=2 -O /tmp/ss-worker https://gitlab.com/littlebizzy/slickstack/-/raw/master/bash/ss-worker.txt || \
+        wget --no-cache --no-cookies --quiet --inet6-only --tries=1 --timeout=2 -O /tmp/ss-worker https://gitlab.com/littlebizzy/slickstack/-/raw/master/bash/ss-worker.txt
+        VALIDATE_TMP_SS_WORKER=$(grep 'SS_EOF' /tmp/ss-worker)
+
+        ## recover from sourceforge ##
+        if [[ -z "${VALIDATE_TMP_SS_WORKER}" ]]; then
+            wget --no-cache --no-cookies --quiet --inet4-only --tries=1 --timeout=1 -O /tmp/ss-worker https://sourceforge.net/p/slickstack/code/ci/master/tree/bash/ss-worker.txt?format=raw || \
+            wget --no-cache --no-cookies --quiet --inet6-only --tries=1 --timeout=1 -O /tmp/ss-worker https://sourceforge.net/p/slickstack/code/ci/master/tree/bash/ss-worker.txt?format=raw
+            VALIDATE_TMP_SS_WORKER=$(grep 'SS_EOF' /tmp/ss-worker)
+        fi
     fi
-    rm -rf /tmp/ss-worker
+
+    ## replace ss-worker if valid ##
+    if [[ -n "${VALIDATE_TMP_SS_WORKER}" ]]; then
+        mkdir -p /var/www
+        mv -f /tmp/ss-worker /var/www/ss-worker
+        chown root:root /var/www/ss-worker
+        chmod 0700 /var/www/ss-worker
+    else
+        false
+    fi
+
+    ## cleanup temp files ##
+    rm -f /tmp/ss-worker
 fi
 
 ####################################################################################################
