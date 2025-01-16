@@ -263,18 +263,26 @@ source "${PATH_04_CRON_QUARTER_HOURLY_CUSTOM}"
 #### H. 04-Cron-Quarter-Hourly: Run WP-Cron (Conditional) ##########################################
 ####################################################################################################
 
-## this snippet will call wp-cron via the server if enabled in your ss-config settings ##
-## it is useful for sites with low traffic or that need strict cron management ##
+## this snippet will run WP-Cron via the server if changed in your ss-config settings ##
+## WP-CLI is the default as it works much better (also required for Multisite) ##
 
+## PATTERN: ss cron jobs
+## UPDATED: 16JAN2025
+
+## run wp-cron if interval matches ##
 if [[ "${WP_CRON_INTERVAL}" == "quarter-hourly" ]]; then
-    if [[ "${WP_CRON_METHOD}" == "server" ]]; then 
-        /usr/bin/php /var/www/html/wp-cron.php
-    elif [[ "${WP_CRON_METHOD}" == "wpcli" ]]; then
+    ## use wp-cli unless set to server or if running multisite ##
+    if [[ "${WP_CRON_METHOD}" != "server" || "${WP_MULTISITE}" == "true" ]]; then
         if [[ "${WP_MULTISITE}" == "true" ]]; then
-            sudo -u "${SFTP_USER}" /usr/local/bin/wp --path=/var/www/html site list --field=url | sudo -u "${SFTP_USER}" xargs -i -n1 /usr/local/bin/wp --path=/var/www/html cron event run --due-now --url="{}"
+            ## run wp-cron for all sites in multisite ##
+            sudo -u "${SFTP_USER}" "${PATH_WP_CLI}" --path="${PATH_WEB_ROOT}" site list --field=url | sudo -u "${SFTP_USER}" xargs -i -n1 "${PATH_WP_CLI}" --path="${PATH_WEB_ROOT}" cron event run --due-now --url="{}"
         else
-            sudo -u "${SFTP_USER}" /usr/local/bin/wp --path=/var/www/html cron event run --due-now
+            ## run wp-cli for single site ##
+            sudo -u "${SFTP_USER}" "${PATH_WP_CLI}" --path="${PATH_WEB_ROOT}" cron event run --due-now
         fi
+    else
+        ## use server method ##
+        "${PATH_PHP_BIN}" "${PATH_WP_CRON_PHP}"
     fi
 fi
 
