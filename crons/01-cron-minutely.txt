@@ -28,9 +28,9 @@
 ## D. Source SS-Config + SS-Functions (After Validated)
 ## E. Run SS-Check + SS-Worker In Case Overdue
 ## F. Touch Timestamp File
-## G. Run Custom Tasks (EDIT SOURCED FILES)
-## H. Run FIFO Command Queue
-## I. Run WP-Cron (Conditional)
+## G. Run FIFO Command Queue
+## H. Run WP-Cron (Conditional)
+## I. Run Custom Tasks (EDIT SOURCED FILES)
 ## J. Run Scheduled Tasks (DO NOT EDIT)
 ## K. Delete Lock File
 
@@ -252,16 +252,7 @@ fi
 ss_touch "${TIMESTAMP_01_CRON_MINUTELY}"
 
 ####################################################################################################
-#### G. 01-Cron-Minutely: Run Custom Tasks (EDIT SOURCED FILES) ####################################
-####################################################################################################
-
-## this will run custom shell commands that you can save in a reserved filename below ##
-## carefully consider server resources and best practices before customizing ##
-
-source "${PATH_01_CRON_MINUTELY_CUSTOM}"
-
-####################################################################################################
-#### H. 01-Cron-Minutely: Run FIFO Command Queue ###################################################
+#### G. 01-Cron-Minutely: Run FIFO Command Queue ###################################################
 ####################################################################################################
 
 ## here we read the FIFO queue to run SlickStack scripts from the WP Admin dashboard ##
@@ -281,7 +272,7 @@ if [[ -p "${PATH_FIFO}" && -s "${PATH_FIFO}" ]]; then
 fi
 
 ####################################################################################################
-#### I. 01-Cron-Minutely: Run WP-Cron (Conditional) ################################################
+#### H. 01-Cron-Minutely: Run WP-Cron (Conditional) ################################################
 ####################################################################################################
 
 ## this snippet will call wp-cron via the server if enabled in your ss-config settings ##
@@ -298,6 +289,15 @@ if [[ "${WP_CRON_INTERVAL}" == "minutely" ]]; then
         fi
     fi
 fi
+
+####################################################################################################
+#### I. 01-Cron-Minutely: Run Custom Tasks (EDIT SOURCED FILES) ####################################
+####################################################################################################
+
+## this will run custom shell commands that you can save in a reserved filename below ##
+## carefully consider server resources and best practices before customizing ##
+
+source "${PATH_01_CRON_MINUTELY_CUSTOM}"
 
 ####################################################################################################
 #### J. 01-Cron-Minutely: Run Scheduled Tasks (DO NOT EDIT) ########################################
