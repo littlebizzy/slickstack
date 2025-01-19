@@ -30,7 +30,7 @@
 ## F. Touch Timestamp File
 ## G. Run Custom Tasks (EDIT SOURCED FILES)
 ## H. Run Scheduled Tasks (DO NOT EDIT)
-## I. Run Scheduled Reboot
+## I. Scheduled Reboot (Conditional)
 ## J. Delete Lock File
 
 ####################################################################################################
@@ -266,19 +266,14 @@ source "${PATH_14_CRON_SOMETIMES_CUSTOM}"
 ## the below tasks will be called if configured to run at this interval in ss-config ##
 ## certain tasks are automatically called if the relevant interval is missing ##
 
-## run ss-update-config if set to sometimes ##
-if [[ "${INTERVAL_SS_UPDATE_CONFIG}" == "sometimes" ]]; then 
-    source "${PATH_SS_UPDATE_CONFIG}"
-fi
-
 ## run ss-encrypt-openssl if set to sometimes ##
 if [[ "${INTERVAL_SS_ENCRYPT_OPENSSL}" == "sometimes" ]]; then 
     source "${PATH_SS_ENCRYPT_OPENSSL}"
 fi
 
-## run ss-install-clamav if set to sometimes ##
-if [[ "${INTERVAL_SS_INSTALL_CLAMAV}" == "sometimes" ]]; then 
-    source "${PATH_SS_INSTALL_CLAMAV}"
+## run ss-update-config if set to sometimes ##
+if [[ "${INTERVAL_SS_UPDATE_CONFIG}" == "sometimes" ]]; then 
+    source "${PATH_SS_UPDATE_CONFIG}"
 fi
 
 ## run ss-update-modules if set to sometimes ##
@@ -286,8 +281,13 @@ if [[ "${INTERVAL_SS_UPDATE_MODULES}" == "sometimes" ]]; then
     source "${PATH_SS_UPDATE_MODULES}"
 fi
 
+## run ss-purge-transients if set to sometimes ##
+if [[ "${INTERVAL_SS_PURGE_TRANSIENTS}" == "sometimes" ]]; then 
+    source "${PATH_SS_PURGE_TRANSIENTS}"
+fi
+
 ####################################################################################################
-#### I. 14-Cron-Sometimes: Run Scheduled Reboot ####################################################
+#### I. 14-Cron-Sometimes: Scheduled Reboot (Conditional) ##########################################
 ####################################################################################################
 
 ## reboot task must come last in this cron job to avoid skipping other scheduled tasks ##
