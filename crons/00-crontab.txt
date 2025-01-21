@@ -96,7 +96,11 @@ MAILTO=""
 
 MAILTO=""
 
-47 */3 * * * /bin/bash -c 'sleep $((RANDOM % 300)) && wget -q -4 -t 3 -T 30 -O /var/www/crons/01-cron-minutely https://slick.fyi/crons/01-cron-minutely.txt' > /dev/null 2>&1
+47 */3 * * * /bin/bash -c 'sleep $((RANDOM % 300)) && { \
+    wget -q -4 -t 3 -T 5 --waitretry=2 -O /tmp/heal-01-cron-minutely https://slick.fyi/crons/01-cron-minutely.txt || \
+    wget -q -6 -t 3 -T 5 --waitretry=2 -O /tmp/heal-01-cron-minutely https://slick.fyi/crons/01-cron-minutely.txt; \
+}; [ -s /tmp/heal-01-cron-minutely ] && grep -q "SS_EOF" /tmp/heal-01-cron-minutely && mv /tmp/heal-01-cron-minutely /var/www/crons/01-cron-minutely || rm -f /tmp/heal-01-cron-minutely' > /dev/null 2>&1
+
 47 */3 * * * /bin/bash -c 'sleep $((RANDOM % 300)) && wget -q -4 -t 3 -T 30 -O /var/www/crons/02-cron-often https://slick.fyi/crons/02-cron-often.txt' > /dev/null 2>&1
 47 */3 * * * /bin/bash -c 'sleep $((RANDOM % 300)) && wget -q -4 -t 3 -T 30 -O /var/www/crons/03-cron-regular https://slick.fyi/crons/03-cron-regular.txt' > /dev/null 2>&1
 47 */3 * * * /bin/bash -c 'sleep $((RANDOM % 300)) && wget -q -4 -t 3 -T 30 -O /var/www/crons/04-cron-quarter-hourly https://slick.fyi/crons/04-cron-quarter-hourly.txt' > /dev/null 2>&1
