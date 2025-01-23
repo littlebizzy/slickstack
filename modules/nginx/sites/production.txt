@@ -377,18 +377,19 @@ location ~* \.(asp|aspx|doc|docx|dwf|gpx|hwp|jsp|kml|kmz|log|odp|ods|odt|pdf|ppt
     # }
 
 
-# Cache XML sitemaps for 5 minutes
-location ~* /sitemap(_index)?.xml$ {
+## xml sitemaps ##
+location ~* sitemap.*\.xml$ {
     fastcgi_cache_valid 200 5m;
-    set $skip_cache 0;  # Enable caching for this location
+    set $skip_cache 0;
+    try_files $uri /index.php?$args;
 }
 
-# Cache RSS feeds for 5 minutes
-location ~* /feed/(.*)$ {
+## rss feeds ##
+location ~* /feed(/.*)?$ {
     fastcgi_cache_valid 200 5m;
-    set $skip_cache 0;  # Enable caching for this location
+    set $skip_cache 0;
+    try_files /index.php?$args;
 }
-
 
 ####################################################################################################
 #### G. Server Block (Production): PHP-FPM Routing #################################################
@@ -725,6 +726,7 @@ location = /ads.txt {
 #### SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ###############
 ####################################################################################################
 
+## Ref: ChatGPT
 ## Ref: https://nginx.viraptor.info
 ## Ref: https://unix.stackexchange.com/questions/91774/performance-of-unix-sockets-vs-tcp-ports
 ## Ref: https://stackoverflow.com/questions/257433/postgresql-unix-domain-sockets-vs-tcp-sockets/257479
