@@ -181,25 +181,8 @@ server {
     #### redirect trackback URLs ####
     rewrite ^(.*)/trackback/?$ $1 permanent;
 
-    #### redirect atom feeds to parent URL ####
-    rewrite ^/(.*)/atom/?$ /$1 permanent;
-
-    #### redirect rss2 feeds to parent URL ####
-    rewrite ^/(.*)/rss2/?$ /$1 permanent;
-
     #### redirect comment feeds to parent URL ####
     rewrite ^(.*/)comments/?$ $1 permanent;
-
-    #### preserve the master WordPress RSS feed and set noindex headers ####
-    location ~ ^/feed/?$ {
-        try_files $uri $uri/ /index.php?$args;
-        set $robots "noindex, nofollow, nosnippet, noarchive";
-    }
-
-    #### redirect all feeds except for the master WordPress and bbPress topic feeds ####
-    location ~ ^/(?!topics/feed/?$|feed/?$).*/feed/?$ {
-        rewrite ^/(.*)/feed/?$ /$1 permanent;
-    }
 
 ####################################################################################################
 #### Server Block (Production): Root Location Block ################################################
@@ -376,6 +359,9 @@ location ~* \.(asp|aspx|doc|docx|dwf|gpx|hwp|jsp|kml|kmz|log|odp|ods|odt|pdf|ppt
     #    set $skip_cache 1;
     # }
 
+####################################################################################################
+#### XXX. Server Block (Production): XML Sitemaps ##################################################
+####################################################################################################
 
 ## xml sitemaps ##
 location ~* sitemap.*\.xml$ {
@@ -384,11 +370,29 @@ location ~* sitemap.*\.xml$ {
     try_files $uri /index.php?$args;
 }
 
-## rss feeds ##
-location ~* /feed(/.*)?$ {
+####################################################################################################
+#### XXX. Server Block (Production): RSS Feeds #####################################################
+####################################################################################################
+
+## preserve main wordpress feed ##
+location ~* ^/feed/?$ {
     fastcgi_cache_valid 200 5m;
     set $skip_cache 0;
-    try_files /index.php?$args;
+    set $robots "noindex, nofollow, nosnippet, noarchive";
+    try_files $uri /index.php?$args;
+}
+
+## preserve bbpress topics feed ##
+location ~* ^/topics/feed/?$ {
+    fastcgi_cache_valid 200 5m;
+    set $skip_cache 0;
+    set $robots "noindex, nofollow, nosnippet, noarchive";
+    try_files $uri /index.php?$args;
+}
+
+## redirect all other feeds ##
+location ~* ^/(?!topics/feed/?$|feed/?$).+/(feed|atom|rss2)/?$ {
+    rewrite ^/(.*)/(feed|atom|rss2)/?$ /$1 permanent;
 }
 
 ####################################################################################################
