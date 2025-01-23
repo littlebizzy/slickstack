@@ -287,9 +287,8 @@ location ~* \.(asp|aspx|doc|docx|dwf|gpx|hwp|jsp|kml|kmz|log|odp|ods|odt|pdf|ppt
 }
 
 ####################################################################################################
-
+#### XXX. Server Block (Production): REST API Settings #############################################
 ####################################################################################################
-
 
 ## disabled until new zone added to nginx.conf
 # location ~ ^/wp-json/wp/v2/ {
@@ -297,10 +296,17 @@ location ~* \.(asp|aspx|doc|docx|dwf|gpx|hwp|jsp|kml|kmz|log|odp|ods|odt|pdf|ppt
 #    limit_req_status 429;
 # }
 
-
-    ## fixes potential 403 denied issues with WP-JSON ##
+    ## ensure proper handling and prevent 403 errors with wp-json ##
     location ~ ^/wp-json/ {
-        ## if permalinks not enabled or not loaded properly in the browser ##
+        ## prevent caching for dynamic responses ##
+        add_header Cache-Control "no-cache, must-revalidate, max-age=0, no-store, private";
+        add_header Pragma "no-cache";
+        add_header Expires "0";
+
+        ## skip fastcgi cache for all wp-json requests ##
+        set $skip_cache 1;
+
+        ## rewrite requests to query string format if permalinks are not enabled ##
         rewrite ^/wp-json/(.*?)$ /?rest_route=/$1 last;
     }
 	
