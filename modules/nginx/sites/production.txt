@@ -410,42 +410,41 @@ location ~* ^/(?!topics/feed/?$|feed/?$).+/(feed|atom|rss2)/?$ {
 
 location ~* \.php$ {
 
+    ## rate limiting for php requests ##
     limit_req zone=php_second burst=@LIMIT_REQUESTS_PHP_SECOND_BURST nodelay;
     limit_req zone=php_minute burst=@LIMIT_REQUESTS_PHP_MINUTE_BURST nodelay;
 
-    ## default session is blank and cookie is secure ##
+    ## initialize default session and secure cookie settings ##
     set $ss_session "";
     set $cachecontrol "nocache";
     set $setcookie "Path=/; HttpOnly; Secure";
 
-    ## unique session (cookie suffix) after users interact with woocommerce ##
+    ## detect woocommerce session cookie and bypass cache ##
     if ($http_cookie ~* "wp_woocommerce_session_[^=]*=([^%]+)%7C") {
         set $skip_cache 1;
         set $ss_session wp_woocommerce_session_$1;
     }
 
-    ## blank session and strip cookie header if cached page ##
-    if ($skip_cache = 0 ) {
+    ## clear cookies if cache is not bypassed ##
+    if ($skip_cache = 0) {
         more_clear_headers "Set-Cookie*";
     }
 
-    ## fastcgi stuff ##
+    ## fastcgi configurations ##
     include /etc/nginx/fastcgi.conf;
     fastcgi_split_path_info ^(.+\.php)(/.+)$;
     fastcgi_pass 127.0.0.1:9000;
     fastcgi_read_timeout 300;
     fastcgi_index index.php;
     fastcgi_cache WORDPRESS;
-    fastcgi_cache_valid 200 301 404 1440m;
+    fastcgi_cache_valid 200 301 404 @CACHEVALID;
     fastcgi_cache_bypass $skip_cache;
     fastcgi_no_cache $skip_cache;
 
-    ## try_files must be after fastcgi_cache or fallback to WordPress fails ##
-    ## send .php requests to WordPress for error handling if not found ##
-    ## https://github.com/littlebizzy/slickstack/issues/204 ##
+    ## ensure proper request fallback for WordPress ##
     try_files $uri $uri/ /index.php?$args;
 
-    ## universal robots header ##
+    ## set robots meta headers ##
     more_set_headers "X-Robots-Tag $robots";
 }
 	
@@ -838,6 +837,7 @@ location = /ads.txt {
 ## Ref: https://www.oreilly.com/library/view/nginx-cookbook/9781492078470/ch01.html
 ## Ref: https://woocommerce.com/document/woocommerce-cookies/
 ## Ref: https://slickstack.io/forum/topic/which-woocommerce-cookies-should-skip-the-nginx-cache
+## Ref: https://github.com/littlebizzy/slickstack/issues/204
 
 ## Ref: https://stackoverflow.com/questions/72516213/how-to-rewrite-wordpress-default-search-url-slug-to-clean-search-nginx
 ## ORGANIZE BLOCKS BETTER PER: ##
