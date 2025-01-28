@@ -20,7 +20,13 @@ jobs:
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan -t rsa git.code.sf.net >> ~/.ssh/known_hosts
 
+      - name: Debug SSH Connection
+        run: |
+          echo "Testing SSH connection to SourceForge..."
+          ssh -T jessuppi@git.code.sf.net || exit 1
+
       - name: Push to SourceForge
         run: |
           git remote add sourceforge ssh://jessuppi@git.code.sf.net/p/slickstack/code
+          echo "Pushing code to SourceForge..."
           git push sourceforge master --force
