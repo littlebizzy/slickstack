@@ -300,7 +300,7 @@ location ~* \.(asp|aspx|doc|docx|dwf|gpx|hwp|jsp|kml|kmz|log|odp|ods|odt|pdf|ppt
 #    limit_req_status 429;
 # }
 
-    ## ensure proper handling and prevent 403 errors with wp-json ##
+    ## handle wordpress wp-json requests ##
     location ~ ^/wp-json/ {
         ## prevent caching for dynamic responses ##
         add_header Cache-Control "no-cache, must-revalidate, max-age=0, no-store, private";
@@ -310,8 +310,8 @@ location ~* \.(asp|aspx|doc|docx|dwf|gpx|hwp|jsp|kml|kmz|log|odp|ods|odt|pdf|ppt
         ## skip fastcgi cache for all wp-json requests ##
         set $skip_cache 1;
 
-        ## rewrite requests to query string format if permalinks are not enabled ##
-        rewrite ^/wp-json/(.*?)$ /?rest_route=/$1 last;
+        ### ensure wordpress process requests ##
+        try_files $uri /index.php?$args;
     }
 	
 ####################################################################################################
