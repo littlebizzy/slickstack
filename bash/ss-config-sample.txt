@@ -21,7 +21,7 @@
 ## run ss-update-config if outdated (check the public mirror link for current build) ##
 ## builds merely prevent conflicts as SlickStack scripts auto-update regardless ##
 
-SS_BUILD="FEB2025F"
+SS_BUILD="FEB2025G"
 
 ## SS_LOCKDOWN = [false|true] stops dev site from being overwritten... and more soon ##
 ## SS_APP = [wordpress|etc] only wordpress is supported currently (feedback welcome) ##
@@ -49,34 +49,104 @@ SS_MASSIVE_SITE="false"
 #### SS-Config: Access Settings ####################################################################
 ####################################################################################################
 
-## write down your sudo password or you will be locked out of your server forever ##
+## store your sudo password securely otherwise you may lose SSH access to your server ##
 ## after ss-install finishes the root user will no longer have shell access ##
 
-## SUDO_USER = [*must be unique*] username for SSH (must be different than SFTP_USER) ##
-## SUDO_PASSWORD = [*must be unique*] something very strong (write it down) ##
+## SUDO_USER = [*must be unique*] SSH login user (must be different from SFTP_USER) ##
+## SUDO_PASSWORD = [*must be unique*] something very strong (store securely) ##
 
 SUDO_USER="@SUDO_USER"
 SUDO_PASSWORD="@SUDO_PASSWORD"
 
-## using SSH keys is only recommended for advanced users who know what they are doing ##
-## be sure to copy your public key hash into: /var/www/auth/authorized_keys ##
+## using SSH keys is only recommended for advanced users familiar with auth identities ##
+## copy your public key hash to /var/www/auth/authorized_keys if using SSH keys ##
 
-## SSH_KEYS = [false|true] if enabled then SSH password logins will be disabled ##
-## SSH_RESTRICT_IP = [false|true] enable restricting SSH logins per IP address (caution) ##
-## SSH_IPV4 = [*must be unique*] only allow SSH logins from the given IPv4 address ##
+## SSH_KEYS = [false|true] if true then SSH password logins will be fully disabled ##
+## SSH_RESTRICT_IP = [false|true] restrict SSH logins to a specific IP (use caution) ##
+## SSH_IPV4 = [*must be unique*] only allow SSH logins from this IPv4 address ##
 
 SSH_KEYS="false"
 SSH_RESTRICT_IP="false"
 SSH_IPV4="192.0.2.1"
 
-## SFTP user is jailed to the /var/www/ directory e.g. for your client to safely access ##
-## you can also use SFTP user for remote backups like CodeGuard (safer than sudo) ##
+## SFTP user is jailed to /var/www/ so your client can safely access files without risk ##
+## you can also use SFTP user for remote backups like CodeGuard which is safer ##
 
-## SFTP_USER = [*must be unique*] username that your client can login as via SFTP ##
-## SFTP_PASSWORD = [*must be unique*] something very strong (for your client) ##
+## SFTP_USER = [*must be unique*] SFTP login user (must be different from SUDO_USER) ##
+## SFTP_PASSWORD = [*must be unique*] something very strong (store securely) ##
 
 SFTP_USER="@SFTP_USER"
 SFTP_PASSWORD="@SFTP_PASSWORD"
+
+####################################################################################################
+#### SS-Config: Domain Settings ####################################################################
+####################################################################################################
+
+## below domain values are used to hardcode Nginx and WordPress config for stability ##
+## these values will override any domain settings that exist in the database ##
+
+## SITE_ROOT_DOMAIN = [example.com] root domain without any prefixes or subdomains ##
+## SITE_FULL_DOMAIN = [example.com|www.example.com|blog.example.com] no subdirectories ##
+
+SITE_ROOT_DOMAIN="@SITE_ROOT_DOMAIN"
+SITE_FULL_DOMAIN="@SITE_FULL_DOMAIN"
+
+####################################################################################################
+#### SS-Config: Cloudflare Settings ################################################################
+####################################################################################################
+
+## SlickStack assumes you are using Cloudflare for performance and security benefits ##
+## authenticated origin must be activated in the Cloudflare dashboard if enabled ##
+
+## CLOUDFLARE_EMAIL = [*must be unique*] email address used for your Cloudflare account ##
+## CLOUDFLARE_API_KEY = [*must be unique*] global API key or token (requires python v2.3.1) ##
+## CLOUDFLARE_IPS_ONLY = [false|true] restricts all traffic to Cloudflare IP addresses ##
+## CLOUDFLARE_AUTH_ORIGIN = [false|true] allows only Cloudflare TLS connections (secure) ##
+## CLOUDFLARE_REAL_IPS = [true|false] ensures server logs reflect real client IPs ##
+
+CLOUDFLARE_EMAIL=""
+CLOUDFLARE_API_KEY=""
+CLOUDFLARE_IPS_ONLY="false"
+CLOUDFLARE_AUTHENTICATED_ORIGIN="false"
+CLOUDFLARE_REAL_IPS="true"
+
+####################################################################################################
+#### SS-Config: Database Settings ##################################################################
+####################################################################################################
+
+## remote MySQL databases are supported along with custom ports required by providers ##
+## for security reasons the password for DB_PASSWORD_ROOT should be different ##
+
+## DB_REMOTE = [false|true] skips local MySQL install if true and uses a remote database ##
+## DB_HOST = [127.0.0.1] specify remote database hostname or use 127.0.0.1 for local setup ##
+## DB_PORT = [3306] some remote database providers require a specific non-standard port ##
+## DB_NAME = [production] active production database (staging and development hardcoded) ##
+## DB_PREFIX = [wp_] default wp_ prefix is recommended for easier table organization ##
+## DB_USER = [example] database user that WordPress and remote backups should authenticate as ##
+## DB_PASSWORD = [*must be unique*] strong password you likely will not need to remember ##
+## DB_PASSWORD_ROOT = [*must be unique*] used for admin@127.0.0.1 or root on older systems ##
+## DB_CHARSET = [utf8mb4] utf8mb4 is recommended for most modern MySQL configurations ##
+## DB_COLLATE = [NULL] leave blank unless a specific collation setting is necessary ##
+
+DB_REMOTE="false"
+DB_HOST="127.0.0.1"
+DB_PORT="3306"
+DB_NAME="production"
+DB_PREFIX="wp_"
+DB_USER="@DB_USER"
+DB_PASSWORD="@DB_PASSWORD_USER"
+DB_PASSWORD_ROOT="@DB_PASSWORD_ROOT"
+DB_CHARSET="utf8mb4"
+DB_COLLATE=""
+
+## Adminer is a lightweight alternative to phpMyAdmin for database management ##
+## your freelancers or team members might occasionally need to use Adminer ##
+
+## ADMINER_PUBLIC = [true|false] enables a randomized link accessible from the frontend ##
+## ADMINER_URL = [*must be unique*] should be long and completely random for security ##
+
+ADMINER_PUBLIC="true"
+ADMINER_URL="@RANDOM_STRING_ADMINER_URL"
 
 ####################################################################################################
 #### SS-Config: Pilot File Settings ################################################################
@@ -88,78 +158,6 @@ SFTP_PASSWORD="@SFTP_PASSWORD"
 ## SS_PILOT_FILE = [*must be unique*] full raw URL to secret Gist file with variables ##
 
 SS_PILOT_FILE=""
-
-####################################################################################################
-#### SS-Config: Domain Settings ####################################################################
-####################################################################################################
-
-## below domain values are used in order to hardcode Nginx and WordPress configuration ##
-## these values will override any domain settings that may exist in the database ##
-
-## SITE_ROOT_DOMAIN = [example.com|etc] root domain without any prefixes or subdomains ##
-## SITE_FULL_DOMAIN = [example.com|www.example.com|blog.example.com|etc] no subdirectories ##
-
-SITE_ROOT_DOMAIN="@SITE_ROOT_DOMAIN"
-SITE_FULL_DOMAIN="@SITE_FULL_DOMAIN"
-
-####################################################################################################
-#### SS-Config: Cloudflare Settings ################################################################
-####################################################################################################
-
-## SlickStack generally expects you to be using Cloudflare for many different reasons ##
-## authenticated origin must be activated in the Cloudflare dashboard if enabled ##
-
-## CLOUDFLARE_EMAIL = [*must be unique*] the email address on your Cloudflare account ##
-## CLOUDFLARE_API_KEY = [*must be unique*] global API key or token (requires v2.3.1 of python cloudflare module) ##
-## CLOUDFLARE_REAL_IPS = [true|false] ensures your server logs see the real client IPs ##
-## CLOUDFLARE_AUTH_ORIGIN = [false|true] allows only Cloudflare TLS connections (secure) ##
-## CLOUDFLARE_IPS_ONLY = [false|true] restricts access to Cloudflare IP addresses only ##
-
-CLOUDFLARE_REAL_IPS="true"
-CLOUDFLARE_AUTHENTICATED_ORIGIN="false"
-CLOUDFLARE_IPS_ONLY="false"
-
-## new ##
-CLOUDFLARE_EMAIL=""
-CLOUDFLARE_API_KEY=""
-
-####################################################################################################
-#### SS-Config: Database Settings ##################################################################
-####################################################################################################
-
-## remote MySQL databases are supported along with whatever port number is required ##
-## for security reasons the password for DB_PASSWORD_ROOT should be different ##
-
-## DB_REMOTE = [false|true] skips local MySQL install if true (remote database) ##
-## DB_NAME = [production|etc] active production database (staging/development hardcoded) ##
-## DB_USER = [example|etc] the user that WordPress and remote backups should use ##
-## DB_PASSWORD = [*must be unique*] strong as you probably will not need to remember it ##
-## DB_PASSWORD_ROOT = [*must be unique*] for admin@127.0.0.1 or root in older stacks ##
-## DB_HOST = [127.0.0.1|etc] enter remote database hostname here otherwise use 127.0.0.1 ##
-## DB_PORT = [3306|25060|etc] some remote database providers require a specific port ##
-## DB_PREFIX = [wp_|etc] for easier management the default wp_ prefix is recommended ##
-## DB_CHARSET = [utf8mb4|etc] most databases these days should be using utf8mb4 ##
-## DB_COLLATE = [NULL|etc] leave it blank unless you really know what you are doing ##
-
-DB_REMOTE="false"
-DB_NAME="production"
-DB_USER="@DB_USER"
-DB_PASSWORD="@DB_PASSWORD_USER"
-DB_PASSWORD_ROOT="@DB_PASSWORD_ROOT"
-DB_HOST="127.0.0.1"
-DB_PORT="3306"
-DB_PREFIX="wp_"
-DB_CHARSET="utf8mb4"
-DB_COLLATE=""
-
-## adminer is a lightweight alternative to phpmyadmin used for database management ##
-## your freelancers or team members might want to use adminer occassionally ##
-
-## ADMINER_PUBLIC = [true|false] if you want a randomized link accessible on frontend ##
-## ADMINER_URL = [*must be unique*] should be long and very random for security ##
-
-ADMINER_PUBLIC="true"
-ADMINER_URL="@RANDOM_STRING_ADMINER_URL"
 
 ####################################################################################################
 #### SS-Config: Staging/Dev Settings ###############################################################
