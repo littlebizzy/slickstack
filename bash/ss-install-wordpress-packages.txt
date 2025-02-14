@@ -7,7 +7,7 @@
 #### path: /var/www/ss-install-wordpress-packages ##################################################
 #### destination: n/a (not a boilerplate) ##########################################################
 #### purpose: Reinstalls the WordPress module packages and non-config files (idempotent) ###########
-#### module version: WordPress 6.5.x ###############################################################
+#### module version: WordPress 6.7.x ###############################################################
 #### sourced by: ss-install ########################################################################
 #### bash aliases: ss install wordpress|wp packages ################################################
 ####################################################################################################
@@ -228,13 +228,13 @@ source "${PATH_SS_INSTALL_WORDPRESS_HOVERCRAFT}"
 ## minimum wp_options required to avoid /wp-admin/install.php redirect are below: ##
 ## home/siteurl, blogname, admin_user, admin_email, admin_password ##
 
-# QUERY_PRODUCTION_WP_OPTIONS_EXIST=$(ss_mysql_root --execute "SHOW TABLES FROM ${DB_NAME} WHERE Tables_in_${DB_NAME} LIKE '${DB_PREFIX}options';")
+# QUERY_PRODUCTION_WP_OPTIONS_EXIST=$(ss_mysql_user --execute "SHOW TABLES FROM ${DB_NAME} WHERE Tables_in_${DB_NAME} LIKE '${DB_PREFIX}options';")
 # GREP_WP_OPTIONS_STRING_PRODUCTION=$(echo "${QUERY_PRODUCTION_WP_OPTIONS_EXIST}" | ss_grep_boolean "${DB_PREFIX}"options)
 
 ## populate wp_options if not exists ##
 # if [[ -z "${GREP_WP_OPTIONS_STRING_PRODUCTION}" ]]; then
 #    /usr/bin/php -qCr "include '/var/www/html/wp-admin/install.php'; wp_install('SlickStack', '\"${SFTP_USER}\"', '\"${SFTP_USER}\"@\"${SITE_DOMAIN_EXCLUDING_WWW}\"', 1, '', \"${SFTP_PASSWORD}\", 'en_US');"
-#    ss_mysql_root --execute="UPDATE ${DB_PREFIX}options SET option_value='Lightning-fast WordPress on Nginx' WHERE option_name='blogdescription';"
+#    ss_mysql_user --execute="UPDATE ${DB_PREFIX}options SET option_value='Lightning-fast WordPress on Nginx' WHERE option_name='blogdescription';"
 # fi
 
 ## https://developer.wordpress.org/cli/commands/core/is-installed/
@@ -256,12 +256,12 @@ fi
 
 ## populate wp_options if not exists ##
 # if [[ "${DEV_SITE}" == "true" ]]; then
-#    QUERY_DEVELOPMENT_WP_OPTIONS_EXIST=$(ss_mysql_root --execute "SHOW TABLES FROM development WHERE Tables_in_development LIKE '${DB_PREFIX}options';" 2> /dev/null)
+#    QUERY_DEVELOPMENT_WP_OPTIONS_EXIST=$(ss_mysql_user --execute "SHOW TABLES FROM development WHERE Tables_in_development LIKE '${DB_PREFIX}options';" 2> /dev/null)
 #    GREP_WP_OPTIONS_STRING_DEVELOPMENT=$(echo "${QUERY_DEVELOPMENT_WP_OPTIONS_EXIST}" | ss_grep_boolean "${DB_PREFIX}"options)
 #    ## populate wp_options if not exists ##
 #    if [[ -z "${GREP_WP_OPTIONS_STRING_DEVELOPMENT}" ]]; then
 #        /usr/bin/php -qCr "include '/var/www/html/dev/wp-admin/install.php'; wp_install('SlickStack', '\"${SFTP_USER}\"', '\"${SFTP_USER}\"@\"${SITE_DOMAIN_EXCLUDING_WWW}\"', 1, '', \"${SFTP_PASSWORD}\", 'en_US');"
-#        ss_mysql_root --execute="UPDATE ${DB_PREFIX}options SET option_value='Lightning-fast WordPress on Nginx' WHERE option_name='blogdescription';"
+#        ss_mysql_user --execute="UPDATE ${DB_PREFIX}options SET option_value='Lightning-fast WordPress on Nginx' WHERE option_name='blogdescription';"
 #    fi
 # fi
 
@@ -288,20 +288,20 @@ fi
 ## UPDATED: 19MAR2024
 
 ## production ##
-if [[ -n $(ss_mysql_root --execute "SHOW TABLES FROM ${DB_NAME} WHERE Tables_in_${DB_NAME} LIKE '${DB_PREFIX}options';" 2> /dev/null) ]]; then
+if [[ -n $(ss_mysql_user --execute "SHOW TABLES FROM ${DB_NAME} WHERE Tables_in_${DB_NAME} LIKE '${DB_PREFIX}options';" 2> /dev/null) ]]; then
     
-    ss_mysql_root --execute="UPDATE ${DB_NAME}.${DB_PREFIX}options SET option_value='https://${SITE_FULL_DOMAIN}' WHERE option_name='home'";
-    ss_mysql_root --execute="UPDATE ${DB_NAME}.${DB_PREFIX}options SET option_value='https://${SITE_FULL_DOMAIN}' WHERE option_name='siteurl'";
+    ss_mysql_user --execute="UPDATE ${DB_NAME}.${DB_PREFIX}options SET option_value='https://${SITE_FULL_DOMAIN}' WHERE option_name='home'";
+    ss_mysql_user --execute="UPDATE ${DB_NAME}.${DB_PREFIX}options SET option_value='https://${SITE_FULL_DOMAIN}' WHERE option_name='siteurl'";
     
 fi
 
 ## staging ##
 if [[ "${STAGING_SITE}" == "true" ]]; then 
     
-    if [[ -n $(ss_mysql_root --execute "SHOW TABLES FROM staging WHERE Tables_in_staging LIKE '${DB_PREFIX}options';" 2> /dev/null) ]]; then
+    if [[ -n $(ss_mysql_user --execute "SHOW TABLES FROM staging WHERE Tables_in_staging LIKE '${DB_PREFIX}options';" 2> /dev/null) ]]; then
     
-        ss_mysql_root --execute="UPDATE staging.${DB_PREFIX}options SET option_value='https://staging.${SITE_DOMAIN_EXCLUDING_WWW}' WHERE option_name='home'";
-        ss_mysql_root --execute="UPDATE staging.${DB_PREFIX}options SET option_value='https://staging.${SITE_DOMAIN_EXCLUDING_WWW}' WHERE option_name='siteurl'";
+        ss_mysql_user --execute="UPDATE staging.${DB_PREFIX}options SET option_value='https://staging.${SITE_DOMAIN_EXCLUDING_WWW}' WHERE option_name='home'";
+        ss_mysql_user --execute="UPDATE staging.${DB_PREFIX}options SET option_value='https://staging.${SITE_DOMAIN_EXCLUDING_WWW}' WHERE option_name='siteurl'";
     fi
     
 fi
@@ -309,10 +309,10 @@ fi
 ## development ##
 if [[ "${DEV_SITE}" == "true" ]]; then 
     
-    if [[ -n $(ss_mysql_root --execute "SHOW TABLES FROM development WHERE Tables_in_development LIKE '${DB_PREFIX}options';" 2> /dev/null) ]]; then
+    if [[ -n $(ss_mysql_user --execute "SHOW TABLES FROM development WHERE Tables_in_development LIKE '${DB_PREFIX}options';" 2> /dev/null) ]]; then
     
-        ss_mysql_root --execute="UPDATE development.${DB_PREFIX}options SET option_value='https://dev.${SITE_DOMAIN_EXCLUDING_WWW}' WHERE option_name='home'";
-        ss_mysql_root --execute="UPDATE development.${DB_PREFIX}options SET option_value='https://dev.${SITE_DOMAIN_EXCLUDING_WWW}' WHERE option_name='siteurl'";
+        ss_mysql_user --execute="UPDATE development.${DB_PREFIX}options SET option_value='https://dev.${SITE_DOMAIN_EXCLUDING_WWW}' WHERE option_name='home'";
+        ss_mysql_user --execute="UPDATE development.${DB_PREFIX}options SET option_value='https://dev.${SITE_DOMAIN_EXCLUDING_WWW}' WHERE option_name='siteurl'";
     fi
 
 fi
