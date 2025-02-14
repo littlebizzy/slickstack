@@ -1502,6 +1502,11 @@ function ss_add_apt_repository {
     command add-apt-repository --yes "$@"
 }
 
+## ss_adduser ##
+function ss_adduser {
+    adduser --disabled-password --quiet --shell /bin/bash --gecos "" "$@" 2> /dev/null
+}
+
 ## ss_apt ##
 function ss_apt {
     export DEBIAN_FRONTEND="noninteractive"
@@ -1548,11 +1553,6 @@ function ss_apt_update {
 ## ss_apt_upgrade ##
 function ss_apt_upgrade {
     ss_apt upgrade > /dev/null 2>&1
-}
-
-## ss_adduser ##
-function ss_adduser {
-    adduser --disabled-password --quiet --shell /bin/bash --gecos "" "$@" 2> /dev/null
 }
 
 ## ss_cd_default ##
@@ -1681,9 +1681,24 @@ function ss_print {
     command printf "%s" "$@"
 }
 
+## ss_reload ##
+function ss_reload {
+    command systemctl reload "$1".service > /dev/null 2>&1
+}
+
+## ss_restart ##
+function ss_restart {
+    command /etc/init.d/"$1" restart > /dev/null 2>&1
+}
+
 ## ss_rm ##
 function ss_rm {
     command rm -R -f -- "$@"
+}
+
+## ss_rsync ##
+function ss_rsync {
+    command rsync -aI --no-links --ignore-errors -- "$@"
 }
 
 ## ss_rsync_backup ##
@@ -1696,29 +1711,9 @@ function ss_sed {
     command sed -i -- "$@"
 }
 
-## ss_truncate ##
-function ss_truncate {
-    command truncate -s 0 -- "$@" > /dev/null 2>&1
-}
-
 ## ss_swapon ##
 function ss_swapon {
     sudo swapon -- "$@" 2> /dev/null
-}
-
-## ss_reload ##
-function ss_reload {
-    command systemctl reload "$1".service > /dev/null 2>&1
-}
-
-## ss_restart ##
-function ss_restart {
-    command /etc/init.d/"$1" restart > /dev/null 2>&1
-}
-
-## ss_rsync ##
-function ss_rsync {
-    command rsync -aI --no-links --ignore-errors -- "$@"
 }
 
 ## ss_tar ##
@@ -1734,6 +1729,11 @@ function ss_targz {
 ## ss_touch ##
 function ss_touch {
     mkdir -p -- "$(dirname "$1")" && touch -am -- "$@"
+}
+
+## ss_truncate ##
+function ss_truncate {
+    command truncate -s 0 -- "$@" > /dev/null 2>&1
 }
 
 ## ss_untar ##
