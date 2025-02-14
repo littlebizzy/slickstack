@@ -1562,12 +1562,12 @@ function ss_cd_default {
 
 ## ss_certbot ##
 function ss_certbot {
-    command certbot certonly --noninteractive --agree-tos --register-unsafely-without-email --cert-name slickstack --webroot -w /var/www/html/ "$@"
+    command certbot certonly --noninteractive --agree-tos --register-unsafely-without-email --cert-name slickstack --webroot -w /var/www/html/ -- "$@"
 }
 
 ## ss_certbot_dns ##
 function ss_certbot_dns {
-    command certbot certonly --noninteractive --agree-tos --register-unsafely-without-email --cert-name slickstack --dns-cloudflare --dns-cloudflare-credentials /var/www/meta/cloudflare.ini --dns-cloudflare-propagation-seconds 30 --preferred-challenges=dns "$@"
+    command certbot certonly --noninteractive --agree-tos --register-unsafely-without-email --cert-name slickstack --dns-cloudflare --dns-cloudflare-credentials /var/www/meta/cloudflare.ini --dns-cloudflare-propagation-seconds 30 --preferred-challenges=dns -- "$@"
 }
 
 ## ss_chmod ##
@@ -1656,7 +1656,7 @@ function ss_mysql_sudo {
 }
 
 ## ss_mysql_user ##
-## --max_allowed_packet=1GB ... add this after test?
+## --max_allowed_packet=1GB ... add this after testing?
 function ss_mysql_user {
     command mysql --user="${DB_USER}" --password="${DB_PASSWORD}" --host="${DB_HOST}" --protocol=tcp --port="${DB_PORT}" --force "$@" 2> /dev/null
 }
@@ -1673,88 +1673,87 @@ function ss_mysqldump_user {
 
 ## ss_null ##
 function ss_null {
-    cat /dev/null > "$@"
+    cat /dev/null > "$1"
 }
 
 ## ss_print ##
 function ss_print {
-    command printf "$@"
+    command printf "%s" "$@"
 }
 
 ## ss_rm ##
 function ss_rm {
-    command rm -R -f "$@"
+    command rm -R -f -- "$@"
 }
 
 ## ss_rsync_backup ##
 function ss_rsync_backup {
     command rsync -acz --mkpath --rsh="sshpass -p ${RSYNC_PASSWORD} ssh -o StrictHostKeyChecking=no -l ${RSYNC_USER}" "$@"
-    # command rsync -acze "ssh -o StrictHostKeyChecking=no" --mkpath --rsh='sshpass -p "${RSYNC_PASSWORD}" -e ssh -l test' "$@"
 }
 
 ## ss_sed ##
 function ss_sed {
-    sed -i "$@"
+    command sed -i -- "$@"
 }
 
 ## ss_truncate ##
 function ss_truncate {
-    truncate -s 0 "$@" > /dev/null 2>&1
+    command truncate -s 0 -- "$@" > /dev/null 2>&1
 }
 
 ## ss_swapon ##
 function ss_swapon {
-    sudo swapon "$@" 2> /dev/null
+    sudo swapon -- "$@" 2> /dev/null
 }
 
 ## ss_reload ##
 function ss_reload {
-    systemctl reload "$@".service > /dev/null 2>&1
+    command systemctl reload "$1".service > /dev/null 2>&1
 }
 
 ## ss_restart ##
 function ss_restart {
-    /etc/init.d/"$@" restart > /dev/null 2>&1
+    command /etc/init.d/"$1" restart > /dev/null 2>&1
 }
 
 ## ss_rsync ##
 function ss_rsync {
-    command rsync -aI --no-links --ignore-errors "$@"
+    command rsync -aI --no-links --ignore-errors -- "$@"
 }
 
 ## ss_tar ##
 function ss_tar {
-    command tar -cf "$@"
+    command tar -cf -- "$1" "${@:2}"
 }
 
 ## ss_targz ##
 function ss_targz {
-    command tar -zcf "$@" ## flags must remain in this order
+    command tar -zcf -- "$1" "${@:2}" ## flags must remain in this order
 }
 
 ## ss_touch ##
 function ss_touch {
-    mkdir -p "$(dirname "$1")" && touch -am "$@"
+    mkdir -p -- "$(dirname "$1")" && touch -am -- "$@"
 }
 
 ## ss_untar ##
 function ss_untar {
-    command tar -xf "$@"
+    command tar -xf -- "$1" "${@:2}"
 }
 
 ## ss_untargz ##
 function ss_untargz {
-    command tar -zxf "$@" ## flags must remain in this order
+    command tar -zxf -- "$1" "${@:2}" ## flags must remain in this order
 }
 
 ## ss_unzip ##
 function ss_unzip {
-    command unzip -q -o "$@"
+    command unzip -q -o -- "$1" -d "${2:-.}"
 }
 
 ## ss_wget ##
 function ss_wget {
-    command wget --no-check-certificate --no-cache --no-cookies --quiet --inet4-only --tries=30 --timeout=300 --waitretry=15 -O "$@"
+    command wget --no-check-certificate --no-cache --no-cookies --quiet --inet4-only --tries=30 --timeout=300 --waitretry=15 -O "$1" "$2"
 }
 
 ####################################################################################################
