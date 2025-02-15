@@ -12,8 +12,8 @@
 #### bash aliases: ss purge transients #############################################################
 ####################################################################################################
 
-## PURGING CACHES DURING TRAFFIC SPIKES MIGHT CAUSE SUDDEN STRESS TO SERVER RESOURCES ##
-## KEEP IN MIND THAT MOST CACHING IS FORCE-DISABLED ON DEV/STAGING WEBSITES ##
+## PURGING CACHES DURING TRAFFIC SPIKES MIGHT CAUSE SUDDEN STRAIN TO SERVER RESOURCES ##
+## KEEP IN MIND THAT MOST CACHING IS ALREADY DISABLED ON DEV/STAGING SUBDOMAINS ##
 
 ####################################################################################################
 #### TABLE OF CONTENTS (SS-Purge-Transients) #######################################################
@@ -64,11 +64,8 @@ ss_echo "${COLOR_INFO}Running ss-purge-transients... ${COLOR_RESET}"
 #### D. SS-Purge-Transients: Delete Transients From Database #######################################
 ####################################################################################################
 
-## manually deletes all transients (temporary query cache data) from WordPress database ##
-## this is a more forceful approach than simply purging the Memcached cache ##
-
-## need to communicate better that this script is more relevant when object cache (Redis) has been disabled, otherwise its cleaning ##
-## out the database but has no affect on the queries that Redis has cached ##
+## forcefully removes all transients (temporary query cache) from the WordPress database ##
+## useful when object caching (Memcached) is disabled, or cached queries persist ##
 
 ## ubuntu 24.04 ##
 if [[ "${SYSTEM_UBUNTU_VERSION}" = "24.04" ]] || [[ -z "${SYSTEM_UBUNTU_VERSION}" ]]; then 
@@ -136,6 +133,7 @@ chmod 0700 /var/www/crons/custom/*cron* ## 0700 means only root/sudo can execute
 #### SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ###############
 ####################################################################################################
 
+## Ref: ChatGPT
 ## Ref: https://www.php.net/manual/en/function.opcache-reset.php#121513
 ## Ref: https://stackoverflow.com/questions/5506913/bash-script-to-run-php-script
 ## Ref: https://coderwall.com/p/yrqrkw/delete-all-existing-wordpress-transients-in-mysql-database
