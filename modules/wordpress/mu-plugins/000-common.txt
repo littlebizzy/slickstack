@@ -37,9 +37,17 @@ License URI: http://www.gnu.org/licenses/gpl-3.0.html
 /** A. 000 Common: Safe Constant ************************************************************ */
 /** ********************************************************************************************* */
 
-// Function to check if a constant is defined before using it
+// check if constant is defined before using it
 function ss_safe_constant( $constant, $default = '' ) {
-    return defined( $constant ) ? (string) constant( $constant ) : $default;
+    if ( defined( $constant ) ) {
+        $value = constant( $constant );
+
+        if ( is_scalar( $value ) ) {
+            return (string) $value;
+        }
+    }
+
+    return $default;
 }
 
 /** ********************************************************************************************* */
