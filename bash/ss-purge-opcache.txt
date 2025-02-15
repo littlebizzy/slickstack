@@ -72,6 +72,22 @@ echo "<?php opcache_reset(); ?>" > /var/www/html/purge-"${RANDOM_RESET_OPCACHE}"
 /usr/bin/php /var/www/html/purge-"${RANDOM_RESET_OPCACHE}".php
 ss_rm /var/www/html/purge-*.php
 
+
+## NEW WAY TESTING ## 
+
+## reset opcache using wp-cli ##
+wp eval 'if (function_exists("opcache_reset")) { opcache_reset(); }'
+
+## fallback: create a temp php file and trigger via web request ##
+RANDOM_OPCACHE_RESET=$(openssl rand -hex 12)
+echo "<?php if (function_exists('opcache_reset')) { opcache_reset(); } ?>" > "/var/www/html/purge-${RANDOM_OPCACHE_RESET}.php"
+
+## trigger reset via site domain ##
+curl -sSf "https://${SITE_FULL_DOMAIN}/purge-${RANDOM_OPCACHE_RESET}.php" >/dev/null
+
+## remove temp php file ##
+ss_rm "/var/www/html/purge-${RANDOM_OPCACHE_RESET}.php"
+
 ####################################################################################################
 #### SlickStack: Reset Permissions (SlickStack Scripts) ############################################
 ####################################################################################################
@@ -94,6 +110,7 @@ chmod 0700 /var/www/crons/custom/*cron* ## 0700 means only root/sudo can execute
 #### SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ###############
 ####################################################################################################
 
+## Ref: ChatGPT
 ## Ref: https://www.php.net/manual/en/function.opcache-reset.php#121513
 ## Ref: https://stackoverflow.com/questions/5506913/bash-script-to-run-php-script
 ## Ref: https://coderwall.com/p/yrqrkw/delete-all-existing-wordpress-transients-in-mysql-database
