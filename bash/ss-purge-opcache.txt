@@ -67,23 +67,15 @@ ss_echo "${COLOR_INFO}Running ss-purge-opcache... ${COLOR_RESET}"
 ## by default OPcache only caches PHP files for a few seconds but we clear it to be sure ##
 ## this snippet will also clear physical OPcache files if the feature is enabled ##
 
-RANDOM_RESET_OPCACHE=$(openssl rand -hex 12)
-echo "<?php opcache_reset(); ?>" > /var/www/html/purge-"${RANDOM_RESET_OPCACHE}".php
-/usr/bin/php /var/www/html/purge-"${RANDOM_RESET_OPCACHE}".php
-ss_rm /var/www/html/purge-*.php
-
-
-## NEW WAY TESTING ## 
-
 ## reset opcache using wp-cli ##
-wp eval 'if (function_exists("opcache_reset")) { opcache_reset(); }'
+sudo -u "${SFTP_USER}" "${PATH_WP_CLI}" --path="${PATH_WEB_ROOT}" eval 'if (function_exists("opcache_reset")) { opcache_reset(); }'
 
 ## fallback: create a temp php file and trigger via web request ##
 RANDOM_OPCACHE_RESET=$(openssl rand -hex 12)
 echo "<?php if (function_exists('opcache_reset')) { opcache_reset(); } ?>" > "/var/www/html/purge-${RANDOM_OPCACHE_RESET}.php"
 
 ## trigger reset via site domain ##
-curl -sSf "https://${SITE_FULL_DOMAIN}/purge-${RANDOM_OPCACHE_RESET}.php" >/dev/null
+curl -sS --fail --connect-timeout 3 --retry 2 --retry-connrefused "https://${SITE_FULL_DOMAIN}/purge-${RANDOM_OPCACHE_RESET}.php" >/dev/null
 
 ## remove temp php file ##
 ss_rm "/var/www/html/purge-${RANDOM_OPCACHE_RESET}.php"
