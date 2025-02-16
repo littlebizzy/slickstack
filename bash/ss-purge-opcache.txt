@@ -65,14 +65,17 @@ ss_echo "${COLOR_INFO}Running ss-purge-opcache... ${COLOR_RESET}"
 #### D. SS-Purge-OPcache: Purge OPcache Via WP-CLI #################################################
 ####################################################################################################
 
-## by default OPcache only caches PHP files for a few seconds but we clear it to be sure ##
-## this snippet will also clear physical OPcache files if the feature is enabled ##
+## clears in-memory OPcache using WP-CLI ensuring updated scripts load without any delay ##
+## does not remove physical OPcache files, only resets cached PHP files in memory ##
 
 sudo -u "${SFTP_USER}" "${PATH_WP_CLI}" --path="${PATH_WEB_ROOT}" eval 'if (function_exists("opcache_reset")) { opcache_reset(); }'
 
 ####################################################################################################
 #### E. SS-Purge-OPcache: Purge OPcache Via PHP Script (Fallback) ##################################
 ####################################################################################################
+
+## creates and executes temporary PHP script to manually reset OPcache via curl request ##
+## always runs regardless of WP-CLI method, ensures OPcache is cleared properly ##
 
 ## generate unique filename ##
 RANDOM_STRING_PURGE_OPCACHE=$(openssl rand -hex 12)
