@@ -25,7 +25,8 @@
 ## A. Source SS-Config + SS-Functions
 ## B. Touch Timestamp File
 ## C. Message (Begin Script)
-## D. Purge OPcache
+## D. Purge OPcache Via WP-CLI
+## E. Purge OPcache Via PHP Script (Fallback)
 
 ####################################################################################################
 #### A. SS-Purge-OPcache: Source SS-Config + SS-Functions ##########################################
@@ -61,24 +62,30 @@ ss_touch "${TIMESTAMP_SS_PURGE_OPCACHE}"
 ss_echo "${COLOR_INFO}Running ss-purge-opcache... ${COLOR_RESET}"
 
 ####################################################################################################
-#### D. SS-Purge-OPcache: Purge OPcache ############################################################
+#### D. SS-Purge-OPcache: Purge OPcache Via WP-CLI #################################################
 ####################################################################################################
 
 ## by default OPcache only caches PHP files for a few seconds but we clear it to be sure ##
 ## this snippet will also clear physical OPcache files if the feature is enabled ##
 
-## reset opcache using wp-cli ##
 sudo -u "${SFTP_USER}" "${PATH_WP_CLI}" --path="${PATH_WEB_ROOT}" eval 'if (function_exists("opcache_reset")) { opcache_reset(); }'
 
-## fallback: create a temp php file and trigger via web request ##
-RANDOM_OPCACHE_RESET=$(openssl rand -hex 12)
-echo "<?php if (function_exists('opcache_reset')) { opcache_reset(); } ?>" > "/var/www/html/purge-${RANDOM_OPCACHE_RESET}.php"
+####################################################################################################
+#### E. SS-Purge-OPcache: Purge OPcache Via PHP Script (Fallback) ##################################
+####################################################################################################
 
-## trigger reset via site domain ##
-curl -sS --fail --connect-timeout 3 --retry 2 --retry-connrefused "https://${SITE_FULL_DOMAIN}/purge-${RANDOM_OPCACHE_RESET}.php" >/dev/null
+## generate unique filename ##
+RANDOM_STRING_PURGE_OPCACHE=$(openssl rand -hex 12)
+PURGE_OPCACHE_FILE="/var/www/html/purge-${RANDOM_STRING_PURGE_OPCACHE}.php"
 
-## remove temp php file ##
-ss_rm "/var/www/html/purge-${RANDOM_OPCACHE_RESET}.php"
+## create temp php script to reset opcache ##
+echo "<?php if (function_exists('opcache_reset')) { opcache_reset(); } ?>" > "${PURGE_OPCACHE_FILE}"
+
+## execute temp script via https (curl) request ##
+curl --silent --show-error --fail --max-time 5 --connect-timeout 3 --retry 3 --retry-connrefused "https://${SITE_FULL_DOMAIN}/purge-${RANDOM_STRING_PURGE_OPCACHE}.php" > /dev/null
+
+## delete temp script ##
+ss_rm "${PURGE_OPCACHE_FILE}"
 
 ####################################################################################################
 #### SlickStack: Reset Permissions (SlickStack Scripts) ############################################
