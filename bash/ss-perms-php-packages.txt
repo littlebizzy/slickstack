@@ -62,8 +62,16 @@ ss_echo "${COLOR_INFO}Running ss-perms-php-packages... ${COLOR_RESET}"
 ####################################################################################################
 
 ss_mkdir /var/run/php
+chown www-data:www-data /var/run/php
+chmod 750 /var/run/php
 
-# chown www-data:www-data /var/run/php
+## ubuntu 24.04 ##
+if [[ "${SYSTEM_UBUNTU_VERSION}" == "24.04" ]]; then
+    chown root:root /etc/php/8.3/fpm/php-fpm.conf
+    chown root:root /etc/php/8.3/fpm/php.ini
+    chown root:root /etc/php/8.3/cli/php.ini
+    chown root:root /etc/php/8.3/fpm/pool.d/www.conf
+fi
 
 ## ubuntu 22.04 ##
 if [[ "${SYSTEM_UBUNTU_VERSION}" == "22.04" ]]; then
@@ -90,9 +98,8 @@ if [[ "${SYSTEM_UBUNTU_VERSION}" == "18.04" ]]; then
 fi
 
 if [ ! -f "/var/www/logs/php-error.log" ]; then ss_touch "/var/www/logs/php-error.log"; fi
-
 chown www-data:www-data /var/www/logs/php-error.log
-# chmod 0644 /var/www/logs/php-error.log ## 0755 should also work
+chmod 0644 /var/www/logs/php-error.log ## must be 0644
 
 ####################################################################################################
 #### SlickStack: Reset Permissions (SlickStack Scripts) ############################################
