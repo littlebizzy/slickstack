@@ -64,11 +64,11 @@ ss_echo "${COLOR_INFO}Running ss-purge-memcached... ${COLOR_RESET}"
 #### D. SS-Purge-Memcached: Purge Memcached Via Flush_All And Memcflush ############################
 ####################################################################################################
 
-## when a persistent object cache is installed in WordPress it retains all WP transients ##
-## therefore flushing Redis is similar to manually deleting WP transients in MySQL ##
+## completely clears all cached objects stored in Memcached including WP transients ##
+## persistent object cache entries are also flushed forcing fresh data retrieval ##
 
-echo flush_all > /dev/tcp/127.0.0.1/11211
-memcflush --servers=127.0.0.1:11211 ## redundant
+echo "flush_all" | nc -q 2 127.0.0.1 11211 || echo "flush_all" > /dev/tcp/127.0.0.1/11211
+memcflush --servers=127.0.0.1:11211
 
 ####################################################################################################
 #### SlickStack: Reset Permissions (SlickStack Scripts) ############################################
@@ -92,6 +92,7 @@ chmod 0700 /var/www/crons/custom/*cron* ## 0700 means only root/sudo can execute
 #### SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ###############
 ####################################################################################################
 
+## Ref: ChatGPT
 ## Ref: https://ma.ttias.be/flush-content-memcached-via-cli/
 ## Ref: https://www.php.net/manual/en/memcached.flush.php
 ## Ref: https://www.tutorialspoint.com/memcached/memcached_clear_data.htm
