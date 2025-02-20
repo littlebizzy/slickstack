@@ -7,7 +7,7 @@
 #### path: /var/www/ss-push-staging ################################################################
 #### destination: n/a (not a boilerplate) ##########################################################
 #### purpose: Pushes /wp-content/ and database from staging site to the production site ############
-#### module version: WordPress 6.6.x + MySQL 8.0.x #################################################
+#### module version: WordPress 6.7.x + MySQL 8.0.x #################################################
 #### sourced by: n/a ###############################################################################
 #### bash aliases: ss push staging #################################################################
 ####################################################################################################
@@ -74,9 +74,14 @@ ss_echo "${COLOR_INFO}Running ss-push-staging... ${COLOR_RESET}"
 #### D. SS-Push-Staging: INTERACTIVE PROMPT CONFIRMATION ###########################################
 ####################################################################################################
 
-read -r -p "EXPERIMENTAL... BE CAREFUL... WILL OVERWRITE PRODUCTION... BACKUP FIRST: Push staging files (wp-content and database) to production, are you sure? [y/N]" response
-if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]]
-then
+## enhanced prompt message with clearer warning, color, and added timeout ##
+read -t 30 -r -p "${COLOR_WARN}WARNING: This operation will overwrite production files and the database with staging content. Please ensure you have backups before proceeding. Push staging files (wp-content and database) to production, are you sure? Type 'yes' to continue, anything else to cancel. [yes/No]${COLOR_RESET}" response
+
+## default to "no" if no input after timeout ##
+response="${response:-n}"
+
+## enforce "yes", "Yes", or "YES" for confirmation, and allow flexible "no" answers ##
+if [[ "$response" =~ ^([yY][eE][sS])$ ]]; then
 
 ####################################################################################################
 #### E. SS-Push-Staging: Run SS-Dump-Database ######################################################
@@ -200,6 +205,7 @@ chmod 0700 /var/www/crons/custom/*cron* ## 0700 means only root/sudo can execute
 #### SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ###############
 ####################################################################################################
 
+## Ref: ChatGPT
 ## Ref: https://stackoverflow.com/questions/16735344/mysql-import-database-but-ignore-specific-table
 ## Ref: https://www.ibenic.com/manage-order-item-meta-woocommerce/
 ## Ref: https://rudrastyh.com/woocommerce/order-items.html
