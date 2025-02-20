@@ -74,13 +74,16 @@ ss_echo "${COLOR_INFO}Running ss-push-staging... ${COLOR_RESET}"
 #### D. SS-Push-Staging: INTERACTIVE PROMPT CONFIRMATION ###########################################
 ####################################################################################################
 
-## enhanced prompt message with clearer warning, color, and added timeout ##
+## prompts the user for confirmation before proceeding, with a 30-second auto timeout ##
+## only "yes" "Yes" or "YES" will continue the operation, anything else exits ##
+
+## warning prompt with timeout ##
 read -t 30 -r -p "${COLOR_WARN}WARNING: This operation will overwrite production files and the database with staging content. Please ensure you have backups before proceeding. Push staging files (wp-content and database) to production, are you sure? Type 'yes' to continue, anything else to cancel. [yes/No]${COLOR_RESET}" response
 
-## default to "no" if no input after timeout ##
+## default exit if no input after timeout ##
 response="${response:-n}"
 
-## enforce "yes", "Yes", or "YES" for confirmation, and allow flexible "no" answers ##
+## anything besides "yes" "Yes" or "YES" will exit ##
 if [[ "$response" =~ ^([yY][eE][sS])$ ]]; then
 
 ####################################################################################################
@@ -100,10 +103,10 @@ source "${PATH_SS_DUMP_DATABASE}"
 ## then it forecfully replaces the home/siteurl options to staging subdomain ##
 
 ## import database ##
-ss_cp /var/www/backups/mysql/staging.sql /tmp/staging_push.sql
-chown mysql:mysql /tmp/staging_push.sql ## does not matter if -L flag used below
-chmod 0644 /tmp/staging_push.sql ## does not matter if -L flag used below
-ss_mysql_user "${DB_NAME}" < /tmp/staging_push.sql
+ss_cp /var/www/backups/mysql/staging.sql "${TMP_STAGING_PUSH_SQL}"
+chown mysql:mysql "${TMP_STAGING_PUSH_SQL}" ## does not matter if -L flag used below
+chmod 0644 "${TMP_STAGING_PUSH_SQL}" ## does not matter if -L flag used below
+ss_mysql_user "${DB_NAME}" < "${TMP_STAGING_PUSH_SQL}"
 
 ## fix domain in database ##
 if [[ "${SS_APP}" == "wordpress" ]]; then
@@ -113,7 +116,7 @@ if [[ "${SS_APP}" == "wordpress" ]]; then
     fi
 fi
 
-ss_rm /tmp/staging_push.sql
+ss_rm "${TMP_STAGING_PUSH_SQL}"
 
 ####################################################################################################
 #### G. SS-Push-Staging: Copy All Relevant Files From Staging To Production ########################
@@ -123,10 +126,10 @@ ss_rm /tmp/staging_push.sql
 ## keep in mind that both sites share the same uploads folder (so not copied) ##
 
 ## copy wp-content files over (skips media uploads) ##
-ss_rsync --max-size=5mb --exclude 'blacklist.txt' --exclude mu-plugins --exclude temp --exclude upgrade --exclude uploads /var/www/html/staging/wp-content/ /var/www/html/wp-content
+ss_rsync --max-size=5mb --exclude 'blacklist.txt' --exclude mu-plugins --exclude temp --exclude upgrade --exclude uploads /var/www/html/staging/wp-content/ "${PATH_DIR_WP_CONTENT}"
 
 ## remove potential run-on subdirectories ##
-ss_rm /var/www/html/wp-content/wp-content*
+ss_rm "${PATH_DIR_WP_CONTENT}"/wp-content*
 
 ####################################################################################################
 #### H. SS-Push-Staging: Fix Incorrect URLs in Production Database #################################
