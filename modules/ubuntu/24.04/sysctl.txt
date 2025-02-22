@@ -68,33 +68,94 @@ net.ipv4.ip_forward = 0
 net.ipv6.conf.all.forwarding = 0
 
 ## do not accept ICMP redirects (prevents MITM attacks) ##
-net.ipv4.conf.default.accept_redirects = 0
 net.ipv4.conf.all.accept_redirects = 0
-net.ipv6.conf.default.accept_redirects = 0
 net.ipv6.conf.all.accept_redirects = 0
 
 ## do not send ICMP redirects (we are not a router) ##
-net.ipv4.conf.default.send_redirects = 0
 net.ipv4.conf.all.send_redirects = 0
 
 ## do not accept IP source route packets (we are not a router) ##
-net.ipv4.conf.default.accept_source_route = 0
 net.ipv4.conf.all.accept_source_route = 0
-net.ipv6.conf.default.accept_source_route = 0
 net.ipv6.conf.all.accept_source_route = 0
 
 ## allowed local port range (set to max limit) ##
 net.ipv4.ip_local_port_range = 1024 65535
 net.ipv6.ip_local_port_range = 1024 65535
 
-## log Martian packets (IPv4 only) ##
-net.ipv4.conf.all.log_martians = 1
+## increase TCP SYN backlog to prevent SYN flood attacks ##
+net.ipv4.tcp_max_syn_backlog = 2048
+net.ipv6.tcp_max_syn_backlog = 2048
+
+## enable TCP syn cookies (SYN flood attack protection) ##
+net.ipv4.tcp_syncookies = 1
+
+## reduce TCP FIN timeout (improves performance) ##
+net.ipv4.tcp_fin_timeout = 30
+
+## enable TCP window scaling (useful for high latency networks) ##
+net.ipv4.tcp_window_scaling = 1
+
+## enable IP source address validation (anti-spoofing) ##
+net.ipv4.conf.all.src_valid_mark = 1
+
+## set max open files (for high traffic servers) ##
+fs.file-max = 2097152
+
+## tune buffer space for high traffic connections ##
+net.ipv4.tcp_rmem = 4096 87380 16777216
+net.ipv4.tcp_wmem = 4096 65536 16777216
+
+## enable TCP timestamps (for high latency networks) ##
+net.ipv4.tcp_timestamps = 1
+
+## enable TCP keepalive to detect dead connections ##
+net.ipv4.tcp_keepalive_time = 7200
+net.ipv4.tcp_keepalive_intvl = 75
+net.ipv4.tcp_keepalive_probes = 9
+
+## enable TCP Fast Open ##
+net.ipv4.tcp_fastopen = 3
+
+## disable IPv4 forwarding on lo interface ##
+net.ipv4.conf.lo.forwarding = 0
+
+## enable TCP SACK (Selective Acknowledgments) ##
+net.ipv4.tcp_sack = 1
+
+## restrict the number of connections in SYN_RECV state ##
+net.ipv4.tcp_max_orphans = 32768
+
+## limit TCP buffer allocations to prevent overflow ##
+net.ipv4.tcp_mem = 786432 16777216 33554432
 
 ## disable IPv6 globally (if needed) ##
 # net.ipv6.conf.all.disable_ipv6 = 1
 # net.ipv6.conf.default.disable_ipv6 = 1
 # net.ipv6.conf.lo.disable_ipv6 = 1
 # net.ipv6.conf.all.accept_ra = 0
+# net.ipv6.conf.all.disable_ipv6_nd = 1
+
+## disable IPv6 privacy extensions ##
+net.ipv6.conf.all.use_tempaddr = 0
+net.ipv6.conf.default.use_tempaddr = 0
+
+## disable IPv6 Router Advertisements (RA) ##
+net.ipv6.conf.all.accept_ra = 0
+net.ipv6.conf.default.accept_ra = 0
+
+## disable IPv6 Duplicate Address Detection (DAD) ##
+net.ipv6.conf.all.dad_transmits = 0
+net.ipv6.conf.default.dad_transmits = 0
+
+## disable IPv6 RFC 4941 (Privacy Extensions) ##
+net.ipv6.conf.all.rfc4941 = 0
+
+## set maximum initial window size for TCP/UDP (optimization) ##
+net.ipv4.tcp_init_rwnd = 10
+
+## adjust maximum buffer size for TCP connections ##
+net.core.rmem_max = 16777216
+net.core.wmem_max = 16777216
 
 ####################################################################################################
 #### Ubuntu Kernel: TCP + UDP Settings #############################################################
