@@ -25,7 +25,7 @@
 ## A. Source SS-Config + SS-Functions
 ## B. Touch Timestamp File
 ## C. Message (Begin Script)
-## D. Install (Optimize) Ubuntu Linux Kernel
+## D. Install Ubuntu Linux Kernel
 ## E. Reset Permissions (Ubuntu Kernel)
 
 ####################################################################################################
@@ -62,27 +62,35 @@ ss_touch "${TIMESTAMP_SS_INSTALL_UBUNTU_KERNEL}"
 ss_echo "${COLOR_INFO}Running ss-install-ubuntu-kernel... ${COLOR_RESET}"
 
 ####################################################################################################
-#### D. SS-Install-Ubuntu-Kernel: Install (Optimize) Ubuntu Linux Kernel ###########################
+#### D. SS-Install-Ubuntu-Kernel: Install Ubuntu Linux Kernel ######################################
 ####################################################################################################
 
-## backup current Ubunt kernel file ##
+## backup current kernel file ##
 ss_cp "${PATH_SYSCTL_CONF}" /etc/sysctl.conf.bak
 
-## download latest versions ##
+## download kernel boilerplate ##
 ss_wget "${TMP_SYSCTL_CONF}" "${GITHUB_LINUX_KERNEL}"
+
+## check if ipv6 connection is active ##
+if [[ -n "${SYSTEM_DIG_IPV6_ADDRESS}" ]]; then
+    ss_sed "s|^net.ipv6.conf.all.disable_ipv6.*|# net.ipv6.conf.all.disable_ipv6 = 1|g" "${PATH_SYSCTL_CONF}"
+    ss_echo "IPv6 detected, enabling IPv6 in the kernel settings."
+else
+    ss_echo "IPv6 appears inactive, keeping IPv6 disabled in the kernel settings."
+fi
 
 ## copy files to their destinations ##
 ss_cp "${TMP_SYSCTL_CONF}" "${PATH_SYSCTL_CONF}"
-
-## reset permissions ##
-chown root:root "${PATH_SYSCTL_CONF}"
-chmod 0664 "${PATH_SYSCTL_CONF}"
 
 ####################################################################################################
 #### E. SS-Install-Ubuntu-Kernel: Reset Permissions (Ubuntu Kernel) ################################
 ####################################################################################################
 
 source "${PATH_SS_PERMS_UBUNTU_KERNEL}"
+
+
+## apply the changes ##
+sysctl -p /etc/sysctl.conf
 
 ####################################################################################################
 #### SlickStack: Reset Permissions (SlickStack Scripts) ############################################
@@ -106,6 +114,6 @@ chmod 0700 /var/www/crons/custom/*cron* ## 0700 means only root/sudo can execute
 #### SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ###############
 ####################################################################################################
 
-## Ref: 
+## Ref: ChatGPT
 
 ## SS_EOF
