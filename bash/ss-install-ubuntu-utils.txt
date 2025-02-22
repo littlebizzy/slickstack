@@ -25,10 +25,13 @@
 ## A. Source SS-Config + SS-Functions
 ## B. Touch Timestamp File
 ## C. Message (Begin Script)
-## D. Prettify The Shell Prompt
-## E. Update Existing Packages
+## D. Update Existing Packages
+
+## E. Prettify The Shell Prompt
 ## F. Update System Timezone
 ## G. Install Various Linux Utilities
+## X. Make Nano Default System-wide Editor
+
 ## H. Reset Permissions (Ubuntu Utils)
 
 ####################################################################################################
@@ -65,20 +68,7 @@ ss_touch "${TIMESTAMP_SS_INSTALL_UBUNTU_UTILS}"
 ss_echo "${COLOR_INFO}Running ss-install-ubuntu-utils... ${COLOR_RESET}"
 
 ####################################################################################################
-#### D. SS-Install-Ubuntu-Utils: Prettify The Shell Prompt #########################################
-####################################################################################################
-
-## download latest versions ##
-ss_wget /tmp/custom-shell-prompt "${GITHUB_CUSTOM_SHELL_PROMPT}"
-
-## delete old one ##
-ss_rm /etc/profile.d/custom-shell-prompt
-
-## copy files to their destinations ##
-ss_cp /tmp/custom-shell-prompt /etc/profile.d/custom-shell-prompt.sh
-
-####################################################################################################
-#### E. SS-Install-Ubuntu-Utils: Update Existing Packages ##########################################
+#### D. SS-Install-Ubuntu-Utils: Update Existing Packages ##########################################
 ####################################################################################################
 
 ## SNIPPET: ss-install-*-packages bash scripts
@@ -94,10 +84,24 @@ ss_apt_update
 ss_apt_upgrade
 
 ####################################################################################################
+#### E. SS-Install-Ubuntu-Utils: Prettify The Shell Prompt #########################################
+####################################################################################################
+
+## Move this to ss-install-ubuntu-bash maybe ? ##
+
+## download latest versions ##
+ss_wget /tmp/custom-shell-prompt "${GITHUB_CUSTOM_SHELL_PROMPT}"
+
+## delete old one ##
+ss_rm /etc/profile.d/custom-shell-prompt
+
+## copy files to their destinations ##
+ss_cp /tmp/custom-shell-prompt /etc/profile.d/custom-shell-prompt.sh
+
+####################################################################################################
 #### F. SS-Install-Ubuntu-Utils: Update System Timezone ############################################
 ####################################################################################################
 
-## set timezone ##
 if [[ -z "${SS_TIMEZONE}" ]]; then 
     sudo timedatectl set-timezone UTC
 else 
@@ -108,15 +112,29 @@ fi
 #### G. SS-Install-Ubuntu-Utils: Install Various Linux Utilities ###################################
 ####################################################################################################
 
-## install update-manager-core ##
+## do-release-upgrade support ##
 ss_apt_install update-manager-core
+
+## ppa management support ##
+ss_apt_install software-properties-common
 
 ## coreutils ##
 ss_apt_install coreutils
 
-## dnsutils ##
-## https://www.cyberciti.biz/faq/ubuntu-dig-command-not-found-install-digonubuntu/
+## dnsutils (required for dig) ##
 ss_apt_install dnsutils
+
+## virt-what (detects virtualization) ##
+ss_apt_install virt-what
+
+## sshpass (required for remote connections) ##
+ss_apt_install sshpass
+
+## used in ubuntu 18.04 for some apt tools ##
+ss_apt_install debconf-utils
+
+## exiftool (for cleaning up exif data) ##
+ss_apt_install "${PACKAGE_EXIFTOOL}"
 
 ## new ##
 ss_apt_install nano
@@ -133,27 +151,16 @@ ss_apt_install dos2unix
 ss_apt_install gzip
 ss_apt_install tar
 
+## not sure yet ##
 # ss_apt_install logrotate
 # ss_apt_install bash-completion
 # ss_apt_install iptables-persistent
 
-## set default editor to nano ##
+####################################################################################################
+#### X. SS-Install-Ubuntu-Utils: Make Nano Default System-wide Editor ##############################
+####################################################################################################
+
 update-alternatives --set editor /bin/nano
-
-## magento ##
-ss_apt_install software-properties-common
-
-## install debconf-utils for some APT debug tools (move this to ss-install-misc) ##
-ss_apt_install debconf-utils
-
-## virt-what ##
-ss_apt_install virt-what
-
-## exiftool ##
-ss_apt_install "${PACKAGE_EXIFTOOL}"
-
-## sshpass ##
-ss_apt_install sshpass
 
 ####################################################################################################
 #### H. SS-Install-Ubuntu-Utils: Reset Permissions (Ubuntu Utils) ##################################
