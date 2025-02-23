@@ -6,7 +6,7 @@
 #### destination: n/a (not a boilerplate) ##########################################################
 #### purpose: Ubuntu kernel configuration file (symlink = /etc/sysctl.d/99-sysctl.conf) ############
 #### module version: Ubuntu 24.04 LTS ##############################################################
-#### bash aliases: n/a #############################################################################
+#### bash aliases: n/a (ss-install-ubuntu-kernel) ##################################################
 ####################################################################################################
 
 ## UBUNTU KERNEL OPTIMIZED FOR CLOUDFLARE + TRAFFIC SCALING (NON-CLUSTERED HIGH TRAFFIC) ##
@@ -16,22 +16,26 @@
 #### Ubuntu Kernel: Miscellaneous Settings #########################################################
 ####################################################################################################
 
-# kernel.domainname = example.com
-# kernel.printk = 3 4 1 3
+## log verbosity for kernel messages ##
+kernel.printk = 3 4 1 3
 
-## disable SysRq keyboard shortcuts (we are not a desktop computer) ##
+## disable SysRq (not needed on servers) ##
 kernel.sysrq = 0
 
-## maximum open files in cache (set to upper limit) ##
+## improve task migration performance ##
+kernel.sched_migration_cost_ns = 5000000
+
+## disable autogrouping for better server performance ##
+kernel.sched_autogroup_enabled = 0
+
+## set max open files in cache ##
 fs.file-max = 2097152
 
-## protect system hard/soft links ##
+## enhance security for hard links ##
 fs.protected_hardlinks = 1
-fs.protected_symlinks = 1
 
-## big performance boost (published by PostgreSQL community) ##
-kernel.sched_migration_cost_ns = 5000000
-kernel.sched_autogroup_enabled = 0
+## enhance security for symlinks ##
+fs.protected_symlinks = 1
 
 ####################################################################################################
 #### Sysctl.conf: Virtual Machine (VM) Settings ####################################################
@@ -242,6 +246,7 @@ net.core.netdev_budget_usecs = 5000
 #### SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ###############
 ####################################################################################################
 
+## ChatGPT
 ## Ref: https://cromwell-intl.com/open-source/performance-tuning/tcp.html
 ## Ref: https://gist.github.com/magnetikonline/2760f98f6bf654d5ad79
 ## Ref: https://www.ndchost.com/wiki/server-administration/hardening-tcpip-syn-flood
