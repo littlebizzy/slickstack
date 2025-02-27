@@ -80,16 +80,18 @@ sudo -u "${SFTP_USER}" "${PATH_WP_CLI}" --path="${PATH_WEB_ROOT}" eval 'opcache_
 
 ## generate unique filename ##
 RANDOM_STRING_PURGE_OPCACHE=$(openssl rand -hex 12)
-PURGE_OPCACHE_FILE="/var/www/html/purge-${RANDOM_STRING_PURGE_OPCACHE}.php"
+PURGE_OPCACHE_FILENAME="purge-${RANDOM_STRING_PURGE_OPCACHE}.php"
+PURGE_OPCACHE_FILEPATH="/var/www/html/${PURGE_OPCACHE_FILENAME}"
 
 ## create temp php script to reset opcache ##
-echo "<?php if (function_exists('opcache_reset')) { opcache_reset(); } ?>" > "${PURGE_OPCACHE_FILE}"
+echo "<?php if (function_exists('opcache_reset')) { opcache_reset(); } ?>" > "${PURGE_OPCACHE_FILEPATH}"
 
-## execute temp script via https (curl) request ##
-curl --silent --show-error --fail --max-time 5 --connect-timeout 3 --retry 3 --retry-connrefused "https://${SITE_FULL_DOMAIN}/purge-${RANDOM_STRING_PURGE_OPCACHE}.php" > /dev/null
+## execute temp script via https (wget) request ##
+# curl --silent --show-error --fail --max-time 5 --connect-timeout 3 --retry 3 --retry-connrefused "https://${SITE_FULL_DOMAIN}/${PURGE_OPCACHE_FILENAME}" > /dev/null
+wget --quiet --spider --timeout=3 --tries=3 --max-time=5 "https://${SITE_FULL_DOMAIN}/${PURGE_OPCACHE_FILENAME}"
 
 ## delete temp script ##
-ss_rm "${PURGE_OPCACHE_FILE}"
+ss_rm "${PURGE_OPCACHE_FILEPATH}"
 
 ####################################################################################################
 #### F. SS-Purge-OPcache: Purge Physical OPcache Files #############################################
