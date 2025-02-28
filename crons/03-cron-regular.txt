@@ -258,15 +258,15 @@ ss_touch "${TIMESTAMP_03_CRON_REGULAR}"
 ## WP-CLI is the default as it works much better (also required for Multisite) ##
 
 ## PATTERN: ss cron jobs
-## UPDATED: 16JAN2025
+## UPDATED: 28FEB2025
 
-## run wp-cron if interval matches ##
+## run wp-cron if set to regular ##
 if [[ "${WP_CRON_INTERVAL}" == "regular" ]]; then
     ## use wp-cli unless set to server or if running multisite ##
     if [[ "${WP_CRON_METHOD}" != "server" || "${WP_MULTISITE}" == "true" ]]; then
         if [[ "${WP_MULTISITE}" == "true" ]]; then
             ## run wp-cron for all sites in multisite ##
-            sudo -u "${SFTP_USER}" "${PATH_WP_CLI}" --path="${PATH_WEB_ROOT}" site list --field=url | sudo -u "${SFTP_USER}" xargs -i -n1 "${PATH_WP_CLI}" --path="${PATH_WEB_ROOT}" cron event run --due-now --url="{}"
+            sudo -u "${SFTP_USER}" "${PATH_WP_CLI}" --path="${PATH_WEB_ROOT}" site list --field=url | sudo -u "${SFTP_USER}" xargs -I {} "${PATH_WP_CLI}" --path="${PATH_WEB_ROOT}" cron event run --due-now --url="{}"
         else
             ## run wp-cli for single site ##
             sudo -u "${SFTP_USER}" "${PATH_WP_CLI}" --path="${PATH_WEB_ROOT}" cron event run --due-now
