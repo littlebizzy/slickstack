@@ -30,7 +30,9 @@
 ## F. Backup Active SS-Config
 ## G. Validate Active SS-Config Before Proceeding
 ## H. Retrieve Latest SS-Config Boilerplate
+
 ## I. Prepare Latest SS-Config Boilerplate (Transfers Settings)
+
 ## J. Miscellaneous Patches To Latest SS-Config Boilerplate
 ## K. Validate + Activate Latest SS-Config Boilerplate
 ## L. Force Replace Placeholders (If Exist)
@@ -136,137 +138,87 @@ else
 ## this will update the existing ss-config file to latest boilerplate from our mirrors ##
 ## all existing options will be safely transferred to the new boilerplate ##
 
+## parse flags
+RESTORE_DEFAULTS=false
+while [[ "$#" -gt 0 ]]; do
+    case "$1" in
+        --restore) RESTORE_DEFAULTS=true ;;
+        --) shift; break ;; # end flag parsing
+        -*) echo "Error: Unknown option $1" >&2; exit 1 ;;
+        *) break ;; # stop processing flags on first non-flag argument
+    esac
+    shift
+done
+
+## transfer these settings from existing ss-config to updated boilerplate if --restore flag not true ##
+# if [[ "$RESTORE_DEFAULTS" == false ]]; then
+
+## add here 
+
+# fi
+
 ## general settings ##
-ss_sed "s|\(^SS_LOCKDOWN=\).*|SS_LOCKDOWN=\"$SS_LOCKDOWN\"|g" "${TMP_SS_CONFIG_UPDATE}"
-
-if [[ -n "${SS_APP}" ]]; then
-    ss_sed "s|\(^SS_APP=\).*|SS_APP=\"$SS_APP\"|g" "${TMP_SS_CONFIG_UPDATE}"
-fi
-
-if [[ -n "${SS_LANGUAGE}" ]]; then
-    ss_sed "s|\(^SS_LANGUAGE=\).*|SS_LANGUAGE=\"$SS_LANGUAGE\"|g" "${TMP_SS_CONFIG_UPDATE}"
-fi
-
-ss_sed "s|\(^SS_NOINDEX=\).*|SS_NOINDEX=\"$SS_NOINDEX\"|g" "${TMP_SS_CONFIG_UPDATE}"
-
-if [[ -n "${SS_TIMEZONE}" ]]; then
-ss_sed "s|\(^SS_TIMEZONE=\).*|SS_TIMEZONE=\"$SS_TIMEZONE\"|g" "${TMP_SS_CONFIG_UPDATE}"
-fi
-
-if [[ -n "${SS_SYNC_DEVELOPMENT}" ]]; then
-ss_sed "s|\(^SS_SYNC_DEVELOPMENT=\).*|SS_SYNC_DEVELOPMENT=\"$SS_SYNC_DEVELOPMENT\"|g" "${TMP_SS_CONFIG_UPDATE}"
-fi
-
-if [[ -n "${SS_SYNC_STAGING}" ]]; then
-ss_sed "s|\(^SS_SYNC_STAGING=\).*|SS_SYNC_STAGING=\"$SS_SYNC_STAGING\"|g" "${TMP_SS_CONFIG_UPDATE}"
-fi
-
-if [[ -n "${SS_REBOOT_MIN_UPTIME}" ]]; then
-ss_sed "s|\(^SS_REBOOT_MIN_UPTIME=\).*|SS_REBOOT_MIN_UPTIME=\"$SS_REBOOT_MIN_UPTIME\"|g" "${TMP_SS_CONFIG_UPDATE}"
-fi
-
-if [[ -n "${SS_REMOTE_BACKUPS}" ]]; then
-ss_sed "s|\(^SS_REMOTE_BACKUPS=\).*|SS_REMOTE_BACKUPS=\"$SS_REMOTE_BACKUPS\"|g" "${TMP_SS_CONFIG_UPDATE}"
-fi
-
-if [[ -n "${SS_MASSIVE_SITE}" ]]; then
-ss_sed "s|\(^SS_MASSIVE_SITE=\).*|SS_MASSIVE_SITE=\"$SS_MASSIVE_SITE\"|g" "${TMP_SS_CONFIG_UPDATE}"
-fi
-
+[[ -n "$SS_APP" ]] && ss_sed "s|\(^SS_APP=\).*|SS_APP=\"$SS_APP\"|g" "${TMP_SS_CONFIG_UPDATE}"
+[[ -n "$SS_LANGUAGE" ]] && ss_sed "s|\(^SS_LANGUAGE=\).*|SS_LANGUAGE=\"$SS_LANGUAGE\"|g" "${TMP_SS_CONFIG_UPDATE}"
+[[ -n "$SS_NOINDEX" ]] && ss_sed "s|\(^SS_NOINDEX=\).*|SS_NOINDEX=\"$SS_NOINDEX\"|g" "${TMP_SS_CONFIG_UPDATE}"
+[[ -n "$SS_TIMEZONE" ]] && ss_sed "s|\(^SS_TIMEZONE=\).*|SS_TIMEZONE=\"$SS_TIMEZONE\"|g" "${TMP_SS_CONFIG_UPDATE}"
+[[ -n "$SS_SYNC_DEVELOPMENT" ]] && ss_sed "s|\(^SS_SYNC_DEVELOPMENT=\).*|SS_SYNC_DEVELOPMENT=\"$SS_SYNC_DEVELOPMENT\"|g" "${TMP_SS_CONFIG_UPDATE}"
+[[ -n "$SS_SYNC_STAGING" ]] && ss_sed "s|\(^SS_SYNC_STAGING=\).*|SS_SYNC_STAGING=\"$SS_SYNC_STAGING\"|g" "${TMP_SS_CONFIG_UPDATE}"
+[[ -n "$SS_REBOOT_MIN_UPTIME" ]] && ss_sed "s|\(^SS_REBOOT_MIN_UPTIME=\).*|SS_REBOOT_MIN_UPTIME=\"$SS_REBOOT_MIN_UPTIME\"|g" "${TMP_SS_CONFIG_UPDATE}"
+[[ -n "$SS_REMOTE_BACKUPS" ]] && ss_sed "s|\(^SS_REMOTE_BACKUPS=\).*|SS_REMOTE_BACKUPS=\"$SS_REMOTE_BACKUPS\"|g" "${TMP_SS_CONFIG_UPDATE}"
+[[ -n "$SS_MASSIVE_SITE" ]] && ss_sed "s|\(^SS_MASSIVE_SITE=\).*|SS_MASSIVE_SITE=\"$SS_MASSIVE_SITE\"|g" "${TMP_SS_CONFIG_UPDATE}"
+[[ -n "$SS_LOCKDOWN" ]] && ss_sed "s|\(^SS_LOCKDOWN=\).*|SS_LOCKDOWN=\"$SS_LOCKDOWN\"|g" "${TMP_SS_CONFIG_UPDATE}"
 
 ## access settings ##
-ss_sed "s|\(^SUDO_USER=\).*|SUDO_USER=\"$SUDO_USER\"|g" "${TMP_SS_CONFIG_UPDATE}"
-ss_sed "s|\(^SUDO_PASSWORD=\).*|SUDO_PASSWORD=\"$SUDO_PASSWORD\"|g" "${TMP_SS_CONFIG_UPDATE}"
-ss_sed "s|\(^SSH_KEYS=\).*|SSH_KEYS=\"$SSH_KEYS\"|g" "${TMP_SS_CONFIG_UPDATE}"
-ss_sed "s|\(^SSH_RESTRICT_IP=\).*|SSH_RESTRICT_IP=\"$SSH_RESTRICT_IP\"|g" "${TMP_SS_CONFIG_UPDATE}"
-ss_sed "s|\(^SSH_IPV4=\).*|SSH_IPV4=\"$SSH_IPV4\"|g" "${TMP_SS_CONFIG_UPDATE}"
-ss_sed "s|\(^SFTP_USER=\).*|SFTP_USER=\"$SFTP_USER\"|g" "${TMP_SS_CONFIG_UPDATE}"
-ss_sed "s|\(^SFTP_PASSWORD=\).*|SFTP_PASSWORD=\"$SFTP_PASSWORD\"|g" "${TMP_SS_CONFIG_UPDATE}"
+[[ -n "$SUDO_USER" ]] && ss_sed "s|\(^SUDO_USER=\).*|SUDO_USER=\"$SUDO_USER\"|g" "${TMP_SS_CONFIG_UPDATE}"
+[[ -n "$SUDO_PASSWORD" ]] && ss_sed "s|\(^SUDO_PASSWORD=\).*|SUDO_PASSWORD=\"$SUDO_PASSWORD\"|g" "${TMP_SS_CONFIG_UPDATE}"
+[[ -n "$SSH_KEYS" ]] && ss_sed "s|\(^SSH_KEYS=\).*|SSH_KEYS=\"$SSH_KEYS\"|g" "${TMP_SS_CONFIG_UPDATE}"
+[[ -n "$SSH_RESTRICT_IP" ]] && ss_sed "s|\(^SSH_RESTRICT_IP=\).*|SSH_RESTRICT_IP=\"$SSH_RESTRICT_IP\"|g" "${TMP_SS_CONFIG_UPDATE}"
+[[ -n "$SSH_IPV4" ]] && ss_sed "s|\(^SSH_IPV4=\).*|SSH_IPV4=\"$SSH_IPV4\"|g" "${TMP_SS_CONFIG_UPDATE}"
+[[ -n "$SFTP_USER" ]] && ss_sed "s|\(^SFTP_USER=\).*|SFTP_USER=\"$SFTP_USER\"|g" "${TMP_SS_CONFIG_UPDATE}"
+[[ -n "$SFTP_PASSWORD" ]] && ss_sed "s|\(^SFTP_PASSWORD=\).*|SFTP_PASSWORD=\"$SFTP_PASSWORD\"|g" "${TMP_SS_CONFIG_UPDATE}"
 
 ## pilot file settings ##
-if [[ -n "${SS_PILOT_FILE}" ]]; then
-    ss_sed "s|\(^SS_PILOT_FILE=\).*|SS_PILOT_FILE=\"$SS_PILOT_FILE\"|g" "${TMP_SS_CONFIG_UPDATE}"
-fi
-
-
+[[ -n "$SS_PILOT_FILE" ]] && ss_sed "s|\(^SS_PILOT_FILE=\).*|SS_PILOT_FILE=\"$SS_PILOT_FILE\"|g" "${TMP_SS_CONFIG_UPDATE}"
 
 ## domain settings ##
-ss_sed "s|\(^SITE_ROOT_DOMAIN=\).*|SITE_ROOT_DOMAIN=\"$SITE_ROOT_DOMAIN\"|g" "${TMP_SS_CONFIG_UPDATE}"
-ss_sed "s|\(^SITE_FULL_DOMAIN=\).*|SITE_FULL_DOMAIN=\"$SITE_FULL_DOMAIN\"|g" "${TMP_SS_CONFIG_UPDATE}"
+[[ -n "$SITE_ROOT_DOMAIN" ]] && ss_sed "s|\(^SITE_ROOT_DOMAIN=\).*|SITE_ROOT_DOMAIN=\"$SITE_ROOT_DOMAIN\"|g" "${TMP_SS_CONFIG_UPDATE}"
+[[ -n "$SITE_FULL_DOMAIN" ]] && ss_sed "s|\(^SITE_FULL_DOMAIN=\).*|SITE_FULL_DOMAIN=\"$SITE_FULL_DOMAIN\"|g" "${TMP_SS_CONFIG_UPDATE}"
 
-
-## cloudflare stuff ##
-if [[ -n "${CLOUDFLARE_EMAIL}" ]]; then
-ss_sed "s|\(^CLOUDFLARE_EMAIL=\).*|CLOUDFLARE_EMAIL=\"$CLOUDFLARE_EMAIL\"|g" "${TMP_SS_CONFIG_UPDATE}"
-fi
-
-if [[ -n "${CLOUDFLARE_API_KEY}" ]]; then
-ss_sed "s|\(^CLOUDFLARE_API_KEY=\).*|CLOUDFLARE_API_KEY=\"$CLOUDFLARE_API_KEY\"|g" "${TMP_SS_CONFIG_UPDATE}"
-fi
-
-if [[ -n "${CLOUDFLARE_REAL_IPS}" ]]; then
-ss_sed "s|\(^CLOUDFLARE_REAL_IPS=\).*|CLOUDFLARE_REAL_IPS=\"$CLOUDFLARE_REAL_IPS\"|g" "${TMP_SS_CONFIG_UPDATE}"
-fi
-
-if [[ -n "${CLOUDFLARE_AUTHENTICATED_ORIGIN}" ]]; then
-ss_sed "s|\(^CLOUDFLARE_AUTHENTICATED_ORIGIN=\).*|CLOUDFLARE_AUTHENTICATED_ORIGIN=\"$CLOUDFLARE_AUTHENTICATED_ORIGIN\"|g" "${TMP_SS_CONFIG_UPDATE}"
-fi
-
-if [[ -n "${CLOUDFLARE_IPS_ONLY}" ]]; then
-ss_sed "s|\(^CLOUDFLARE_IPS_ONLY=\).*|CLOUDFLARE_IPS_ONLY=\"$CLOUDFLARE_IPS_ONLY\"|g" "${TMP_SS_CONFIG_UPDATE}"
-fi
-
+## cloudflare settings ##
+[[ -n "$CLOUDFLARE_EMAIL" ]] && ss_sed "s|\(^CLOUDFLARE_EMAIL=\).*|CLOUDFLARE_EMAIL=\"$CLOUDFLARE_EMAIL\"|g" "${TMP_SS_CONFIG_UPDATE}"
+[[ -n "$CLOUDFLARE_API_KEY" ]] && ss_sed "s|\(^CLOUDFLARE_API_KEY=\).*|CLOUDFLARE_API_KEY=\"$CLOUDFLARE_API_KEY\"|g" "${TMP_SS_CONFIG_UPDATE}"
+[[ -n "$CLOUDFLARE_REAL_IPS" ]] && ss_sed "s|\(^CLOUDFLARE_REAL_IPS=\).*|CLOUDFLARE_REAL_IPS=\"$CLOUDFLARE_REAL_IPS\"|g" "${TMP_SS_CONFIG_UPDATE}"
+[[ -n "$CLOUDFLARE_AUTHENTICATED_ORIGIN" ]] && ss_sed "s|\(^CLOUDFLARE_AUTHENTICATED_ORIGIN=\).*|CLOUDFLARE_AUTHENTICATED_ORIGIN=\"$CLOUDFLARE_AUTHENTICATED_ORIGIN\"|g" "${TMP_SS_CONFIG_UPDATE}"
+[[ -n "$CLOUDFLARE_IPS_ONLY" ]] && ss_sed "s|\(^CLOUDFLARE_IPS_ONLY=\).*|CLOUDFLARE_IPS_ONLY=\"$CLOUDFLARE_IPS_ONLY\"|g" "${TMP_SS_CONFIG_UPDATE}"
 
 ## database settings ##
-
-if [[ -n "${DB_REMOTE}" ]]; then 
-ss_sed "s|\(^DB_REMOTE=\).*|DB_REMOTE=\"$DB_REMOTE\"|g" "${TMP_SS_CONFIG_UPDATE}"
-fi
-
-ss_sed "s|\(^DB_NAME=\).*|DB_NAME=\"$DB_NAME\"|g" "${TMP_SS_CONFIG_UPDATE}"
-ss_sed "s|\(^DB_USER=\).*|DB_USER=\"$DB_USER\"|g" "${TMP_SS_CONFIG_UPDATE}"
-ss_sed "s|\(^DB_PASSWORD_ROOT=\).*|DB_PASSWORD_ROOT=\"$DB_PASSWORD_ROOT\"|g" "${TMP_SS_CONFIG_UPDATE}" ## should come before below line
-ss_sed "s|\(^DB_PASSWORD=\).*|DB_PASSWORD=\"$DB_PASSWORD\"|g" "${TMP_SS_CONFIG_UPDATE}"
-ss_sed "s|\(^DB_HOST=\).*|DB_HOST=\"$DB_HOST\"|g" "${TMP_SS_CONFIG_UPDATE}"
-ss_sed "s|\(^DB_PORT=\).*|DB_PORT=\"$DB_PORT\"|g" "${TMP_SS_CONFIG_UPDATE}"
-ss_sed "s|\(^DB_PREFIX=\).*|DB_PREFIX=\"$DB_PREFIX\"|g" "${TMP_SS_CONFIG_UPDATE}"
-ss_sed "s|\(^DB_CHARSET=\).*|DB_CHARSET=\"$DB_CHARSET\"|g" "${TMP_SS_CONFIG_UPDATE}"
-ss_sed "s|\(^DB_COLLATE=\).*|DB_COLLATE=\"$DB_COLLATE\"|g" "${TMP_SS_CONFIG_UPDATE}"
+[[ -n "$DB_REMOTE" ]] && ss_sed "s|\(^DB_REMOTE=\).*|DB_REMOTE=\"$DB_REMOTE\"|g" "${TMP_SS_CONFIG_UPDATE}"
+[[ -n "$DB_NAME" ]] && ss_sed "s|\(^DB_NAME=\).*|DB_NAME=\"$DB_NAME\"|g" "${TMP_SS_CONFIG_UPDATE}"
+[[ -n "$DB_USER" ]] && ss_sed "s|\(^DB_USER=\).*|DB_USER=\"$DB_USER\"|g" "${TMP_SS_CONFIG_UPDATE}"
+[[ -n "$DB_PASSWORD_ROOT" ]] && ss_sed "s|\(^DB_PASSWORD_ROOT=\).*|DB_PASSWORD_ROOT=\"$DB_PASSWORD_ROOT\"|g" "${TMP_SS_CONFIG_UPDATE}" ## should come before below line
+[[ -n "$DB_PASSWORD" ]] && ss_sed "s|\(^DB_PASSWORD=\).*|DB_PASSWORD=\"$DB_PASSWORD\"|g" "${TMP_SS_CONFIG_UPDATE}"
+[[ -n "$DB_HOST" ]] && ss_sed "s|\(^DB_HOST=\).*|DB_HOST=\"$DB_HOST\"|g" "${TMP_SS_CONFIG_UPDATE}"
+[[ -n "$DB_PORT" ]] && ss_sed "s|\(^DB_PORT=\).*|DB_PORT=\"$DB_PORT\"|g" "${TMP_SS_CONFIG_UPDATE}"
+[[ -n "$DB_PREFIX" ]] && ss_sed "s|\(^DB_PREFIX=\).*|DB_PREFIX=\"$DB_PREFIX\"|g" "${TMP_SS_CONFIG_UPDATE}"
+[[ -n "$DB_CHARSET" ]] && ss_sed "s|\(^DB_CHARSET=\).*|DB_CHARSET=\"$DB_CHARSET\"|g" "${TMP_SS_CONFIG_UPDATE}"
+[[ -n "$DB_COLLATE" ]] && ss_sed "s|\(^DB_COLLATE=\).*|DB_COLLATE=\"$DB_COLLATE\"|g" "${TMP_SS_CONFIG_UPDATE}"
 
 ## adminer settings ##
-if [[ -n "${ADMINER_PUBLIC}" ]]; then
-ss_sed "s|\(^ADMINER_PUBLIC=\).*|ADMINER_PUBLIC=\"$ADMINER_PUBLIC\"|g" "${TMP_SS_CONFIG_UPDATE}"
-fi
-
-ss_sed "s|\(^ADMINER_URL=\).*|ADMINER_URL=\"$ADMINER_URL\"|g" "${TMP_SS_CONFIG_UPDATE}"
+[[ -n "$ADMINER_PUBLIC" ]] && ss_sed "s|\(^ADMINER_PUBLIC=\).*|ADMINER_PUBLIC=\"$ADMINER_PUBLIC\"|g" "${TMP_SS_CONFIG_UPDATE}"
+[[ -n "$ADMINER_URL" ]] && ss_sed "s|\(^ADMINER_URL=\).*|ADMINER_URL=\"$ADMINER_URL\"|g" "${TMP_SS_CONFIG_UPDATE}"
 
 ## staging site settings ##
-if [[ -n "${STAGING_SITE}" ]]; then 
-ss_sed "s|\(^STAGING_SITE=\).*|STAGING_SITE=\"$STAGING_SITE\"|g" "${TMP_SS_CONFIG_UPDATE}"
-fi
-
-if [[ -n "${STAGING_SITE_PROTECT}" ]]; then 
-ss_sed "s|\(^STAGING_SITE_PROTECT=\).*|STAGING_SITE_PROTECT=\"$STAGING_SITE_PROTECT\"|g" "${TMP_SS_CONFIG_UPDATE}"
-fi
+[[ -n "$STAGING_SITE" ]] && ss_sed "s|\(^STAGING_SITE=\).*|STAGING_SITE=\"$STAGING_SITE\"|g" "${TMP_SS_CONFIG_UPDATE}"
+[[ -n "$STAGING_SITE_PROTECT" ]] && ss_sed "s|\(^STAGING_SITE_PROTECT=\).*|STAGING_SITE_PROTECT=\"$STAGING_SITE_PROTECT\"|g" "${TMP_SS_CONFIG_UPDATE}"
 
 ## dev site settings ##
-if [[ -n "${DEV_SITE}" ]]; then 
-ss_sed "s|\(^DEV_SITE=\).*|DEV_SITE=\"$DEV_SITE\"|g" "${TMP_SS_CONFIG_UPDATE}"
-fi
-
-if [[ -n "${DEV_SITE_PROTECT}" ]]; then 
-ss_sed "s|\(^DEV_SITE_PROTECT=\).*|DEV_SITE_PROTECT=\"$DEV_SITE_PROTECT\"|g" "${TMP_SS_CONFIG_UPDATE}"
-fi
+[[ -n "$DEV_SITE" ]] && ss_sed "s|\(^DEV_SITE=\).*|DEV_SITE=\"$DEV_SITE\"|g" "${TMP_SS_CONFIG_UPDATE}"
+[[ -n "$DEV_SITE_PROTECT" ]] && ss_sed "s|\(^DEV_SITE_PROTECT=\).*|DEV_SITE_PROTECT=\"$DEV_SITE_PROTECT\"|g" "${TMP_SS_CONFIG_UPDATE}"
 
 ## guest user ##
-if [[ -n "${GUEST_USER}" ]]; then 
-ss_sed "s|\(^GUEST_USER=\).*|GUEST_USER=\"$GUEST_USER\"|g" "${TMP_SS_CONFIG_UPDATE}"
-fi
-
-if [[ -n "${GUEST_PASSWORD}" ]]; then 
-ss_sed "s|\(^GUEST_PASSWORD=\).*|GUEST_PASSWORD=\"$GUEST_PASSWORD\"|g" "${TMP_SS_CONFIG_UPDATE}"
-fi
-
+[[ -n "$GUEST_USER" ]] && ss_sed "s|\(^GUEST_USER=\).*|GUEST_USER=\"$GUEST_USER\"|g" "${TMP_SS_CONFIG_UPDATE}"
+[[ -n "$GUEST_PASSWORD" ]] && ss_sed "s|\(^GUEST_PASSWORD=\).*|GUEST_PASSWORD=\"$GUEST_PASSWORD\"|g" "${TMP_SS_CONFIG_UPDATE}"
 
 ## wordpress settings ##
 if [[ -n "${WP_CRON_METHOD}" ]]; then 
