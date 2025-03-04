@@ -26,11 +26,11 @@
 ## B. Touch Timestamp File
 ## C. Message (Begin Script)
 ## D. Update Existing Packages
-## E. Install PHP-FPM + PHP Extensions
-## F. Install PHP-Memcached Extension (Required)
-## G. Set Default PHP Version
-## H. Reset Permissions (PHP Packages)
-## I. Purge Cache (PHP OPcache)
+## E. Install PHP-FPM + Required PHP Extensions
+## F. Install Custom PHP Extensions
+## G. Install PHP-Memcached (Required)
+## H. Set Default PHP Version
+## I. Reset Permissions (PHP Packages)
 ## J. Restart Services (PHP-FPM)
 
 ####################################################################################################
@@ -80,200 +80,135 @@ ss_apt_update
 ss_apt_upgrade
 
 ####################################################################################################
-#### E. SS-Install-PHP-Packages: Install PHP-FPM + PHP Extensions ##################################
+#### E. SS-Install-PHP-Packages: Install PHP-FPM + Required PHP Extensions #########################
 ####################################################################################################
 
 ## here PHP-FPM will be installed along with any custom PHP extensions in your ss-config ##
 ## remember to check version compatibility of PHP extensions if you modify them ##
 
-## ubuntu 24.04 ##
 if [[ "${SYSTEM_UBUNTU_VERSION}" == "24.04" ]]; then
-    PHP_EXTENSIONS_NOW=$(source /var/www/ss-config; echo "${PHP_EXTENSIONS}")
-    
-        ss_apt_install php8.3-fpm
-        ss_apt_install php8.3-bcmath
-        ss_apt_install php8.3-curl
-        ss_apt_install php8.3-gd
-        ss_apt_install php8.3-imagick
-        ss_apt_install php8.3-intl
-        ss_apt_install php8.3-mbstring
-        ss_apt_install php8.3-mysql
-        ss_apt_install php8.3-soap
-        ss_apt_install php8.3-sqlite3
-        ss_apt_install php8.3-ssh2
-        ss_apt_install php8.3-xml
-        ss_apt_install php8.3-zip
-    
-        ## https://stackoverflow.com/questions/27702452/loop-through-a-comma-separated-shell-variable
-    if [[ -n "${PHP_EXTENSIONS_NOW}" ]]; then
-        for i in ${PHP_EXTENSIONS_NOW//,/ }
-            do
-            ss_apt_install php8.3-"$i"
-        done
-    fi
+    ss_apt_install php8.3-fpm
+    ss_apt_install php8.3-bcmath
+    ss_apt_install php8.3-curl
+    ss_apt_install php8.3-gd
+    ss_apt_install php8.3-imagick
+    ss_apt_install php8.3-intl
+    ss_apt_install php8.3-mbstring
+    ss_apt_install php8.3-mysql
+    ss_apt_install php8.3-soap
+    ss_apt_install php8.3-sqlite3
+    ss_apt_install php8.3-ssh2
+    ss_apt_install php8.3-xml
+    ss_apt_install php8.3-zip
+
+elif [[ "${SYSTEM_UBUNTU_VERSION}" == "22.04" ]]; then
+    ss_apt_install php8.1-fpm
+    ss_apt_install php8.1-bcmath
+    ss_apt_install php8.1-curl
+    ss_apt_install php8.1-gd
+    ss_apt_install php8.1-imagick
+    ss_apt_install php8.1-intl
+    ss_apt_install php8.1-mbstring
+    ss_apt_install php8.1-mysql
+    ss_apt_install php8.1-soap
+    ss_apt_install php8.1-sqlite3
+    ss_apt_install php8.1-ssh2
+    ss_apt_install php8.1-xml
+    ss_apt_install php8.1-zip
+
+elif [[ "${SYSTEM_UBUNTU_VERSION}" == "20.04" ]]; then
+    ss_apt_install php7.4-fpm
+    ss_apt_install php7.4-bcmath
+    ss_apt_install php7.4-ctype
+    ss_apt_install php7.4-curl
+    ss_apt_install php7.4-dom
+    ss_apt_install php7.4-fileinfo
+    ss_apt_install php7.4-gd
+    ss_apt_install php7.4-iconv
+    ss_apt_install php7.4-intl
+    ss_apt_install php7.4-imagick
+    ss_apt_install php7.4-json
+    ss_apt_install php7.4-mbstring
+    ss_apt_install php7.4-mysql
+    ss_apt_install php7.4-simplexml
+    ss_apt_install php7.4-soap
+    ss_apt_install php7.4-sockets
+    ss_apt_install php7.4-sqlite3
+    ss_apt_install php7.4-ssh2
+    ss_apt_install php7.4-xml
+    ss_apt_install php7.4-xmlwriter
+    ss_apt_install php7.4-xsl
+    ss_apt_install php7.4-zip
+
+elif [[ "${SYSTEM_UBUNTU_VERSION}" == "18.04" ]]; then
+    ss_apt_install php7.2-fpm
+    ss_apt_install php7.2-bcmath
+    ss_apt_install php7.2-curl
+    ss_apt_install php7.2-gd
+    ss_apt_install php7.2-imagick
+    ss_apt_install php7.2-json
+    ss_apt_install php7.2-mbstring
+    ss_apt_install php7.2-mysql
+    ss_apt_install php7.2-soap
+    ss_apt_install php7.2-sqlite3
+    ss_apt_install php7.2-ssh2
+    ss_apt_install php7.2-xml
+    ss_apt_install php7.2-zip
 fi
-
-## ubuntu 22.04 ##
-if [[ "${SYSTEM_UBUNTU_VERSION}" == "22.04" ]]; then
-    PHP_EXTENSIONS_NOW=$(source /var/www/ss-config; echo "${PHP_EXTENSIONS}")
-    
-        ss_apt_install php8.1-fpm
-        ss_apt_install php8.1-bcmath
-        ss_apt_install php8.1-curl
-        ss_apt_install php8.1-gd
-        ss_apt_install php8.1-imagick
-        ss_apt_install php8.1-intl
-        ss_apt_install php8.1-mbstring
-        ss_apt_install php8.1-mysql
-        ss_apt_install php8.1-soap
-        ss_apt_install php8.1-sqlite3
-        ss_apt_install php8.1-ssh2
-        ss_apt_install php8.1-xml
-        ss_apt_install php8.1-zip
-    
-        ## https://stackoverflow.com/questions/27702452/loop-through-a-comma-separated-shell-variable
-    if [[ -n "${PHP_EXTENSIONS_NOW}" ]]; then
-        for i in ${PHP_EXTENSIONS_NOW//,/ }
-            do
-            ss_apt_install php8.1-"$i"
-        done
-    fi
-fi
-
-## ubuntu 20.04 ##
-if [[ "${SYSTEM_UBUNTU_VERSION}" == "20.04" ]]; then
-    PHP_EXTENSIONS_NOW=$(source /var/www/ss-config; echo "${PHP_EXTENSIONS}")
-    
-        ss_apt_install php7.4-fpm
-        ss_apt_install php7.4-bcmath
-        ss_apt_install php7.4-ctype
-        ss_apt_install php7.4-curl
-        ss_apt_install php7.4-dom
-        ss_apt_install php7.4-fileinfo
-        ss_apt_install php7.4-gd
-        ss_apt_install php7.4-iconv
-        ss_apt_install php7.4-intl
-        ss_apt_install php7.4-imagick
-        ss_apt_install php7.4-json
-        ss_apt_install php7.4-mbstring
-        ss_apt_install php7.4-mysql
-        ss_apt_install php7.4-simplexml
-        ss_apt_install php7.4-soap
-        ss_apt_install php7.4-sockets
-        ss_apt_install php7.4-sqlite3
-        ss_apt_install php7.4-ssh2
-        ss_apt_install php7.4-xml
-        ss_apt_install php7.4-xmlwriter
-        ss_apt_install php7.4-xsl
-        ss_apt_install php7.4-zip
-        
-        ## https://stackoverflow.com/questions/27702452/loop-through-a-comma-separated-shell-variable
-    if [[ -n "${PHP_EXTENSIONS_NOW}" ]]; then
-        for i in ${PHP_EXTENSIONS_NOW//,/ }
-            do
-            ss_apt_install php7.4-"$i"
-        done
-    fi
-
-fi
-
-## ubuntu 18.04 ##
-if [[ "${SYSTEM_UBUNTU_VERSION}" == "18.04" ]]; then
-    PHP_EXTENSIONS_NOW=$(source /var/www/ss-config; echo "${PHP_EXTENSIONS}")
-    
-        ss_apt_install php7.2-fpm
-        ss_apt_install php7.2-bcmath
-        ss_apt_install php7.2-curl
-        ss_apt_install php7.2-gd
-        ss_apt_install php7.2-imagick
-        ss_apt_install php7.2-json
-        ss_apt_install php7.2-mbstring
-        ss_apt_install php7.2-mysql
-        ss_apt_install php7.2-soap
-        ss_apt_install php7.2-sqlite3
-        ss_apt_install php7.2-ssh2
-        ss_apt_install php7.2-xml
-        ss_apt_install php7.2-zip
-
-        ## https://stackoverflow.com/questions/27702452/loop-through-a-comma-separated-shell-variable
-    if [[ -n "${PHP_EXTENSIONS_NOW}" ]]; then
-        for i in ${PHP_EXTENSIONS_NOW//,/ }
-            do
-            ss_apt_install php7.2-"$i"
-        done
-    fi
-
-fi 
 
 ####################################################################################################
-#### F. SS-Install-PHP-Packages: Install PHP-Memcached Extension (Required) ########################
+#### F. SS-Install-PHP-Packages: Install Custom PHP Extensions #####################################
+####################################################################################################
+
+if [[ -n "${PHP_EXTENSIONS}" ]]; then
+    for i in ${PHP_EXTENSIONS//,/ }; do
+        ss_apt_install php"${SYSTEM_PHP_VERSION}"-"${i}"
+    done
+fi
+
+####################################################################################################
+#### G. SS-Install-PHP-Packages: Install PHP-Memcached (Required) ##################################
 ####################################################################################################
 
 ## we force install the php-redis extension to ensure it exists on SlickStack servers ##
 ## this is because Redis is a core module and required for i.e. object caching ##
 
-## ubuntu 24.04 ##
 if [[ "${SYSTEM_UBUNTU_VERSION}" == "24.04" ]]; then
     ss_apt_install php-memcached
     ss_apt_install php-memcache
-fi
-
-## ubuntu 22.04 ##
-if [[ "${SYSTEM_UBUNTU_VERSION}" == "22.04" ]]; then
+elif [[ "${SYSTEM_UBUNTU_VERSION}" == "22.04" ]]; then
     ss_apt_install php-memcached
     ss_apt_install php-memcache
-fi
-
-## ubuntu 20.04 ##
-if [[ "${SYSTEM_UBUNTU_VERSION}" == "20.04" ]]; then
+elif [[ "${SYSTEM_UBUNTU_VERSION}" == "20.04" ]]; then
     ss_apt_install php-memcached
     ss_apt_install php-memcache
-fi
-
-## ubuntu 18.04 ##
-if [[ "${SYSTEM_UBUNTU_VERSION}" == "18.04" ]]; then
+elif [[ "${SYSTEM_UBUNTU_VERSION}" == "18.04" ]]; then
     ss_apt_install php-memcached
     ss_apt_install php-memcache
 fi
 
 ####################################################################################################
-#### G. SS-Install-PHP-Packages: Set Default PHP Version ###########################################
+#### H. SS-Install-PHP-Packages: Set Default PHP Version ###########################################
 ####################################################################################################
 
 ## here we set the default PHP version depending on the version of Ubuntu LTS detected ##
 ## in most cases this step is not necessary but we do it anyway for consistency ##
 
-## ubuntu 24.04 ##
 if [[ "${SYSTEM_UBUNTU_VERSION}" == "24.04" ]]; then
     update-alternatives --set php /usr/bin/php8.3
-fi
-
-## ubuntu 22.04 ##
-if [[ "${SYSTEM_UBUNTU_VERSION}" == "22.04" ]]; then
+elif [[ "${SYSTEM_UBUNTU_VERSION}" == "22.04" ]]; then
     update-alternatives --set php /usr/bin/php8.1
-fi
-
-## ubuntu 20.04 ##
-if [[ "${SYSTEM_UBUNTU_VERSION}" == "20.04" ]]; then
+elif [[ "${SYSTEM_UBUNTU_VERSION}" == "20.04" ]]; then
     update-alternatives --set php /usr/bin/php7.4
-fi
-
-## ubuntu 18.04 ##
-if [[ "${SYSTEM_UBUNTU_VERSION}" == "18.04" ]]; then
+elif [[ "${SYSTEM_UBUNTU_VERSION}" == "18.04" ]]; then
     update-alternatives --set php /usr/bin/php7.2
 fi
 
 ####################################################################################################
-#### H. SS-Install-PHP-Packages: Reset Permissions (PHP Packages) ##################################
+#### I. SS-Install-PHP-Packages: Reset Permissions (PHP Packages) ##################################
 ####################################################################################################
 
 source "${PATH_SS_PERMS_PHP_PACKAGES}"
-
-####################################################################################################
-#### I. SS-Install-PHP-Packages: Purge Cache (PHP OPcache) #########################################
-####################################################################################################
-
-source "${PATH_SS_PURGE_OPCACHE}"
 
 ####################################################################################################
 #### J. SS-Install-PHP-Packages: Restart Services (PHP-FPM) ########################################
@@ -303,6 +238,7 @@ chmod 0700 /var/www/crons/custom/*cron* ## 0700 means only root/sudo can execute
 #### SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ###############
 ####################################################################################################
 
+## Ref: ChatGPT
 ## Ref: https://askubuntu.com/questions/541781/install-list-of-packages-using-apt-get
 ## Ref: https://stackoverflow.com/questions/22284131/why-cant-i-install-multiple-packages-with-apt-get-install
 ## Ref: https://askubuntu.com/questions/913221/why-does-my-install-shell-script-not-work-when-i-can-run-it-line-by-line-and-it
