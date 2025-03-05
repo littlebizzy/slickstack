@@ -16,58 +16,56 @@
 #### Ubuntu Kernel: Miscellaneous Settings #########################################################
 ####################################################################################################
 
-## log verbosity for kernel messages ##
+## control kernel logging verbosity ##
 kernel.printk = 3 4 1 3
 
-## disable SysRq (not needed on servers) ##
+## disable SysRq to prevent unauthorized debugging ##
 kernel.sysrq = 0
 
-## improve task migration performance ##
-kernel.sched_migration_cost_ns = 5000000
+## prevent unauthorized process debugging ##
+kernel.yama.ptrace_scope = 1
 
-## disable autogrouping for better server performance ##
+## optimize CPU task scheduling ##
 kernel.sched_autogroup_enabled = 0
+kernel.sched_migration_cost_ns = 5000000
+kernel.sched_min_granularity_ns = 5000000
+kernel.sched_wakeup_granularity_ns = 10000000
+
+## enable full ASLR for better security ##
+kernel.randomize_va_space = 2
 
 ####################################################################################################
 #### Sysctl.conf: Filesystem Settings ##############################################################
 ####################################################################################################
 
-## set max open files in cache ##
-fs.file-max = 2097152
+## set max open files for system and user processes ##
 fs.nr_open = 2097152
+fs.file-max = 2097152
 
-## enhance security for hard links ##
+## harden file permissions ##
 fs.protected_hardlinks = 1
-
-## enhance security for symlinks ##
 fs.protected_symlinks = 1
 
-## increase inotify watchers (helps with fail2ban, WP security plugins, etc.) ##
+## increase inotify limits for monitoring tools ##
 fs.inotify.max_user_watches = 524288
 fs.inotify.max_user_instances = 1024
 
 ####################################################################################################
-#### Sysctl.conf: Virtual Machine (VM) Settings ####################################################
+#### Sysctl.conf: Virtual Machine Settings #########################################################
 ####################################################################################################
 
 ## these settings ensure Linux is aware that swap can be used in case RAM is exhausted ##
 ## however we hardcode values here to avoid Linux over-relying on the swap file ##
 
-## minimize swapping ##
+## optimize memory usage ##
 vm.swappiness = 10
+vm.overcommit_memory = 1
+vm.max_map_count = 262144
 
-## reduce filesystem lookups ##
+## balance filesystem caching ##
 vm.vfs_cache_pressure = 50
-
-## dirty ratios ##
 vm.dirty_ratio = 40
 vm.dirty_background_ratio = 10
-
-## avoid memory overcommit warnings ##
-vm.overcommit_memory = 1
-
-## lower max map count for lighter load ##
-vm.max_map_count = 262144
 
 ####################################################################################################
 #### Sysctl.conf: IPv6 Only Settings #################################################################################
