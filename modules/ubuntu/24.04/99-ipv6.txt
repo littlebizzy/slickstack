@@ -1,0 +1,65 @@
+####################################################################################################
+#### author: SlickStack ############################################################################
+#### link: https://slickstack.io ###################################################################
+#### mirror: littlebizzy/slickstack/blob/master/modules/ubuntu/24.04/99-ipv6.txt ###################
+#### path: /etc/sysctl.d/99-ipv6.conf ##############################################################
+#### destination: n/a (not a boilerplate) ##########################################################
+#### purpose: Ubuntu kernel sub-configuration file to enable IPv6 support in SlickStack ############
+#### module version: Ubuntu 24.04 LTS ##############################################################
+#### bash aliases: n/a (ss-install-ubuntu-kernel) ##################################################
+####################################################################################################
+
+## UBUNTU KERNEL OPTIMIZED FOR CLOUDFLARE + TRAFFIC SCALING (NON-CLUSTERED HIGH TRAFFIC) ##
+## THESE SETTINGS PRETTY MUCH UNCAP EVERYTHING THAT UBUNTU LIMITS BY DEFAULT ##
+
+## enable spoof protection (reverse-path filters) ##
+net.ipv6.conf.all.rp_filter = 1
+
+## disable packet forwarding (retains SLAAC for IPv6) ##
+net.ipv6.conf.all.forwarding = 0
+
+## do not accept ICMP redirects (prevents MITM attacks) ##
+net.ipv6.conf.all.accept_redirects = 0
+
+## do not accept IP source route packets (we are not a router) ##
+net.ipv6.conf.all.accept_source_route = 0
+
+## allowed local port range (set to max limit) ##
+net.ipv6.ip_local_port_range = 1024 65535
+
+## increase TCP SYN backlog to prevent SYN flood attacks ##
+net.ipv6.tcp_max_syn_backlog = 2048
+
+## tune buffer space for high traffic connections ##
+net.ipv6.tcp_rmem = 4096 87380 16777216
+net.ipv6.tcp_wmem = 4096 65536 16777216
+
+## enable TCP timestamps (for high latency networks) ##
+net.ipv6.tcp_timestamps = 1
+
+## enable TCP keepalive to detect dead connections ##
+net.ipv6.tcp_keepalive_time = 7200
+net.ipv6.tcp_keepalive_intvl = 75
+net.ipv6.tcp_keepalive_probes = 9
+
+## enable TCP Fast Open ##
+net.ipv6.tcp_fastopen = 3
+
+## disable IPv6 forwarding on lo interface ##
+net.ipv6.conf.lo.forwarding = 0
+
+## enable TCP SACK (Selective Acknowledgments) ##
+net.ipv6.tcp_sack = 1
+
+## restrict the number of connections in SYN_RECV state ##
+net.ipv6.tcp_max_orphans = 32768
+
+## limit TCP buffer allocations to prevent overflow ##
+net.ipv6.tcp_mem = 786432 16777216 33554432
+
+## disable IPv6 globally (SlickStack will comment this if IPv6 support is detected) ##
+net.ipv6.conf.all.disable_ipv6 = 1
+
+
+
+## SS_EOF
