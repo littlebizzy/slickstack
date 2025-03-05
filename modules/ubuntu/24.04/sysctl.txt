@@ -61,35 +61,120 @@ vm.overcommit_memory = 1
 vm.max_map_count = 262144
 
 ####################################################################################################
-#### Sysctl.conf: IPv4 + IPv6 Settings #############################################################
+#### Sysctl.conf: IPv6 Only Settings #################################################################################
+####################################################################################################
+
+## disable ipv6 by default (SlickStack will comment this out if ipv6 is detected) ##
+net.ipv6.conf.all.disable_ipv6 = 1
+
+## disable IPv6 RFC 4941 (Privacy Extensions) ##
+net.ipv6.conf.all.rfc4941 = 0
+
+####################################################################################################
+#### Sysctl.conf: IPv4 + IPv6 Common Settings ##################################################
 ####################################################################################################
 
 ## enable spoof protection (reverse-path filters) ##
 net.ipv4.conf.all.rp_filter = 1
-# net.ipv6.conf.all.rp_filter = 1
+net.ipv6.conf.all.rp_filter = 1
 
-## disable packet forwarding (retains SLAAC for IPv6) ##
-net.ipv4.ip_forward = 0
-# net.ipv6.conf.all.forwarding = 0
+## disable packet forwarding (retain SLAAC for IPv6) ##
+net.ipv4.conf.all.forwarding = 0
+net.ipv6.conf.all.forwarding = 0
 
 ## do not accept ICMP redirects (prevents MITM attacks) ##
 net.ipv4.conf.all.accept_redirects = 0
-# net.ipv6.conf.all.accept_redirects = 0
+net.ipv6.conf.all.accept_redirects = 0
 
 ## do not send ICMP redirects (we are not a router) ##
 net.ipv4.conf.all.send_redirects = 0
+net.ipv6.conf.all.send_redirects = 0
 
 ## do not accept IP source route packets (we are not a router) ##
 net.ipv4.conf.all.accept_source_route = 0
-# net.ipv6.conf.all.accept_source_route = 0
+net.ipv6.conf.all.accept_source_route = 0
+
+## disable IPv6 Router Advertisements (RA) ##
+net.ipv6.conf.all.accept_ra = 0
+net.ipv6.conf.default.accept_ra = 0
+
+## disable IPv6 Duplicate Address Detection (DAD) ##
+net.ipv6.conf.all.dad_transmits = 0
+net.ipv6.conf.default.dad_transmits = 0
 
 ## allowed local port range (set to max limit) ##
 net.ipv4.ip_local_port_range = 1024 65535
-# net.ipv6.ip_local_port_range = 1024 65535
+net.ipv6.ip_local_port_range = 1024 65535
 
 ## increase TCP SYN backlog to prevent SYN flood attacks ##
 net.ipv4.tcp_max_syn_backlog = 2048
-# net.ipv6.tcp_max_syn_backlog = 2048
+net.ipv6.tcp_max_syn_backlog = 2048
+
+## restrict the number of connections in SYN_RECV state ##
+net.ipv4.tcp_max_orphans = 32768
+net.ipv6.tcp_max_orphans = 32768
+
+## limit TCP buffer allocations to prevent overflow ##
+net.ipv4.tcp_mem = 786432 16777216 33554432
+net.ipv6.tcp_mem = 786432 16777216 33554432
+
+## tune buffer space for high traffic connections ##
+net.ipv4.tcp_rmem = 4096 87380 16777216
+net.ipv6.tcp_rmem = 4096 87380 16777216
+net.ipv4.tcp_wmem = 4096 65536 16777216
+net.ipv6.tcp_wmem = 4096 65536 16777216
+
+## enable TCP timestamps (for high latency networks) ##
+net.ipv4.tcp_timestamps = 1
+net.ipv6.tcp_timestamps = 1
+
+## enable TCP keepalive to detect dead connections ##
+net.ipv4.tcp_keepalive_time = 7200
+net.ipv6.tcp_keepalive_time = 7200
+net.ipv4.tcp_keepalive_intvl = 75
+net.ipv6.tcp_keepalive_intvl = 75
+net.ipv4.tcp_keepalive_probes = 9
+net.ipv6.tcp_keepalive_probes = 9
+
+## enable TCP Fast Open ##
+net.ipv4.tcp_fastopen = 3
+net.ipv6.tcp_fastopen = 3
+
+## reduce retries for faster connection failures ##
+net.ipv4.tcp_retries1 = 3
+net.ipv6.tcp_retries1 = 3
+net.ipv4.tcp_retries2 = 15
+net.ipv6.tcp_retries2 = 15
+
+## prevent unnecessary TCP metric saving (improves performance on busy servers) ##
+net.ipv4.tcp_no_metrics_save = 1
+net.ipv6.tcp_no_metrics_save = 1
+
+## optimize IPv6 neighbor cache to prevent memory exhaustion (useful for high-traffic servers) ##
+net.ipv6.neigh.default.gc_thresh1 = 128
+net.ipv6.neigh.default.gc_thresh2 = 512
+net.ipv6.neigh.default.gc_thresh3 = 1024
+
+## limit IPv6 fragment handling to prevent DoS attacks ##
+net.ipv6.ipfrag_high_thresh = 4194304
+net.ipv6.ipfrag_low_thresh = 3145728
+net.ipv6.ipfrag_time = 60
+
+## disable IPv4 forwarding on lo interface ##
+net.ipv4.conf.lo.forwarding = 0
+net.ipv6.conf.lo.forwarding = 0
+
+## enable TCP SACK (Selective Acknowledgments) ##
+net.ipv4.tcp_sack = 1
+net.ipv6.tcp_sack = 1
+
+## disable packet forwarding (retain SLAAC for IPv6) ##
+net.ipv4.ip_forward = 0
+net.ipv6.conf.all.forwarding = 0
+
+####################################################################################################
+#### Ubuntu Kernel: IPv4 Only Settings ##############################################################################
+####################################################################################################
 
 ## enable TCP syn cookies (SYN flood attack protection) ##
 net.ipv4.tcp_syncookies = 1
@@ -103,83 +188,8 @@ net.ipv4.tcp_window_scaling = 1
 ## enable IP source address validation (anti-spoofing) ##
 net.ipv4.conf.all.src_valid_mark = 1
 
-## set max open files (for high traffic servers) ##
-fs.file-max = 2097152
-
-## tune buffer space for high traffic connections ##
-net.ipv4.tcp_rmem = 4096 87380 16777216
-# net.ipv6.tcp_rmem = 4096 87380 16777216
-
-net.ipv4.tcp_wmem = 4096 65536 16777216
-# net.ipv6.tcp_wmem = 4096 65536 16777216
-
-## enable TCP timestamps (for high latency networks) ##
-net.ipv4.tcp_timestamps = 1
-# net.ipv6.tcp_timestamps = 1
-
-## enable TCP keepalive to detect dead connections ##
-net.ipv4.tcp_keepalive_time = 7200
-# net.ipv6.tcp_keepalive_time = 7200
-
-net.ipv4.tcp_keepalive_intvl = 75
-# net.ipv6.tcp_keepalive_intvl = 75
-
-net.ipv4.tcp_keepalive_probes = 9
-# net.ipv6.tcp_keepalive_probes = 9
-
-## enable TCP Fast Open ##
-net.ipv4.tcp_fastopen = 3
-# net.ipv6.tcp_fastopen = 3
-
-## disable IPv4 forwarding on lo interface ##
-net.ipv4.conf.lo.forwarding = 0
-# net.ipv6.conf.lo.forwarding = 0
-
-## enable TCP SACK (Selective Acknowledgments) ##
-net.ipv4.tcp_sack = 1
-# net.ipv6.tcp_sack = 1
-
-## restrict the number of connections in SYN_RECV state ##
-net.ipv4.tcp_max_orphans = 32768
-# net.ipv6.tcp_max_orphans = 32768
-
-## limit TCP buffer allocations to prevent overflow ##
-net.ipv4.tcp_mem = 786432 16777216 33554432
-# net.ipv6.tcp_mem = 786432 16777216 33554432
-
-## disable IPv6 globally (SlickStack will comment this if IPv6 support is detected) ##
-net.ipv6.conf.all.disable_ipv6 = 1
-
-## disable IPv6 privacy extensions ##
-# net.ipv6.conf.all.use_tempaddr = 0
-# net.ipv6.conf.default.use_tempaddr = 0
-
-## disable IPv6 Router Advertisements (RA) ##
-# net.ipv6.conf.all.accept_ra = 0
-# net.ipv6.conf.default.accept_ra = 0
-
-## disable IPv6 Duplicate Address Detection (DAD) ##
-# net.ipv6.conf.all.dad_transmits = 0
-# net.ipv6.conf.default.dad_transmits = 0
-
-## disable IPv6 RFC 4941 (Privacy Extensions) ##
-# net.ipv6.conf.all.rfc4941 = 0
-
 ## set maximum initial window size for TCP/UDP (IPv4 optimization) ##
 net.ipv4.tcp_init_rwnd = 10
-
-## adjust maximum buffer size for TCP connections ##
-net.core.rmem_max = 16777216
-net.core.wmem_max = 16777216
-
-####################################################################################################
-#### Ubuntu Kernel: TCP + UDP Settings #############################################################
-####################################################################################################
-
-## enable TCP/IP SYN cookies (SYN flood protection) ##
-net.ipv4.tcp_syncookies = 1
-net.ipv4.tcp_max_syn_backlog = 2048
-net.ipv4.tcp_synack_retries = 2
 
 ## max number of TCP sockets not attached to any user file handle (held by system) ##
 net.ipv4.tcp_max_orphans = 60000
@@ -193,30 +203,35 @@ net.ipv4.tcp_rfc1337 = 1
 ## decrease the time default value for tcp_fin_timeout connection (copied from EasyEngine) ##
 net.ipv4.tcp_fin_timeout = 15
 
-## decrease the keepalive connection timeouts (copied from EasyEngine) ##
-net.ipv4.tcp_keepalive_time = 300
-net.ipv4.tcp_keepalive_probes = 5
-net.ipv4.tcp_keepalive_intvl = 15
+## enable TCP/IP SYN cookies (SYN flood protection) ##
+net.ipv4.tcp_max_syn_backlog = 2048
+net.ipv4.tcp_synack_retries = 2
 
-## increase buffer-space allocatable measured in (4096 bytes) units of pages (copied from EasyEngine) ## 
-net.ipv4.tcp_mem = 65536 131072 262144
-net.ipv4.udp_mem = 65536 131072 262144
+####################################################################################################
+#### Ubuntu Kernel: Other Settings ######################################################
+####################################################################################################
 
-## increase the read-buffer space allocatable (copied from EasyEngine) ##
-net.ipv4.tcp_rmem = 8192 87380 16777216
-net.ipv4.udp_rmem_min = 16384
 
-## increase the write-buffer-space allocatable (copied from EasyEngine) ##
-net.ipv4.tcp_wmem = 8192 65536 16777216
-net.ipv4.udp_wmem_min = 16384
+## set max open files (for high traffic servers) ##
+fs.file-max = 2097152
 
-## increase the tcp-time-wait buckets pool size to prevent simple DOS attacks (copied from EasyEngine) ##
-net.ipv4.tcp_max_tw_buckets = 1440000
+## disable IPv6 privacy extensions ##
+# net.ipv6.conf.all.use_tempaddr = 0
+# net.ipv6.conf.default.use_tempaddr = 0
+
+
+
 net.ipv4.tcp_tw_reuse = 1
+
+
 
 ####################################################################################################
 #### Ubuntu Kernel: Net Core Settings ##############################################################
 ####################################################################################################
+
+## adjust maximum buffer size for TCP connections ##
+net.core.rmem_max = 16777216
+net.core.wmem_max = 16777216
 
 ## incoming connections backlog ##
 net.core.netdev_max_backlog = 65535
@@ -238,6 +253,9 @@ net.core.optmem_max = 25165824
 ## netdev budget settings ##
 net.core.netdev_budget = 50000
 net.core.netdev_budget_usecs = 5000
+
+####################################################################################################
+####################################################################################################
 
 ## more custom configs ##
 ## /etc/sysctl.d/
