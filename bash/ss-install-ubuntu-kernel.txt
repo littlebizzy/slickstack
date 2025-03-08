@@ -81,29 +81,6 @@ elif [[ "${SYSTEM_UBUNTU_VERSION}" == "18.04" ]]; then
     ss_wget "${TMP_SYSCTL_CONF}" "${GITHUB_SYSCTL_CONF_1804}"
 fi
 
-## temporarily enable ipv6 for re-check ##
-# sysctl -w net.ipv6.conf.all.disable_ipv6=0 > /dev/null 2>&1
-
-## temporarily enable ipv6 for re-check ##
-sysctl -w net.ipv6.conf.all.disable_ipv6=0
-sysctl -w net.ipv6.conf.default.disable_ipv6=0
-sysctl -w net.ipv6.conf.lo.disable_ipv6=0
-sysctl -w net.ipv6.conf.eth0.disable_ipv6=0
-sysctl -w net.ipv6.conf.eth1.disable_ipv6=0
-modprobe ipv6
-ip link set lo up
-ip link set eth0 up
-ip link set eth1 up
-
-## modify ipv6 settings depending on environment ##
-if [[ -n "${SYSTEM_DIG_IPV6_ADDRESS}" ]]; then
-    ss_sed "s|net.ipv6.conf.all.disable_ipv6 = 1|net.ipv6.conf.all.disable_ipv6 = 0|g" "${PATH_SYSCTL_CONF}"
-    ss_echo "${COLOR_WARN}Notice: IPv6 appears active, enabling IPv6 in the kernel settings. ${COLOR_RESET}"
-else
-    ss_sed "s|net.ipv6.conf.all.disable_ipv6 = 0|net.ipv6.conf.all.disable_ipv6 = 1|g" "${PATH_SYSCTL_CONF}"
-    ss_echo "${COLOR_WARN}Notice: IPv6 appears inactive, disabling IPv6 in the kernel settings. ${COLOR_RESET}"
-fi
-
 ## copy files to their destinations ##
 ss_cp "${TMP_SYSCTL_CONF}" "${PATH_SYSCTL_CONF}"
 
