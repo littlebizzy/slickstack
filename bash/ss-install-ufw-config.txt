@@ -6,7 +6,7 @@
 #### mirror: littlebizzy/slickstack/blob/master/bash/ss-install-ufw-config.txt #####################
 #### path: /var/www/ss-install-ufw-config ##########################################################
 #### destination: n/a (not a boilerplate) ##########################################################
-#### purpose: Reinstalls the UFW firewall module for SlickStack servers (idempotent) ###############
+#### purpose: Reinstalls the UFW module config files for SlickStack servers (idempotent) ###########
 #### module version: UFW 0.36.x ####################################################################
 #### sourced by: ss-install ########################################################################
 #### bash aliases: ss install ufw config ###########################################################
@@ -25,11 +25,11 @@
 ## A. Source SS-Config + SS-Functions
 ## B. Touch Timestamp File
 ## C. Message (Begin Script)
-## D. Force Disable UFW
+## D. Stop UFW Service
 ## E. Configure UFW Settings
 ## F. Configure UFW User Rules
 ## G. Reset Permissions (UFW)
-## H. Enable UFW
+## H. Start UFW Service
 
 ####################################################################################################
 #### A. SS-Install-UFW-Config: Source SS-Config + SS-Functions #####################################
@@ -65,10 +65,10 @@ ss_touch "${TIMESTAMP_SS_INSTALL_UFW_CONFIG}"
 ss_echo "${COLOR_INFO}Running ss-install-ufw-config... ${COLOR_RESET}"
 
 ####################################################################################################
-#### D. SS-Install-UFW-Config: Force Disable UFW ###################################################
+#### D. SS-Install-UFW-Config: Stop UFW Service ####################################################
 ####################################################################################################
 
-sudo ufw --force disable > /dev/null 2>&1
+sudo systemctl stop ufw > /dev/null
 
 ####################################################################################################
 #### E. SS-Install-UFW-Config: Configure UFW Settings ##############################################
@@ -110,13 +110,13 @@ ss_cp /tmp/user6.rules /etc/ufw/user6.rules
 source "${PATH_SS_PERMS_UFW_CONFIG}"
 
 ####################################################################################################
-#### H. SS-Install-UFW-Config: Enable UFW ##########################################################
+#### H. SS-Install-UFW-Config: Start UFW Service ###################################################
 ####################################################################################################
 
 ## CONSIDER not enabling ufw in this script and letting ss-worker do it or something cuz 
 ## many times during re-installation of ss-install the shell session gets kicked off right after this step ##
 
-sudo ufw --force enable > /dev/null 2>&1
+sudo systemctl start ufw > /dev/null
 
 ####################################################################################################
 #### SlickStack: Reset Permissions (SlickStack Scripts) ############################################
@@ -140,6 +140,7 @@ chmod 0700 /var/www/crons/custom/*cron* ## 0700 means only root/sudo can execute
 #### SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ###############
 ####################################################################################################
 
+## Ref: ChatGPT
 ## Ref: https://linux.die.net/man/8/apt-get
 ## Ref: https://wiki.ubuntu.com/UncomplicatedFirewall
 ## Ref: https://askubuntu.com/questions/1006834/ufw-rules-disappear-after-manually-adding-them-to-user-rules-ubuntu-16-04
