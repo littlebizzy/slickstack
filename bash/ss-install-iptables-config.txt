@@ -59,6 +59,34 @@ ss_touch "${TIMESTAMP_SS_INSTALL_IPTABLES_CONFIG}"
 
 ss_echo "${COLOR_INFO}Running ss-install-iptables-config... ${COLOR_RESET}"
 
+
+# download files to /tmp/ first
+ss_wget "${GITHUB_RULES_V4}" "${TMP_RULES_V4}"
+ss_wget "${GITHUB_RULES_V6}" "${TMP_RULES_V6}"
+
+# verify downloads before applying
+if [[ -s "${TMP_RULES_V4}" && -s "${TMP_RULES_V6}" ]]; then
+    # move files to proper location
+    mv "${TMP_RULES_V4}" /etc/iptables/rules.v4
+    mv "${TMP_RULES_V6}" /etc/iptables/rules.v6
+
+    # ensure proper permissions
+    chmod 600 /etc/iptables/rules.v4 /etc/iptables/rules.v6
+
+    # apply rules immediately
+    iptables-restore < /etc/iptables/rules.v4
+    ip6tables-restore < /etc/iptables/rules.v6
+
+    # enable and restart netfilter-persistent
+    systemctl enable netfilter-persistent
+    systemctl restart netfilter-persistent
+
+    echo "iptables configuration applied successfully."
+else
+    echo "Failed to download iptables rules. Configuration not applied."
+    exit 1
+fi
+
 ####################################################################################################
 #### SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ###############
 ####################################################################################################
