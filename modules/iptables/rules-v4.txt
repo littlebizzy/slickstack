@@ -1,0 +1,30 @@
+*filter
+
+# default policies
+-P INPUT DROP
+-P FORWARD DROP
+-P OUTPUT ACCEPT
+
+# allow loopback traffic
+-A INPUT -i lo -j ACCEPT
+
+# allow established and related connections
+-A INPUT -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
+
+# allow SSH (port 22)
+-A INPUT -p tcp --dport 22 -m conntrack --ctstate NEW -j ACCEPT
+
+# allow HTTP and HTTPS
+-A INPUT -p tcp -m multiport --dports 80,443 -m conntrack --ctstate NEW -j ACCEPT
+
+# allow ping
+-A INPUT -p icmp --icmp-type echo-request -j ACCEPT
+
+# logging denied packets
+-A INPUT -m limit --limit 3/min --limit-burst 10 -j LOG --log-prefix "[IPTABLES BLOCK] "
+
+# rate limiting (prevent brute-force attacks)
+-A INPUT -p tcp --dport 22 -m limit --limit 3/min --limit-burst 5 -j ACCEPT
+-A INPUT -p tcp --dport 22 -j REJECT
+
+COMMIT
