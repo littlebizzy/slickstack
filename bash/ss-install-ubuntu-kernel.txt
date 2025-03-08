@@ -82,7 +82,16 @@ elif [[ "${SYSTEM_UBUNTU_VERSION}" == "18.04" ]]; then
 fi
 
 ## temporarily enable ipv6 for re-check ##
-sysctl -w net.ipv6.conf.all.disable_ipv6=0 > /dev/null 2>&1
+# sysctl -w net.ipv6.conf.all.disable_ipv6=0 > /dev/null 2>&1
+
+## temporarily enable ipv6 for re-check ##
+sysctl -w net.ipv6.conf.all.disable_ipv6=0
+sysctl -w net.ipv6.conf.default.disable_ipv6=0
+sysctl -w net.ipv6.conf.lo.disable_ipv6=0
+sysctl -w net.ipv6.conf.eth0.disable_ipv6=0
+sysctl -w net.ipv6.conf.eth1.disable_ipv6=0
+modprobe ipv6
+ip link set lo up
 
 ## modify ipv6 settings depending on environment ##
 if [[ -n "${SYSTEM_DIG_IPV6_ADDRESS}" ]]; then
@@ -106,7 +115,8 @@ source "${PATH_SS_PERMS_UBUNTU_KERNEL}"
 #### F. SS-Install-Ubuntu-Kernel: Reload Ubuntu Kernel #############################################
 ####################################################################################################
 
-sysctl -p "${PATH_SYSCTL_CONF}" > /dev/null
+# sysctl -p "${PATH_SYSCTL_CONF}" > /dev/null
+sysctl --system
 
 ####################################################################################################
 #### G. SS-Install-Ubuntu-Kernel: Cleanup Temp Files ###############################################
