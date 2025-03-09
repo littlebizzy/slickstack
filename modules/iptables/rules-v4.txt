@@ -4,10 +4,10 @@
 #### author: SlickStack ############################################################################
 #### link: https://slickstack.io ###################################################################
 #### mirror:  ################
-#### path: n/a (boilerplate) #######################################################################
-#### destination: (after install) ##############################################
+#### path: /etc/iptables/rules.v4 ##################################################################
+#### destination: n/a ##############################################################################
 #### purpose:  ###########
-#### module version: ####################################################################
+#### module version: Iptables 1.8.x ################################################################
 #### sourced by: n/a ###############################################################################
 #### bash aliases: n/a (ss-install-iptables-config) ################################################
 ####################################################################################################
@@ -29,8 +29,14 @@
 # allow HTTP and HTTPS
 -A INPUT -p tcp -m multiport --dports 80,443 -m conntrack --ctstate NEW -j ACCEPT
 
-# allow ping
+# allow essential ICMP (ping, fragmentation, time exceeded)
 -A INPUT -p icmp --icmp-type echo-request -j ACCEPT
+-A INPUT -p icmp --icmp-type echo-reply -j ACCEPT
+-A INPUT -p icmp --icmp-type destination-unreachable -j ACCEPT
+-A INPUT -p icmp --icmp-type time-exceeded -j ACCEPT
+
+# allow outbound ICMP
+-A OUTPUT -p icmp -j ACCEPT
 
 # logging denied packets
 -A INPUT -m limit --limit 3/min --limit-burst 10 -j LOG --log-prefix "[IPTABLES BLOCK] "
