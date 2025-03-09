@@ -4,10 +4,10 @@
 #### author: SlickStack ############################################################################
 #### link: https://slickstack.io ###################################################################
 #### mirror:  ################
-#### path: n/a (boilerplate) #######################################################################
-#### destination: (after install) ##############################################
+#### path: /etc/iptables/rules.v6 ##################################################################
+#### destination: n/a ##############################################################################
 #### purpose:  ###########
-#### module version: ####################################################################
+#### module version: Iptables 1.8.x ################################################################
 #### sourced by: n/a ###############################################################################
 #### bash aliases: n/a (ss-install-iptables-config) ################################################
 ####################################################################################################
@@ -29,8 +29,20 @@
 # allow HTTP and HTTPS
 -A INPUT -p tcp -m multiport --dports 80,443 -m conntrack --ctstate NEW -j ACCEPT
 
-# allow ICMPv6 (ping)
+# allow essential ICMPv6 (ping + neighbor discovery)
 -A INPUT -p icmpv6 --icmpv6-type echo-request -j ACCEPT
+-A INPUT -p icmpv6 --icmpv6-type echo-reply -j ACCEPT
+-A INPUT -p icmpv6 --icmpv6-type router-solicitation -j ACCEPT
+-A INPUT -p icmpv6 --icmpv6-type router-advertisement -j ACCEPT
+-A INPUT -p icmpv6 --icmpv6-type neighbor-solicitation -j ACCEPT
+-A INPUT -p icmpv6 --icmpv6-type neighbor-advertisement -j ACCEPT
+-A INPUT -p icmpv6 --icmpv6-type redirect -j ACCEPT
+
+# allow outbound ICMPv6
+-A OUTPUT -p icmpv6 -j ACCEPT
+
+# allow DHCPv6 client requests (if applicable)
+-A INPUT -p udp --dport 546 -j ACCEPT
 
 # logging denied packets
 -A INPUT -m limit --limit 3/min --limit-burst 10 -j LOG --log-prefix "[IP6TABLES BLOCK] "
