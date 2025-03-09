@@ -25,7 +25,7 @@
 ## A. Source SS-Config + SS-Functions
 ## B. Touch Timestamp File
 ## C. Message (Begin Script)
-## D. Install Iptables (Config)
+## D. Install Iptables Config
 ## E. Reset Permissions (Iptables Config)
 
 ####################################################################################################
@@ -62,36 +62,44 @@ ss_touch "${TIMESTAMP_SS_INSTALL_IPTABLES_CONFIG}"
 ss_echo "${COLOR_INFO}Running ss-install-iptables-config... ${COLOR_RESET}"
 
 ####################################################################################################
-#### D. SS-Install-Iptables-Config: Install Iptables (Config) ######################################
+#### D. SS-Install-Iptables-Config: Install Iptables Config ########################################
 ####################################################################################################
 
-# download files to /tmp/ first
+## retrieve iptables rules ##
 ss_wget "${TMP_RULES_V4}" "${GITHUB_RULES_V4}"
 ss_wget "${TMP_RULES_V6}" "${GITHUB_RULES_V6}"
 
-# verify downloads before applying
+## verify downloads before applying ##
 if [[ -s "${TMP_RULES_V4}" && -s "${TMP_RULES_V6}" ]]; then
+    if ss_grep "SS_EOF" "${TMP_RULES_V4}" && ss_grep "SS_EOF" "${TMP_RULES_V6}"; then
+        if iptables-restore -t < "${TMP_RULES_V4}" && ip6tables-restore -t < "${TMP_RULES_V6}"; then
 
-    ss_mv "${TMP_RULES_V4}" /etc/iptables/rules.v4
-    ss_mv "${TMP_RULES_V6}" /etc/iptables/rules.v6
+            ss_mv "${TMP_RULES_V4}" /etc/iptables/rules.v4
+            ss_mv "${TMP_RULES_V6}" /etc/iptables/rules.v6
 
-    # ensure proper permissions
-    chmod 600 /etc/iptables/rules.v4
-    chmod 600 /etc/iptables/rules.v6
+            ## ensure proper permissions ##
+            chmod 600 /etc/iptables/rules.v4
+            chmod 600 /etc/iptables/rules.v6
 
-    # apply rules immediately, suppressing success messages but keeping errors
-    iptables-restore < /etc/iptables/rules.v4 > /dev/null || echo "Error applying IPv4 iptables rules."
-    ip6tables-restore < /etc/iptables/rules.v6 > /dev/null || echo "Error applying IPv6 iptables rules."
+            ## apply rules immediately ##
+            iptables-restore < /etc/iptables/rules.v4
+            ip6tables-restore < /etc/iptables/rules.v6
 
-    # enable and restart netfilter-persistent, suppressing only specific messages
-    systemctl enable netfilter-persistent 2>&1 | grep -viE "(synchronizing|executing)"
-    systemctl restart netfilter-persistent 2>&1 | grep -viE "(synchronizing|executing)"
+            ## enable and restart netfilter-persistent, suppressing only specific messages ##
+            systemctl enable netfilter-persistent 2>&1 | grep -viE "(synchronizing|executing)"
+            systemctl restart netfilter-persistent 2>&1 | grep -viE "(synchronizing|executing)"
 
-    # usually not required
-    # systemctl restart networking
+            ## usually not required ##
+            # systemctl restart networking
 
+        else
+            ss_echo "Invalid iptables rules detected. Configuration not applied."
+        fi
+    else
+        ss_echo "Failed to verify iptables rules. Configuration not applied."
+    fi
 else
-    echo "Failed to download iptables rules. Configuration not applied."
+    ss_echo "Failed to download iptables rules. Configuration not applied."
 fi
 
 ####################################################################################################
