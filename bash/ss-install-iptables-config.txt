@@ -76,21 +76,20 @@ if [[ -s "${TMP_RULES_V4}" && -s "${TMP_RULES_V6}" ]]; then
     ss_mv "${TMP_RULES_V6}" /etc/iptables/rules.v6
 
     # ensure proper permissions
-chmod 600 /etc/iptables/rules.v4
-chmod 600 /etc/iptables/rules.v6
+    chmod 600 /etc/iptables/rules.v4
+    chmod 600 /etc/iptables/rules.v6
 
-    # apply rules immediately
-    iptables-restore < /etc/iptables/rules.v4
-    ip6tables-restore < /etc/iptables/rules.v6
+    # apply rules immediately, suppressing success messages but keeping errors
+    iptables-restore < /etc/iptables/rules.v4 > /dev/null || echo "Error applying IPv4 iptables rules."
+    ip6tables-restore < /etc/iptables/rules.v6 > /dev/null || echo "Error applying IPv6 iptables rules."
 
-# enable and restart netfilter-persistent, suppressing only specific messages
-systemctl enable netfilter-persistent 2>&1 | grep -viE "(synchronizing|executing)"
-systemctl restart netfilter-persistent 2>&1 | grep -viE "(synchronizing|executing)"
+    # enable and restart netfilter-persistent, suppressing only specific messages
+    systemctl enable netfilter-persistent 2>&1 | grep -viE "(synchronizing|executing)"
+    systemctl restart netfilter-persistent 2>&1 | grep -viE "(synchronizing|executing)"
 
     # usually not required
     # systemctl restart networking
 
-    echo "iptables configuration applied successfully."
 else
     echo "Failed to download iptables rules. Configuration not applied."
 fi
