@@ -83,9 +83,9 @@ chmod 600 /etc/iptables/rules.v6
     iptables-restore < /etc/iptables/rules.v4
     ip6tables-restore < /etc/iptables/rules.v6
 
-    # enable and restart netfilter-persistent
-    systemctl enable netfilter-persistent > /dev/null
-    systemctl restart netfilter-persistent > /dev/null
+# enable and restart netfilter-persistent, suppressing only specific messages
+systemctl enable netfilter-persistent 2>&1 | grep -viE "(synchronizing|executing)"
+systemctl restart netfilter-persistent 2>&1 | grep -viE "(synchronizing|executing)"
 
     # usually not required
     # systemctl restart networking
