@@ -22,9 +22,9 @@
 ## A. Kernel Settings
 ## B. Filesystem Settings
 ## C. Virtual Machine Settings
-
 ## D. IPv6 Only Settings
 ## E. IPv4 + IPv6 Settings
+
 ## F. IPv4 Only Settings
 
 ## G. Net Core Settings
@@ -85,6 +85,52 @@ vm.min_free_kbytes = 32768
 vm.vfs_cache_pressure = 50
 vm.dirty_ratio = 10
 vm.dirty_background_ratio = 5
+
+####################################################################################################
+#### D. Sysctl.conf: IPv6 Only Settings ############################################################
+####################################################################################################
+
+## to avoid causing networking conflicts SlickStack hardcodes support for IPv6 here ##
+## if your server does not have IPv6 assigned it should not cause problems ##
+
+## ipv6 enabled and stable addresses ##
+net.ipv6.conf.all.disable_ipv6 = 0
+net.ipv6.conf.all.use_tempaddr = 0
+
+## router advertisements and autoconfiguration ##
+net.ipv6.conf.all.accept_ra = 2
+net.ipv6.conf.eth0.accept_ra = 2
+net.ipv6.conf.eth1.accept_ra = 2
+net.ipv6.conf.all.autoconf = 1
+net.ipv6.conf.eth0.autoconf = 1
+net.ipv6.conf.eth1.autoconf = 1
+
+## disable ra on loopback ##
+net.ipv6.conf.lo.accept_ra = 0
+
+## disable duplicate address detection ##
+net.ipv6.conf.all.dad_transmits = 0
+net.ipv6.conf.default.dad_transmits = 0
+
+## optimize neighbor cache ##
+net.ipv6.neigh.default.gc_thresh1 = 128
+net.ipv6.neigh.default.gc_thresh2 = 512
+net.ipv6.neigh.default.gc_thresh3 = 1024
+net.ipv6.neigh.default.gc_stale_time = 60
+
+####################################################################################################
+#### E. Sysctl.conf: IPv4 + IPv6 Settings ##########################################################
+####################################################################################################
+
+## icmp redirects and source routing ##
+net.ipv4.conf.all.accept_redirects = 0
+net.ipv6.conf.all.accept_redirects = 0
+net.ipv4.conf.all.accept_source_route = 0
+net.ipv6.conf.all.accept_source_route = 0
+
+## disable forwarding on loopback ##
+net.ipv4.conf.lo.forwarding = 0
+net.ipv6.conf.lo.forwarding = 0
 
 ####################################################################################################
 #### Sysctl.conf: IPv4 + IPv6 Settings #############################################################
