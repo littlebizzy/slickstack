@@ -22,10 +22,11 @@
 ## A. Kernel Settings
 ## B. Filesystem Settings
 ## C. Virtual Machine Settings
-
 ## D. IPv6 Only Settings
 ## E. IPv4 + IPv6 Settings
+
 ## F. IPv4 Only Settings
+
 ## G. Net Core Settings
 ## H. Load Sub-Configuration Files
 
@@ -121,92 +122,59 @@ net.ipv6.neigh.default.gc_stale_time = 60
 #### E. Sysctl.conf: IPv4 + IPv6 Settings ##########################################################
 ####################################################################################################
 
-## enable spoof protection (reverse-path filtering) ##
-net.ipv4.conf.all.rp_filter = 1
-
-## do not accept ICMP redirects (prevents MITM attacks) ##
+## icmp redirects and source routing ##
 net.ipv4.conf.all.accept_redirects = 0
 net.ipv6.conf.all.accept_redirects = 0
-
-## do not send ICMP redirects (we are not a router) ##
-net.ipv4.conf.all.send_redirects = 0
-
-## do not accept IP source route packets (we are not a router) ##
 net.ipv4.conf.all.accept_source_route = 0
 net.ipv6.conf.all.accept_source_route = 0
 
-## disable forwarding on lo interface ##
+## disable forwarding on loopback ##
 net.ipv4.conf.lo.forwarding = 0
 net.ipv6.conf.lo.forwarding = 0
-
-## allowed local port range (set to max limit) ##
-net.ipv4.ip_local_port_range = 1024 65535
-
-## limit TCP buffer allocations to prevent overflow ##
-net.ipv4.tcp_mem = 786432 16777216 33554432
-
-## tune buffer space for high-traffic connections ##
-net.ipv4.tcp_rmem = 4096 87380 16777216
-net.ipv4.tcp_wmem = 4096 65536 16777216
-
-## enable TCP timestamps (for high latency networks) ##
-net.ipv4.tcp_timestamps = 1
-
-## enable TCP keepalive to detect dead connections ##
-net.ipv4.tcp_keepalive_time = 7200
-net.ipv4.tcp_keepalive_intvl = 75
-net.ipv4.tcp_keepalive_probes = 9
-
-## enable TCP Fast Open ##
-net.ipv4.tcp_fastopen = 3
-
-## reduce retries for faster connection failures ##
-net.ipv4.tcp_retries1 = 3
-net.ipv4.tcp_retries2 = 15
-
-## prevent unnecessary TCP metric saving (improves performance on busy servers) ##
-net.ipv4.tcp_no_metrics_save = 1
-
-## enable TCP SACK (Selective Acknowledgments) ##
-net.ipv4.tcp_sack = 1
-
-## enable TCP Low Latency Mode ##
-net.ipv4.tcp_low_latency = 1
-
-## enable TCP TIME_WAIT reuse to improve performance ##
-net.ipv4.tcp_tw_reuse = 1
 
 ####################################################################################################
 #### F. Sysctl.conf: IPv4 Only Settings ############################################################
 ####################################################################################################
 
-## enable TCP syn cookies (SYN flood attack protection) ##
-net.ipv4.tcp_syncookies = 1
+## spoof protection and redirects ##
+net.ipv4.conf.all.rp_filter = 1
+net.ipv4.conf.all.send_redirects = 0
+net.ipv4.conf.all.secure_redirects = 1
 
-## reduce TCP FIN timeout (improves performance) ##
-net.ipv4.tcp_fin_timeout = 15
+## local port range ##
+net.ipv4.ip_local_port_range = 1024 65535
 
-## enable TCP window scaling (useful for high latency networks) ##
-net.ipv4.tcp_window_scaling = 1
+## tcp buffer allocations ##
+net.ipv4.tcp_mem = 786432 16777216 33554432
+net.ipv4.tcp_rmem = 4096 87380 16777216
+net.ipv4.tcp_wmem = 4096 65536 16777216
 
-## max number of TCP sockets not attached to any user file handle (held by system) ##
-net.ipv4.tcp_max_orphans = 60000
+## tcp time settings ##
+net.ipv4.tcp_timestamps = 1
+net.ipv4.tcp_keepalive_time = 7200
+net.ipv4.tcp_keepalive_intvl = 75
+net.ipv4.tcp_keepalive_probes = 9
+net.ipv4.tcp_fastopen = 3
 
-## disable TCP slow start (we are not a variable speed WAN) ##
-net.ipv4.tcp_slow_start_after_idle = 0
+## tcp retries and metrics ##
+net.ipv4.tcp_retries1 = 3
+net.ipv4.tcp_retries2 = 15
+net.ipv4.tcp_no_metrics_save = 1
 
-## protect against TCP Time-Wait ##
-net.ipv4.tcp_rfc1337 = 1
-
-## enable TCP SYN cookies (SYN flood protection) ##
-net.ipv4.tcp_max_syn_backlog = 2048
-net.ipv4.tcp_synack_retries = 2
-
-## allow reuse of TCP TIME_WAIT sockets to improve performance ##
+## tcp performance enhancements ##
+net.ipv4.tcp_sack = 1
+net.ipv4.tcp_low_latency = 1
 net.ipv4.tcp_tw_reuse = 1
 
-## enable ipv4 dynamic address configuration (via dhclient or other methods) ##
-net.ipv4.conf.all.secure_redirects = 1
+## connection timeouts and scaling ##
+net.ipv4.tcp_syncookies = 1
+net.ipv4.tcp_fin_timeout = 15
+net.ipv4.tcp_window_scaling = 1
+net.ipv4.tcp_max_orphans = 60000
+net.ipv4.tcp_slow_start_after_idle = 0
+net.ipv4.tcp_rfc1337 = 1
+net.ipv4.tcp_max_syn_backlog = 2048
+net.ipv4.tcp_synack_retries = 2
 
 ####################################################################################################
 #### G. Sysctl.conf: Net Core Settings #############################################################
