@@ -24,9 +24,7 @@
 ## C. Virtual Machine Settings
 ## D. IPv6 Only Settings
 ## E. IPv4 + IPv6 Settings
-
 ## F. IPv4 Only Settings
-
 ## G. Net Core Settings
 ## H. Load Sub-Configuration Files
 
@@ -135,158 +133,48 @@ net.ipv4.conf.lo.forwarding = 0
 net.ipv6.conf.lo.forwarding = 0
 
 ####################################################################################################
-#### Sysctl.conf: IPv4 + IPv6 Settings #############################################################
+#### F. Sysctl.conf: IPv4 Only Settings ############################################################
 ####################################################################################################
 
-## enable spoof protection (reverse-path filters) ##
+## spoof protection and redirects ##
 net.ipv4.conf.all.rp_filter = 1
-# net.ipv6.conf.all.rp_filter = 1
-
-## disable packet forwarding (retains SLAAC for IPv6) ##
-net.ipv4.ip_forward = 0
-# net.ipv6.conf.all.forwarding = 0
-
-## do not accept ICMP redirects (prevents MITM attacks) ##
-net.ipv4.conf.all.accept_redirects = 0
-# net.ipv6.conf.all.accept_redirects = 0
-
-## do not send ICMP redirects (we are not a router) ##
 net.ipv4.conf.all.send_redirects = 0
+net.ipv4.conf.all.secure_redirects = 1
 
-## do not accept IP source route packets (we are not a router) ##
-net.ipv4.conf.all.accept_source_route = 0
-# net.ipv6.conf.all.accept_source_route = 0
-
-## allowed local port range (set to max limit) ##
+## local port range ##
 net.ipv4.ip_local_port_range = 1024 65535
-# net.ipv6.ip_local_port_range = 1024 65535
 
-## increase TCP SYN backlog to prevent SYN flood attacks ##
-net.ipv4.tcp_max_syn_backlog = 2048
-# net.ipv6.tcp_max_syn_backlog = 2048
-
-## enable TCP syn cookies (SYN flood attack protection) ##
-net.ipv4.tcp_syncookies = 1
-
-## reduce TCP FIN timeout (improves performance) ##
-net.ipv4.tcp_fin_timeout = 30
-
-## enable TCP window scaling (useful for high latency networks) ##
-net.ipv4.tcp_window_scaling = 1
-
-## enable IP source address validation (anti-spoofing) ##
-net.ipv4.conf.all.src_valid_mark = 1
-
-## set max open files (for high traffic servers) ##
-fs.file-max = 2097152
-
-## tune buffer space for high traffic connections ##
-net.ipv4.tcp_rmem = 4096 87380 16777216
-# net.ipv6.tcp_rmem = 4096 87380 16777216
-
-net.ipv4.tcp_wmem = 4096 65536 16777216
-# net.ipv6.tcp_wmem = 4096 65536 16777216
-
-## enable TCP timestamps (for high latency networks) ##
-net.ipv4.tcp_timestamps = 1
-# net.ipv6.tcp_timestamps = 1
-
-## enable TCP keepalive to detect dead connections ##
-net.ipv4.tcp_keepalive_time = 7200
-# net.ipv6.tcp_keepalive_time = 7200
-
-net.ipv4.tcp_keepalive_intvl = 75
-# net.ipv6.tcp_keepalive_intvl = 75
-
-net.ipv4.tcp_keepalive_probes = 9
-# net.ipv6.tcp_keepalive_probes = 9
-
-## enable TCP Fast Open ##
-net.ipv4.tcp_fastopen = 3
-# net.ipv6.tcp_fastopen = 3
-
-## disable IPv4 forwarding on lo interface ##
-net.ipv4.conf.lo.forwarding = 0
-# net.ipv6.conf.lo.forwarding = 0
-
-## enable TCP SACK (Selective Acknowledgments) ##
-net.ipv4.tcp_sack = 1
-# net.ipv6.tcp_sack = 1
-
-## restrict the number of connections in SYN_RECV state ##
-net.ipv4.tcp_max_orphans = 32768
-# net.ipv6.tcp_max_orphans = 32768
-
-## limit TCP buffer allocations to prevent overflow ##
+## tcp buffer allocations ##
 net.ipv4.tcp_mem = 786432 16777216 33554432
-# net.ipv6.tcp_mem = 786432 16777216 33554432
+net.ipv4.tcp_rmem = 4096 87380 16777216
+net.ipv4.tcp_wmem = 4096 65536 16777216
 
-## disable IPv6 globally (SlickStack will comment this if IPv6 support is detected) ##
-net.ipv6.conf.all.disable_ipv6 = 1
+## tcp time settings ##
+net.ipv4.tcp_timestamps = 1
+net.ipv4.tcp_keepalive_time = 7200
+net.ipv4.tcp_keepalive_intvl = 75
+net.ipv4.tcp_keepalive_probes = 9
+net.ipv4.tcp_fastopen = 3
 
-## disable IPv6 privacy extensions ##
-# net.ipv6.conf.all.use_tempaddr = 0
-# net.ipv6.conf.default.use_tempaddr = 0
+## tcp retries and metrics ##
+net.ipv4.tcp_retries1 = 3
+net.ipv4.tcp_retries2 = 15
+net.ipv4.tcp_no_metrics_save = 1
 
-## disable IPv6 Router Advertisements (RA) ##
-# net.ipv6.conf.all.accept_ra = 0
-# net.ipv6.conf.default.accept_ra = 0
+## tcp performance enhancements ##
+net.ipv4.tcp_sack = 1
+net.ipv4.tcp_low_latency = 1
+net.ipv4.tcp_tw_reuse = 1
 
-## disable IPv6 Duplicate Address Detection (DAD) ##
-# net.ipv6.conf.all.dad_transmits = 0
-# net.ipv6.conf.default.dad_transmits = 0
-
-## disable IPv6 RFC 4941 (Privacy Extensions) ##
-# net.ipv6.conf.all.rfc4941 = 0
-
-## set maximum initial window size for TCP/UDP (IPv4 optimization) ##
-net.ipv4.tcp_init_rwnd = 10
-
-## adjust maximum buffer size for TCP connections ##
-net.core.rmem_max = 16777216
-net.core.wmem_max = 16777216
-
-####################################################################################################
-#### Ubuntu Kernel: TCP + UDP Settings #############################################################
-####################################################################################################
-
-## enable TCP/IP SYN cookies (SYN flood protection) ##
+## connection timeouts and scaling ##
 net.ipv4.tcp_syncookies = 1
+net.ipv4.tcp_fin_timeout = 15
+net.ipv4.tcp_window_scaling = 1
+net.ipv4.tcp_max_orphans = 60000
+net.ipv4.tcp_slow_start_after_idle = 0
+net.ipv4.tcp_rfc1337 = 1
 net.ipv4.tcp_max_syn_backlog = 2048
 net.ipv4.tcp_synack_retries = 2
-
-## max number of TCP sockets not attached to any user file handle (held by system) ##
-net.ipv4.tcp_max_orphans = 60000
-
-## disable TCP slow start (we are not a variable speed WAN) ##
-net.ipv4.tcp_slow_start_after_idle = 0
-
-## protect against TCP Time-Wait (assasinate!) ##
-net.ipv4.tcp_rfc1337 = 1
-
-## decrease the time default value for tcp_fin_timeout connection (copied from EasyEngine) ##
-net.ipv4.tcp_fin_timeout = 15
-
-## decrease the keepalive connection timeouts (copied from EasyEngine) ##
-net.ipv4.tcp_keepalive_time = 300
-net.ipv4.tcp_keepalive_probes = 5
-net.ipv4.tcp_keepalive_intvl = 15
-
-## increase buffer-space allocatable measured in (4096 bytes) units of pages (copied from EasyEngine) ## 
-net.ipv4.tcp_mem = 65536 131072 262144
-net.ipv4.udp_mem = 65536 131072 262144
-
-## increase the read-buffer space allocatable (copied from EasyEngine) ##
-net.ipv4.tcp_rmem = 8192 87380 16777216
-net.ipv4.udp_rmem_min = 16384
-
-## increase the write-buffer-space allocatable (copied from EasyEngine) ##
-net.ipv4.tcp_wmem = 8192 65536 16777216
-net.ipv4.udp_wmem_min = 16384
-
-## increase the tcp-time-wait buckets pool size to prevent simple DOS attacks (copied from EasyEngine) ##
-net.ipv4.tcp_max_tw_buckets = 1440000
-net.ipv4.tcp_tw_reuse = 1
 
 ####################################################################################################
 #### G. Sysctl.conf: Net Core Settings #############################################################
