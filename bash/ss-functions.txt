@@ -1883,7 +1883,8 @@ fi
 if [[ -d /etc/php ]]; then
     SYSTEM_PHP_EXTENSIONS_OLD=$(php -m | paste -s -d , | sed -e 's/,/, /g' | awk -F 'zlib' '{print $1"zlib"}' | sed -e 's#\[PHP Modules\], ##g')
     SYSTEM_PHP_EXTENSIONS=$(php -m | paste -s -d , | sed -e 's/,/, /g' | sed -e 's#\[PHP Modules\], ##g' | awk '{print $0}')
-    SYSTEM_PHP_VERSION=$(php -r 'echo PHP_MAJOR_VERSION.".".PHP_MINOR_VERSION;')
+    SYSTEM_PHP_VERSION_JANKY=$(php -r 'echo PHP_MAJOR_VERSION.".".PHP_MINOR_VERSION;')
+    SYSTEM_PHP_VERSION=$(php -r 'printf("%s\n", PHP_MAJOR_VERSION.".".PHP_MINOR_VERSION);' | tr -d -c '[:alnum:].')
     SYSTEM_PHP_VERSION_FULL=$(php -v | awk '/^PHP/{print $2}' | awk -F '\\-*' '{print $1""}')
 fi
 
