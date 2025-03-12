@@ -6,8 +6,8 @@
 #### mirror: littlebizzy/slickstack/blob/master/bash/ss-install-ubuntu-users.txt ###################
 #### path: /var/www/ss-install-ubuntu-users ########################################################
 #### destination: n/a (not a boilerplate) ##########################################################
-#### purpose: Reinstalls Linux OS users based on ss-config #########################################
-#### module version: Ubuntu 24.04 LTS ##############################################################
+#### purpose: Reinstalls Ubuntu users and groups and sudoers file based on ss-config ###############
+#### module version: Ubuntu 18.04 to 24.04 LTS #####################################################
 #### sourced by: ss-install ########################################################################
 #### bash aliases: ss install ubuntu users, ss install users #######################################
 ####################################################################################################
@@ -25,13 +25,14 @@
 ## A. Source SS-Config + SS-Functions
 ## B. Touch Timestamp File
 ## C. Message (Begin Script)
-## D. Configure Root User
-## E. Configure Sudo User
-## F. Configure SFTP User
-## G. Configure User Groups
-## H. Configure Sudoers File 
-## I. Reset Permissions (Ubuntu Users)
-## J. Run SS-Install-Ubuntu-Bash
+## D. Create User Groups
+## E. Configure Root User
+## F. Configure Sudo User
+## G. Configure SFTP User
+## H. Assign Additional Groups
+## I. Configure Sudoers File 
+## J. Reset Permissions (Ubuntu Users)
+## K. Run SS-Install-Ubuntu-Bash
 
 ####################################################################################################
 #### A. SS-Install-Ubuntu-Users: Source SS-Config + SS-Functions ###################################
@@ -67,118 +68,133 @@ ss_touch "${TIMESTAMP_SS_INSTALL_UBUNTU_USERS}"
 ss_echo "${COLOR_INFO}Running ss-install-ubuntu-users... ${COLOR_RESET}"
 
 ####################################################################################################
-#### D. SS-Install-Ubuntu-Users: Configure Root User ###############################################
+#### D. SS-Install-Ubuntu-Users: Create User Groups ################################################
 ####################################################################################################
 
-## set root password same as sudo password ##
+groupadd -f sudo-ssh
+groupadd -f sftp-only
+groupadd -f slickstack
+
+####################################################################################################
+#### E. SS-Install-Ubuntu-Users: Configure Root User ###############################################
+####################################################################################################
+
+## set root password to match sudo password ##
 echo "root:${SUDO_PASSWORD}" | /usr/sbin/chpasswd
 
-## ensure root password never expires ##
+## prevent root password expiration ##
 chage -E -1 -m 0 -M -1 -I -1 -W 99999 root
 
+## ensure root is not in sudo-ssh or sftp-only groups ##
+gpasswd -d root sudo-ssh > /dev/null 2>&1 || true
+gpasswd -d root sftp-only > /dev/null 2>&1 || true
+
 ####################################################################################################
-#### E. SS-Install-Ubuntu-Users: Configure Sudo User ###############################################
+#### F. SS-Install-Ubuntu-Users: Configure Sudo User ###############################################
 ####################################################################################################
 
 ## create sudo user ##
 ss_adduser "${SUDO_USER}"
 
-## assign password to sudo user ##
+## set sudo user password ##
 echo "${SUDO_USER}:${SUDO_PASSWORD}" | /usr/sbin/chpasswd
 
-## disable password expiration ##
+## prevent password expiration ##
 chage -m 0 -M 99999 -I -1 -E -1 "${SUDO_USER}"
 
 ## ensure home directory exists ##
 mkhomedir_helper "${SUDO_USER}"
 
-## force user shell to bash (suppress "no changes" message) ##
+## set default shell to bash (hide "no changes" message) ##
 usermod -s /bin/bash "${SUDO_USER}" 2>&1 | grep -v "no changes"
 
+## add sudo user to sudo-ssh group for SSH access ##
+usermod -aG sudo-ssh "${SUDO_USER}"
+
 ####################################################################################################
-#### F. SS-Install-Ubuntu-Users: Configure SFTP User ###############################################
+#### G. SS-Install-Ubuntu-Users: Configure SFTP User ###############################################
 ####################################################################################################
 
 ## create sftp user ##
 ss_adduser "${SFTP_USER}"
 
-## assign password to sftp user ##
+## set sftp user password ##
 echo "${SFTP_USER}:${SFTP_PASSWORD}" | /usr/sbin/chpasswd
 
-## disable password expiration ##
+## prevent password expiration ##
 chage -m 0 -M 99999 -I -1 -E -1 "${SFTP_USER}"
 
 ## ensure home directory exists ##
 mkhomedir_helper "${SFTP_USER}"
 
-## set user shell to nologin (suppress "no changes" message) ##
+## disable shell access (hide "no changes" message) ##
 usermod -s /usr/sbin/nologin "${SFTP_USER}" 2>&1 | grep -v "no changes"
 
+## add sftp user to sftp-only group ##
+usermod -aG sftp-only "${SFTP_USER}"
+
 ####################################################################################################
-#### G. SS-Install-Ubuntu-Users: Configure User Groups #############################################
+#### H. SS-Install-Ubuntu-Users: Assign Additional Groups ##########################################
 ####################################################################################################
 
-## add slickstack group ##
-groupadd -f slickstack
+## add sftp user to required groups ##
+usermod -aG slickstack "${SFTP_USER}"
+usermod -aG www-data "${SFTP_USER}"
 
-## add sftp user to groups ##
-usermod -a -G slickstack "${SFTP_USER}"
-usermod -a -G www-data "${SFTP_USER}"
+## add sudo user to required groups ##
+usermod -aG slickstack "${SUDO_USER}"
+usermod -aG www-data "${SUDO_USER}"
 
-## add sudo user to groups ##
-usermod -a -G slickstack "${SUDO_USER}"
-usermod -a -G www-data "${SUDO_USER}"
+## add www-data user to slickstack group ##
+usermod -aG slickstack www-data
 
 ## perhaps add sudo user to root group and then source ss-config inside bashrc with group exec perms?
 
-## add www-data user to groups ##
-usermod -a -G slickstack www-data
-
 ####################################################################################################
-#### H. SS-Install-Ubuntu-Users: Configure Sudoers File ############################################
+#### I. SS-Install-Ubuntu-Users: Configure Sudoers File ############################################
 ####################################################################################################
 
 if [[ "${SYSTEM_UBUNTU_VERSION}" == "24.04" ]]; then
     ss_wget "${TMP_SUDOERS}" "${GITHUB_SUDOERS_2404}"
     ss_sed "s/@SUDO_USER/${SUDO_USER}/g" "${TMP_SUDOERS}"
     ss_mv "${TMP_SUDOERS}" "${PATH_SUDOERS}"
-fi
 
-if [[ "${SYSTEM_UBUNTU_VERSION}" == "22.04" ]]; then
+elif [[ "${SYSTEM_UBUNTU_VERSION}" == "22.04" ]]; then
     ss_wget "${TMP_SUDOERS}" "${GITHUB_SUDOERS_2204}"
     ss_sed "s/@SUDO_USER/${SUDO_USER}/g" "${TMP_SUDOERS}"
     ss_mv "${TMP_SUDOERS}" "${PATH_SUDOERS}"
-fi
 
-if [[ "${SYSTEM_UBUNTU_VERSION}" == "20.04" ]]; then
+elif [[ "${SYSTEM_UBUNTU_VERSION}" == "20.04" ]]; then
+    ss_wget "${TMP_SUDOERS}" "${GITHUB_SUDOERS}" ## change this later to version specific
+    ss_sed "s/@SUDO_USER/${SUDO_USER}/g" "${TMP_SUDOERS}"
+    ss_mv "${TMP_SUDOERS}" "${PATH_SUDOERS}"
+
+elif [[ "${SYSTEM_UBUNTU_VERSION}" == "18.04" ]]; then
     ss_wget "${TMP_SUDOERS}" "${GITHUB_SUDOERS}" ## change this later to version specific
     ss_sed "s/@SUDO_USER/${SUDO_USER}/g" "${TMP_SUDOERS}"
     ss_mv "${TMP_SUDOERS}" "${PATH_SUDOERS}"
 fi
-
-if [[ "${SYSTEM_UBUNTU_VERSION}" == "18.04" ]]; then
-    ss_wget "${TMP_SUDOERS}" "${GITHUB_SUDOERS}" ## change this later to version specific
-    ss_sed "s/@SUDO_USER/${SUDO_USER}/g" "${TMP_SUDOERS}"
-    ss_mv "${TMP_SUDOERS}" "${PATH_SUDOERS}"
-fi
-
-## delete tmp files ##
-ss_rm "${TMP_SUDOERS}"
 
 ####################################################################################################
-#### I. SS-Install-Ubuntu-Users: Reset Permissions (Ubuntu Users) ##################################
+#### J. SS-Install-Ubuntu-Users: Reset Permissions (Ubuntu Users) ##################################
 ####################################################################################################
 
 source "${PATH_SS_PERMS_UBUNTU_USERS}"
 
 ####################################################################################################
-#### J. SS-Install-Ubuntu-Users: Run SS-Install-Ubuntu-Bash ########################################
+#### K. SS-Install-Ubuntu-Users: Run SS-Install-Ubuntu-Bash ########################################
 ####################################################################################################
 
 ## here we reinstall bash run commands which requires the users to be installed already ##
 ## there is no drawback to running this repeatedly so we include it here casually ##
 
 source "${PATH_SS_INSTALL_UBUNTU_BASH}"
+
+####################################################################################################
+#### K. SS-Install-Ubuntu-Users: Cleanup Temporary Files ###########################################
+####################################################################################################
+
+ss_rm "${TMP_SUDOERS}"
 
 ####################################################################################################
 #### SlickStack: Reset Permissions (SlickStack Scripts) ############################################
@@ -202,6 +218,7 @@ chmod 0700 /var/www/crons/custom/*cron* ## 0700 means only root/sudo can execute
 #### SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ###############
 ####################################################################################################
 
+## Ref: ChatGPT
 ## Ref: https://askubuntu.com/questions/94060/run-adduser-non-interactively
 ## Ref: http://manpages.ubuntu.com/manpages/trusty/man8/adduser.8.html
 ## Ref: https://www.computerhope.com/unix/adduser.htm
