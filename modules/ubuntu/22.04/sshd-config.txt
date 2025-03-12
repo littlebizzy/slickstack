@@ -1,7 +1,7 @@
 ####################################################################################################
 #### author: SlickStack ############################################################################
 #### link: https://slickstack.io ###################################################################
-#### mirror: https://mirrors.slickstack.io/modules/ubuntu/22.04/sshd-config.txt ####################
+#### mirror: littlebizzy/slickstack/blob/master/modules/ubuntu/22.04/sshd-config.txt ###############
 #### path: n/a (boilerplate) #######################################################################
 #### destination: /etc/ssh/sshd_config (after install) #############################################
 #### purpose: SSH configuration file boilerplate including settings for jailed SFTP user ###########
@@ -21,9 +21,9 @@
 ## this is a brief summary of the different code snippets you will find in this script ##
 ## each section should be commented so you understand what is being accomplished ##
 
-## A. Port/Listen Settings
+## A. Port + IP Settings
 ## B. Fingerprint Settings
-## C. Ciphers/Keying Settings
+## C. Ciphers + Keying Settings
 ## D. Logging Settings
 ## E. Authentication Settings
 ## F. Kerberos/GSSAPI Settings
@@ -31,7 +31,7 @@
 ## H. SFTP User Settings
 
 ####################################################################################################
-#### A. SSHD_Config: Port/Listen Settings ##########################################################
+#### A. SSHD_Config: Port + IP Settings ############################################################
 ####################################################################################################
 
 ## we only allow IPv4 connections and disable DNS lookups to speed up SSH connections ##
@@ -46,15 +46,15 @@ ListenAddress 0.0.0.0
 #### B. SSHD_Config: Fingerprint Settings ##########################################################
 ####################################################################################################
 
-## these are the default fingerprint keys that modern OpenSSH servers recommend using ##
-## generally speaking you should select RSA such as when using a new SSH app ##
+## here we set ED25519 as the preferred host key for better security and performance ##
+## however it falls back to ECDSA and RSA for compatibility with older clients ##
 
-HostKey /etc/ssh/ssh_host_rsa_key
-HostKey /etc/ssh/ssh_host_ecdsa_key
 HostKey /etc/ssh/ssh_host_ed25519_key
+HostKey /etc/ssh/ssh_host_ecdsa_key
+HostKey /etc/ssh/ssh_host_rsa_key
 
 ####################################################################################################
-#### C. SSHD_Config: Ciphers/Keying Settings #######################################################
+#### C. SSHD_Config: Ciphers + Keying Settings #####################################################
 ####################################################################################################
 
 # RekeyLimit default none
@@ -73,27 +73,27 @@ LogLevel INFO
 ## the root user cannot access SSH after the first ss-install setup process is completed ##
 ## ensure that you remember your sudo user and password (set in your ss-config) ##
 
-AllowUsers @SUDO_USER@SSH_IPV4 @SFTP_USER
-AllowGroups sudo-ssh
+AllowUsers @SUDO_USER@SSH_IPV4 @SFTP_USER ## to be deleted soon
+AllowGroups sudo-ssh sftp-only
 LoginGraceTime 1m
-PermitRootLogin no ## never
+PermitRootLogin no
 StrictModes no
-MaxAuthTries 6
+MaxAuthTries 3
 MaxSessions 10
 PubkeyAuthentication yes
 AuthorizedKeysFile @PATH_SSH_AUTHORIZED_KEYS_FILE
 # AuthorizedPrincipalsFile none
 # AuthorizedKeysCommand none
 # AuthorizedKeysCommandUser nobody
-# HostbasedAuthentication no ## never
+# HostbasedAuthentication no
 # IgnoreUserKnownHosts yes
 # IgnoreRhosts yes
 PasswordAuthentication @SSH_PASSWORD_AUTHENTICATION
-PermitEmptyPasswords no ## never
+PermitEmptyPasswords no
 KbdInteractiveAuthentication no ## Ubuntu 22.04+ (replaced ChallengeResponseAuthentication)
 
 ####################################################################################################
-#### F. SSHD_Config: Kerberos/GSSAPI Settings ######################################################
+#### F. SSHD_Config: Kerberos + GSSAPI Settings ####################################################
 ####################################################################################################
 
 # KerberosAuthentication no
@@ -115,9 +115,9 @@ KbdInteractiveAuthentication no ## Ubuntu 22.04+ (replaced ChallengeResponseAuth
 
 UsePAM yes
 # AllowAgentForwarding yes
-AllowTcpForwarding yes ## unfortunately required by CodeGuard (and maybe other apps)
+AllowTcpForwarding yes ## required by CodeGuard (and maybe other apps)
 # GatewayPorts no
-X11Forwarding yes
+X11Forwarding no
 # X11DisplayOffset 10
 # X11UseLocalhost yes
 # PermitTTY yes
@@ -126,7 +126,7 @@ PrintMotd no
 TCPKeepAlive yes
 # PermitUserEnvironment no
 # Compression delayed
-ClientAliveInterval 0
+ClientAliveInterval 300
 ClientAliveCountMax 3
 UseDNS no
 # PidFile /var/run/sshd.pid
@@ -135,7 +135,6 @@ UseDNS no
 # ChrootDirectory none
 # VersionAddendum none
 # Banner none
-
 # AcceptEnv LANG LC_*
 
 ####################################################################################################
@@ -146,12 +145,12 @@ UseDNS no
 ## you can share this login with trusted developers or remote backup services ##
 
 Subsystem sftp internal-sftp
-Match User @SFTP_USER
 Match Group sftp-only
 ChrootDirectory /var/www
 ForceCommand internal-sftp
 AllowTcpForwarding no
 X11Forwarding no
+PermitTTY no
 
 ####################################################################################################
 #### External References Used By SlickStack To Improve This Script (Thanks, Interwebz) #############
