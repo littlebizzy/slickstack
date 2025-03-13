@@ -179,10 +179,10 @@ fi
 ## many themes (or custom-coded themes) often contain hardcoded HTML assets and links ##
 ## here we forcefully fix these links to ensure staging sites render properly ##
 
-find /var/www/html/staging/wp-content/themes/ -type f -exec bash -c 'ss_sed "s|https://${SITE_DOMAIN_INCLUDING_WWW}|https://staging.${SITE_DOMAIN_EXCLUDING_WWW}|g" "$1"' _ {} \;
-find /var/www/html/staging/wp-content/themes/ -type f -exec bash -c 'ss_sed "s|http://${SITE_DOMAIN_INCLUDING_WWW}|https://staging.${SITE_DOMAIN_EXCLUDING_WWW}|g" "$1"' _ {} \;
-find /var/www/html/staging/wp-content/themes/ -type f -exec bash -c 'ss_sed "s|https://${SITE_DOMAIN_EXCLUDING_WWW}|https://staging.${SITE_DOMAIN_EXCLUDING_WWW}|g" "$1"' _ {} \;
-find /var/www/html/staging/wp-content/themes/ -type f -exec bash -c 'ss_sed "s|http://${SITE_DOMAIN_EXCLUDING_WWW}|https://staging.${SITE_DOMAIN_EXCLUDING_WWW}|g" "$1"' _ {} \;
+find /var/www/html/staging/wp-content/themes/ -type f | xargs -I{} bash -c 'ss_sed "s|https://${SITE_DOMAIN_INCLUDING_WWW}|https://staging.${SITE_DOMAIN_EXCLUDING_WWW}|g" "{}"'
+find /var/www/html/staging/wp-content/themes/ -type f | xargs -I{} bash -c 'ss_sed "s|http://${SITE_DOMAIN_INCLUDING_WWW}|https://staging.${SITE_DOMAIN_EXCLUDING_WWW}|g" "{}"'
+find /var/www/html/staging/wp-content/themes/ -type f | xargs -I{} bash -c 'ss_sed "s|https://${SITE_DOMAIN_EXCLUDING_WWW}|https://staging.${SITE_DOMAIN_EXCLUDING_WWW}|g" "{}"'
+find /var/www/html/staging/wp-content/themes/ -type f | xargs -I{} bash -c 'ss_sed "s|http://${SITE_DOMAIN_EXCLUDING_WWW}|https://staging.${SITE_DOMAIN_EXCLUDING_WWW}|g" "{}"'
 
 ####################################################################################################
 #### L. SS-Sync-Staging: Fix Incorrect URLs In Staging Database ####################################
