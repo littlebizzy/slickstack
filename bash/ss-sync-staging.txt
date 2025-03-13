@@ -7,7 +7,7 @@
 #### path: /var/www/ss-sync-staging ################################################################
 #### destination: n/a (not a boilerplate) ##########################################################
 #### purpose: Syncs relevant files and database from production site to the staging site ###########
-#### module version: MySQL 8.0.x + WordPress 6.5.x #################################################
+#### module version: MySQL 8.0.x + WordPress 6.7.x #################################################
 #### sourced by: n/a ###############################################################################
 #### bash aliases: ss sync staging #################################################################
 ####################################################################################################
@@ -28,6 +28,7 @@
 ## D. Begin If
 ## E. Run SS-Dump-Database
 ## F. Install Staging Database (Conditional)
+
 ## G. Import Production Database To Staging Database
 ## H. Copy Relevant Files From Production To Staging
 ## I. Run SS-Install-WordPress-Config (Conditional)
@@ -85,7 +86,7 @@ ss_echo "${COLOR_INFO}Running ss-sync-staging... ${COLOR_RESET}"
 #### D. SS-Sync-Staging: Begin If ##################################################################
 ####################################################################################################
 
-if [[ "${STAGING_SITE}" == "true" ]] && [[ "${SS_SYNC_STAGING}" != "false" ]] && [[ "${WP_MULTISITE}" != "true" ]]; then
+if [[ "${STAGING_SITE}" == "true" && "${SS_SYNC_STAGING}" != "false" && "${WP_MULTISITE}" != "true" ]]; then
 
 ####################################################################################################
 #### E. SS-Sync-Staging: Run SS-Dump-Database ######################################################
@@ -103,8 +104,7 @@ source "${PATH_SS_DUMP_DATABASE}"
 ## here we perform a simple check to see if the staging database exists yet or not ##
 ## if the database is not detected the script will attempt to install it now ##
 
-if ! ss_mysql_user -e 'use staging'; then
-    ss_echo "${COLOR_WARN}no staging database found so will try to reinstall it now... ${COLOR_RESET}"
+if ! [[ $(ss_mysql_user -e 'use staging') ]]; then
     source "${PATH_SS_INSTALL_MYSQL_DATABASE}"
 fi
 
@@ -116,10 +116,10 @@ fi
 ## then it forcefully replaces the home/siteurl options to staging subdomain ##
 
 ## import database ##
-ss_cp /var/www/backups/mysql/production.sql /tmp/staging_sync.sql
-chown mysql:mysql /tmp/staging_sync.sql ## does not matter if -L flag used below
-chmod 0644 /tmp/staging_sync.sql ## does not matter if -L flag used below
-ss_mysql_user staging < /tmp/staging_sync.sql
+ss_cp /var/www/backups/mysql/production.sql "${TMP_STAGING_SYNC_SQL}"
+chown mysql:mysql "${TMP_STAGING_SYNC_SQL}" ## does not matter if -L flag used below
+chmod 0644 "${TMP_STAGING_SYNC_SQL}" ## does not matter if -L flag used below
+ss_mysql_user staging < "${TMP_STAGING_SYNC_SQL}"
 
 ## fix staging home and siteurl fields (no mass search/replace to avoid potential conflicts) ##
 if [[ "${SS_APP}" == "wordpress" ]]; then
@@ -132,8 +132,7 @@ if [[ "${SS_APP}" == "wordpress" ]]; then
 fi
 
 ## cleanup files ##
-ss_rm /tmp/staging.sql ## old
-ss_rm /tmp/staging_sync.sql
+ss_rm "${TMP_STAGING_SYNC_SQL}"
     
 ####################################################################################################
 #### H. SS-Sync-Staging: Copy Relevant Files From Production To Staging ############################
@@ -229,6 +228,7 @@ chmod 0700 /var/www/crons/custom/*cron* ## 0700 means only root/sudo can execute
 #### SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ###############
 ####################################################################################################
 
+## Ref: ChatGPT
 ## Ref: https://community.centminmod.com/threads/wp-engine-type-production-staging-file-and-db-sync.19720/
 ## Ref: https://softwareengineering.stackexchange.com/questions/117945/staging-environment-vs-production-environment
 ## Ref: https://www.thegeekstuff.com/2011/01/rsync-exclude-files-and-folders/
