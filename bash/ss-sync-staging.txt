@@ -28,9 +28,10 @@
 ## D. Begin If
 ## E. Run SS-Dump-Database
 ## F. Install Staging Database (Conditional)
-
 ## G. Import Production Database To Staging Database
+
 ## H. Copy Relevant Files From Production To Staging
+
 ## I. Run SS-Install-WordPress-Config (Conditional)
 ## J. Run SS-Install-WordPress-MU-Plugins (Conditional)
 ## K. Fix Any Hardcoded Links In Staging Theme Files
@@ -142,7 +143,7 @@ ss_rm "${TMP_STAGING_SYNC_SQL}"
 ## very large files e.g. backup archives are always skipped in this snippet ##
 
 ## copy wp-content files over (skips media uploads) ##
-ss_rsync --max-size=25mb --exclude 'blacklist.txt' --exclude 'object-cache.php' --exclude='*/mu-plugins/' --exclude='*/uploads/' /var/www/html/wp-content/ /var/www/html/staging/wp-content
+ss_rsync --max-size=25mb --exclude 'blacklist.txt' --exclude 'object-cache.php' --exclude '*/mu-plugins/' --exclude '*/uploads/' /var/www/html/wp-content/ /var/www/html/staging/wp-content
 
 ## remove potential run-on subdirectories ##
 ss_rm /var/www/html/staging/staging*
@@ -158,7 +159,7 @@ ss_rm /var/www/html/staging/wp-content/object-cache.php*
 ## below snippet will install wp-config.php in case does not exist already in staging ##
 ## this is a failsafe in case staging enabled in ss-config post-installation ##
 
-if [[ ! -f "/var/www/html/staging/wp-config.php" ]]; then
+if [[ ! -s "/var/www/html/staging/wp-config.php" ]]; then
     source "${PATH_SS_INSTALL_WORDPRESS_CONFIG}"
 fi
 
@@ -169,7 +170,7 @@ fi
 ## below snippet will install MU plugins in case they do not exist already in staging ##
 ## this is a failsafe in case staging enabled in ss-config post-installation ##
 
-if [[ ! -f "/var/www/html/staging/wp-content/mu-plugins/000-common.php" ]]; then
+if [[ ! -s "/var/www/html/staging/wp-content/mu-plugins/000-common.php" ]]; then
     source "${PATH_SS_INSTALL_WORDPRESS_MU_PLUGINS}"
 fi
 
@@ -192,7 +193,7 @@ find /var/www/html/staging/wp-content/themes/ -type f -exec ss_sed "s|http://${S
 ## here we use WP-CLI to search and replace prod domain with staging domain in MySQL ##
 ## this is not super necessary due to wp-config.php but can help avoid issues ##
 
-sudo -u "${SFTP_USER}" /usr/local/bin/wp --path=/var/www/html/staging search-replace https://"${SITE_FULL_DOMAIN}" https://staging."${SITE_DOMAIN_EXCLUDING_WWW}" --all-tables
+sudo -u "${SFTP_USER}" /usr/local/bin/wp --path=/var/www/html/staging search-replace https://"${SITE_FULL_DOMAIN}" https://staging."${SITE_DOMAIN_EXCLUDING_WWW}" --all-tables > /dev/null
 
 ####################################################################################################
 #### M. SS-Sync-Staging: Reset Permissions (WordPress Packages) ####################################
