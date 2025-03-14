@@ -4,7 +4,7 @@
 #### mirror: littlebizzy/slickstack/blob/master/modules/ubuntu/24.04/sudoers.txt ###################
 #### path: n/a (boilerplate) #######################################################################
 #### destination: /etc/sudoers (after install) #####################################################
-#### purpose: Sudoers configuration file boilerplate for the root and sudo users ###################
+#### purpose: Sudoers configuration file boilerplate for root and sudo users and groups ############
 #### module version: Ubuntu 24.04 LTS ##############################################################
 #### sourced by: n/a ###############################################################################
 #### bash aliases: n/a (ss-install-ubuntu-users) ###################################################
@@ -19,26 +19,26 @@
 
 ## A. Shell Defaults
 ## B. Root + Sudo User Privilege Specification
-## C. Custom Sudo User Privileges
-## D. Admin + Sudo Group Privilege Specification
-## E. Include Other Sudoers Configuration Files (Not Supported) 
+## C. Passwordless Sudo User Privileges
+## D. Sudo Group Privilege Specification
+## E. Additional Configuration Files (Not Used)
 
 ####################################################################################################
 #### A. Sudoers: Shell Defaults ####################################################################
 ####################################################################################################
 
-Defaults    editor=/usr/bin/nano
-Defaults    env_reset
-Defaults    mail_badpass
-Defaults    pwfeedback
-Defaults    timestamp_timeout=30
-Defaults    timestamp_type=global
-Defaults    passwd_timeout=15
-Defaults    passwd_tries=5
-Defaults    secure_path="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin"
-Defaults    lecture="never"
-# Defaults    requiretty
-# Defaults    use_pty
+Defaults editor=/usr/bin/nano
+Defaults env_reset
+Defaults mail_badpass
+# Defaults pwfeedback
+Defaults timestamp_timeout=30
+Defaults timestamp_type=global
+Defaults passwd_timeout=2
+Defaults passwd_tries=5
+Defaults secure_path="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin"
+Defaults lecture="never"
+# Defaults requiretty
+# Defaults use_pty
 
 ####################################################################################################
 #### B. Sudoers: Root + Sudo User Privilege Specification ##########################################
@@ -51,28 +51,23 @@ root ALL = (ALL:ALL) ALL
 @SUDO_USER ALL = (ALL:ALL) ALL
 
 ####################################################################################################
-#### C. Sudoers: Custom Sudo User Privileges #######################################################
+#### C. Sudoers: Passwordless Sudo User Privileges #################################################
 ####################################################################################################
 
 ## here we allow the sudo user to run a few specific programs without any password prompt ##
 ## this can help relieve a lot of frustration to users who do not use SSH keys ##
 
-# @SUDO_USER ALL = (root) NOPASSWD: /bin/bash, /usr/local/bin/wp
 @SUDO_USER ALL = (root) NOPASSWD:ALL
 
 ####################################################################################################
-#### D. Sudoers: Admin + Sudo Group Privilege Specification ########################################
+#### D. Sudoers: Sudo Group Privilege Specification ################################################
 ####################################################################################################
 
-## Allow `admin` and `sudo` groups to have sudo access ##
-%admin ALL = (ALL) ALL
 %sudo ALL = (ALL:ALL) ALL
-
-## Allow `sudo-ssh` group to have sudo access ##
 %sudo-ssh ALL=(ALL) NOPASSWD: ALL
 
 ####################################################################################################
-#### E. Sudoers: Include Other Sudoers Configuration Files (Not Supported) #########################
+#### E. Sudoers: Additional Configuration Files (Not Used) #########################################
 ####################################################################################################
 
 ## includedir /etc/sudoers.d
