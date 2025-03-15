@@ -25,10 +25,9 @@
 ## A. Source SS-Config + SS-Functions
 ## B. Touch Timestamp File
 ## C. Message (Begin Script)
-## D. Retrieve Memcached.conf Boilerplates
-## E. Install Memcached.conf
-## F. Reset Permissions (Memcached Config)
-## G. Restart Services (Memcached)
+## D. Install Memcached.conf
+## E. Reset Permissions (Memcached Config)
+## F. Restart Services (Memcached)
 
 ####################################################################################################
 #### A. SS-Install-Memcached-Config: Source SS-Config + SS-Functions ###############################
@@ -64,9 +63,10 @@ ss_touch "${TIMESTAMP_SS_INSTALL_MEMCACHED_CONFIG}"
 ss_echo "${COLOR_INFO}Running ss-install-memcached-config... ${COLOR_RESET}"
 
 ####################################################################################################
-#### D. SS-Install-Memcached-Config: Retrieve Memcached.conf Boilerplates ##########################
+#### D. SS-Install-Memcached-Config: Install Memcached.conf ########################################
 ####################################################################################################
 
+## download memcached config based on ubuntu version ##
 if [[ "${SYSTEM_UBUNTU_VERSION}" == "24.04" ]]; then
     ss_wget "${TMP_MEMCACHED_CONF}" "${GITHUB_MEMCACHED_CONF}"
 elif [[ "${SYSTEM_UBUNTU_VERSION}" == "22.04" ]]; then
@@ -79,31 +79,17 @@ else
     ss_wget "${TMP_MEMCACHED_CONF}" "${GITHUB_MEMCACHED_CONF}"
 fi
 
-## check if ipv6 connection is active ##
-if [[ -n "${SYSTEM_DIG_IPV6_ADDRESS}" ]]; then
-
-    ss_echo "${COLOR_WARN}Message ss-install-memcached-config: IPv6 detected, keeping IPv6 enabled in Memcached config. ${COLOR_RESET}"
-
-else
-    ss_sed "s|^-l ::1|# -l ::1|g" "${TMP_MEMCACHED_CONF}"
-
-    ss_echo "${COLOR_WARN}Message ss-install-memcached-config: IPv6 not detected, commenting out IPv6 settings in Memcached config. ${COLOR_RESET}"
-fi
-
-####################################################################################################
-#### E. SS-Install-Memcached-Config: Install Memcached.conf ########################################
-####################################################################################################
-
+## move config to final location ##
 ss_mv "${TMP_MEMCACHED_CONF}" "${PATH_MEMCACHED_CONF}"
 
 ####################################################################################################
-#### F. SS-Install-Memcached-Config: Reset Permissions (Memcached Config) ##########################
+#### E. SS-Install-Memcached-Config: Reset Permissions (Memcached Config) ##########################
 ####################################################################################################
 
 source "${PATH_SS_PERMS_MEMCACHED_CONFIG}"
 
 ####################################################################################################
-#### G. SS-Install-Memcached-Config: Restart Services (Memcached) ##################################
+#### F. SS-Install-Memcached-Config: Restart Services (Memcached) ##################################
 ####################################################################################################
 
 source "${PATH_SS_RESTART_MEMCACHED}"
