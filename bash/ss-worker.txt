@@ -26,6 +26,7 @@
 ## B. Touch Timestamp File
 ## C. Message (Begin Script)
 ## D. Backup SS-Config
+
 ## E. Backup Custom Cron Jobs
 ## F. Update SS-Check
 ## G. Update Blacklist.txt
@@ -81,9 +82,9 @@ ss_echo "${COLOR_INFO}Running ss-worker... ${COLOR_RESET}"
 ## the oldest .bak files will be cleaned up periodically by ss-clean-files ##
 
 ## SNIPPET: ss-update-config, ss-worker
-## UPDATED: 20MAR2024
+## UPDATED: 16MAR2025
 
-ss_cp "${PATH_SS_CONFIG}" /var/www/backups/config/ss-config.bak.${SYSTEM_CURRENT_TIME}
+ss_cp "${PATH_SS_CONFIG}" /var/www/backups/config/ss-config.bak."${SYSTEM_CURRENT_TIME}"
 
 ####################################################################################################
 #### E. SS-Worker: Backup Custom Cron Jobs #########################################################
@@ -101,18 +102,13 @@ ss_rsync /var/www/crons/custom/ /var/www/backups/crons
 ## here we retrieve the latest ss-check bash script to improve SlickStack redundancy ##
 ## ss-check thus avoids installing itself and single point of failure (SPOF) ##
 
-## retrieve ss-check ##
+## download ss-check from github first then gitlab then sourceforge ##
 ss_wget "${TMP_SS_CHECK}" "${GITHUB_SS_CHECK}"
-VALIDATE_TMP_SS_CHECK=$(grep 'SS_EOF' "${TMP_SS_CHECK}" 2> /dev/null)
-if [[ -z "${VALIDATE_TMP_SS_CHECK}" ]]; then
-    ss_wget "${TMP_SS_CHECK}" "${GITLAB_SS_CHECK}"
-fi
+[[ -f "${TMP_SS_CHECK}" && -z $(grep 'SS_EOF' "${TMP_SS_CHECK}") ]] && ss_wget "${TMP_SS_CHECK}" "${GITLAB_SS_CHECK}"
+[[ -f "${TMP_SS_CHECK}" && -z $(grep 'SS_EOF' "${TMP_SS_CHECK}") ]] && ss_wget "${TMP_SS_CHECK}" "${SOURCEFORGE_SS_CHECK}"
 
-## install ss-check ##
-VALIDATE2_TMP_SS_CHECK=$(grep 'SS_EOF' "${TMP_SS_CHECK}" 2> /dev/null)
-if [[ -n "${VALIDATE2_TMP_SS_CHECK}" ]]; then
-    ss_mv "${TMP_SS_CHECK}" "${PATH_SS_CHECK}"
-fi
+## install ss-check only if valid ##
+[[ -f "${TMP_SS_CHECK}" && -n $(grep 'SS_EOF' "${TMP_SS_CHECK}") ]] && ss_mv "${TMP_SS_CHECK}" "${PATH_SS_CHECK}"
 
 ####################################################################################################
 #### G. SS-Worker: Update Blacklist.txt ############################################################
