@@ -32,11 +32,11 @@
 ## H. Copy Relevant Files From Production To Development
 ## I. Run SS-Install-WordPress-Config (Conditional)
 ## J. Run SS-Install-WordPress-MU-Plugins (Conditional)
-
-## L. Fix Any Hardcoded Links In Development Theme Files
-## M. Fix Incorrect URLs In Development Database
-## N. Reset Permissions (WordPress Packages)
-## O. End If
+## K. Fix Any Hardcoded Links In Development Theme Files
+## L. Fix Incorrect URLs In Development Database
+## M. Reset Permissions (WordPress Packages)
+## N. End If
+## O. Cleanup Temporary Files
 
 ####################################################################################################
 #### A. SS-Sync-Development: Source SS-Config + SS-Functions #######################################
@@ -168,40 +168,40 @@ if [[ ! -s "/var/www/html/dev/wp-content/mu-plugins/000-common.php" ]]; then
 fi
 
 ####################################################################################################
-#### L. SS-Sync-Development: Fix Any Hardcoded Links In Development Theme Files ####################
+#### K. SS-Sync-Development: Fix Any Hardcoded Links In Development Theme Files ####################
 ####################################################################################################
 
 ## many themes (or custom-coded themes) often contain hardcoded HTML assets and links ##
 ## here we forcefully fix these links to ensure development site renders properly ##
 
-find /var/www/html/dev/wp-content/themes/ -type f -exec ss_sed "s#https://${SITE_DOMAIN_INCLUDING_WWW}#https://dev.${SITE_DOMAIN_EXCLUDING_WWW}#g" {} +
-find /var/www/html/dev/wp-content/themes/ -type f -exec ss_sed "s#http://${SITE_DOMAIN_INCLUDING_WWW}#https://dev.${SITE_DOMAIN_EXCLUDING_WWW}#g" {} +
-find /var/www/html/dev/wp-content/themes/ -type f -exec ss_sed "s#https://${SITE_DOMAIN_EXCLUDING_WWW}#https://dev.${SITE_DOMAIN_EXCLUDING_WWW}#g" {} +
-find /var/www/html/dev/wp-content/themes/ -type f -exec ss_sed "s#http://${SITE_DOMAIN_EXCLUDING_WWW}#https://dev.${SITE_DOMAIN_EXCLUDING_WWW}#g" {} +
+find /var/www/html/dev/wp-content/themes/ -type f -exec sed -i'' "s|https://${SITE_DOMAIN_INCLUDING_WWW}|https://dev.${SITE_DOMAIN_EXCLUDING_WWW}|g" {} +
+find /var/www/html/dev/wp-content/themes/ -type f -exec sed -i'' "s|http://${SITE_DOMAIN_INCLUDING_WWW}|https://dev.${SITE_DOMAIN_EXCLUDING_WWW}|g" {} +
+find /var/www/html/dev/wp-content/themes/ -type f -exec sed -i'' "s|https://${SITE_DOMAIN_EXCLUDING_WWW}|https://dev.${SITE_DOMAIN_EXCLUDING_WWW}|g" {} +
+find /var/www/html/dev/wp-content/themes/ -type f -exec sed -i'' "s|http://${SITE_DOMAIN_EXCLUDING_WWW}|https://dev.${SITE_DOMAIN_EXCLUDING_WWW}|g" {} +
 
 ####################################################################################################
-#### M. SS-Sync-Development: Fix Incorrect URLs In Development Database ############################
+#### L. SS-Sync-Development: Fix Incorrect URLs In Development Database ############################
 ####################################################################################################
 
 ## here we use WP-CLI to search and replace prod domain with development domain in MySQL ##
 ## this is not super necessary due to wp-config.php but can help avoid issues ##
 
-/usr/local/bin/wp --path=/var/www/html/dev search-replace https://"${SITE_FULL_DOMAIN}" https://dev."${SITE_DOMAIN_EXCLUDING_WWW}" --all-tables
+sudo -u "${SFTP_USER}" /usr/local/bin/wp --path=/var/www/html/dev search-replace https://"${SITE_FULL_DOMAIN}" https://dev."${SITE_DOMAIN_EXCLUDING_WWW}" --all-tables > /dev/null 2>&1
 
 ####################################################################################################
-#### N. SS-Sync-Development: Reset Permissions (WordPress Packages) ################################
+#### M. SS-Sync-Development: Reset Permissions (WordPress Packages) ################################
 ####################################################################################################
 
 source "${PATH_SS_PERMS_WORDPRESS_PACKAGES}"
 
 ####################################################################################################
-#### O. SS-Sync-Development: End If ################################################################
+#### N. SS-Sync-Development: End If ################################################################
 ####################################################################################################
 
 fi
 
 ####################################################################################################
-#### O. SS-Sync-Staging: Cleanup Temporary Files ###################################################
+#### O. SS-Sync-Development: Cleanup Temporary Files ###############################################
 ####################################################################################################
 
 ss_rm "${TMP_DEVELOPMENT_SYNC_SQL}"
