@@ -26,13 +26,13 @@
 ## B. Touch Timestamp File
 ## C. Message (Begin Script)
 ## D. Begin If
-## E. Dump Production Database
+## E. Run SS-Dump-Database
 ## F. Install Development Database (Conditional)
+## G. Import Production Database To Development Database
+## H. Copy Relevant Files From Production To Development
+## I. Run SS-Install-WordPress-Config (Conditional)
+## J. Run SS-Install-WordPress-MU-Plugins (Conditional)
 
-## H. Import Production Database To Development Database
-## I. Copy Relevant Files From Production To Development
-## J. Run SS-Install-WordPress-Config (Conditional)
-## K. Run SS-Install-WordPress-MU-Plugins (Conditional)
 ## L. Fix Any Hardcoded Links In Development Theme Files
 ## M. Fix Incorrect URLs In Development Database
 ## N. Reset Permissions (WordPress Packages)
@@ -86,7 +86,7 @@ ss_echo "${COLOR_INFO}Running ss-sync-development... ${COLOR_RESET}"
 if [[ "${DEV_SITE}" == "true" && "${SS_SYNC_DEVELOPMENT}" == "true" && "${WP_MULTISITE}" != "true" && "${SS_LOCKDOWN}" != "true" ]]; then
 
 ####################################################################################################
-#### E. SS-Sync-Development: Dump Production Database ##############################################
+#### E. SS-Sync-Development: Run SS-Dump-Database ##################################################
 ####################################################################################################
 
 ## we run ss-dump-database now to export the latest version of production database ##
@@ -106,33 +106,30 @@ if ! [[ $(ss_mysql_user -e 'use development') ]]; then
 fi
 
 ####################################################################################################
-#### H. SS-Sync-Development: Import Production Database To Development Database ####################
+#### G. SS-Sync-Development: Import Production Database To Development Database ####################
 ####################################################################################################
 
 ## this snippet duplicates the dumped production database and imports it into MySQL ##
 ## then it forecfully replaces the home/siteurl options to staging subdomain ##
 
 ## import database ##
-ss_cp /var/www/backups/mysql/production.sql /tmp/sync-development.sql
-chown mysql:mysql /tmp/sync-development.sql ## does not matter if -L flag used below
-chmod 0644 /tmp/sync-development.sql ## does not matter if -L flag used below
-ss_mysql_user development < /tmp/sync-development.sql
-    
+ss_cp /var/www/backups/mysql/production.sql "${TMP_DEVELOPMENT_SYNC_SQL}"
+chown mysql:mysql "${TMP_DEVELOPMENT_SYNC_SQL}" ## does not matter if -L flag used below
+chmod 0644 "${TMP_DEVELOPMENT_SYNC_SQL}" ## does not matter if -L flag used below
+ss_mysql_user development < "${TMP_DEVELOPMENT_SYNC_SQL}"
+
 ## fix development home and siteurl fields (no mass search/replace to avoid potential conflicts) ##
 if [[ "${SS_APP}" == "wordpress" ]]; then
 
     if [[ -n $(ss_mysql_user --execute "SHOW TABLES FROM development WHERE Tables_in_development LIKE '${DB_PREFIX}options';" 2> /dev/null) ]]; then
-        ss_mysql_user --execute="UPDATE development.${DB_PREFIX}options SET option_value='https://dev.${SITE_DOMAIN_EXCLUDING_WWW}' WHERE option_name='home'";
-        ss_mysql_user --execute="UPDATE development.${DB_PREFIX}options SET option_value='https://dev.${SITE_DOMAIN_EXCLUDING_WWW}' WHERE option_name='siteurl'";
+        ss_mysql_user --execute="UPDATE development.${DB_PREFIX}options SET option_value='https://dev.${SITE_DOMAIN_EXCLUDING_WWW}' WHERE option_name='home'"
+        ss_mysql_user --execute="UPDATE development.${DB_PREFIX}options SET option_value='https://dev.${SITE_DOMAIN_EXCLUDING_WWW}' WHERE option_name='siteurl'"
     fi
-
+    
 fi
     
-## delete tmp files ##
-ss_rm /tmp/sync-development.sql
-    
 ####################################################################################################
-#### I. SS-Sync-Development: Copy Relevant Files From Production To Development ####################
+#### H. SS-Sync-Development: Copy Relevant Files From Production To Development ####################
 ####################################################################################################
 
 ## here we copy over everything from production to dev including media uploads folder ##
@@ -147,26 +144,26 @@ ss_rm /var/www/html/dev/wp-content/wp-content*
 
 ## remove object-cache.php if exists ##
 ss_rm /var/www/html/dev/wp-content/object-cache.php*
-    
+
 ####################################################################################################
-#### J. SS-Sync-Development: Run SS-Install-WordPress-Config (Conditional) #########################
+#### I. SS-Sync-Development: Run SS-Install-WordPress-Config (Conditional) #########################
 ####################################################################################################
 
 ## below snippet will install wp-config.php in case does not exist already in development ##
 ## this is a failsafe in case development enabled in ss-config post-installation ##
 
-if [[ ! -f "/var/www/html/dev/wp-config.php" ]]; then
+if [[ ! -s "/var/www/html/dev/wp-config.php" ]]; then
     source "${PATH_SS_INSTALL_WORDPRESS_CONFIG}"
 fi
 
 ####################################################################################################
-#### K. SS-Sync-Development: Run SS-Install-WordPress-MU-Plugins (Conditional) #####################
+#### J. SS-Sync-Development: Run SS-Install-WordPress-MU-Plugins (Conditional) #####################
 ####################################################################################################
 
 ## below snippet will install MU plugins in case they do not exist already in development ##
 ## this is a failsafe in case development enabled in ss-config post-installation ##
 
-if [[ ! -f "/var/www/html/dev/wp-content/mu-plugins/000-common.php" ]]; then
+if [[ ! -s "/var/www/html/dev/wp-content/mu-plugins/000-common.php" ]]; then
     source "${PATH_SS_INSTALL_WORDPRESS_MU_PLUGINS}"
 fi
 
@@ -202,6 +199,12 @@ source "${PATH_SS_PERMS_WORDPRESS_PACKAGES}"
 ####################################################################################################
 
 fi
+
+####################################################################################################
+#### O. SS-Sync-Staging: Cleanup Temporary Files ###################################################
+####################################################################################################
+
+ss_rm "${TMP_DEVELOPMENT_SYNC_SQL}"
 
 ####################################################################################################
 #### SlickStack: Reset Permissions (SlickStack Scripts) ############################################
