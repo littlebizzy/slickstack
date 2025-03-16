@@ -7,7 +7,7 @@
 #### path: /var/www/ss-sync-development ############################################################
 #### destination: n/a (not a boilerplate) ##########################################################
 #### purpose: Syncs all physical files and database from production site to the dev site ###########
-#### module version: MySQL 8.0.x + WordPress 6.4.x #################################################
+#### module version: MySQL 8.0.x + WordPress 6.7.x #################################################
 #### sourced by: n/a ###############################################################################
 #### bash aliases: ss sync dev|development #########################################################
 ####################################################################################################
@@ -23,11 +23,11 @@
 ## each section should be commented so you understand what is being accomplished ##
 
 ## A. Source SS-Config + SS-Functions
-## B. Change To Default Directory
-## C. Touch Timestamp File
-## D. Message (Begin Script)
-## E. Begin If
-## F. Dump Production Database
+## B. Touch Timestamp File
+## C. Message (Begin Script)
+## D. Begin If
+## E. Dump Production Database
+
 ## G. Install Development Database (Conditional)
 ## H. Import Production Database To Development Database
 ## I. Copy Relevant Files From Production To Development
@@ -51,16 +51,7 @@ source /var/www/ss-functions
 ## BELOW THIS RELIES ON SS-CONFIG AND SS-FUNCTIONS
 
 ####################################################################################################
-#### B. SS-Sync-Development: Change To Default Directory ###########################################
-####################################################################################################
-
-## this tells the current script to change to the /var/www directory before proceeding ##
-## it can help avoid random warnings and issues when running ss shortcut commands ##
-
-ss_cd_default
-
-####################################################################################################
-#### C. SS-Sync-Development: Touch Timestamp File ##################################################
+#### B. SS-Sync-Development: Touch Timestamp File ##################################################
 ####################################################################################################
 
 ## this is a dummy timestamp file that will remember the last time this script was run ##
@@ -69,7 +60,7 @@ ss_cd_default
 ss_touch "${TIMESTAMP_SS_SYNC_DEVELOPMENT}"
 
 ####################################################################################################
-#### D. SS-Sync-Development: Message (Begin Script) ################################################
+#### C. SS-Sync-Development: Message (Begin Script) ################################################
 ####################################################################################################
 
 ## this is a simple message that announces to the shell the purpose of this bash script ##
@@ -89,13 +80,13 @@ ss_echo "${COLOR_INFO}Running ss-sync-development... ${COLOR_RESET}"
 # $sql = "SELECT 'id' FROM Users WHERE username='$name'";
 
 ####################################################################################################
-#### E. SS-Sync-Development: Begin If ##############################################################
+#### D. SS-Sync-Development: Begin If ##############################################################
 ####################################################################################################
 
-if [[ "${DEV_SITE}" == "true" ]] && [[ "${SS_SYNC_DEVELOPMENT}" == "true" ]] && [[ "${WP_MULTISITE}" != "true" ]] && [[ "${SS_LOCKDOWN}" != "true" ]]; then
+if [[ "${DEV_SITE}" == "true" && "${SS_SYNC_DEVELOPMENT}" == "true" && "${WP_MULTISITE}" != "true" && "${SS_LOCKDOWN}" != "true" ]]; then
 
 ####################################################################################################
-#### F. SS-Sync-Development: Dump Production Database ##############################################
+#### E. SS-Sync-Development: Dump Production Database ##############################################
 ####################################################################################################
 
 ## we run ss-dump-database now to export the latest version of production database ##
@@ -235,6 +226,7 @@ chmod 0700 /var/www/crons/custom/*cron* ## 0700 means only root/sudo can execute
 #### SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ###############
 ####################################################################################################
 
+## Ref: ChatGPT
 ## Ref: https://community.centminmod.com/threads/wp-engine-type-production-staging-file-and-db-sync.19720/
 ## Ref: https://softwareengineering.stackexchange.com/questions/117945/staging-environment-vs-production-environment
 ## Ref: https://www.thegeekstuff.com/2011/01/rsync-exclude-files-and-folders/
