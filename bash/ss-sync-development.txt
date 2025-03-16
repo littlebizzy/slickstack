@@ -27,8 +27,8 @@
 ## C. Message (Begin Script)
 ## D. Begin If
 ## E. Dump Production Database
+## F. Install Development Database (Conditional)
 
-## G. Install Development Database (Conditional)
 ## H. Import Production Database To Development Database
 ## I. Copy Relevant Files From Production To Development
 ## J. Run SS-Install-WordPress-Config (Conditional)
@@ -95,14 +95,13 @@ if [[ "${DEV_SITE}" == "true" && "${SS_SYNC_DEVELOPMENT}" == "true" && "${WP_MUL
 source "${PATH_SS_DUMP_DATABASE}"
 
 ####################################################################################################
-#### G. SS-Sync-Development: Install Development Database (Conditional) ############################
+#### F. SS-Sync-Development: Install Development Database (Conditional) ############################
 ####################################################################################################
 
 ## here we perform a simple check to see if the staging database exists yet or not ##
 ## if the database is not detected the script will attempt to install it now ##
 
-if ! ss_mysql_user -e 'use development'; then
-    ss_echo "${COLOR_WARN}no development database found so will try to reinstall it now... ${COLOR_RESET}"
+if ! [[ $(ss_mysql_user -e 'use development') ]]; then
     source "${PATH_SS_INSTALL_MYSQL_DATABASE}"
 fi
 
