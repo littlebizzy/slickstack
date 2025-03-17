@@ -7,7 +7,7 @@
 #### path: /var/www/ss-dump-files ##################################################################
 #### destination: n/a (not a boilerplate) ##########################################################
 #### purpose: Dumps files to /var/www/backups/html/production.tar.gz (SFTP user can access) ########
-#### module version: Ubuntu 24.04 LTS ##############################################################
+#### module version: Ubuntu 18.04 to 24.04 LTS #####################################################
 #### sourced by: n/a ###############################################################################
 #### bash aliases: ss dump files ###################################################################
 ####################################################################################################
@@ -67,16 +67,16 @@ ss_echo "${COLOR_INFO}Running ss-dump-files... ${COLOR_RESET}"
 ## if free space is okay then dump TAR ball of /html/ to /var/www/backups/html/production.tar.gz (must overwrite each time to save space)
 
 ## production ##
-ss_targz "${PATH_DUMP_FILES_PRODUCTION}" --exclude="staging" --exclude="dev" -C /var/www/html . ## ending period required
+ss_targz "${PATH_DUMP_FILES_PRODUCTION}" --exclude="staging" --exclude="dev" -C "/var/www" "html"
 
 ## staging ##
 if [[ "${STAGING_SITE}" == "true" ]]; then
-    ss_targz "${PATH_DUMP_FILES_STAGING}" -C /var/www/html/staging . ## ending period required
+    ss_targz "${PATH_DUMP_FILES_STAGING}" -C "/var/www/html" "staging"
 fi
 
 ## development ##
 if [[ "${DEV_SITE}" == "true" ]]; then
-    ss_targz "${PATH_DUMP_FILES_DEVELOPMENT}" -C /var/www/html/dev . ## ending period required
+    ss_targz "${PATH_DUMP_FILES_DEVELOPMENT}" -C "/var/www/html" "dev"
 fi
 
 ####################################################################################################
@@ -124,6 +124,7 @@ chmod 0700 /var/www/crons/custom/*cron* ## 0700 means only root/sudo can execute
 #### SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ###############
 ####################################################################################################
 
+## Ref: ChatGPT
 ## Ref: https://www.cyberciti.biz/faq/how-do-i-compress-a-whole-linux-or-unix-directory/
 ## Ref: https://stackoverflow.com/questions/984204/shell-command-to-tar-directory-excluding-certain-files-folders
 ## Ref: https://stackoverflow.com/questions/20841727/exclude-directory-while-using-tar
