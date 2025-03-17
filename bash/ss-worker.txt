@@ -8,7 +8,7 @@
 #### destination: n/a (not a boilerplate) ##########################################################
 #### purpose: Performs SlickStack maintenance tasks and updates the ss-check bash script ###########
 #### module version: Ubuntu 18.04 to 24.04 LTS #####################################################
-#### sourced by: ss-install, ss-update-modules #####################################################
+#### sourced by: ss-install ########################################################################
 #### bash aliases: ss worker #######################################################################
 ####################################################################################################
 
@@ -28,7 +28,9 @@
 ## D. Backup SS-Config
 
 ## E. Backup Custom Cron Jobs
-## F. Update SS-Check
+
+## F. Download + Install SS-Check
+
 ## G. Update Blacklist.txt
 
 ## H. Transfer Pilot File Settings (If Exists)
@@ -96,7 +98,7 @@ ss_cp "${PATH_SS_CONFIG}" /var/www/backups/config/ss-config.bak."${SYSTEM_CURREN
 ss_rsync /var/www/crons/custom/ /var/www/backups/crons
 
 ####################################################################################################
-#### F. SS-Worker: Update SS-Check #################################################################
+#### F. SS-Worker: Download + Install SS-Check #####################################################
 ####################################################################################################
 
 ## here we retrieve the latest ss-check bash script to improve SlickStack redundancy ##
@@ -104,11 +106,11 @@ ss_rsync /var/www/crons/custom/ /var/www/backups/crons
 
 ## download ss-check from github first then gitlab then sourceforge ##
 ss_wget "${TMP_SS_CHECK}" "${GITHUB_SS_CHECK}"
-[[ -f "${TMP_SS_CHECK}" && -z $(grep 'SS_EOF' "${TMP_SS_CHECK}") ]] && ss_wget "${TMP_SS_CHECK}" "${GITLAB_SS_CHECK}"
-[[ -f "${TMP_SS_CHECK}" && -z $(grep 'SS_EOF' "${TMP_SS_CHECK}") ]] && ss_wget "${TMP_SS_CHECK}" "${SOURCEFORGE_SS_CHECK}"
+ss_grep 'SS_EOF' "${TMP_SS_CHECK}" || ss_wget "${TMP_SS_CHECK}" "${GITLAB_SS_CHECK}"
+ss_grep 'SS_EOF' "${TMP_SS_CHECK}" || ss_wget "${TMP_SS_CHECK}" "${SOURCEFORGE_SS_CHECK}"
 
 ## install ss-check only if valid ##
-[[ -f "${TMP_SS_CHECK}" && -n $(grep 'SS_EOF' "${TMP_SS_CHECK}") ]] && ss_mv "${TMP_SS_CHECK}" "${PATH_SS_CHECK}"
+ss_grep 'SS_EOF' "${TMP_SS_CHECK}" && ss_mv "${TMP_SS_CHECK}" "${PATH_SS_CHECK}"
 
 ####################################################################################################
 #### G. SS-Worker: Update Blacklist.txt ############################################################
