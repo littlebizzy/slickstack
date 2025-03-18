@@ -21,7 +21,7 @@
 ## run ss-update-config if outdated (check the public mirror link for current build) ##
 ## builds merely prevent conflicts as SlickStack scripts auto-update regardless ##
 
-SS_BUILD="MAR2025EE"
+SS_BUILD="MAR2025FF"
 
 ## SS_LOCKDOWN = [false|true] stops dev site from being overwritten... and more soon ##
 ## SS_APP = [wordpress|etc] only wordpress is supported currently (feedback welcome) ##
@@ -651,29 +651,29 @@ FPM_SYSTEMD_INTERVAL="10s"
 ## modifying pool settings can have drastic effects on scaling LEMP for high-traffic ##
 ## ondemand is best for cheap cloud VMs (most sites should not change these) ##
 
-## WWW_LISTEN_BACKLOG = [65535|etc] most sites can leave this uncapped (i.e. 65535) ##
-## WWW_PM_MODE = [ondemand|dynamic] dynamic for extremely high traffic (upgrade your VM) ##
-## WWW_PM_MAX_CHILDREN = [5|10|20|etc] really depends on the rest of the settings you choose ##
-## WWW_PM_START_SERVERS = [2|etc] keeping this number small usually makes more sense ##
-## WWW_PM_MIN_SPARE_SERVERS = [1|etc] keep this at 1 to maximize CPU efficiency ##
-## WWW_PM_MAX_SPARE_SERVERS = [3|etc] should usually be greater than PM_START_SERVERS ##
-## WWW_PM_MAX_SPAWN_RATE = [32|etc] play with dynamic spawn rate at your own risk ##
-## WWW_PM_PROCESS_IDLE_TIMEOUT = [5s|10s|etc] keep it small to avoid CPU resource abuse ##
-## WWW_PM_MAX_REQUESTS = [50|200|500|etc] usually can keep it big if other settings are safe ##
-## WWW_REQUEST_TERMINATE_TIMEOUT = [60s|etc] backup timeout if IDLE_TIMEOUT not applied ##
-## WWW_RLIMIT_FILES = [65535|etc] most sites can leave this uncapped (i.e. 65535) ##
-## WWW_RLIMIT_CORE = [0|etc] most sites should keep this disabled (i.e. 0) ##
+## WWW_LISTEN_BACKLOG = [512|1024|2048] most sites can leave this at 1024 for queueing ##
+## WWW_PM_MODE = [ondemand|dynamic] dynamic is better for WooCommerce and high traffic ##
+## WWW_PM_MAX_CHILDREN = [10|20|30|40] adjust based on available RAM (20–30 is a good default) ##
+## WWW_PM_START_SERVERS = [2|3|5|7] keeping this small ensures efficient memory usage ##
+## WWW_PM_MIN_SPARE_SERVERS = [1|2|3|4] keep this low to maximize CPU efficiency ##
+## WWW_PM_MAX_SPARE_SERVERS = [3|5|7|10] should usually be greater than PM_START_SERVERS ##
+## WWW_PM_MAX_SPAWN_RATE = [2|4|8|16] controls how fast new workers are spawned ##
+## WWW_PM_PROCESS_IDLE_TIMEOUT = [10s|15s|30s|60s] only applies to ondemand mode ##
+## WWW_PM_MAX_REQUESTS = [100|250|500|1000] prevents memory leaks by recycling workers ##
+## WWW_REQUEST_TERMINATE_TIMEOUT = [60s|120s|300s|600s] should match PHP_MAX_EXECUTION_TIME ##
+## WWW_RLIMIT_FILES = [16384|32768|65535] controls max open file descriptors ##
+## WWW_RLIMIT_CORE = [0] should be disabled for security and stability ##
 
-WWW_LISTEN_BACKLOG="65535"
-WWW_PM_MODE="ondemand"
+WWW_LISTEN_BACKLOG="1024"
+WWW_PM_MODE="dynamic"
 WWW_PM_MAX_CHILDREN="20"
-WWW_PM_START_SERVERS="2"
-WWW_PM_MIN_SPARE_SERVERS="1"
-WWW_PM_MAX_SPARE_SERVERS="3"
-WWW_PM_MAX_SPAWN_RATE="32"
-WWW_PM_PROCESS_IDLE_TIMEOUT="10s"
+WWW_PM_START_SERVERS="3"
+WWW_PM_MIN_SPARE_SERVERS="2"
+WWW_PM_MAX_SPARE_SERVERS="5"
+WWW_PM_MAX_SPAWN_RATE="4"
+WWW_PM_PROCESS_IDLE_TIMEOUT="30s" ## for ondemand only
 WWW_PM_MAX_REQUESTS="500"
-WWW_REQUEST_TERMINATE_TIMEOUT="60s"
+WWW_REQUEST_TERMINATE_TIMEOUT="300s"
 WWW_RLIMIT_FILES="65535"
 WWW_RLIMIT_CORE="0"
 
