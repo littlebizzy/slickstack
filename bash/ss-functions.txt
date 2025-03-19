@@ -1590,9 +1590,9 @@ function ss_apt_install {
     local attempt=1  ## track current attempt number
     local delay=5  ## initial delay before retrying
 
-    until ss_apt install -y "$@"; do  ## try installing the package
+    until ss_apt install -y "$@" > /dev/null; do  ## suppress normal output
         if [ ${attempt} -ge ${max_retries} ]; then  ## stop after max retries
-            echo "Installation failed for: $*" >&2
+            echo "installation failed for $*" >&2
             return 1
         fi
         attempt=$((attempt + 1))  ## increment attempt count
