@@ -209,10 +209,10 @@ try_files $uri $uri/ /index.php?$args;
 #	return 301 $1;
 # }
 
-## 503 error if maintenance file found in web root ##
-if (-f /var/www/html/maintenance.html) {
-	return 503;
-}
+    ## serve maintenance page if the file exists ##
+    if (-f /var/www/html/maintenance.html) {
+        return 503;
+    }
 	
 ## force trailing slashes on urls (do not enable for bbPress/BuddyPress sites) ##
 # rewrite ^([^.]*[^/])$ $1/ permanent;
@@ -715,18 +715,13 @@ location = /ads.txt {
 #### Server Block (Production): Maintenance File (Named Location) ##################################
 ####################################################################################################
 
-  ## activate named @maintenance location for any 503 errors ##
-  error_page 503 @maintenance;
+    ## 503 error page ##
+    error_page 503 @maintenance;
   
-  ## location rules for maintenance.html ##
-  location @maintenance {
-       rewrite ^(.*)$ /maintenance.html break;
-  }
-  
-  
-  
-
-
+    ## named location for maintenance page ##
+    location @maintenance {
+        rewrite ^(.*)$ /maintenance.html break;
+    }
 
 ####################################################################################################
 #### Server Block (Production): #######################
