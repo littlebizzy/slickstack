@@ -1580,8 +1580,26 @@ function ss_apt_full_upgrade {
 }
 
 ## ss_apt_install ##
+# function ss_apt_install {
+#    ss_apt install "$@" > /dev/null
+# }
+
+## ss_apt_install ##
 function ss_apt_install {
-    ss_apt install "$@" > /dev/null
+    local max_retries=3  ## maximum number of install attempts
+    local attempt=1  ## track current attempt number
+    local delay=5  ## initial delay before retrying
+
+    until ss_apt install -y "$@"; do  ## try installing the package
+        if [ ${attempt} -ge ${max_retries} ]; then  ## stop after max retries
+            echo "Installation failed for: $*" >&2
+            return 1
+        fi
+        attempt=$((attempt + 1))  ## increment attempt count
+        sleep ${delay}  ## wait before retrying
+        delay=$((delay + 5))  ## increase wait time (5s -> 10s -> 15s)
+        if [ ${delay} -gt 15 ]; then delay=15; fi  ## cap delay at 15s max
+    done
 }
 
 ## ss_apt_remove ##
