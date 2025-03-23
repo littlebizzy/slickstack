@@ -55,7 +55,7 @@ SS_LANGUAGE="en_US"
 SS_NOINDEX="false"
 SS_TIMEZONE="UTC"
 SS_SYNC_DEVELOPMENT="false"
-SS_SYNC_STAGING="true"
+SS_SYNC_STAGING="false"
 SS_REBOOT_MIN_UPTIME="3600"
 SS_REMOTE_BACKUPS="none"
 SS_MASSIVE_SITE="false"
@@ -160,7 +160,7 @@ DB_COLLATE=""
 ## ADMINER_PUBLIC = [true|false] enables a randomized link accessible from the frontend ##
 ## ADMINER_URL = [*must be unique*] should be long and completely random for security ##
 
-ADMINER_PUBLIC="true"
+ADMINER_PUBLIC="false"
 ADMINER_URL="@RANDOM_STRING_ADMINER_URL"
 
 ####################################################################################################
@@ -414,7 +414,7 @@ CSR_DEPT="DevOps"
 
 NGINX_WORKER_RLIMIT_NOFILE="65535"
 NGINX_WORKER_PRIORITY="-2"
-NGINX_WORKER_CONNECTIONS="2048"
+NGINX_WORKER_CONNECTIONS="8192"
 NGINX_SERVER_NAMES_MAX_HASH_SIZE="512"
 NGINX_SERVER_NAMES_HASH_BUCKET_SIZE="128"
 NGINX_TYPES_MAX_HASH_SIZE="2048"
@@ -468,7 +468,7 @@ OPEN_FILE_CACHE_ERRORS="on"
 ## LIMIT_REQUESTS_WPSEARCH_MINUTE = [1500|3000|3600|4500] max search requests per minute per IP ##
 ## LIMIT_REQUESTS_WPSEARCH_MINUTE_BURST = [4500|9000|10000|12000] short burst capacity for search requests per minute ##
 
-LIMIT_CONNECTIONS_PER_IP="20"
+LIMIT_CONNECTIONS_PER_IP="50"
 LIMIT_CONNECTIONS_SERVER="300"
 LIMIT_REQUESTS_SERVER_SECOND="300"
 LIMIT_REQUESTS_SERVER_SECOND_BURST="900"
@@ -516,18 +516,18 @@ LIMIT_REQUESTS_ADMINER_MINUTE="5000"
 ## FCGI_CACHE_QUERIES_SEARCH = 
 
 FCGI_CACHE="true"
-FCGI_CACHE_VALID="360m"
-FCGI_CACHE_INACTIVE="1440m"
-FCGI_CACHE_MEMORY="256m"
-FCGI_CACHE_MAX_SIZE="4096m"
-FCGI_CACHE_TMPFS="false"
+FCGI_CACHE_VALID="360m" # Reduce to 2 hours for dynamic sites
+FCGI_CACHE_INACTIVE="1440m" # Reduce to 12 hours to prevent excessive stale data
+FCGI_CACHE_MEMORY="1024m" # Increase cache memory for better performance - High number of requests, set to 512M–1024M
+FCGI_CACHE_MAX_SIZE="8192m" # Increase disk cache size
+FCGI_CACHE_TMPFS="true" # False tp keep disk-based cache - True as 16gb memory for faster cache access
 FCGI_CONNECT_TIMEOUT="30s"
 FCGI_READ_TIMEOUT="300s"
 FCGI_SEND_TIMEOUT="30s"
-FCGI_BUFFERS="16 32k"
-FCGI_BUFFER_SIZE="32k"
-FCGI_BUSY_BUFFERS_SIZE="256k"
-FCGI_TEMP_FILE_WRITE_SIZE="256k"
+FCGI_BUFFERS="32 64k" # Increase buffer size for large responses
+FCGI_BUFFER_SIZE="64k" # Increase initial buffer
+FCGI_BUSY_BUFFERS_SIZE="512k" # Increase busy buffer size
+FCGI_TEMP_FILE_WRITE_SIZE="512k" # Increase for handling larger temp file writes
 
 # FCGI_CACHE_QUERIES="true"
 # FCGI_CACHE_QUERIES_SEARCH="true"
@@ -564,9 +564,9 @@ SQL_NET_WRITE_TIMEOUT="3600"
 ## INNODB_FLUSH_METHOD = most servers should use O_DIRECT flushing ##
 
 INNODB_BUFFER_POOL_SIZE="auto"
-INNODB_LOG_FILE_SIZE="256M"
+INNODB_LOG_FILE_SIZE="512M" #For write-heavy workloads, increase to 512M-1G
 INNODB_LOG_FILES_IN_GROUP="1"
-INNODB_FLUSH_LOG_AT_TRX_COMMIT="true"
+INNODB_FLUSH_LOG_AT_TRX_COMMIT="true" # 0 to Optimize for performance (set to 1 for full ACID compliance)
 INNODB_FLUSH_METHOD="O_DIRECT_NO_FSYNC"
 
 ####################################################################################################
