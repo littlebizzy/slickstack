@@ -65,7 +65,7 @@
 ## this build version ensures compatibility with the currently active ss-config file ##
 ## it must match the localhost ss-config otherwise installation will fail ##
 
-SS_INSTALL_BUILD="MAR2025LL"
+SS_INSTALL_BUILD="MAR2025MM"
 
 ####################################################################################################
 #### B. SS-Install: Validate (Restore) SS-Functions ################################################
@@ -370,16 +370,42 @@ ss_echo "${COLOR_INFO}#### SlickStack Interactive Setup Wizard (SS-Config) #####
 ss_echo "${COLOR_INFO}################################################################################ ${COLOR_RESET}"
 ss_echo ""
 
-## replace placeholders with random strings ##
+## replace sudo username ##
 ss_sed "s|@SUDO_USER|sudo-$(openssl rand -hex 3)|g" /tmp/ss-config-wizard
-ss_sed "s|@SUDO_PASSWORD|pass-$(openssl rand -hex 10)|g" /tmp/ss-config-wizard
-ss_sed "s|@DB_PASSWORD_ROOT|pass-$(openssl rand -hex 10)|g" /tmp/ss-config-wizard
-ss_sed "s|@DB_PASSWORD_USER|pass-$(openssl rand -hex 10)|g" /tmp/ss-config-wizard
-ss_sed "s|@SFTP_PASSWORD|pass-$(openssl rand -hex 10)|g" /tmp/ss-config-wizard
-ss_sed "s|@GUEST_PASSWORD|pass-$(openssl rand -hex 10)|g" /tmp/ss-config-wizard
+
+## replace sudo password with pam-safe random string ##
+while [[ $((n++)) -lt 5 ]]; do
+    GENERATED_PASSWORD="pass-$(openssl rand -hex 10)"
+    echo "test:${GENERATED_PASSWORD}" | chpasswd 2>/dev/null && break
+done
+ss_sed "s|@SUDO_PASSWORD|${GENERATED_PASSWORD}|g" /tmp/ss-config-wizard
+
+## replace sftp username ##
 ss_sed "s|@SFTP_USER|sftp-$(openssl rand -hex 3)|g" /tmp/ss-config-wizard
-ss_sed "s|@DB_USER|mysql-$(openssl rand -hex 3)|g" /tmp/ss-config-wizard
+
+## replace sftp password with pam-safe random string ##
+while [[ $((n++)) -lt 5 ]]; do
+    GENERATED_PASSWORD="pass-$(openssl rand -hex 10)"
+    echo "test:${GENERATED_PASSWORD}" | chpasswd 2>/dev/null && break
+done
+ss_sed "s|@SFTP_PASSWORD|${GENERATED_PASSWORD}|g" /tmp/ss-config-wizard
+
+## replace http auth guest username ##
 ss_sed "s|@GUEST_USER|guest-$(openssl rand -hex 3)|g" /tmp/ss-config-wizard
+
+## replace http auth guest password ##
+ss_sed "s|@GUEST_PASSWORD|pass-$(openssl rand -hex 10)|g" /tmp/ss-config-wizard
+
+## replace mysql username ##
+ss_sed "s|@DB_USER|mysql-$(openssl rand -hex 3)|g" /tmp/ss-config-wizard
+
+## replace mysql user password ##
+ss_sed "s|@DB_PASSWORD_USER|pass-$(openssl rand -hex 10)|g" /tmp/ss-config-wizard
+
+## replace mysql root password ##
+ss_sed "s|@DB_PASSWORD_ROOT|pass-$(openssl rand -hex 10)|g" /tmp/ss-config-wizard
+
+## replace random adminer url string ##
 ss_sed "s|@RANDOM_STRING_ADMINER_URL|$(openssl rand -hex 12)|g" /tmp/ss-config-wizard
 
 #### ss_sed "s|@SITE_ROOT_DOMAIN|${SYSTEM_HOSTNAME_TLD}|g" /tmp/ss-config-wizard
