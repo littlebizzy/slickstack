@@ -6,7 +6,7 @@
 #### mirror: littlebizzy/slickstack/blob/master/bash/ss-perms-wordpress-packages.txt ###############
 #### path: /var/www/ss-perms-wordpress-packages ####################################################
 #### destination: n/a (not a boilerplate) ##########################################################
-#### purpose: Resets file and user permissions for WordPress module files and folders ##############
+#### purpose: Resets ownership and permissions for WordPress module files and directories ##########
 #### module version: WordPress 6.7.x ###############################################################
 #### sourced by: ss-install-wordpress-packages, ss-perms ###########################################
 #### bash aliases: ss perms wordpress|wp packages ##################################################
@@ -76,6 +76,9 @@ else
     find /var/www/html/ -path /var/www/html/wp-content/uploads -prune -o -type f -print0 | xargs -0 chmod 0664 ## must be 0664 (0644 not enough)
 fi
 
+## fix ownership for auto plugin updates ##
+chown -R www-data:www-data /var/www/html/wp-content/plugins
+
 ## production ##
 ss_mkdir /var/www/html/wp-content
 ss_mkdir /var/www/html/wp-content/temp
@@ -89,6 +92,9 @@ if [[ "${STAGING_SITE}" != "false" ]]; then
     ss_mkdir /var/www/html/staging/wp-content/temp
     ss_mkdir /var/www/html/staging/wp-content/upgrade
     ss_mkdir /var/www/html/staging/wp-content/upgrade-temp-backup
+
+    ## fix ownership for auto plugin updates ##
+    chown -R www-data:www-data /var/www/html/staging/wp-content/plugins
 
     ## create uploads symlink if does not exist ##
     if [[ ! -L "${PATH_WORDPRESS_UPLOADS_STAGING}" ]]; then
@@ -104,6 +110,9 @@ if [[ "${DEV_SITE}" != "false" ]]; then
     ss_mkdir /var/www/html/dev/wp-content/upgrade
     ss_mkdir /var/www/html/dev/wp-content/uploads
     ss_mkdir /var/www/html/dev/wp-content/upgrade-temp-backup
+
+    ## fix ownership for auto plugin updates ##
+    chown -R www-data:www-data /var/www/html/dev/wp-content/plugins
 fi
 
 ####################################################################################################
