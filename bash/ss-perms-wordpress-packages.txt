@@ -76,17 +76,18 @@ else
     find /var/www/html/ -path /var/www/html/wp-content/uploads -prune -o -type f -print0 | xargs -0 chmod 0664 ## must be 0664 (0644 not enough)
 fi
 
-## fix ownership for plugin auto-updates and related temp dirs ##
-chown -R www-data:www-data /var/www/html/wp-content/plugins
-chown -R www-data:www-data /var/www/html/wp-content/upgrade
-chown -R www-data:www-data /var/www/html/wp-content/upgrade-temp-backup
-
 ## production ##
 ss_mkdir /var/www/html/wp-content
 ss_mkdir /var/www/html/wp-content/temp
 ss_mkdir /var/www/html/wp-content/upgrade
 ss_mkdir /var/www/html/wp-content/uploads
 ss_mkdir /var/www/html/wp-content/upgrade-temp-backup
+
+## fix ownership for plugin auto-updates and related temp dirs ##
+ss_chown www-data:www-data /var/www/html/wp-content/plugins
+ss_chown www-data:www-data /var/www/html/wp-content/temp
+ss_chown www-data:www-data /var/www/html/wp-content/upgrade
+ss_chown www-data:www-data /var/www/html/wp-content/upgrade-temp-backup
 
 ## staging ##
 if [[ "${STAGING_SITE}" != "false" ]]; then 
@@ -96,9 +97,10 @@ if [[ "${STAGING_SITE}" != "false" ]]; then
     ss_mkdir /var/www/html/staging/wp-content/upgrade-temp-backup
 
     ## fix ownership for plugin auto-updates and related temp dirs ##
-    chown -R www-data:www-data /var/www/html/staging/wp-content/plugins
-    chown -R www-data:www-data /var/www/html/staging/wp-content/upgrade
-    chown -R www-data:www-data /var/www/html/staging/wp-content/upgrade-temp-backup
+    ss_chown www-data:www-data /var/www/html/staging/wp-content/plugins
+    ss_chown www-data:www-data /var/www/html/staging/wp-content/temp
+    ss_chown www-data:www-data /var/www/html/staging/wp-content/upgrade
+    ss_chown www-data:www-data /var/www/html/staging/wp-content/upgrade-temp-backup
 
     ## create uploads symlink if does not exist ##
     if [[ ! -L "${PATH_WORDPRESS_UPLOADS_STAGING}" ]]; then
@@ -116,9 +118,10 @@ if [[ "${DEV_SITE}" != "false" ]]; then
     ss_mkdir /var/www/html/dev/wp-content/upgrade-temp-backup
 
     ## fix ownership for plugin auto-updates and related temp dirs ##
-    chown -R www-data:www-data /var/www/html/dev/wp-content/plugins
-    chown -R www-data:www-data /var/www/html/dev/wp-content/upgrade
-    chown -R www-data:www-data /var/www/html/dev/wp-content/upgrade-temp-backup
+    ss_chown www-data:www-data /var/www/html/dev/wp-content/plugins
+    ss_chown www-data:www-data /var/www/html/dev/wp-content/temp
+    ss_chown www-data:www-data /var/www/html/dev/wp-content/upgrade
+    ss_chown www-data:www-data /var/www/html/dev/wp-content/upgrade-temp-backup
 fi
 
 ####################################################################################################
