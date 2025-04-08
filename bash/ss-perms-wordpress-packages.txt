@@ -69,15 +69,12 @@ ss_chown "${SFTP_USER}":slickstack /var/www/html
 chmod 0775 /var/www/html ## must be 0775 (0755 not enough)
 find /var/www/html/ -type d -print0 | xargs -0 chmod 0775 ## must be 0775 (0755 not enough)
 
-## reset perms for ALL public files if website is not massive ##
+## reset perms for all public files if website is not massive ##
 if [[ "${SS_MASSIVE_SITE}" != "true" ]]; then 
     find /var/www/html/ -type f -print0 | xargs -0 chmod 0664 ## must be 0664 (0644 not enough)
 else 
     find /var/www/html/ -path /var/www/html/wp-content/uploads -prune -o -type f -print0 | xargs -0 chmod 0664 ## must be 0664 (0644 not enough)
 fi
-
-## fix ownership for auto plugin updates ##
-chown -R www-data:www-data /var/www/html/wp-content/plugins
 
 ## production ##
 ss_mkdir /var/www/html/wp-content
@@ -86,6 +83,12 @@ ss_mkdir /var/www/html/wp-content/upgrade
 ss_mkdir /var/www/html/wp-content/uploads
 ss_mkdir /var/www/html/wp-content/upgrade-temp-backup
 
+## fix ownership for plugin auto-updates and related temp dirs ##
+ss_chown www-data:www-data /var/www/html/wp-content/plugins
+ss_chown www-data:www-data /var/www/html/wp-content/temp
+ss_chown www-data:www-data /var/www/html/wp-content/upgrade
+ss_chown www-data:www-data /var/www/html/wp-content/upgrade-temp-backup
+
 ## staging ##
 if [[ "${STAGING_SITE}" != "false" ]]; then 
     ss_mkdir /var/www/html/staging
@@ -93,8 +96,11 @@ if [[ "${STAGING_SITE}" != "false" ]]; then
     ss_mkdir /var/www/html/staging/wp-content/upgrade
     ss_mkdir /var/www/html/staging/wp-content/upgrade-temp-backup
 
-    ## fix ownership for auto plugin updates ##
-    chown -R www-data:www-data /var/www/html/staging/wp-content/plugins
+    ## fix ownership for plugin auto-updates and related temp dirs ##
+    ss_chown www-data:www-data /var/www/html/staging/wp-content/plugins
+    ss_chown www-data:www-data /var/www/html/staging/wp-content/temp
+    ss_chown www-data:www-data /var/www/html/staging/wp-content/upgrade
+    ss_chown www-data:www-data /var/www/html/staging/wp-content/upgrade-temp-backup
 
     ## create uploads symlink if does not exist ##
     if [[ ! -L "${PATH_WORDPRESS_UPLOADS_STAGING}" ]]; then
@@ -111,8 +117,11 @@ if [[ "${DEV_SITE}" != "false" ]]; then
     ss_mkdir /var/www/html/dev/wp-content/uploads
     ss_mkdir /var/www/html/dev/wp-content/upgrade-temp-backup
 
-    ## fix ownership for auto plugin updates ##
-    chown -R www-data:www-data /var/www/html/dev/wp-content/plugins
+    ## fix ownership for plugin auto-updates and related temp dirs ##
+    ss_chown www-data:www-data /var/www/html/dev/wp-content/plugins
+    ss_chown www-data:www-data /var/www/html/dev/wp-content/temp
+    ss_chown www-data:www-data /var/www/html/dev/wp-content/upgrade
+    ss_chown www-data:www-data /var/www/html/dev/wp-content/upgrade-temp-backup
 fi
 
 ####################################################################################################
