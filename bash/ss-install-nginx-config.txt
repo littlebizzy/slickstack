@@ -28,6 +28,9 @@
 ## D. Reset Permissions (Nginx Config)
 ## E. Generate DH Parameters (Conditional)
 ## F. Run SS-Encrypt-OpenSSL
+
+## F2. Add Self-Signed CA to System Trust Store
+
 ## G. Generate Htpasswd File
 ## H. Install Nginx.conf
 ## I. Install Server Block (Development)
@@ -156,6 +159,32 @@ if [[ ! -f "${PATH_OPENSSL_CONF}" ]] && [[ ! -f "${PATH_LETSENCRYPT_CONF}" ]] &&
     
 fi
 
+####################################################################################################
+#### F2. SS-Install-Nginx-Config: Add Self-Signed CA to System Trust Store #########################
+####################################################################################################
+
+## if self-signed cert exists, ensure it's trusted system-wide for curl and wp-cli ##
+if [[ -s "${PATH_OPENSSL_CERT}" ]]; then
+    ss_cp "${PATH_OPENSSL_CERT}" /usr/local/share/ca-certificates/slickstack.crt
+    update-ca-certificates > /dev/null
+    ss_echo "${COLOR_INFO}added self-signed CA to system trust store... ${COLOR_RESET}"
+fi
+
+## test wp_remote_get loopback request to confirm https support works ##
+ss_echo "${COLOR_INFO}checking HTTPS loopback via wp_remote_get()... ${COLOR_RESET}"
+sudo -u "${SFTP_USER}" "${PATH_WP_CLI}" --path="${PATH_WEB_ROOT}" eval '
+$response = wp_remote_get( home_url() );
+if ( is_wp_error( $response ) ) {
+    echo "FAIL: " . $response->get_error_message() . "\n";
+} else {
+    echo "SUCCESS: Received response code " . $response["response"]["code"] . "\n";
+}
+'
+
+## test curl to https://localhost with -k just for baseline reference ##
+ss_echo "${COLOR_INFO}testing curl HTTPS loopback... ${COLOR_RESET}"
+echo ""
+curl -I "https://${SITE_FULL_DOMAIN}" 2>&1 | grep HTTP || echo "curl test failed"
 
 ####################################################################################################
 #### G. SS-Install-Nginx-Config: Generate Htpasswd File ############################################
@@ -1252,6 +1281,7 @@ chmod 0700 /var/www/crons/custom/*cron* ## 0700 means only root/sudo can execute
 #### SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ###############
 ####################################################################################################
 
+## Ref: ChatGPT
 ## Ref: https://serverfault.com/questions/527630/difference-in-sites-available-vs-sites-enabled-vs-conf-d-directories-nginx
 ## Ref: https://www.digitalocean.com/community/tutorials/how-to-set-up-nginx-server-blocks-virtual-hosts-on-ubuntu-16-04
 ## Ref: https://ar.al/2018/07/05/nginx-remember-to-remove-the-default-site/
