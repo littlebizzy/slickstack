@@ -20,8 +20,9 @@
 ## each section should be commented so you understand what is being accomplished ##
 
 ## A. Source SS-Config + SS-Functions
-## B. Touch Timestamp Fil
+## B. Touch Timestamp File
 ## C. Message (Begin Script)
+
 ## D. Reset Permissions (WordPress MU Plugins)
 
 ####################################################################################################
@@ -76,9 +77,6 @@ find /var/www/html/wp-content/mu-plugins/ -type f -exec chmod 0644 {} \; ## 0644
 chmod 0440 /var/www/html/wp-content/mu-plugins/autoloader.php ## 0440 (read-only)
 chmod 0440 /var/www/html/wp-content/mu-plugins/000-common.php ## 0440 (read-only)
 
-chown -R "${SFTP_USER}":www-data "${PATH_BLACKLIST_TXT}" ## change to www-data:www-data when ss-perms fixed
-chmod 0444 "${PATH_BLACKLIST_TXT}"
-
 if [[ -f "/var/www/html/wp-content/object-cache.php" ]]; then 
     chmod 0664 /var/www/html/wp-content/object-cache.php ## 0644 is enough
 fi
@@ -87,24 +85,28 @@ fi
 if [[ "${STAGING_SITE}" == "true" ]]; then 
     ss_touch "/var/www/html/staging/wp-content/blacklist.txt"
     chown -R www-data:slickstack /var/www/html/staging/wp-content/mu-plugins
-    chown www-data:slickstack /var/www/html/staging/wp-content/blacklist.txt
     find /var/www/html/staging/wp-content/mu-plugins/ -type d -exec chmod 0755 {} \; ## 0755 is enough
     find /var/www/html/staging/wp-content/mu-plugins/ -type f -exec chmod 0644 {} \; ## 0644 is enough
     chmod 0440 /var/www/html/staging/wp-content/mu-plugins/autoloader.php ## 0440 (read-only)
     chmod 0440 /var/www/html/staging/wp-content/mu-plugins/000-common.php ## 0440 (read-only)
-    chmod 0440 /var/www/html/staging/wp-content/blacklist.txt ## 0440 (read-only)
+
+    ## reset blacklist.txt permissions ##
+    ss_chown root:www-data /var/www/html/staging/wp-content/blacklist.txt ## must be root:www-data
+    chmod 0444 /var/www/html/staging/wp-content/blacklist.txt ## must be 0444
 fi
 
 ## development ##
 if [[ "${DEV_SITE}" == "true" ]]; then 
     ss_touch "/var/www/html/dev/wp-content/blacklist.txt"
     chown -R www-data:slickstack /var/www/html/dev/wp-content/mu-plugins
-    chown www-data:slickstack /var/www/html/dev/wp-content/blacklist.txt
     find /var/www/html/dev/wp-content/mu-plugins/ -type d -exec chmod 0755 {} \; ## 0755 is enough
     find /var/www/html/dev/wp-content/mu-plugins/ -type f -exec chmod 0644 {} \; ## 0644 is enough
     chmod 0440 /var/www/html/dev/wp-content/mu-plugins/autoloader.php ## 0440 (read-only)
     chmod 0440 /var/www/html/dev/wp-content/mu-plugins/000-common.php ## 0440 (read-only)
-    chmod 0440 /var/www/html/dev/wp-content/blacklist.txt ## 0440 (read-only)
+
+    ## reset blacklist.txt permissions ##
+    ss_chown root:www-data /var/www/html/dev/wp-content/blacklist.txt ## must be root:www-data
+    chmod 0444 /var/www/html/dev/wp-content/blacklist.txt ## must be 0444
 fi
 
 ## NULL blacklist.txt if ss-config false (allows default SS MU plugin to be installed while still being able to disable plugin blacklist) ##
@@ -122,6 +124,10 @@ if [[ "${SS_PLUGIN_BLACKLIST}" == "false" ]] && [[ "${STAGING_SITE}" == "true" ]
     ss_touch /var/www/html/staging/wp-content/blacklist.txt
     ss_truncate /var/www/html/staging/wp-content/blacklist.txt
 fi
+
+## reset blacklist.txt permissions ##
+ss_chown root:www-data "${PATH_BLACKLIST_TXT}" ## must be root:www-data
+chmod 0444 "${PATH_BLACKLIST_TXT}" ## must be 0444
 
 ####################################################################################################
 #### SlickStack: Reset Permissions (SlickStack Scripts) ############################################
@@ -145,6 +151,6 @@ chmod 0700 /var/www/crons/custom/*cron* ## 0700 means only root/sudo can execute
 #### SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ###############
 ####################################################################################################
 
-## Ref:
+## Ref: ChatGPT
 
 ## SS_EOF
