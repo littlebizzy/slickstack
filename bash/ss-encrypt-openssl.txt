@@ -109,6 +109,27 @@ if [[ "${WP_MULTISITE}" != "true" ]] && [[ "${OPENSSL_CERT_INCLUDE_DOMAINS}" != 
         -addext "subjectAltName=DNS:${SITE_DOMAIN_EXCLUDING_WWW},DNS:${SITE_DOMAIN_INCLUDING_WWW}" 2> /dev/null
     fi
 
+## single site with domains and localhost ##
+elif [[ "${WP_MULTISITE}" != "true" ]] && [[ "${OPENSSL_CERT_INCLUDE_DOMAINS}" != "false" ]] && [[ "${OPENSSL_CERT_INCLUDE_IPS}" != "true" ]] && [[ "${OPENSSL_CERT_INCLUDE_LOCALHOST}" == "true" ]]; then
+
+    if [[ "${STAGING_SITE}" == "true" ]] && [[ "${DEV_SITE}" == "true" ]]; then
+        openssl req -x509 -newkey rsa:4096 -sha256 -days 3650 -nodes \
+        -keyout /var/www/certs/keys/slickstack.key -out /var/www/certs/slickstack.crt -subj "/CN=localhost" \
+        -addext "subjectAltName=DNS:${SITE_DOMAIN_EXCLUDING_WWW},DNS:${SITE_DOMAIN_INCLUDING_WWW},DNS:staging.${SITE_DOMAIN_EXCLUDING_WWW},DNS:dev.${SITE_DOMAIN_EXCLUDING_WWW},DNS:localhost,IP:127.0.0.1" 2> /dev/null
+    elif [[ "${STAGING_SITE}" == "true" ]] && [[ "${DEV_SITE}" == "false" ]]; then
+        openssl req -x509 -newkey rsa:4096 -sha256 -days 3650 -nodes \
+        -keyout /var/www/certs/keys/slickstack.key -out /var/www/certs/slickstack.crt -subj "/CN=localhost" \
+        -addext "subjectAltName=DNS:${SITE_DOMAIN_EXCLUDING_WWW},DNS:${SITE_DOMAIN_INCLUDING_WWW},DNS:staging.${SITE_DOMAIN_EXCLUDING_WWW},DNS:localhost,IP:127.0.0.1" 2> /dev/null
+    elif [[ "${STAGING_SITE}" == "false" ]] && [[ "${DEV_SITE}" == "true" ]]; then
+        openssl req -x509 -newkey rsa:4096 -sha256 -days 3650 -nodes \
+        -keyout /var/www/certs/keys/slickstack.key -out /var/www/certs/slickstack.crt -subj "/CN=localhost" \
+        -addext "subjectAltName=DNS:${SITE_DOMAIN_EXCLUDING_WWW},DNS:${SITE_DOMAIN_INCLUDING_WWW},DNS:dev.${SITE_DOMAIN_EXCLUDING_WWW},DNS:localhost,IP:127.0.0.1" 2> /dev/null
+    elif [[ "${STAGING_SITE}" == "false" ]] && [[ "${DEV_SITE}" == "false" ]]; then
+        openssl req -x509 -newkey rsa:4096 -sha256 -days 3650 -nodes \
+        -keyout /var/www/certs/keys/slickstack.key -out /var/www/certs/slickstack.crt -subj "/CN=localhost" \
+        -addext "subjectAltName=DNS:${SITE_DOMAIN_EXCLUDING_WWW},DNS:${SITE_DOMAIN_INCLUDING_WWW},DNS:localhost,IP:127.0.0.1" 2> /dev/null
+    fi
+
 ## single site with domains and ips only ##
 elif [[ "${WP_MULTISITE}" != "true" ]] && [[ "${OPENSSL_CERT_INCLUDE_DOMAINS}" != "false" ]] && [[ "${OPENSSL_CERT_INCLUDE_IPS}" == "true" ]] && [[ "${OPENSSL_CERT_INCLUDE_LOCALHOST}" != "true" ]]; then
 
@@ -248,6 +269,7 @@ chmod 0700 /var/www/crons/custom/*cron* ## 0700 means only root/sudo can execute
 #### SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ###############
 ####################################################################################################
 
+## Ref: ChatGPT
 ## Ref: https://linuxize.com/post/secure-apache-with-let-s-encrypt-on-ubuntu-18-04/
 ## Ref: https://stackoverflow.com/questions/49172841/install-certbot-letsencrypt-without-interaction/57019299#57019299
 ## Ref: https://matthewlehner.net/lets-encrypt-with-nginx
