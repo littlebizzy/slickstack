@@ -166,25 +166,8 @@ fi
 ## if self-signed cert exists, ensure it's trusted system-wide for curl and wp-cli ##
 if [[ -s "${PATH_OPENSSL_CERT}" ]]; then
     ss_cp "${PATH_OPENSSL_CERT}" /usr/local/share/ca-certificates/slickstack.crt
-    update-ca-certificates 2>&1 | grep -v 'rehash'
-    ss_echo "${COLOR_INFO}added self-signed CA to system trust store... ${COLOR_RESET}"
+    update-ca-certificates > /dev/null
 fi
-
-## test wp_remote_get loopback request to confirm https support works ##
-ss_echo "${COLOR_INFO}checking HTTPS loopback via wp_remote_get(home_url())... ${COLOR_RESET}"
-sudo -u "${SFTP_USER}" "${PATH_WP_CLI}" --path="${PATH_WEB_ROOT}" eval '
-$response = wp_remote_get( "https://${SITE_FULL_DOMAIN}" );
-if ( is_wp_error( $response ) ) {
-    echo "FAIL: " . $response->get_error_message() . "\n";
-} else {
-    echo "SUCCESS: Received response code " . $response["response"]["code"] . "\n";
-}
-'
-
-## test curl to https://localhost with -k just for baseline reference ##
-ss_echo "${COLOR_INFO}testing curl HTTPS loopback... ${COLOR_RESET}"
-echo ""
-curl -I "https://${SITE_FULL_DOMAIN}" 2>&1 | grep HTTP || echo "curl test failed"
 
 ####################################################################################################
 #### G. SS-Install-Nginx-Config: Generate Htpasswd File ############################################
