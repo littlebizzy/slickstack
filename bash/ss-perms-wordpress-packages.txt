@@ -72,6 +72,9 @@ ss_echo "${COLOR_INFO}Running ss-perms-wordpress-packages... ${COLOR_RESET}"
 ss_chown root:www-data /var/www/html ## must be root:www-data
 chmod 0775 /var/www/html ## must be 0775
 
+## reset permissions for all directories ##
+find /var/www/html/ -type d -print0 | xargs -0 chmod 0775 ## must be 0775
+
 ## ensure directories exist (besides wp-admin and wp-includes) ##
 ss_mkdir /var/www/html/wp-content/languages
 ss_mkdir /var/www/html/wp-content/plugins
@@ -89,6 +92,23 @@ ss_chown www-data:www-data /var/www/html/wp-content/themes
 ss_chown www-data:www-data /var/www/html/wp-content/upgrade
 ss_chown www-data:www-data /var/www/html/wp-content/upgrade-temp-backup
 ss_chown www-data:www-data /var/www/html/wp-content/uploads
+
+## allow sftp user to modify languages, plugins, themes, and uploads ##
+chmod 0775 /var/www/html/wp-content/languages
+chmod 0775 /var/www/html/wp-content/plugins
+chmod 0775 /var/www/html/wp-content/themes
+chmod 0775 /var/www/html/wp-content/uploads
+
+## restrict sftp user from modifying other writable dirs ##
+chmod 0755 /var/www/html/wp-content/temp
+chmod 0755 /var/www/html/wp-content/upgrade
+chmod 0755 /var/www/html/wp-content/upgrade-temp-backup
+
+## lock down wordpress core directories slightly to prevent sftp user from making changes ##
+ss_chown www-data:www-data /var/www/html/wp-admin
+ss_chown www-data:www-data /var/www/html/wp-includes
+chmod 0755 /var/www/html/wp-admin
+chmod 0755 /var/www/html/wp-includes
 
 ####################################################################################################
 #### E. SS-Perms-WordPress-Packages: Reset Permissions (WordPress Packages) Staging ################
@@ -120,6 +140,22 @@ if [[ "${STAGING_SITE}" != "false" ]]; then
     ## uploads symlink permissions ##
     chown -h root:root /var/www/html/staging/wp-content/uploads ## must be root:root
     chmod -h 0777 /var/www/html/staging/wp-content/uploads ## must be 0777
+
+    ## allow sftp user to modify languages, plugins, and themes ##
+    chmod 0775 /var/www/html/staging/wp-content/languages
+    chmod 0775 /var/www/html/staging/wp-content/plugins
+    chmod 0775 /var/www/html/staging/wp-content/themes
+
+    ## restrict sftp user from modifying other writable dirs ##
+    chmod 0755 /var/www/html/staging/wp-content/temp
+    chmod 0755 /var/www/html/staging/wp-content/upgrade
+    chmod 0755 /var/www/html/staging/wp-content/upgrade-temp-backup
+
+    ## lock down wordpress core directories slightly to prevent sftp user from making changes ##
+    ss_chown www-data:www-data /var/www/html/staging/wp-admin
+    ss_chown www-data:www-data /var/www/html/staging/wp-includes
+    chmod 0755 /var/www/html/staging/wp-admin
+    chmod 0755 /var/www/html/staging/wp-includes
 fi
 
 ####################################################################################################
@@ -144,14 +180,28 @@ if [[ "${DEV_SITE}" != "false" ]]; then
     ss_chown www-data:www-data /var/www/html/dev/wp-content/upgrade
     ss_chown www-data:www-data /var/www/html/dev/wp-content/upgrade-temp-backup
     ss_chown www-data:www-data /var/www/html/dev/wp-content/uploads
+
+    ## allow sftp user to modify languages, plugins, themes, and uploads ##
+    chmod 0775 /var/www/html/dev/wp-content/languages
+    chmod 0775 /var/www/html/dev/wp-content/plugins
+    chmod 0775 /var/www/html/dev/wp-content/themes
+    chmod 0775 /var/www/html/dev/wp-content/uploads
+
+    ## restrict sftp user from modifying other writable dirs ##
+    chmod 0755 /var/www/html/dev/wp-content/temp
+    chmod 0755 /var/www/html/dev/wp-content/upgrade
+    chmod 0755 /var/www/html/dev/wp-content/upgrade-temp-backup
+
+    ## lock down wordpress core directories slightly to prevent sftp user from making changes ##
+    ss_chown www-data:www-data /var/www/html/dev/wp-admin
+    ss_chown www-data:www-data /var/www/html/dev/wp-includes
+    chmod 0755 /var/www/html/dev/wp-admin
+    chmod 0755 /var/www/html/dev/wp-includes
 fi
 
 ####################################################################################################
 #### G. SS-Perms-WordPress-Packages: Reset Permissions (WordPress Packages) Finish Up ##############
 ####################################################################################################
-
-## reset permissions for all directories ##
-find /var/www/html/ -type d -print0 | xargs -0 chmod 0775 ## must be 0775
 
 ## reset perms for all public files if website is not massive ##
 if [[ "${SS_MASSIVE_SITE}" != "true" ]]; then 
