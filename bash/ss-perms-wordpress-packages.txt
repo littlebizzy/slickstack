@@ -86,8 +86,10 @@ ss_mkdir /var/www/html/wp-content/uploads
 ss_chown www-data:www-data /var/www/html/wp-content/languages
 ss_chown www-data:www-data /var/www/html/wp-content/plugins
 ss_chown www-data:www-data /var/www/html/wp-content/temp
+ss_chown www-data:www-data /var/www/html/wp-content/themes
 ss_chown www-data:www-data /var/www/html/wp-content/upgrade
 ss_chown www-data:www-data /var/www/html/wp-content/upgrade-temp-backup
+ss_chown www-data:www-data /var/www/html/wp-content/uploads
 
 ####################################################################################################
 #### E. SS-Perms-WordPress-Packages: Reset Permissions (WordPress Packages) Staging ################
@@ -106,14 +108,19 @@ if [[ "${STAGING_SITE}" != "false" ]]; then
     ss_chown www-data:www-data /var/www/html/staging/wp-content/languages
     ss_chown www-data:www-data /var/www/html/staging/wp-content/plugins
     ss_chown www-data:www-data /var/www/html/staging/wp-content/temp
+    ss_chown www-data:www-data /var/www/html/staging/wp-content/themes
     ss_chown www-data:www-data /var/www/html/staging/wp-content/upgrade
     ss_chown www-data:www-data /var/www/html/staging/wp-content/upgrade-temp-backup
 
-    ## create uploads symlink if does not exist ##
+    ## recreate uploads symlink if not already a symlink ##
     if [[ ! -L "${PATH_WORDPRESS_UPLOADS_STAGING}" ]]; then
         ss_rm "${PATH_WORDPRESS_UPLOADS_STAGING}"
         ss_ln "${PATH_WORDPRESS_UPLOADS_PRODUCTION}" "${PATH_WORDPRESS_UPLOADS_STAGING}"
     fi
+
+    ## uploads symlink permissions ##
+    chown -h root:root /var/www/html/staging/wp-content/uploads ## must be root:root
+    chmod -h 0777 /var/www/html/staging/wp-content/uploads ## must be 0777
 fi
 
 ####################################################################################################
@@ -134,8 +141,10 @@ if [[ "${DEV_SITE}" != "false" ]]; then
     ss_chown www-data:www-data /var/www/html/dev/wp-content/languages
     ss_chown www-data:www-data /var/www/html/dev/wp-content/plugins
     ss_chown www-data:www-data /var/www/html/dev/wp-content/temp
+    ss_chown www-data:www-data /var/www/html/dev/wp-content/themes
     ss_chown www-data:www-data /var/www/html/dev/wp-content/upgrade
     ss_chown www-data:www-data /var/www/html/dev/wp-content/upgrade-temp-backup
+    ss_chown www-data:www-data /var/www/html/dev/wp-content/uploads
 fi
 
 ####################################################################################################
