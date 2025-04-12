@@ -22,7 +22,11 @@
 ## A. Source SS-Config + SS-Functions
 ## B. Touch Timestamp File
 ## C. Message (Begin Script)
-## D. Reset Permissions (WordPress Packages)
+
+## D. Reset Permissions (WordPress Packages) Production
+## E. Reset Permissions (WordPress Packages) Staging
+## F. Reset Permissions (WordPress Packages) Development
+## G. Finish Up
 
 ####################################################################################################
 #### A. SS-Perms-WordPress-Packages: Source SS-Config + SS-Functions ###############################
@@ -58,7 +62,7 @@ ss_touch "${TIMESTAMP_SS_PERMS_WORDPRESS_PACKAGES}"
 ss_echo "${COLOR_INFO}Running ss-perms-wordpress-packages... ${COLOR_RESET}"
 
 ####################################################################################################
-#### D. SS-Perms-WordPress-Packages: Reset Permissions (WordPress Packages) ########################
+#### D. SS-Perms-WordPress-Packages: Reset Permissions (WordPress Packages) Production #############
 ####################################################################################################
 
 ## here we briefly reset permissions for WordPress Core files only to avoid errors etc ##
@@ -69,15 +73,7 @@ ss_chown "${SFTP_USER}":slickstack /var/www/html
 chmod 0775 /var/www/html ## must be 0775 (0755 not enough)
 find /var/www/html/ -type d -print0 | xargs -0 chmod 0775 ## must be 0775 (0755 not enough)
 
-## reset perms for all public files if website is not massive ##
-if [[ "${SS_MASSIVE_SITE}" != "true" ]]; then 
-    find /var/www/html/ -type f -print0 | xargs -0 chmod 0664 ## must be 0664 (0644 not enough)
-else 
-    find /var/www/html/ -path /var/www/html/wp-content/uploads -prune -o -type f -print0 | xargs -0 chmod 0664 ## must be 0664 (0644 not enough)
-fi
-
 ## production ##
-ss_mkdir /var/www/html/wp-content
 ss_mkdir /var/www/html/wp-content/languages
 ss_mkdir /var/www/html/wp-content/temp
 ss_mkdir /var/www/html/wp-content/upgrade
@@ -91,10 +87,11 @@ ss_chown www-data:www-data /var/www/html/wp-content/temp
 ss_chown www-data:www-data /var/www/html/wp-content/upgrade
 ss_chown www-data:www-data /var/www/html/wp-content/upgrade-temp-backup
 
-## staging ##
+####################################################################################################
+#### E. SS-Perms-WordPress-Packages: Reset Permissions (WordPress Packages) Staging ################
+####################################################################################################
+
 if [[ "${STAGING_SITE}" != "false" ]]; then 
-    ss_mkdir /var/www/html/staging
-    ss_mkdir /var/www/html/staging/wp-content
     ss_mkdir /var/www/html/staging/wp-content/languages
     ss_mkdir /var/www/html/staging/wp-content/temp
     ss_mkdir /var/www/html/staging/wp-content/upgrade
@@ -114,10 +111,11 @@ if [[ "${STAGING_SITE}" != "false" ]]; then
     fi
 fi
 
-## development ##
+####################################################################################################
+#### F. SS-Perms-WordPress-Packages: Reset Permissions (WordPress Packages) Develoment #############
+####################################################################################################
+
 if [[ "${DEV_SITE}" != "false" ]]; then 
-    ss_mkdir /var/www/html/dev
-    ss_mkdir /var/www/html/dev/wp-content
     ss_mkdir /var/www/html/dev/wp-content/languages
     ss_mkdir /var/www/html/dev/wp-content/temp
     ss_mkdir /var/www/html/dev/wp-content/upgrade
@@ -130,6 +128,17 @@ if [[ "${DEV_SITE}" != "false" ]]; then
     ss_chown www-data:www-data /var/www/html/dev/wp-content/temp
     ss_chown www-data:www-data /var/www/html/dev/wp-content/upgrade
     ss_chown www-data:www-data /var/www/html/dev/wp-content/upgrade-temp-backup
+fi
+
+####################################################################################################
+#### G. SS-Perms-WordPress-Packages: Reset Permissions (WordPress Packages) Finish Up ##############
+####################################################################################################
+
+## reset perms for all public files if website is not massive ##
+if [[ "${SS_MASSIVE_SITE}" != "true" ]]; then 
+    find /var/www/html/ -type f -print0 | xargs -0 chmod 0664 ## must be 0664 (0644 not enough)
+else 
+    find /var/www/html/ -path /var/www/html/wp-content/uploads -prune -o -type f -print0 | xargs -0 chmod 0664 ## must be 0664 (0644 not enough)
 fi
 
 ####################################################################################################

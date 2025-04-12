@@ -27,11 +27,11 @@
 ## C. Message (Begin Script)
 ## D. Backup SS-Config
 
-## E. Backup Custom Cron Jobs
+## E. Backup Custom Cron Jobs ## make this better
 
 ## F. Download + Install SS-Check
 
-## G. Update Blacklist.txt
+## G. Download + Install Blacklist.txt ## make this better
 
 ## H. Transfer Pilot File Settings (If Exists)
 ## I. Install SS-Constants.php
@@ -113,18 +113,14 @@ ss_grep 'SS_EOF' "${TMP_SS_CHECK}" || ss_wget "${TMP_SS_CHECK}" "${SOURCEFORGE_S
 ss_grep 'SS_EOF' "${TMP_SS_CHECK}" && ss_mv "${TMP_SS_CHECK}" "${PATH_SS_CHECK}"
 
 ####################################################################################################
-#### G. SS-Worker: Update Blacklist.txt ############################################################
+#### G. SS-Worker: Download + Install Blacklist.txt ################################################
 ####################################################################################################
 
 ## here we retrieve the latest plugin blacklist file which might contain urgent changes ##
 ## maintaining a thoughtful blacklist vastly improves WP performance and security ##
 
-## download latest blacklist (or custom blacklist) ##
-if [[ -z "${WP_PLUGIN_BLACKLIST_SOURCE}" ]]; then 
-    ss_wget "${TMP_BLACKLIST_TXT}" "${GITHUB_BLACKLIST_TXT}"
-else
-    ss_wget "${TMP_BLACKLIST_TXT}" "${WP_PLUGIN_BLACKLIST_SOURCE}"
-fi
+## download blacklist.txt (or custom blacklist.txt) ##
+[[ -z "${WP_PLUGIN_BLACKLIST_SOURCE}" ]] && ss_wget "${TMP_BLACKLIST_TXT}" "${GITHUB_BLACKLIST_TXT}" || ss_wget "${TMP_BLACKLIST_TXT}" "${WP_PLUGIN_BLACKLIST_SOURCE}"
 
 ## ensure wp-content directory exists ##
 ss_mkdir /var/www/html/wp-content/
@@ -149,8 +145,8 @@ else
 fi
 
 ## reset permissions ##
-ss_chown "${SFTP_USER}":www-data "${PATH_BLACKLIST_TXT}"
-chmod 0444 "${PATH_BLACKLIST_TXT}"
+ss_chown root:www-data "${PATH_BLACKLIST_TXT}" ## must be root:www-data
+chmod 0444 "${PATH_BLACKLIST_TXT}" ## must be 0444
 
 ####################################################################################################
 #### H. SS-Worker: Transfer Pilot File Settings (If Exists) ########################################
