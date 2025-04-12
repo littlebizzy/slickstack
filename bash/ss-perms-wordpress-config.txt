@@ -12,6 +12,26 @@
 #### bash aliases: ss perms wordpress|wp config ####################################################
 ####################################################################################################
 
+####################################################################################################
+#### TABLE OF CONTENTS (SS-Perms-WordPress-Config) #################################################
+####################################################################################################
+
+## this is a brief summary of the different code snippets you will find in this script ##
+## each section should be commented so you understand what is being accomplished ##
+
+## A. Source SS-Config + SS-Functions
+## B. Touch Timestamp File
+## C. Message (Begin Script)
+
+## D. Reset Permissions (WordPress Config)
+
+####################################################################################################
+#### A. SS-Perms-WordPress-Config: Source SS-Config + SS-Functions #################################
+####################################################################################################
+
+## before anything else we must source the critical variables that power this script ##
+## ss-config is setup during ss-install wizard but ss-functions is hardcoded ##
+
 ## source ss-config ##
 source /var/www/ss-config
 
@@ -21,18 +41,7 @@ source /var/www/ss-functions
 ## BELOW THIS RELIES ON SS-CONFIG AND SS-FUNCTIONS
 
 ####################################################################################################
-#### TABLE OF CONTENTS (SS-Perms-WordPress-Config) #################################################
-####################################################################################################
-
-## this is a brief summary of the different code snippets you will find in this script ##
-## each section should be commented so you understand what is being accomplished ##
-
-## A. Touch Timestamp File
-## B. Message (Begin Script)
-## C. Reset Permissions (WordPress Config)
-
-####################################################################################################
-#### A. SS-Perms-WordPress-Config: Touch Timestamp File ############################################
+#### B. SS-Perms-WordPress-Config: Touch Timestamp File ############################################
 ####################################################################################################
 
 ## this is a dummy timestamp file that will remember the last time this script was run ##
@@ -41,7 +50,7 @@ source /var/www/ss-functions
 ss_touch "${TIMESTAMP_SS_PERMS_WORDPRESS_CONFIG}"
 
 ####################################################################################################
-#### B. SS-Perms-WordPress-Config: Message (Begin Script) ##########################################
+#### C. SS-Perms-WordPress-Config: Message (Begin Script) ##########################################
 ####################################################################################################
 
 ## this is a simple message that announces to the shell the purpose of this bash script ##
@@ -50,41 +59,41 @@ ss_touch "${TIMESTAMP_SS_PERMS_WORDPRESS_CONFIG}"
 ss_echo "${COLOR_INFO}Running ss-perms-wordpress-config... ${COLOR_RESET}"
 
 ####################################################################################################
-#### C. SS-Perms-WordPress-Config: Reset Permissions (WordPress Config) ############################
+#### D. SS-Perms-WordPress-Config: Reset Permissions (WordPress Config) ############################
 ####################################################################################################
 
 ## here we briefly reset permissions for the wp-config.php file and related dirs only ##
 ## keep in mind that general WordPress core and other files are not affected ##
 
 ## production ##
-ss_chown "${SFTP_USER}":slickstack "${PATH_WP_CONFIG_PHP}"
+ss_chown root:www-data "${PATH_WP_CONFIG_PHP}" ## must be root:www-data
 chmod 0440 "${PATH_WP_CONFIG_PHP}" ## must be 0440
 
 if [[ -f "/var/www/html/wp-content/custom-functions.php" ]]; then 
-    ss_chown "${SFTP_USER}":slickstack /var/www/html/wp-content/custom-functions.php
-    chmod 0440 /var/www/html/wp-content/custom-functions.php
+    ss_chown root:www-data /var/www/html/wp-content/custom-functions.php ## must be root:www-data
+    chmod 0440 /var/www/html/wp-content/custom-functions.php ## must be 0440
 fi
 
 ## staging ##
 if [[ "${STAGING_SITE}" != "false" ]]; then
-    ss_chown "${SFTP_USER}":slickstack /var/www/html/staging/wp-config.php
+    ss_chown root:www-data /var/www/html/staging/wp-config.php ## must be root:www-data
     chmod 0440 /var/www/html/staging/wp-config.php ## must be 0440
     
     if [[ -f "/var/www/html/staging/wp-content/custom-functions.php" ]]; then 
-        ss_chown "${SFTP_USER}":slickstack /var/www/html/staging/wp-content/custom-functions.php
-        chmod 0440 /var/www/html/staging/wp-content/custom-functions.php
+        ss_chown root:www-data /var/www/html/staging/wp-content/custom-functions.php ## must be root:www-data
+        chmod 0440 /var/www/html/staging/wp-content/custom-functions.php ## must be 0440
     fi
     
 fi
 
 ## development ##
 if [[ "${DEV_SITE}" != "false" ]]; then
-    ss_chown "${SFTP_USER}":slickstack /var/www/html/dev/wp-config.php
+    ss_chown root:www-data /var/www/html/dev/wp-config.php ## must be root:www-data
     chmod 0440 /var/www/html/dev/wp-config.php ## must be 0440
     
     if [[ -f "/var/www/html/dev/wp-content/custom-functions.php" ]]; then 
-        ss_chown "${SFTP_USER}":slickstack /var/www/html/dev/wp-content/custom-functions.php
-        chmod 0440 /var/www/html/dev/wp-content/custom-functions.php
+        ss_chown root:www-data /var/www/html/dev/wp-content/custom-functions.php ## must be root:www-data
+        chmod 0440 /var/www/html/dev/wp-content/custom-functions.php ## must be 0440
     fi
     
 fi
