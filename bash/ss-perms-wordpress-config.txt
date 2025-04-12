@@ -23,7 +23,10 @@
 ## B. Touch Timestamp File
 ## C. Message (Begin Script)
 
-## D. Reset Permissions (WordPress Config)
+## D. Reset Permissions (SS-Constants.php)
+## E. Reset Permissions (WordPress Config) Production
+## F. Reset Permissions (WordPress Config) Staging
+## G. Reset Permissions (WordPress Config) Development
 
 ####################################################################################################
 #### A. SS-Perms-WordPress-Config: Source SS-Config + SS-Functions #################################
@@ -59,30 +62,39 @@ ss_touch "${TIMESTAMP_SS_PERMS_WORDPRESS_CONFIG}"
 ss_echo "${COLOR_INFO}Running ss-perms-wordpress-config... ${COLOR_RESET}"
 
 ####################################################################################################
-#### D. SS-Perms-WordPress-Config: Reset Permissions (WordPress Config) ############################
+#### D. SS-Perms-WordPress-Config: Reset Permissions (SS-Constants.php) ############################
+####################################################################################################
+
+ss_chown root:www-data /var/www/meta/ss-constants.php ## must be root:www-data
+chmod 0440 /var/www/meta/ss-constants.php ## must be 0440
+
+####################################################################################################
+#### E. SS-Perms-WordPress-Config: Reset Permissions (WordPress Config) Production #################
 ####################################################################################################
 
 ## here we briefly reset permissions for the wp-config.php file and related dirs only ##
 ## keep in mind that general WordPress core and other files are not affected ##
 
-
-### ADD THIS SNIPPET TOO BEFORE OTHERS 
-### /var/www/meta/ss-constants.php
-
-## production ##
+## wp-config.php ##
 ss_chown root:www-data "${PATH_WP_CONFIG_PHP}" ## must be root:www-data
 chmod 0440 "${PATH_WP_CONFIG_PHP}" ## must be 0440
 
+## custom-functions.php ##
 if [[ -f "/var/www/html/wp-content/custom-functions.php" ]]; then 
     ss_chown root:www-data /var/www/html/wp-content/custom-functions.php ## must be root:www-data
     chmod 0440 /var/www/html/wp-content/custom-functions.php ## must be 0440
 fi
 
-## staging ##
+####################################################################################################
+#### F. SS-Perms-WordPress-Config: Reset Permissions (WordPress Config) Staging ####################
+####################################################################################################
+
 if [[ "${STAGING_SITE}" != "false" ]]; then
+    ## wp-config.php ##
     ss_chown root:www-data /var/www/html/staging/wp-config.php ## must be root:www-data
     chmod 0440 /var/www/html/staging/wp-config.php ## must be 0440
-    
+
+    ## custom-functions.php ##
     if [[ -f "/var/www/html/staging/wp-content/custom-functions.php" ]]; then 
         ss_chown root:www-data /var/www/html/staging/wp-content/custom-functions.php ## must be root:www-data
         chmod 0440 /var/www/html/staging/wp-content/custom-functions.php ## must be 0440
@@ -90,11 +102,16 @@ if [[ "${STAGING_SITE}" != "false" ]]; then
     
 fi
 
-## development ##
+####################################################################################################
+#### G. SS-Perms-WordPress-Config: Reset Permissions (WordPress Config) Development ################
+####################################################################################################
+
 if [[ "${DEV_SITE}" != "false" ]]; then
+    ## wp-config.php ##
     ss_chown root:www-data /var/www/html/dev/wp-config.php ## must be root:www-data
     chmod 0440 /var/www/html/dev/wp-config.php ## must be 0440
-    
+
+    ## custom-functions.php ##
     if [[ -f "/var/www/html/dev/wp-content/custom-functions.php" ]]; then 
         ss_chown root:www-data /var/www/html/dev/wp-content/custom-functions.php ## must be root:www-data
         chmod 0440 /var/www/html/dev/wp-content/custom-functions.php ## must be 0440
