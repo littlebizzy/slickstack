@@ -22,11 +22,11 @@
 ## A. Source SS-Config + SS-Functions
 ## B. Touch Timestamp File
 ## C. Message (Begin Script)
-
-## D. Reset Permissions (WordPress Packages) Production
-## E. Reset Permissions (WordPress Packages) Staging
-## F. Reset Permissions (WordPress Packages) Development
-## G. Finish Up
+## D. Reset Directory Permissions (Public Root)
+## E. Reset Directory Permissions (Production)
+## F. Reset Directory Permissions (Staging)
+## G. Reset Directory Permissions (Development)
+## H. Reset File Permissions
 
 ####################################################################################################
 #### A. SS-Perms-WordPress-Packages: Source SS-Config + SS-Functions ###############################
@@ -62,18 +62,19 @@ ss_touch "${TIMESTAMP_SS_PERMS_WORDPRESS_PACKAGES}"
 ss_echo "${COLOR_INFO}Running ss-perms-wordpress-packages... ${COLOR_RESET}"
 
 ####################################################################################################
-#### D. SS-Perms-WordPress-Packages: Reset Permissions (WordPress Packages) Production #############
+#### D. SS-Perms-WordPress-Packages: Reset Directory Permissions (Public Root) #####################
+####################################################################################################
+
+ss_chown root:www-data /var/www/html ## must be root:www-data
+chmod 0775 /var/www/html ## must be 0775
+find /var/www/html/ -type d -print0 | xargs -0 chmod 0775 ## must be 0775
+
+####################################################################################################
+#### E. SS-Perms-WordPress-Packages: Reset Directory Permissions (Production) ######################
 ####################################################################################################
 
 ## here we briefly reset permissions for WordPress Core files only to avoid errors etc ##
 ## keep in mind that non-WordPress Core files are not affected by this snippet ##
-
-## all environments ##
-ss_chown root:www-data /var/www/html ## must be root:www-data
-chmod 0775 /var/www/html ## must be 0775
-
-## reset permissions for all directories ##
-find /var/www/html/ -type d -print0 | xargs -0 chmod 0775 ## must be 0775
 
 ## ensure directories exist (besides wp-admin and wp-includes) ##
 ss_mkdir /var/www/html/wp-content/languages
@@ -111,7 +112,7 @@ chmod 0755 /var/www/html/wp-admin
 chmod 0755 /var/www/html/wp-includes
 
 ####################################################################################################
-#### E. SS-Perms-WordPress-Packages: Reset Permissions (WordPress Packages) Staging ################
+#### F. SS-Perms-WordPress-Packages: Reset Directory Permissions (Staging) #########################
 ####################################################################################################
 
 if [[ "${STAGING_SITE}" != "false" ]]; then 
@@ -159,7 +160,7 @@ if [[ "${STAGING_SITE}" != "false" ]]; then
 fi
 
 ####################################################################################################
-#### F. SS-Perms-WordPress-Packages: Reset Permissions (WordPress Packages) Develoment #############
+#### G. SS-Perms-WordPress-Packages: Reset Directory Permissions (Development) #####################
 ####################################################################################################
 
 if [[ "${DEV_SITE}" != "false" ]]; then 
@@ -200,19 +201,27 @@ if [[ "${DEV_SITE}" != "false" ]]; then
 fi
 
 ####################################################################################################
-#### G. SS-Perms-WordPress-Packages: Reset Permissions (WordPress Packages) Finish Up ##############
+#### H. SS-Perms-WordPress-Packages: Reset File Permissions ########################################
 ####################################################################################################
 
 ## set default perms for all public files ##
 find /var/www/html/ -type f -print0 | xargs -0 chmod 0664 ## must be 0664
 
-## tighten perms for wordpress core files to block sftp edits ##
+## tighten perms for wordpress core files to block sftp edits (production) ##
 find /var/www/html/wp-admin/ -type f -print0 | xargs -0 chmod 0644
 find /var/www/html/wp-includes/ -type f -print0 | xargs -0 chmod 0644
-find /var/www/html/staging/wp-admin/ -type f -print0 | xargs -0 chmod 0644
-find /var/www/html/staging/wp-includes/ -type f -print0 | xargs -0 chmod 0644
-find /var/www/html/dev/wp-admin/ -type f -print0 | xargs -0 chmod 0644
-find /var/www/html/dev/wp-includes/ -type f -print0 | xargs -0 chmod 0644
+
+if [[ "${STAGING_SITE}" != "false" ]]; then 
+    ## tighten perms for wordpress core files to block sftp edits (staging) ##
+    find /var/www/html/staging/wp-admin/ -type f -print0 | xargs -0 chmod 0644
+    find /var/www/html/staging/wp-includes/ -type f -print0 | xargs -0 chmod 0644
+fi
+
+if [[ "${DEV_SITE}" != "false" ]]; then 
+    ## tighten perms for wordpress core files to block sftp edits (development) ##
+    find /var/www/html/dev/wp-admin/ -type f -print0 | xargs -0 chmod 0644
+    find /var/www/html/dev/wp-includes/ -type f -print0 | xargs -0 chmod 0644
+fi
 
 ####################################################################################################
 #### SlickStack: Reset Permissions (SlickStack Scripts) ############################################
