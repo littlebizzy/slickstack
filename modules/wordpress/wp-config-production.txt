@@ -65,7 +65,8 @@ define( 'WP_LANG_DIR', '/var/www/html/wp-content/languages' ); // ss = /var/www/
 define( 'WP_TEMP_DIR', '/var/www/html/wp-content/temp' ); // ss = /var/www/html/wp-content/temp
 define( 'UPLOADS', 'wp-content/uploads' ); // ss = wp-content/uploads
 
-if ( defined( 'WP_CLI' ) && WP_CLI && ! isset( $_SERVER['HTTP_HOST'] ) ) {
+/** set fallback http_host to avoid wp-cli domain issues */
+if ( defined( 'WP_CLI' ) && WP_CLI && empty( $_SERVER['HTTP_HOST'] ) ) {
     $_SERVER['HTTP_HOST'] = '@SITE_FULL_DOMAIN';
 }
 
@@ -79,7 +80,10 @@ if ( defined( 'WP_CLI' ) && WP_CLI && ! isset( $_SERVER['HTTP_HOST'] ) ) {
 define( 'FORCE_SSL_ADMIN', true ); // ss = true
 define( 'FORCE_SSL_LOGIN', true ); // ss = true
 
-if (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https'){ $_SERVER['HTTPS']='on'; }
+/** support https detection behind reverse proxies or load balancers */
+if ( isset( $_SERVER['HTTP_X_FORWARDED_PROTO'] ) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https' ) {
+    $_SERVER['HTTPS'] = 'on';
+}
 
 /** ********************************************************************************************* */
 /** WP-Config (Production): Cookie Settings ***************************************************** */
@@ -264,6 +268,7 @@ require_once(ABSPATH . 'wp-settings.php');
 /** SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ************* */
 /** ********************************************************************************************* */
 
+// Ref: ChatGPT
 // Ref: https://wordpress.org/support/article/editing-wp-config-php/
 // Ref: https://wordpress.org/support/article/debugging-in-wordpress
 // Ref: https://github.com/littlebizzy/custom-functions
