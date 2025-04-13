@@ -382,10 +382,9 @@ fi
 ## THIS SNIPPET DOES NOT RELY ON SS-CONFIG OR SS-FUNCTIONS ##
 
 ## SNIPPET: ss-worker, ss core cron jobs
-## UPDATED: 19MAR2025
+## UPDATED: 13APR2025
 
 ## make directories ##
-ss_mkdir /var/www
 ss_mkdir /var/www/auth
 ss_mkdir /var/www/backups
 ss_mkdir /var/www/backups/config
@@ -403,7 +402,6 @@ ss_mkdir /var/www/cache/system
 ss_mkdir /var/www/cache/wp-cli
 ss_mkdir /var/www/crons
 ss_mkdir /var/www/crons/custom
-ss_mkdir /var/www/html
 ss_mkdir /var/www/html/.well-known
 ss_mkdir /var/www/html/.well-known/acme-challenge
 ss_mkdir /var/www/logs
@@ -426,7 +424,6 @@ sudo chmod 660 "${PATH_FIFO}"
 
 ## if staging enabled
 if [[ "$STAGING_SITE" != "false" ]]; then 
-    ss_mkdir /var/www/html/staging
     ss_mkdir /var/www/html/staging/.well-known
     ss_mkdir /var/www/html/staging/.well-known/acme-challenge
     chown -R "${SFTP_USER}":www-data /var/www/html/staging/.well-known ## accessed by server for e.g. Cerbot but also by SFTP user for things like Stripe ##
@@ -440,7 +437,6 @@ fi
 
 ## if dev enabled
 if [[ "$DEV_SITE" != "false" ]]; then 
-    ss_mkdir /var/www/html/dev
     ss_mkdir /var/www/html/dev/.well-known
     ss_mkdir /var/www/html/dev/.well-known/acme-challenge
     chown -R "${SFTP_USER}":www-data /var/www/html/dev/.well-known ## accessed by server for e.g. Cerbot but also by SFTP user for things like Stripe ##
@@ -461,9 +457,7 @@ chown www-data:www-data /var/www/cache/opcache ## must be www-data:www-data (PHP
 chown root:root /var/www/cache/system ## must be root:root
 chown -R "${SFTP_USER}":www-data /var/www/cache/wp-cli ## must be SFTP_USER as we usually run WP-CLI as that user
 chown root:root /var/www/crons ## must be root:root
-chown root:root /var/www/crons/*cron* ## must be root:root
 chown root:root /var/www/crons/custom ## must be root:root
-chown root:root /var/www/crons/custom/*cron* ## must be root:root
 chown -R "${SFTP_USER}":www-data /var/www/html/.well-known ## accessed by server for e.g. Cerbot but also by SFTP user for things like Stripe ##
 chown -R "${SFTP_USER}":www-data /var/www/html/.well-known/acme-challenge ## accessed by server for e.g. Cerbot but also by SFTP user for things like Stripe ##
 chown www-data:www-data /var/www/logs ## must be www-data:www-data
@@ -471,7 +465,6 @@ chown www-data:www-data /var/www/logs/nginx*.log ## must be www-data:www-data
 chown www-data:www-data /var/www/meta ## must be www-data:www-data
 chown www-data:www-data /var/www/meta/.htpasswd ## must be www-data:www-data
 chown www-data:www-data /var/www/meta/ss-constants.php ## must be www-data:www-data
-chown root:root /var/www/ss* ## must be root:root
 chown root:root /var/www/sites
 chown root:root /var/www/sites/includes
 chown root:root /var/www/sites/error_pages
