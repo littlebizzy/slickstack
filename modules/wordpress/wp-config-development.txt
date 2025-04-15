@@ -174,36 +174,36 @@ define( 'FS_CHMOD_DIR', ( 0775 & ~umask() ) ); // ss = 0775
 define( 'FS_CHMOD_FILE', ( 0664 & ~umask() ) ); // ss = 0664
 
 /** ********************************************************************************************* */
-/** WP-Config: File + Upload + API Permissions Settings ***************************************** */
+/** WP-Config (Development): File + Upload Settings ********************************************* */
 /** ********************************************************************************************* */
 
-/** restrict external HTTP (API) requests */
+define( 'DISALLOW_FILE_EDIT', @WP_DISALLOW_FILE_EDIT ); // ss = false
+define( 'DISALLOW_FILE_MODS', @WP_DISALLOW_FILE_MODS ); // ss = false
+define( 'ALLOW_UNFILTERED_UPLOADS', @WP_ALLOW_UNFILTERED_UPLOADS ); // ss = true
+define( 'DISALLOW_UNFILTERED_HTML', false ); // ss = false
+
+/** ********************************************************************************************* */
+/** WP-Config (Development): External API Request Settings ************************************** */
+/** ********************************************************************************************* */
+
 define( 'WP_HTTP_BLOCK_EXTERNAL', false ); // ss = false
 
-/** restrict backend file modification */
-define('DISALLOW_FILE_EDIT', @WP_DISALLOW_FILE_EDIT); // ss = false
-define('DISALLOW_FILE_MODS', @WP_DISALLOW_FILE_MODS); // ss = false
-
-/** restrict file (media) uploads */
-define('ALLOW_UNFILTERED_UPLOADS', @WP_ALLOW_UNFILTERED_UPLOADS); // ss = true
-
-define('DISALLOW_UNFILTERED_HTML', false); // ss = false
-
 /** ********************************************************************************************* */
-/** WP-Config: Various Performance Settings ***************************************************** */
+/** WP-Config (Development): Performance Settings *********************************************** */
 /** ********************************************************************************************* */
 
-/** optimize WordPress memory */
-define('WP_MEMORY_LIMIT', '256M'); // ss = 256M
-define('WP_MAX_MEMORY_LIMIT', '512M'); // ss = 512M
+define( 'WP_MEMORY_LIMIT', '256M' ); // ss = 256M
+define( 'WP_MAX_MEMORY_LIMIT', '512M' ); // ss = 512M
 
-/** limit post revisions and drafts */
-define('WP_POST_REVISIONS', @WP_POST_REVISIONS); // ss = 3
-define('AUTOSAVE_INTERVAL', @WP_AUTOSAVE_INTERVAL); // ss = 60 (1 minute)
+/** ********************************************************************************************* */
+/** WP-Config (Development): Content Behavior Settings ****************************************** */
+/** ********************************************************************************************* */
 
-/** trash management */
-define('MEDIA_TRASH', true); // ss = true
+define( 'WP_POST_REVISIONS', @WP_POST_REVISIONS ); // ss = 3
+define( 'AUTOSAVE_INTERVAL', @WP_AUTOSAVE_INTERVAL ); // ss = 30 (secs)
+define( 'MEDIA_TRASH', true ); // ss = true
 define( 'EMPTY_TRASH_DAYS', 36500 ); // ss = 36500 (100 years)
+define( 'IMAGE_EDIT_OVERWRITE', false ); // ss = false
 
 /** ********************************************************************************************* */
 /** WP-Config (Development): WP Admin Optimization Settings ************************************* */
@@ -228,24 +228,6 @@ define( 'CLEAR_CACHES_OBJECT', true ); // ss = true
 define( 'CLEAR_CACHES_OPCACHE', true ); // ss = true
 
 /** ********************************************************************************************* */
-/** WP-Config (Development): Force HTTPS (MU Plugin) Settings *********************************** */
-/** ********************************************************************************************* */
-
-define( 'FORCE_HTTPS', true ); // ss = true
-define( 'FORCE_HTTPS_EXTERNAL_RESOURCES', true ); // ss = true
-define( 'FORCE_HTTPS_INTERNAL_LINKS', true ); // ss = true
-define( 'FORCE_HTTPS_INTERNAL_RESOURCES', true ); // ss = true
-
-// define( 'FORCE_HTTPS_EXTERNAL_LINKS', false ); // default = false
-
-/** ********************************************************************************************* */
-/** WP-Config (Development): Miscellaneous Settings ********************************************* */
-/** ********************************************************************************************* */
-
-define( 'DISABLE_NAG_NOTICES', true ); // ss = true
-define( 'WPCF7_UPLOADS_TMP_DIR', '/var/www/html/wp-content/temp' ); // ss = /var/www/html/wp-content/temp
-
-/** ********************************************************************************************* */
 /** WP-Config (Development): Inactive Defined Constants (Modify With Custom Functions) ********** */
 /** ********************************************************************************************* */
 
@@ -257,14 +239,16 @@ define( 'WPCF7_UPLOADS_TMP_DIR', '/var/www/html/wp-content/temp' ); // ss = /var
 // define( 'SCRIPT_DEBUG', false ); // ss = false
 
 /** ********************************************************************************************* */
-/** WP-Config (Development): Include Custom Functions (If Exists) ******************************* */
+/** WP-Config (Development): Include Custom-Functions.php (Conditional) ************************* */
 /** ********************************************************************************************* */
 
 /** rather than editing your wp-config.php file simply create a custom functions file */
 /** if SlickStack detects this file exists it will load included constants etc */
 
 $custom_functions = '/var/www/html/dev/wp-content/custom-functions.php';
-is_file($custom_functions) AND include $custom_functions;
+if ( is_file( $custom_functions ) ) {
+    include $custom_functions;
+}
 
 /** ********************************************************************************************* */
 /** WP-Config (Development): Require WP-Settings File (MUST APPEAR LAST) ************************ */
