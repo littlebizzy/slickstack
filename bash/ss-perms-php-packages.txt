@@ -23,8 +23,9 @@
 ## B. Touch Timestamp File
 ## C. Message (Begin Script)
 ## D. Reset Permissions (PHP Runtime Directory)
-## E. Reset Permissions (PHP Config)
-## F. Reset Permissions (PHP Logs)
+## E. Reset Permissions (PHP Binary and Symlinks)
+## F. Reset Permissions (PHP Config)
+## G. Reset Permissions (PHP Logs)
 
 ####################################################################################################
 #### A. SS-Perms-PHP-Packages: Source SS-Config + SS-Functions #####################################
@@ -68,7 +69,24 @@ chown www-data:www-data /var/run/php
 chmod 750 /var/run/php
 
 ####################################################################################################
-#### E. SS-Perms-PHP-Packages: Reset Permissions (PHP Config) ######################################
+#### E. SS-Perms-PHP-Packages: Reset Permissions (PHP Binary and Symlinks) #########################
+####################################################################################################
+
+## /usr/bin/php is a symlink to /etc/alternatives/php ##
+chown root:root /usr/bin/php
+chmod 755 /usr/bin/php
+
+## /etc/alternatives/php is a symlink to /usr/bin/phpX.X ##
+chown root:root /etc/alternatives/php
+chmod 755 /etc/alternatives/php
+
+## resolve the actual php binary path and fix its permissions ##
+PHP_REAL_BIN=$(readlink -f /usr/bin/php)
+chown root:root "${PHP_REAL_BIN}"
+chmod 755 "${PHP_REAL_BIN}"
+
+####################################################################################################
+#### F. SS-Perms-PHP-Packages: Reset Permissions (PHP Config) ######################################
 ####################################################################################################
 
 ## ubuntu 24.04 ##
@@ -104,7 +122,7 @@ if [[ "${SYSTEM_UBUNTU_VERSION}" == "18.04" ]]; then
 fi
 
 ####################################################################################################
-#### F. SS-Perms-PHP-Packages: Reset Permissions (PHP Logs) ########################################
+#### G. SS-Perms-PHP-Packages: Reset Permissions (PHP Logs) ########################################
 ####################################################################################################
 
 if [ ! -f "/var/www/logs/php-error.log" ]; then ss_touch "/var/www/logs/php-error.log"; fi
