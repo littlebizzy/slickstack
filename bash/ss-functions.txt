@@ -1590,9 +1590,19 @@ function ss_apt_install {
     local attempt=1  ## track current attempt number
     local delay=5  ## initial delay before retrying
 
-    until ss_apt install -y "$@" > /dev/null; do  ## suppress normal output
+    ## strip accidental double prefix like php7.4-php7.4-soap
+    local clean_packages=()
+    for pkg in "$@"; do
+        pkg="${pkg/php7.2-php7.2-/php7.2-}"
+        pkg="${pkg/php7.4-php7.4-/php7.4-}"
+        pkg="${pkg/php8.1-php8.1-/php8.1-}"
+        pkg="${pkg/php8.3-php8.3-/php8.3-}"
+        clean_packages+=("${pkg}")
+    done
+
+    until ss_apt install -y "${clean_packages[@]}" > /dev/null; do  ## suppress normal output
         if [ ${attempt} -ge ${max_retries} ]; then  ## stop after max retries
-            echo "installation failed for $*" >&2
+            echo "installation failed for ${clean_packages[*]}" >&2
             return 1
         fi
         attempt=$((attempt + 1))  ## increment attempt count
