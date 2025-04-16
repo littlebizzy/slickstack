@@ -30,10 +30,10 @@ include_once( '/var/www/meta/ss-constants.php' );
 /** database connection settings should only be modified inside the ss-config file */
 /** SlickStack will create the database and user if they do not exist yet */
 
+define( 'DB_HOST', '@DB_HOST:@DB_PORT' ); // ss = 127.0.0.1:3306
 define( 'DB_NAME', 'staging' ); // ss = staging
 define( 'DB_USER', '@DB_USER' ); // ss = *must be unique*
 define( 'DB_PASSWORD', '@DB_PASSWORD' ); // ss = *must be unique*
-define( 'DB_HOST', '@DB_HOST:@DB_PORT' ); // ss = 127.0.0.1:3306
 define( 'DB_CHARSET', '@DB_CHARSET' ); // ss = utf8mb4
 define( 'DB_COLLATE', '@DB_COLLATE' ); // ss = (blank)
 $table_prefix = '@DB_PREFIX'; // ss = wp_
@@ -47,6 +47,7 @@ $table_prefix = '@DB_PREFIX'; // ss = wp_
 
 define( 'WP_ENVIRONMENT_TYPE', 'staging' ); // ss = staging
 define( 'WP_LOCAL_DEV', false ); // ss = false
+define( 'DISALLOW_INDEXING', true ); // ss = true
 
 /** ********************************************************************************************* */
 /** WP-Config (Staging): Domain Settings ******************************************************** */
@@ -75,7 +76,7 @@ if ( defined( 'WP_CLI' ) && WP_CLI && empty( $_SERVER['HTTP_HOST'] ) ) {
 /** ********************************************************************************************* */
 
 /** as SlickStack is HTTPS-only we hardcode SSL admin and login for WordPress here */
-/** our Force HTTPS plugin is also included as a default WordPress MU plugin */
+/** the Force HTTPS MU plugin from LittleBizzy is also included by default */
 
 define( 'FORCE_SSL_ADMIN', true ); // ss = true
 define( 'FORCE_SSL_LOGIN', true ); // ss = true
@@ -107,6 +108,7 @@ define( 'ADMIN_COOKIE_PATH', SITECOOKIEPATH . 'wp-admin' );
 define( 'WP_DEBUG', true ); // ss = true
 define( 'WP_DEBUG_LOG', true ); // ss = true (enable debug.log)
 define( 'WP_DEBUG_DISPLAY', false ); // ss = false
+define( 'WP_DISABLE_FATAL_ERROR_HANDLER', true ); // ss = true
 
 /** ********************************************************************************************* */
 /** WP-Config (Staging): Core Update Settings *************************************************** */
@@ -135,6 +137,52 @@ define( 'SECURE_AUTH_SALT', '@SECUREAUTHSALT' ); // ss = *must be unique*
 define( 'LOGGED_IN_SALT', '@LOGGEDINSALT' ); // ss = *must be unique*
 define( 'NONCE_SALT', '@NONCESALT' ); // ss = *must be unique*
 define( 'WP_CACHE_KEY_SALT', 'staging.@SITE_DOMAIN_EXCLUDING_WWW' ); // ss = staging.example.com
+
+/** ********************************************************************************************* */
+/** WP-Config (Staging): File System Settings *************************************************** */
+/** ********************************************************************************************* */
+
+/** these settings manage how WordPress interacts with the Nginx server file system */
+/** used for core updates, plugin/theme installs, and default file ownership */
+
+define( 'FS_METHOD', 'direct' ); // ss = direct
+define( 'FS_CHMOD_DIR', ( 0775 & ~umask() ) ); // ss = 0775
+define( 'FS_CHMOD_FILE', ( 0664 & ~umask() ) ); // ss = 0664
+
+/** ********************************************************************************************* */
+/** WP-Config (Staging): File + Upload Settings ************************************************* */
+/** ********************************************************************************************* */
+
+/** controls access to file editing and upload behavior within the WordPress admin */
+/** used to restrict plugin/theme editing and allows advanced file uploads */
+
+define( 'DISALLOW_FILE_MODS', @WP_DISALLOW_FILE_MODS ); // ss = false
+define( 'DISALLOW_FILE_EDIT', @WP_DISALLOW_FILE_EDIT ); // ss = false
+define( 'ALLOW_UNFILTERED_UPLOADS', @WP_ALLOW_UNFILTERED_UPLOADS ); // ss = true
+
+/** ********************************************************************************************* */
+/** WP-Config (Staging): External API Request Settings ****************************************** */
+/** ********************************************************************************************* */
+
+define( 'WP_HTTP_BLOCK_EXTERNAL', false ); // ss = false
+
+/** ********************************************************************************************* */
+/** WP-Config (Staging): Performance Settings *************************************************** */
+/** ********************************************************************************************* */
+
+define( 'WP_MEMORY_LIMIT', '256M' ); // ss = 256M
+define( 'WP_MAX_MEMORY_LIMIT', '512M' ); // ss = 512M
+
+/** ********************************************************************************************* */
+/** WP-Config (Staging): Content Behavior Settings ********************************************** */
+/** ********************************************************************************************* */
+
+define( 'WP_POST_REVISIONS', @WP_POST_REVISIONS ); // ss = 3
+define( 'AUTOSAVE_INTERVAL', @WP_AUTOSAVE_INTERVAL ); // ss = 30 (secs)
+define( 'DISALLOW_UNFILTERED_HTML', false ); // ss = false
+define( 'IMAGE_EDIT_OVERWRITE', false ); // ss = false
+define( 'MEDIA_TRASH', true ); // ss = true
+define( 'EMPTY_TRASH_DAYS', 36500 ); // ss = 36500 (100 years)
 
 /** ********************************************************************************************* */
 /** WP-Config (Staging): WP-Cron Settings ******************************************************* */
@@ -166,77 +214,40 @@ define( 'WP_DEFAULT_THEME', 'hovercraft' ); // ss = hovercraft
 define( 'WP_CACHE', false ); // ss = false
 
 /** ********************************************************************************************* */
-/** WP-Config (Staging): File System Settings *************************************************** */
-/** ********************************************************************************************* */
-
-define( 'FS_METHOD', 'direct' ); // ss = direct
-define( 'FS_CHMOD_DIR', ( 0775 & ~umask() ) ); // ss = 0775
-define( 'FS_CHMOD_FILE', ( 0664 & ~umask() ) ); // ss = 0664
-
-/** ********************************************************************************************* */
-/** WP-Config (Staging): File + Upload Settings ************************************************* */
-/** ********************************************************************************************* */
-
-define( 'DISALLOW_FILE_EDIT', @WP_DISALLOW_FILE_EDIT ); // ss = false
-define( 'DISALLOW_FILE_MODS', @WP_DISALLOW_FILE_MODS ); // ss = false
-define( 'ALLOW_UNFILTERED_UPLOADS', @WP_ALLOW_UNFILTERED_UPLOADS ); // ss = true
-define( 'DISALLOW_UNFILTERED_HTML', false ); // ss = false
-
-/** ********************************************************************************************* */
-/** WP-Config (Staging): External API Request Settings ****************************************** */
-/** ********************************************************************************************* */
-
-define( 'WP_HTTP_BLOCK_EXTERNAL', false ); // ss = false
-
-/** ********************************************************************************************* */
-/** WP-Config (Staging): Performance Settings *************************************************** */
-/** ********************************************************************************************* */
-
-define( 'WP_MEMORY_LIMIT', '256M' ); // ss = 256M
-define( 'WP_MAX_MEMORY_LIMIT', '512M' ); // ss = 512M
-
-/** ********************************************************************************************* */
-/** WP-Config (Staging): Content Behavior Settings ********************************************** */
-/** ********************************************************************************************* */
-
-define( 'WP_POST_REVISIONS', @WP_POST_REVISIONS ); // ss = 3
-define( 'AUTOSAVE_INTERVAL', @WP_AUTOSAVE_INTERVAL ); // ss = 30 (secs)
-define( 'MEDIA_TRASH', true ); // ss = true
-define( 'EMPTY_TRASH_DAYS', 36500 ); // ss = 36500 (100 years)
-define( 'IMAGE_EDIT_OVERWRITE', false ); // ss = false
-
-/** ********************************************************************************************* */
 /** WP-Config (Staging): WP Admin Optimization Settings ***************************************** */
 /** ********************************************************************************************* */
 
 /** keep in mind that SlickStack (Nginx) performs Gzip compression at the server-level */
 /** using PHP to compress code uses more CPU and slows down the parsing speed */
 
-define( 'ENFORCE_GZIP', true ); // ss = true
-define( 'COMPRESS_CSS', true ); // ss = true
-define( 'COMPRESS_SCRIPTS', true ); // ss = true
+define( 'SCRIPT_DEBUG', true ); // ss = true
+define( 'COMPRESS_CSS', false ); // ss = false
+define( 'COMPRESS_SCRIPTS', false ); // ss = false
 define( 'CONCATENATE_SCRIPTS', false ); // ss = false
+define( 'ENFORCE_GZIP', false ); // ss = false
 
 /** ********************************************************************************************* */
 /** WP-Config (Staging): Clear Caches (MU Plugin) Settings ************************************** */
 /** ********************************************************************************************* */
 
-define( 'CLEAR_CACHES', true ); // ss = true
+/** we hardcode settings for the Clear Caches plugin from LittleBizzy for security */
+/** this ensures that these settings cannot be maliciously changed elsewhere */
+
 define( 'CLEAR_CACHES_NGINX', true ); // ss = true
 define( 'CLEAR_CACHES_NGINX_PATH', '/var/www/cache/nginx' ); // ss = /var/www/cache/nginx
-define( 'CLEAR_CACHES_OBJECT', true ); // ss = true
 define( 'CLEAR_CACHES_OPCACHE', true ); // ss = true
+define( 'CLEAR_CACHES_OBJECT', true ); // ss = true
+define( 'CLEAR_CACHES_TRANSIENTS', true ); // ss = true
 
 /** ********************************************************************************************* */
-/** WP-Config (Staging): Inactive Defined Constants (Modify With Custom Functions) ************** */
+/** WP-Config (Staging): Inactive Defined Constants ********************************************* */
 /** ********************************************************************************************* */
 
 /** the following defined constants should not be hardcoded to allow for modification */
-/** modify these constants using the custom-functions.php script or otherwise */
+/** modify these using custom-functions.php script or enable below temporarily */
 
-// define( 'WP_ALLOW_REPAIR', false ); // ss = false
 // define( 'SAVEQUERIES', false ); // ss = false
-// define( 'SCRIPT_DEBUG', false ); // ss = false
+// define( 'WP_ALLOW_REPAIR', false ); // ss = false
 
 /** ********************************************************************************************* */
 /** WP-Config (Staging): Include Custom-Functions.php (Conditional) ***************************** */
@@ -257,10 +268,11 @@ if ( is_file( $custom_functions ) ) {
 /** the wp-settings.php file is critical to WordPress Core functions and must load last */
 /** below snippet also relies on ABSPATH being properly defined in this section */
 
-if ( !defined('ABSPATH') )
-    define('ABSPATH', dirname(__FILE__) . '/');
+if ( ! defined( 'ABSPATH' ) ) {
+    define( 'ABSPATH', dirname( __FILE__ ) . '/' );
+}
 
-require_once(ABSPATH . 'wp-settings.php');
+require_once ABSPATH . 'wp-settings.php';
 
 /** ********************************************************************************************* */
 /** SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ************* */
