@@ -33,6 +33,8 @@ License URI: http://www.gnu.org/licenses/gpl-3.0.html
 // I. Switch Environment Menu
 // J. WP Admin Toolbar Menu
 
+// K. Force Plugin Auto-Updates (Patch)
+
 /** ********************************************************************************************* */
 /** A. 000 Common: Safe Constant ************************************************************ */
 /** ********************************************************************************************* */
@@ -1548,6 +1550,31 @@ function slickstack_menu() {
         ) );
     }
 }
+
+/** ********************************************************************************************* */
+/** K. 000-Common: Force Plugin Auto-Updates (Patch) ******************************************** */
+/** ********************************************************************************************* */
+
+// auto update all plugins silently (if updates available)
+add_action( 'init', function() {
+
+	// skip if wp core still installing or functions not ready
+	if ( ! function_exists( 'get_plugin_updates' ) || ! function_exists( 'wp_get_update_data' ) || ! class_exists( 'Plugin_Upgrader' ) ) {
+		return;
+	}
+
+	// skip if no plugin updates available
+	$updates = get_plugin_updates();
+	if ( empty( $updates ) ) {
+		return;
+	}
+
+	// load upgrader class and run updates
+	require_once ABSPATH . 'wp-admin/includes/class-wp-upgrader.php';
+	$upgrader = new Plugin_Upgrader();
+	$upgrader->bulk_upgrade( array_keys( $updates ) );
+
+} );
 
 /** ********************************************************************************************* */
 /** SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ************* */
