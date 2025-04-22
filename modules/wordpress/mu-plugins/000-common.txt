@@ -20,21 +20,23 @@ License URI: http://www.gnu.org/licenses/gpl-3.0.html
 /** this is a brief summary of the different code snippets you will find in this script */
 /** each section should be commented so you understand what is being accomplished */
 
-// A. WP Login Messages
-// B. WP Admin Dashboard Widget
-// C. WP Admin Notices (Production)
-// D. WP Admin Notices (Staging)
-// E. WP Admin Notices (Development)
-
-// F. SlickStack Dashboard
+// A. Return Safe Constants
+// B. WP-Login.php Messages
+// C. WP Admin Dashboard Widget
+// D. WP Admin Notices (Production)
+// E. WP Admin Notices (Staging)
+// F. WP Admin Notices (Development)
+// G. SlickStack Dashboard
 
 // G. Disk Space Warning (WP Admin Notice)
 // H. PENDING: PHP Hacks Warning (WP Admin Notice)
 // I. Switch Environment Menu
 // J. WP Admin Toolbar Menu
 
+// K. Force Plugin Auto-Updates (Patch)
+
 /** ********************************************************************************************* */
-/** A. 000 Common: Safe Constant ************************************************************ */
+/** A. 000 Common: Return Safe Constants ******************************************************** */
 /** ********************************************************************************************* */
 
 // check if constant is defined before using it
@@ -51,14 +53,14 @@ function ss_safe_constant( $constant, $default = '' ) {
 }
 
 /** ********************************************************************************************* */
-/** A. 000 Common: WP Login Messages ************************************************************ */
+/** B. 000 Common: WP-Login.php Messages ******************************************************** */
 /** ********************************************************************************************* */
 
 /** this is a brief login page welcome message that we use to announce important things */
 /** most of the time this feature will only be activated in case of emergencies */
 
-// production
-if ( defined( 'WP_ENVIRONMENT_TYPE' ) && WP_ENVIRONMENT_TYPE == 'production' ) {
+// show login message on production sites
+if ( defined( 'WP_ENVIRONMENT_TYPE' ) && WP_ENVIRONMENT_TYPE === 'production' ) {
 
     function ss_login_message_production() {
         return '<p class="message">Having trouble logging in? Please clear all cookies for this site and then try again (we use secure cookie rules). The default username and password should be the same as your SFTP credentials, until you change them. &mdash; <em>SlickStack</em></p>';
@@ -68,8 +70,8 @@ if ( defined( 'WP_ENVIRONMENT_TYPE' ) && WP_ENVIRONMENT_TYPE == 'production' ) {
 
 }
 
-// staging
-if ( defined( 'WP_ENVIRONMENT_TYPE' ) && WP_ENVIRONMENT_TYPE == 'staging' ) {
+// show login message on staging sites
+if ( defined( 'WP_ENVIRONMENT_TYPE' ) && WP_ENVIRONMENT_TYPE === 'staging' ) {
 
     function ss_login_message_staging() {
         return '<p class="message">Having trouble logging in? Please clear all cookies for this site and then try again (we use secure cookie rules). The default username and password should be the same as your SFTP credentials, until you change them. &mdash; <em>SlickStack</em></p>';
@@ -79,8 +81,8 @@ if ( defined( 'WP_ENVIRONMENT_TYPE' ) && WP_ENVIRONMENT_TYPE == 'staging' ) {
 
 }
 
-// development
-if ( defined( 'WP_ENVIRONMENT_TYPE' ) && WP_ENVIRONMENT_TYPE == 'development' ) {
+// show login message on development sites
+if ( defined( 'WP_ENVIRONMENT_TYPE' ) && WP_ENVIRONMENT_TYPE === 'development' ) {
 
     function ss_login_message_development() {
         return '<p class="message">Having trouble logging in? Please clear all cookies for this site and then try again (we use secure cookie rules). The default username and password should be the same as your SFTP credentials, until you change them. &mdash; <em>SlickStack</em></p>';
@@ -91,36 +93,38 @@ if ( defined( 'WP_ENVIRONMENT_TYPE' ) && WP_ENVIRONMENT_TYPE == 'development' ) 
 }
 
 /** ********************************************************************************************* */
-/** B. 000 Common: WP Admin Dashboard Widget **************************************************** */
+/** C. 000 Common: WP Admin Dashboard Widget **************************************************** */
 /** ********************************************************************************************* */
 
+// add status widget to wp admin dashboard
 add_action( 'wp_dashboard_setup', 'ss_dashboard_widgets' );
 
 function ss_dashboard_widgets() {
     wp_add_dashboard_widget( 'ss_overview_widget', 'SlickStack Status', 'ss_overview_widget_content' );
 }
 
+// render status widget content
 function ss_overview_widget_content() {
     echo '<table class="striped"><tbody>
-    <tr><td><strong>Virtualization Technology:</strong> <span>' . ss_safe_constant('SYSTEM_VIRTUAL', 'Unknown') . '</span></td></tr>
-    <tr><td><strong>Linux Kernel:</strong> <span>' . ss_safe_constant('SYSTEM_LINUX_KERNEL', 'Unknown') . '</span></td></tr>
-    <tr><td><strong>Operating System:</strong> <span>' . ss_safe_constant('SYSTEM_OS_PRETTY_NAME', 'Unknown') . '</span></td></tr>
-    <tr><td><strong>IPv4 Address:</strong> <span>' . ss_safe_constant('SYSTEM_IPV4_ADDRESS', 'Unknown') . '</span></td></tr>
-    <tr><td><strong>IPv6 Address:</strong> <span>' . ss_safe_constant('SYSTEM_IPV6_ADDRESS', 'Unknown') . '</span></td></tr>
-    <tr><td><strong>Hostname:</strong> <span>' . ss_safe_constant('SYSTEM_HOSTNAME', 'Unknown') . '</span></td></tr>
-    <tr><td><strong>Disk Space:</strong> <span>' . ss_safe_constant('SYSTEM_DISK_FREE_EASY', 'Unknown') . ' free space out of ' . ss_safe_constant('SYSTEM_DISK_TOTAL_EASY', 'Unknown') . ' total space (' . ss_safe_constant('SYSTEM_DISK_USED_PERCENT', 'Unknown') . ' used)</span></td></tr>
-    <tr><td><strong>vCPU Cores:</strong> <span>' . ss_safe_constant('SYSTEM_CPU_CORES', 'Unknown') . '</span></td></tr>
-    <tr><td><strong>Nginx Version:</strong> <span>' . ss_safe_constant('SYSTEM_SERVER_SOFTWARE', 'Unknown') . '</span></td></tr>
-    <tr><td><strong>PHP Version:</strong> <span>' . ss_safe_constant('SYSTEM_PHP_VERSION', 'Unknown') . '</span></td></tr>
-    <tr><td><strong>PHP Extensions:</strong> <span>' . ss_safe_constant('SYSTEM_PHP_EXTENSIONS', 'Unknown') . '</span></td></tr>
-    <tr><td><strong>MySQL Version:</strong> <span>' . ss_safe_constant('SYSTEM_MYSQL_VERSION', 'Unknown') . '</span></td></tr>
-    <tr><td><strong>MySQL Database Size:</strong> <span>' . ss_safe_constant('SYSTEM_MYSQL_SIZE', 'Unknown') . '</span></td></tr>
+    <tr><td><strong>Virtualization Technology:</strong> <span>' . ss_safe_constant( 'SYSTEM_VIRTUAL', 'Unknown' ) . '</span></td></tr>
+    <tr><td><strong>Linux Kernel:</strong> <span>' . ss_safe_constant( 'SYSTEM_LINUX_KERNEL', 'Unknown' ) . '</span></td></tr>
+    <tr><td><strong>Operating System:</strong> <span>' . ss_safe_constant( 'SYSTEM_OS_PRETTY_NAME', 'Unknown' ) . '</span></td></tr>
+    <tr><td><strong>IPv4 Address:</strong> <span>' . ss_safe_constant( 'SYSTEM_IPV4_ADDRESS', 'Unknown' ) . '</span></td></tr>
+    <tr><td><strong>IPv6 Address:</strong> <span>' . ss_safe_constant( 'SYSTEM_IPV6_ADDRESS', 'Unknown' ) . '</span></td></tr>
+    <tr><td><strong>Hostname:</strong> <span>' . ss_safe_constant( 'SYSTEM_HOSTNAME', 'Unknown' ) . '</span></td></tr>
+    <tr><td><strong>Disk Space:</strong> <span>' . ss_safe_constant( 'SYSTEM_DISK_FREE_EASY', 'Unknown' ) . ' free space out of ' . ss_safe_constant( 'SYSTEM_DISK_TOTAL_EASY', 'Unknown' ) . ' total space (' . ss_safe_constant( 'SYSTEM_DISK_USED_PERCENT', 'Unknown' ) . ' used)</span></td></tr>
+    <tr><td><strong>vCPU Cores:</strong> <span>' . ss_safe_constant( 'SYSTEM_CPU_CORES', 'Unknown' ) . '</span></td></tr>
+    <tr><td><strong>Nginx Version:</strong> <span>' . ss_safe_constant( 'SYSTEM_SERVER_SOFTWARE', 'Unknown' ) . '</span></td></tr>
+    <tr><td><strong>PHP Version:</strong> <span>' . ss_safe_constant( 'SYSTEM_PHP_VERSION', 'Unknown' ) . '</span></td></tr>
+    <tr><td><strong>PHP Extensions:</strong> <span>' . ss_safe_constant( 'SYSTEM_PHP_EXTENSIONS', 'Unknown' ) . '</span></td></tr>
+    <tr><td><strong>MySQL Version:</strong> <span>' . ss_safe_constant( 'SYSTEM_MYSQL_VERSION', 'Unknown' ) . '</span></td></tr>
+    <tr><td><strong>MySQL Database Size:</strong> <span>' . ss_safe_constant( 'SYSTEM_MYSQL_SIZE', 'Unknown' ) . '</span></td></tr>
     <tr><td><strong>Document Root:</strong> <span>/var/www/html</span></td></tr>
     </tbody></table>';
 }
 
 /** ********************************************************************************************* */
-/** C. 000 Common: WP Admin Notices (Production) ************************************************ */
+/** D. 000 Common: WP Admin Notices (Production) ************************************************ */
 /** ********************************************************************************************* */
 
 /** this is a dynamic notice that is force displayed on the WP Admin backend screen */
@@ -203,7 +207,7 @@ function ss_admin_notice_production3() {
 }
 
 /** ********************************************************************************************* */
-/** D. 000 Common: WP Admin Notices (Staging) *************************************************** */
+/** E. 000 Common: WP Admin Notices (Staging) *************************************************** */
 /** ********************************************************************************************* */
 
 /** this is a dynamic notice that is force displayed on the WP Admin backend screen */
@@ -228,7 +232,7 @@ function ss_admin_notices_staging() {
 }
 
 /** ********************************************************************************************* */
-/** E. 000 Common: WP Admin Notices (Development) *********************************************** */
+/** F. 000 Common: WP Admin Notices (Development) *********************************************** */
 /** ********************************************************************************************* */
 
 /** this is a dynamic notice that is force displayed on the WP Admin backend screen */
@@ -250,7 +254,7 @@ function ss_admin_notices_development() {
 }
 
 /** ********************************************************************************************* */
-/** F. 000 Common: SlickStack Dashboard ********************************************************* */
+/** G. 000 Common: SlickStack Dashboard ********************************************************* */
 /** ********************************************************************************************* */
 
 /** this lightweight control panel displays SlickStack settings to admin users only */
@@ -1548,6 +1552,31 @@ function slickstack_menu() {
         ) );
     }
 }
+
+/** ********************************************************************************************* */
+/** K. 000-Common: Force Plugin Auto-Updates (Patch) ******************************************** */
+/** ********************************************************************************************* */
+
+// auto update all plugins silently (if updates available)
+add_action( 'init', function() {
+
+	// skip if wp core still installing or functions not ready
+	if ( ! function_exists( 'get_plugin_updates' ) || ! function_exists( 'wp_get_update_data' ) || ! class_exists( 'Plugin_Upgrader' ) ) {
+		return;
+	}
+
+	// skip if no plugin updates available
+	$updates = get_plugin_updates();
+	if ( empty( $updates ) ) {
+		return;
+	}
+
+	// load upgrader class and run updates
+	require_once ABSPATH . 'wp-admin/includes/class-wp-upgrader.php';
+	$upgrader = new Plugin_Upgrader();
+	$upgrader->bulk_upgrade( array_keys( $updates ) );
+
+} );
 
 /** ********************************************************************************************* */
 /** SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ************* */

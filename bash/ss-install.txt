@@ -65,7 +65,7 @@
 ## this build version ensures compatibility with the currently active ss-config file ##
 ## it must match the localhost ss-config otherwise installation will fail ##
 
-SS_INSTALL_BUILD="APR2025Q"
+SS_INSTALL_BUILD="APR2025T"
 
 ####################################################################################################
 #### B. SS-Install: Validate (Restore) SS-Functions ################################################
@@ -156,21 +156,15 @@ if [[ -f "/var/www/ss-config" ]]; then
         exit 1
     fi
 
-    ## verify site root domain is valid ##
-    if [[ ! "${SITE_ROOT_DOMAIN}" =~ ^[a-zA-Z0-9-]{2,}\.[a-zA-Z]{2,}$ ]]; then
-        ss_echo "${COLOR_ERROR}ERROR: Please fix SITE_ROOT_DOMAIN in your ss-config... the part before and after the period must be at least 2 characters long... ${COLOR_RESET}"
+    ## verify site root domain is valid (multi-level domains like hey.com.uk allowed) ##
+    if [[ ! "${SITE_ROOT_DOMAIN}" =~ ^([a-zA-Z0-9-]{2,}\.)+[a-zA-Z]{2,}$ ]]; then
+        ss_echo "${COLOR_ERROR}ERROR: Invalid SITE_ROOT_DOMAIN in ss-config. Must be a valid root domain like hey.com.uk, with each segment at least 2 characters. ${COLOR_RESET}"
         exit 1
     fi
 
-    ## verify site root domain is valid ##
-    if [[ ! "${SITE_ROOT_DOMAIN}" =~ ^[a-zA-Z0-9-]{2,}\.[a-zA-Z]{2,63}(\.[a-zA-Z]{2,63})?$ ]]; then
-        ss_echo "${COLOR_ERROR}ERROR: Please fix SITE_ROOT_DOMAIN in your ss-config... the part before and after the period must be at least 2 characters long... ${COLOR_RESET}"
-        exit 1
-    fi
-
-    ## verify site full domain is valid ##
+    ## verify site full domain is valid (including subdomains like www.hey.com.uk) ##
     if [[ ! "${SITE_FULL_DOMAIN}" =~ ^([a-zA-Z0-9-]+\.)*[a-zA-Z0-9-]{2,}\.[a-zA-Z]{2,63}$ ]]; then
-        ss_echo "${COLOR_ERROR}ERROR: Invalid SITE_FULL_DOMAIN in ss-config. The domain should include valid subdomains (if any) and a valid root domain (e.g., www.example.com or blog.example.co.uk). Please correct this value. ${COLOR_RESET}"
+        ss_echo "${COLOR_ERROR}ERROR: Invalid SITE_FULL_DOMAIN in ss-config. Must be a valid full domain like www.hey.com.uk with optional subdomains and a valid root domain. ${COLOR_RESET}"
         exit 1
     fi
 
