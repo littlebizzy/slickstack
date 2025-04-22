@@ -7,7 +7,7 @@
 #### path: /var/www/ss-perms-wordpress-packages ####################################################
 #### destination: n/a (not a boilerplate) ##########################################################
 #### purpose: Resets ownership and permissions for WordPress module files and directories ##########
-#### module version: WordPress 6.7.x ###############################################################
+#### module version: WordPress 6.8.x ###############################################################
 #### sourced by: ss-install-wordpress-packages, ss-perms ###########################################
 #### bash aliases: ss perms wordpress|wp packages ##################################################
 ####################################################################################################
@@ -94,16 +94,14 @@ ss_chown www-data:www-data /var/www/html/wp-content/upgrade
 ss_chown www-data:www-data /var/www/html/wp-content/upgrade-temp-backup
 ss_chown www-data:www-data /var/www/html/wp-content/uploads
 
-## allow sftp user to modify languages, plugins, themes, and uploads ##
+## allow php and sftp user to modify all writable wp-content dirs ##
 chmod 0775 /var/www/html/wp-content/languages
 chmod 0775 /var/www/html/wp-content/plugins
+chmod 0775 /var/www/html/wp-content/temp
 chmod 0775 /var/www/html/wp-content/themes
+chmod 0775 /var/www/html/wp-content/upgrade
+chmod 0775 /var/www/html/wp-content/upgrade-temp-backup
 chmod 0775 /var/www/html/wp-content/uploads
-
-## restrict sftp user from modifying other writable dirs ##
-chmod 0755 /var/www/html/wp-content/temp
-chmod 0755 /var/www/html/wp-content/upgrade
-chmod 0755 /var/www/html/wp-content/upgrade-temp-backup
 
 ## lock down wordpress core directories slightly to prevent sftp user from making changes ##
 ss_chown www-data:www-data /var/www/html/wp-admin
@@ -132,15 +130,13 @@ if [[ "${STAGING_SITE}" != "false" ]]; then
     ss_chown www-data:www-data /var/www/html/staging/wp-content/upgrade
     ss_chown www-data:www-data /var/www/html/staging/wp-content/upgrade-temp-backup
 
-    ## allow sftp user to modify languages, plugins, and themes ##
+    ## allow php and sftp user to modify all writable wp-content dirs ##
     chmod 0775 /var/www/html/staging/wp-content/languages
     chmod 0775 /var/www/html/staging/wp-content/plugins
+    chmod 0775 /var/www/html/staging/wp-content/temp
     chmod 0775 /var/www/html/staging/wp-content/themes
-
-    ## restrict sftp user from modifying other writable dirs ##
-    chmod 0755 /var/www/html/staging/wp-content/temp
-    chmod 0755 /var/www/html/staging/wp-content/upgrade
-    chmod 0755 /var/www/html/staging/wp-content/upgrade-temp-backup
+    chmod 0775 /var/www/html/staging/wp-content/upgrade
+    chmod 0775 /var/www/html/staging/wp-content/upgrade-temp-backup
 
     ## lock down wordpress core directories slightly to prevent sftp user from making changes ##
     ss_chown www-data:www-data /var/www/html/staging/wp-admin
@@ -182,16 +178,14 @@ if [[ "${DEV_SITE}" != "false" ]]; then
     ss_chown www-data:www-data /var/www/html/dev/wp-content/upgrade-temp-backup
     ss_chown www-data:www-data /var/www/html/dev/wp-content/uploads
 
-    ## allow sftp user to modify languages, plugins, themes, and uploads ##
+    ## allow php and sftp user to modify all writable wp-content dirs ##
     chmod 0775 /var/www/html/dev/wp-content/languages
     chmod 0775 /var/www/html/dev/wp-content/plugins
+    chmod 0775 /var/www/html/dev/wp-content/temp
     chmod 0775 /var/www/html/dev/wp-content/themes
+    chmod 0775 /var/www/html/dev/wp-content/upgrade
+    chmod 0775 /var/www/html/dev/wp-content/upgrade-temp-backup
     chmod 0775 /var/www/html/dev/wp-content/uploads
-
-    ## restrict sftp user from modifying other writable dirs ##
-    chmod 0755 /var/www/html/dev/wp-content/temp
-    chmod 0755 /var/www/html/dev/wp-content/upgrade
-    chmod 0755 /var/www/html/dev/wp-content/upgrade-temp-backup
 
     ## lock down wordpress core directories slightly to prevent sftp user from making changes ##
     ss_chown www-data:www-data /var/www/html/dev/wp-admin
