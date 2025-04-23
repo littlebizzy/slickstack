@@ -34,6 +34,7 @@ License URI: http://www.gnu.org/licenses/gpl-3.0.html
 // J. WP Admin Toolbar Menu
 
 // K. Force Plugin Auto-Updates (Patch)
+// L. Disable Native PHP Mail
 
 /** ********************************************************************************************* */
 /** A. 000 Common: Return Safe Constants ******************************************************** */
@@ -1576,6 +1577,21 @@ add_action( 'init', function() {
 	$upgrader = new Plugin_Upgrader();
 	$upgrader->bulk_upgrade( array_keys( $updates ) );
 
+} );
+
+/** ********************************************************************************************* */
+/** L. 000-Common: Disable Native PHP Mail ****************************************************** */
+/** ********************************************************************************************* */
+
+// disable php mail fallback to prevent sendmail warnings and enforce smtp/api plugins
+add_action( 'phpmailer_init', function( $phpmailer ) {
+    if ( empty( $phpmailer->Host ) ) {
+        $phpmailer->isSMTP();
+        $phpmailer->Host = 'smtp.disabled.local';
+        $phpmailer->SMTPAuth = false;
+        $phpmailer->SMTPAutoTLS = false;
+        $phpmailer->SMTPDebug = 0;
+    }
 } );
 
 /** ********************************************************************************************* */
