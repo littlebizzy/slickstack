@@ -10,8 +10,33 @@
 #### bash aliases: n/a #############################################################################
 ####################################################################################################
 
-ssl_verify_client on;
+## load cloudflare origin cert bundle ##
 ssl_client_certificate /var/www/certs/cloudflare.pem;
+
+## request but do not require cert ##
+ssl_verify_client optional;
+
+## allow loopbacks ##
+map $remote_addr $is_loopback {
+    default      0;
+    127.0.0.1    1;
+    127.0.1.1    1;
+    ::1          1;
+}
+
+## allow verified cloudflare certs ##
+map $ssl_client_verify $is_valid_cert {
+    default      0;
+    SUCCESS      1;
+}
+
+## combine both maps to control access ##
+map "$is_loopback$is_valid_cert" $allow_request {
+    default      0;
+    10           1;
+    01           1;
+    11           1;
+}
 
 ####################################################################################################
 #### SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ###############
