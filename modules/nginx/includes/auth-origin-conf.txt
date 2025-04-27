@@ -1,0 +1,49 @@
+####################################################################################################
+#### author: SlickStack ############################################################################
+#### link: https://slickstack.io ###################################################################
+#### mirror: littlebizzy/slickstack/blob/master/modules/nginx/includes/auth-origin-conf.txt ########
+#### path: /var/www/sites/includes/auth-origin.conf ################################################
+#### destination: n/a (not a boilerplate) ##########################################################
+#### purpose: Nginx config file for Cloudflare authenticated origin (conditionally included) #######
+#### module version: Nginx 1.18.x ##################################################################
+#### sourced by: /etc/nginx/nginx.conf #############################################################
+#### bash aliases: n/a #############################################################################
+####################################################################################################
+
+## load cloudflare origin cert bundle ##
+ssl_client_certificate /var/www/certs/cloudflare.pem;
+
+## request but do not require cert ##
+ssl_verify_client optional;
+
+## allow loopbacks ##
+map $remote_addr $is_loopback {
+    default      0;
+    127.0.0.1    1;
+    127.0.1.1    1;
+    ::1          1;
+}
+
+## allow verified cloudflare certs ##
+map $ssl_client_verify $is_valid_cert {
+    default      0;
+    SUCCESS      1;
+}
+
+## combine both maps to control access ##
+map "$is_loopback$is_valid_cert" $allow_request {
+    default      0;
+    10           1;
+    01           1;
+    11           1;
+}
+
+####################################################################################################
+#### SlickStack: External References Used To Improve This Script (Thanks, Interwebz) ###############
+####################################################################################################
+
+## Ref: ChatGPT
+## Ref: https://developers.cloudflare.com/ssl/origin-configuration/authenticated-origin-pull/set-up/zone-level/
+## Ref: https://serverfault.com/questions/818812/conditional-ssl-verify-client-in-nginx/1000
+
+## SS_EOF

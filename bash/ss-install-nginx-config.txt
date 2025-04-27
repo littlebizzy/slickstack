@@ -1111,6 +1111,9 @@ ss_rm "${TMP_ALLOWED_IPS_CONF}"
 #### O. SS-Install-Nginx-Config: Install Authenticated-Origin.conf (Optional) ######################
 ####################################################################################################
 
+## temp patch due to filename change 25APR2025 ... remove in future ##
+ss_rm /var/www/sites/includes/authenticated-origin.conf
+
 if [[ "${CLOUDFLARE_AUTHENTICATED_ORIGIN}" == "true" ]]; then 
 
 ## retrieve public cloudflare.pem cert ##
@@ -1123,13 +1126,16 @@ if [[ -z "${VALIDATE_TMP_AUTHENTICATED_ORIGIN_CONF}" ]]; then
     ss_wget "${TMP_AUTHENTICATED_ORIGIN_CONF}" "${GITLAB_AUTHENTICATED_ORIGIN_CONF}"
 fi
 
+## retrieve origin-gate.conf boilerplate ##
+ss_wget /tmp/origin-gate.conf https://raw.githubusercontent.com/littlebizzy/slickstack/refs/heads/master/modules/nginx/includes/origin-gate-conf.txt
+
 ## install if valid ##
 VALIDATE_TMP_AUTHENTICATED_ORIGIN_CONF=$(grep 'ssl_verify_client' "${TMP_AUTHENTICATED_ORIGIN_CONF}" 2> /dev/null)
 if [[ -n "${VALIDATE_TMP_AUTHENTICATED_ORIGIN_CONF}" ]]; then
     ss_mv "${TMP_CLOUDFLARE_PEM}" "${PATH_CLOUDFLARE_PEM}"
     ss_mv "${TMP_AUTHENTICATED_ORIGIN_CONF}" "${PATH_AUTHENTICATED_ORIGIN_CONF}"
+    ss_mv /tmp/origin-gate.conf /var/www/sites/includes/origin-gate.conf
     ss_reload nginx
-    ss_echo "${COLOR_INFO}ss-install-nginx-auth-origin: Successfully installed authenticated-origin.conf and reloaded Nginx... ${COLOR_RESET}"
 elif [[ -z "${VALIDATE_TMP_AUTHENTICATED_ORIGIN_CONF}" ]]; then
     ss_echo "${COLOR_WARN}ss-install-nginx-config: latest authenticated-origin.conf boilerplate appears corrupt so skipping install (old version remains installed if exists)... ${COLOR_RESET}"
 fi
@@ -1138,9 +1144,7 @@ fi
 elif [[ "${CLOUDFLARE_AUTHENTICATED_ORIGIN}" == "false" ]]; then
     ss_rm "${PATH_CLOUDFLARE_PEM}"
     ss_rm "${PATH_AUTHENTICATED_ORIGIN_CONF}"
-    ## no need to reload nginx here... ##
-    ss_echo "${COLOR_WARN}ss-install-nginx-config: authenticated-origin.conf is disabled in your ss-config so installation skipped... ${COLOR_RESET}"
-
+    ss_rm /var/www/sites/includes/origin-gate.conf
 
 ## end if parent #####
 fi
