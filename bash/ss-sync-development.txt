@@ -69,17 +69,6 @@ ss_touch "${TIMESTAMP_SS_SYNC_DEVELOPMENT}"
 ss_echo "${COLOR_INFO}Running ss-sync-development... ${COLOR_RESET}"
 
 ####################################################################################################
-#### Query Settings
-####################################################################################################
-
-## EXPAND SS DASHBOARD USING MYSQL???
-## check if SlickStack dashboard staging.wp_options has paused this script before proceeding
-
-# select EmployeeName from DemoTable where isMarried=true;
-# ss_options_staging_sync_status=$(ss_mysql_user -BNe "USE staging; SELECT EmployeeName FROM DemoTable WHERE id=1")
-# $sql = "SELECT 'id' FROM Users WHERE username='$name'";
-
-####################################################################################################
 #### D. SS-Sync-Development: Begin If ##############################################################
 ####################################################################################################
 
@@ -101,7 +90,7 @@ source "${PATH_SS_DUMP_DATABASE}"
 ## here we perform a simple check to see if the staging database exists yet or not ##
 ## if the database is not detected the script will attempt to install it now ##
 
-if ! [[ $(ss_mysql_user -e 'use development') ]]; then
+if ! ss_mysql_user -e 'use development;' 2> /dev/null; then
     source "${PATH_SS_INSTALL_MYSQL_DATABASE}"
 fi
 
