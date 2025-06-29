@@ -25,7 +25,7 @@
 ## A. Source SS-Config + SS-Functions
 ## B. Touch Timestamp File
 ## C. Message (Begin Script)
-## D. Begin If
+## D. Validate Dev Sync Conditions
 ## E. Run SS-Dump-Database
 ## F. Install Development Database (Conditional)
 ## G. Import Production Database To Development Database
@@ -35,7 +35,7 @@
 ## K. Fix Any Hardcoded Links In Development Theme Files
 ## L. Fix Incorrect URLs In Development Database
 ## M. Reset Permissions (WordPress Packages)
-## N. End If
+## N. Skip If Conditions Not Met
 ## O. Cleanup Temporary Files
 
 ####################################################################################################
@@ -69,7 +69,7 @@ ss_touch "${TIMESTAMP_SS_SYNC_DEVELOPMENT}"
 ss_echo "${COLOR_INFO}Running ss-sync-development... ${COLOR_RESET}"
 
 ####################################################################################################
-#### D. SS-Sync-Development: Begin If ##############################################################
+#### D. SS-Sync-Development: Validate Dev Sync Conditions ##########################################
 ####################################################################################################
 
 if [[ "${DEV_SITE}" == "true" && "${SS_SYNC_DEVELOPMENT}" == "true" && "${WP_MULTISITE}" != "true" && "${SS_LOCKDOWN}" != "true" ]]; then
@@ -184,8 +184,19 @@ sudo -u "${SFTP_USER}" /usr/local/bin/wp --path=/var/www/html/dev search-replace
 source "${PATH_SS_PERMS_WORDPRESS_PACKAGES}"
 
 ####################################################################################################
-#### N. SS-Sync-Development: End If ################################################################
+#### N. SS-Sync-Development: Skip If Conditions Not Met ############################################
 ####################################################################################################
+
+else
+
+FAILED_CONDITIONS=""
+
+[[ "${DEV_SITE}" != "true" ]] && FAILED_CONDITIONS+=" DEV_SITE!=true"
+[[ "${SS_SYNC_DEVELOPMENT}" != "true" ]] && FAILED_CONDITIONS+=" SS_SYNC_DEVELOPMENT!=true"
+[[ "${WP_MULTISITE}" == "true" ]] && FAILED_CONDITIONS+=" WP_MULTISITE==true"
+[[ "${SS_LOCKDOWN}" == "true" ]] && FAILED_CONDITIONS+=" SS_LOCKDOWN==true"
+
+ss_echo "${COLOR_ERROR}ss-sync-development skipped: One or more conditions not met: ${FAILED_CONDITIONS} ${COLOR_RESET}"
 
 fi
 
