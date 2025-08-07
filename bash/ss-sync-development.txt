@@ -25,7 +25,7 @@
 ## A. Source SS-Config + SS-Functions
 ## B. Touch Timestamp File
 ## C. Message (Begin Script)
-## D. Begin If
+## D. Validate Dev Sync Conditions
 ## E. Run SS-Dump-Database
 ## F. Install Development Database (Conditional)
 ## G. Import Production Database To Development Database
@@ -35,7 +35,7 @@
 ## K. Fix Any Hardcoded Links In Development Theme Files
 ## L. Fix Incorrect URLs In Development Database
 ## M. Reset Permissions (WordPress Packages)
-## N. End If
+## N. Skip If Conditions Not Met
 ## O. Cleanup Temporary Files
 
 ####################################################################################################
@@ -69,18 +69,7 @@ ss_touch "${TIMESTAMP_SS_SYNC_DEVELOPMENT}"
 ss_echo "${COLOR_INFO}Running ss-sync-development... ${COLOR_RESET}"
 
 ####################################################################################################
-#### Query Settings
-####################################################################################################
-
-## EXPAND SS DASHBOARD USING MYSQL???
-## check if SlickStack dashboard staging.wp_options has paused this script before proceeding
-
-# select EmployeeName from DemoTable where isMarried=true;
-# ss_options_staging_sync_status=$(ss_mysql_user -BNe "USE staging; SELECT EmployeeName FROM DemoTable WHERE id=1")
-# $sql = "SELECT 'id' FROM Users WHERE username='$name'";
-
-####################################################################################################
-#### D. SS-Sync-Development: Begin If ##############################################################
+#### D. SS-Sync-Development: Validate Dev Sync Conditions ##########################################
 ####################################################################################################
 
 if [[ "${DEV_SITE}" == "true" && "${SS_SYNC_DEVELOPMENT}" == "true" && "${WP_MULTISITE}" != "true" && "${SS_LOCKDOWN}" != "true" ]]; then
@@ -101,7 +90,7 @@ source "${PATH_SS_DUMP_DATABASE}"
 ## here we perform a simple check to see if the staging database exists yet or not ##
 ## if the database is not detected the script will attempt to install it now ##
 
-if ! [[ $(ss_mysql_user -e 'use development') ]]; then
+if ! ss_mysql_user -e 'use development;' 2> /dev/null; then
     source "${PATH_SS_INSTALL_MYSQL_DATABASE}"
 fi
 
@@ -195,8 +184,19 @@ sudo -u "${SFTP_USER}" /usr/local/bin/wp --path=/var/www/html/dev search-replace
 source "${PATH_SS_PERMS_WORDPRESS_PACKAGES}"
 
 ####################################################################################################
-#### N. SS-Sync-Development: End If ################################################################
+#### N. SS-Sync-Development: Skip If Conditions Not Met ############################################
 ####################################################################################################
+
+else
+
+FAILED_CONDITIONS=""
+
+[[ "${DEV_SITE}" != "true" ]] && FAILED_CONDITIONS+=" DEV_SITE!=true"
+[[ "${SS_SYNC_DEVELOPMENT}" != "true" ]] && FAILED_CONDITIONS+=" SS_SYNC_DEVELOPMENT!=true"
+[[ "${WP_MULTISITE}" == "true" ]] && FAILED_CONDITIONS+=" WP_MULTISITE==true"
+[[ "${SS_LOCKDOWN}" == "true" ]] && FAILED_CONDITIONS+=" SS_LOCKDOWN==true"
+
+ss_echo "${COLOR_ERROR}ss-sync-development skipped: One or more conditions not met: ${FAILED_CONDITIONS} ${COLOR_RESET}"
 
 fi
 
