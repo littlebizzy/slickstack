@@ -37,6 +37,7 @@
 ## X. RSS Feeds
 ## X. PHP-FPM Routing
 ## X. WP-Login (Rate Limiting)
+## X. Admin-Ajax (Rate Limiting)
 
 ## M. Adminer Settings
 ## N. Redirect Staging/Dev Subdirectories
@@ -490,6 +491,28 @@ location = /wp-login.php {
     fastcgi_index index.php;
 
     ## bypass caching for wp-login.php ##
+    fastcgi_cache_bypass $skip_cache;
+    fastcgi_no_cache $skip_cache;
+}
+
+####################################################################################################
+#### X. Server Block (Production): Rate Limit admin-ajax.php #######################################
+####################################################################################################
+
+location = /wp-admin/admin-ajax.php {
+
+    ## protect against admin-ajax abuse ##
+    limit_req zone=admin_ajax_second burst=10 nodelay;
+    limit_req zone=admin_ajax_minute burst=30 nodelay;
+
+    ## fastcgi configurations ##
+    include /etc/nginx/fastcgi.conf;
+    fastcgi_split_path_info ^(.+\.php)(/.+)$;
+    fastcgi_pass 127.0.0.1:9000;
+    fastcgi_read_timeout 300;
+    fastcgi_index index.php;
+
+    ## bypass caching ##
     fastcgi_cache_bypass $skip_cache;
     fastcgi_no_cache $skip_cache;
 }
