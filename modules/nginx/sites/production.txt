@@ -430,6 +430,11 @@ location ~* ^/(?!topics/feed/?$|feed/?$).+/(feed|atom|rss2)/?$ {
 
 location ~* \.php$ {
 
+	## allow only valid wordpress php entry points ##
+	if ($uri !~ ^/(index\.php|wp-login\.php|wp-comments-post\.php|wp-signup\.php|wp-activate\.php|wp-admin/.*\.php)$) {
+    	return 444;
+	}
+
     ## rate limiting for php requests ##
     limit_req zone=php_second burst=@LIMIT_REQUESTS_PHP_SECOND_BURST nodelay;
     limit_req zone=php_minute burst=@LIMIT_REQUESTS_PHP_MINUTE_BURST nodelay;
