@@ -4,6 +4,11 @@
 
 - [ss-constants.php](ss-constants.txt)
 
+#### 8.3
+- [php.ini](8.3/php-ini.txt)
+- [php-fpm.conf](8.3/php-fpm-conf.txt)
+- [www.conf](8.3/www-conf.txt)
+
 #### 8.1
 - [php.ini](8.1/php-ini.txt)
 - [php-fpm.conf](8.1/php-fpm-conf.txt)
