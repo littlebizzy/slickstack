@@ -81,13 +81,13 @@ if [[ "${response}" =~ ^[Yy]([Ee][Ss])?$ ]]; then
     ## import plain sql file if present and non-empty ##
     if [[ -s "/tmp/import.sql" ]]; then
 
-        ss_echo "Found import.sql and proceeding to overwrite the database."
+        ss_echo "Found import.sql. Proceeding to overwrite the database."
 
-        ## fix ownership and permissions ##
-        ss_chown "${SFTP_USER}":slickstack /tmp/import.sql
-        ss_chmod 0660 /tmp/import.sql
+		## fix ownership and permissions ##
+		ss_chown "${SFTP_USER}":slickstack "/tmp/import.sql"
+		ss_chmod 0660 "/tmp/import.sql"
 
-        ## import sql file into database ##
+        ## import sql into database ##
         ss_mysql_user "${DB_NAME}" < "/tmp/import.sql" || {
             ss_echo "Database import failed."
             exit 1
@@ -108,41 +108,41 @@ if [[ "${response}" =~ ^[Yy]([Ee][Ss])?$ ]]; then
             exit 1
         }
 
-        ss_echo "Found import.sql.zip and proceeding to overwrite the database."
+        ss_echo "Found import.sql.zip. Proceeding to overwrite the database."
 
-        ## fix ownership and permissions ##
-        ss_chown "${SFTP_USER}":slickstack /tmp/import.sql.zip
-        ss_chmod 0660 /tmp/import.sql.zip
+		## fix ownership and permissions ##
+		ss_chown "${SFTP_USER}":slickstack "/tmp/import.sql.zip"
+		ss_chmod 0660 "/tmp/import.sql.zip"
 
-        ## stream unzip and import sql file into database ##
+        ## stream unzip and import sql into database ##
         unzip -p "/tmp/import.sql.zip" | ss_mysql_user "${DB_NAME}" || {
             ss_echo "Database import failed."
             exit 1
         }
         
-    ## import gzip archive if present ##
+    ## import gzipped sql file if present ##
     elif [[ -f "/tmp/import.sql.gz" ]]; then
 
-        ## verify gzip integrity ##
-        gunzip -t /tmp/import.sql.gz || {
+        ## verify gzip file integrity ##
+        gunzip -t "/tmp/import.sql.gz" || {
             ss_echo "Gzip file failed integrity check."
             exit 1
         }
 
-        ## ensure gzip contains data ##
-        gunzip -c /tmp/import.sql.gz | head -c 1 | grep -q . || {
+        ## ensure gzip file contains data ##
+        gunzip -c "/tmp/import.sql.gz" | head -c 1 >/dev/null || {
             ss_echo "Gzip file appears to be empty."
             exit 1
         }
 
-        ss_echo "Found import.sql.gz and proceeding to overwrite the database."
+        ss_echo "Found import.sql.gz. Proceeding to overwrite the database."
 
-        ## fix ownership and permissions ##
-        ss_chown "${SFTP_USER}":slickstack /tmp/import.sql.gz
-        ss_chmod 0660 /tmp/import.sql.gz
+		## fix ownership and permissions ##
+		ss_chown "${SFTP_USER}":slickstack "/tmp/import.sql.gz"
+		ss_chmod 0660 "/tmp/import.sql.gz"
 
-        ## stream gunzip and import into database ##
-        gunzip -c /tmp/import.sql.gz | ss_mysql_user "${DB_NAME}" || {
+        ## stream gunzip and import sql into database ##
+        gunzip -c "/tmp/import.sql.gz" | ss_mysql_user "${DB_NAME}" || {
             ss_echo "Database import failed."
             exit 1
         }
