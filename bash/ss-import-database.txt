@@ -74,56 +74,96 @@ source "${PATH_SS_DUMP_DATABASE}"
 ## here the sudo user must manually confirm importing database before it can proceed ##
 ## import.sql is the preferred file format followed by .sql.zip and .sql.gz ##
 
-read -r -p "DATABASE will be completely overwritten, are you sure? [y/N]" response
+## confirm destructive database import ##
+read -r -p "The database will be completely overwritten. Are you sure? [y/N] " response
 if [[ "${response}" =~ ^([yY][eE][sS]|[yY])$ ]]; then
 
-    if [[ -f "/tmp/import.sql" ]]; then
-    
-        echo "found import.sql and proceeding to import and overwrite database"
-        chown -R "${SFTP_USER}":www-data /tmp/import.sql
-        chmod 6775 /tmp/import.sql
-        
-        if [[ "${DB_REMOTE}" == "true" ]]; then
-            ss_mysql_user "${DB_NAME}" < /tmp/import.sql
-        else
-            ss_mysql_user "${DB_NAME}" < /tmp/import.sql
-        fi
-        
-    elif [[ ! -f "/tmp/import.sql" ]] && [[ -f "/tmp/import.sql.zip" ]]; then
-    
-        echo "found import.sql.zip and proceeding to import and overwrite database"
-        chown -R "${SFTP_USER}":www-data /tmp/import.sql.zip
-        chmod 6775 /tmp/import.sql.zip
-        
-        if [[ "${DB_REMOTE}" == "true" ]]; then
-            ss_mysql_user "${DB_NAME}" < /tmp/import.sql.zip
-        else
-            ss_mysql_user "${DB_NAME}" < /tmp/import.sql.zip
-        fi
-        
-    elif [[ ! -f "/tmp/import.sql" ]] && [[ ! -f "/tmp/import.sql.zip" ]] && [[ -f "/tmp/import.sql.gz" ]]; then
-    
-        echo "found import.sql.gz and proceeding to import and overwrite database"
-        chown -R "${SFTP_USER}":www-data /tmp/import.sql.gz
+    ## import plain sql file if present and non-empty ##
+    if [[ -s "/tmp/import.sql" ]]; then
 
-        ## should we gunzip it first, run below commands, and then import.sql to database? ##
-        chmod g-s /tmp/import.sql.gz ## avoids gunzip errors
-        chmod 0777 /tmp/import.sql.gz ## avoids gunzip errors
+        ss_echo "Found import.sql. Proceeding to overwrite the database."
+
+        ## fix ownership and permissions ##
+        ss_chown "${SFTP_USER}":slickstack /tmp/import.sql
+        ss_chmod 0660 /tmp/import.sql
+
+        ## import sql into database ##
+        ss_mysql_user "${DB_NAME}" < /tmp/import.sql || {
+            ss_echo "Database import failed."
+            exit 1
+        }
+
+        ss_echo "Database import completed successfully."
         
-        if [[ "${DB_REMOTE}" == "true" ]]; then
-            ss_mysql_user "${DB_NAME}" < /tmp/import.sql.gz
-        else
-            ss_mysql_user "${DB_NAME}" < /tmp/import.sql.gz
-        fi
+    ## import zip archive if present ##
+    elif [[ -f "/tmp/import.sql.zip" ]]; then
+
+        ## verify zip integrity ##
+        unzip -tq /tmp/import.sql.zip || {
+            ss_echo "Zip file failed integrity check."
+            exit 1
+        }
+
+        ## ensure zip contains data ##
+        unzip -p /tmp/import.sql.zip | head -c 1 | grep -q . || {
+            ss_echo "Zip file appears to be empty."
+            exit 1
+        }
+
+        ss_echo "Found import.sql.zip. Proceeding to overwrite the database."
+
+        ## fix ownership and permissions ##
+        ss_chown "${SFTP_USER}":slickstack /tmp/import.sql.zip
+        ss_chmod 0660 /tmp/import.sql.zip
+
+        ## stream unzip and import into database ##
+        unzip -p /tmp/import.sql.zip | ss_mysql_user "${DB_NAME}" || {
+            ss_echo "Database import failed."
+            exit 1
+        }
+
+        ss_echo "Database import completed successfully."
+        
+    ## import gzip archive if present ##
+    elif [[ -f "/tmp/import.sql.gz" ]]; then
+
+        ## verify gzip integrity ##
+        gunzip -t /tmp/import.sql.gz || {
+            ss_echo "Gzip file failed integrity check."
+            exit 1
+        }
+
+        ## ensure gzip contains data ##
+        gunzip -c /tmp/import.sql.gz | head -c 1 | grep -q . || {
+            ss_echo "Gzip file appears to be empty."
+            exit 1
+        }
+
+        ss_echo "Found import.sql.gz. Proceeding to overwrite the database."
+
+        ## fix ownership and permissions ##
+        ss_chown "${SFTP_USER}":slickstack /tmp/import.sql.gz
+        ss_chmod 0660 /tmp/import.sql.gz
+
+        ## stream gunzip and import into database ##
+        gunzip -c /tmp/import.sql.gz | ss_mysql_user "${DB_NAME}" || {
+            ss_echo "Database import failed."
+            exit 1
+        }
+
+        ss_echo "Database import completed successfully."
                 
-    elif [[ ! -f "/tmp/import.sql" ]] && [[ ! -f "/tmp/import.sql.zip" ]] && [[ ! -f "/tmp/import.sql.gz" ]]; then
-    
-        echo "No import.sql|.sql.zip|.sql.gz file found, cannot import database"
-        
+    ## no valid import file found ##
+    else
+
+        ss_echo "No import.sql, import.sql.zip, or import.sql.gz file was found. The database cannot be imported."
+        exit 1
+
     fi
 
+## user cancelled import ##
 else
-    echo "cancelled import"
+    ss_echo "Database import cancelled."
     exit 1
 fi
 
