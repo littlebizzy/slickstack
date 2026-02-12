@@ -38,33 +38,48 @@
 #### A. 01-Cron-Minutely: Validate (Restore) SS-Config #############################################
 ####################################################################################################
 
-## this attempts to restore missing or damaged ss-config using a recent intact backup ##
+## this attempts to restore missing or damaged ss-config using a recent valid backup ##
 ## however it is not foolproof since there is no way to verify all settings ##
 
 ## THIS SNIPPET DOES NOT RELY ON SS-CONFIG OR SS-FUNCTIONS
 ## SNIPPET: ss cron jobs
-## UPDATED: 15JAN2025
+## UPDATED: 12FEB2026
 
-VALIDATE_SS_CONFIG=$(grep 'SS_BUILD' /var/www/ss-config)
+## validate ss-config integrity ##
+VALIDATE_SS_CONFIG=$(grep 'SS_BUILD' "/var/www/ss-config" 2>/dev/null)
 
-## find most recent backup ##
+## restore from newest backup if ss-config invalid ##
 if [[ -z "${VALIDATE_SS_CONFIG}" ]]; then
-    SS_CONFIG_RECENT_BACKUPS=$(find /var/www/backups/config/ -maxdepth 1 -name 'ss-config.bak*' -type f -printf '%T@ %p\n' | sort -n | tail -n1 | cut -d' ' -f2-)
-    SS_CONFIG_BEST_MATCH=$(grep -il 'SS_BUILD' "${SS_CONFIG_RECENT_BACKUPS}")
 
-    ## validate best match backup ##
-    mv -f "${SS_CONFIG_BEST_MATCH}" /tmp/ss-config
-    VALIDATE_TMP_SS_CONFIG=$(grep 'SS_BUILD' /tmp/ss-config)
+	## locate newest ss-config backup file ##
+	SS_CONFIG_RECENT_BACKUPS=$(find "/var/www/backups/config/" -maxdepth 1 -name 'ss-config.bak*' -type f -printf '%T@ %p\n' 2>/dev/null | sort -n | tail -n1 | cut -d' ' -f2-)
 
-    ## replace ss-config if valid ##
-    if [[ -n "${VALIDATE_TMP_SS_CONFIG}" ]]; then
-        mv -f /tmp/ss-config /var/www/ss-config
-        chown root:root /var/www/ss-config
-        chmod 0700 /var/www/ss-config
-    fi
+	## continue only if backup file exists and is non-empty ##
+	if [[ -n "${SS_CONFIG_RECENT_BACKUPS}" && -s "${SS_CONFIG_RECENT_BACKUPS}" ]]; then
 
-    ## cleanup temp files ##
-    rm -rf /tmp/ss-config
+		## confirm backup file contains required marker ##
+		SS_CONFIG_BEST_MATCH=$(grep -il 'SS_BUILD' "${SS_CONFIG_RECENT_BACKUPS}" 2>/dev/null)
+
+		## continue only if validated backup candidate found ##
+		if [[ -n "${SS_CONFIG_BEST_MATCH}" ]]; then
+
+			## copy backup to temporary ss-config file ##
+			cp -f "${SS_CONFIG_BEST_MATCH}" "/tmp/ss-config"
+
+			## validate temporary ss-config file before promotion ##
+			VALIDATE_TMP_SS_CONFIG=$(grep 'SS_BUILD' "/tmp/ss-config" 2>/dev/null)
+
+			## atomically restore validated ss-config ##
+			if [[ -n "${VALIDATE_TMP_SS_CONFIG}" ]]; then
+				mv -f "/tmp/ss-config" "/var/www/ss-config"
+				chown root:root "/var/www/ss-config"
+				chmod 0700 "/var/www/ss-config"
+			fi
+		fi
+	fi
+
+	## remove temporary file ##
+	rm -f "/tmp/ss-config"
 fi
 
 ####################################################################################################
