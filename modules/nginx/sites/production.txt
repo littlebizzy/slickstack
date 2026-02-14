@@ -179,11 +179,19 @@ include /var/www/sites/includes/origin-gate[.]conf;
 ####################################################################################################
 
     ## block direct non-POST access to Woo PayPal approve-subscription wc-ajax endpoint ##
-    if ($arg_wc-ajax = "ppc-approve-subscription") {
-        if ($request_method != POST) {
-            return 403;
-        }
-    }
+	set $block_ppc_approve_subscription 0;
+
+	if ($arg_wc-ajax = "ppc-approve-subscription") {
+		set $block_ppc_approve_subscription 1;
+	}
+
+	if ($request_method = POST) {
+		set $block_ppc_approve_subscription 0;
+	}
+
+	if ($block_ppc_approve_subscription = 1) {
+		return 403;
+	}
 
 ####################################################################################################
 #### G. Server Block (Production): Cleanup Junk Query Strings ######################################
