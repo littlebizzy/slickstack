@@ -114,6 +114,10 @@ chmod 0755 "/var/www/html/wp-includes"
 ####################################################################################################
 
 if [[ "${STAGING_SITE}" != "false" ]]; then 
+    ## normalize staging wp-content ownership for auto-updates ##
+    ss_chown www-data:www-data "/var/www/html/staging/wp-content" ## must be www-data:www-data
+    chmod 0775 "/var/www/html/staging/wp-content" ## must be 0775
+
     ## ensure required staging wp-content directories exist (besides uploads because it is symlinked to production) ##
     ss_mkdir "/var/www/html/staging/wp-content/languages"
     ss_mkdir "/var/www/html/staging/wp-content/plugins"
@@ -159,7 +163,11 @@ fi
 #### F. SS-Perms-WordPress-Packages: Reset Directory Permissions (Development) #####################
 ####################################################################################################
 
-if [[ "${DEV_SITE}" != "false" ]]; then 
+if [[ "${DEV_SITE}" != "false" ]]; then
+    ## normalize dev wp-content ownership for auto-updates ##
+    ss_chown www-data:www-data "/var/www/html/dev/wp-content" ## must be www-data:www-data
+    chmod 0775 "/var/www/html/dev/wp-content" ## must be 0775
+
     ## ensure required dev wp-content directories exist ##
     ss_mkdir "/var/www/html/dev/wp-content/languages"
     ss_mkdir "/var/www/html/dev/wp-content/plugins"
