@@ -22,11 +22,10 @@
 ## A. Source SS-Config + SS-Functions
 ## B. Touch Timestamp File
 ## C. Message (Begin Script)
-## D. Reset Directory Permissions (Public Root)
-## E. Reset Directory Permissions (Production)
-## F. Reset Directory Permissions (Staging)
-## G. Reset Directory Permissions (Development)
-## H. Reset File Permissions
+## D. Reset Directory Permissions (Production)
+## E. Reset Directory Permissions (Staging)
+## F. Reset Directory Permissions (Development)
+## G. Reset File Permissions
 
 ####################################################################################################
 #### A. SS-Perms-WordPress-Packages: Source SS-Config + SS-Functions ###############################
@@ -62,25 +61,20 @@ ss_touch "${TIMESTAMP_SS_PERMS_WORDPRESS_PACKAGES}"
 ss_echo "${COLOR_INFO}Running ss-perms-wordpress-packages... ${COLOR_RESET}"
 
 ####################################################################################################
-#### D. SS-Perms-WordPress-Packages: Reset Directory Permissions (Public Root) #####################
-####################################################################################################
-
-ss_chown root:www-data /var/www/html ## must be root:www-data
-chmod 0775 /var/www/html ## must be 0775
-find /var/www/html/ -type d -print0 | xargs -0 chmod 0775 ## must be 0775
-
-####################################################################################################
-#### E. SS-Perms-WordPress-Packages: Reset Directory Permissions (Production) ######################
+#### D. SS-Perms-WordPress-Packages: Reset Directory Permissions (Production) ######################
 ####################################################################################################
 
 ## here we briefly reset permissions for WordPress Core files only to avoid errors etc ##
 ## keep in mind that non-WordPress Core files are not affected by this snippet ##
 
+## normalize public root ownership and directory perms ##
+ss_chown root:www-data /var/www/html ## must be root:www-data
+chmod 0775 /var/www/html ## must be 0775
+find /var/www/html/ -type d -print0 | xargs -0 chmod 0775 ## must be 0775
 
 ## ensure wp-content owned by www-data for plugin updates ##
 ss_chown www-data:www-data /var/www/html/wp-content
 chmod 0775 /var/www/html/wp-content
-
 
 ## ensure directories exist (besides wp-admin and wp-includes) ##
 ss_mkdir /var/www/html/wp-content/languages
@@ -116,7 +110,7 @@ chmod 0755 /var/www/html/wp-admin
 chmod 0755 /var/www/html/wp-includes
 
 ####################################################################################################
-#### F. SS-Perms-WordPress-Packages: Reset Directory Permissions (Staging) #########################
+#### E. SS-Perms-WordPress-Packages: Reset Directory Permissions (Staging) #########################
 ####################################################################################################
 
 if [[ "${STAGING_SITE}" != "false" ]]; then 
@@ -162,7 +156,7 @@ if [[ "${STAGING_SITE}" != "false" ]]; then
 fi
 
 ####################################################################################################
-#### G. SS-Perms-WordPress-Packages: Reset Directory Permissions (Development) #####################
+#### F. SS-Perms-WordPress-Packages: Reset Directory Permissions (Development) #####################
 ####################################################################################################
 
 if [[ "${DEV_SITE}" != "false" ]]; then 
@@ -201,7 +195,7 @@ if [[ "${DEV_SITE}" != "false" ]]; then
 fi
 
 ####################################################################################################
-#### H. SS-Perms-WordPress-Packages: Reset File Permissions ########################################
+#### G. SS-Perms-WordPress-Packages: Reset File Permissions ########################################
 ####################################################################################################
 
 ## set default perms for all public files ##
