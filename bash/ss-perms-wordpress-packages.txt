@@ -114,45 +114,45 @@ chmod 0755 "/var/www/html/wp-includes"
 ####################################################################################################
 
 if [[ "${STAGING_SITE}" != "false" ]]; then 
-    ## ensure directories exist (besides wp-admin and wp-includes and uploads because uploads is symlinked to production) ##
-    ss_mkdir /var/www/html/staging/wp-content/languages
-    ss_mkdir /var/www/html/staging/wp-content/plugins
-    ss_mkdir /var/www/html/staging/wp-content/temp
-    ss_mkdir /var/www/html/staging/wp-content/themes
-    ss_mkdir /var/www/html/staging/wp-content/upgrade
-    ss_mkdir /var/www/html/staging/wp-content/upgrade-temp-backup
+    ## ensure required staging wp-content directories exist (besides uploads because it is symlinked to production) ##
+    ss_mkdir "/var/www/html/staging/wp-content/languages"
+    ss_mkdir "/var/www/html/staging/wp-content/plugins"
+    ss_mkdir "/var/www/html/staging/wp-content/temp"
+    ss_mkdir "/var/www/html/staging/wp-content/themes"
+    ss_mkdir "/var/www/html/staging/wp-content/upgrade"
+    ss_mkdir "/var/www/html/staging/wp-content/upgrade-temp-backup"
 
-    ## fix ownership for plugin auto-updates and related temp dirs ##
-    ss_chown www-data:www-data /var/www/html/staging/wp-content/languages
-    ss_chown www-data:www-data /var/www/html/staging/wp-content/plugins
-    ss_chown www-data:www-data /var/www/html/staging/wp-content/temp
-    ss_chown www-data:www-data /var/www/html/staging/wp-content/themes
-    ss_chown www-data:www-data /var/www/html/staging/wp-content/upgrade
-    ss_chown www-data:www-data /var/www/html/staging/wp-content/upgrade-temp-backup
+    ## normalize ownership for writable staging wp-content directories ##
+    ss_chown www-data:www-data "/var/www/html/staging/wp-content/languages"
+    ss_chown www-data:www-data "/var/www/html/staging/wp-content/plugins"
+    ss_chown www-data:www-data "/var/www/html/staging/wp-content/temp"
+    ss_chown www-data:www-data "/var/www/html/staging/wp-content/themes"
+    ss_chown www-data:www-data "/var/www/html/staging/wp-content/upgrade"
+    ss_chown www-data:www-data "/var/www/html/staging/wp-content/upgrade-temp-backup"
 
-    ## allow php and sftp user to modify all writable wp-content dirs ##
-    chmod 0775 /var/www/html/staging/wp-content/languages
-    chmod 0775 /var/www/html/staging/wp-content/plugins
-    chmod 0775 /var/www/html/staging/wp-content/temp
-    chmod 0775 /var/www/html/staging/wp-content/themes
-    chmod 0775 /var/www/html/staging/wp-content/upgrade
-    chmod 0775 /var/www/html/staging/wp-content/upgrade-temp-backup
+    ## allow php and sftp user to write to staging wp-content directories ##
+    chmod 0775 "/var/www/html/staging/wp-content/languages"
+    chmod 0775 "/var/www/html/staging/wp-content/plugins"
+    chmod 0775 "/var/www/html/staging/wp-content/temp"
+    chmod 0775 "/var/www/html/staging/wp-content/themes"
+    chmod 0775 "/var/www/html/staging/wp-content/upgrade"
+    chmod 0775 "/var/www/html/staging/wp-content/upgrade-temp-backup"
 
-    ## lock down wordpress core directories slightly to prevent sftp user from making changes ##
-    ss_chown www-data:www-data /var/www/html/staging/wp-admin
-    ss_chown www-data:www-data /var/www/html/staging/wp-includes
-    chmod 0755 /var/www/html/staging/wp-admin
-    chmod 0755 /var/www/html/staging/wp-includes
+    ## restrict staging wordpress core directories to prevent sftp edits ##
+    ss_chown www-data:www-data "/var/www/html/staging/wp-admin"
+    ss_chown www-data:www-data "/var/www/html/staging/wp-includes"
+    chmod 0755 "/var/www/html/staging/wp-admin"
+    chmod 0755 "/var/www/html/staging/wp-includes"
 
-    ## recreate uploads symlink if not already a symlink ##
+    ## ensure staging uploads is a symlink to production ##
     if [[ ! -L "${PATH_WORDPRESS_UPLOADS_STAGING}" ]]; then
         ss_rm "${PATH_WORDPRESS_UPLOADS_STAGING}"
         ss_ln "${PATH_WORDPRESS_UPLOADS_PRODUCTION}" "${PATH_WORDPRESS_UPLOADS_STAGING}"
     fi
 
-    ## uploads symlink permissions ##
-    chown -h root:root /var/www/html/staging/wp-content/uploads ## must be root:root
-    # chmod -h 0777 /var/www/html/staging/wp-content/uploads ## must be 0777 ## pointless for most systems
+    ## normalize uploads symlink ownership ##
+    chown -h root:root "/var/www/html/staging/wp-content/uploads" ## must be root:root
+    # chmod -h 0777 "/var/www/html/staging/wp-content/uploads" ## must be 0777 ## pointless for most systems
 fi
 
 ####################################################################################################
