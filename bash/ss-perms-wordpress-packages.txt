@@ -64,17 +64,17 @@ ss_echo "${COLOR_INFO}Running ss-perms-wordpress-packages... ${COLOR_RESET}"
 #### D. SS-Perms-WordPress-Packages: Reset Directory Permissions (Production) ######################
 ####################################################################################################
 
-## here we briefly reset permissions for WordPress Core files only to avoid errors etc ##
-## keep in mind that non-WordPress Core files are not affected by this snippet ##
+## normalizes production directory ownership and perms for WordPress and wp-content ##
+## non-WordPress paths outside of this scope are not affected by this section ##
 
 ## normalize public root ownership and directory perms ##
-ss_chown root:www-data /var/www/html ## must be root:www-data
-chmod 0775 /var/www/html ## must be 0775
-find /var/www/html/ -type d -print0 | xargs -0 chmod 0775 ## must be 0775
+ss_chown root:www-data "/var/www/html" ## must be root:www-data
+chmod 0775 "/var/www/html" ## must be 0775
+find "/var/www/html" -type d -print0 | xargs -0 chmod 0775 ## must be 0775
 
-## ensure wp-content owned by www-data for plugin updates ##
-ss_chown www-data:www-data /var/www/html/wp-content
-chmod 0775 /var/www/html/wp-content
+## normalize wp-content ownership for auto-updates ##
+ss_chown www-data:www-data "/var/www/html/wp-content" ## must be www-data:www-data
+chmod 0775 "/var/www/html/wp-content" ## must be 0775
 
 ## ensure directories exist (besides wp-admin and wp-includes) ##
 ss_mkdir /var/www/html/wp-content/languages
