@@ -83,7 +83,6 @@ chown root:root /var/www ## must be root:root
 chown www-data:www-data /var/www/cache ## must be www-data:www-data
 chown www-data:www-data /var/www/cache/opcache ## must be www-data:www-data
 chown root:root /var/www/crons ## must be root:root
-chown -R $SFTP_USER:www-data /var/www/html/.well-known
 chown www-data:www-data /var/www/logs ## must be www-data:www-data
 chown www-data:www-data /var/www/meta ## must be www-data:www-data
 chmod 0755 /var/www ## must be 0755
@@ -219,6 +218,17 @@ if [[ "${SS_APP}" == "wordpress" ]] || [[ -z "${SS_APP}"  ]]; then
     ## run ss-perms-wordpress-config (must be last) ##
     source "${PATH_SS_PERMS_WORDPRESS_CONFIG}"
     
+fi
+
+####################################################################################################
+#### SS-Perms: Reset Permissions (Well-Known) ######################################################
+####################################################################################################
+
+if [[ -d "/var/www/html/.well-known" ]]; then
+    chown -R "${SFTP_USER}":www-data "/var/www/html/.well-known"
+    chmod 0775 "/var/www/html/.well-known"
+    find "/var/www/html/.well-known" -type d -print0 | xargs -0 chmod 0775
+    find "/var/www/html/.well-known" -type f -print0 | xargs -0 chmod 0664
 fi
 
 ####################################################################################################
