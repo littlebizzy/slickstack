@@ -258,23 +258,27 @@ ss_touch "${TIMESTAMP_06_CRON_HOURLY}"
 ## WP-CLI is the default as it works much better (also required for Multisite) ##
 
 ## PATTERN: ss cron jobs
-## UPDATED: 28FEB2025
+## UPDATED: 02MAY2026
 
 ## run wp-cron if set to hourly ##
 if [[ "${WP_CRON_INTERVAL}" == "hourly" ]]; then
+
     ## use wp-cli unless set to server or if running multisite ##
     if [[ "${WP_CRON_METHOD}" != "server" || "${WP_MULTISITE}" == "true" ]]; then
+
         if [[ "${WP_MULTISITE}" == "true" ]]; then
             ## run wp-cron for all sites in multisite ##
-            sudo -u "${SFTP_USER}" "${PATH_WP_CLI}" --path="${PATH_WEB_ROOT}" site list --field=url | sudo -u "${SFTP_USER}" xargs -I {} "${PATH_WP_CLI}" --path="${PATH_WEB_ROOT}" cron event run --due-now --url="{}"
+            sudo -u www-data "${PATH_WP_CLI}" --path="${PATH_WEB_ROOT}" site list --field=url | sudo -u www-data xargs -I {} "${PATH_WP_CLI}" --path="${PATH_WEB_ROOT}" cron event run --due-now --url="{}" 2>> /var/www/logs/wp-cli.log
         else
-            ## run wp-cli for single site ##
-            sudo -u "${SFTP_USER}" "${PATH_WP_CLI}" --path="${PATH_WEB_ROOT}" cron event run --due-now
+            ## run wp-cron for single site ##
+            sudo -u www-data "${PATH_WP_CLI}" --path="${PATH_WEB_ROOT}" cron event run --due-now 2>> /var/www/logs/wp-cli.log
         fi
+
     else
         ## use server method ##
-        "${PATH_PHP_BIN}" "${PATH_WP_CRON_PHP}"
+        sudo -u www-data "${PATH_PHP_BIN}" "${PATH_WP_CRON_PHP}" >/dev/null 2>&1
     fi
+
 fi
 
 ####################################################################################################
