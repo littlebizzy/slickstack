@@ -73,7 +73,7 @@ if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]]; then
     if [[ -f "/tmp/import.tar" ]]; then
         echo "found import.tar and proceeding to import and overwrite"
         ss_chown "${SFTP_USER}":www-data /tmp/import.tar
-        chmod 6775 /tmp/import.tar
+        chmod 0644 /tmp/import.tar
         ss_mkdir /var/www/html
         ss_chown "${SFTP_USER}":slickstack /var/www/html
         chmod 0775 /var/www/html ## must be 0775 (0755 not enough)
@@ -82,16 +82,19 @@ if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]]; then
         ## run ss-install-wordpress-config ##
         source "${PATH_SS_INSTALL_WORDPRESS_CONFIG}"
 
-        ## run ss-perms-wordpress-mu-plugins ##
-        source "${PATH_SS_PERMS_WORDPRESS_MU_PLUGINS}"
-        
         ## run ss-perms-wordpress-packages ##
         source "${PATH_SS_PERMS_WORDPRESS_PACKAGES}"
+
+        ## run ss-perms-wordpress-mu-plugins ##
+        source "${PATH_SS_PERMS_WORDPRESS_MU_PLUGINS}"
+
+        ## run ss-perms-wordpress-config ##
+        source "${PATH_SS_PERMS_WORDPRESS_CONFIG}"
     
     elif [[ ! -f "/tmp/import.tar" ]] && [[ -f "/tmp/import.tar.gz" ]]; then
         echo "found import.tar.gz and proceeding to import and overwrite"
         ss_chown "${SFTP_USER}":www-data /tmp/import.tar.gz
-        chmod 6775 /tmp/import.tar.gz
+        chmod 0644 /tmp/import.tar.gz
         ss_mkdir /var/www/html
         ss_chown "${SFTP_USER}":slickstack /var/www/html
         chmod 0775 /var/www/html ## must be 0775 (0755 not enough)
@@ -100,11 +103,14 @@ if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]]; then
         ## run ss-install-wordpress-config ##
         source "${PATH_SS_INSTALL_WORDPRESS_CONFIG}"
 
-        ## run ss-perms-wordpress-mu-plugins ##
-        source "${PATH_SS_PERMS_WORDPRESS_MU_PLUGINS}"
-        
         ## run ss-perms-wordpress-packages ##
         source "${PATH_SS_PERMS_WORDPRESS_PACKAGES}"
+
+        ## run ss-perms-wordpress-mu-plugins ##
+        source "${PATH_SS_PERMS_WORDPRESS_MU_PLUGINS}"
+
+        ## run ss-perms-wordpress-config ##
+        source "${PATH_SS_PERMS_WORDPRESS_CONFIG}"
         
     elif [[ ! -f "/tmp/import.tar" ]] && [[ ! -f "/tmp/import.tar.gz" ]]; then
         echo "could not find import.tar or import.tar.gz in /tmp/ folder"
