@@ -258,16 +258,13 @@ ss_touch "${TIMESTAMP_02_CRON_OFTEN}"
 ## WP-CLI is the default as it works much better (also required for Multisite) ##
 
 ## PATTERN: ss cron jobs
-## UPDATED: 16APR2025
+## UPDATED: 02MAY2026
 
 ## run wp-cron if set to often (default) or not properly defined ##
 if [[ "${WP_CRON_INTERVAL}" == "often" ]] || [[ "${WP_CRON_INTERVAL}" != @(minutely|often|regular|quarter-hourly|half-hourly|hourly) ]]; then
 
     ## use wp-cli unless set to server or if running multisite ##
     if [[ "${WP_CRON_METHOD}" != "server" || "${WP_MULTISITE}" == "true" ]]; then
-
-        ## run wp-cron.php to trigger registration of all scheduled events (only needed in wp-cli mode) ##
-        "${PATH_PHP_BIN}" "${PATH_WP_CRON_PHP}" >/dev/null 2>&1
 
         if [[ "${WP_MULTISITE}" == "true" ]]; then
             ## run wp-cron for all sites in multisite ##
@@ -279,7 +276,7 @@ if [[ "${WP_CRON_INTERVAL}" == "often" ]] || [[ "${WP_CRON_INTERVAL}" != @(minut
 
     else
         ## use server method ##
-        "${PATH_PHP_BIN}" "${PATH_WP_CRON_PHP}"
+        sudo -u www-data "${PATH_PHP_BIN}" "${PATH_WP_CRON_PHP}" >/dev/null 2>&1
     fi
 
 fi
