@@ -31,11 +31,12 @@
 ## G. Copy All Relevant Files From Staging To Production
 ## H. Fix Incorrect URLs in Production Database
 ## I. Fix Any Hardcoded Links In Production Theme Files
-## J. Purge Cache (OPcache)
-## K. Purge Cache (Transients)
-## L. Purge Cache (Memcached)
-## M. Purge Cache (Nginx)
-## N. INTERACTIVE PROMPT EXIT
+## J. Reset Permissions (WordPress)
+## K. Purge Cache (OPcache)
+## L. Purge Cache (Transients)
+## M. Purge Cache (Memcached)
+## N. Purge Cache (Nginx)
+## O. INTERACTIVE PROMPT EXIT
 
 ####################################################################################################
 #### A. SS-Push-Staging: Source SS-Config + SS-Functions ###########################################
@@ -155,31 +156,44 @@ sudo -u "${SFTP_USER}" /usr/local/bin/wp --path=/var/www/html search-replace htt
 # find /var/www/html/wp-content/themes/ -type f -exec ss_sed "s#http://staging.${SITE_DOMAIN_EXCLUDING_WWW}#https://${SITE_DOMAIN_EXCLUDING_WWW}#g" {} +
 
 ####################################################################################################
-#### J. SS-Push-Staging: Purge Cache (OPcache) #####################################################
+#### J. SS-Push-Staging: Reset Permissions (WordPress) ############################################
+####################################################################################################
+
+## run ss-perms-wordpress-packages ##
+source "${PATH_SS_PERMS_WORDPRESS_PACKAGES}"
+
+## run ss-perms-wordpress-mu-plugins ##
+source "${PATH_SS_PERMS_WORDPRESS_MU_PLUGINS}"
+
+## run ss-perms-wordpress-config ##
+source "${PATH_SS_PERMS_WORDPRESS_CONFIG}"
+
+####################################################################################################
+#### K. SS-Push-Staging: Purge Cache (OPcache) #####################################################
 ####################################################################################################
 
 source "${PATH_SS_PURGE_OPCACHE}"
 
 ####################################################################################################
-#### K. SS-Push-Staging: Purge Cache (Transients) ##################################################
+#### L. SS-Push-Staging: Purge Cache (Transients) ##################################################
 ####################################################################################################
 
 source "${PATH_SS_PURGE_TRANSIENTS}"
 
 ####################################################################################################
-#### L. SS-Push-Staging: Purge Cache (Memcached) ###################################################
+#### M. SS-Push-Staging: Purge Cache (Memcached) ###################################################
 ####################################################################################################
 
 source "${PATH_SS_PURGE_MEMCACHED}"
 
 ####################################################################################################
-#### M. SS-Push-Staging: Purge Cache (Nginx) #######################################################
+#### N. SS-Push-Staging: Purge Cache (Nginx) #######################################################
 ####################################################################################################
 
 source "${PATH_SS_PURGE_NGINX}"
 
 ####################################################################################################
-#### N. SS-Push-Staging: INTERACTIVE PROMPT EXIT ###################################################
+#### O. SS-Push-Staging: INTERACTIVE PROMPT EXIT ###################################################
 ####################################################################################################
 
 else
