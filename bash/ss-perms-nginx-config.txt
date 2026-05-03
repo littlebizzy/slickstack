@@ -71,7 +71,7 @@ ss_touch /var/www/meta/.htpasswd
 
 ## chown dirs ##
 ss_chown www-data:www-data /var/www/cache/nginx ## must be www-data:www-data
-chown "${SFTP_USER}":slickstack /var/www/html ## must be SFTP_USER:slickstack
+chown "${SFTP_USER}":www-data /var/www/html ## must be SFTP_USER:www-data
 chown root:www-data /var/www/logs ## must be root:www-data
 chown root:www-data /var/www/meta ## must be root:www-data
 chown root:root /var/www/certs
@@ -89,10 +89,10 @@ chown root:www-data /var/www/meta/.htpasswd ## must be root:www-data
 chmod 0755 /var/www/cache/nginx ## 0755 seems enough
 chmod 0775 /var/www/html ## must be 0775 (0755 not enough)
 chmod 0775 /var/www/logs ## 0755 should also work
-chmod 0775 /var/www/meta ## 0755 should also work
-ss_chmod 0775 /var/www/sites ## 0755 should also work
-ss_chmod 0775 /var/www/sites/includes ## 0755 should also work
-ss_chmod 0775 /var/www/sites/error_pages ## 0755 should also work
+chmod 0755 /var/www/meta ## must be 0755
+ss_chmod 0755 /var/www/sites ## must be 0755
+ss_chmod 0755 /var/www/sites/includes ## must be 0755
+ss_chmod 0755 /var/www/sites/error_pages ## must be 0755
 
 ## chmod files ##
 ss_chmod 0640 /var/www/meta/.htpasswd ## must be 0640
@@ -110,8 +110,26 @@ ss_chmod 0660 /var/www/logs/nginx*.log ## must be 0660
 
 ## cloudflare.ini ##
 if [[ -f /var/www/meta/cloudflare.ini ]]; then
-    chmod 600 /var/www/meta/cloudflare.ini
-    chown root:root /var/www/meta/cloudflare.ini
+    chown root:root /var/www/meta/cloudflare.ini ## must be root:root
+    chmod 0600 /var/www/meta/cloudflare.ini ## must be 0600
+fi
+
+## rclone.conf ##
+if [[ -f /var/www/meta/rclone.conf ]]; then
+    chown root:root /var/www/meta/rclone.conf ## must be root:root
+    chmod 0600 /var/www/meta/rclone.conf ## must be 0600
+fi
+
+## adminer.php ##
+if [[ -f /var/www/meta/adminer.php ]]; then
+    chown root:www-data /var/www/meta/adminer.php ## must be root:www-data
+    chmod 0640 /var/www/meta/adminer.php ## must be 0640
+fi
+
+## maintenance.html ##
+if [[ -f /var/www/meta/maintenance.html ]]; then
+    chown root:www-data /var/www/meta/maintenance.html ## must be root:www-data
+    chmod 0644 /var/www/meta/maintenance.html ## must be 0644
 fi
 
 ####################################################################################################

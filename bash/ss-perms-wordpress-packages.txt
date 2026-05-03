@@ -22,10 +22,10 @@
 ## A. Source SS-Config + SS-Functions
 ## B. Touch Timestamp File
 ## C. Message (Begin Script)
-## D. Reset Directory Permissions (Production)
-## E. Reset Directory Permissions (Staging)
-## F. Reset Directory Permissions (Development)
-## G. Reset File Permissions
+## D. Reset WordPress Directory Helper
+## E. Reset WordPress Permissions (Production)
+## F. Reset WordPress Permissions (Staging)
+## G. Reset WordPress Permissions (Development)
 
 ####################################################################################################
 #### A. SS-Perms-WordPress-Packages: Source SS-Config + SS-Functions ###############################
@@ -61,174 +61,139 @@ ss_touch "${TIMESTAMP_SS_PERMS_WORDPRESS_PACKAGES}"
 ss_echo "${COLOR_INFO}Running ss-perms-wordpress-packages... ${COLOR_RESET}"
 
 ####################################################################################################
-#### D. SS-Perms-WordPress-Packages: Reset Directory Permissions (Production) ######################
+#### D. SS-Perms-WordPress-Packages: Reset WordPress Directory Helper ##############################
 ####################################################################################################
 
-## normalizes production directory ownership and perms for WordPress and wp-content ##
-## non-WordPress paths outside of this scope are not affected by this section ##
+## this helper avoids broad recursive resets of the public root ##
+## each wordpress tree is divided into sftp, php, and root controlled zones ##
 
-## normalize public root ownership and directory perms ##
-ss_chown root:www-data "/var/www/html" ## must be root:www-data
-chmod 0775 "/var/www/html" ## must be 0775
-find "/var/www/html" -type d -print0 | xargs -0 chmod 0775 ## must be 0775
+function ss_reset_wordpress_tree_permissions {
+    local WORDPRESS_ROOT_PATH="${1}"
+    local WORDPRESS_UPLOADS_SOURCE_PATH="${2}"
 
-## normalize wp-content ownership for auto-updates ##
-ss_chown www-data:www-data "/var/www/html/wp-content" ## must be www-data:www-data
-chmod 0775 "/var/www/html/wp-content" ## must be 0775
-
-## ensure required wp-content directories exist ##
-ss_mkdir "/var/www/html/wp-content/languages"
-ss_mkdir "/var/www/html/wp-content/plugins"
-ss_mkdir "/var/www/html/wp-content/temp"
-ss_mkdir "/var/www/html/wp-content/themes"
-ss_mkdir "/var/www/html/wp-content/upgrade"
-ss_mkdir "/var/www/html/wp-content/upgrade-temp-backup"
-ss_mkdir "/var/www/html/wp-content/uploads"
-
-## normalize ownership for writable wp-content directories ##
-ss_chown www-data:www-data "/var/www/html/wp-content/languages"
-ss_chown www-data:www-data "/var/www/html/wp-content/plugins"
-ss_chown www-data:www-data "/var/www/html/wp-content/temp"
-ss_chown www-data:www-data "/var/www/html/wp-content/themes"
-ss_chown www-data:www-data "/var/www/html/wp-content/upgrade"
-ss_chown www-data:www-data "/var/www/html/wp-content/upgrade-temp-backup"
-ss_chown www-data:www-data "/var/www/html/wp-content/uploads"
-
-## allow php and sftp user to write to wp-content directories ##
-chmod 0775 "/var/www/html/wp-content/languages"
-chmod 0775 "/var/www/html/wp-content/plugins"
-chmod 0775 "/var/www/html/wp-content/temp"
-chmod 0775 "/var/www/html/wp-content/themes"
-chmod 0775 "/var/www/html/wp-content/upgrade"
-chmod 0775 "/var/www/html/wp-content/upgrade-temp-backup"
-chmod 0775 "/var/www/html/wp-content/uploads"
-
-## restrict wordpress core directories to prevent sftp edits ##
-ss_chown www-data:www-data "/var/www/html/wp-admin"
-ss_chown www-data:www-data "/var/www/html/wp-includes"
-find "/var/www/html/wp-admin" -type d -print0 | xargs -0 chmod 0755
-find "/var/www/html/wp-includes" -type d -print0 | xargs -0 chmod 0755
-
-####################################################################################################
-#### E. SS-Perms-WordPress-Packages: Reset Directory Permissions (Staging) #########################
-####################################################################################################
-
-## normalizes staging directory ownership and perms for WordPress and wp-content ##
-## non-WordPress paths outside of this scope are not affected by this section ##
-
-if [[ "${STAGING_SITE}" != "false" ]]; then 
-    ## normalize staging wp-content ownership for auto-updates ##
-    ss_chown www-data:www-data "/var/www/html/staging/wp-content" ## must be www-data:www-data
-    chmod 0775 "/var/www/html/staging/wp-content" ## must be 0775
-
-    ## ensure required staging wp-content directories exist (besides uploads because it is symlinked to production) ##
-    ss_mkdir "/var/www/html/staging/wp-content/languages"
-    ss_mkdir "/var/www/html/staging/wp-content/plugins"
-    ss_mkdir "/var/www/html/staging/wp-content/temp"
-    ss_mkdir "/var/www/html/staging/wp-content/themes"
-    ss_mkdir "/var/www/html/staging/wp-content/upgrade"
-    ss_mkdir "/var/www/html/staging/wp-content/upgrade-temp-backup"
-
-    ## normalize ownership for writable staging wp-content directories ##
-    ss_chown www-data:www-data "/var/www/html/staging/wp-content/languages"
-    ss_chown www-data:www-data "/var/www/html/staging/wp-content/plugins"
-    ss_chown www-data:www-data "/var/www/html/staging/wp-content/temp"
-    ss_chown www-data:www-data "/var/www/html/staging/wp-content/themes"
-    ss_chown www-data:www-data "/var/www/html/staging/wp-content/upgrade"
-    ss_chown www-data:www-data "/var/www/html/staging/wp-content/upgrade-temp-backup"
-
-    ## allow php and sftp user to write to staging wp-content directories ##
-    chmod 0775 "/var/www/html/staging/wp-content/languages"
-    chmod 0775 "/var/www/html/staging/wp-content/plugins"
-    chmod 0775 "/var/www/html/staging/wp-content/temp"
-    chmod 0775 "/var/www/html/staging/wp-content/themes"
-    chmod 0775 "/var/www/html/staging/wp-content/upgrade"
-    chmod 0775 "/var/www/html/staging/wp-content/upgrade-temp-backup"
-
-    ## restrict staging wordpress core directories to prevent sftp edits ##
-    ss_chown www-data:www-data "/var/www/html/staging/wp-admin"
-    ss_chown www-data:www-data "/var/www/html/staging/wp-includes"
-    find "/var/www/html/staging/wp-admin" -type d -print0 | xargs -0 chmod 0755
-    find "/var/www/html/staging/wp-includes" -type d -print0 | xargs -0 chmod 0755
-
-    ## ensure staging uploads is a symlink to production ##
-    if [[ ! -L "${PATH_WORDPRESS_UPLOADS_STAGING}" ]]; then
-        ss_rm "${PATH_WORDPRESS_UPLOADS_STAGING}"
-        ss_ln "${PATH_WORDPRESS_UPLOADS_PRODUCTION}" "${PATH_WORDPRESS_UPLOADS_STAGING}"
+    if [[ ! -d "${WORDPRESS_ROOT_PATH}" ]]; then
+        return 0
     fi
 
-    ## normalize uploads symlink ownership ##
-    chown -h root:root "/var/www/html/staging/wp-content/uploads" ## must be root:root
-    # chmod -h 0777 "/var/www/html/staging/wp-content/uploads" ## must be 0777 ## pointless for most systems
+    ## keep the web-root shell friendly for sftp and public verification files ##
+    chown "${SFTP_USER}":www-data "${WORDPRESS_ROOT_PATH}" ## must be SFTP_USER:www-data
+    chmod 0775 "${WORDPRESS_ROOT_PATH}" ## must be 0775
+
+    ## allow sftp edits for simple non-php files in the web root ##
+    find "${WORDPRESS_ROOT_PATH}" -maxdepth 1 -type f ! -name "*.php" -print0 | xargs -0 --no-run-if-empty chown "${SFTP_USER}":www-data
+    find "${WORDPRESS_ROOT_PATH}" -maxdepth 1 -type f ! -name "*.php" -print0 | xargs -0 --no-run-if-empty chmod 0664
+
+    ## keep top-level wordpress php files owned by php for core updates ##
+    find "${WORDPRESS_ROOT_PATH}" -maxdepth 1 -type f -name "*.php" ! -name "wp-config.php" -print0 | xargs -0 --no-run-if-empty chown www-data:www-data
+    find "${WORDPRESS_ROOT_PATH}" -maxdepth 1 -type f -name "*.php" ! -name "wp-config.php" -print0 | xargs -0 --no-run-if-empty chmod 0644
+
+    ## ensure required wp-content directories exist ##
+    ss_mkdir "${WORDPRESS_ROOT_PATH}/wp-content"
+    ss_mkdir "${WORDPRESS_ROOT_PATH}/wp-content/languages"
+    ss_mkdir "${WORDPRESS_ROOT_PATH}/wp-content/plugins"
+    ss_mkdir "${WORDPRESS_ROOT_PATH}/wp-content/temp"
+    ss_mkdir "${WORDPRESS_ROOT_PATH}/wp-content/themes"
+    ss_mkdir "${WORDPRESS_ROOT_PATH}/wp-content/upgrade"
+    ss_mkdir "${WORDPRESS_ROOT_PATH}/wp-content/upgrade-temp-backup"
+
+    if [[ -z "${WORDPRESS_UPLOADS_SOURCE_PATH}" ]]; then
+        ss_mkdir "${WORDPRESS_ROOT_PATH}/wp-content/uploads"
+    elif [[ ! -L "${WORDPRESS_ROOT_PATH}/wp-content/uploads" ]]; then
+        ss_rm "${WORDPRESS_ROOT_PATH}/wp-content/uploads"
+        ss_ln "${WORDPRESS_UPLOADS_SOURCE_PATH}" "${WORDPRESS_ROOT_PATH}/wp-content/uploads"
+    fi
+
+    ## allow wordpress and php to manage wp-content safely ##
+    chown www-data:www-data "${WORDPRESS_ROOT_PATH}/wp-content" ## must be www-data:www-data
+    chmod 0775 "${WORDPRESS_ROOT_PATH}/wp-content" ## must be 0775
+    find "${WORDPRESS_ROOT_PATH}/wp-content" -maxdepth 1 -type f -print0 | xargs -0 --no-run-if-empty chown www-data:www-data
+    find "${WORDPRESS_ROOT_PATH}/wp-content" -maxdepth 1 -type f -print0 | xargs -0 --no-run-if-empty chmod 0664
+
+    ## allow wordpress updates, installs, uploads, translations, and rollback temp backups ##
+    if [[ -d "${WORDPRESS_ROOT_PATH}/wp-content/languages" ]]; then
+        ss_chown www-data:www-data "${WORDPRESS_ROOT_PATH}/wp-content/languages"
+        find "${WORDPRESS_ROOT_PATH}/wp-content/languages" -type d -print0 | xargs -0 --no-run-if-empty chmod 0775
+        find "${WORDPRESS_ROOT_PATH}/wp-content/languages" -type f -print0 | xargs -0 --no-run-if-empty chmod 0664
+    fi
+
+    if [[ -d "${WORDPRESS_ROOT_PATH}/wp-content/plugins" ]]; then
+        ss_chown www-data:www-data "${WORDPRESS_ROOT_PATH}/wp-content/plugins"
+        find "${WORDPRESS_ROOT_PATH}/wp-content/plugins" -type d -print0 | xargs -0 --no-run-if-empty chmod 0775
+        find "${WORDPRESS_ROOT_PATH}/wp-content/plugins" -type f -print0 | xargs -0 --no-run-if-empty chmod 0664
+    fi
+
+    if [[ -d "${WORDPRESS_ROOT_PATH}/wp-content/temp" ]]; then
+        ss_chown www-data:www-data "${WORDPRESS_ROOT_PATH}/wp-content/temp"
+        find "${WORDPRESS_ROOT_PATH}/wp-content/temp" -type d -print0 | xargs -0 --no-run-if-empty chmod 0775
+        find "${WORDPRESS_ROOT_PATH}/wp-content/temp" -type f -print0 | xargs -0 --no-run-if-empty chmod 0664
+    fi
+
+    if [[ -d "${WORDPRESS_ROOT_PATH}/wp-content/themes" ]]; then
+        ss_chown www-data:www-data "${WORDPRESS_ROOT_PATH}/wp-content/themes"
+        find "${WORDPRESS_ROOT_PATH}/wp-content/themes" -type d -print0 | xargs -0 --no-run-if-empty chmod 0775
+        find "${WORDPRESS_ROOT_PATH}/wp-content/themes" -type f -print0 | xargs -0 --no-run-if-empty chmod 0664
+    fi
+
+    if [[ -d "${WORDPRESS_ROOT_PATH}/wp-content/upgrade" ]]; then
+        ss_chown www-data:www-data "${WORDPRESS_ROOT_PATH}/wp-content/upgrade"
+        find "${WORDPRESS_ROOT_PATH}/wp-content/upgrade" -type d -print0 | xargs -0 --no-run-if-empty chmod 0775
+        find "${WORDPRESS_ROOT_PATH}/wp-content/upgrade" -type f -print0 | xargs -0 --no-run-if-empty chmod 0664
+    fi
+
+    if [[ -d "${WORDPRESS_ROOT_PATH}/wp-content/upgrade-temp-backup" ]]; then
+        ss_chown www-data:www-data "${WORDPRESS_ROOT_PATH}/wp-content/upgrade-temp-backup"
+        find "${WORDPRESS_ROOT_PATH}/wp-content/upgrade-temp-backup" -type d -print0 | xargs -0 --no-run-if-empty chmod 0775
+        find "${WORDPRESS_ROOT_PATH}/wp-content/upgrade-temp-backup" -type f -print0 | xargs -0 --no-run-if-empty chmod 0664
+    fi
+
+    if [[ -z "${WORDPRESS_UPLOADS_SOURCE_PATH}" && -d "${WORDPRESS_ROOT_PATH}/wp-content/uploads" ]]; then
+        ss_chown www-data:www-data "${WORDPRESS_ROOT_PATH}/wp-content/uploads"
+        find "${WORDPRESS_ROOT_PATH}/wp-content/uploads" -type d -print0 | xargs -0 --no-run-if-empty chmod 0775
+        find "${WORDPRESS_ROOT_PATH}/wp-content/uploads" -type f -print0 | xargs -0 --no-run-if-empty chmod 0664
+    elif [[ -L "${WORDPRESS_ROOT_PATH}/wp-content/uploads" ]]; then
+        chown -h root:root "${WORDPRESS_ROOT_PATH}/wp-content/uploads" ## must be root:root
+    fi
+
+    ## restrict wordpress core directories to prevent sftp edits ##
+    if [[ -d "${WORDPRESS_ROOT_PATH}/wp-admin" ]]; then
+        ss_chown www-data:www-data "${WORDPRESS_ROOT_PATH}/wp-admin"
+        find "${WORDPRESS_ROOT_PATH}/wp-admin" -type d -print0 | xargs -0 --no-run-if-empty chmod 0755
+        find "${WORDPRESS_ROOT_PATH}/wp-admin" -type f -print0 | xargs -0 --no-run-if-empty chmod 0644
+    fi
+
+    if [[ -d "${WORDPRESS_ROOT_PATH}/wp-includes" ]]; then
+        ss_chown www-data:www-data "${WORDPRESS_ROOT_PATH}/wp-includes"
+        find "${WORDPRESS_ROOT_PATH}/wp-includes" -type d -print0 | xargs -0 --no-run-if-empty chmod 0755
+        find "${WORDPRESS_ROOT_PATH}/wp-includes" -type f -print0 | xargs -0 --no-run-if-empty chmod 0644
+    fi
+}
+
+####################################################################################################
+#### E. SS-Perms-WordPress-Packages: Reset WordPress Permissions (Production) ######################
+####################################################################################################
+
+## reset production wordpress permissions using explicit policy zones ##
+
+ss_reset_wordpress_tree_permissions "/var/www/html" ""
+
+####################################################################################################
+#### F. SS-Perms-WordPress-Packages: Reset WordPress Permissions (Staging) #########################
+####################################################################################################
+
+## reset staging wordpress permissions only when staging is enabled and exists ##
+
+if [[ "${STAGING_SITE}" != "false" && -d "/var/www/html/staging" ]]; then
+    ss_reset_wordpress_tree_permissions "/var/www/html/staging" "${PATH_WORDPRESS_UPLOADS_PRODUCTION}"
 fi
 
 ####################################################################################################
-#### F. SS-Perms-WordPress-Packages: Reset Directory Permissions (Development) #####################
+#### G. SS-Perms-WordPress-Packages: Reset WordPress Permissions (Development) #####################
 ####################################################################################################
 
-## normalizes development directory ownership and perms for WordPress and wp-content ##
-## non-WordPress paths outside of this scope are not affected by this section ##
+## reset development wordpress permissions only when development is enabled and exists ##
 
-if [[ "${DEV_SITE}" != "false" ]]; then
-    ## normalize dev wp-content ownership for auto-updates ##
-    ss_chown www-data:www-data "/var/www/html/dev/wp-content" ## must be www-data:www-data
-    chmod 0775 "/var/www/html/dev/wp-content" ## must be 0775
-
-    ## ensure required dev wp-content directories exist ##
-    ss_mkdir "/var/www/html/dev/wp-content/languages"
-    ss_mkdir "/var/www/html/dev/wp-content/plugins"
-    ss_mkdir "/var/www/html/dev/wp-content/temp"
-    ss_mkdir "/var/www/html/dev/wp-content/themes"
-    ss_mkdir "/var/www/html/dev/wp-content/upgrade"
-    ss_mkdir "/var/www/html/dev/wp-content/upgrade-temp-backup"
-    ss_mkdir "/var/www/html/dev/wp-content/uploads"
-
-    ## normalize ownership for writable dev wp-content directories ##
-    ss_chown www-data:www-data "/var/www/html/dev/wp-content/languages"
-    ss_chown www-data:www-data "/var/www/html/dev/wp-content/plugins"
-    ss_chown www-data:www-data "/var/www/html/dev/wp-content/temp"
-    ss_chown www-data:www-data "/var/www/html/dev/wp-content/themes"
-    ss_chown www-data:www-data "/var/www/html/dev/wp-content/upgrade"
-    ss_chown www-data:www-data "/var/www/html/dev/wp-content/upgrade-temp-backup"
-    ss_chown www-data:www-data "/var/www/html/dev/wp-content/uploads"
-
-    ## allow php and sftp user to write to dev wp-content directories ##
-    chmod 0775 "/var/www/html/dev/wp-content/languages"
-    chmod 0775 "/var/www/html/dev/wp-content/plugins"
-    chmod 0775 "/var/www/html/dev/wp-content/temp"
-    chmod 0775 "/var/www/html/dev/wp-content/themes"
-    chmod 0775 "/var/www/html/dev/wp-content/upgrade"
-    chmod 0775 "/var/www/html/dev/wp-content/upgrade-temp-backup"
-    chmod 0775 "/var/www/html/dev/wp-content/uploads"
-
-    ## restrict dev wordpress core directories to prevent sftp edits ##
-    ss_chown www-data:www-data "/var/www/html/dev/wp-admin"
-    ss_chown www-data:www-data "/var/www/html/dev/wp-includes"
-    find "/var/www/html/dev/wp-admin" -type d -print0 | xargs -0 chmod 0755
-    find "/var/www/html/dev/wp-includes" -type d -print0 | xargs -0 chmod 0755
-fi
-
-####################################################################################################
-#### G. SS-Perms-WordPress-Packages: Reset File Permissions ########################################
-####################################################################################################
-
-## set default perms for all public files ##
-find "/var/www/html" -type f -print0 | xargs -0 chmod 0664 ## must be 0664
-
-## tighten perms for wordpress core files to block sftp edits (production) ##
-find "/var/www/html/wp-admin" -type f -print0 | xargs -0 chmod 0644
-find "/var/www/html/wp-includes" -type f -print0 | xargs -0 chmod 0644
-
-if [[ "${STAGING_SITE}" != "false" ]]; then 
-    ## tighten perms for wordpress core files to block sftp edits (staging) ##
-    find "/var/www/html/staging/wp-admin" -type f -print0 | xargs -0 chmod 0644
-    find "/var/www/html/staging/wp-includes" -type f -print0 | xargs -0 chmod 0644
-fi
-
-if [[ "${DEV_SITE}" != "false" ]]; then 
-    ## tighten perms for wordpress core files to block sftp edits (development) ##
-    find "/var/www/html/dev/wp-admin" -type f -print0 | xargs -0 chmod 0644
-    find "/var/www/html/dev/wp-includes" -type f -print0 | xargs -0 chmod 0644
+if [[ "${DEV_SITE}" != "false" && -d "/var/www/html/dev" ]]; then
+    ss_reset_wordpress_tree_permissions "/var/www/html/dev" ""
 fi
 
 ####################################################################################################
@@ -254,10 +219,8 @@ chmod 0700 /var/www/crons/custom/*cron* ## 0700 means only root/sudo can execute
 ####################################################################################################
 
 ## Ref: ChatGPT
-## Ref: https://stackoverflow.com/questions/10062513/install-wordpress-using-bash-shell-without-visiting-wp-admin-install-php
-## Ref: https://github.com/littlebizzy/throwaway-theme/blob/master/functions.php
-## Ref: https://docs.bitnami.com/ibm/apps/wordpress-pro/administration/understand-file-permissions/
-## Ref: https://unix.stackexchange.com/questions/376075/explain-finds-path-and-prune-options
+## Ref: https://developer.wordpress.org/advanced-administration/server/file-permissions/
 ## Ref: https://make.wordpress.org/core/2024/04/19/merge-proposal-rollback-auto-update/
+## Ref: https://core.trac.wordpress.org/ticket/51857
 
 ## SS_EOF
