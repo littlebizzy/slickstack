@@ -87,12 +87,17 @@ ss_apt_upgrade
 ## https://github.com/fail2ban/fail2ban/issues/3755
 ## https://support.plesk.com/hc/en-us/articles/23560932208535-Fail2ban-does-not-start-on-a-Plesk-server-with-Ubuntu-24-No-module-named-asynchat
 
-## install asynchat compatibility package only if missing on ubuntu 24.04 ##
+## check if ubuntu 24.04 needs the asynchat compatibility workaround ##
 if [[ "${SYSTEM_UBUNTU_VERSION}" == "24.04" ]]; then
-    if ! python3 -c "import asynchat" > /dev/null 2>&1; then
+
+    PYTHON_ASYNCHAT_STATUS=$(python3 -c "import asynchat" > /dev/null 2>&1; echo "$?")
+
+    ## install asynchat compatibility package only if missing ##
+    if [[ "${PYTHON_ASYNCHAT_STATUS}" != "0" ]]; then
         ss_apt_install python3-pip
         python3 -m pip install pyasynchat --break-system-packages
     fi
+
 fi
 
 ss_apt_install fail2ban
