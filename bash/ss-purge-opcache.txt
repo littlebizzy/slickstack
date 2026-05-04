@@ -69,7 +69,9 @@ ss_echo "${COLOR_INFO}Running ss-purge-opcache... ${COLOR_RESET}"
 ## clears in-memory OPcache using WP-CLI ensuring updated scripts load without any delay ##
 ## does not remove physical OPcache files, only resets cached PHP files in memory ##
 
-sudo -u www-data "${PATH_WP_CLI}" --path="${PATH_WEB_ROOT}" eval 'opcache_reset();'
+if [[ ! -e "/var/www/html/wp-content/object-cache.php" ]] || sudo -u www-data test -r "/var/www/html/wp-content/object-cache.php"; then
+    sudo -u www-data "${PATH_WP_CLI}" --path="${PATH_WEB_ROOT}" eval 'opcache_reset();'
+fi
 
 ####################################################################################################
 #### E. SS-Purge-OPcache: Purge OPcache Via PHP Script (Fallback) ##################################
