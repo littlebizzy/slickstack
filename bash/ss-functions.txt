@@ -1624,7 +1624,13 @@ function ss_apt_remove_purge {
 
 ## ss_apt_update ##
 function ss_apt_update {
-    ss_apt update > /dev/null
+    ## update apt cache normally first ##
+    ss_apt update > /dev/null 2>&1
+
+    ## retry apt cache update over ipv4 if normal update fails ##
+    if [[ "$?" != "0" ]]; then
+        ss_apt --option Acquire::ForceIPv4=true update > /dev/null 2>&1
+    fi
 }
 
 ## ss_apt_upgrade ##
