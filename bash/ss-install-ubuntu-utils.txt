@@ -29,10 +29,11 @@
 
 ## E. Prettify The Shell Prompt
 ## F. Update System Timezone
-## G. Install Various Linux Utilities
+## G. Install Various Linux Utilities (Unconditional)
+## H. Install Various Linux Utilities (Conditional)
 ## X. Make Nano Default System-wide Editor
 
-## H. Reset Permissions (Ubuntu Utils)
+## I. Reset Permissions (Ubuntu Utils)
 
 ####################################################################################################
 #### A. SS-Install-Nginx-Config: Source SS-Config + SS-Functions ###################################
@@ -109,8 +110,10 @@ else
 fi
 
 ####################################################################################################
-#### G. SS-Install-Ubuntu-Utils: Install Various Linux Utilities ###################################
+#### G. SS-Install-Ubuntu-Utils: Install Various Linux Utilities (Unconditional) ####################
 ####################################################################################################
+
+## these packages are installed directly because command checks are not obvious enough ##
 
 ## do-release-upgrade support ##
 ss_apt_install update-manager-core
@@ -120,6 +123,17 @@ ss_apt_install software-properties-common
 
 ## coreutils ##
 ss_apt_install coreutils
+
+## used in ubuntu 18.04 for some apt tools ##
+ss_apt_install debconf-utils
+
+ss_apt_install cron
+
+####################################################################################################
+#### H. SS-Install-Ubuntu-Utils: Install Various Linux Utilities (Conditional) ######################
+####################################################################################################
+
+## these packages are only installed when their related command is not detected ##
 
 ## dnsutils (required for dig) ##
 if [[ -z "$(command -v dig 2>/dev/null)" ]]; then
@@ -136,9 +150,6 @@ if [[ -z "$(command -v sshpass 2>/dev/null)" ]]; then
     ss_apt_install sshpass
 fi
 
-## used in ubuntu 18.04 for some apt tools ##
-ss_apt_install debconf-utils
-
 ## exiftool (for cleaning up exif data) ##
 if [[ -z "$(command -v exiftool 2>/dev/null)" ]]; then
     ss_apt_install "${PACKAGE_EXIFTOOL}"
@@ -148,8 +159,6 @@ fi
 if [[ -z "$(command -v nano 2>/dev/null)" ]]; then
     ss_apt_install nano
 fi
-
-ss_apt_install cron
 
 if [[ -z "$(command -v wget 2>/dev/null)" ]]; then
     ss_apt_install wget
@@ -207,7 +216,7 @@ fi
 update-alternatives --set editor /bin/nano
 
 ####################################################################################################
-#### H. SS-Install-Ubuntu-Utils: Reset Permissions (Ubuntu Utils) ##################################
+#### I. SS-Install-Ubuntu-Utils: Reset Permissions (Ubuntu Utils) ##################################
 ####################################################################################################
 
 source "${PATH_SS_PERMS_UBUNTU_UTILS}"
