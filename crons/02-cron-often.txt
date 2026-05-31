@@ -28,10 +28,11 @@
 ## D. Source SS-Config + SS-Functions (After Validated)
 ## E. Run SS-Check + SS-Worker In Case Overdue
 ## F. Touch Timestamp File
-## G. Run WP-Cron (Conditional)
-## H. Run Custom Tasks (EDIT SOURCED FILES)
-## I. Run Scheduled Tasks (DO NOT EDIT)
-## J. Delete Lock File
+## G. Check + Restart MySQL
+## H. Run WP-Cron (Conditional)
+## I. Run Custom Tasks (EDIT SOURCED FILES)
+## J. Run Scheduled Tasks (DO NOT EDIT)
+## K. Delete Lock File
 
 ####################################################################################################
 #### A. 02-Cron-Often: Validate (Restore) SS-Config ################################################
@@ -251,7 +252,51 @@ fi
 ss_touch "${TIMESTAMP_02_CRON_OFTEN}"
 
 ####################################################################################################
-#### G. 02-Cron-Often: Run WP-Cron (Conditional) ###################################################
+#### G. 02-Cron-Often: Check + Restart MySQL #######################################################
+####################################################################################################
+
+## below we use a cheap local socket ping to detect when MySQL becomes unresponsive ##
+## restart only after 3 failures to avoid reacting to brief traffic spikes ##
+
+if [[ "${DB_REMOTE}" != "true" ]]; then
+
+    MYSQL_WATCHDOG_COUNT_FILE="/var/www/meta/mysql-watchdog.count"
+
+    ## read previous failure count and reset bad values ##
+    MYSQL_WATCHDOG_COUNT="$(cat "${MYSQL_WATCHDOG_COUNT_FILE}" 2> /dev/null)"
+    if [[ ! "${MYSQL_WATCHDOG_COUNT}" =~ ^[0-9]+$ ]]; then
+        MYSQL_WATCHDOG_COUNT="0"
+    fi
+
+    ## continue only if local mysql service exists ##
+    if systemctl cat mysql.service > /dev/null 2>&1; then
+
+        ## use root socket auth because this is a local service health check ##
+        if timeout 5 mysqladmin --user=root --host=localhost --protocol=socket ping --silent > /dev/null 2>&1; then
+
+            ## clear failure count after successful ping ##
+            ss_rm "${MYSQL_WATCHDOG_COUNT_FILE}"
+
+        else
+
+            ## increment failure count after failed or timed out ping ##
+            MYSQL_WATCHDOG_COUNT=$((MYSQL_WATCHDOG_COUNT + 1))
+            printf '%s\n' "${MYSQL_WATCHDOG_COUNT}" > "${MYSQL_WATCHDOG_COUNT_FILE}"
+
+            ## restart mysql only after 3 consecutive failed checks ##
+            if [[ "${MYSQL_WATCHDOG_COUNT}" -ge 3 ]]; then
+                source "${PATH_SS_RESTART_MYSQL}"
+                ss_rm "${MYSQL_WATCHDOG_COUNT_FILE}"
+            fi
+
+        fi
+
+    fi
+
+fi
+
+####################################################################################################
+#### H. 02-Cron-Often: Run WP-Cron (Conditional) ###################################################
 ####################################################################################################
 
 ## this snippet will run WP-Cron via the server if changed in your ss-config settings ##
@@ -282,7 +327,7 @@ if [[ "${WP_CRON_INTERVAL}" == "often" ]] || [[ "${WP_CRON_INTERVAL}" != @(minut
 fi
 
 ####################################################################################################
-#### H. 02-Cron-Often: Run Custom Tasks (EDIT SOURCED FILES) #######################################
+#### I. 02-Cron-Often: Run Custom Tasks (EDIT SOURCED FILES) #######################################
 ####################################################################################################
 
 ## this will run custom shell commands that you can save in a reserved filename below ##
@@ -291,7 +336,7 @@ fi
 source "${PATH_02_CRON_OFTEN_CUSTOM}"
 
 ####################################################################################################
-#### I. 02-Cron-Often: Run Scheduled Tasks (DO NOT EDIT) ###########################################
+#### J. 02-Cron-Often: Run Scheduled Tasks (DO NOT EDIT) ###########################################
 ####################################################################################################
 
 ## the below tasks will be called if configured to run at this interval in ss-config ##
@@ -301,7 +346,7 @@ source "${PATH_02_CRON_OFTEN_CUSTOM}"
 source "${PATH_SS_CHECK}"
 
 ####################################################################################################
-#### J. 02-Cron-Often: Delete Lock File ############################################################
+#### K. 02-Cron-Often: Delete Lock File ############################################################
 ####################################################################################################
 
 ## here we delete the lock file associated with this cron job to clear the cron queue ##
