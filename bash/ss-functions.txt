@@ -1849,10 +1849,17 @@ SYSTEM_DISK_FREE_HUMAN=$(df -kh --output=avail "${PWD}" | tail -n1)
 SYSTEM_DISK_TOTAL_EASY=$(df -kh . | tail -n1 | awk '{print $2}')
 SYSTEM_DISK_FREE_EASY=$(df -kh . | tail -n1 | awk '{print $4}')
 SYSTEM_DISK_USED_PERCENT=$(df -kh . | tail -n1 | awk '{print $5}')
+
 SYSTEM_HOSTNAME=$(/bin/hostname -f) ## remove -f in future
 # SYSTEM_HOSTNAME_ALL=`/bin/hostname -A`
 # SYSTEM_HOSTNAME_FQDN=`/bin/hostname -f`
 SYSTEM_HOSTNAME_TLD=$(/bin/hostname -d)
+
+## fallback to full hostname if domain-only hostname detection returns a tld ##
+if [[ -z "${SYSTEM_HOSTNAME_TLD}" ]] || [[ "${SYSTEM_HOSTNAME_TLD}" != *.* ]]; then
+    SYSTEM_HOSTNAME_TLD="${SYSTEM_HOSTNAME}"
+fi
+
 SYSTEM_LINUX_KERNEL=$(uname -a)
 SYSTEM_MYSQL_SIZE=$(du -sh /var/lib/mysql |& sed 's#/var/lib/mysql##')
 SYSTEM_OS_PRETTY_NAME=$(lsb_release -ds)
