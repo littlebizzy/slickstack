@@ -26,20 +26,21 @@
 ## B. Touch Timestamp File
 ## C. Message (Begin Script)
 ## D. Retrieve Latest Boilerplates
+## E. Autotune PHP-FPM Settings By RAM
 
-## E. Configure PHP.ini Boilerplate
-## F. Configure PHP-FPM.conf Boilerplate
-## G. Configure WWW.conf Boilerplate
+## F. Configure PHP.ini Boilerplate
+## G. Configure PHP-FPM.conf Boilerplate
+## H. Configure WWW.conf Boilerplate
 
-## H. Configure Opcache.ini Boilerplate
-## I. Install PHP Config Files
+## I. Configure Opcache.ini Boilerplate
+## J. Install PHP Config Files
 
-## X. Install OPcache Config Files
+## K. Install OPcache Config Files
 
-## J. Install Adminer.php
-## K. Reset Permissions (PHP Config)
-## L. Restart Modules (PHP-FPM)
-## M. Cleanup Temporary Files
+## L. Install Adminer.php
+## M. Reset Permissions (PHP Config)
+## N. Restart Modules (PHP-FPM)
+## O. Cleanup Temporary Files
 
 ####################################################################################################
 #### A. SS-Install-Nginx-Adminer: Source SS-Config + SS-Functions ##################################
@@ -177,7 +178,83 @@ if [[ "${SYSTEM_UBUNTU_VERSION}" == "18.04" ]]; then
 fi
 
 ####################################################################################################
-#### E. SS-Install-PHP-Config: Configure PHP.ini Boilerplate #######################################
+#### E. SS-Install-PHP-Config: Autotune PHP-FPM Settings By RAM ####################################
+####################################################################################################
+
+## force conservative PHP-FPM settings based on total physical RAM on the cloud server ##
+## these values prevent low memory servers from spawning too many pool workers ##
+
+if [[ ! "${SYSTEM_RAM_MEMORY}" =~ ^[0-9]+$ ]] || [[ "${SYSTEM_RAM_MEMORY}" -le 0 ]]; then
+    SYSTEM_RAM_MEMORY="$(awk '/MemTotal/ {printf "%.0f", $2 / 1024}' /proc/meminfo 2> /dev/null)"
+fi
+
+if [[ ! "${SYSTEM_RAM_MEMORY}" =~ ^[0-9]+$ ]] || [[ "${SYSTEM_RAM_MEMORY}" -le 0 ]]; then
+    SYSTEM_RAM_MEMORY="1024"
+fi
+
+## 1GB RAM servers ##
+if [[ "${SYSTEM_RAM_MEMORY}" -le 1200 ]]; then
+    PHP_MEMORY_LIMIT="256M"
+    OPCACHE_MEMORY_CONSUMPTION="128"
+    OPCACHE_INTERNED_STRINGS_BUFFER="16"
+    FPM_PROCESS_MAX="8"
+    WWW_PM_MODE="ondemand"
+    WWW_PM_MAX_CHILDREN="6"
+    WWW_PM_START_SERVERS="1"
+    WWW_PM_MIN_SPARE_SERVERS="1"
+    WWW_PM_MAX_SPARE_SERVERS="2"
+    WWW_PM_MAX_SPAWN_RATE="2"
+    WWW_PM_PROCESS_IDLE_TIMEOUT="10s"
+    WWW_PM_MAX_REQUESTS="250"
+
+## 2GB RAM servers ##
+elif [[ "${SYSTEM_RAM_MEMORY}" -le 2400 ]]; then
+    PHP_MEMORY_LIMIT="384M"
+    OPCACHE_MEMORY_CONSUMPTION="192"
+    OPCACHE_INTERNED_STRINGS_BUFFER="32"
+    FPM_PROCESS_MAX="12"
+    WWW_PM_MODE="ondemand"
+    WWW_PM_MAX_CHILDREN="10"
+    WWW_PM_START_SERVERS="2"
+    WWW_PM_MIN_SPARE_SERVERS="1"
+    WWW_PM_MAX_SPARE_SERVERS="3"
+    WWW_PM_MAX_SPAWN_RATE="4"
+    WWW_PM_PROCESS_IDLE_TIMEOUT="10s"
+    WWW_PM_MAX_REQUESTS="350"
+
+## 4GB RAM servers ##
+elif [[ "${SYSTEM_RAM_MEMORY}" -le 4800 ]]; then
+    PHP_MEMORY_LIMIT="512M"
+    OPCACHE_MEMORY_CONSUMPTION="256"
+    OPCACHE_INTERNED_STRINGS_BUFFER="64"
+    FPM_PROCESS_MAX="24"
+    WWW_PM_MODE="ondemand"
+    WWW_PM_MAX_CHILDREN="20"
+    WWW_PM_START_SERVERS="2"
+    WWW_PM_MIN_SPARE_SERVERS="1"
+    WWW_PM_MAX_SPARE_SERVERS="3"
+    WWW_PM_MAX_SPAWN_RATE="4"
+    WWW_PM_PROCESS_IDLE_TIMEOUT="10s"
+    WWW_PM_MAX_REQUESTS="500"
+
+## 8GB+ RAM servers ##
+else
+    PHP_MEMORY_LIMIT="768M"
+    OPCACHE_MEMORY_CONSUMPTION="384"
+    OPCACHE_INTERNED_STRINGS_BUFFER="64"
+    FPM_PROCESS_MAX="48"
+    WWW_PM_MODE="ondemand"
+    WWW_PM_MAX_CHILDREN="40"
+    WWW_PM_START_SERVERS="4"
+    WWW_PM_MIN_SPARE_SERVERS="2"
+    WWW_PM_MAX_SPARE_SERVERS="6"
+    WWW_PM_MAX_SPAWN_RATE="8"
+    WWW_PM_PROCESS_IDLE_TIMEOUT="10s"
+    WWW_PM_MAX_REQUESTS="750"
+fi
+
+####################################################################################################
+#### F. SS-Install-PHP-Config: Configure PHP.ini Boilerplate #######################################
 ####################################################################################################
 
 ss_sed "s/@PHP_MAX_EXECUTION_TIME/${PHP_MAX_EXECUTION_TIME:-60}/g" "${TMP_PHP_INI}"
@@ -213,7 +290,7 @@ ss_sed "s/@OPCACHE_HUGE_CODE_PAGES/${OPCACHE_HUGE_CODE_PAGES}/g" "${TMP_PHP_INI}
 ss_sed "s/@PHP_ALLOW_URL_FOPEN/${PHP_ALLOW_URL_FOPEN}/g" "${TMP_PHP_INI}"
 
 ####################################################################################################
-#### F. SS-Install-PHP-Config: Configure PHP-FPM.conf Boilerplate ##################################
+#### G. SS-Install-PHP-Config: Configure PHP-FPM.conf Boilerplate ##################################
 ####################################################################################################
 
 ss_sed "s/@FPM_EMERGENCY_RESTART_THRESHOLD/${FPM_EMERGENCY_RESTART_THRESHOLD:-10}/g" "${TMP_PHP_FPM_CONF}"
@@ -226,7 +303,7 @@ ss_sed "s/@FPM_RLIMIT_CORE/${FPM_RLIMIT_CORE:-0}/g" "${TMP_PHP_FPM_CONF}"
 ss_sed "s/@FPM_SYSTEMD_INTERVAL/${FPM_SYSTEMD_INTERVAL:-10}/g" "${TMP_PHP_FPM_CONF}"
 
 ####################################################################################################
-#### G. SS-Install-PHP-Config: Configure WWW.conf Boilerplate ######################################
+#### H. SS-Install-PHP-Config: Configure WWW.conf Boilerplate ######################################
 ####################################################################################################
 
 ss_sed "s/@WWW_LISTEN_BACKLOG/${WWW_LISTEN_BACKLOG:-65535}/g" "${TMP_WWW_CONF}"
@@ -243,7 +320,7 @@ ss_sed "s/@WWW_RLIMIT_FILES/${WWW_RLIMIT_FILES:-65535}/g" "${TMP_WWW_CONF}"
 ss_sed "s/@WWW_RLIMIT_CORE/${WWW_RLIMIT_CORE:-0}/g" "${TMP_WWW_CONF}"
 
 ####################################################################################################
-#### H. SS-Install-PHP-Config: Configure Opcache.ini Boilerplate ###################################
+#### I. SS-Install-PHP-Config: Configure Opcache.ini Boilerplate ###################################
 ####################################################################################################
 
 ## ubuntu 24.04 (php 8.3) ##
@@ -253,7 +330,7 @@ if [[ "${SYSTEM_UBUNTU_VERSION}" == "24.04" ]]; then
 fi
 
 ####################################################################################################
-#### I. SS-Install-PHP-Config: Install PHP Config Files ############################################
+#### J. SS-Install-PHP-Config: Install PHP Config Files ############################################
 ####################################################################################################
 
 ## note: ss_cp must be used for the ini files because ss_mv not working for some reason ##
@@ -291,7 +368,7 @@ if [[ "${SYSTEM_UBUNTU_VERSION}" == "18.04" ]]; then
 fi
 
 ####################################################################################################
-#### X. SS-Install-PHP-Config: Install OPcache Config Files ########################################
+#### K. SS-Install-PHP-Config: Install OPcache Config Files ########################################
 ####################################################################################################
 
 ## ubuntu 24.04 (php 8.3) ##
@@ -300,7 +377,7 @@ if [[ "${SYSTEM_UBUNTU_VERSION}" == "24.04" ]]; then
 fi
 
 ####################################################################################################
-#### J. SS-Install-PHP-Config: Install Adminer.php #################################################
+#### L. SS-Install-PHP-Config: Install Adminer.php #################################################
 ####################################################################################################
 
 ## here we retrieve the latest version of adminer.php from our mirrors and install it ##
@@ -327,19 +404,19 @@ if [[ -n "${VALIDATE2_TMP_ADMINER_PHP}" ]]; then
 fi
 
 ####################################################################################################
-#### K. SS-Install-PHP-Config: Reset Permissions (PHP Config) ######################################
+#### M. SS-Install-PHP-Config: Reset Permissions (PHP Config) ######################################
 ####################################################################################################
 
 source "${PATH_SS_PERMS_PHP_CONFIG}"
 
 ####################################################################################################
-#### L. SS-Install-PHP-Config: Restart Modules (PHP-FPM) ###########################################
+#### N. SS-Install-PHP-Config: Restart Modules (PHP-FPM) ###########################################
 ####################################################################################################
 
 source "${PATH_SS_RESTART_PHP}"
 
 ####################################################################################################
-#### M. SS-Install-PHP-Config: Cleanup Temporary Files #############################################
+#### O. SS-Install-PHP-Config: Cleanup Temporary Files #############################################
 ####################################################################################################
 
 ss_rm "${TMP_PHP_FPM_CONF}"
