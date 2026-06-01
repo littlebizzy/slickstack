@@ -28,11 +28,13 @@
 ## D. Source SS-Config + SS-Functions (After Validated)
 ## E. Run SS-Check + SS-Worker In Case Overdue
 ## F. Touch Timestamp File
-## G. Check + Restart MySQL
-## H. Run WP-Cron (Conditional)
-## I. Run Custom Tasks (EDIT SOURCED FILES)
-## J. Run Scheduled Tasks (DO NOT EDIT)
-## K. Delete Lock File
+## G. Check + Restart PHP-FPM
+## H. Check + Restart Nginx
+## I. Check + Restart MySQL
+## J. Run WP-Cron (Conditional)
+## K. Run Custom Tasks (EDIT SOURCED FILES)
+## L. Run Scheduled Tasks (DO NOT EDIT)
+## M. Delete Lock File
 
 ####################################################################################################
 #### A. 02-Cron-Often: Validate (Restore) SS-Config ################################################
@@ -252,7 +254,54 @@ fi
 ss_touch "${TIMESTAMP_02_CRON_OFTEN}"
 
 ####################################################################################################
-#### G. 02-Cron-Often: Check + Restart MySQL #######################################################
+#### G. 02-Cron-Often: Check + Restart PHP-FPM #####################################################
+####################################################################################################
+
+## below we restart php-fpm if systemd reports the service failed or inactive ##
+## this helps recover from oom kills and other service failures between full stack restarts ##
+
+## detect the current php-fpm service based on ubuntu version ##
+PHP_FPM_SERVICE=""
+
+if [[ "${SYSTEM_UBUNTU_VERSION}" == "24.04" ]]; then
+    PHP_FPM_SERVICE="php8.3-fpm.service"
+elif [[ "${SYSTEM_UBUNTU_VERSION}" == "22.04" ]]; then
+    PHP_FPM_SERVICE="php8.1-fpm.service"
+elif [[ "${SYSTEM_UBUNTU_VERSION}" == "20.04" ]]; then
+    PHP_FPM_SERVICE="php7.4-fpm.service"
+elif [[ "${SYSTEM_UBUNTU_VERSION}" == "18.04" ]]; then
+    PHP_FPM_SERVICE="php7.2-fpm.service"
+fi
+
+## continue only if php-fpm service exists ##
+if [[ -n "${PHP_FPM_SERVICE}" ]] && systemctl cat "${PHP_FPM_SERVICE}" > /dev/null 2>&1; then
+
+    ## restart php-fpm if inactive or failed ##
+    if ! systemctl is-active --quiet "${PHP_FPM_SERVICE}"; then
+        source "${PATH_SS_RESTART_PHP}"
+    fi
+
+fi
+
+####################################################################################################
+#### H. 02-Cron-Often: Check + Restart Nginx #######################################################
+####################################################################################################
+
+## below we restart nginx if systemd reports the service failed or inactive ##
+## this helps recover from oom kills and other service failures between full stack restarts ##
+
+## continue only if nginx service exists ##
+if systemctl cat nginx.service > /dev/null 2>&1; then
+
+    ## restart nginx if inactive or failed ##
+    if ! systemctl is-active --quiet nginx.service; then
+        source "${PATH_SS_RESTART_NGINX}"
+    fi
+
+fi
+
+####################################################################################################
+#### I. 02-Cron-Often: Check + Restart MySQL #######################################################
 ####################################################################################################
 
 ## below we use a cheap local socket ping to detect when MySQL becomes unresponsive ##
@@ -296,7 +345,7 @@ if [[ "${DB_REMOTE}" != "true" ]]; then
 fi
 
 ####################################################################################################
-#### H. 02-Cron-Often: Run WP-Cron (Conditional) ###################################################
+#### J. 02-Cron-Often: Run WP-Cron (Conditional) ###################################################
 ####################################################################################################
 
 ## this snippet will run WP-Cron via the server if changed in your ss-config settings ##
@@ -327,7 +376,7 @@ if [[ "${WP_CRON_INTERVAL}" == "often" ]] || [[ "${WP_CRON_INTERVAL}" != @(minut
 fi
 
 ####################################################################################################
-#### I. 02-Cron-Often: Run Custom Tasks (EDIT SOURCED FILES) #######################################
+#### K. 02-Cron-Often: Run Custom Tasks (EDIT SOURCED FILES) #######################################
 ####################################################################################################
 
 ## this will run custom shell commands that you can save in a reserved filename below ##
@@ -336,7 +385,7 @@ fi
 source "${PATH_02_CRON_OFTEN_CUSTOM}"
 
 ####################################################################################################
-#### J. 02-Cron-Often: Run Scheduled Tasks (DO NOT EDIT) ###########################################
+#### L. 02-Cron-Often: Run Scheduled Tasks (DO NOT EDIT) ###########################################
 ####################################################################################################
 
 ## the below tasks will be called if configured to run at this interval in ss-config ##
@@ -346,7 +395,7 @@ source "${PATH_02_CRON_OFTEN_CUSTOM}"
 source "${PATH_SS_CHECK}"
 
 ####################################################################################################
-#### K. 02-Cron-Often: Delete Lock File ############################################################
+#### M. 02-Cron-Often: Delete Lock File ############################################################
 ####################################################################################################
 
 ## here we delete the lock file associated with this cron job to clear the cron queue ##
