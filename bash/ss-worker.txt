@@ -382,6 +382,16 @@ fi
 ## cleanup temp file ##
 # ss_rm /tmp/git-updater.zip
 
+## Ubuntu 24.04 Nginx package regression hotfix ##
+## Ubuntu nginx 1.24.0-2ubuntu7.10 can segfault with external modules ##
+if [[ "${SYSTEM_UBUNTU_VERSION}" == "24.04" ]] && dpkg -s nginx 2> /dev/null | grep -q 'Version: 1.24.0-2ubuntu7.10'; then
+    apt-get update
+    apt-get install -y --only-upgrade nginx nginx-common nginx-extras
+    if ! dpkg -s nginx 2> /dev/null | grep -q 'Version: 1.24.0-2ubuntu7.10'; then
+        nginx -t && systemctl restart nginx
+    fi
+fi
+
 ####################################################################################################
 #### P. SS-Worker: Reset Permissions (SlickStack) ##################################################
 ####################################################################################################
