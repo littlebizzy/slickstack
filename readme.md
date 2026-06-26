@@ -36,18 +36,18 @@ You can safely re-install SlickStack anytime via `sudo bash /var/www/ss-install`
 
 ## Modules
 
-*Last updated: Feb 10, 2026*
+*Last updated: Jun 26, 2026*
 
 | Module | Version | What does SlickStack optimize? |
 | :------------- | :----------: | :----------: |
 | **Ubuntu LTS** | 24.04 | `crontab` + `gai.conf` + `sshd_config` + `sudoers` + `sysctl.conf` |
-| **Nginx** | 1.18.x | `nginx.conf` + `cloudflare.conf` + server blocks |
+| **Nginx** | 1.24.x | `nginx.conf` + `cloudflare.conf` + server blocks |
 | **OpenSSL** | 3.0.x | `slickstack.crt` + `slickstack.key` + `dhparam.pem` |
 | **Certbot** | 2.9.x | `cert.perm` + `chain.pem` + `fullchain.pem` + `privkey.pem` |
 | **MySQL** | 8.0.x | `my.cnf` |
 | **PHP-FPM** | 8.3.x | `php.ini` + `php-fpm.conf` + `www.conf` |
 | **Memcached** | 1.6.x | `memcached.conf` + `object-cache.php` |
-| **WordPress** | 6.9.x | some WP Core junk files removed by `ss-clean-files` |
+| **WordPress** | 7.0 | some WP Core junk files removed by `ss-clean-files` |
 | **WP-CLI** | 2.12.x | some `wp` commands disabled |
 | **Adminer** | 5.4.2 | default config |
 | **Iptables** | 1.8.x | `rules.v4` + `rules.v6` |
