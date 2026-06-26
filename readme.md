@@ -20,19 +20,19 @@ Our sponsors: [backamblock](https://github.com/backamblock), [yamanmucahit](http
 
 ## Installation
 
-Because it’s written purely in Bash (Unix shell), SlickStack has no dependencies and works on any Ubuntu LTS machine. Unlike heavier provisioning tools like EasyEngine or Ansible, there are no third party languages required such as Python or Docker, meaning a lighter and simpler approach to WordPress servers.
+Because it’s written purely in Bash (Unix shell), SlickStack has no third-party provisioning dependencies and works on Ubuntu LTS machines. Unlike heavier provisioning tools like EasyEngine or Ansible, it does not require external runtimes such as Python or Docker, meaning a lighter and simpler approach to WordPress servers.
 
-The below installation steps assume that you've already spun up a [KVM cloud server](https://slickstack.io/hosting) on Ubuntu LTS, with at least 1GB+ RAM, and that you are logged in via SSH as `root`:
+The following installation steps assume that you've already spun up a [KVM cloud server](https://slickstack.io/hosting) on Ubuntu LTS, with at least 1GB+ RAM, and that you are logged in via SSH as `root`:
 
 ```
 cd /tmp/ && wget -O ss slick.fyi/ss && bash ss
 ```
 
-From this point forward, you can manage your SlickStack server by simply using the `sudo bash` command on any one of the bundled scripts located within the `/var/www/` directory, as needed. However, in most cases there shouldn't be any need for much hands-on management as the server will intelligently run various cron jobs which connect to this GitHub repo.
+After installation, you can manage your SlickStack server by running the bundled scripts located within the `/var/www/` directory using `sudo bash`, as needed. In most cases, however, there shouldn't be much hands-on management because SlickStack runs scheduled cron jobs that connect to this GitHub repo.
 
-You can safely re-install SlickStack anytime via `sudo bash /var/www/ss-install` without causing any conflicts or data loss since the installation process is completely idempotent.
+You can safely re-install SlickStack anytime via `sudo bash /var/www/ss-install` without causing conflicts or data loss, since the installation process is designed to be idempotent.
 
-**Note:** SlickStack requires Cloudflare to be activated on your domain before SSL (HTTPS) will be recognized as fully secure by your browser, because of its self-signed OpenSSL certificate. If you wish to use Let's Encrypt instead, be sure to change your settings in `ss-config` before running the installation.
+**Note:** SlickStack uses a self-signed OpenSSL certificate by default, so Cloudflare should be active on your domain before SSL (HTTPS) will appear fully secure in browsers. If you wish to use Let's Encrypt instead, be sure to change your settings in `ss-config` before running the installation.
 
 ## Modules
 
