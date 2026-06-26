@@ -65,7 +65,7 @@ SlickStack is HTTPS-only and enables HSTS by default, so plain HTTP sites are no
 
 ## Philosophy
 
-Outside of the so-called [Application Layer](https://en.wikipedia.org/wiki/Application_layer), so much of the way computers and servers now work has been moved away from in-house teams and specialists and onto "the cloud" that terms like [DevOps](https://www.reddit.com/r/devops/comments/3rpzem/devops_vs_sysadmin/cwqmlnd/) have become standard among recruiters, companies, and developers alike. Modern web development trends have begun to revolve entirely around concepts such as automation, APIs, [cloud services](https://www.bcsg.com/wp-content/uploads/2015/03/The-small-business-revolution-trends-in-SMB-cloud-adoption.pdf), and beyond — a phenomenon we might refer to as *Web 3.0*.
+Outside of the so-called Application Layer, much of the way computers and servers now work has been pushed away from in-house teams and specialists and onto "the cloud." Terms like DevOps have become standard across companies and developers, while modern web development keeps drifting toward automation, APIs, dashboards, managed platforms, and whatever the latest cloud vendor wants to sell.
 
 While this shift is exciting, there is now a massive and growing disconnect between these emerging technologies and the humans that are expected to implement or benefit from them. Typical small business owners (SMBs), along with independent agencies or freelancers, now face a virtually impossible learning curve if they wish to maintain a competitive "webdev" edge, let alone keep up with basic standards in website performance and security.
 
