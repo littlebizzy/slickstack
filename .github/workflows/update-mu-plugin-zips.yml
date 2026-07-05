@@ -111,8 +111,12 @@ jobs:
             )
 
             echo "Verifying built ZIP contains ${plugin}/${plugin}.php"
-            zipinfo -1 "${temp_zip}" | grep -Fxq "${plugin}/${plugin}.php"
-            mv "${temp_zip}" "${target_zip}"
+            if zipinfo -1 "${temp_zip}" | grep -Fxq "${plugin}/${plugin}.php"; then
+              mv "${temp_zip}" "${target_zip}"
+            else
+              echo "Built ZIP is missing ${plugin}/${plugin}.php" >&2
+              exit 1
+            fi
           done
 
       - name: Commit changes
