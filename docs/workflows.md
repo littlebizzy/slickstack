@@ -31,6 +31,8 @@ on:
 
 There is no schedule trigger and no push trigger. It should only run when a maintainer manually starts it from the GitHub Actions tab.
 
+The workflow also uses a concurrency lock so two manual MU plugin ZIP update runs do not overlap.
+
 ## Purpose
 
 The workflow updates approved vendored LittleBizzy MU plugin ZIPs inside:
@@ -57,15 +59,19 @@ The workflow is structured with a plugin list so more approved LittleBizzy plugi
 
 For each supported plugin, the workflow:
 
-1. finds the latest Git tag in the source plugin repo
-2. compares that tag against the plugin version inside the existing vendored ZIP
-3. skips the plugin if the vendored ZIP already matches the latest tagged version
-4. downloads the GitHub tag archive when an update is needed
-5. extracts the archive into a temporary work directory
-6. renames the extracted GitHub archive folder to the exact plugin slug
-7. verifies the expected main plugin file exists
-8. rebuilds the ZIP under `modules/wordpress/mu-plugins/`
-9. commits and pushes only if Git detects ZIP changes
+1. validates the plugin slug before using it in paths
+2. finds the latest Git tag in the source plugin repo
+3. compares that tag against the plugin version inside the existing vendored ZIP
+4. logs the current vendored ZIP version and latest source tag
+5. skips the plugin if the vendored ZIP already matches the latest tagged version
+6. downloads the GitHub tag archive when an update is needed
+7. extracts the archive into a temporary work directory
+8. renames the extracted GitHub archive folder to the exact plugin slug
+9. verifies the expected main plugin file exists before packaging
+10. rebuilds the package as a temporary ZIP
+11. verifies the temporary ZIP contains the expected main plugin file
+12. replaces the vendored ZIP under `modules/wordpress/mu-plugins/` only after verification passes
+13. commits and pushes only if Git detects ZIP changes
 
 For example, GitHub tag archives normally extract into names like:
 
@@ -80,6 +86,10 @@ force-https/
 ```
 
 The workflow handles that normalization before rebuilding `force-https.zip`.
+
+If a download, extraction, normalization, packaging, or verification step fails, the workflow exits with an error. The existing committed ZIP is not replaced until the newly built temporary ZIP passes verification.
+
+The version and verification messages appear in the GitHub Actions run logs for the manual run. They are not committed to the repo and are not saved as artifacts.
 
 ## Before running the MU plugin workflow
 
@@ -102,6 +112,8 @@ plugin-slug.zip
 ```
 
 The workflow intentionally assumes this simple convention because the SlickStack MU plugin installer expects predictable extracted folder names.
+
+Plugin slugs should be plain repo slugs such as `force-https`. Do not include organization names, slashes, paths, or ZIP filenames in the plugin list.
 
 ## Related docs
 
