@@ -44,6 +44,37 @@ jobs:
               exit 1
             fi
 
+            target_zip="${GITHUB_WORKSPACE}/${target_dir}/${plugin}.zip"
+            normalized_tag="${latest_tag#v}"
+
+            if [[ -f "${target_zip}" ]]; then
+              current_version="$(python3 - "${target_zip}" "${plugin}/${plugin}.php" <<'PY'
+import re
+import sys
+import zipfile
+
+zip_path = sys.argv[1]
+php_path = sys.argv[2]
+
+try:
+    with zipfile.ZipFile(zip_path) as package:
+        text = package.read(php_path).decode('utf-8', 'ignore')
+except Exception:
+    sys.exit(0)
+
+match = re.search(r'^\s*Version:\s*(.+?)\s*$', text, re.MULTILINE)
+
+if match:
+    print(match.group(1).removeprefix('v'))
+PY
+)"
+
+              if [[ "${current_version}" == "${normalized_tag}" ]]; then
+                echo "No version changes for ${plugin}.zip (${latest_tag})"
+                continue
+              fi
+            fi
+
             echo "Updating ${plugin}.zip from ${plugin_org}/${plugin}@${latest_tag}"
 
             plugin_work_dir="${work_dir}/${plugin}"
@@ -76,7 +107,7 @@ jobs:
 
             (
               cd "${package_dir}"
-              zip -qr "${GITHUB_WORKSPACE}/${target_dir}/${plugin}.zip" "${plugin}"
+              zip -qr "${target_zip}" "${plugin}"
             )
           done
 
