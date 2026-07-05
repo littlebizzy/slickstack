@@ -60,7 +60,7 @@ The workflow is structured with a plugin list so more approved LittleBizzy plugi
 For each supported plugin, the workflow:
 
 1. validates the plugin slug before using it in paths
-2. finds the latest Git tag in the source plugin repo
+2. finds the latest Git tag in the source plugin repo, normalizing an optional leading v before version sorting
 3. compares that tag against the plugin version inside the existing vendored ZIP
 4. logs the current vendored ZIP version and latest source tag
 5. skips the plugin if the vendored ZIP already matches the latest tagged version
