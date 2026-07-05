@@ -45,6 +45,7 @@ jobs:
             fi
 
             target_zip="${GITHUB_WORKSPACE}/${target_dir}/${plugin}.zip"
+            temp_zip="${target_zip}.tmp"
             normalized_tag="${latest_tag#v}"
 
             if [[ -f "${target_zip}" ]]; then
@@ -90,8 +91,11 @@ jobs:
 
             (
               cd "${package_dir}"
-              zip -qr "${target_zip}" "${plugin}"
+              zip -qr "${temp_zip}" "${plugin}"
             )
+
+            zipinfo -1 "${temp_zip}" | grep -Fxq "${plugin}/${plugin}.php"
+            mv "${temp_zip}" "${target_zip}"
           done
 
       - name: Commit changes
