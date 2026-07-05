@@ -45,8 +45,10 @@ jobs:
             latest_tag="$(git ls-remote --tags --refs "${repo_url}" \
               | awk '{ print $2 }' \
               | sed 's#refs/tags/##' \
-              | sort -V \
-              | tail -n 1)"
+              | awk '{ normalized = $0; sub(/^v/, "", normalized); print normalized "\t" $0 }' \
+              | sort -k1,1V \
+              | tail -n 1 \
+              | cut -f2)"
 
             if [[ -z "${latest_tag}" ]]; then
               echo "No tags found for ${plugin_org}/${plugin}" >&2
