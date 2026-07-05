@@ -1,0 +1,98 @@
+name: Update MU Plugin ZIPs
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Update MU plugin ZIPs
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          plugin_org="littlebizzy"
+          target_dir="modules/wordpress/mu-plugins"
+          work_dir="${RUNNER_TEMP}/mu-plugin-zips"
+
+          # Add more LittleBizzy plugin repo names here later, one per line.
+          plugins=(
+            force-https
+          )
+
+          rm -rf "${work_dir}"
+          mkdir -p "${work_dir}" "${target_dir}"
+
+          for plugin in "${plugins[@]}"; do
+            repo_url="https://github.com/${plugin_org}/${plugin}.git"
+            latest_tag="$(git ls-remote --tags --refs "${repo_url}" \
+              | awk '{ print $2 }' \
+              | sed 's#refs/tags/##' \
+              | sort -V \
+              | tail -n 1)"
+
+            if [[ -z "${latest_tag}" ]]; then
+              echo "No tags found for ${plugin_org}/${plugin}" >&2
+              exit 1
+            fi
+
+            echo "Updating ${plugin}.zip from ${plugin_org}/${plugin}@${latest_tag}"
+
+            plugin_work_dir="${work_dir}/${plugin}"
+            archive_zip="${plugin_work_dir}/${plugin}-${latest_tag}.zip"
+            extract_dir="${plugin_work_dir}/extract"
+            package_dir="${plugin_work_dir}/package"
+
+            rm -rf "${plugin_work_dir}"
+            mkdir -p "${extract_dir}" "${package_dir}"
+
+            curl -fsSL \
+              -o "${archive_zip}" \
+              "https://github.com/${plugin_org}/${plugin}/archive/refs/tags/${latest_tag}.zip"
+
+            unzip -q "${archive_zip}" -d "${extract_dir}"
+
+            extracted_dir="$(find "${extract_dir}" -mindepth 1 -maxdepth 1 -type d | head -n 1)"
+
+            if [[ -z "${extracted_dir}" || ! -d "${extracted_dir}" ]]; then
+              echo "Unable to find extracted directory for ${plugin}" >&2
+              exit 1
+            fi
+
+            mv "${extracted_dir}" "${package_dir}/${plugin}"
+
+            if [[ ! -f "${package_dir}/${plugin}/${plugin}.php" ]]; then
+              echo "Expected ${plugin}/${plugin}.php was not found" >&2
+              exit 1
+            fi
+
+            (
+              cd "${package_dir}"
+              zip -qr "${GITHUB_WORKSPACE}/${target_dir}/${plugin}.zip" "${plugin}"
+            )
+          done
+
+      - name: Commit changes
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          if git diff --quiet -- modules/wordpress/mu-plugins/*.zip; then
+            echo "No MU plugin ZIP changes to commit."
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add modules/wordpress/mu-plugins/*.zip
+          git commit -m "Update MU plugin ZIPs"
+          git push
