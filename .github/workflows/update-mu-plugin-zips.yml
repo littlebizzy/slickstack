@@ -48,26 +48,9 @@ jobs:
             normalized_tag="${latest_tag#v}"
 
             if [[ -f "${target_zip}" ]]; then
-              current_version="$(python3 - "${target_zip}" "${plugin}/${plugin}.php" <<'PY'
-import re
-import sys
-import zipfile
-
-zip_path = sys.argv[1]
-php_path = sys.argv[2]
-
-try:
-    with zipfile.ZipFile(zip_path) as package:
-        text = package.read(php_path).decode('utf-8', 'ignore')
-except Exception:
-    sys.exit(0)
-
-match = re.search(r'^\s*Version:\s*(.+?)\s*$', text, re.MULTILINE)
-
-if match:
-    print(match.group(1).removeprefix('v'))
-PY
-)"
+              current_version="$(unzip -p "${target_zip}" "${plugin}/${plugin}.php" 2>/dev/null \
+                | sed -n 's/^[[:space:]]*Version:[[:space:]]*v\{0,1\}\(.*[^[:space:]]\)[[:space:]]*$/\1/p' \
+                | head -n 1 || true)"
 
               if [[ "${current_version}" == "${normalized_tag}" ]]; then
                 echo "No version changes for ${plugin}.zip (${latest_tag})"
