@@ -17,16 +17,20 @@
 -P FORWARD DROP
 -P OUTPUT ACCEPT
 
+# custom chains for layered SSH rate limiting
+-N SSH_GLOBAL_LIMIT
+-N SSH_SOURCE_LIMIT
+
 # allow loopback traffic
 -A INPUT -i lo -j ACCEPT
 
 # allow established and related connections
 -A INPUT -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
 
-# allow HTTP and HTTPS
+# allow new HTTP and HTTPS connections
 -A INPUT -p tcp -m multiport --dports 80,443 -m conntrack --ctstate NEW -j ACCEPT
 
-# allow essential ICMP (ping, fragmentation, time exceeded)
+# allow essential inbound ICMP for ping and network diagnostics
 -A INPUT -p icmp --icmp-type echo-request -j ACCEPT
 -A INPUT -p icmp --icmp-type echo-reply -j ACCEPT
 -A INPUT -p icmp --icmp-type destination-unreachable -j ACCEPT
@@ -35,12 +39,19 @@
 # allow outbound ICMP
 -A OUTPUT -p icmp -j ACCEPT
 
-# logging denied packets
--A INPUT -m limit --limit 3/min --limit-burst 10 -j LOG --log-prefix "[IPTABLES BLOCK] "
-
 # rate limit SSH connections
--A INPUT -p tcp --dport 22 -m limit --limit 3/min --limit-burst 5 -j ACCEPT
--A INPUT -p tcp --dport 22 -j REJECT
+-A INPUT -p tcp --dport 22 -m conntrack --ctstate NEW -j SSH_GLOBAL_LIMIT
+
+# limit aggregate SSH connection attempts to protect small servers
+-A SSH_GLOBAL_LIMIT -m limit --limit 30/min --limit-burst 60 -j SSH_SOURCE_LIMIT
+-A SSH_GLOBAL_LIMIT -j REJECT --reject-with icmp-port-unreachable
+
+# limit SSH connection attempts per source IP to avoid one shared global bucket
+-A SSH_SOURCE_LIMIT -m hashlimit --hashlimit-name ssh4_per_ip --hashlimit-mode srcip --hashlimit-upto 6/min --hashlimit-burst 12 --hashlimit-htable-expire 60000 -j ACCEPT
+-A SSH_SOURCE_LIMIT -j REJECT --reject-with icmp-port-unreachable
+
+# log remaining denied packets without flooding kernel logs
+-A INPUT -m limit --limit 3/min --limit-burst 10 -j LOG --log-prefix "[IPTABLES BLOCK] "
 
 COMMIT
 
@@ -49,5 +60,8 @@ COMMIT
 ####################################################################################################
 
 ## Ref: ChatGPT
+## Ref: https://man7.org/linux/man-pages/man8/iptables.8.html
+## Ref: https://man7.org/linux/man-pages/man8/iptables-extensions.8.html
+## Ref: https://manpages.ubuntu.com/manpages/noble/man8/iptables-extensions.8.html
 
 ## SS_EOF
