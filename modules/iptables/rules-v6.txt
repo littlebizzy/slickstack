@@ -17,23 +17,29 @@
 -P FORWARD DROP
 -P OUTPUT ACCEPT
 
+# custom chains for layered SSH rate limiting
+-N SSH_GLOBAL_LIMIT
+-N SSH_SOURCE_LIMIT
+
 # allow loopback traffic
 -A INPUT -i lo -j ACCEPT
 
 # allow established and related connections
 -A INPUT -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
 
-# allow HTTP and HTTPS
+# allow new HTTP and HTTPS connections
 -A INPUT -p tcp -m multiport --dports 80,443 -m conntrack --ctstate NEW -j ACCEPT
 
-# allow essential ICMPv6 (ping + neighbor discovery)
+# allow essential inbound ICMPv6 for ping, network diagnostics, routing, and neighbor discovery
 -A INPUT -p icmpv6 --icmpv6-type echo-request -j ACCEPT
 -A INPUT -p icmpv6 --icmpv6-type echo-reply -j ACCEPT
--A INPUT -p icmpv6 --icmpv6-type router-solicitation -j ACCEPT
+-A INPUT -p icmpv6 --icmpv6-type destination-unreachable -j ACCEPT
+-A INPUT -p icmpv6 --icmpv6-type packet-too-big -j ACCEPT
+-A INPUT -p icmpv6 --icmpv6-type time-exceeded -j ACCEPT
+-A INPUT -p icmpv6 --icmpv6-type parameter-problem -j ACCEPT
 -A INPUT -p icmpv6 --icmpv6-type router-advertisement -j ACCEPT
 -A INPUT -p icmpv6 --icmpv6-type neighbor-solicitation -j ACCEPT
 -A INPUT -p icmpv6 --icmpv6-type neighbor-advertisement -j ACCEPT
--A INPUT -p icmpv6 --icmpv6-type redirect -j ACCEPT
 
 # allow outbound ICMPv6
 -A OUTPUT -p icmpv6 -j ACCEPT
@@ -41,12 +47,19 @@
 # allow DHCPv6 client requests (if applicable)
 -A INPUT -p udp --dport 546 -j ACCEPT
 
-# logging denied packets
--A INPUT -m limit --limit 3/min --limit-burst 10 -j LOG --log-prefix "[IP6TABLES BLOCK] "
-
 # rate limit SSH connections
--A INPUT -p tcp --dport 22 -m limit --limit 3/min --limit-burst 5 -j ACCEPT
--A INPUT -p tcp --dport 22 -j REJECT
+-A INPUT -p tcp --dport 22 -m conntrack --ctstate NEW -j SSH_GLOBAL_LIMIT
+
+# limit aggregate SSH connection attempts to protect small servers
+-A SSH_GLOBAL_LIMIT -m limit --limit 30/min --limit-burst 60 -j SSH_SOURCE_LIMIT
+-A SSH_GLOBAL_LIMIT -j REJECT --reject-with icmp6-port-unreachable
+
+# limit SSH connection attempts per source IP to avoid one shared global bucket
+-A SSH_SOURCE_LIMIT -m hashlimit --hashlimit-name ssh6_per_ip --hashlimit-mode srcip --hashlimit-upto 6/min --hashlimit-burst 12 --hashlimit-htable-expire 60000 -j ACCEPT
+-A SSH_SOURCE_LIMIT -j REJECT --reject-with icmp6-port-unreachable
+
+# log remaining denied packets without flooding kernel logs
+-A INPUT -m limit --limit 3/min --limit-burst 10 -j LOG --log-prefix "[IP6TABLES BLOCK] "
 
 COMMIT
 
@@ -55,5 +68,8 @@ COMMIT
 ####################################################################################################
 
 ## Ref: ChatGPT
+## Ref: https://man7.org/linux/man-pages/man8/iptables.8.html
+## Ref: https://man7.org/linux/man-pages/man8/iptables-extensions.8.html
+## Ref: https://manpages.ubuntu.com/manpages/noble/man8/iptables-extensions.8.html
 
 ## SS_EOF
