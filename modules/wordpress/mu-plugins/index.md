@@ -18,27 +18,31 @@ title: MU (Must-Use) Plugins (Public Mirrors)
 * [xxx-staging.txt](xxx-staging.txt)
 * [redis-cache](redis-cache.zip)
 
-#### Optional MU Plugins
+#### Default MU Plugin ZIPs
 
 * [clear-caches.zip](clear-caches.zip)
+* [disable-empty-trash.zip](disable-empty-trash.zip)
+* [disable-image-compression.zip](disable-image-compression.zip)
+* [disable-xml-rpc.zip](disable-xml-rpc.zip)
+* [force-https.zip](force-https.zip)
+* [plugin-blacklist.zip](plugin-blacklist.zip)
+* [repoman.zip](repoman.zip)
+
+#### Additional Plugin ZIPs
+
 * [cloudflare.zip](cloudflare.zip)
 * [dashboard-cleanup.zip](dashboard-cleanup.zip)
 * [delete-expired-transients.zip](delete-expired-transients.zip)
 * [disable-attachment-pages.zip](disable-attachment-pages.zip)
 * [disable-embeds.zip](disable-embeds.zip)
 * [disable-emojis.zip](disable-emojis.zip)
-* [disable-empty-trash.zip](disable-empty-trash.zip)
 * [disable-gutenberg.zip](disable-gutenberg.zip)
-* [disable-image-compression.zip](disable-image-compression.zip)
 * [disable-post-via-email.zip](disable-post-via-email.zip)
-* [disable-xml-rpc.zip](disable-xml-rpc.zip)
-* [force-https.zip](force-https.zip)
 * [force-strong-hashing.zip](force-strong-hashing.zip)
 * [git-updater.zip](git-updater.zip)
 * [header-cleanup.zip](header-cleanup.zip)
 * [limit-heartbeat.zip](limit-heartbeat.zip)
 * [minify-html.zip](minify-html.zip)
-* [plugin-blacklist.zip](plugin-blacklist.zip)
 * [virtual-robotstxt.zip](virtual-robotstxt.zip)
 
 #### Staging MU Plugins
@@ -59,7 +63,7 @@ title: MU (Must-Use) Plugins (Public Mirrors)
 * [https://github.com/woocommerce/action-scheduler-disable-default-runner](https://github.com/woocommerce/action-scheduler-disable-default-runner)
 * https://wordpress.programmingpedia.net/en/tutorial/9189/add-menu-page--
 * https://nimblewebdeveloper.com/blog/add-tabs-to-wordpress-plugin-admin-page
-* https://softwareengineering.stackexchange.com/questions/12807/make-a-big-deal-out-of-true/12819#12819
+* https://softwareengineering.stackexchange.com/questions/12807/make-a-big-deal-out-of-true/12819#make-a-big-deal-out-of-true
 * https://speedysense.com/php-remove-http-https-www-and-slashes-from-urls/
 * https://wpsmackdown.com/wordpress-custom-login-message/
 
