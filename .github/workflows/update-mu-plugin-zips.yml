@@ -23,29 +23,31 @@ jobs:
         run: |
           set -euo pipefail
 
-          plugin_org="littlebizzy"
           target_dir="modules/wordpress/mu-plugins"
           work_dir="${RUNNER_TEMP}/mu-plugin-zips"
 
-          # Add more LittleBizzy plugin repo names here later, one per line.
-          plugins=(
-            disable-empty-trash
-            disable-image-compression
-            disable-xml-rpc
-            force-https
-            repoman
+          # Add approved plugin repos here, one owner/repo per line.
+          plugin_repos=(
+            littlebizzy/disable-empty-trash
+            littlebizzy/disable-image-compression
+            littlebizzy/disable-xml-rpc
+            littlebizzy/force-https
+            littlebizzy/repoman
+            afragen/git-updater
           )
 
           rm -rf "${work_dir}"
           mkdir -p "${work_dir}" "${target_dir}"
 
-          for plugin in "${plugins[@]}"; do
-            if [[ -z "${plugin}" || "${plugin}" == */* ]]; then
-              echo "Invalid plugin slug: ${plugin}" >&2
+          for plugin_repo in "${plugin_repos[@]}"; do
+            if [[ ! "${plugin_repo}" =~ ^[A-Za-z0-9._-]+/[A-Za-z0-9._-]+$ ]]; then
+              echo "Invalid plugin repo: ${plugin_repo}" >&2
               exit 1
             fi
 
-            repo_url="https://github.com/${plugin_org}/${plugin}.git"
+            plugin_org="${plugin_repo%%/*}"
+            plugin="${plugin_repo##*/}"
+            repo_url="https://github.com/${plugin_repo}.git"
             latest_tag="$(git ls-remote --tags --refs "${repo_url}" \
               | awk '{ print $2 }' \
               | sed 's#refs/tags/##' \
@@ -55,7 +57,7 @@ jobs:
               | cut -f2)"
 
             if [[ -z "${latest_tag}" ]]; then
-              echo "No tags found for ${plugin_org}/${plugin}" >&2
+              echo "No tags found for ${plugin_repo}" >&2
               exit 1
             fi
 
@@ -65,8 +67,15 @@ jobs:
 
             if [[ -f "${target_zip}" ]]; then
               current_version="$(unzip -p "${target_zip}" "${plugin}/${plugin}.php" 2>/dev/null \
-                | sed -n 's/^[[:space:]]*Version:[[:space:]]*v\{0,1\}\(.*[^[:space:]]\)[[:space:]]*$/\1/p' \
-                | head -n 1 || true)"
+                | awk '
+                    /^[[:space:]]*(\*[[:space:]]*)?Version:[[:space:]]*/ {
+                      version = $0
+                      sub(/^[[:space:]]*(\*[[:space:]]*)?Version:[[:space:]]*v?/, "", version)
+                      sub(/[[:space:]]*$/, "", version)
+                      print version
+                      exit
+                    }
+                  ' || true)"
 
               echo "Current ${plugin}.zip version: ${current_version:-unknown}"
               echo "Latest ${plugin} tag: ${latest_tag}"
@@ -80,7 +89,7 @@ jobs:
               echo "Latest ${plugin} tag: ${latest_tag}"
             fi
 
-            echo "Updating ${plugin}.zip from ${plugin_org}/${plugin}@${latest_tag}"
+            echo "Updating ${plugin}.zip from ${plugin_repo}@${latest_tag}"
 
             plugin_work_dir="${work_dir}/${plugin}"
             archive_zip="${plugin_work_dir}/${plugin}-${latest_tag}.zip"
