@@ -50,13 +50,17 @@ That distinction is important because live release API lookups can fail or be ra
 The workflow currently supports:
 
 ```text
+littlebizzy/clear-caches
 littlebizzy/disable-empty-trash
 littlebizzy/disable-image-compression
 littlebizzy/disable-xml-rpc
 littlebizzy/force-https
+littlebizzy/plugin-blacklist
 littlebizzy/repoman
 afragen/git-updater
 ```
+
+This covers every default plugin ZIP downloaded by the current MU plugin installer, plus the separately approved Git Updater mirror. Other optional or legacy ZIPs in the module directory are not updated by this workflow unless their source repositories are explicitly approved and added.
 
 The workflow uses explicit `owner/repo` entries so approved external plugin repositories can be included without changing the packaging logic.
 
