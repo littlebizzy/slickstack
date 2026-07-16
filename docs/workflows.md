@@ -35,7 +35,7 @@ The workflow also uses a concurrency lock so two manual MU plugin ZIP update run
 
 ## Purpose
 
-The workflow updates approved vendored LittleBizzy MU plugin ZIPs inside:
+The workflow updates approved vendored MU plugin ZIPs inside:
 
 ```bash
 modules/wordpress/mu-plugins/
@@ -47,31 +47,37 @@ That distinction is important because live release API lookups can fail or be ra
 
 ## Current plugin support
 
-The first version supports only:
+The workflow currently supports:
 
 ```text
-force-https
+littlebizzy/disable-empty-trash
+littlebizzy/disable-image-compression
+littlebizzy/disable-xml-rpc
+littlebizzy/force-https
+littlebizzy/repoman
+afragen/git-updater
 ```
 
-The workflow is structured with a plugin list so more approved LittleBizzy plugin repos can be added later.
+The workflow uses explicit `owner/repo` entries so approved external plugin repositories can be included without changing the packaging logic.
 
 ## How the MU plugin update works
 
 For each supported plugin, the workflow:
 
-1. validates the plugin slug before using it in paths
+1. validates the `owner/repo` entry before using it in URLs or paths
 2. finds the latest Git tag in the source plugin repo, normalizing an optional leading v before version sorting
 3. compares that tag against the plugin version inside the existing vendored ZIP
-4. logs the current vendored ZIP version and latest source tag
-5. skips the plugin if the vendored ZIP already matches the latest tagged version
-6. downloads the GitHub tag archive when an update is needed
-7. extracts the archive into a temporary work directory
-8. renames the extracted GitHub archive folder to the exact plugin slug
-9. verifies the expected main plugin file exists before packaging
-10. rebuilds the package as a temporary ZIP
-11. verifies the temporary ZIP contains the expected main plugin file
-12. replaces the vendored ZIP under `modules/wordpress/mu-plugins/` only after verification passes
-13. commits and pushes only if Git detects ZIP changes
+4. supports both plain `Version:` headers and standard docblock `* Version:` headers
+5. logs the current vendored ZIP version and latest source tag
+6. skips the plugin if the vendored ZIP already matches the latest tagged version
+7. downloads the GitHub tag archive when an update is needed
+8. extracts the archive into a temporary work directory
+9. renames the extracted GitHub archive folder to the exact plugin slug
+10. verifies the expected main plugin file exists before packaging
+11. rebuilds the package as a temporary ZIP
+12. verifies the temporary ZIP contains the expected main plugin file
+13. replaces the vendored ZIP under `modules/wordpress/mu-plugins/` only after verification passes
+14. commits and pushes only if Git detects ZIP changes
 
 For example, GitHub tag archives normally extract into names like:
 
@@ -97,11 +103,11 @@ Before running the workflow for a plugin, the source plugin repo should already 
 
 For example, if `force-https.php` has been updated to version `4.0.0`, the `littlebizzy/force-https` repo should have a matching `4.0.0` or `v4.0.0` tag before the workflow is run.
 
-If the new version has not been tagged yet, the workflow will keep using the latest existing tag instead of the latest source code on `master`.
+If the new version has not been tagged yet, the workflow will keep using the latest existing tag instead of the latest source code on the repository's default branch.
 
 ## Adding more plugins later
 
-To add more supported MU plugin ZIP mirrors later, add plugin repo slugs to the workflow plugin list.
+To add more supported MU plugin ZIP mirrors later, add approved `owner/repo` entries to the workflow plugin list.
 
 Each plugin should follow the same packaging convention:
 
@@ -113,7 +119,7 @@ plugin-slug.zip
 
 The workflow intentionally assumes this simple convention because the SlickStack MU plugin installer expects predictable extracted folder names.
 
-Plugin slugs should be plain repo slugs such as `force-https`. Do not include organization names, slashes, paths, or ZIP filenames in the plugin list.
+Repository entries should use the plain `owner/repo` form, such as `littlebizzy/force-https` or `afragen/git-updater`. Do not include URLs, tags, paths, or ZIP filenames in the plugin list.
 
 ## Related docs
 
