@@ -34,6 +34,7 @@ title: MU (Must-Use) Plugins (Public Mirrors)
 * [disable-xml-rpc.zip](disable-xml-rpc.zip)
 * [force-https.zip](force-https.zip)
 * [force-strong-hashing.zip](force-strong-hashing.zip)
+* [git-updater.zip](git-updater.zip)
 * [header-cleanup.zip](header-cleanup.zip)
 * [limit-heartbeat.zip](limit-heartbeat.zip)
 * [minify-html.zip](minify-html.zip)
@@ -59,9 +60,9 @@ title: MU (Must-Use) Plugins (Public Mirrors)
 * https://wordpress.programmingpedia.net/en/tutorial/9189/add-menu-page--
 * https://nimblewebdeveloper.com/blog/add-tabs-to-wordpress-plugin-admin-page
 * https://softwareengineering.stackexchange.com/questions/12807/make-a-big-deal-out-of-true/12819#12819
-* https://speedysense.com/php-remove-http-https-www-and-slashes-from-url/
+* https://speedysense.com/php-remove-http-https-www-and-slashes-from-urls/
 * https://wpsmackdown.com/wordpress-custom-login-message/
 
 ----
 
-*Last updated: Jan 11, 2022*
+*Last updated: Jul 16, 2026*
