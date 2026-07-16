@@ -32,7 +32,7 @@ into the production, staging, or development MU plugin directories as needed.
 
 ## Default plugin ZIPs
 
-The default MU plugin ZIPs currently include packages such as:
+The current default installer downloads these vendored ZIPs:
 
 ```text
 clear-caches.zip
@@ -40,12 +40,19 @@ disable-empty-trash.zip
 disable-image-compression.zip
 disable-xml-rpc.zip
 force-https.zip
-git-updater.zip
 plugin-blacklist.zip
 repoman.zip
 ```
 
 The related remote path variables are defined in `bash/ss-functions.txt`, and the install/copy logic is handled in `bash/ss-install-wordpress-mu-plugins.txt`.
+
+## Additional vendored ZIPs
+
+The module directory also contains additional optional or legacy plugin ZIPs. These files are available as public mirrors but are not necessarily downloaded by the default installer.
+
+`git-updater.zip` is an explicitly approved external mirror sourced from `afragen/git-updater`. It is not part of the default installer set.
+
+See `modules/wordpress/mu-plugins/index.md` for the module directory listing.
 
 ## Updating vendored ZIPs
 
@@ -53,7 +60,7 @@ Vendored ZIP files should be updated inside the SlickStack repo before they are 
 
 The preferred approach is to use the manual GitHub Actions workflow documented in `docs/workflows.md`. That workflow pulls the latest tagged archive from each approved plugin repository, normalizes the extracted folder name, rebuilds the ZIP under `modules/wordpress/mu-plugins/`, and commits changed ZIPs back to SlickStack.
 
-The approved source list supports both LittleBizzy repositories and explicitly approved external repositories such as `afragen/git-updater`.
+The current workflow covers every default installer ZIP plus the explicitly approved `afragen/git-updater` mirror. Other optional or legacy ZIPs remain outside the workflow until their source repositories are reviewed and added to its approved list.
 
 ## Rules for ZIP mirrors
 
