@@ -2,7 +2,7 @@
 
 SlickStack installs a small set of WordPress MU plugins during `ss-install-wordpress-mu-plugins`.
 
-The installer does not fetch most LittleBizzy plugin packages directly from their standalone plugin repositories during server installs. Instead, SlickStack keeps approved ZIP mirrors under:
+The installer does not fetch most plugin packages directly from their standalone repositories during server installs. Instead, SlickStack keeps approved ZIP mirrors under:
 
 ```bash
 modules/wordpress/mu-plugins/
@@ -14,7 +14,7 @@ The public download variables in `ss-functions` point to those vendored ZIP file
 
 The MU plugin installer downloads the ZIP files from the SlickStack mirror path, extracts them under `/tmp`, and copies the extracted plugin directories into the active WordPress MU plugin directory.
 
-For the default LittleBizzy MU plugins, the installer expects each ZIP to extract into a clean top-level directory matching the plugin slug, for example:
+For the default MU plugins, the installer expects each ZIP to extract into a clean top-level directory matching the plugin slug, for example:
 
 ```text
 force-https.zip
@@ -32,7 +32,7 @@ into the production, staging, or development MU plugin directories as needed.
 
 ## Default plugin ZIPs
 
-The default LittleBizzy MU plugin ZIPs currently include packages such as:
+The default MU plugin ZIPs currently include packages such as:
 
 ```text
 clear-caches.zip
@@ -40,6 +40,7 @@ disable-empty-trash.zip
 disable-image-compression.zip
 disable-xml-rpc.zip
 force-https.zip
+git-updater.zip
 plugin-blacklist.zip
 repoman.zip
 ```
@@ -50,9 +51,9 @@ The related remote path variables are defined in `bash/ss-functions.txt`, and th
 
 Vendored ZIP files should be updated inside the SlickStack repo before they are used by servers. This avoids doing live GitHub API release lookups during server installs, which can be unreliable because of rate limits and network conditions.
 
-The preferred approach is to use the manual GitHub Actions workflow documented in `docs/workflows.md`. That workflow can pull the latest tagged release archive from an approved LittleBizzy plugin repo, normalize the extracted folder name, rebuild the ZIP under `modules/wordpress/mu-plugins/`, and commit the changed ZIP back to SlickStack.
+The preferred approach is to use the manual GitHub Actions workflow documented in `docs/workflows.md`. That workflow pulls the latest tagged archive from each approved plugin repository, normalizes the extracted folder name, rebuilds the ZIP under `modules/wordpress/mu-plugins/`, and commits changed ZIPs back to SlickStack.
 
-For the first version, the workflow only supports `force-https.zip`. Other plugin repos can be added later by extending the workflow plugin list.
+The approved source list supports both LittleBizzy repositories and explicitly approved external repositories such as `afragen/git-updater`.
 
 ## Rules for ZIP mirrors
 
@@ -68,4 +69,4 @@ Each vendored MU plugin ZIP should follow these rules:
 
 SlickStack also supports custom MU plugin sources through `ss-config` variables such as `WP_MU_PLUGINS`, `MU_PLUGIN_01_SOURCE`, and `MU_PLUGIN_01_DIR`.
 
-Custom MU plugin installs are separate from the default vendored LittleBizzy ZIP mirrors. The vendored ZIP workflow is intended for SlickStack-maintained default packages, not arbitrary custom plugin sources.
+Custom MU plugin installs are separate from the default vendored ZIP mirrors. The vendored ZIP workflow is intended for explicitly approved SlickStack-maintained packages, not arbitrary custom plugin sources.
