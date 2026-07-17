@@ -70,6 +70,16 @@ REST API responses may also contain backend URLs for posts, pages, categories, a
 
 SlickStack does not currently rewrite WordPress URLs to the remote frontend domain.
 
+## Frontend caching and revalidation
+
+SlickStack does not FastCGI-cache WordPress REST API responses. The remote frontend should manage its own API caching, generated pages, and content refresh behavior.
+
+Publishing or updating content in WordPress does not automatically clear caches or rebuild pages on the remote frontend.
+
+Depending on the frontend platform, this may require scheduled refreshes, build hooks, publishing webhooks, or on-demand page and tag revalidation.
+
+Avoid making a new uncached WordPress API request for every public page view. Excessive requests from a remote hosting provider may encounter SlickStack's normal Nginx or PHP rate limits.
+
 ## Scope
 
 SlickStack manages the WordPress backend and LEMP stack.
