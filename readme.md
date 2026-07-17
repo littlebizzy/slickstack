@@ -6,6 +6,16 @@ SlickStack is a free LEMP stack automation script written in Bash designed to en
 
 <a href="https://www.capterra.com/p/211436/SlickStack">Capterra</a> • <a href="https://www.g2.com/products/slickstack/reviews">G2 Crowd</a> • <a href="https://www.producthunt.com/posts/slickstack">Product Hunt</a> • <a href="https://sourceforge.net/software/product/SlickStack/">SourceForge</a>
 
+## Documentation
+
+| Guide | Description |
+| :------------- | :---------- |
+| [GitHub Workflows](docs/workflows.md) | GitHub Actions maintenance and repository mirror workflows. |
+| [Headless WordPress](docs/headless.md) | Using SlickStack as the WordPress backend for a remote frontend. |
+| [Iptables](docs/iptables.md) | Default firewall policies, allowed traffic, and rule management. |
+| [Nginx](docs/nginx.md) | Approved include files and SlickStack-managed Nginx configuration. |
+| [WordPress MU Plugins](docs/mu-plugins.md) | Installed MU plugins, vendored ZIP mirrors, and update behavior. |
+
 ## Thank you to our sponsors!
 
 [**Become a sponsor**](https://github.com/sponsors/jessuppi) and receive access to our **#perma-lounge** channel on Discord. Your donations and public displays of support for SlickStack are what keep this project going. Thank you very much!
