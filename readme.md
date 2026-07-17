@@ -8,6 +8,7 @@ SlickStack is a free LEMP stack automation script written in Bash designed to en
 
 | Document | Description |
 | :------------- | :---------- |
+| [Backups](docs/backups.md) | Covers local database and file dumps, backup schedules, production restores, Rclone and Rsync transfers, retention limits, credentials, and recovery verification. |
 | [Workflows](docs/workflows.md) | Explains the GitHub Actions used for repository maintenance, SourceForge mirroring, and manual updates of approved WordPress MU plugin ZIP files. |
 | [Headless](docs/headless.md) | Covers using SlickStack as a WordPress backend for a remote frontend, including APIs, authentication, SEO, media, caching, redirects, and previews. |
 | [Iptables](docs/iptables.md) | Documents the default firewall policies, allowed inbound traffic, installed rule files, persistence behavior, and the limits of custom firewall changes. |
