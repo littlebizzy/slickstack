@@ -37,6 +37,25 @@ SlickStack already routes REST API requests through WordPress and excludes them 
 
 Plugins such as WPGraphQL may also be used, but SlickStack does not install or configure them.
 
+## Authentication
+
+Public WordPress REST API endpoints normally do not require authentication.
+
+Private content, drafts, previews, and write requests require authentication. For remote server-to-server requests, WordPress Application Passwords are the recommended starting point.
+
+Application Passwords are generated from a WordPress user profile and are separate from the user’s normal login password. They should only be used over HTTPS and must never be exposed in browser-side frontend code.
+
+An authenticated request can be tested with:
+
+```bash
+curl --user "WORDPRESS_USERNAME:WORDPRESS_APPLICATION_PASSWORD" \
+    https://cms.example.com/wp-json/wp/v2/users/me
+```
+
+The `/users/me` endpoint should return the authenticated WordPress user when the credentials are accepted.
+
+SlickStack has not yet verified Application Password authentication with a real remote headless deployment. This should be tested before more advanced preview or publishing integrations are documented.
+
 ## Scope
 
 SlickStack manages the WordPress backend and LEMP stack.
