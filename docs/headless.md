@@ -35,7 +35,21 @@ https://cms.example.com/wp-json/
 
 SlickStack already routes REST API requests through WordPress and excludes them from FastCGI page caching.
 
-Plugins such as WPGraphQL may also be used, but SlickStack does not install or configure them.
+## WPGraphQL
+
+WPGraphQL may be installed as a normal WordPress plugin when a GraphQL API is preferred over the standard REST API.
+
+With WordPress pretty permalinks enabled, the default endpoint is:
+
+```text
+https://cms.example.com/graphql
+```
+
+WPGraphQL uses normal WordPress rewrite rules, so it should work with SlickStack's existing WordPress routing. However, SlickStack has not yet specifically tested public queries, authenticated queries, mutations, or high-volume GraphQL traffic.
+
+WPGraphQL does not include its own complete authentication system. Private data and mutations require a compatible authentication method and appropriate WordPress user permissions.
+
+SlickStack does not currently install, configure, cache, rate-limit, or otherwise optimize WPGraphQL separately.
 
 ## Authentication
 
