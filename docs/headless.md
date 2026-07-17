@@ -80,6 +80,16 @@ Depending on the frontend platform, this may require scheduled refreshes, build 
 
 Avoid making a new uncached WordPress API request for every public page view. Excessive requests from a remote hosting provider may encounter SlickStack's normal Nginx or PHP rate limits.
 
+## Draft previews
+
+WordPress preview links normally open the WordPress-rendered site on the SlickStack domain rather than the remote frontend.
+
+A headless frontend must provide its own preview route and securely retrieve draft or revision content from WordPress using an authenticated request.
+
+SlickStack does not currently rewrite WordPress preview links, create preview tokens, or configure preview routes on the remote frontend.
+
+A future headless integration plugin could use a configured frontend URL to redirect WordPress preview links to the appropriate frontend preview route.
+
 ## Scope
 
 SlickStack manages the WordPress backend and LEMP stack.
