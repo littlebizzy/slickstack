@@ -25,6 +25,16 @@ SS_NOINDEX="true"
 
 For a fully headless setup, `SS_NOINDEX="true"` is recommended so the WordPress-rendered backend does not compete with the remote frontend in search results.
 
+## SEO and indexing
+
+In a fully headless setup, the remote frontend should provide the public site's metadata, canonical URLs, social sharing tags, `robots.txt`, and XML sitemaps.
+
+`SS_NOINDEX="true"` helps keep WordPress-rendered pages on the SlickStack domain out of search results, but it does not configure SEO for the remote frontend.
+
+SEO metadata stored in WordPress must be retrieved and rendered by the remote frontend where required. Public URLs should use the remote frontend domain rather than the WordPress backend domain.
+
+SlickStack does not manage metadata, canonical URLs, robots rules, or sitemap generation on the remote frontend.
+
 ## WordPress API
 
 The standard WordPress REST API is available at:
