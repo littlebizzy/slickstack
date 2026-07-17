@@ -141,7 +141,7 @@ A headless frontend must provide its own preview route and securely retrieve dra
 
 SlickStack does not currently rewrite WordPress preview links, create preview tokens, or configure preview routes on the remote frontend.
 
-A future headless integration plugin could use a configured frontend URL to redirect WordPress preview links to the appropriate frontend preview route.
+A future optional SlickStack MU plugin could use a configured frontend URL to redirect WordPress preview links to the appropriate frontend preview route.
 
 ## Scope
 
