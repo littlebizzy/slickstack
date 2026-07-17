@@ -56,6 +56,14 @@ The `/users/me` endpoint should return the authenticated WordPress user when the
 
 SlickStack has not yet verified Application Password authentication with a real remote headless deployment. This should be tested before more advanced preview or publishing integrations are documented.
 
+## CORS and request location
+
+Remote frontends should normally retrieve WordPress content from server-side code. This keeps API credentials private and avoids browser-enforced cross-origin restrictions.
+
+WordPress REST API endpoints support cross-origin browser requests, but Application Passwords and other secrets must never be included in browser-side JavaScript.
+
+SlickStack does not add a separate headless-specific CORS policy. Custom CORS rules should only be added when the frontend must request WordPress directly from a visitor's browser.
+
 ## Media and URLs
 
 WordPress media remains hosted on the SlickStack domain, for example:
