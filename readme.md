@@ -10,6 +10,7 @@ SlickStack is a free LEMP stack automation script written in Bash designed to en
 | :------------- | :---------- |
 | [Backups](docs/backups.md) | Covers local database and file dumps, backup schedules, production restores, Rclone and Rsync transfers, retention limits, credentials, and recovery verification. |
 | [Cron Jobs](docs/cron.md) | Documents the 14 fixed wrapper intervals, task selection through `ss-config`, WP-Cron, overlap protection, custom cron files, self-healing, logging, and troubleshooting. |
+| [Adminer](docs/adminer.md) | Covers Adminer installation, randomized and environment-specific URLs, database credentials, Nginx and PHP-FPM routing, rate limits, disabling access, and security limitations. |
 | [Fail2ban](docs/fail2ban.md) | Documents the current SSH and Nginx jails, thresholds, bans, troubleshooting, and planned removal in favor of a simpler Iptables-only approach. |
 | [Workflows](docs/workflows.md) | Explains the GitHub Actions used for repository maintenance, SourceForge mirroring, and manual updates of approved WordPress MU plugin ZIP files. |
 | [Headless](docs/headless.md) | Covers using SlickStack as a WordPress backend for a remote frontend, including APIs, authentication, SEO, media, caching, redirects, and previews. |
