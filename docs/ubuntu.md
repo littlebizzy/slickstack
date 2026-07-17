@@ -17,15 +17,15 @@ The current installer accepts these Ubuntu LTS versions:
 
 The active SlickStack module baseline and README target Ubuntu 24.04 LTS. New servers should normally use 24.04 rather than starting with an older accepted release.
 
-SlickStack also requires a normal physical or virtual machine. Containerized environments such as Docker, LXC, OpenVZ, Podman, and systemd-nspawn are rejected by the installer.
+SlickStack requires a normal physical or virtual machine. Containerized environments such as Docker, LXC, OpenVZ, Podman, and systemd-nspawn are rejected by the installer.
+
+The installer also requires at least 1 GB of free disk space before it proceeds.
 
 The main installation command is:
 
 ```bash
 sudo bash /var/www/ss-install
 ```
-
-The installer also requires at least 1 GB of free disk space before it proceeds.
 
 ## Managed Ubuntu components
 
@@ -47,9 +47,9 @@ It can also create:
 /var/www/auth/authorized_keys
 ```
 
-Direct changes to managed files may be overwritten the next time the related installer or the complete `ss-install` workflow runs.
+Direct changes to these files may be overwritten the next time the related installer or the complete `ss-install` workflow runs.
 
-Use `ss-config`, the reserved custom cron files, or another documented customization point instead of editing generated system files directly.
+Use `ss-config`, the reserved custom cron files, or another documented customization point instead of editing managed system files directly.
 
 ## Server users
 
@@ -71,7 +71,7 @@ SFTP_PASSWORD="example-password"
 
 The sudo and SFTP usernames must be different.
 
-The installer creates and maintains these groups:
+The user installer creates these groups:
 
 ```text
 sudo-ssh
@@ -79,15 +79,15 @@ sftp-only
 slickstack
 ```
 
-The sudo user is added to `sudo-ssh`, `slickstack`, and `www-data`. The SFTP user is added to `sftp-only`, `slickstack`, and `www-data`. The `www-data` user is also added to the `slickstack` group.
+The sudo user is added to `sudo-ssh`, `slickstack`, and `www-data`. The SFTP user is added to `sftp-only`, `slickstack`, and `www-data`. The `www-data` user is also added to `slickstack`.
 
 ## Root account
 
 During user installation, SlickStack sets the root password to the configured `SUDO_PASSWORD` and disables password expiration for root.
 
-Root remains available for local system administration, recovery consoles, and commands already running with elevated privileges, but direct root SSH login is disabled by the managed SSH configuration.
+Direct root SSH login is disabled by the managed SSH configuration. Root remains available for provider consoles, local recovery, and commands already running with elevated privileges.
 
-Do not rely on root SSH access after installation. Confirm that the configured sudo user can successfully open a new SSH session before closing the original provider or root session.
+Confirm that the configured sudo user can open a new SSH session before closing the original provider or root session.
 
 ## Sudo privileges
 
@@ -103,7 +103,7 @@ The template additionally:
 - uses a 30-minute global sudo timestamp
 - retains the normal Ubuntu `sudo` group rule
 
-Because `/etc/sudoers` is managed, custom privilege rules added directly to that file may be lost. SlickStack does not currently use the normal `/etc/sudoers.d` include directory in its template.
+Custom privilege rules added directly to `/etc/sudoers` may be lost. The current template does not use the normal `/etc/sudoers.d` include directory.
 
 ## SSH access
 
@@ -115,25 +115,25 @@ sudo bash /var/www/ss-install-ubuntu-ssh
 
 It installs an Ubuntu-version-specific `/etc/ssh/sshd_config`, resets permissions, and restarts the SSH service.
 
-The standard configuration:
+The Ubuntu 24.04 configuration:
 
 - listens on TCP port `22`
 - accepts IPv4 connections
 - disables root login
-- allows only the `sudo-ssh` and `sftp-only` groups
+- allows the `sudo-ssh` and `sftp-only` groups
 - limits authentication attempts
 - disables empty passwords and keyboard-interactive authentication
 - disables X11 forwarding
 - keeps TCP forwarding available for the sudo user
 - disables DNS lookups for faster connections
 
-Port 22 is intentionally hardcoded by the current installer for compatibility. Changing an old `SSH_PORT` value elsewhere does not change the active SSH listener created by this script.
+Port 22 is intentionally hardcoded by the active installer and template for compatibility. An old `SSH_PORT` value elsewhere does not change the current SSH listener.
 
-Keep an existing SSH or provider-console session open while testing a changed SSH configuration. A bad IP restriction, key, or username can otherwise lock you out of the server.
+Keep an existing SSH or provider-console session open while testing any access change. A bad key, username, or generated configuration can otherwise lock you out of the server.
 
-## Password and key authentication
+## Password and public-key authentication
 
-Authentication behavior is controlled by:
+Authentication settings include:
 
 ```bash
 SSH_KEYS="false"
@@ -141,36 +141,40 @@ SSH_RESTRICT_IP="false"
 SSH_IPV4="192.0.2.1"
 ```
 
-With the default `SSH_KEYS="false"` setting, the sudo user logs in with a password and public-key authentication is disabled by the installer.
+The active Ubuntu 24.04 template hardcodes:
 
-When `SSH_KEYS="true"`:
+```text
+PubkeyAuthentication yes
+```
 
-- password authentication is disabled
-- public-key authentication is enabled
-- SlickStack generates a 4096-bit RSA key pair if its expected key does not already exist
-- the detected public key is appended to the centralized authorized-keys file
+The current `SSH_KEYS` behavior is therefore:
 
-The centralized authorized-keys file is:
+| Setting | Password authentication | Public-key authentication |
+| :------------- | :----------: | :----------: |
+| `SSH_KEYS="false"` | Enabled | Enabled |
+| `SSH_KEYS="true"` | Disabled | Enabled |
+
+When `SSH_KEYS="true"`, SlickStack also generates a 4096-bit RSA key pair if its expected key does not already exist and appends the public key to:
 
 ```text
 /var/www/auth/authorized_keys
 ```
 
-SlickStack owns that file as `root:root` with mode `0644`.
+That centralized file is owned by `root:root` with mode `0644`.
 
-Administrators using their own key should place the public key in the expected authorized-keys file before enabling key-only authentication and should verify access in a second session before disconnecting.
+Administrators using their own key should place the public key in the expected authorized-keys file and verify access in a second session before enabling key-only login.
 
-## Optional SSH IP restriction
+## SSH IP restriction setting
 
-When enabled, `SSH_RESTRICT_IP` restricts sudo-user SSH access to the IPv4 address defined by `SSH_IPV4`.
+`SSH_RESTRICT_IP` and `SSH_IPV4` remain available in `ss-config`, and the installer attempts to replace an IP placeholder when restriction is enabled.
 
-The SFTP account remains separately matched so file-transfer services can still connect according to the generated SSH rules.
+However, the active Ubuntu 24.04 SSH template does not currently contain that placeholder. The setting therefore does not presently enforce an SSH source-IP restriction and should not be relied upon.
 
-Use IP restriction cautiously. Dynamic residential IP addresses, VPN changes, travel, and provider network changes can immediately prevent SSH access.
+Use a cloud firewall or another deliberately maintained access-control layer when an IP allowlist is required.
 
 ## Jailed SFTP access
 
-The SFTP user has `/usr/sbin/nologin` as its shell and is matched by the `sftp-only` group.
+The SFTP user has `/usr/sbin/nologin` as its shell and is matched through the `sftp-only` group.
 
 The SSH template applies:
 
@@ -182,9 +186,9 @@ X11Forwarding no
 PermitTTY no
 ```
 
-This means the account can transfer files within the `/var/www` jail but cannot open a normal shell, run arbitrary commands, request a terminal, or create SSH tunnels.
+The account can transfer files within the `/var/www` jail but cannot open a normal shell, run arbitrary commands, request a terminal, or create SSH tunnels.
 
-The jailed SFTP account is suitable for trusted developers, agencies, and compatible remote backup services that only require file access.
+This account is suitable for trusted developers, agencies, and compatible backup services that only require file access.
 
 ## System timezone
 
@@ -196,7 +200,7 @@ SS_TIMEZONE="UTC"
 
 During Ubuntu utility installation, SlickStack runs `timedatectl set-timezone` with this value. If the setting is missing, it falls back to UTC.
 
-UTC is the recommended server timezone because it avoids daylight-saving changes and keeps logs and scheduled jobs predictable across regions.
+UTC is recommended because it avoids daylight-saving changes and keeps logs and scheduled jobs predictable across regions.
 
 ## Ubuntu utilities
 
@@ -206,7 +210,7 @@ The utility installer is:
 sudo bash /var/www/ss-install-ubuntu-utils
 ```
 
-It updates the APT cache, upgrades installed packages, installs required command-line utilities, sets the system timezone, installs a custom shell prompt, and makes Nano the default editor.
+It updates the APT cache, upgrades installed packages, installs required command-line utilities, sets the timezone, installs a custom shell prompt, and makes Nano the default editor.
 
 Core packages include:
 
@@ -239,7 +243,7 @@ gzip
 tar
 ```
 
-Some services install their own additional packages through their dedicated module installers.
+Individual services install their own additional packages through dedicated module installers.
 
 ## Bash environment and aliases
 
@@ -255,7 +259,7 @@ It installs the shared SlickStack Bash configuration at:
 /var/www/meta/.bashrc
 ```
 
-The shared file is sourced by the root, sudo, and SFTP user Bash configuration files. The SFTP user still cannot open a normal shell because its login shell is disabled.
+The file is sourced by the root, sudo, and SFTP user Bash configurations. The SFTP account still cannot open a shell because its login shell is disabled.
 
 The managed Bash environment provides:
 
@@ -265,9 +269,9 @@ The managed Bash environment provides:
 - the `ss` command aliases
 - WP-CLI completion and environment support
 - Rclone environment configuration when applicable
-- `/var/www` as the normal working area for management tasks
+- `/var/www` as the normal management area
 
-For example:
+Examples include:
 
 ```bash
 ss check
@@ -277,7 +281,7 @@ ss cron hourly
 ss reboot
 ```
 
-These aliases are conveniences for the underlying scripts. The explicit form remains valid:
+These aliases call the underlying scripts. The explicit form remains valid:
 
 ```bash
 sudo bash /var/www/ss-check
@@ -307,7 +311,7 @@ sysctl -p /etc/sysctl.conf
 
 The managed settings cover:
 
-- kernel logging and basic hardening
+- kernel logging and hardening
 - process and memory behavior
 - file-descriptor and inotify limits
 - swap and filesystem-cache behavior
@@ -316,9 +320,9 @@ The managed settings cover:
 - TCP buffers, retries, timeouts, and queues
 - socket and network-processing limits
 
-Current Ubuntu 24.04 defaults include low swap preference, increased file limits, disabled IP forwarding, enabled TCP syncookies, and larger connection queues suitable for a standalone web server.
+Current Ubuntu 24.04 defaults include low swap preference, increased file limits, disabled IP forwarding, enabled TCP syncookies, and larger connection queues for a standalone web server.
 
-These settings are designed for SlickStack's normal single-server WordPress architecture. Clustering, container networking, VPN gateways, routers, custom forwarding, and unusual network appliances may require different kernel values and are outside the standard managed configuration.
+These settings target SlickStack's normal single-server WordPress architecture. Clustering, container networking, VPN gateways, routers, custom forwarding, and unusual network appliances may require different values.
 
 Direct changes to `/etc/sysctl.conf` may be overwritten by `ss-install-ubuntu-kernel` or the complete installer.
 
@@ -338,7 +342,7 @@ When no swapfile entry is detected in `/etc/fstab` and more than approximately 5
 
 The file is owned by `root:root` with mode `0600`, activated with `swapon`, and appended to `/etc/fstab` for future boots.
 
-The installer does not currently resize an existing swapfile when server RAM or disk capacity changes. It also does not replace an existing swap configuration detected in `/etc/fstab`.
+The installer does not currently resize an existing swapfile when RAM or disk capacity changes. It also does not replace an existing swap configuration detected in `/etc/fstab`.
 
 Useful checks include:
 
@@ -348,7 +352,7 @@ free -h
 grep swap /etc/fstab
 ```
 
-Swap is an emergency buffer, not a replacement for adequate RAM. Sustained swap usage usually indicates that the server needs resource tuning or a larger virtual machine.
+Swap is an emergency buffer, not a substitute for adequate RAM. Sustained swap usage usually indicates that the server needs tuning or a larger virtual machine.
 
 ## Root crontab
 
@@ -358,9 +362,9 @@ The root crontab installer is:
 sudo bash /var/www/ss-install-ubuntu-crontab
 ```
 
-It installs the Cron package if needed, replaces root's crontab from SlickStack's template, reloads Cron, and restores managed permissions.
+It installs Cron if needed, replaces root's crontab from the SlickStack template, reloads Cron, and restores permissions.
 
-The root schedule runs SlickStack cron wrappers at these fixed frequencies:
+The root schedule runs wrappers at these fixed frequencies:
 
 ```text
 minutely
@@ -379,11 +383,11 @@ monthly
 sometimes (every 2 months)
 ```
 
-Each wrapper uses `flock` so another copy of the same interval does not begin while its lock is active.
+Each wrapper uses `flock` so another copy of the same interval does not start while its lock is active.
 
-The root crontab also removes lock files older than six hours and periodically repairs missing or damaged SlickStack cron wrapper files from public mirrors.
+The root crontab also removes lock files older than six hours and periodically repairs missing or damaged SlickStack cron wrappers from public mirrors.
 
-Do not edit root's crontab or the standard files under `/var/www/crons/`. The crontab installer replaces the root schedule, and the self-healing workflow can replace standard cron wrappers.
+Do not edit root's crontab or the standard files under `/var/www/crons/`. The installer replaces the root schedule, and the self-healing workflow can replace standard wrappers.
 
 ## Scheduled task configuration
 
@@ -404,9 +408,9 @@ Use the reserved files under:
 /var/www/crons/custom/
 ```
 
-for custom shell tasks. These files are sourced by the matching standard cron wrappers and are the supported place for custom recurring commands.
+for custom recurring commands. These files are sourced by the matching standard cron wrappers.
 
-Custom tasks run as root. Validate commands carefully, use absolute paths where practical, avoid long blocking operations, and account for the resources required by other scheduled SlickStack tasks.
+Custom tasks run as root. Use absolute paths where practical, avoid long blocking operations, and account for resources required by other scheduled tasks.
 
 ## Package updates
 
@@ -430,13 +434,13 @@ The default scheduled interval is:
 INTERVAL_SS_UPDATE_MODULES="never"
 ```
 
-This means module updates are manual unless the administrator deliberately schedules them.
+Module updates are therefore manual unless the administrator deliberately schedules them.
 
-A kernel or low-level library update may require a reboot before the newly installed version becomes active.
+A kernel or low-level library update may require a reboot before the new version becomes active.
 
 ## Reinstallation
 
-SlickStack's Ubuntu installers are designed to be idempotent and can be run again to restore the managed configuration:
+SlickStack's Ubuntu installers are designed to be idempotent and can be run again to restore managed configuration:
 
 ```bash
 sudo bash /var/www/ss-install-ubuntu-users
@@ -476,7 +480,7 @@ The script checks server uptime against:
 SS_REBOOT_MIN_UPTIME="3600"
 ```
 
-With the default value, it refuses to reboot a server that has been running for less than one hour. This helps prevent accidental reboot loops when the command is called from another script.
+With the default value, it refuses to reboot a server that has been running for less than one hour. This helps prevent accidental reboot loops when another script calls it.
 
 The scheduled reboot interval defaults to:
 
@@ -484,7 +488,7 @@ The scheduled reboot interval defaults to:
 INTERVAL_SS_REBOOT_MACHINE="never"
 ```
 
-For an intentional emergency reboot that must ignore the SlickStack uptime guard, use the normal operating-system reboot command directly from an active sudo or provider-console session.
+For an intentional emergency reboot that must ignore the SlickStack uptime guard, use the normal operating-system reboot command from an active sudo or provider-console session.
 
 ## Troubleshooting
 
@@ -495,10 +499,11 @@ Confirm:
 - the client is connecting to port 22
 - the username matches `SUDO_USER`
 - the user belongs to `sudo-ssh`
-- password authentication matches `SSH_KEYS`
-- the public key exists in `/var/www/auth/authorized_keys` when keys are enabled
-- `SSH_RESTRICT_IP` is not blocking the current address
+- password authentication matches the `SSH_KEYS` behavior
+- the public key exists in `/var/www/auth/authorized_keys` when key-only login is enabled
 - the SSH service is running
+
+The current `SSH_RESTRICT_IP` setting does not enforce an IP allowlist in the Ubuntu 24.04 template.
 
 Use a provider console if no SSH session remains available.
 
@@ -529,13 +534,13 @@ sudo bash /var/www/ss-install-ubuntu-crontab
 
 ### Kernel settings do not persist
 
-Confirm that the expected values exist in `/etc/sysctl.conf`, then reapply the managed template:
+Confirm the expected values exist in `/etc/sysctl.conf`, then reapply the managed template:
 
 ```bash
 sudo bash /var/www/ss-install-ubuntu-kernel
 ```
 
-Custom values added directly to the managed file may be replaced.
+Custom values added directly to the file may be replaced.
 
 ### Swap was not created
 
@@ -560,6 +565,6 @@ The standard SlickStack Ubuntu design assumes:
 - a single 2 GB emergency swapfile when needed
 - APT-based package management
 - systemd-managed services
-- custom recurring commands only through reserved cron files
+- custom recurring commands through reserved cron files
 
 Multiple independent admin privilege policies, custom SSH ports, LDAP or centralized identity, immutable operating systems, configuration-management convergence, containers, Kubernetes, custom routing, clustered kernels, automatic distribution upgrades, and multi-server orchestration are outside the standard managed configuration.
