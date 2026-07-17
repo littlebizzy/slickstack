@@ -15,6 +15,7 @@ SlickStack is a free LEMP stack automation script written in Bash designed to en
 | [MySQL](docs/mysql.md) | Covers local and remote database modes, managed MySQL configuration, InnoDB tuning, users and databases, dumps, imports, optimization, and service recovery. |
 | [Nginx](docs/nginx.md) | Describes SlickStack-managed Nginx configuration, approved optional include files, supported customization boundaries, and safe reload behavior. |
 | [PHP-FPM](docs/php-fpm.md) | Documents PHP version selection, package and configuration installation, Nginx routing, RAM-based process tuning, extensions, OPcache, restarts, and service recovery. |
+| [SSL (Certs)](docs/ssl.md) | Covers self-signed OpenSSL certificates, Certbot issuance and renewal, Cloudflare wildcard validation, third-party certificates, permissions, and Nginx activation. |
 | [MU Plugins](docs/mu-plugins.md) | Explains which WordPress MU plugins SlickStack installs, how vendored ZIP mirrors are managed, and how the installer updates plugin files. |
 
 ## Thank you to our sponsors!
