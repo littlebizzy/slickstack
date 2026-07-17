@@ -16,7 +16,7 @@ SlickStack is a free LEMP stack automation script written in Bash designed to en
 
 &nbsp;
 
-Our sponsors: [backamblock](https://github.com/backamblock), [yamanmucahit](https://github.com/yamanmucahit), [maxalerator](https://github.com/maxalerator), [konkova](https://github.com/konkova), [HDBear](https://github.com/HDBear), [Politicalite](https://github.com/politicalite), [liwernyap](https://github.com/liwernyap), [vivdev](https://github.com/vivdev), [hamzah](https://github.com/hamzah), [gingibash](https://github.com/gingibash), [damiafaw](https://github.com/damiafaw), [trevplaig](https://github.com/trevplaig), [hargums](https://github.com/hargums), [volneanschi](https://github/volneanschi), [OSO Electric Equipment](https://github.com/Oso-Electric-Equipment), [vladbejenaru](https://github.com/vladbejenaru), [alexbohariuc](https://github.com/alexbohariuc), [romfeo](https://github/romfeo), [chelovek07](https://github/chelovek07)
+Our sponsors: [alexbohariuc](https://github.com/alexbohariuc), [backamblock](https://github.com/backamblock), [gingibash](https://github.com/gingibash), [hamzah](https://github.com/hamzah), [liwernyap](https://github.com/liwernyap), [OSO Electric Equipment](https://github.com/Oso-Electric-Equipment), [strxno](https://github.com/strxno), [trevplaig](https://github.com/trevplaig), [vivdev](https://github.com/vivdev), [volneanschi](https://github.com/volneanschi)
 
 ## Installation
 
