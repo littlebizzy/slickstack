@@ -23,7 +23,9 @@ Then:
 5. verify the site, logs, SSL, WordPress, and Certbot behavior
 6. enable stricter origin protections only after the basic proxy setup is stable
 
-Do not begin by enabling every restriction at once. Real-IP restoration, Cloudflare-only Nginx access, Authenticated Origin Pulls, and certificate validation solve different problems and fail differently.
+Do not begin by enabling every restriction at once. Real-IP restoration, Cloudflare-only origin access, Authenticated Origin Pulls, and certificate validation solve different problems and fail differently.
+
+> **Current limitation:** Do not enable `CLOUDFLARE_IPS_ONLY="true"` together with `CLOUDFLARE_REAL_IPS="true"`. Nginx replaces the client address with `CF-Connecting-IP` before its `allow` and `deny` access checks run. The current SlickStack `allowed-ips.conf` then compares Cloudflare's network allowlist against the restored visitor address and can reject legitimate proxied traffic. Treat `CLOUDFLARE_IPS_ONLY` as experimental until the implementation is changed to evaluate the original network peer address.
 
 ## SlickStack settings
 
@@ -40,7 +42,7 @@ CLOUDFLARE_REAL_IPS="true"
 | Setting | Default | Purpose |
 | :-- | :--: | :-- |
 | `CLOUDFLARE_REAL_IPS` | `true` | Trust Cloudflare proxy ranges and restore the visitor address from `CF-Connecting-IP` |
-| `CLOUDFLARE_IPS_ONLY` | `false` | Allow HTTP and HTTPS requests through Nginx only when the connecting address belongs to Cloudflare |
+| `CLOUDFLARE_IPS_ONLY` | `false` | Installs a Cloudflare network allowlist, but currently conflicts with real-IP restoration |
 | `CLOUDFLARE_AUTHENTICATED_ORIGIN` | `false` | Validate Cloudflare's client certificate for the origin gate used by the standard production server block |
 | `CLOUDFLARE_EMAIL` | empty | Cloudflare account email used by the current Certbot DNS credentials format |
 | `CLOUDFLARE_API_KEY` | empty | Cloudflare Global API Key used by the current Certbot DNS credentials format |
@@ -78,7 +80,7 @@ dev.example.com
 
 Use proxied records—the orange cloud—for hostnames that should receive Cloudflare caching, WAF, DDoS, TLS, and origin-protection benefits.
 
-DNS-only records connect visitors directly to the origin and can expose its address. They also bypass Cloudflare's WAF and will fail when `CLOUDFLARE_IPS_ONLY="true"` because those requests do not originate from Cloudflare proxy ranges.
+DNS-only records connect visitors directly to the origin and can expose its address. They also bypass Cloudflare's WAF and other edge controls.
 
 SlickStack does not automatically:
 
@@ -89,7 +91,7 @@ SlickStack does not automatically:
 - manage Cloudflare nameservers
 - validate that staging and development records exist
 
-Confirm DNS before enabling strict origin restrictions:
+Confirm DNS before enabling stricter origin controls:
 
 ```bash
 dig +short example.com
@@ -175,13 +177,16 @@ real_ip_header CF-Connecting-IP;
 
 The live Nginx configuration includes this file in the global `http` context.
 
-After Nginx processes a trusted Cloudflare request, `$remote_addr` represents the visitor address. This affects:
+After Nginx processes a trusted Cloudflare request, `$remote_addr` represents the visitor address. The original network peer remains available to Nginx as `$realip_remote_addr`.
+
+Real-IP restoration affects:
 
 - `/var/www/logs/nginx-access.log`
 - Nginx per-IP request and connection limits
 - WordPress and PHP applications reading the remote address
 - Adminer rate limiting
 - the current Fail2ban Nginx filters
+- any Nginx access rules that evaluate the client address
 
 Without real-IP restoration, many visitors can appear to come from the same Cloudflare proxy address. That can make logs less useful and cause per-IP security controls to group unrelated users together.
 
@@ -211,33 +216,61 @@ The first address should normally be the visitor address rather than a Cloudflar
 
 When `CLOUDFLARE_REAL_IPS="false"`, the full Nginx installer removes the managed Cloudflare real-IP include.
 
-## Allowing only Cloudflare proxy addresses
+## Cloudflare-only origin access
 
-With:
+SlickStack currently exposes this setting:
 
 ```bash
 CLOUDFLARE_IPS_ONLY="true"
 ```
 
-SlickStack generates:
+It generates:
 
 ```text
 /var/www/sites/includes/allowed-ips.conf
 ```
 
-The file contains Cloudflare's current IPv4 and IPv6 ranges as Nginx `allow` directives followed by:
+The file contains Cloudflare's IPv4 and IPv6 ranges as Nginx `allow` directives followed by:
 
 ```nginx
 deny all;
 ```
 
-Because the file is included in Nginx's global `http` context, it applies broadly to HTTP and HTTPS requests handled by the managed Nginx configuration.
+The file is included in Nginx's global `http` context.
 
-### What it protects
+### Current incompatibility with real-IP restoration
 
-This setting prevents normal direct web requests from bypassing Cloudflare and reaching the origin through Nginx.
+The current implementation does not safely combine with the default:
 
-It does not:
+```bash
+CLOUDFLARE_REAL_IPS="true"
+```
+
+Nginx's real-IP module changes the client address before access-module rules evaluate it. Therefore the `allow` directives in `allowed-ips.conf` see the restored visitor address rather than the Cloudflare proxy address.
+
+A normal visitor address does not match Cloudflare's network ranges, so the final `deny all` can reject the request even though it arrived through Cloudflare.
+
+The original proxy address is available through `$realip_remote_addr`, but the current `allow` and `deny` template does not use that variable.
+
+### Current recommendation
+
+Leave:
+
+```bash
+CLOUDFLARE_IPS_ONLY="false"
+```
+
+on normal production servers.
+
+Do not use this setting as the primary origin-protection control until SlickStack changes the implementation to evaluate the original peer address through a compatible `geo`, `map`, network-firewall, or equivalent design.
+
+Setting `CLOUDFLARE_REAL_IPS="false"` avoids the direct conflict because `$remote_addr` remains the Cloudflare proxy address, but then access logs and per-IP Nginx limits no longer operate on the real visitor address. That tradeoff is usually worse than leaving `CLOUDFLARE_IPS_ONLY` disabled.
+
+### Intended protection and limits
+
+The intended purpose is to prevent direct web requests from bypassing Cloudflare and reaching the origin through Nginx.
+
+Even after the implementation is corrected, an Nginx Cloudflare allowlist would not:
 
 - change Iptables rules
 - close ports 80 or 443 at the network layer
@@ -246,24 +279,7 @@ It does not:
 - hide an origin address that has already been exposed
 - prove that the request belongs to your specific Cloudflare account
 
-The TCP connection can still reach Nginx, but Nginx denies requests whose source address is not in the current Cloudflare range list.
-
-### Safe enablement order
-
-Before enabling this setting:
-
-1. confirm production DNS is proxied
-2. confirm enabled staging and development hostnames are proxied
-3. confirm `/var/www/sites/includes/cloudflare.conf` contains valid Cloudflare ranges
-4. confirm Cloudflare can reach the origin over ports 80 and 443
-5. ensure external monitoring or validation services do not require direct origin access
-6. set `CLOUDFLARE_IPS_ONLY="true"`
-7. run `ss-install-nginx-config`
-8. test through the public proxied hostname
-
-Direct requests to the origin, DNS-only hostnames, local web checks, and `curl --resolve` tests can receive `403` after this setting is enabled.
-
-The current `allowed-ips.conf` template does not separately allow loopback addresses.
+Network-layer Cloudflare allowlisting belongs in Iptables or the cloud provider firewall, where the original TCP peer address is still available.
 
 ## Authenticated Origin Pulls
 
@@ -321,11 +337,11 @@ include /var/www/sites/includes/origin-gate[.]conf;
 
 The current staging, development, and Multisite server-block templates do not include the same origin gate.
 
-Therefore `CLOUDFLARE_AUTHENTICATED_ORIGIN="true"` should not be described as universal enforcement across every SlickStack hostname or server-block mode. `CLOUDFLARE_IPS_ONLY` remains the broader Nginx-level restriction because it is included globally.
+Therefore `CLOUDFLARE_AUTHENTICATED_ORIGIN="true"` should not be described as universal enforcement across every SlickStack hostname or server-block mode.
 
 ## Cloudflare credentials and Certbot DNS validation
 
-Normal Cloudflare proxying, real-IP restoration, and Cloudflare-only Nginx access do not require Cloudflare API credentials.
+Normal Cloudflare proxying and real-IP restoration do not require Cloudflare API credentials.
 
 The credentials are used by SlickStack's Certbot DNS workflow for WordPress Multisite wildcard certificates.
 
@@ -398,7 +414,7 @@ Do not rely exclusively on the legacy scheduled standalone refresh. The authorit
 sudo bash /var/www/ss-install-nginx-config
 ```
 
-This rebuilds both real-IP and allowed-IP lists and validates that the downloaded templates contain the expected directives before replacing the installed files.
+This rebuilds both Cloudflare range files and validates that the downloaded templates contain the expected directives before replacing the installed files.
 
 ## Nginx, Cloudflare, and request limits
 
@@ -464,13 +480,13 @@ Adminer's Nginx rate limit also uses the remote address. Cloudflare proxying doe
 
 Single-site certificates normally use HTTP webroot validation. Multisite wildcard certificates use Cloudflare DNS validation and require the managed credentials file.
 
-DNS-only hostnames, strict Cloudflare-only origin rules, incorrect records, or missing credentials can prevent issuance.
+Incorrect records, strict origin controls, or missing credentials can prevent issuance.
 
 ### Iptables
 
-Iptables sees the network peer address, which is normally a Cloudflare proxy when traffic is proxied. Nginx real-IP restoration happens later at the HTTP layer and does not rewrite the source address seen by Iptables.
+Iptables sees the original network peer address, which is normally a Cloudflare proxy when traffic is proxied. Nginx real-IP restoration happens later at the HTTP layer and does not rewrite the source address seen by Iptables.
 
-`CLOUDFLARE_IPS_ONLY` is an Nginx access rule, not an Iptables allowlist. See [Iptables](iptables.md).
+That makes Iptables or the provider firewall a better layer for a future Cloudflare network allowlist. See [Iptables](iptables.md).
 
 ## Managed files
 
@@ -512,7 +528,7 @@ Check the public route:
 curl -I https://example.com
 ```
 
-When strict origin restrictions are enabled, a direct origin test can be expected to fail even while the public Cloudflare route works.
+When strict origin restrictions are enabled, a direct origin test can fail even while the public Cloudflare route works.
 
 ## Troubleshooting
 
@@ -575,17 +591,21 @@ Confirm:
 
 Use Full temporarily with SlickStack's self-signed certificate, or install and activate a certificate suitable for Full (strict).
 
-### Public site returns 403 after enabling Cloudflare-only access
+### Site returns 403 after enabling Cloudflare-only access
 
-Check whether the DNS record is proxied and whether the connecting Cloudflare range exists in:
+Disable the current setting:
 
-```text
-/var/www/sites/includes/allowed-ips.conf
+```bash
+CLOUDFLARE_IPS_ONLY="false"
 ```
 
-Rebuild the Nginx configuration to refresh the range list.
+Then run:
 
-A DNS-only or direct-origin request is expected to receive `403`.
+```bash
+sudo bash /var/www/ss-install-nginx-config
+```
+
+When `CLOUDFLARE_REAL_IPS="true"`, the current Nginx access allowlist evaluates the restored visitor address and can reject legitimate Cloudflare traffic.
 
 ### Public site returns 403 after enabling Authenticated Origin Pulls
 
@@ -636,8 +656,9 @@ The standard SlickStack Cloudflare integration assumes:
 - SlickStack manages one primary domain per server
 - Cloudflare ranges are downloaded from Cloudflare's public endpoints
 - `CF-Connecting-IP` supplies the visitor address
-- optional origin restrictions are implemented through Nginx
+- Authenticated Origin Pulls are optional and currently limited by server-block coverage
 - Certbot wildcard validation uses the current Global API Key credentials format
+- `CLOUDFLARE_IPS_ONLY` remains disabled until its real-IP conflict is corrected
 
 Cloudflare Workers, Pages, Tunnels, Load Balancing, Spectrum, Argo, SaaS custom hostnames, account-specific Authenticated Origin Pull certificates, automatic DNS management, API-token generation, WAF rule deployment, Cache Rule deployment, Logpush, edge cache purging, and multi-origin failover are outside the standard SlickStack configuration.
 
@@ -650,4 +671,6 @@ Cloudflare Workers, Pages, Tunnels, Load Balancing, Spectrum, Argo, SaaS custom 
 - [Authenticated Origin Pulls](https://developers.cloudflare.com/ssl/origin-configuration/authenticated-origin-pull/)
 - [Protecting the origin server](https://developers.cloudflare.com/fundamentals/security/protect-your-origin-server/)
 - [Cloudflare 5xx errors](https://developers.cloudflare.com/support/troubleshooting/http-status-codes/cloudflare-5xx-errors/)
+- [Nginx real-IP module](https://nginx.org/en/docs/http/ngx_http_realip_module.html)
+- [Nginx access module](https://nginx.org/en/docs/http/ngx_http_access_module.html)
 - [Certbot DNS Cloudflare credentials](https://certbot-dns-cloudflare.readthedocs.io/en/stable/)
