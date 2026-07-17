@@ -78,6 +78,27 @@ REST API responses may also contain backend URLs for posts, pages, categories, a
 
 SlickStack does not currently rewrite WordPress URLs to the remote frontend domain.
 
+## Backend page redirects
+
+WordPress continues serving normal frontend pages on the SlickStack domain unless another plugin or configuration changes that behavior.
+
+A fully headless setup may redirect public post, page, archive, and homepage requests to the remote frontend.
+
+Redirects must preserve required WordPress routes such as:
+
+```text
+/wp-admin/
+/wp-login.php
+/wp-json/
+/wp-content/uploads/
+```
+
+Webhook endpoints, preview routes, and plugin callback URLs may also need to remain accessible.
+
+SlickStack does not currently redirect WordPress-rendered pages to the remote frontend.
+
+A future optional SlickStack MU plugin could use a configured frontend URL to manage these redirects without interfering with required administration, API, media, webhook, preview, or plugin callback routes.
+
 ## Frontend caching and revalidation
 
 SlickStack does not FastCGI-cache WordPress REST API responses. The remote frontend should manage its own API caching, generated pages, and content refresh behavior.
