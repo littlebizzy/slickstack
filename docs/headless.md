@@ -56,6 +56,20 @@ The `/users/me` endpoint should return the authenticated WordPress user when the
 
 SlickStack has not yet verified Application Password authentication with a real remote headless deployment. This should be tested before more advanced preview or publishing integrations are documented.
 
+## Media and URLs
+
+WordPress media remains hosted on the SlickStack domain, for example:
+
+```text
+https://cms.example.com/wp-content/uploads/
+```
+
+The remote frontend must allow images and other media to load from this hostname.
+
+REST API responses may also contain backend URLs for posts, pages, categories, and media. The remote frontend is responsible for using, replacing, or redirecting those URLs where necessary.
+
+SlickStack does not currently rewrite WordPress URLs to the remote frontend domain.
+
 ## Scope
 
 SlickStack manages the WordPress backend and LEMP stack.
