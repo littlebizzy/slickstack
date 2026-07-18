@@ -10,6 +10,7 @@ SlickStack is a free LEMP stack automation script written in Bash designed to en
 | :------------- | :---------- |
 | [Backups](docs/backups.md) | Covers local database and file dumps, backup schedules, production restores, Rclone and Rsync transfers, retention limits, credentials, and recovery verification. |
 | [Caching](docs/caching.md) | Explains Nginx FastCGI cache, PHP OPcache, Memcached, WordPress transients, browser and Cloudflare cache boundaries, purge commands, schedules, bypass rules, and troubleshooting. |
+| [Commands](docs/commands.md) | Provides a curated reference for the `ss` Bash aliases, direct script equivalents, narrow versus compound operations, destructive commands, and known legacy or broken shortcuts. |
 | [Cron Jobs](docs/cron.md) | Documents the 14 fixed wrapper intervals, task selection through `ss-config`, WP-Cron, overlap protection, custom cron files, self-healing, logging, and troubleshooting. |
 | [Adminer](docs/adminer.md) | Covers Adminer installation, randomized and environment-specific URLs, database credentials, Nginx and PHP-FPM routing, rate limits, disabling access, and security limitations. |
 | [Cloudflare](docs/cloudflare.md) | Covers DNS and proxy setup, SSL modes, real visitor IPs, Authenticated Origin Pulls, Certbot DNS credentials, IP range refreshes, origin restrictions, current limitations, and troubleshooting. |
