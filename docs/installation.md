@@ -27,7 +27,7 @@ SlickStack expects:
 - root or provider-console access for the first installation
 - at least 1 GB of free disk space
 - one primary production domain per server
-- working IPv4 connectivity and DNS
+- working network connectivity and DNS
 - no Docker, LXC, OpenVZ, Podman, systemd-nspawn, or similar container environment
 
 Basic WordPress sites can run with approximately 1 GB of RAM, while 2 GB or more is recommended for WooCommerce, membership sites, forums, Multisite, and other dynamic workloads.
@@ -288,13 +288,11 @@ See [WordPress](wordpress.md).
 
 ### Staging synchronization
 
-The full installer always invokes `ss-sync-staging`, but a destructive synchronization occurs only when:
+The full installer always invokes `ss-sync-staging`, but a destructive synchronization occurs only when all of these conditions are true:
 
-```bash
-STAGING_SITE="true"
-SS_SYNC_STAGING!="false"
-WP_MULTISITE!="true"
-```
+- `STAGING_SITE="true"`
+- `SS_SYNC_STAGING` is any value other than `"false"`
+- `WP_MULTISITE` is any value other than `"true"`
 
 When those conditions are met, the script:
 
