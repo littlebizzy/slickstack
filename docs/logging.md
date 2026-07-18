@@ -474,7 +474,7 @@ Supported values are:
 
 ```text
 half-daily
- daily
+daily
 half-weekly
 weekly
 half-monthly
