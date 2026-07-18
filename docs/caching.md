@@ -274,15 +274,21 @@ Run:
 sudo bash /var/www/ss-purge-transients
 ```
 
-The script directly deletes rows from the configured production options table where the option name contains:
+The script directly runs this type of match against the configured production options table:
 
-```text
-_transient_
+```sql
+LIKE '%_transient_%'
 ```
 
-This removes ordinary transient values, timeout rows, and matching site-transient rows from the primary options table.
+It is intended to remove ordinary transient values, timeout rows, and matching site-transient rows from the primary options table.
 
-Current boundaries:
+### Current SQL-pattern limitation
+
+The underscores in the current `LIKE` pattern are not escaped. In SQL pattern matching, `_` means any single character rather than a literal underscore.
+
+The query can therefore match option names more broadly than the intended literal `_transient_` substring. This is another reason to treat the purge as a targeted maintenance operation rather than a harmless read-only check.
+
+Other current boundaries:
 
 - it targets the configured production database only
 - it does not clear Memcached
@@ -351,8 +357,8 @@ See [Cron Jobs](cron.md) before changing recurring tasks.
 
 Near the end of every full `ss-install`, SlickStack:
 
-1. disables maintenance mode
-2. purges Nginx FastCGI cache
+1. disables maintenance mode, which itself purges the Nginx cache
+2. explicitly purges the Nginx FastCGI cache again
 3. purges OPcache
 4. purges Memcached
 5. deletes production database transients
