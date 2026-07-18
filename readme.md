@@ -16,6 +16,7 @@ SlickStack is a free LEMP stack automation script written in Bash designed to en
 | [Fail2ban](docs/fail2ban.md) | Documents the current SSH and Nginx jails, thresholds, bans, troubleshooting, and planned removal in favor of a simpler Iptables-only approach. |
 | [Workflows](docs/workflows.md) | Explains the GitHub Actions used for repository maintenance, SourceForge mirroring, and manual updates of approved WordPress MU plugin ZIP files. |
 | [Headless](docs/headless.md) | Covers using SlickStack as a WordPress backend for a remote frontend, including APIs, authentication, SEO, media, caching, redirects, and previews. |
+| [Installation](docs/installation.md) | Covers server requirements, first-run setup, preflight checks, the full installer sequence, production reinstallation effects, backups, verification, recovery, and managed-file boundaries. |
 | [Iptables](docs/iptables.md) | Documents the default firewall policies, allowed inbound traffic, installed rule files, persistence behavior, and the limits of custom firewall changes. |
 | [Logging](docs/logging.md) | Covers SlickStack and systemd log locations, service-specific behavior, WordPress debug logs, permissions, destructive clearing, retention limits, redaction, and troubleshooting. |
 | [Memcached](docs/memcached.md) | Explains the loopback-only Memcached service, WordPress object-cache integration, cache layers, purging schedules, restarts, and troubleshooting. |
@@ -55,7 +56,7 @@ cd /tmp/ && wget -O ss slick.fyi/ss && bash ss
 
 After installation, you can manage your SlickStack server by running the bundled scripts located within the `/var/www/` directory using `sudo bash`, as needed. In most cases, however, there shouldn't be much hands-on management because SlickStack runs scheduled cron jobs that connect to this GitHub repo.
 
-You can safely re-install SlickStack anytime via `sudo bash /var/www/ss-install` without causing conflicts or data loss, since the installation process is designed to be idempotent.
+Reinstallation through `sudo bash /var/www/ss-install` is designed to reconcile the managed stack without deleting normal WordPress content, but it is a broad maintenance operation that upgrades packages, rewrites managed configuration, may synchronize staging, truncates SlickStack logs, resets permissions, purges caches, and restarts services. Review the [Installation](docs/installation.md) guide before rerunning it on production.
 
 **Note:** SlickStack uses a self-signed OpenSSL certificate by default, so Cloudflare should be active on your domain before SSL (HTTPS) will appear fully secure in browsers. If you wish to use Let's Encrypt instead, be sure to change your settings in `ss-config` before running the installation.
 
