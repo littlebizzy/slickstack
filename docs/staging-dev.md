@@ -1,4 +1,4 @@
-# Staging and Development
+# Staging & Development
 
 SlickStack can create optional staging and development WordPress environments under the same primary domain as production.
 
