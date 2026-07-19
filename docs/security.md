@@ -149,7 +149,7 @@ Share SFTP only with trusted parties and remove access when the task is complete
 
 ### SSH IP restriction limitation
 
-`SS_RESTRICT_IP` and `SSH_IPV4` remain in `ss-config`, but the active Ubuntu 24.04 SSH template does not currently contain the expected replacement placeholder. The setting does not presently enforce an SSH source-IP allowlist.
+`SSH_RESTRICT_IP` and `SSH_IPV4` remain in `ss-config`, but the active Ubuntu 24.04 SSH template does not currently contain the expected replacement placeholder. The setting does not presently enforce an SSH source-IP allowlist.
 
 Use a provider firewall, cloud firewall, VPN, or deliberately maintained Iptables rule when SSH must be restricted by source address.
 

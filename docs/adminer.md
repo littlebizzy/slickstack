@@ -152,7 +152,7 @@ The Nginx configuration workflow:
 2. validates the expected SlickStack marker
 3. replaces the URL placeholder with `ADMINER_URL`
 4. installs `/var/www/sites/includes/adminer.conf`
-5. reloads Nginx
+5. forcefully restarts Nginx
 
 When `ADMINER_PUBLIC="false"`, it removes the production include instead.
 
@@ -290,15 +290,19 @@ Always confirm the selected database before importing, dropping tables, running 
 
 ## Permissions
 
-When the Adminer PHP file exists, SlickStack sets:
+When the Adminer PHP file exists, the PHP configuration permission script initially sets:
 
 ```text
-owner: www-data
- group: www-data
- mode: 0664
+www-data:www-data 0664
 ```
 
-This allows PHP-FPM to read and execute the application through the managed Nginx route.
+The Nginx configuration permission script then applies the final managed state:
+
+```text
+root:www-data 0640
+```
+
+Because the Nginx reset runs after the PHP reset during `ss-perms`, the complete permission workflow leaves Adminer root-owned and readable by PHP-FPM through the `www-data` group. Running only `ss-install-php-config` can temporarily leave the intermediate PHP permissions until the Nginx or full permission reset runs.
 
 Do not move Adminer into the public WordPress document root. The managed file belongs under `/var/www/meta/`, with access provided only through explicit Nginx locations.
 
