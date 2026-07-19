@@ -9,33 +9,33 @@ SlickStack is a free LEMP stack automation script written in Bash designed to en
 | Document | Description |
 | :------------- | :---------- |
 | [Architecture](docs/architecture.md) | Maps SlickStack's request flow, control plane, service boundaries, filesystem layout, environments, cache layers, generated configuration, external responsibilities, and deliberate non-goals. |
-| [Backups](docs/backups.md) | Covers local database and file dumps, backup schedules, production restores, Rclone and Rsync transfers, retention limits, credentials, and recovery verification. |
-| [Caching](docs/caching.md) | Explains Nginx FastCGI cache, PHP OPcache, Memcached, WordPress transients, browser and Cloudflare cache boundaries, purge commands, schedules, bypass rules, and troubleshooting. |
-| [Commands](docs/commands.md) | Provides a curated reference for the `ss` Bash aliases, direct script equivalents, narrow versus compound operations, destructive commands, and known legacy or broken shortcuts. |
-| [Cron Jobs](docs/cron.md) | Documents the 14 fixed wrapper intervals, task selection through `ss-config`, WP-Cron, overlap protection, custom cron files, self-healing, logging, and troubleshooting. |
-| [Adminer](docs/adminer.md) | Covers Adminer installation, randomized and environment-specific URLs, database credentials, Nginx and PHP-FPM routing, rate limits, disabling access, and security limitations. |
-| [Cloudflare](docs/cloudflare.md) | Covers DNS and proxy setup, SSL modes, real visitor IPs, Authenticated Origin Pulls, Certbot DNS credentials, IP range refreshes, origin restrictions, current limitations, and troubleshooting. |
-| [Fail2ban](docs/fail2ban.md) | Documents the current SSH and Nginx jails, thresholds, bans, troubleshooting, and planned removal in favor of a simpler Iptables-only approach. |
-| [Workflows](docs/workflows.md) | Explains the GitHub Actions used for repository maintenance, SourceForge mirroring, and manual updates of approved WordPress MU plugin ZIP files. |
-| [Headless](docs/headless.md) | Covers using SlickStack as a WordPress backend for a remote frontend, including APIs, authentication, SEO, media, caching, redirects, and previews. |
 | [Installation](docs/installation.md) | Covers server requirements, first-run setup, preflight checks, the full installer sequence, production reinstallation effects, backups, verification, recovery, and managed-file boundaries. |
-| [Iptables](docs/iptables.md) | Documents the default firewall policies, allowed inbound traffic, installed rule files, persistence behavior, and the limits of custom firewall changes. |
-| [Logging](docs/logging.md) | Covers SlickStack and systemd log locations, service-specific behavior, WordPress debug logs, permissions, destructive clearing, retention limits, redaction, and troubleshooting. |
-| [Memcached](docs/memcached.md) | Explains the loopback-only Memcached service, WordPress object-cache integration, cache layers, purging schedules, restarts, and troubleshooting. |
+| [SS-Config](docs/ss-config.md) | Documents SlickStack's central configuration file, secure editing, build compatibility, schema migration, automatic tuning, pilot files, supported boundaries, rollback, and troubleshooting. |
+| [Commands](docs/commands.md) | Provides a curated reference for the `ss` Bash aliases, direct script equivalents, narrow versus compound operations, destructive commands, and known legacy or broken shortcuts. |
+| [Troubleshooting](docs/troubleshooting.md) | Provides a first-response runbook for isolating edge, service, application, resource, access, cron, update, and recovery failures while preserving evidence and using narrow repairs. |
+| [Updates](docs/updates.md) | Explains script refreshes, `ss-config` migration, Ubuntu package and kernel upgrades, compound update aliases, scheduling, reboots, recovery, and managed-file boundaries. |
+| [Cron Jobs](docs/cron.md) | Documents the 14 fixed wrapper intervals, task selection through `ss-config`, WP-Cron, overlap protection, custom cron files, self-healing, logging, and troubleshooting. |
 | [Monitoring](docs/monitoring.md) | Covers interactive resource checks, stack overview limits, service status, timestamps, and the automatic PHP-FPM, Nginx, and local MySQL recovery listeners in `02-cron-often`. |
-| [MySQL](docs/mysql.md) | Covers local and remote database modes, managed MySQL configuration, InnoDB tuning, users and databases, dumps, imports, optimization, and service recovery. |
+| [Logging](docs/logging.md) | Covers SlickStack and systemd log locations, service-specific behavior, WordPress debug logs, permissions, destructive clearing, retention limits, redaction, and troubleshooting. |
+| [Backups](docs/backups.md) | Covers local database and file dumps, backup schedules, production restores, Rclone and Rsync transfers, retention limits, credentials, and recovery verification. |
+| [Permissions](docs/permissions.md) | Documents ownership and file modes across SlickStack, WordPress permission zones, SFTP and `www-data` responsibilities, scheduled resets, protected credentials, and troubleshooting. |
+| [Ubuntu](docs/ubuntu.md) | Documents supported Ubuntu LTS releases, managed users, SSH and SFTP access, sudoers, utilities, sysctl tuning, swap, cron, package updates, reinstallation, and reboots. |
 | [Nginx](docs/nginx.md) | Describes SlickStack-managed Nginx configuration, approved optional include files, supported customization boundaries, and safe reload behavior. |
 | [PHP-FPM](docs/php-fpm.md) | Documents PHP version selection, package and configuration installation, Nginx routing, RAM-based process tuning, extensions, OPcache, restarts, and service recovery. |
-| [Permissions](docs/permissions.md) | Documents ownership and file modes across SlickStack, WordPress permission zones, SFTP and `www-data` responsibilities, scheduled resets, protected credentials, and troubleshooting. |
-| [Security](docs/security.md) | Connects SlickStack's SSH, firewall, Cloudflare, TLS, permissions, WordPress, credentials, monitoring, backup, and incident-recovery security boundaries. |
+| [MySQL](docs/mysql.md) | Covers local and remote database modes, managed MySQL configuration, InnoDB tuning, users and databases, dumps, imports, optimization, and service recovery. |
+| [Memcached](docs/memcached.md) | Explains the loopback-only Memcached service, WordPress object-cache integration, cache layers, purging schedules, restarts, and troubleshooting. |
+| [Caching](docs/caching.md) | Explains Nginx FastCGI cache, PHP OPcache, Memcached, WordPress transients, browser and Cloudflare cache boundaries, purge commands, schedules, bypass rules, and troubleshooting. |
+| [Cloudflare](docs/cloudflare.md) | Covers DNS and proxy setup, SSL modes, real visitor IPs, Authenticated Origin Pulls, Certbot DNS credentials, IP range refreshes, origin restrictions, current limitations, and troubleshooting. |
 | [SSL (Certs)](docs/ssl.md) | Covers self-signed OpenSSL certificates, Certbot issuance and renewal, Cloudflare wildcard validation, third-party certificates, permissions, and Nginx activation. |
-| [SS-Config](docs/ss-config.md) | Documents SlickStack's central configuration file, secure editing, build compatibility, schema migration, automatic tuning, pilot files, supported boundaries, rollback, and troubleshooting. |
-| [Staging & Dev](docs/staging-dev.md) | Covers environment setup, guest protection, production-to-staging and development syncs, shared uploads, overwrite risks, production push commands, and recovery boundaries. |
-| [Troubleshooting](docs/troubleshooting.md) | Provides a first-response runbook for isolating edge, service, application, resource, access, cron, update, and recovery failures while preserving evidence and using narrow repairs. |
-| [Ubuntu](docs/ubuntu.md) | Documents supported Ubuntu LTS releases, managed users, SSH and SFTP access, sudoers, utilities, sysctl tuning, swap, cron, package updates, reinstallation, and reboots. |
-| [Updates](docs/updates.md) | Explains script refreshes, `ss-config` migration, Ubuntu package and kernel upgrades, compound update aliases, scheduling, reboots, recovery, and managed-file boundaries. |
+| [Iptables](docs/iptables.md) | Documents the default firewall policies, allowed inbound traffic, installed rule files, persistence behavior, and the limits of custom firewall changes. |
+| [Fail2ban](docs/fail2ban.md) | Documents the current SSH and Nginx jails, thresholds, bans, troubleshooting, and planned removal in favor of a simpler Iptables-only approach. |
+| [Security](docs/security.md) | Connects SlickStack's SSH, firewall, Cloudflare, TLS, permissions, WordPress, credentials, monitoring, backup, and incident-recovery security boundaries. |
 | [WordPress](docs/wordpress.md) | Covers managed WordPress Core installation, generated configuration, WP-Cron, WP-CLI, permissions, updates, Multisite, and staging and development synchronization. |
 | [MU Plugins](docs/mu-plugins.md) | Explains which WordPress MU plugins SlickStack installs, how vendored ZIP mirrors are managed, and how the installer updates plugin files. |
+| [Adminer](docs/adminer.md) | Covers Adminer installation, randomized and environment-specific URLs, database credentials, Nginx and PHP-FPM routing, rate limits, disabling access, and security limitations. |
+| [Staging & Dev](docs/staging-dev.md) | Covers environment setup, guest protection, production-to-staging and development syncs, shared uploads, overwrite risks, production push commands, and recovery boundaries. |
+| [Headless](docs/headless.md) | Covers using SlickStack as a WordPress backend for a remote frontend, including APIs, authentication, SEO, media, caching, redirects, and previews. |
+| [Workflows](docs/workflows.md) | Explains the GitHub Actions used for repository maintenance, SourceForge mirroring, and manual updates of approved WordPress MU plugin ZIP files. |
 
 ## Thank you to our sponsors!
 
