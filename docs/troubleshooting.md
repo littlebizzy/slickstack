@@ -917,7 +917,7 @@ Check:
 
 ```bash
 sudo ls -lh /var/www/backups/mysql/
-sudo ls -lh /var/www/backups/files/
+sudo ls -lh /var/www/backups/html/
 df -h /
 ```
 
