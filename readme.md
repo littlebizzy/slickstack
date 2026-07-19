@@ -31,6 +31,7 @@ SlickStack is a free LEMP stack automation script written in Bash designed to en
 | [SSL (Certs)](docs/ssl.md) | Covers self-signed OpenSSL certificates, Certbot issuance and renewal, Cloudflare wildcard validation, third-party certificates, permissions, and Nginx activation. |
 | [SS-Config](docs/ss-config.md) | Documents SlickStack's central configuration file, secure editing, build compatibility, schema migration, automatic tuning, pilot files, supported boundaries, rollback, and troubleshooting. |
 | [Staging & Dev](docs/staging-dev.md) | Covers environment setup, guest protection, production-to-staging and development syncs, shared uploads, overwrite risks, production push commands, and recovery boundaries. |
+| [Troubleshooting](docs/troubleshooting.md) | Provides a first-response runbook for isolating edge, service, application, resource, access, cron, update, and recovery failures while preserving evidence and using narrow repairs. |
 | [Ubuntu](docs/ubuntu.md) | Documents supported Ubuntu LTS releases, managed users, SSH and SFTP access, sudoers, utilities, sysctl tuning, swap, cron, package updates, reinstallation, and reboots. |
 | [Updates](docs/updates.md) | Explains script refreshes, `ss-config` migration, Ubuntu package and kernel upgrades, compound update aliases, scheduling, reboots, recovery, and managed-file boundaries. |
 | [WordPress](docs/wordpress.md) | Covers managed WordPress Core installation, generated configuration, WP-Cron, WP-CLI, permissions, updates, Multisite, and staging and development synchronization. |
