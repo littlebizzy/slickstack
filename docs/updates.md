@@ -207,7 +207,7 @@ when the new boilerplate or changed settings need to be applied across Ubuntu, N
 
 For a narrowly scoped setting, the relevant module installer may be sufficient, but the full installer is the most complete reconciliation workflow.
 
-### Restoring boilerplate defaults
+### Current `--restore` limitation
 
 The updater accepts:
 
@@ -215,16 +215,19 @@ The updater accepts:
 sudo bash /var/www/ss-update-config --restore
 ```
 
-With `--restore`, the normal old-value transfer block is skipped. The active config is still backed up first, but the replacement file uses current boilerplate defaults plus the script's placeholder and empty-value fallback logic.
+The intended behavior is to skip old-value migration and restore current boilerplate defaults. However, the current transfer commands are outside the flag's conditional block, so recognized non-empty values are still transferred.
 
-This is destructive to existing customized values. Treat it as a deliberate reset rather than a normal update.
+The active config is backed up first, but `--restore` should not currently be treated as a clean-default reset.
 
-After using `--restore`:
+To rebuild carefully from current defaults:
 
-1. inspect the new `/var/www/ss-config`
-2. restore required domains, credentials, access settings, and integration values
-3. verify `SS_BUILD`
-4. run `ss-install` only after the file is correct
+1. preserve the timestamped config backup
+2. prepare a fresh current boilerplate
+3. restore all required domains, credentials, access settings, and integration values
+4. validate Bash syntax, placeholders, and `SS_BUILD`
+5. run `ss-install` only after the file is correct
+
+See [SS-Config](ss-config.md) for the wider configuration lifecycle and limitations.
 
 ### Current config-updater limitations
 
