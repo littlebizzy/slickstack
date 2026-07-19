@@ -83,7 +83,7 @@ This operation does more than replace `nginx.conf`. Depending on the current con
 - generate DH parameters when missing
 - create the staging and development guest-password file
 - replace the main Nginx configuration
-- create or remove production, staging, and development server blocks
+- replace the production server block and create or remove optional staging and development server blocks
 - request or refresh a Certbot certificate
 - activate the selected SSL include
 - refresh Cloudflare real-IP ranges
