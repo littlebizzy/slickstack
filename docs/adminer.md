@@ -4,6 +4,30 @@ SlickStack includes Adminer as a lightweight browser-based MySQL management tool
 
 Adminer is powerful and can modify or delete database content. Keep its URL private, use the least-privileged database account that fits the task, and disable public access when it is not needed.
 
+## Table of Contents
+
+- [Current version](#current-version)
+- [Configuration](#configuration)
+- [Production URL](#production-url)
+- [Staging and development URLs](#staging-and-development-urls)
+- [Installation behavior](#installation-behavior)
+- [Nginx and PHP-FPM routing](#nginx-and-php-fpm-routing)
+- [Rate limiting](#rate-limiting)
+- [Authentication](#authentication)
+- [Local database credentials](#local-database-credentials)
+- [Root login](#root-login)
+- [Remote databases](#remote-databases)
+- [Database selection](#database-selection)
+- [Permissions](#permissions)
+- [Caching and sessions](#caching-and-sessions)
+- [Logs](#logs)
+- [Disabling Adminer](#disabling-adminer)
+- [Updating Adminer](#updating-adminer)
+- [Adminer is not a backup system](#adminer-is-not-a-backup-system)
+- [Security recommendations](#security-recommendations)
+- [Troubleshooting](#troubleshooting)
+- [Scope](#scope)
+
 ## Current version
 
 The current SlickStack module contains Adminer:

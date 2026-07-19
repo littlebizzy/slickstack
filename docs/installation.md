@@ -8,6 +8,24 @@ sudo bash /var/www/ss-install
 
 The installer is designed to be idempotent, meaning it can normally be rerun to restore the managed SlickStack state. It is not a read-only check or a harmless configuration reload. A full run upgrades packages, rewrites managed files, synchronizes enabled environments, truncates logs, resets permissions, purges caches, and restarts services.
 
+## Table of Contents
+
+- [Server requirements](#server-requirements)
+- [DNS and Cloudflare preparation](#dns-and-cloudflare-preparation)
+- [Initial bootstrap](#initial-bootstrap)
+- [First-run setup wizard](#first-run-setup-wizard)
+- [Preflight validation](#preflight-validation)
+- [Installation sequence](#installation-sequence)
+- [What idempotent means](#what-idempotent-means)
+- [Reinstallation effects](#reinstallation-effects)
+- [Before reinstalling production](#before-reinstalling-production)
+- [Full installer versus a narrow installer](#full-installer-versus-a-narrow-installer)
+- [SSH safety](#ssh-safety)
+- [Post-install verification](#post-install-verification)
+- [Failure recovery](#failure-recovery)
+- [Managed-file boundary](#managed-file-boundary)
+- [Scope](#scope)
+
 ## Server requirements
 
 The current installer accepts these Ubuntu LTS releases:

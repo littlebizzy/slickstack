@@ -4,6 +4,32 @@ SlickStack is a single-server, WordPress-focused LEMP architecture built around 
 
 It is designed for one primary production domain per server, with optional staging and development subdomains. SlickStack manages the origin server and its generated configuration; external services such as DNS, the Cloudflare dashboard, email delivery, provider firewalls, and off-server monitoring remain administrator responsibilities.
 
+## Table of Contents
+
+- [System overview](#system-overview)
+- [Design goals](#design-goals)
+- [Control plane and request plane](#control-plane-and-request-plane)
+- [Source configuration and generated state](#source-configuration-and-generated-state)
+- [Templates, generated files, and persistent customization](#templates-generated-files-and-persistent-customization)
+- [Main filesystem layout](#main-filesystem-layout)
+- [Ownership model](#ownership-model)
+- [Network boundaries](#network-boundaries)
+- [Cloudflare and the origin](#cloudflare-and-the-origin)
+- [Nginx layer](#nginx-layer)
+- [PHP-FPM layer](#php-fpm-layer)
+- [WordPress layer](#wordpress-layer)
+- [MySQL layer](#mysql-layer)
+- [Memcached layer](#memcached-layer)
+- [Cache architecture](#cache-architecture)
+- [Production, staging, and development](#production-staging-and-development)
+- [Cron and scheduled maintenance](#cron-and-scheduled-maintenance)
+- [Installation and reconciliation lifecycle](#installation-and-reconciliation-lifecycle)
+- [State and recovery boundaries](#state-and-recovery-boundaries)
+- [External responsibilities](#external-responsibilities)
+- [Deliberate non-goals](#deliberate-non-goals)
+- [Architecture verification](#architecture-verification)
+- [Related guides](#related-guides)
+
 ## System overview
 
 A normal production request follows this path:

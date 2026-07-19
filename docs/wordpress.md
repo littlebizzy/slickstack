@@ -4,6 +4,30 @@ SlickStack installs and manages WordPress Core, environment-specific configurati
 
 The standard design uses one production WordPress site per server, with optional staging and development environments under the same primary domain.
 
+## Table of Contents
+
+- [Environment layout](#environment-layout)
+- [WordPress Core installation](#wordpress-core-installation)
+- [Fresh installations](#fresh-installations)
+- [HoverCraft and stock extensions](#hovercraft-and-stock-extensions)
+- [Managed wp-config.php](#managed-wp-configphp)
+- [Authentication salts](#authentication-salts)
+- [Custom constants and code](#custom-constants-and-code)
+- [Domains and HTTPS](#domains-and-https)
+- [Database settings](#database-settings)
+- [WordPress settings in ss-config](#wordpress-settings-in-ss-config)
+- [Updates and file modifications](#updates-and-file-modifications)
+- [WP-Cron](#wp-cron)
+- [WP-CLI](#wp-cli)
+- [Staging behavior](#staging-behavior)
+- [Development behavior](#development-behavior)
+- [WordPress Multisite](#wordpress-multisite)
+- [Permissions](#permissions)
+- [Object caching and cache clearing](#object-caching-and-cache-clearing)
+- [Backups and imports](#backups-and-imports)
+- [Recommended management commands](#recommended-management-commands)
+- [Scope](#scope)
+
 ## Environment layout
 
 SlickStack uses these web roots:

@@ -16,6 +16,29 @@ sudo bash /var/www/ss-check
 
 The aliases are conveniences, not a separate command-line application. The underlying scripts remain the clearest and most stable way to understand exactly what will run.
 
+## Table of Contents
+
+- [Loading the aliases](#loading-the-aliases)
+- [Recommended core commands](#recommended-core-commands)
+- [Script refreshes and updates](#script-refreshes-and-updates)
+- [Full installation and narrow installers](#full-installation-and-narrow-installers)
+- [Status and monitoring](#status-and-monitoring)
+- [Cache commands](#cache-commands)
+- [Service restarts](#service-restarts)
+- [Backups and database operations](#backups-and-database-operations)
+- [Staging and development](#staging-and-development)
+- [Maintenance mode](#maintenance-mode)
+- [SSL commands](#ssl-commands)
+- [Configuration shortcuts](#configuration-shortcuts)
+- [Cron wrappers](#cron-wrappers)
+- [Logs](#logs)
+- [Permissions and passwords](#permissions-and-passwords)
+- [Rebooting](#rebooting)
+- [Worker command](#worker-command)
+- [Historical and inconsistent aliases](#historical-and-inconsistent-aliases)
+- [Safe command workflow](#safe-command-workflow)
+- [Source of truth](#source-of-truth)
+
 ## Loading the aliases
 
 The managed alias function is stored in:

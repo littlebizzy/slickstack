@@ -4,6 +4,22 @@ SlickStack uses MySQL as the primary database service for WordPress production, 
 
 A local MySQL server is installed and managed by default. Remote MySQL servers are also supported, but SlickStack does not install, tune, restart, or monitor the remote service.
 
+## Table of Contents
+
+- [MySQL versions](#mysql-versions)
+- [Database settings](#database-settings)
+- [Local database mode](#local-database-mode)
+- [Remote database mode](#remote-database-mode)
+- [Managed configuration](#managed-configuration)
+- [MySQL and InnoDB tuning](#mysql-and-innodb-tuning)
+- [Installation commands](#installation-commands)
+- [Database dumps](#database-dumps)
+- [Database imports](#database-imports)
+- [Database optimization](#database-optimization)
+- [Restarts and recovery](#restarts-and-recovery)
+- [Troubleshooting](#troubleshooting)
+- [Scope](#scope)
+
 ## MySQL versions
 
 SlickStack selects the MySQL package version from the detected Ubuntu LTS release:

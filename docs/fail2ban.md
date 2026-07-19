@@ -6,6 +6,22 @@ SlickStack currently installs Fail2ban as an additional log-based banning layer 
 
 Fail2ban remains active in the current stack until that migration is completed. This document describes the present implementation so existing servers can be inspected and maintained safely.
 
+## Table of Contents
+
+- [Current role](#current-role)
+- [Installation](#installation)
+- [Managed configuration](#managed-configuration)
+- [Enabled jails](#enabled-jails)
+- [Default thresholds](#default-thresholds)
+- [Cloudflare and reverse proxies](#cloudflare-and-reverse-proxies)
+- [Relationship with Iptables](#relationship-with-iptables)
+- [Service management](#service-management)
+- [Inspecting and removing bans](#inspecting-and-removing-bans)
+- [Testing filters](#testing-filters)
+- [Troubleshooting](#troubleshooting)
+- [Migration direction](#migration-direction)
+- [Scope](#scope)
+
 ## Current role
 
 Fail2ban watches authentication and Nginx access logs for repeated matching events. When a jail reaches its configured threshold, Fail2ban adds temporary firewall rules that reject traffic from the detected source address.

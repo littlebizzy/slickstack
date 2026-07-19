@@ -4,6 +4,19 @@ SlickStack uses PHP-FPM to execute WordPress and other approved PHP requests pas
 
 PHP-FPM packages, extensions, configuration files, process limits, OPcache settings, permissions, restarts, and basic service recovery are managed by SlickStack. The standard layout uses one local PHP version and one `www` pool for the production, staging, and development sites on the server.
 
+## Table of Contents
+
+- [PHP versions](#php-versions)
+- [Configuration files](#configuration-files)
+- [Installation behavior](#installation-behavior)
+- [Nginx connection](#nginx-connection)
+- [RAM autotuning](#ram-autotuning)
+- [PHP settings](#php-settings)
+- [PHP extensions](#php-extensions)
+- [OPcache](#opcache)
+- [Restarts and recovery](#restarts-and-recovery)
+- [Scope](#scope)
+
 ## PHP versions
 
 SlickStack selects the PHP version from the detected Ubuntu LTS version:

@@ -8,6 +8,17 @@ Workflows live under:
 .github/workflows/
 ```
 
+## Table of Contents
+
+- [SourceForge mirror workflow](#sourceforge-mirror-workflow)
+- [MU plugin ZIP update workflow](#mu-plugin-zip-update-workflow)
+- [Purpose](#purpose)
+- [Current plugin support](#current-plugin-support)
+- [How the MU plugin update works](#how-the-mu-plugin-update-works)
+- [Before running the MU plugin workflow](#before-running-the-mu-plugin-workflow)
+- [Adding more plugins later](#adding-more-plugins-later)
+- [Related docs](#related-docs)
+
 ## SourceForge mirror workflow
 
 The main workflow mirrors the SlickStack `master` branch to SourceForge after pushes to `master`.

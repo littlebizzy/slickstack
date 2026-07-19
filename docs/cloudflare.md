@@ -4,6 +4,26 @@ SlickStack is designed to work behind Cloudflare for public DNS, reverse-proxy t
 
 SlickStack manages the origin-side Nginx configuration. It does not create Cloudflare zones, DNS records, SSL/TLS dashboard settings, WAF rules, cache rules, redirects, or account credentials.
 
+## Table of Contents
+
+- [Recommended baseline](#recommended-baseline)
+- [SlickStack settings](#slickstack-settings)
+- [DNS and proxy setup](#dns-and-proxy-setup)
+- [SSL/TLS encryption mode](#ssltls-encryption-mode)
+- [Restoring visitor IP addresses](#restoring-visitor-ip-addresses)
+- [Cloudflare-only origin access](#cloudflare-only-origin-access)
+- [Authenticated Origin Pulls](#authenticated-origin-pulls)
+- [Cloudflare credentials and Certbot DNS validation](#cloudflare-credentials-and-certbot-dns-validation)
+- [Cloudflare IP range refreshes](#cloudflare-ip-range-refreshes)
+- [Nginx, Cloudflare, and request limits](#nginx-cloudflare-and-request-limits)
+- [Caching boundaries](#caching-boundaries)
+- [Interaction with other SlickStack components](#interaction-with-other-slickstack-components)
+- [Managed files](#managed-files)
+- [Verification](#verification)
+- [Troubleshooting](#troubleshooting)
+- [Scope](#scope)
+- [References](#references)
+
 ## Recommended baseline
 
 A normal SlickStack deployment should begin with:

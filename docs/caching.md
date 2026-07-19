@@ -4,6 +4,22 @@ SlickStack uses several independent cache layers to reduce repeated PHP executio
 
 Purging one layer does not automatically clear the others unless a broader SlickStack workflow explicitly invokes every purge script.
 
+## Table of Contents
+
+- [Cache layers](#cache-layers)
+- [Purge commands](#purge-commands)
+- [Nginx FastCGI cache](#nginx-fastcgi-cache)
+- [Nginx open-file and browser caching](#nginx-open-file-and-browser-caching)
+- [PHP OPcache](#php-opcache)
+- [Memcached object cache](#memcached-object-cache)
+- [WordPress transients](#wordpress-transients)
+- [Scheduled purges](#scheduled-purges)
+- [Full installation behavior](#full-installation-behavior)
+- [Cloudflare and browser cache](#cloudflare-and-browser-cache)
+- [Troubleshooting](#troubleshooting)
+- [Managed-file boundaries](#managed-file-boundaries)
+- [Scope](#scope)
+
 ## Cache layers
 
 | Layer | What it caches | Main location | Purge command |

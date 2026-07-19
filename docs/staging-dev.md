@@ -9,6 +9,23 @@ The standard roles are:
 
 These environments are convenient, but their sync and push commands can overwrite databases and files. Treat them as server-management tools rather than a full deployment platform.
 
+## Table of Contents
+
+- [Environment layout](#environment-layout)
+- [DNS, HTTPS, and indexing](#dns-https-and-indexing)
+- [Guest protection](#guest-protection)
+- [Staging behavior](#staging-behavior)
+- [Shared production uploads](#shared-production-uploads)
+- [Automatic staging synchronization](#automatic-staging-synchronization)
+- [Development behavior](#development-behavior)
+- [Development synchronization effects](#development-synchronization-effects)
+- [Lockdown and Multisite](#lockdown-and-multisite)
+- [Pushing staging to production](#pushing-staging-to-production)
+- [Pushing development to production](#pushing-development-to-production)
+- [Safe workflow](#safe-workflow)
+- [Troubleshooting](#troubleshooting)
+- [Managed boundaries](#managed-boundaries)
+
 ## Environment layout
 
 | Environment | URL | Web root | Database |

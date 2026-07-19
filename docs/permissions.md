@@ -10,6 +10,25 @@ sudo bash /var/www/ss-perms
 
 The Bash aliases `ss perms` and `ss reset perms` run the same managed workflow.
 
+## Table of Contents
+
+- [What ss-perms does](#what-ss-perms-does)
+- [Schedule](#schedule)
+- [User and group model](#user-and-group-model)
+- [Core SlickStack directories](#core-slickstack-directories)
+- [SlickStack scripts and cron files](#slickstack-scripts-and-cron-files)
+- [WordPress permission zones](#wordpress-permission-zones)
+- [Nginx, logs, and metadata](#nginx-logs-and-metadata)
+- [Certificates and private credentials](#certificates-and-private-credentials)
+- [PHP-FPM and WP-CLI](#php-fpm-and-wp-cli)
+- [MySQL](#mysql)
+- [Ubuntu and SSH files](#ubuntu-and-ssh-files)
+- [Manual permission changes](#manual-permission-changes)
+- [Persistent custom files](#persistent-custom-files)
+- [Verification](#verification)
+- [Troubleshooting](#troubleshooting)
+- [Scope](#scope)
+
 ## What `ss-perms` does
 
 `ss-perms` sources the current `ss-config` and `ss-functions`, then runs the permission scripts for:

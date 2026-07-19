@@ -4,6 +4,23 @@ SlickStack uses a root-owned cron system to run recurring maintenance, recovery,
 
 Do not edit the root crontab or the standard SlickStack cron wrappers directly. Use `INTERVAL_SS_*` settings for bundled tasks and the reserved custom cron files for your own commands.
 
+## Table of Contents
+
+- [Architecture](#architecture)
+- [Fixed wrapper frequencies](#fixed-wrapper-frequencies)
+- [Interval settings](#interval-settings)
+- [Current default task intervals](#current-default-task-intervals)
+- [WP-Cron](#wp-cron)
+- [Overlap protection](#overlap-protection)
+- [Stale lock cleanup](#stale-lock-cleanup)
+- [Custom cron files](#custom-cron-files)
+- [Managed files and self-healing](#managed-files-and-self-healing)
+- [Running wrappers manually](#running-wrappers-manually)
+- [Output and logging](#output-and-logging)
+- [Installation and repair](#installation-and-repair)
+- [Troubleshooting](#troubleshooting)
+- [Scope](#scope)
+
 ## Architecture
 
 The cron system has three layers:

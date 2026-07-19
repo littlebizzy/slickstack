@@ -4,6 +4,29 @@ SlickStack applies a layered security model across Ubuntu, SSH, Nginx, TLS, Clou
 
 These layers reduce common risks, but they do not turn a server into a fully managed security service. Administrators remain responsible for credentials, Cloudflare configuration, WordPress users and extensions, backups, update decisions, incident response, and any external monitoring or compliance requirements.
 
+## Table of Contents
+
+- [Security model](#security-model)
+- [Recommended baseline](#recommended-baseline)
+- [SSH access](#ssh-access)
+- [Network firewall](#network-firewall)
+- [Fail2ban](#fail2ban)
+- [Cloudflare boundary](#cloudflare-boundary)
+- [TLS and security headers](#tls-and-security-headers)
+- [Nginx request controls](#nginx-request-controls)
+- [Credentials and ss-config](#credentials-and-ss-config)
+- [File ownership and permissions](#file-ownership-and-permissions)
+- [WordPress security](#wordpress-security)
+- [Adminer exposure](#adminer-exposure)
+- [Staging and development data](#staging-and-development-data)
+- [Logs, monitoring, and alerting](#logs-monitoring-and-alerting)
+- [Updates and patching](#updates-and-patching)
+- [Backups and recovery](#backups-and-recovery)
+- [Incident response](#incident-response)
+- [Verification commands](#verification-commands)
+- [Managed security boundaries](#managed-security-boundaries)
+- [Current limitations](#current-limitations)
+
 ## Security model
 
 The standard SlickStack security boundary assumes:

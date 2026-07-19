@@ -18,6 +18,23 @@ They are installed as:
 
 Both installed files use mode `0600`.
 
+## Table of Contents
+
+- [Firewall layers](#firewall-layers)
+- [Default policy](#default-policy)
+- [Allowed inbound traffic](#allowed-inbound-traffic)
+- [Installation and persistence](#installation-and-persistence)
+- [Persistence across reboots](#persistence-across-reboots)
+- [Inspecting the active firewall](#inspecting-the-active-firewall)
+- [ICMP and ICMPv6](#icmp-and-icmpv6)
+- [SSH rate limiting](#ssh-rate-limiting)
+- [Denied-packet logging](#denied-packet-logging)
+- [Custom rules and managed-file boundaries](#custom-rules-and-managed-file-boundaries)
+- [Safe firewall changes](#safe-firewall-changes)
+- [Recovery](#recovery)
+- [IPv4 and IPv6 parity](#ipv4-and-ipv6-parity)
+- [Scope](#scope)
+
 ## Firewall layers
 
 Iptables is only one security layer:

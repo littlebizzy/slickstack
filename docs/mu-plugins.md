@@ -10,6 +10,15 @@ modules/wordpress/mu-plugins/
 
 The public download variables in `ss-functions` point to those vendored ZIP files inside the SlickStack repo. This keeps SlickStack installs simple, repeatable, and independent from live release API lookups on end-user servers.
 
+## Table of Contents
+
+- [Install behavior](#install-behavior)
+- [Default plugin ZIPs](#default-plugin-zips)
+- [Additional vendored ZIPs](#additional-vendored-zips)
+- [Updating vendored ZIPs](#updating-vendored-zips)
+- [Rules for ZIP mirrors](#rules-for-zip-mirrors)
+- [Custom MU plugins](#custom-mu-plugins)
+
 ## Install behavior
 
 The MU plugin installer downloads the ZIP files from the SlickStack mirror path, extracts them under `/tmp`, and copies the extracted plugin directories into the active WordPress MU plugin directory.

@@ -4,6 +4,20 @@ SlickStack can be used as the WordPress backend for a remote frontend such as Ne
 
 There is no separate headless mode. WordPress continues running normally on the SlickStack server while the remote frontend retrieves content through the WordPress REST API or another API plugin.
 
+## Table of Contents
+
+- [Recommended setup](#recommended-setup)
+- [SEO and indexing](#seo-and-indexing)
+- [WordPress API](#wordpress-api)
+- [WPGraphQL](#wpgraphql)
+- [Authentication](#authentication)
+- [CORS and request location](#cors-and-request-location)
+- [Media and URLs](#media-and-urls)
+- [Backend page redirects](#backend-page-redirects)
+- [Frontend caching and revalidation](#frontend-caching-and-revalidation)
+- [Draft previews](#draft-previews)
+- [Scope](#scope)
+
 ## Recommended setup
 
 Use separate hostnames for the backend and frontend:

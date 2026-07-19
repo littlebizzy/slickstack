@@ -4,6 +4,25 @@
 
 `ss-config` is the source of truth for user-selectable policy, but it is not intended to expose every low-level value. SlickStack installation scripts also calculate and hardcode derived settings when automatic tuning is safer and more predictable than another user option.
 
+## Table of Contents
+
+- [File locations](#file-locations)
+- [Bash syntax and security](#bash-syntax-and-security)
+- [Configuration lifecycle](#configuration-lifecycle)
+- [Initial setup](#initial-setup)
+- [Build compatibility](#build-compatibility)
+- [Configuration sections](#configuration-sections)
+- [User options versus automatic optimization](#user-options-versus-automatic-optimization)
+- [Boolean and enum values](#boolean-and-enum-values)
+- [Scheduled intervals](#scheduled-intervals)
+- [Limited and transitional options](#limited-and-transitional-options)
+- [Updating the schema](#updating-the-schema)
+- [Pilot file](#pilot-file)
+- [Backups and rollback](#backups-and-rollback)
+- [Troubleshooting](#troubleshooting)
+- [Managed-file boundaries](#managed-file-boundaries)
+- [Scope](#scope)
+
 ## File locations
 
 The active configuration is:

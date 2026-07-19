@@ -4,6 +4,30 @@ SlickStack uses Ubuntu LTS as the operating-system foundation for the entire sta
 
 Because these settings affect server access and every installed service, review `ss-config` carefully before running `ss-install` or an individual Ubuntu installer.
 
+## Table of Contents
+
+- [Supported Ubuntu releases](#supported-ubuntu-releases)
+- [Managed Ubuntu components](#managed-ubuntu-components)
+- [Server users](#server-users)
+- [Root account](#root-account)
+- [Sudo privileges](#sudo-privileges)
+- [SSH access](#ssh-access)
+- [Password and public-key authentication](#password-and-public-key-authentication)
+- [SSH IP restriction setting](#ssh-ip-restriction-setting)
+- [Jailed SFTP access](#jailed-sftp-access)
+- [System timezone](#system-timezone)
+- [Ubuntu utilities](#ubuntu-utilities)
+- [Bash environment and aliases](#bash-environment-and-aliases)
+- [Kernel and sysctl tuning](#kernel-and-sysctl-tuning)
+- [Swapfile](#swapfile)
+- [Root crontab](#root-crontab)
+- [Scheduled task configuration](#scheduled-task-configuration)
+- [Package updates](#package-updates)
+- [Reinstallation](#reinstallation)
+- [Reboots](#reboots)
+- [Troubleshooting](#troubleshooting)
+- [Scope](#scope)
+
 ## Supported Ubuntu releases
 
 The current installer accepts these Ubuntu LTS versions:

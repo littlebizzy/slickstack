@@ -4,6 +4,28 @@ SlickStack uses a combination of application log files under `/var/www/logs`, Wo
 
 These sources are related, but they are not interchangeable. A service can write to a SlickStack-managed file, the systemd journal, both, or neither depending on its active configuration.
 
+## Table of Contents
+
+- [Main log locations](#main-log-locations)
+- [Nginx logs](#nginx-logs)
+- [PHP and PHP-FPM logs](#php-and-php-fpm-logs)
+- [WordPress debug logs](#wordpress-debug-logs)
+- [WP-CLI log](#wp-cli-log)
+- [Memcached log](#memcached-log)
+- [MySQL logging](#mysql-logging)
+- [Fail2ban log](#fail2ban-log)
+- [Systemd journals](#systemd-journals)
+- [Ownership and permissions](#ownership-and-permissions)
+- [Clearing logs](#clearing-logs)
+- [Scheduled clearing](#scheduled-clearing)
+- [Rotation and retention](#rotation-and-retention)
+- [Searching and filtering](#searching-and-filtering)
+- [Sensitive data and redaction](#sensitive-data-and-redaction)
+- [Troubleshooting](#troubleshooting)
+- [Recommended incident sequence](#recommended-incident-sequence)
+- [Managed-file boundaries](#managed-file-boundaries)
+- [Scope](#scope)
+
 ## Main log locations
 
 The primary SlickStack log directory is:

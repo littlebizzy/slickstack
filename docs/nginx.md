@@ -26,6 +26,29 @@ Nginx on ports 80 and 443
 
 Nginx is one layer of SlickStack. Cloudflare, Iptables, PHP-FPM, WordPress, MySQL, Memcached, and browser caching have separate responsibilities and failure boundaries.
 
+## Table of Contents
+
+- [Main configuration files](#main-configuration-files)
+- [Installation and reconciliation](#installation-and-reconciliation)
+- [Main Nginx configuration](#main-nginx-configuration)
+- [Production, staging, and development](#production-staging-and-development)
+- [HTTP, HTTPS, and canonical routing](#http-https-and-canonical-routing)
+- [WordPress request routing](#wordpress-request-routing)
+- [FastCGI cache](#fastcgi-cache)
+- [Static files and compression](#static-files-and-compression)
+- [Request and connection limits](#request-and-connection-limits)
+- [Headers and indexing](#headers-and-indexing)
+- [Cloudflare integration](#cloudflare-integration)
+- [Logging](#logging)
+- [Approved include files only](#approved-include-files-only)
+- [Optional loading behavior](#optional-loading-behavior)
+- [/etc/nginx/conf.d/ is ignored](#etcnginxconfd-is-ignored)
+- [Generated files and persistent customization](#generated-files-and-persistent-customization)
+- [Validation and service control](#validation-and-service-control)
+- [Common problems](#common-problems)
+- [Scope](#scope)
+- [Related guides](#related-guides)
+
 ## Main configuration files
 
 SlickStack generates the active main configuration at:

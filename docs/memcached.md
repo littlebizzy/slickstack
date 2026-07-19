@@ -4,6 +4,18 @@ SlickStack uses Memcached as a local persistent object cache for the production 
 
 Memcached stores frequently reused WordPress objects in server memory so repeated database queries can often be avoided. It is separate from the Nginx FastCGI page cache and PHP OPcache, which cache different parts of the request lifecycle.
 
+## Table of Contents
+
+- [Packages](#packages)
+- [Configuration](#configuration)
+- [WordPress object cache](#wordpress-object-cache)
+- [Cache behavior](#cache-behavior)
+- [Cache layers](#cache-layers)
+- [Purging Memcached](#purging-memcached)
+- [Restarting Memcached](#restarting-memcached)
+- [Troubleshooting](#troubleshooting)
+- [Scope](#scope)
+
 ## Packages
 
 SlickStack installs the Memcached service together with command-line tools and PHP extensions:

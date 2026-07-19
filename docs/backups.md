@@ -4,6 +4,23 @@ SlickStack provides local database and file dump scripts plus optional remote tr
 
 The local dump files are current working archives stored on the same server. They are useful for migrations, staging workflows, and quick recovery, but they are not a complete disaster-recovery strategy until copies are stored and retained off the server.
 
+## Table of Contents
+
+- [Backup layers](#backup-layers)
+- [Local backup paths](#local-backup-paths)
+- [Database dumps](#database-dumps)
+- [File dumps](#file-dumps)
+- [Scheduling local dumps](#scheduling-local-dumps)
+- [Database restores](#database-restores)
+- [File restores](#file-restores)
+- [Remote backups](#remote-backups)
+- [Rclone backups](#rclone-backups)
+- [Rsync backups](#rsync-backups)
+- [Encryption and credentials](#encryption-and-credentials)
+- [Retention and verification](#retention-and-verification)
+- [Recommended baseline](#recommended-baseline)
+- [Scope](#scope)
+
 ## Backup layers
 
 SlickStack separates backups into three layers:

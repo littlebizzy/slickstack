@@ -4,6 +4,22 @@ SlickStack is HTTPS-only and manages the certificate files and Nginx SSL include
 
 A self-signed OpenSSL certificate is generated as the default and fallback certificate. SlickStack can also activate certificates issued through Certbot or certificate files supplied by a third party.
 
+## Table of Contents
+
+- [Certificate modes](#certificate-modes)
+- [Shared SSL settings](#shared-ssl-settings)
+- [Default OpenSSL certificate](#default-openssl-certificate)
+- [Cloudflare and self-signed certificates](#cloudflare-and-self-signed-certificates)
+- [Certbot certificates](#certbot-certificates)
+- [Domain validation](#domain-validation)
+- [Multisite wildcard certificates](#multisite-wildcard-certificates)
+- [Requesting and renewing certificates](#requesting-and-renewing-certificates)
+- [Third-party certificates](#third-party-certificates)
+- [Certificate permissions](#certificate-permissions)
+- [DH parameters](#dh-parameters)
+- [Troubleshooting](#troubleshooting)
+- [Scope](#scope)
+
 ## Certificate modes
 
 The active certificate mode is controlled in `ss-config`:

@@ -4,6 +4,21 @@ SlickStack provides lightweight local health checks, interactive resource output
 
 Logging is documented separately. See [Logging](logging.md) when investigating request history, service errors, PHP failures, WordPress debugging, or systemd journals.
 
+## Table of Contents
+
+- [Main monitoring commands](#main-monitoring-commands)
+- [Interactive resource monitor](#interactive-resource-monitor)
+- [Stack overview](#stack-overview)
+- [Automatic service monitoring and recovery](#automatic-service-monitoring-and-recovery)
+- [Recovery listeners versus monitoring](#recovery-listeners-versus-monitoring)
+- [Timestamp files](#timestamp-files)
+- [Manual service checks](#manual-service-checks)
+- [Cron and watchdog verification](#cron-and-watchdog-verification)
+- [Troubleshooting](#troubleshooting)
+- [Recommended incident sequence](#recommended-incident-sequence)
+- [Managed-file boundaries](#managed-file-boundaries)
+- [Scope](#scope)
+
 ## Main monitoring commands
 
 The primary commands are:

@@ -25,6 +25,37 @@ WordPress
 
 A visible website failure does not prove that WordPress is the cause. Start at the outermost failing boundary and work inward.
 
+## Table of Contents
+
+- [Troubleshooting principles](#troubleshooting-principles)
+- [Preserve evidence first](#preserve-evidence-first)
+- [Five-minute triage](#five-minute-triage)
+- [Separate edge, origin, and application failures](#separate-edge-origin-and-application-failures)
+- [Site unreachable or Cloudflare-branded errors](#site-unreachable-or-cloudflare-branded-errors)
+- [Nginx configuration failure](#nginx-configuration-failure)
+- [HTTP response problems](#http-response-problems)
+- [PHP-FPM failures and timeouts](#php-fpm-failures-and-timeouts)
+- [WordPress and application failures](#wordpress-and-application-failures)
+- [MySQL connection and service failures](#mysql-connection-and-service-failures)
+- [Memcached and object-cache problems](#memcached-and-object-cache-problems)
+- [Stale content and cache confusion](#stale-content-and-cache-confusion)
+- [Disk-space and inode exhaustion](#disk-space-and-inode-exhaustion)
+- [Memory, load, and out-of-memory events](#memory-load-and-out-of-memory-events)
+- [SSL and certificate failures](#ssl-and-certificate-failures)
+- [SSH access problems](#ssh-access-problems)
+- [SFTP access problems](#sftp-access-problems)
+- [Permission problems](#permission-problems)
+- [Cron tasks not running](#cron-tasks-not-running)
+- [Installation or update failure](#installation-or-update-failure)
+- [Staging and development problems](#staging-and-development-problems)
+- [Backup or restore problems](#backup-or-restore-problems)
+- [Narrow repair reference](#narrow-repair-reference)
+- [When a full installation is appropriate](#when-a-full-installation-is-appropriate)
+- [Diagnostic sharing and redaction](#diagnostic-sharing-and-redaction)
+- [External monitoring](#external-monitoring)
+- [Final escalation checklist](#final-escalation-checklist)
+- [Related guides](#related-guides)
+
 ## Troubleshooting principles
 
 Use these rules during an incident:

@@ -24,6 +24,22 @@ ss install
 
 These aliases do not all perform the same sequence. Review the distinctions below before using them on a production server.
 
+## Table of Contents
+
+- [Update workflow summary](#update-workflow-summary)
+- [ss-check: SlickStack scripts and cron wrappers](#ss-check-slickstack-scripts-and-cron-wrappers)
+- [ss-worker: maintenance and support files](#ss-worker-maintenance-and-support-files)
+- [ss-update-config: migrate ss-config](#ss-update-config-migrate-ss-config)
+- [ss-update-modules: Ubuntu packages and kernel](#ss-update-modules-ubuntu-packages-and-kernel)
+- [ss update versus ss upgrade](#ss-update-versus-ss-upgrade)
+- [ss-install: full reconciliation](#ss-install-full-reconciliation)
+- [Scheduled updates](#scheduled-updates)
+- [Reboots after updates](#reboots-after-updates)
+- [Recommended production procedure](#recommended-production-procedure)
+- [Recovery](#recovery)
+- [Managed-file boundaries](#managed-file-boundaries)
+- [Scope](#scope)
+
 ## Update workflow summary
 
 | Workflow | Primary purpose | Does not normally do |
