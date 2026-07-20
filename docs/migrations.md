@@ -560,6 +560,7 @@ Every migration should be treated as a production change with verified backups, 
 - [SS-Config](ss-config.md)
 - [Backups](backups.md)
 - [WordPress](wordpress.md)
+- [Email](email.md)
 - [MySQL](mysql.md)
 - [Staging & Development](staging-dev.md)
 - [Cloudflare](cloudflare.md)
