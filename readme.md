@@ -101,8 +101,8 @@ SlickStack installs, configures, or integrates the following core components. Ol
 | **[WordPress](docs/wordpress.md)** | 7.0 | Core installation and refreshes, generated `wp-config.php`, selected constants, MU plugins, WP-Cron execution, permissions, maintenance mode, Multisite handling, and staging or development synchronization. |
 | **[WP-CLI](docs/wordpress.md)** | 2.12.x | Installation and updates, SlickStack aliases, WordPress cron execution, database operations, search and replace, Core and extension maintenance, cache operations, and selected command restrictions. |
 | **[Adminer](docs/adminer.md)** | 5.4.2 | Installation, randomized production and test URLs, Nginx and PHP-FPM routing, database credential integration, request limits, permissions, and optional removal. |
-| **[Rclone](docs/backups.md)** | Varies by Ubuntu release | Installation, protected configuration, scheduled off-server backups, provider transfers, logs, timestamps, and credential permissions. |
-| **[Rsync](docs/backups.md)** | Varies by Ubuntu release | Server-to-server backup transfers, staging and development file synchronization, production push workflows, migration support, exclusions, ownership, and permissions. |
+| **[Rclone](docs/backups.md)** | Varies | Installation, protected configuration, scheduled off-server backups, provider transfers, logs, timestamps, and credential permissions. |
+| **[Rsync](docs/backups.md)** | Varies | Server-to-server backup transfers, staging and development file synchronization, production push workflows, migration support, exclusions, ownership, and permissions. |
 | **[Iptables](docs/iptables.md)** | 1.8.x | IPv4 and IPv6 policies, public HTTP and HTTPS access, rate-limited SSH, loopback and established traffic, persistent rule files, rebuilds, and permission controls. |
 | **[Fail2ban](docs/fail2ban.md)** | 1.0.x | Current SSH and Nginx jails, custom filters, thresholds, ban state, logging, and service control pending its planned removal in favor of a simpler Iptables-only baseline. |
 
