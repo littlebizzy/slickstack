@@ -90,7 +90,7 @@ SlickStack installs, configures, or integrates the following core components. Ol
 | Module | Version / source | What SlickStack manages |
 | :------------- | :----------: | :---------- |
 | **[SlickStack](docs/architecture.md)** | `JUL2026C` | Bash control plane under `/var/www`, `ss-config`, installers, aliases, 14 fixed cron wrappers, timestamps, backups, synchronization, permissions, cache purges, service recovery, and full-stack reconciliation. |
-| **[Ubuntu LTS](docs/ubuntu.md)** | 18.04–24.04 LTS | Package and kernel upgrades, required utilities, managed users and groups, SSH and jailed SFTP, sudoers, sysctl tuning, swap, shell configuration, root cron, and system permissions. |
+| **[Ubuntu LTS](docs/ubuntu.md)** | 18.04-24.04 | Package and kernel upgrades, required utilities, managed users and groups, SSH and jailed SFTP, sudoers, sysctl tuning, swap, shell configuration, root cron, and system permissions. |
 | **[Nginx](docs/nginx.md)** | 1.24.x | `nginx.conf`, HTTPS redirects, production and test server blocks, WordPress routing, static-file handling, FastCGI cache, security headers, rate and connection limits, Cloudflare includes, and maintenance or error responses. |
 | **[OpenSSL](docs/ssl.md)** | 3.0.x | Default self-signed origin certificate, private key, Diffie-Hellman parameters, stable certificate paths, permissions, and Nginx activation. |
 | **[Certbot](docs/ssl.md)** | 2.9.x | Optional Let's Encrypt issuance and renewal, HTTP validation for normal sites, Cloudflare DNS validation for wildcard certificates, certificate links, permissions, and Nginx activation. |
