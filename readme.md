@@ -6,6 +6,48 @@ SlickStack is a free LEMP stack automation script written in Bash designed to en
 
 <a href="https://www.capterra.com/p/211436/SlickStack">Capterra</a> • <a href="https://www.g2.com/products/slickstack/reviews">G2 Crowd</a> • <a href="https://www.producthunt.com/posts/slickstack">Product Hunt</a> • <a href="https://sourceforge.net/software/product/SlickStack/">SourceForge</a>
 
+## Thank you to our sponsors!
+
+[**Become a sponsor**](https://github.com/sponsors/jessuppi) and receive access to our **#perma-lounge** channel on Discord. Your donations and public displays of support for SlickStack are what keep this project going. Thank you very much!
+
+&nbsp;
+
+<a href="https://emplibot.com"><img width="150" style="padding: 20px" src="https://slickstack.io/wp-content/uploads/2024/09/emplibot-square.png" /></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="https://www.osoelectric.com"><img width="150" src="https://slickstack.io/wp-content/uploads/2023/04/oso-logo-color-480x467.webp" /></a>
+
+&nbsp;
+
+Our sponsors: [alexbohariuc](https://github.com/alexbohariuc), [backamblock](https://github.com/backamblock), [gingibash](https://github.com/gingibash), [hamzah](https://github.com/hamzah), [liwernyap](https://github.com/liwernyap), [OSO Electric Equipment](https://github.com/Oso-Electric-Equipment), [romfeo](https://github.com/romfeo), [strxno](https://github.com/strxno), [trevplaig](https://github.com/trevplaig), [vivdev](https://github.com/vivdev), [vladbejenaru](https://github.com/vladbejenaru), [volneanschi](https://github.com/volneanschi)
+
+## Installation
+
+Because it’s written purely in Bash (Unix shell), SlickStack has no third-party provisioning dependencies and works on Ubuntu LTS machines. Unlike heavier provisioning tools like EasyEngine or Ansible, it does not require external runtimes such as Python or Docker, meaning a lighter and simpler approach to WordPress servers.
+
+The following installation steps assume that you've already spun up a [KVM cloud server](https://slickstack.io/hosting) on Ubuntu LTS, with at least 1GB+ RAM, and that you are logged in via SSH as `root`:
+
+```
+cd /tmp/ && wget -O ss slick.fyi/ss && bash ss
+```
+
+After installation, you can manage your SlickStack server by running the bundled scripts located within the `/var/www/` directory using `sudo bash`, as needed. In most cases, however, there shouldn't be much hands-on management because SlickStack runs scheduled cron jobs that connect to this GitHub repo.
+
+Reinstallation through `sudo bash /var/www/ss-install` is designed to reconcile the managed stack without deleting normal WordPress content, but it is a broad maintenance operation that upgrades packages, rewrites managed configuration, may synchronize staging, truncates SlickStack logs, resets permissions, purges caches, and restarts services. Review the [Installation](docs/installation.md) guide before rerunning it on production.
+
+**Note:** SlickStack uses a self-signed OpenSSL certificate by default, so Cloudflare should be active on your domain before SSL (HTTPS) will appear fully secure in browsers. If you wish to use Let's Encrypt instead, be sure to change your settings in `ss-config` before running the installation.
+
+## Requirements
+
+*NOTE: SlickStack is designed for one primary domain per server. It will never support installing multiple TLDs (multi-tenancy) on a single server, and it will not include a built-in UI. This keeps the stack focused on speed, stability, security, and predictable integration with third-party management tools.*
+
+SlickStack works best on [KVM cloud servers](https://slickstack.io/hosting) such as DigitalOcean, Vultr, and Linode. Basic WordPress sites can run on 1GB+ RAM, while 2GB+ RAM is recommended for WooCommerce, Multisite, bbPress, BuddyPress, membership sites, forums, or other dynamic/high-traffic workloads. As your site grows, you can upgrade the server and run `sudo bash /var/www/ss-install` again so SlickStack can re-apply optimized settings for the available resources.
+
+By default, MySQL connects locally over TCP to `127.0.0.1:3306` using databases named `production`, `staging`, and `development`, depending on whether staging/dev sites are enabled. Remote databases can also be used, but server clustering and load balancing are not a SlickStack goal; the stack is focused on simple, high-performance WordPress servers for the majority of sites that do not need complex enterprise architecture.
+
+SlickStack is HTTPS-only and enables HSTS by default, so plain HTTP sites are not supported. Because SlickStack uses self-signed OpenSSL certificates by default, Cloudflare should be active in front of your server before HTTPS will appear fully secure in browsers. After the first `ss-install` has completed, you can switch to Certbot / Let's Encrypt if preferred.
+
+## Documentation
+
+Use these guides for detailed setup, configuration, maintenance, troubleshooting, and architecture information.
+
 | Document | Description |
 | :------------- | :---------- |
 | [Architecture](docs/architecture.md) | Maps SlickStack's request flow, control plane, service boundaries, filesystem layout, environments, cache layers, generated configuration, external responsibilities, and deliberate non-goals. |
@@ -39,34 +81,6 @@ SlickStack is a free LEMP stack automation script written in Bash designed to en
 | [Headless](docs/headless.md) | Covers using SlickStack as a WordPress backend for a remote frontend, including APIs, authentication, SEO, media, caching, redirects, and previews. |
 | [Workflows](docs/workflows.md) | Explains the GitHub Actions used for repository maintenance, SourceForge mirroring, and manual updates of approved WordPress MU plugin ZIP files. |
 
-## Thank you to our sponsors!
-
-[**Become a sponsor**](https://github.com/sponsors/jessuppi) and receive access to our **#perma-lounge** channel on Discord. Your donations and public displays of support for SlickStack are what keep this project going. Thank you very much!
-
-&nbsp;
-
-<a href="https://emplibot.com"><img width="150" style="padding: 20px" src="https://slickstack.io/wp-content/uploads/2024/09/emplibot-square.png" /></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="https://www.osoelectric.com"><img width="150" src="https://slickstack.io/wp-content/uploads/2023/04/oso-logo-color-480x467.webp" /></a>
-
-&nbsp;
-
-Our sponsors: [alexbohariuc](https://github.com/alexbohariuc), [backamblock](https://github.com/backamblock), [gingibash](https://github.com/gingibash), [hamzah](https://github.com/hamzah), [liwernyap](https://github.com/liwernyap), [OSO Electric Equipment](https://github.com/Oso-Electric-Equipment), [romfeo](https://github.com/romfeo), [strxno](https://github.com/strxno), [trevplaig](https://github.com/trevplaig), [vivdev](https://github.com/vivdev), [vladbejenaru](https://github.com/vladbejenaru), [volneanschi](https://github.com/volneanschi)
-
-## Installation
-
-Because it’s written purely in Bash (Unix shell), SlickStack has no third-party provisioning dependencies and works on Ubuntu LTS machines. Unlike heavier provisioning tools like EasyEngine or Ansible, it does not require external runtimes such as Python or Docker, meaning a lighter and simpler approach to WordPress servers.
-
-The following installation steps assume that you've already spun up a [KVM cloud server](https://slickstack.io/hosting) on Ubuntu LTS, with at least 1GB+ RAM, and that you are logged in via SSH as `root`:
-
-```
-cd /tmp/ && wget -O ss slick.fyi/ss && bash ss
-```
-
-After installation, you can manage your SlickStack server by running the bundled scripts located within the `/var/www/` directory using `sudo bash`, as needed. In most cases, however, there shouldn't be much hands-on management because SlickStack runs scheduled cron jobs that connect to this GitHub repo.
-
-Reinstallation through `sudo bash /var/www/ss-install` is designed to reconcile the managed stack without deleting normal WordPress content, but it is a broad maintenance operation that upgrades packages, rewrites managed configuration, may synchronize staging, truncates SlickStack logs, resets permissions, purges caches, and restarts services. Review the [Installation](docs/installation.md) guide before rerunning it on production.
-
-**Note:** SlickStack uses a self-signed OpenSSL certificate by default, so Cloudflare should be active on your domain before SSL (HTTPS) will appear fully secure in browsers. If you wish to use Let's Encrypt instead, be sure to change your settings in `ss-config` before running the installation.
-
 ## Modules
 
 *Last updated: Jun 26, 2026*
@@ -85,16 +99,6 @@ Reinstallation through `sudo bash /var/www/ss-install` is designed to reconcile 
 | **Adminer** | 5.4.2 | default config |
 | **Iptables** | 1.8.x | `rules.v4` + `rules.v6` |
 | **Fail2ban** | 1.0.x | `jail.local` + custom filters |
-
-## Requirements
-
-*NOTE: SlickStack is designed for one primary domain per server. It will never support installing multiple TLDs (multi-tenancy) on a single server, and it will not include a built-in UI. This keeps the stack focused on speed, stability, security, and predictable integration with third-party management tools.*
-
-SlickStack works best on [KVM cloud servers](https://slickstack.io/hosting) such as DigitalOcean, Vultr, and Linode. Basic WordPress sites can run on 1GB+ RAM, while 2GB+ RAM is recommended for WooCommerce, Multisite, bbPress, BuddyPress, membership sites, forums, or other dynamic/high-traffic workloads. As your site grows, you can upgrade the server and run `sudo bash /var/www/ss-install` again so SlickStack can re-apply optimized settings for the available resources.
-
-By default, MySQL connects locally over TCP to `127.0.0.1:3306` using databases named `production`, `staging`, and `development`, depending on whether staging/dev sites are enabled. Remote databases can also be used, but server clustering and load balancing are not a SlickStack goal; the stack is focused on simple, high-performance WordPress servers for the majority of sites that do not need complex enterprise architecture.
-
-SlickStack is HTTPS-only and enables HSTS by default, so plain HTTP sites are not supported. Because SlickStack uses self-signed OpenSSL certificates by default, Cloudflare should be active in front of your server before HTTPS will appear fully secure in browsers. After the first `ss-install` has completed, you can switch to Certbot / Let's Encrypt if preferred.
 
 ## Philosophy
 
