@@ -4,69 +4,44 @@ title: MU (Must-Use) Plugins (Public Mirrors)
 
 # MU (Must-Use) WordPress Plugins
 
-----
+This directory stores source files and vendored ZIP mirrors used by SlickStack's WordPress MU plugin installer.
 
-### Module Files
+The installer determines which files are actually deployed. See the [WordPress MU Plugins guide](../../../docs/mu-plugins.md) for current installation behavior, environment differences, custom plugin mode, and update workflows.
 
-*Live configuration files and boilerplates used by current SlickStack installation that may be altered by LittleBizzy or Ubuntu for better performance.*
+## Required SlickStack files
 
-#### Required MU Plugins
+These files are installed independently from the selectable default or custom plugin set:
 
-* [autoloader.txt](autoloader.txt)
-* [custom-functions.zip](custom-functions.zip)
-* [xxx-notices.txt](xxx-notices.txt)
-* [xxx-staging.txt](xxx-staging.txt)
-* [redis-cache](redis-cache.zip)
+- [000-common.txt](000-common.txt)
+- [autoloader.txt](autoloader.txt)
 
-#### Default MU Plugin ZIPs
+The production Memcached `object-cache.php` drop-in is downloaded separately by the installer and is not stored as a ZIP mirror in this directory.
 
-* [clear-caches.zip](clear-caches.zip)
-* [disable-empty-trash.zip](disable-empty-trash.zip)
-* [disable-image-compression.zip](disable-image-compression.zip)
-* [disable-xml-rpc.zip](disable-xml-rpc.zip)
-* [force-https.zip](force-https.zip)
-* [plugin-blacklist.zip](plugin-blacklist.zip)
-* [repoman.zip](repoman.zip)
+## Default MU plugin ZIPs
 
-#### Additional Plugin ZIPs
+Unless valid custom mode is configured, SlickStack installs these packages in production and each enabled test environment:
 
-* [cloudflare.zip](cloudflare.zip)
-* [dashboard-cleanup.zip](dashboard-cleanup.zip)
-* [delete-expired-transients.zip](delete-expired-transients.zip)
-* [disable-attachment-pages.zip](disable-attachment-pages.zip)
-* [disable-embeds.zip](disable-embeds.zip)
-* [disable-emojis.zip](disable-emojis.zip)
-* [disable-gutenberg.zip](disable-gutenberg.zip)
-* [disable-post-via-email.zip](disable-post-via-email.zip)
-* [force-strong-hashing.zip](force-strong-hashing.zip)
-* [git-updater.zip](git-updater.zip)
-* [header-cleanup.zip](header-cleanup.zip)
-* [limit-heartbeat.zip](limit-heartbeat.zip)
-* [minify-html.zip](minify-html.zip)
-* [virtual-robotstxt.zip](virtual-robotstxt.zip)
+- [clear-caches.zip](clear-caches.zip)
+- [disable-empty-trash.zip](disable-empty-trash.zip)
+- [disable-image-compression.zip](disable-image-compression.zip)
+- [disable-xml-rpc.zip](disable-xml-rpc.zip)
+- [force-https.zip](force-https.zip)
+- [plugin-blacklist.zip](plugin-blacklist.zip)
+- [repoman.zip](repoman.zip)
 
-#### Staging MU Plugins
+## Staging and development safeguards
 
-* [disable-default-runner.zip](disable-default-runner.zip)
+SlickStack additionally installs these packages in enabled staging and development environments:
 
-### Related Links
+- [disable-emails.zip](disable-emails.zip)
+- [disable-default-runner.zip](disable-default-runner.zip)
 
-*Links and resources related to the above module that may help users understand its functionality, or how it interacts with other LEMP stack modules.*
+## Related links
 
-* [https://www.littlebizzy.com/plugins](https://www.littlebizzy.com/plugins)
-* [https://wordpress.org/support/article/must-use-plugins/](https://wordpress.org/support/article/must-use-plugins/)
-* [https://codex.wordpress.org/Writing_a_Plugin](https://codex.wordpress.org/Writing_a_Plugin)
-* [https://github.com/pressjitsu/pj-object-cache-red](https://github.com/pressjitsu/pj-object-cache-red)
-* [https://github.com/roots/bedrock/blob/master/web/app/mu-plugins/bedrock-autoloader.php](https://github.com/roots/bedrock/blob/master/web/app/mu-plugins/bedrock-autoloader.php)
-* [https://core.trac.wordpress.org/ticket/24044](https://core.trac.wordpress.org/ticket/24044)
-* [https://wordpress.stackexchange.com/questions/98284/how-come-wp-options-table-does-not-have-an-index-on-autoload](https://wordpress.stackexchange.com/questions/98284/how-come-wp-options-table-does-not-have-an-index-on-autoload)
-* [https://github.com/woocommerce/action-scheduler-disable-default-runner](https://github.com/woocommerce/action-scheduler-disable-default-runner)
-* https://wordpress.programmingpedia.net/en/tutorial/9189/add-menu-page--
-* https://nimblewebdeveloper.com/blog/add-tabs-to-wordpress-plugin-admin-page
-* https://softwareengineering.stackexchange.com/questions/12807/make-a-big-deal-out-of-true/12819#make-a-big-deal-out-of-true
-* https://speedysense.com/php-remove-http-https-www-and-slashes-from-urls/
-* https://wpsmackdown.com/wordpress-custom-login-message/
+- [WordPress MU Plugins guide](../../../docs/mu-plugins.md)
+- [WordPress must-use plugins](https://wordpress.org/documentation/article/must-use-plugins/)
+- [WooCommerce Action Scheduler default runner](https://github.com/woocommerce/action-scheduler-disable-default-runner)
 
-----
+---
 
-*Last updated: Jul 16, 2026*
+*Last updated: Jul 20, 2026*
