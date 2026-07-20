@@ -14,6 +14,7 @@ These environments are convenient, but their sync and push commands can overwrit
 - [Environment layout](#environment-layout)
 - [DNS, HTTPS, and indexing](#dns-https-and-indexing)
 - [Guest protection](#guest-protection)
+- [Environment safeguards](#environment-safeguards)
 - [Staging behavior](#staging-behavior)
 - [Shared production uploads](#shared-production-uploads)
 - [Automatic staging synchronization](#automatic-staging-synchronization)
@@ -86,6 +87,23 @@ GUEST_PASSWORD="example-password"
 The same guest credentials are used for both protected subdomains.
 
 Use unique credentials and do not reuse an administrator, SFTP, database, or Cloudflare password. Anyone with access to a protected environment may still see copied production content.
+
+## Environment safeguards
+
+SlickStack automatically installs two additional MU plugins in both staging and development:
+
+```text
+disable-emails
+disable-default-runner
+```
+
+`disable-emails` suppresses normal WordPress application email from test environments. This helps prevent copied sites from sending password resets, contact-form notifications, order emails, subscription messages, or other production-style email to real recipients.
+
+`disable-default-runner` suppresses the default Action Scheduler runner in test environments. WooCommerce and many other plugins use Action Scheduler for queued and recurring background jobs, so scheduled tasks may intentionally behave differently from production.
+
+These safeguards reduce accidental side effects but do not make staging or development fully isolated. Plugins may use their own cron systems, direct API requests, external webhooks, or custom email delivery methods. Verify important integrations before assuming they are disabled.
+
+The safeguards are managed by `ss-install-wordpress-mu-plugins`. Reinstalling or refreshing the managed MU plugin layer restores them when staging or development is enabled. See [MU Plugins](mu-plugins.md) for the complete installer behavior.
 
 ## Staging behavior
 
