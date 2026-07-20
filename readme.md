@@ -83,7 +83,7 @@ Use these guides for detailed setup, configuration, maintenance, troubleshooting
 
 ## Modules
 
-SlickStack installs, configures, or integrates the following core components. Versions below reflect the normal Ubuntu 24.04 baseline as of July 20, 2026; older supported Ubuntu LTS releases can use different distribution packages, while externally maintained tools may update independently.
+SlickStack installs, configures, or integrates the following core components. Older supported Ubuntu LTS releases can use different distribution packages, while externally maintained tools may update independently.
 
 *Last updated: Jul 20, 2026*
 
