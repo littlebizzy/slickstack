@@ -83,18 +83,18 @@ Use these guides for detailed setup, configuration, maintenance, troubleshooting
 
 ## Modules
 
-SlickStack installs, configures, or integrates the following core components. Older supported Ubuntu LTS releases can use different distribution packages, while externally maintained tools may update independently.
+The table below shows the main software used by SlickStack, which versions it currently supports, and what SlickStack configures or maintains for each component.
 
 *Last updated: Jul 20, 2026*
 
-| Module | Version / source | What SlickStack manages |
+| Module | Version | What SlickStack manages |
 | :------------- | :----------: | :---------- |
 | **[SlickStack](docs/architecture.md)** | `JUL2026C` | Bash control plane under `/var/www`, `ss-config`, installers, aliases, 14 fixed cron wrappers, timestamps, backups, synchronization, permissions, cache purges, service recovery, and full-stack reconciliation. |
 | **[Ubuntu LTS](docs/ubuntu.md)** | 18.04-24.04 | Package and kernel upgrades, required utilities, managed users and groups, SSH and jailed SFTP, sudoers, sysctl tuning, swap, shell configuration, root cron, and system permissions. |
 | **[Nginx](docs/nginx.md)** | 1.24.x | `nginx.conf`, HTTPS redirects, production, staging, and development server blocks, WordPress routing, static-file handling, FastCGI cache, security headers, rate and connection limits, Cloudflare includes, and maintenance or error responses. |
 | **[OpenSSL](docs/ssl.md)** | 3.0.x | Default self-signed origin certificate, private key, Diffie-Hellman parameters, stable certificate paths, permissions, and Nginx activation. |
 | **[Certbot](docs/ssl.md)** | 2.9.x | Optional Let's Encrypt issuance and renewal, HTTP validation for normal sites, Cloudflare DNS validation for wildcard certificates, certificate links, permissions, and Nginx activation. |
-| **[Cloudflare](docs/cloudflare.md)** | External service | Origin-side DNS and proxy guidance, visitor-IP restoration, IP range refreshes, Authenticated Origin Pulls, optional origin restrictions, cache boundaries, and wildcard-certificate credentials; SlickStack does not manage the Cloudflare account itself. |
+| **[Cloudflare](docs/cloudflare.md)** | External | Origin-side DNS and proxy guidance, visitor-IP restoration, IP range refreshes, Authenticated Origin Pulls, optional origin restrictions, cache boundaries, and wildcard-certificate credentials; SlickStack does not manage the Cloudflare account itself. |
 | **[PHP-FPM](docs/php-fpm.md)** | 7.2-8.3 | PHP packages and extensions, version selection, `php.ini`, `php-fpm.conf`, the shared `www` pool, OPcache, RAM-based worker tuning, logging, restarts, and service recovery. |
 | **[MySQL](docs/mysql.md)** | 5.7-8.0 | Local or remote mode, package and service setup, `my.cnf`, InnoDB and RAM-based tuning, WordPress users and databases, dumps, imports, optimization, restarts, and local service recovery. |
 | **[Memcached](docs/memcached.md)** | 1.6.x | Loopback-only service configuration, memory allocation, the production WordPress `object-cache.php` drop-in, cache purges, restarts, and permissions. |
