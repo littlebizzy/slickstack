@@ -318,6 +318,7 @@ Normal plugins installed through WP Admin or WP-CLI remain separate from this ma
 
 - [WordPress](wordpress.md)
 - [Staging & Development](staging-dev.md)
+- [Email](email.md)
 - [Memcached](memcached.md)
 - [Caching](caching.md)
 - [Permissions](permissions.md)
