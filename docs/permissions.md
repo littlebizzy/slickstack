@@ -272,7 +272,7 @@ Sensitive generated service credentials also use root-only access:
 
 Never loosen private-key or credential files to fix a web-server error. Check the Nginx configuration, certificate paths, ownership, and service logs instead.
 
-See [SSL (Certificates)](ssl.md), [Cloudflare](cloudflare.md), and [Backups](backups.md).
+See [SSL Certificates](ssl.md), [Cloudflare](cloudflare.md), and [Backups](backups.md).
 
 ## PHP-FPM and WP-CLI
 

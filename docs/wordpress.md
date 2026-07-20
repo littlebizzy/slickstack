@@ -165,7 +165,7 @@ The production template defines WordPress content, plugin, language, temporary, 
 
 Production, staging, and development use separate cookie domains to reduce login conflicts between environments.
 
-Certificate behavior is documented in [SSL (Certs)](ssl.md). Headless domain arrangements are documented in [Headless](headless.md).
+Certificate behavior is documented in [SSL Certificates](ssl.md). Headless domain arrangements are documented in [Headless](headless.md).
 
 ## Database settings
 
@@ -405,7 +405,7 @@ The standard SlickStack configuration recommends the subdomain approach. Domain 
 
 Staging and development workflows are not supported as normal managed copies when Multisite is enabled. The staging and development sync scripts explicitly skip Multisite.
 
-Subdomain Multisite also affects certificate requirements and normally requires a wildcard certificate. See [SSL (Certs)](ssl.md).
+Subdomain Multisite also affects certificate requirements and normally requires a wildcard certificate. See [SSL Certificates](ssl.md).
 
 Multisite introduces additional operational complexity and should be tested carefully before use on business-critical or high-traffic installations.
 

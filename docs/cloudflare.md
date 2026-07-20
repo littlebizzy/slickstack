@@ -157,7 +157,7 @@ Then run:
 sudo bash /var/www/ss-install-nginx-config
 ```
 
-See [SSL (Certificates)](ssl.md) for certificate issuance, activation, paths, and fallback behavior.
+See [SSL Certificates](ssl.md) for certificate issuance, activation, paths, and fallback behavior.
 
 ### Flexible and Off modes
 
@@ -408,7 +408,7 @@ SlickStack does not currently generate that format. Use the Global API Key for t
 
 Never publish `/var/www/meta/cloudflare.ini`, include it in public backups, or paste its contents into support tickets.
 
-See [SSL (Certificates)](ssl.md) for the complete Certbot workflow.
+See [SSL Certificates](ssl.md) for the complete Certbot workflow.
 
 ## Cloudflare IP range refreshes
 

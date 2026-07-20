@@ -176,7 +176,7 @@ They are separate server blocks, not isolated containers or virtual machines.
 
 Staging and development can use shared HTTP Basic Authentication generated from `GUEST_USER` and `GUEST_PASSWORD`. Their noindex and access controls reduce accidental exposure but do not make copied production data harmless.
 
-See [Staging & Dev](staging-dev.md).
+See [Staging & Development](staging-dev.md).
 
 ## HTTP, HTTPS, and canonical routing
 
@@ -201,7 +201,7 @@ Because HSTS applies to subdomains and can be cached by browsers, domain and cer
 
 The default self-signed certificate is suitable as an encrypted Cloudflare origin certificate in Full mode, but it is not trusted directly by normal browsers. Certbot or a supported third-party certificate is required when the origin must present a publicly trusted certificate directly.
 
-See [SSL (Certs)](ssl.md) and [Cloudflare](cloudflare.md).
+See [SSL Certificates](ssl.md) and [Cloudflare](cloudflare.md).
 
 ## WordPress request routing
 
@@ -681,11 +681,11 @@ These are architectural boundaries, not merely undocumented features.
 - [Troubleshooting](troubleshooting.md)
 - [SS-Config](ss-config.md)
 - [Cloudflare](cloudflare.md)
-- [SSL (Certs)](ssl.md)
+- [SSL Certificates](ssl.md)
 - [Caching](caching.md)
 - [PHP-FPM](php-fpm.md)
 - [WordPress](wordpress.md)
 - [Logging](logging.md)
 - [Security](security.md)
 - [Permissions](permissions.md)
-- [Staging & Dev](staging-dev.md)
+- [Staging & Development](staging-dev.md)

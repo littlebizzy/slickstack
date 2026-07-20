@@ -682,7 +682,7 @@ sudo bash /var/www/ss-install-nginx-config
 
 Do not loosen private-key permissions to solve an Nginx error.
 
-See [SSL (Certificates)](ssl.md) and [Cloudflare](cloudflare.md).
+See [SSL Certificates](ssl.md) and [Cloudflare](cloudflare.md).
 
 ## SSH access problems
 
@@ -938,7 +938,7 @@ Staging normally shares production uploads. Do not troubleshoot staging media by
 
 Synchronization commands overwrite databases and selected files. Push commands overwrite production. Preserve current data before using them as repair tools.
 
-See [Staging & Dev](staging-dev.md).
+See [Staging & Development](staging-dev.md).
 
 ## Backup or restore problems
 
@@ -1149,10 +1149,10 @@ That layer should determine the next repair, not the visibility of the symptom a
 - [MySQL](mysql.md)
 - [Memcached](memcached.md)
 - [Caching](caching.md)
-- [SSL (Certificates)](ssl.md)
+- [SSL Certificates](ssl.md)
 - [Permissions](permissions.md)
 - [Cron Jobs](cron.md)
 - [Backups](backups.md)
-- [Staging & Dev](staging-dev.md)
+- [Staging & Development](staging-dev.md)
 - [Ubuntu](ubuntu.md)
 - [WordPress](wordpress.md)

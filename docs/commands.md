@@ -432,7 +432,7 @@ ss push dev
 
 `ss push development` is marked experimental by its script. Neither push command merges newer production records or provides automatic rollback.
 
-See [Staging & Dev](staging-dev.md).
+See [Staging & Development](staging-dev.md).
 
 ## Maintenance mode
 
@@ -501,7 +501,7 @@ ss config letsencrypt
 
 A related installer must still regenerate and activate the managed Nginx configuration.
 
-See [SSL (Certs)](ssl.md) and [Cloudflare](cloudflare.md).
+See [SSL Certificates](ssl.md) and [Cloudflare](cloudflare.md).
 
 ## Configuration shortcuts
 

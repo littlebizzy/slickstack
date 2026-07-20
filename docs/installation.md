@@ -66,7 +66,7 @@ SlickStack uses a self-signed OpenSSL certificate by default. Without Cloudflare
 
 A temporary subdomain can be used for testing. Domain values can later be changed in [`ss-config`](ss-config.md), followed by another full installation to regenerate the managed configuration.
 
-See [Cloudflare](cloudflare.md), [SSL (Certs)](ssl.md), and [SS-Config](ss-config.md) before installing a production domain.
+See [Cloudflare](cloudflare.md), [SSL Certificates](ssl.md), and [SS-Config](ss-config.md) before installing a production domain.
 
 ## Initial bootstrap
 

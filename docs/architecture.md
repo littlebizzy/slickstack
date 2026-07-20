@@ -680,6 +680,6 @@ Review output before sharing it because domains, usernames, paths, addresses, an
 - [Caching](caching.md)
 - [Cron Jobs](cron.md)
 - [Permissions](permissions.md)
-- [Staging & Dev](staging-dev.md)
+- [Staging & Development](staging-dev.md)
 - [Cloudflare](cloudflare.md)
 - [WordPress](wordpress.md)

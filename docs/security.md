@@ -286,7 +286,7 @@ The normal choices are:
 
 Never publish certificate private keys. Verify ownership and permissions after copying any third-party certificate.
 
-See [SSL (Certs)](ssl.md).
+See [SSL Certificates](ssl.md).
 
 ## Nginx request controls
 
@@ -474,7 +474,7 @@ Important boundaries include:
 
 Do not provide broad access to an environment merely because search engines are told not to index it. Remove or anonymize sensitive data when contractors or external testers do not require it.
 
-See [Staging & Dev](staging-dev.md).
+See [Staging & Development](staging-dev.md).
 
 ## Logs, monitoring, and alerting
 
