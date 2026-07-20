@@ -673,6 +673,7 @@ Review output before sharing it because domains, usernames, paths, addresses, an
 - [SS-Config](ss-config.md)
 - [Commands](commands.md)
 - [Security](security.md)
+- [Email](email.md)
 - [Nginx](nginx.md)
 - [PHP-FPM](php-fpm.md)
 - [MySQL](mysql.md)
