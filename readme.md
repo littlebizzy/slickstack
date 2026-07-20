@@ -32,6 +32,7 @@ SlickStack is a free LEMP stack automation script written in Bash designed to en
 | [Fail2ban](docs/fail2ban.md) | Documents the current SSH and Nginx jails, thresholds, bans, troubleshooting, and planned removal in favor of a simpler Iptables-only approach. |
 | [Security](docs/security.md) | Connects SlickStack's SSH, firewall, Cloudflare, TLS, permissions, WordPress, credentials, monitoring, backup, and incident-recovery security boundaries. |
 | [WordPress](docs/wordpress.md) | Covers managed WordPress Core installation, generated configuration, WP-Cron, WP-CLI, permissions, updates, Multisite, and staging and development synchronization. |
+| [Email](docs/email.md) | Covers WordPress delivery, SMTP and API providers, SPF, DKIM, DMARC, staging safeguards, WooCommerce queues, mailboxes, testing, troubleshooting, and external responsibilities. |
 | [MU Plugins](docs/mu-plugins.md) | Explains which WordPress MU plugins SlickStack installs, how vendored ZIP mirrors are managed, and how the installer updates plugin files. |
 | [Adminer](docs/adminer.md) | Covers Adminer installation, randomized and environment-specific URLs, database credentials, Nginx and PHP-FPM routing, rate limits, disabling access, and security limitations. |
 | [Staging & Dev](docs/staging-dev.md) | Covers environment setup, guest protection, production-to-staging and development syncs, shared uploads, overwrite risks, production push commands, and recovery boundaries. |
