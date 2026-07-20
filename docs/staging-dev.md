@@ -103,7 +103,7 @@ disable-default-runner
 
 These safeguards reduce accidental side effects but do not make staging or development fully isolated. Plugins may use their own cron systems, direct API requests, external webhooks, or custom email delivery methods. Verify important integrations before assuming they are disabled.
 
-The safeguards are managed by `ss-install-wordpress-mu-plugins`. Reinstalling or refreshing the managed MU plugin layer restores them when staging or development is enabled. See [MU Plugins](mu-plugins.md) for the complete installer behavior.
+The safeguards are managed by `ss-install-wordpress-mu-plugins`. Reinstalling or refreshing the managed MU plugin layer restores them when staging or development is enabled. See [MU Plugins](mu-plugins.md) for the complete installer behavior and [Email](email.md) for delivery behavior and test-environment precautions.
 
 ## Staging behavior
 
