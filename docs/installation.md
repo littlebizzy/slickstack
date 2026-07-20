@@ -23,6 +23,7 @@ The installer is designed to be idempotent, meaning it can normally be rerun to 
 - [SSH safety](#ssh-safety)
 - [Post-install verification](#post-install-verification)
 - [Failure recovery](#failure-recovery)
+- [Decommissioning and replacement](#decommissioning-and-replacement)
 - [Managed-file boundary](#managed-file-boundary)
 - [Scope](#scope)
 
@@ -570,6 +571,32 @@ ss maintenance off
 Do not remove maintenance mode merely to expose a broken PHP, database, or WordPress installation to visitors.
 
 If access is lost, use the hosting provider console rather than repeatedly changing SSH files through an unverified session.
+
+## Decommissioning and replacement
+
+SlickStack does not provide an in-place uninstall workflow. Although it is relatively non-invasive outside its managed paths, it configures multiple operating-system services, users, permissions, firewall rules, cron jobs, packages, and application files that depend on one another.
+
+When SlickStack no longer fits the server's purpose, the recommended approach is to provision a clean replacement server for the desired stack rather than attempting to remove SlickStack component by component from the existing operating system. A fresh server is easier to understand, verify, secure, and maintain than a partially dismantled installation with uncertain remaining configuration.
+
+A safe replacement workflow is:
+
+1. create and verify current database and file backups
+2. record required DNS, certificates, credentials, cron jobs, email delivery, and external integrations
+3. provision the replacement server independently
+4. migrate the website and test WordPress, uploads, email, scheduled jobs, SSL, redirects, and dynamic functionality
+5. perform a final content and database synchronization during a controlled cutover window
+6. update DNS or proxy routing to the replacement server
+7. keep the old server available but isolated from new writes for a short rollback period
+8. verify production traffic, logs, backups, and external integrations on the replacement
+9. revoke or rotate credentials that were stored on the old server
+10. remove obsolete DNS records, snapshots, backups, and provider resources according to the required retention policy
+11. destroy the old server through the hosting provider after the rollback window ends
+
+Do not begin decommissioning by deleting `/var/www`, removing packages, changing SSH or firewall rules, or disabling services on the active server. Those actions can destroy migration data, remove access, interrupt production, or leave a confusing mixture of SlickStack and replacement configuration.
+
+Preserve the old server only as long as it remains necessary for rollback or evidence. An internet-accessible abandoned server still requires patching, access control, monitoring, and billing.
+
+See [Migrations](migrations.md), [Backups](backups.md), [Email](email.md), and [Security](security.md) before the final cutover and destruction of the old instance.
 
 ## Managed-file boundary
 
