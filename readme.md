@@ -83,22 +83,28 @@ Use these guides for detailed setup, configuration, maintenance, troubleshooting
 
 ## Modules
 
-*Last updated: Jun 26, 2026*
+SlickStack installs, configures, or integrates the following core components. Versions below reflect the normal Ubuntu 24.04 baseline as of July 20, 2026; older supported Ubuntu LTS releases can use different distribution packages, while externally maintained tools may update independently.
 
-| Module | Version | What does SlickStack optimize? |
-| :------------- | :----------: | :----------: |
-| **Ubuntu LTS** | 24.04 | `crontab` + `gai.conf` + `sshd_config` + `sudoers` + `sysctl.conf` |
-| **Nginx** | 1.24.x | `nginx.conf` + `cloudflare.conf` + server blocks |
-| **OpenSSL** | 3.0.x | `slickstack.crt` + `slickstack.key` + `dhparam.pem` |
-| **Certbot** | 2.9.x | `cert.perm` + `chain.pem` + `fullchain.pem` + `privkey.pem` |
-| **MySQL** | 8.0.x | `my.cnf` |
-| **PHP-FPM** | 8.3.x | `php.ini` + `php-fpm.conf` + `www.conf` |
-| **Memcached** | 1.6.x | `memcached.conf` + `object-cache.php` |
-| **WordPress** | 7.0 | some WP Core junk files removed by `ss-clean-files` |
-| **WP-CLI** | 2.12.x | some `wp` commands disabled |
-| **Adminer** | 5.4.2 | default config |
-| **Iptables** | 1.8.x | `rules.v4` + `rules.v6` |
-| **Fail2ban** | 1.0.x | `jail.local` + custom filters |
+*Last updated: Jul 20, 2026*
+
+| Module | Version / source | What SlickStack manages |
+| :------------- | :----------: | :---------- |
+| **[SlickStack](docs/architecture.md)** | `JUL2026C` | Bash control plane under `/var/www`, `ss-config`, installers, aliases, 14 fixed cron wrappers, timestamps, backups, synchronization, permissions, cache purges, service recovery, and full-stack reconciliation. |
+| **[Ubuntu LTS](docs/ubuntu.md)** | 24.04 baseline | Package and kernel upgrades, required utilities, managed users and groups, SSH and jailed SFTP, sudoers, sysctl tuning, swap, shell configuration, root cron, and system permissions. |
+| **[Nginx](docs/nginx.md)** | 1.24.x | `nginx.conf`, HTTPS redirects, production and test server blocks, WordPress routing, static-file handling, FastCGI cache, security headers, rate and connection limits, Cloudflare includes, and maintenance or error responses. |
+| **[OpenSSL](docs/ssl.md)** | 3.0.x | Default self-signed origin certificate, private key, Diffie-Hellman parameters, stable certificate paths, permissions, and Nginx activation. |
+| **[Certbot](docs/ssl.md)** | 2.9.x | Optional Let's Encrypt issuance and renewal, HTTP validation for normal sites, Cloudflare DNS validation for wildcard certificates, certificate links, permissions, and Nginx activation. |
+| **[Cloudflare](docs/cloudflare.md)** | External service | Origin-side DNS and proxy guidance, visitor-IP restoration, IP range refreshes, Authenticated Origin Pulls, optional origin restrictions, cache boundaries, and wildcard-certificate credentials; SlickStack does not manage the Cloudflare account itself. |
+| **[PHP-FPM](docs/php-fpm.md)** | 8.3.x | PHP packages and extensions, version selection, `php.ini`, `php-fpm.conf`, the shared `www` pool, OPcache, RAM-based worker tuning, logging, restarts, and service recovery. |
+| **[MySQL](docs/mysql.md)** | 8.0.x | Local or remote mode, package and service setup, `my.cnf`, InnoDB and RAM-based tuning, WordPress users and databases, dumps, imports, optimization, restarts, and local service recovery. |
+| **[Memcached](docs/memcached.md)** | 1.6.x | Loopback-only service configuration, memory allocation, the production WordPress `object-cache.php` drop-in, cache purges, restarts, and permissions. |
+| **[WordPress](docs/wordpress.md)** | 7.0 | Core installation and refreshes, generated `wp-config.php`, selected constants, MU plugins, WP-Cron execution, permissions, maintenance mode, Multisite handling, and staging or development synchronization. |
+| **[WP-CLI](docs/wordpress.md)** | 2.12.x | Installation and updates, SlickStack aliases, WordPress cron execution, database operations, search and replace, Core and extension maintenance, cache operations, and selected command restrictions. |
+| **[Adminer](docs/adminer.md)** | 5.4.2 | Installation, randomized production and test URLs, Nginx and PHP-FPM routing, database credential integration, request limits, permissions, and optional removal. |
+| **[Rclone](docs/backups.md)** | Ubuntu package | Installation, protected configuration, scheduled off-server backups, provider transfers, logs, timestamps, and credential permissions. |
+| **[Rsync](docs/backups.md)** | Ubuntu package | Server-to-server backup transfers, staging and development file synchronization, production push workflows, migration support, exclusions, ownership, and permissions. |
+| **[Iptables](docs/iptables.md)** | 1.8.x | IPv4 and IPv6 policies, public HTTP and HTTPS access, rate-limited SSH, loopback and established traffic, persistent rule files, rebuilds, and permission controls. |
+| **[Fail2ban](docs/fail2ban.md)** | 1.0.x | Current SSH and Nginx jails, custom filters, thresholds, ban state, logging, and service control pending its planned removal in favor of a simpler Iptables-only baseline. |
 
 ## Philosophy
 
