@@ -28,6 +28,7 @@ The standard design uses one production WordPress site per server, with optional
 - [Backups and imports](#backups-and-imports)
 - [Recommended management commands](#recommended-management-commands)
 - [Scope](#scope)
+- [Related guides](#related-guides)
 
 ## Environment layout
 
@@ -95,6 +96,8 @@ The initial values are derived from `ss-config`:
 - the initial administrator email uses `SFTP_USER@SITE_DOMAIN_EXCLUDING_WWW`
 
 The WordPress administrator password can be changed later from WordPress without changing the server’s SFTP password.
+
+SlickStack does not create a mailbox for the generated administrator address or configure outgoing delivery. See [Email](email.md).
 
 A new development environment is also installed independently when `DEV_SITE="true"` and its database is empty.
 
@@ -514,3 +517,13 @@ The standard SlickStack WordPress design assumes:
 - WordPress files under `/var/www/html/`
 
 Multiple independent production domains, arbitrary WordPress directory layouts, unmanaged `wp-config.php` ownership, Composer-based WordPress roots, containerized WordPress, Bedrock-style structures, and custom environment orchestration are outside the standard managed configuration.
+
+## Related guides
+
+- [Installation](installation.md)
+- [SS-Config](ss-config.md)
+- [MU Plugins](mu-plugins.md)
+- [Staging & Development](staging-dev.md)
+- [Email](email.md)
+- [Backups](backups.md)
+- [Headless](headless.md)
