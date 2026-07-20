@@ -18,6 +18,7 @@ SlickStack is a free LEMP stack automation script written in Bash designed to en
 | [Monitoring](docs/monitoring.md) | Covers interactive resource checks, stack overview limits, service status, timestamps, and the automatic PHP-FPM, Nginx, and local MySQL recovery listeners in `02-cron-often`. |
 | [Logging](docs/logging.md) | Covers SlickStack and systemd log locations, service-specific behavior, WordPress debug logs, permissions, destructive clearing, retention limits, redaction, and troubleshooting. |
 | [Backups](docs/backups.md) | Covers local database and file dumps, backup schedules, production restores, Rclone and Rsync transfers, retention limits, credentials, and recovery verification. |
+| [Migrations](docs/migrations.md) | Covers SlickStack and third-party WordPress migrations, dump and import scripts, secure transfer, domain changes, DNS cutover, verification, rollback, and current limitations. |
 | [Permissions](docs/permissions.md) | Documents ownership and file modes across SlickStack, WordPress permission zones, SFTP and `www-data` responsibilities, scheduled resets, protected credentials, and troubleshooting. |
 | [Ubuntu](docs/ubuntu.md) | Documents supported Ubuntu LTS releases, managed users, SSH and SFTP access, sudoers, utilities, sysctl tuning, swap, cron, package updates, reinstallation, and reboots. |
 | [Nginx](docs/nginx.md) | Describes SlickStack-managed Nginx configuration, approved optional include files, supported customization boundaries, and safe reload behavior. |
