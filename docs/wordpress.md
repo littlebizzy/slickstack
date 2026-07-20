@@ -17,6 +17,7 @@ The standard design uses one production WordPress site per server, with optional
 - [Database settings](#database-settings)
 - [WordPress settings in ss-config](#wordpress-settings-in-ss-config)
 - [Updates and file modifications](#updates-and-file-modifications)
+- [Media and uploads](#media-and-uploads)
 - [WP-Cron](#wp-cron)
 - [WP-CLI](#wp-cli)
 - [Staging behavior](#staging-behavior)
@@ -223,6 +224,36 @@ Minor WordPress Core releases can update automatically. Plugin and theme install
 The WordPress editor remains available unless `WP_DISALLOW_FILE_EDIT` is enabled. Disabling the editor is generally safer on production sites, but SlickStack leaves the choice configurable.
 
 The managed WordPress package installer is separate from WordPress’s own updater. Running it deliberately refreshes Core files and should be treated as a server-management operation rather than a normal dashboard update.
+
+## Media and uploads
+
+Production WordPress media is stored normally under:
+
+```text
+/var/www/html/wp-content/uploads/
+```
+
+WordPress normally organizes uploaded files into year and month subdirectories unless that application setting is changed. Development uses its own uploads directory under `/var/www/html/dev/wp-content/uploads/`.
+
+The managed PHP-FPM configuration currently sets:
+
+```text
+upload_max_filesize = 512M
+post_max_size = 512M
+max_file_uploads = 100
+```
+
+These are PHP request limits, not guarantees that every 512 MB upload will succeed. WordPress, Nginx, Cloudflare, plugins, available memory, execution time, and the client connection can impose additional limits. Changes to generated PHP configuration may be replaced by future SlickStack configuration installs.
+
+The default SlickStack MU plugin set includes `disable-image-compression`. It sets WordPress JPEG quality to `100` during image upload and editing. This avoids the normal lossy JPEG quality reduction, but it does not disable image resizing, thumbnail creation, metadata generation, or every optimization performed by WordPress, a theme, another plugin, or an external service.
+
+Staging does not keep an independent uploads tree. Its media requests use the production uploads directory, so uploads, deletions, filename changes, and destructive media tools used through staging can affect production files. Development maintains its own uploads directory, although a production-to-development sync can copy eligible production uploads into it. See [Staging & Development](staging-dev.md) for the full shared-upload warning and synchronization behavior.
+
+Uploads are writable application data. SlickStack normally keeps writable `wp-content` directories owned for the web process, with directories generally using mode `0775` and files using `0664`. Run `sudo bash /var/www/ss-perms` to restore the managed permissions policy instead of applying broad manual ownership or `0777` permissions.
+
+A database dump alone does not preserve media files. File backups and migrations must include the uploads tree, and restores should keep the database attachment records and corresponding files from a compatible recovery point. Because staging shares production uploads, a production file backup also protects the files served by staging; development uploads require their own file coverage when they contain unique media.
+
+SlickStack does not configure or manage object storage, CDN media libraries, or WordPress media-offloading plugins. When uploads are moved to Amazon S3, Cloudflare R2, Backblaze B2, or another external service, credentials, synchronization, URL rewriting, lifecycle rules, backups, restores, and migration behavior remain the responsibility of the selected plugin and storage provider.
 
 ## WP-Cron
 
