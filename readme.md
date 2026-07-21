@@ -51,6 +51,8 @@ Use these guides for detailed setup, configuration, maintenance, troubleshooting
 | Document | Description |
 | :------------- | :---------- |
 | [Architecture](docs/architecture.md) | Maps SlickStack's request flow, control plane, service boundaries, filesystem layout, environments, cache layers, generated configuration, external responsibilities, and deliberate non-goals. |
+| [Scope](docs/scope.md) | Defines SlickStack's intended users, suitable workloads, managed boundaries, external responsibilities, design principles, and deliberate non-goals. |
+| [Roadmap](docs/roadmap.md) | Describes SlickStack's current priorities, likely next directions, later possibilities, version-support goals, and explicitly rejected directions. |
 | [Installation](docs/installation.md) | Covers server requirements, first-run setup, preflight checks, the full installer sequence, production reinstallation effects, backups, verification, recovery, and managed-file boundaries. |
 | [SS-Config](docs/ss-config.md) | Documents SlickStack's central configuration file, secure editing, build compatibility, schema migration, automatic tuning, pilot files, supported boundaries, rollback, and troubleshooting. |
 | [Commands](docs/commands.md) | Provides a curated reference for the `ss` Bash aliases, direct script equivalents, narrow versus compound operations, destructive commands, and known legacy or broken shortcuts. |
