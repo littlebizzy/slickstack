@@ -89,6 +89,14 @@ The same guest credentials are used for both protected subdomains.
 
 Use unique credentials and do not reuse an administrator, SFTP, database, or Cloudflare password. Anyone with access to a protected environment may still see copied production content.
 
+When `ADMINER_PUBLIC="true"`, the staging and development Nginx server blocks expose Adminer at the predictable path:
+
+```text
+/adminer
+```
+
+The randomized production `ADMINER_URL` does not protect these test-environment routes. Keep staging and development protected, assume the path can be discovered, and disable Adminer when it is not actively required. See [Adminer](adminer.md) for the complete access and disabling behavior.
+
 ## Environment safeguards
 
 SlickStack automatically installs two additional MU plugins in both staging and development:
@@ -419,3 +427,4 @@ SlickStack's environment tools are designed for a simple single-server workflow.
 ## Related guides
 
 - [WooCommerce](woocommerce.md)
+- [Adminer](adminer.md)
