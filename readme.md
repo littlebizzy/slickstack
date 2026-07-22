@@ -94,7 +94,7 @@ The table below shows the main software used by SlickStack, which versions it cu
 
 | Module | Version | What SlickStack manages |
 | :------------- | :----------: | :---------- |
-| **[SlickStack](docs/architecture.md)** | `JUL2026C` | Bash control plane under `/var/www`, `ss-config`, installers, aliases, 14 fixed cron wrappers, timestamps, backups, synchronization, permissions, cache purges, service recovery, and full-stack reconciliation. |
+| **[SlickStack](docs/architecture.md)** | `JUL2026D` | Bash control plane under `/var/www`, `ss-config`, installers, aliases, 14 fixed cron wrappers, timestamps, backups, synchronization, permissions, cache purges, service recovery, and full-stack reconciliation. |
 | **[Ubuntu LTS](docs/ubuntu.md)** | 18.04-24.04 | Ubuntu 24.04 is recommended for new servers; Ubuntu 22.04 remains supported, while 20.04 and 18.04 are legacy releases that require Ubuntu Pro or ESM for continued package maintenance. SlickStack manages package and kernel upgrades, required utilities, users, SSH, SFTP, sudoers, sysctl, swap, shell configuration, cron, and permissions. |
 | **[Nginx](docs/nginx.md)** | 1.24.x | `nginx.conf`, HTTPS redirects, production, staging, and development server blocks, WordPress routing, static-file handling, FastCGI cache, security headers, rate and connection limits, Cloudflare includes, and maintenance or error responses. |
 | **[OpenSSL](docs/ssl.md)** | 3.0.x | Default self-signed origin certificate, private key, Diffie-Hellman parameters, stable certificate paths, permissions, and Nginx activation. |
