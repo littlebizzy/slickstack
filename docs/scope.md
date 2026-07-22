@@ -167,4 +167,5 @@ SlickStack occupies the middle ground: more control than hosted platforms, less 
 - [Backups](backups.md)
 - [Monitoring](monitoring.md)
 - [WordPress](wordpress.md)
+- [WooCommerce](woocommerce.md)
 - [Headless](headless.md)
