@@ -525,5 +525,6 @@ Multiple independent production domains, arbitrary WordPress directory layouts, 
 - [MU Plugins](mu-plugins.md)
 - [Staging & Development](staging-dev.md)
 - [Email](email.md)
+- [WooCommerce](woocommerce.md)
 - [Backups](backups.md)
 - [Headless](headless.md)
