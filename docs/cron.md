@@ -170,6 +170,8 @@ WP-CLI errors are appended to:
 /var/www/logs/wp-cli.log
 ```
 
+WooCommerce and many extensions use WP-Cron or Action Scheduler for email, webhooks, renewals, inventory synchronization, and other background work. SlickStack runs due WordPress events, but it does not separately monitor Action Scheduler queue size, failed actions, or application-specific completion. See [WooCommerce](woocommerce.md) for the relevant queue checks and staging safeguards.
+
 See [WordPress](wordpress.md) for the broader WP-Cron behavior.
 
 ## Overlap protection
@@ -384,6 +386,6 @@ The standard SlickStack Cron design assumes:
 - one matching custom file per interval
 - `flock` protection for each standard wrapper
 - silent routine output
-- managed self-healing of standard wrapper files
+- managed self-healing
 
 Arbitrary user crontabs, a web-based scheduler, per-task time-of-day settings, second-level schedules, distributed job queues, background workers, dependency graphs, centralized logs, failure notifications, and multi-server orchestration are outside the standard SlickStack Cron system.
