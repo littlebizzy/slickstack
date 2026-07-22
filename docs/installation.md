@@ -38,7 +38,9 @@ The current installer accepts these Ubuntu LTS releases:
 24.04
 ```
 
-New installations should normally use Ubuntu 24.04 LTS, which is the current module baseline.
+Ubuntu 26.04 is not yet supported by the current installer or module templates. Do not run the bootstrap installer on Ubuntu 26.04 until version-specific support has been added and tested.
+
+New installations should normally use Ubuntu 24.04 LTS, which is the current module baseline. Ubuntu 20.04 and 18.04 are legacy choices that require Ubuntu Pro or ESM for continued Ubuntu package maintenance.
 
 SlickStack expects:
 
