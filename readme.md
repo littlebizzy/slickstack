@@ -20,9 +20,11 @@ Our sponsors: [alexbohariuc](https://github.com/alexbohariuc), [backamblock](htt
 
 ## Installation
 
-Because it’s written purely in Bash (Unix shell), SlickStack has no third-party provisioning dependencies and works on Ubuntu LTS machines. Unlike heavier provisioning tools like EasyEngine or Ansible, it does not require external runtimes such as Python or Docker, meaning a lighter and simpler approach to WordPress servers.
+Because it’s written purely in Bash (Unix shell), SlickStack has no third-party provisioning dependencies and works on supported Ubuntu LTS releases. Unlike heavier provisioning tools like EasyEngine or Ansible, it does not require external runtimes such as Python or Docker, meaning a lighter and simpler approach to WordPress servers.
 
-The following installation steps assume that you've already spun up a [KVM cloud server](https://slickstack.io/hosting) on Ubuntu LTS, with at least 1GB+ RAM, and that you are logged in via SSH as `root`:
+The current installer supports Ubuntu 18.04 through 24.04. Ubuntu 26.04 is not yet supported. New installations should normally use Ubuntu 24.04; Ubuntu 20.04 and 18.04 are legacy choices that require Ubuntu Pro or ESM for continued Ubuntu package maintenance.
+
+The following installation steps assume that you've already spun up a [KVM cloud server](https://slickstack.io/hosting) on a supported Ubuntu LTS release, with at least 1GB+ RAM, and that you are logged in via SSH as `root`:
 
 ```
 cd /tmp/ && wget -O ss slick.fyi/ss && bash ss
@@ -93,12 +95,12 @@ The table below shows the main software used by SlickStack, which versions it cu
 | Module | Version | What SlickStack manages |
 | :------------- | :----------: | :---------- |
 | **[SlickStack](docs/architecture.md)** | `JUL2026C` | Bash control plane under `/var/www`, `ss-config`, installers, aliases, 14 fixed cron wrappers, timestamps, backups, synchronization, permissions, cache purges, service recovery, and full-stack reconciliation. |
-| **[Ubuntu LTS](docs/ubuntu.md)** | 18.04-24.04 | Package and kernel upgrades, required utilities, managed users and groups, SSH and jailed SFTP, sudoers, sysctl tuning, swap, shell configuration, root cron, and system permissions. |
+| **[Ubuntu LTS](docs/ubuntu.md)** | 18.04-24.04 | Ubuntu 24.04 is recommended for new servers; Ubuntu 22.04 remains supported, while 20.04 and 18.04 are legacy releases that require Ubuntu Pro or ESM for continued package maintenance. SlickStack manages package and kernel upgrades, required utilities, users, SSH, SFTP, sudoers, sysctl, swap, shell configuration, cron, and permissions. |
 | **[Nginx](docs/nginx.md)** | 1.24.x | `nginx.conf`, HTTPS redirects, production, staging, and development server blocks, WordPress routing, static-file handling, FastCGI cache, security headers, rate and connection limits, Cloudflare includes, and maintenance or error responses. |
 | **[OpenSSL](docs/ssl.md)** | 3.0.x | Default self-signed origin certificate, private key, Diffie-Hellman parameters, stable certificate paths, permissions, and Nginx activation. |
 | **[Certbot](docs/ssl.md)** | 2.9.x | Optional Let's Encrypt issuance and renewal, HTTP validation for normal sites, Cloudflare DNS validation for wildcard certificates, certificate links, permissions, and Nginx activation. |
 | **[Cloudflare](docs/cloudflare.md)** | External | Origin-side DNS and proxy guidance, visitor-IP restoration, IP range refreshes, Authenticated Origin Pulls, optional origin restrictions, cache boundaries, and wildcard-certificate credentials; SlickStack does not manage the Cloudflare account itself. |
-| **[PHP-FPM](docs/php-fpm.md)** | 7.2-8.3 | PHP packages and extensions, version selection, `php.ini`, `php-fpm.conf`, the shared `www` pool, OPcache, RAM-based worker tuning, logging, restarts, and service recovery. |
+| **[PHP-FPM](docs/php-fpm.md)** | 7.2-8.3 | PHP 8.3 is recommended for new servers. PHP 8.1, 7.4, and 7.2 are retained for older accepted Ubuntu releases but are no longer supported by the PHP project. SlickStack manages packages, extensions, `php.ini`, `php-fpm.conf`, the shared `www` pool, OPcache, RAM-based tuning, logging, restarts, and service recovery. |
 | **[MySQL](docs/mysql.md)** | 5.7-8.0 | Local or remote mode, package and service setup, `my.cnf`, InnoDB and RAM-based tuning, WordPress users and databases, dumps, imports, optimization, restarts, and local service recovery. |
 | **[Memcached](docs/memcached.md)** | 1.6.x | Loopback-only service configuration, memory allocation, the production WordPress `object-cache.php` drop-in, cache purges, restarts, and permissions. |
 | **[WordPress](docs/wordpress.md)** | 7.0 | Core installation and refreshes, generated `wp-config.php`, selected constants, MU plugins, WP-Cron execution, permissions, maintenance mode, Multisite handling, and staging or development synchronization. |
