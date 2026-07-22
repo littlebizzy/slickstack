@@ -32,14 +32,16 @@ Because these settings affect server access and every installed service, review 
 
 The current installer accepts these Ubuntu LTS versions:
 
-```text
-18.04
-20.04
-22.04
-24.04
-```
+| Ubuntu | SlickStack status |
+| :-- | :-- |
+| 24.04 | Recommended for new servers and the current module baseline |
+| 22.04 | Supported existing release |
+| 20.04 | Legacy; Ubuntu Pro or ESM is required for continued Ubuntu package maintenance |
+| 18.04 | Legacy; Ubuntu Pro or ESM is required for continued Ubuntu package maintenance |
 
-The active SlickStack module baseline and README target Ubuntu 24.04 LTS. New servers should normally use 24.04 rather than starting with an older accepted release.
+Ubuntu 26.04 is not yet supported by the current installer or module templates. Do not start a SlickStack installation on 26.04 until version-specific support has been added and tested.
+
+An accepted release is not necessarily an equivalent new-install choice. New servers should normally use Ubuntu 24.04. Older accepted releases remain available for existing servers and deliberate migrations, but their application versions and maintenance lifecycle differ.
 
 SlickStack requires a normal physical or virtual machine. Containerized environments such as Docker, LXC, OpenVZ, Podman, and systemd-nspawn are rejected by the installer.
 
