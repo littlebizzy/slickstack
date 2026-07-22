@@ -306,7 +306,7 @@ These controls reduce basic abuse and accidental overload. They are not a replac
 
 Aggressive limits can also block legitimate traffic. Verify checkout, login, API, webhook, import, search, and administrative workflows after changing rate-limit settings.
 
-See [Nginx](nginx.md) and [Caching](caching.md).
+See [Nginx](nginx.md), [Caching](caching.md), [WooCommerce](woocommerce.md), and [Headless WordPress](headless.md).
 
 ## Credentials and `ss-config`
 
@@ -430,7 +430,7 @@ Before installing an extension, review:
 
 SlickStack's plugin blacklist and MU plugins are additional controls, not guarantees that every installed extension is safe.
 
-See [WordPress](wordpress.md) and [MU Plugins](mu-plugins.md).
+See [WordPress](wordpress.md), [MU Plugins](mu-plugins.md), and [WooCommerce](woocommerce.md).
 
 ## Adminer exposure
 
