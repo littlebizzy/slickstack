@@ -26,6 +26,7 @@ These environments are convenient, but their sync and push commands can overwrit
 - [Safe workflow](#safe-workflow)
 - [Troubleshooting](#troubleshooting)
 - [Managed boundaries](#managed-boundaries)
+- [Related guides](#related-guides)
 
 ## Environment layout
 
@@ -414,3 +415,7 @@ SlickStack owns the generated staging and development Nginx blocks, WordPress co
 Persistent customization should use supported `ss-config` values, approved WordPress custom files, version control, and external deployment tooling where appropriate.
 
 SlickStack's environment tools are designed for a simple single-server workflow. Database merging, selective table promotion, media offloading, content conflict resolution, zero-downtime deployment, and automated rollback remain outside their standard scope.
+
+## Related guides
+
+- [WooCommerce](woocommerce.md)
