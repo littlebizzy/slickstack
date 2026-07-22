@@ -21,14 +21,16 @@ PHP-FPM packages, extensions, configuration files, process limits, OPcache setti
 
 SlickStack selects the PHP version from the detected Ubuntu LTS version:
 
-| Ubuntu | PHP-FPM |
-| :------------- | :----------: |
-| 24.04 | 8.3 |
-| 22.04 | 8.1 |
-| 20.04 | 7.4 |
-| 18.04 | 7.2 |
+| Ubuntu | PHP-FPM | Support status |
+| :------------- | :----------: | :-- |
+| 24.04 | 8.3 | Recommended for new servers |
+| 22.04 | 8.1 | Supported Ubuntu release; PHP version is no longer supported upstream |
+| 20.04 | 7.4 | Legacy; Ubuntu Pro or ESM is required for continued Ubuntu package maintenance |
+| 18.04 | 7.2 | Legacy; Ubuntu Pro or ESM is required for continued Ubuntu package maintenance |
 
 The installer also sets the matching PHP CLI binary as the system default.
+
+An Ubuntu release remaining accepted by the SlickStack installer does not mean its bundled PHP branch still receives security fixes from the PHP project. New servers should normally use Ubuntu 24.04 and PHP 8.3. Older accepted combinations are retained for existing SlickStack servers and should be upgraded deliberately rather than treated as equivalent new-install choices.
 
 ## Configuration files
 
