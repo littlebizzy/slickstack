@@ -204,3 +204,4 @@ Features that mainly imitate competitors, follow infrastructure fashion, or incr
 - [Backups](backups.md)
 - [Migrations](migrations.md)
 - [WordPress](wordpress.md)
+- [WooCommerce](woocommerce.md)
