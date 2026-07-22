@@ -20,6 +20,7 @@ The local dump files are current working archives stored on the same server. The
 - [Retention and verification](#retention-and-verification)
 - [Recommended baseline](#recommended-baseline)
 - [Scope](#scope)
+- [Related guides](#related-guides)
 
 ## Backup layers
 
@@ -334,3 +335,11 @@ The standard SlickStack backup design assumes:
 - provider-managed retention for historical backups
 
 Continuous replication, immutable backup repositories, encrypted archive creation, incremental backups, snapshot orchestration, automated disaster recovery, multi-destination replication, and managed retention policies are outside the standard SlickStack workflow.
+
+## Related guides
+
+- [Migrations](migrations.md)
+- [WooCommerce](woocommerce.md)
+- [MySQL](mysql.md)
+- [Staging & Development](staging-dev.md)
+- [Security](security.md)
