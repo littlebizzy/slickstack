@@ -59,7 +59,7 @@ ADMINER_PUBLIC="true"
 ADMINER_URL="long-random-string"
 ```
 
-The current defaults enable Adminer and generate a randomized production URL during initial setup.
+The current defaults enable Adminer and generate a randomized URL during initial setup.
 
 `ADMINER_URL` should be long, unique, and difficult to guess. It is part of the public URL and should not contain spaces, slashes, or characters that can interfere with an Nginx location path.
 
@@ -104,28 +104,17 @@ That include is generated from the SlickStack Adminer Nginx template and contain
 
 ## Staging and development URLs
 
-The current staging and development Nginx templates do not use `ADMINER_URL`. When those environments are enabled and `adminer.php` is installed, they expose Adminer at the predictable path:
+The staging and development server blocks load the same optional Adminer include as production. When `ADMINER_PUBLIC="true"`, every enabled environment therefore uses the same configured `ADMINER_URL` path:
 
 ```text
-/adminer
+https://SITE_FULL_DOMAIN/ADMINER_URL/
+https://STAGING_HOST/ADMINER_URL/
+https://DEVELOPMENT_HOST/ADMINER_URL/
 ```
 
-This means the active paths can include:
+The path is shared rather than generated separately for each environment. Keep it private, protect staging and development when they are publicly reachable, and disable Adminer when it is not actively required.
 
-```text
-https://STAGING_HOST/adminer
-https://DEVELOPMENT_HOST/adminer
-```
-
-This is an important current limitation. The randomized URL protects only the production include.
-
-When staging or development is enabled, either:
-
-- keep those environments protected from public access
-- disable Adminer when it is not actively required
-- assume that `/adminer` can be discovered on those hosts
-
-Setting `ADMINER_PUBLIC="false"` removes the managed Adminer PHP file and production include during the related installers, so the staging and development paths should return an error because their shared target file no longer exists.
+Setting `ADMINER_PUBLIC="false"` removes both the managed Adminer PHP file and the shared Nginx include during the related installers, disabling Adminer routing across production, staging, and development.
 
 ## Installation behavior
 
@@ -154,7 +143,7 @@ The Nginx configuration workflow:
 4. installs `/var/www/sites/includes/adminer.conf`
 5. forcefully restarts Nginx
 
-When `ADMINER_PUBLIC="false"`, it removes the production include instead.
+When `ADMINER_PUBLIC="false"`, it removes the shared include instead.
 
 Run it directly with:
 
@@ -166,7 +155,7 @@ Older standalone Adminer installer scripts remain under the repository archive, 
 
 ## Nginx and PHP-FPM routing
 
-The production Adminer include uses a dedicated Nginx location that:
+The shared Adminer include uses a dedicated Nginx location that:
 
 - aliases requests to `/var/www/meta/adminer.php`
 - routes PHP execution to `127.0.0.1:9000`
@@ -177,7 +166,7 @@ The production Adminer include uses a dedicated Nginx location that:
 
 Adminer bypasses the normal WordPress PHP-entry-point allowlist because it has its own explicit location.
 
-The staging and development server blocks contain similar direct Adminer locations using `/adminer`.
+The production, staging, and development server blocks all load the same optional Adminer include.
 
 ## Rate limiting
 
@@ -336,7 +325,7 @@ tail -n 100 /var/www/logs/php-error.log
 grep adminer /var/www/logs/nginx-access.log | tail -n 50
 ```
 
-The randomized production path may not literally contain the word `adminer`, so search the access log for the configured `ADMINER_URL` when needed.
+The randomized path may not literally contain the word `adminer`, so search the access log for the configured `ADMINER_URL` when needed.
 
 ## Disabling Adminer
 
@@ -397,7 +386,7 @@ For normal SlickStack deployments:
 - use `DB_USER` instead of `admin` when full privileges are unnecessary
 - disable Adminer when no database work is planned
 - protect enabled staging and development hosts
-- remember that those hosts currently expose the predictable `/adminer` path
+- treat the shared Adminer URL as sensitive across every enabled host
 - avoid saving database passwords in shared browsers
 - verify the selected database before destructive actions
 - retain a current database dump before major changes
@@ -406,7 +395,7 @@ Cloudflare, Iptables, Nginx rate limiting, and a randomized URL reduce exposure 
 
 ## Troubleshooting
 
-### Production URL returns 404
+### Adminer URL returns 404
 
 Confirm:
 
@@ -417,18 +406,14 @@ ls -l /var/www/meta/adminer.php
 ls -l /var/www/sites/includes/adminer.conf
 ```
 
-Use the exact configured URL with a trailing slash, then rerun both installers when files are missing.
+Use the exact configured `ADMINER_URL` with a trailing slash on production, staging, or development, then rerun both installers when files are missing.
 
-### Staging or development `/adminer` returns 404
-
-This is expected when:
+A 404 is expected when:
 
 - `ADMINER_PUBLIC="false"`
 - `/var/www/meta/adminer.php` is missing
-- the environment itself is disabled
+- the requested environment is disabled
 - PHP or Nginx configuration is incomplete
-
-The staging and development templates use `/adminer`, not the production random path.
 
 ### The page returns 502 or 504
 
@@ -477,8 +462,7 @@ The standard SlickStack Adminer design assumes:
 
 - one managed Adminer PHP file
 - browser access through SlickStack Nginx and PHP-FPM
-- a randomized production path
-- predictable `/adminer` paths on enabled staging and development hosts
+- one randomized path shared across production, staging, and development
 - manual database authentication
 - local MySQL access through `admin` or `DB_USER`
 - optional remote MySQL access
