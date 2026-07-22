@@ -9,6 +9,7 @@ SlickStack manages the WordPress origin and LEMP stack. WooCommerce remains resp
 - [Recommended baseline](#recommended-baseline)
 - [Caching and customer sessions](#caching-and-customer-sessions)
 - [WP-Cron and Action Scheduler](#wp-cron-and-action-scheduler)
+- [High-Performance Order Storage](#high-performance-order-storage)
 - [Staging and development](#staging-and-development)
 - [Email](#email)
 - [Payments and webhooks](#payments-and-webhooks)
@@ -100,6 +101,25 @@ sudo -u www-data wp --path=/var/www/html action-scheduler action list --status=f
 The Action Scheduler commands are available only when the installed WooCommerce or plugin version provides them.
 
 Do not repeatedly run every pending action without first identifying why the queue grew. Large queues can reflect external API failures, payment problems, email transport failures, PHP timeouts, database pressure, or a broken plugin callback.
+
+## High-Performance Order Storage
+
+WooCommerce High-Performance Order Storage, commonly called HPOS, stores orders in dedicated WooCommerce order tables instead of relying only on the traditional WordPress posts and post-meta tables.
+
+HPOS is an application-level WooCommerce feature rather than a SlickStack server option. SlickStack installs and manages MySQL normally, while WooCommerce controls whether HPOS is enabled, whether compatibility synchronization is active, and which order datastore is authoritative.
+
+Before enabling or changing HPOS on an established store:
+
+- confirm that every payment, subscription, fulfillment, reporting, export, accounting, and order-management extension declares HPOS compatibility
+- create and verify a fresh database backup
+- review the WooCommerce HPOS synchronization status
+- allow any required table synchronization to finish before changing the authoritative datastore
+- test order creation, payment callbacks, refunds, administration, reports, webhooks, and scheduled actions
+- avoid custom SQL or integrations that assume every order remains in `wp_posts` and `wp_postmeta`
+
+A normal SlickStack database dump includes the dedicated WooCommerce order tables because it exports the complete configured WordPress database. Restoration still requires a compatible WooCommerce version and extension set, not merely the presence of the tables.
+
+Staging copies can contain HPOS order data, compatibility tables, live credentials, and background tasks. Treat HPOS migrations and synchronization changes as production database operations rather than harmless WooCommerce settings.
 
 ## Staging and development
 
