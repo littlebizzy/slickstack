@@ -213,7 +213,7 @@ Some lower-level PHP-FPM and OPcache options have already been removed from the 
 - maximum requests
 - request termination timeout
 
-The current installer uses RAM thresholds at approximately 1.2 GB, 2.4 GB, and 4.8 GB, with the highest tier applied above approximately 4.8 GB. These generated values are applied while building PHP-FPM configuration and are not normal persistent choices in `ss-config`.
+The installer selects one of four conservative PHP-FPM profiles based on detected physical RAM. These generated values are applied during installation and are not normal persistent choices in `ss-config`.
 
 Some surviving values can also be overridden by automatic tuning. For example, `WWW_PM_MODE` remains visible in the current sample, but the RAM autotuner currently assigns its own process-manager mode during installation.
 
