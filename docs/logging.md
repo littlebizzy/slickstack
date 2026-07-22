@@ -11,6 +11,7 @@ These sources are related, but they are not interchangeable. A service can write
 - [PHP and PHP-FPM logs](#php-and-php-fpm-logs)
 - [WordPress debug logs](#wordpress-debug-logs)
 - [WP-CLI log](#wp-cli-log)
+- [WooCommerce logs](#woocommerce-logs)
 - [Memcached log](#memcached-log)
 - [MySQL logging](#mysql-logging)
 - [Fail2ban log](#fail2ban-log)
@@ -250,6 +251,24 @@ sudo -u www-data wp --path=/var/www/html cron event list
 ```
 
 For Multisite, inspect each affected site URL rather than assuming one successful network command proves every site is healthy.
+
+## WooCommerce logs
+
+WooCommerce application logs are separate from the SlickStack service logs above. Review them in WordPress under:
+
+```text
+WooCommerce → Status → Logs
+```
+
+Depending on the active WooCommerce version and logging configuration, logs may be stored as files—normally beneath `wp-content/uploads/wc-logs/`—or in WooCommerce database tables. The WooCommerce interface is the best starting point because it identifies the source, timestamp, severity, and active storage handler.
+
+These logs can include payment-gateway events, webhook processing, Action Scheduler tasks, imports, exports, subscriptions, extension diagnostics, and WooCommerce fatal errors. Individual gateways and providers may also maintain separate debug switches, dashboards, or event histories.
+
+Treat WooCommerce logs as sensitive. They can contain order identifiers, customer information, callback URLs, provider responses, request data, and partial tokens or credentials. Avoid leaving verbose debug logging enabled indefinitely, review retention and severity settings, and redact logs before sharing them.
+
+SlickStack staging normally shares the production uploads directory. File-based WooCommerce logs beneath uploads can therefore be shared between production and staging. Use database logging or another deliberately isolated strategy when environment-specific log separation is required.
+
+See [WooCommerce](woocommerce.md) for payment, webhook, Action Scheduler, staging, and troubleshooting guidance.
 
 ## Memcached log
 
