@@ -89,13 +89,7 @@ The same guest credentials are used for both protected subdomains.
 
 Use unique credentials and do not reuse an administrator, SFTP, database, or Cloudflare password. Anyone with access to a protected environment may still see copied production content.
 
-When `ADMINER_PUBLIC="true"`, the staging and development Nginx server blocks expose Adminer at the predictable path:
-
-```text
-/adminer
-```
-
-The randomized production `ADMINER_URL` does not protect these test-environment routes. Keep staging and development protected, assume the path can be discovered, and disable Adminer when it is not actively required. See [Adminer](adminer.md) for the complete access and disabling behavior.
+When `ADMINER_PUBLIC="true"`, production, staging, and development all use the same randomized `ADMINER_URL` path through the shared Nginx include. Keep that URL private, protect publicly reachable test environments, and disable Adminer when it is not actively required. See [Adminer](adminer.md) for the complete access and disabling behavior.
 
 ## Environment safeguards
 
