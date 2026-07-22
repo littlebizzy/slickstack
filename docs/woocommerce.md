@@ -94,7 +94,7 @@ Useful WP-CLI checks may include:
 ```bash
 sudo -u www-data wp --path=/var/www/html cron event list
 sudo -u www-data wp --path=/var/www/html action-scheduler status
-sudo -u www-data wp --path=/var/www/html action-scheduler list --status=failed
+sudo -u www-data wp --path=/var/www/html action-scheduler action list --status=failed
 ```
 
 The Action Scheduler commands are available only when the installed WooCommerce or plugin version provides them.
