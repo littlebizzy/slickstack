@@ -76,11 +76,12 @@ Use these guides for detailed setup, configuration, maintenance, troubleshooting
 | [Fail2ban](docs/fail2ban.md) | Documents the current SSH and Nginx jails, thresholds, bans, troubleshooting, and planned removal in favor of a simpler Iptables-only approach. |
 | [Security](docs/security.md) | Connects SlickStack's SSH, firewall, Cloudflare, TLS, permissions, WordPress, credentials, monitoring, backup, and incident-recovery security boundaries. |
 | [WordPress](docs/wordpress.md) | Covers managed WordPress Core installation, generated configuration, WP-Cron, WP-CLI, permissions, updates, Multisite, and staging and development synchronization. |
+| [WooCommerce](docs/woocommerce.md) | Covers cache bypasses, customer sessions, WP-Cron and Action Scheduler, email, payments, webhooks, staging safety, backups, headless APIs, and troubleshooting. |
 | [Email](docs/email.md) | Covers WordPress delivery, SMTP and API providers, SPF, DKIM, DMARC, staging safeguards, WooCommerce queues, mailboxes, testing, troubleshooting, and external responsibilities. |
 | [MU Plugins](docs/mu-plugins.md) | Explains which WordPress MU plugins SlickStack installs, how vendored ZIP mirrors are managed, and how the installer updates plugin files. |
 | [Adminer](docs/adminer.md) | Covers Adminer installation, randomized and environment-specific URLs, database credentials, Nginx and PHP-FPM routing, rate limits, disabling access, and security limitations. |
 | [Staging & Dev](docs/staging-dev.md) | Covers environment setup, guest protection, production-to-staging and development syncs, shared uploads, overwrite risks, production push commands, and recovery boundaries. |
-| [Headless](docs/headless.md) | Covers using SlickStack as a WordPress backend for a remote frontend, including APIs, authentication, SEO, media, caching, redirects, and previews. |
+| [Headless](docs/headless.md) | Covers using SlickStack as a frontend-neutral WordPress or WooCommerce origin, including API patterns, authentication, SEO, media, caching, redirects, previews, and revalidation. |
 | [Workflows](docs/workflows.md) | Explains the GitHub Actions used for repository maintenance, SourceForge mirroring, and manual updates of approved WordPress MU plugin ZIP files. |
 
 ## Modules
