@@ -346,6 +346,7 @@ A future SlickStack integration could document or simplify selected provider wor
 ## Related guides
 
 - [WordPress](wordpress.md)
+- [WooCommerce](woocommerce.md)
 - [Staging & Development](staging-dev.md)
 - [MU Plugins](mu-plugins.md)
 - [Logging](logging.md)
