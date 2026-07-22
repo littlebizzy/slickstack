@@ -19,6 +19,7 @@ Purging one layer does not automatically clear the others unless a broader Slick
 - [Troubleshooting](#troubleshooting)
 - [Managed-file boundaries](#managed-file-boundaries)
 - [Scope](#scope)
+- [Related guides](#related-guides)
 
 ## Cache layers
 
@@ -483,3 +484,7 @@ The standard SlickStack caching model assumes:
 - Cloudflare and browser caching managed separately
 
 Redis, Varnish, LiteSpeed Cache, remote Memcached, cache clustering, per-site Memcached instances, CDN cache APIs, tag-based invalidation, cache warming, fragment caching, and centralized cache observability are outside the standard managed implementation.
+
+## Related guides
+
+- [WooCommerce](woocommerce.md)
