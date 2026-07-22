@@ -90,10 +90,10 @@ During `ss-install-php-config`, SlickStack detects total physical RAM and applie
 
 | Server RAM | PHP memory | OPcache memory | FPM process cap | Pool children | Max requests | Request timeout |
 | :------------- | :----------: | :----------: | :----------: | :----------: | :----------: | :----------: |
-| Up to ~1.2 GB | 256M | 128M | 8 | 6 | 250 | 60s |
-| Up to ~2.4 GB | 384M | 192M | 12 | 10 | 350 | 120s |
-| Up to ~4.8 GB | 512M | 256M | 24 | 20 | 500 | 300s |
-| More than ~4.8 GB | 768M | 384M | 48 | 40 | 750 | 300s |
+| About 1 GB | 256M | 128M | 8 | 6 | 250 | 60s |
+| About 2 GB | 384M | 192M | 12 | 10 | 350 | 120s |
+| About 4 GB | 512M | 256M | 24 | 20 | 500 | 300s |
+| Larger servers | 768M | 384M | 48 | 40 | 750 | 300s |
 
 The current autotuner uses `ondemand` process management for every RAM tier, with a 10-second idle timeout. Worker and memory values are regenerated during installation, so manually editing those generated values is not persistent.
 
