@@ -294,6 +294,8 @@ The current `02-cron-often` recovery section does not automatically health-check
 - Adminer
 - external DNS or network services
 
+It also does not inspect WooCommerce Action Scheduler queue size, pending or failed actions, delayed orders, webhook completion, or other application-level background work. See [WooCommerce](woocommerce.md) for the relevant checks.
+
 A service can also fail in a way that leaves its systemd state active. External request monitoring remains necessary when availability matters.
 
 ## Recovery listeners versus monitoring
