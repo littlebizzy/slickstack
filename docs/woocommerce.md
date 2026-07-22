@@ -12,6 +12,7 @@ SlickStack manages the WordPress origin and LEMP stack. WooCommerce remains resp
 - [High-Performance Order Storage](#high-performance-order-storage)
 - [Staging and development](#staging-and-development)
 - [Email](#email)
+- [WooCommerce logs](#woocommerce-logs)
 - [Payments and webhooks](#payments-and-webhooks)
 - [Backups and migrations](#backups-and-migrations)
 - [Headless WooCommerce](#headless-woocommerce)
@@ -166,6 +167,33 @@ When troubleshooting, separate these stages:
 6. The destination delivered, rejected, deferred, quarantined, or classified it as spam.
 
 Provider activity logs are normally more useful than looking for a local mail queue because SlickStack does not install a standard production mail transfer agent.
+
+## WooCommerce logs
+
+WooCommerce application logs are separate from SlickStack's Nginx, PHP, WP-CLI, MySQL, and systemd logs. Review them in WordPress under:
+
+```text
+WooCommerce → Status → Logs
+```
+
+Depending on the active WooCommerce logging configuration and version, logs can be stored as files—typically beneath `wp-content/uploads/wc-logs/`—or in WooCommerce database tables. The WooCommerce interface is the safest starting point because it identifies the active source, severity, timestamp, and storage handler.
+
+WooCommerce logs can include information from:
+
+- payment gateways
+- webhooks and callback processing
+- Action Scheduler jobs
+- imports, exports, and background tasks
+- subscriptions and other extensions
+- fatal errors and application-specific diagnostics
+
+A gateway or extension may also keep its own logging switch, provider dashboard, or external event history. Enabling WooCommerce logging does not guarantee that every integration records the same events or level of detail.
+
+Treat these logs as sensitive. They can contain order identifiers, customer information, request data, callback URLs, provider responses, and partial credential or token details. Review retention and severity settings, avoid leaving verbose debug logging enabled indefinitely, and redact logs before sharing them.
+
+SlickStack staging normally shares the production uploads directory. When WooCommerce uses file-based logs beneath uploads, production and staging can therefore write into the same `wc-logs` tree. Use database logging or another deliberately isolated strategy when separate test-environment logs are required.
+
+See [Logging](logging.md) for the server-level logs that should be checked alongside WooCommerce application logs.
 
 ## Payments and webhooks
 
