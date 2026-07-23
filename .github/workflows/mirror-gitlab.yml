@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - master
-  workflow_dispatch:
+  workflow_dispatch:  # allow manual runs
 
 concurrency:
   group: mirror-gitlab-master
@@ -15,41 +15,46 @@ permissions:
 
 jobs:
   mirror:
-    if: github.ref == 'refs/heads/master'
+    if: github.ref == 'refs/heads/master'  # prevent other branches from mirroring
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout Code
         uses: actions/checkout@v6
         with:
-          fetch-depth: 0  # Perform a full clone instead of a shallow clone
+          fetch-depth: 0  # full history instead of a shallow clone
           persist-credentials: false
 
       - name: Setup SSH
         env:
+          # private key from GitHub Actions secrets
           GITLAB_SSH_KEY: ${{ secrets.GITLAB_SSH_KEY }}
         run: |
+          # require the private key
           if [[ -z "${GITLAB_SSH_KEY}" ]]; then
               echo "Missing GITLAB_SSH_KEY repository secret."
               exit 1
           fi
 
-          mkdir -p ~/.ssh
-          chmod 700 ~/.ssh
-          printf '%s\n' "${GITLAB_SSH_KEY}" > ~/.ssh/gitlab
-          chmod 600 ~/.ssh/gitlab
-          ssh-keyscan -H gitlab.com >> ~/.ssh/known_hosts
-          chmod 600 ~/.ssh/known_hosts
+          # create the SSH directory
+          mkdir -p "${HOME}/.ssh"
+          chmod 700 "${HOME}/.ssh"
+
+          # write and normalize the private key
+          printf '%s\n' "${GITLAB_SSH_KEY}" | tr -d '\r' > "${HOME}/.ssh/gitlab"
+          chmod 600 "${HOME}/.ssh/gitlab"
+
+          # add GitLab to known hosts
+          ssh-keyscan -H gitlab.com >> "${HOME}/.ssh/known_hosts"
 
       - name: Configure Git Remote
         run: |
-          echo "Checking Git remote..."
+          # add the GitLab mirror remote
           git remote add gitlab git@gitlab.com:littlebizzy/slickstack.git
-          git remote -v
 
       - name: Push to GitLab
         env:
-          GIT_SSH_COMMAND: ssh -i ~/.ssh/gitlab -o IdentitiesOnly=yes -o BatchMode=yes
+          GIT_SSH_COMMAND: ssh -i "${HOME}/.ssh/gitlab" -o IdentitiesOnly=yes -o BatchMode=yes -o StrictHostKeyChecking=yes
         run: |
-          echo "Pushing code to GitLab..."
+          # mirror GitHub master to GitLab
           git push gitlab +HEAD:refs/heads/master
