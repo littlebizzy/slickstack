@@ -1,0 +1,52 @@
+name: Mirror to GitLab
+
+on:
+  push:
+    branches:
+      - master
+
+concurrency:
+  group: mirror-gitlab-master
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  mirror:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Perform a full clone instead of a shallow clone
+
+      - name: Setup SSH
+        env:
+          GITLAB_SSH_KEY: ${{ secrets.GITLAB_SSH_KEY }}
+        run: |
+          if [[ -z "${GITLAB_SSH_KEY}" ]]; then
+              echo "Missing GITLAB_SSH_KEY repository secret."
+              exit 1
+          fi
+
+          mkdir -p ~/.ssh
+          chmod 700 ~/.ssh
+          printf '%s\n' "${GITLAB_SSH_KEY}" > ~/.ssh/gitlab
+          chmod 600 ~/.ssh/gitlab
+          ssh-keyscan -H gitlab.com >> ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/known_hosts
+
+      - name: Configure Git Remote
+        run: |
+          echo "Checking Git remote..."
+          git remote add gitlab git@gitlab.com:littlebizzy/slickstack.git
+          git remote -v
+
+      - name: Push to GitLab
+        env:
+          GIT_SSH_COMMAND: ssh -i ~/.ssh/gitlab -o IdentitiesOnly=yes -o BatchMode=yes
+        run: |
+          echo "Pushing code to GitLab..."
+          git push gitlab +HEAD:refs/heads/master
