@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - master
-  workflow_dispatch:
+  workflow_dispatch:  # allow manual runs
 
 concurrency:
   group: mirror-sourceforge-master
@@ -15,31 +15,46 @@ permissions:
 
 jobs:
   mirror:
-    if: github.ref == 'refs/heads/master'
+    if: github.ref == 'refs/heads/master'  # prevent other branches from mirroring
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout Code
         uses: actions/checkout@v6
         with:
-          fetch-depth: 0  # Perform a full clone instead of a shallow clone
+          fetch-depth: 0  # full history instead of a shallow clone
           persist-credentials: false
 
       - name: Setup SSH
+        env:
+          # private key from GitHub Actions secrets
+          SOURCEFORGE_SSH_KEY: ${{ secrets.SOURCEFORGE_SSH_KEY }}
         run: |
-          mkdir -p ~/.ssh
-          chmod 700 ~/.ssh
-          echo "${{ secrets.SOURCEFORGE_SSH_KEY }}" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan git.code.sf.net >> ~/.ssh/known_hosts
+          # require the private key
+          if [[ -z "${SOURCEFORGE_SSH_KEY}" ]]; then
+              echo "Missing SOURCEFORGE_SSH_KEY repository secret."
+              exit 1
+          fi
+
+          # create the SSH directory
+          mkdir -p "${HOME}/.ssh"
+          chmod 700 "${HOME}/.ssh"
+
+          # write and normalize the private key
+          printf '%s\n' "${SOURCEFORGE_SSH_KEY}" | tr -d '\r' > "${HOME}/.ssh/sourceforge"
+          chmod 600 "${HOME}/.ssh/sourceforge"
+
+          # add SourceForge to known hosts
+          ssh-keyscan -H git.code.sf.net >> "${HOME}/.ssh/known_hosts"
 
       - name: Configure Git Remote
         run: |
-          echo "Checking Git remote..."
+          # add the SourceForge mirror remote
           git remote add sourceforge ssh://jessuppi@git.code.sf.net/p/slickstack/code
-          git remote -v
 
       - name: Push to SourceForge
+        env:
+          GIT_SSH_COMMAND: ssh -i "${HOME}/.ssh/sourceforge" -o IdentitiesOnly=yes -o BatchMode=yes -o StrictHostKeyChecking=yes
         run: |
-          echo "Pushing code to SourceForge..."
-          git push sourceforge master --force
+          # mirror GitHub master to SourceForge
+          git push sourceforge +HEAD:refs/heads/master
