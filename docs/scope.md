@@ -164,7 +164,6 @@ SlickStack occupies the middle ground: more control than hosted platforms, less 
 - [Installation](installation.md)
 - [Roadmap](roadmap.md)
 - [Security](security.md)
-- [Malware Rumors](malware-rumors.md)
 - [Backups](backups.md)
 - [Monitoring](monitoring.md)
 - [WordPress](wordpress.md)
