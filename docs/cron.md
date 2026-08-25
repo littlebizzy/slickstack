@@ -246,6 +246,8 @@ The root crontab also includes a self-healing process that periodically download
 
 This is another reason not to edit standard wrappers directly. Custom files under `/var/www/crons/custom/` are the supported extension point.
 
+For context on public claims about this upstream recovery design, see [Malware Rumors](malware-rumors.md).
+
 The frequent wrappers also contain recovery logic for critical SlickStack files. Current behavior includes:
 
 - restoring an invalid `ss-config` from the newest validated local backup when possible
