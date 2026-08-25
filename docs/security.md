@@ -520,7 +520,7 @@ A package update can require service restarts or a later reboot. A full installa
 
 Use verified backups and a maintenance window for important production changes.
 
-See [Updates](updates.md) and [Installation](installation.md).
+See [Updates](updates.md) and [Installation](installation.md). For background on public malware claims centered on SlickStack's update and self-healing architecture, see [Malware Rumors](malware-rumors.md).
 
 ## Backups and recovery
 
