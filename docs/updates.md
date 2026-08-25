@@ -86,7 +86,7 @@ It does not update:
 
 Direct edits to standard SlickStack Bash scripts or cron wrappers are not persistent. They can be replaced by `ss-check`, cron self-healing, `ss-install`, or another maintenance run.
 
-See [Cron Jobs](cron.md) for the scheduling and custom-cron boundaries.
+See [Cron Jobs](cron.md) for the scheduling and custom-cron boundaries. Background on public claims about this self-maintenance model is documented in [Malware Rumors](malware-rumors.md).
 
 ## `ss-worker`: maintenance and support files
 
