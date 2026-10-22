@@ -393,6 +393,41 @@ if [[ "${SYSTEM_UBUNTU_VERSION}" == "24.04" ]] && dpkg -s nginx 2> /dev/null | g
     fi
 fi
 
+
+## PHP2Shell critical security hotfix (CVE-2026-109618 and CVE-2026-109619) ##
+PHP2SHELL_VERSION=""
+PHP2SHELL_FIXED=""
+
+if [[ "${SYSTEM_UBUNTU_VERSION}" == "24.04" ]]; then
+    PHP2SHELL_VERSION="8.3"
+    PHP2SHELL_FIXED="8.3.6-0ubuntu0.24.04.13"
+elif [[ "${SYSTEM_UBUNTU_VERSION}" == "22.04" ]]; then
+    PHP2SHELL_VERSION="8.1"
+    PHP2SHELL_FIXED="8.1.2-1ubuntu2.28"
+elif [[ "${SYSTEM_UBUNTU_VERSION}" == "20.04" ]]; then
+    PHP2SHELL_VERSION="7.4"
+    PHP2SHELL_FIXED="7.4.3-4ubuntu2.29+esm5"
+elif [[ "${SYSTEM_UBUNTU_VERSION}" == "18.04" ]]; then
+    PHP2SHELL_VERSION="7.2"
+    PHP2SHELL_FIXED="7.2.24-0ubuntu0.18.04.17+esm14"
+fi
+
+if [[ -n "${PHP2SHELL_FIXED}" ]]; then
+    PHP2SHELL_INSTALLED=$(dpkg-query -W -f='${Version}' "php${PHP2SHELL_VERSION}-fpm" 2> /dev/null)
+
+    if [[ -n "${PHP2SHELL_INSTALLED}" ]] && dpkg --compare-versions "${PHP2SHELL_INSTALLED}" lt "${PHP2SHELL_FIXED}"; then
+        apt-get update
+        apt-get install -y --no-remove --only-upgrade "php${PHP2SHELL_VERSION}-fpm" "php${PHP2SHELL_VERSION}-cli" "php${PHP2SHELL_VERSION}-common"
+
+        PHP2SHELL_INSTALLED=$(dpkg-query -W -f='${Version}' "php${PHP2SHELL_VERSION}-fpm" 2> /dev/null)
+
+        if dpkg --compare-versions "${PHP2SHELL_INSTALLED}" ge "${PHP2SHELL_FIXED}"; then
+            systemctl restart "php${PHP2SHELL_VERSION}-fpm"
+        fi
+    fi
+fi
+
+
 ####################################################################################################
 #### P. SS-Worker: Reset Permissions (SlickStack) ##################################################
 ####################################################################################################
