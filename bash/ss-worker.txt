@@ -383,13 +383,43 @@ fi
 ## cleanup temp file ##
 # ss_rm /tmp/git-updater.zip
 
-## Ubuntu 24.04 Nginx package regression hotfix ##
-## Ubuntu nginx 1.24.0-2ubuntu7.10 can segfault with external modules ##
-if [[ "${SYSTEM_UBUNTU_VERSION}" == "24.04" ]] && dpkg -s nginx 2> /dev/null | grep -q 'Version: 1.24.0-2ubuntu7.10'; then
-    apt-get update
-    apt-get install -y --only-upgrade nginx nginx-common nginx-extras
-    if ! dpkg -s nginx 2> /dev/null | grep -q 'Version: 1.24.0-2ubuntu7.10'; then
-        nginx -t && systemctl restart nginx
+
+## Nginx cumulative security hotfix ##
+## Ubuntu nginx 1.24.0-2ubuntu7.10 regression with external modules ##
+## CVE-2026-123007 and CVE-2026-123633 (HTTP/2) ##
+## CVE-2026-113425 and CVE-2026-123634 (memory corruption) ##
+## CVE-2026-118899 and CVE-2026-123640 (TLS) ##
+## CVE-2026-125283 (try_files and alias) ##
+## https://ubuntu.com/security/notices/USN-9159-1 ##
+## https://ubuntu.com/security/notices/USN-9182-1 ##
+
+NGINX_SECURITY_FIXED=""
+
+if [[ "${SYSTEM_UBUNTU_VERSION}" == "24.04" ]]; then
+    NGINX_SECURITY_FIXED="1.24.0-2ubuntu7.21"
+elif [[ "${SYSTEM_UBUNTU_VERSION}" == "22.04" ]]; then
+    NGINX_SECURITY_FIXED="1.18.0-6ubuntu14.24"
+elif [[ "${SYSTEM_UBUNTU_VERSION}" == "20.04" ]]; then
+    NGINX_SECURITY_FIXED="1.18.0-0ubuntu1.7+esm6"
+elif [[ "${SYSTEM_UBUNTU_VERSION}" == "18.04" ]]; then
+    NGINX_SECURITY_FIXED="1.14.0-0ubuntu1.11+esm7"
+fi
+
+if [[ -n "${NGINX_SECURITY_FIXED}" ]]; then
+    NGINX_SECURITY_INSTALLED=$(dpkg-query -W -f='${Version}' nginx-extras 2> /dev/null)
+
+    if [[ -n "${NGINX_SECURITY_INSTALLED}" ]] && dpkg --compare-versions "${NGINX_SECURITY_INSTALLED}" lt "${NGINX_SECURITY_FIXED}"; then
+        if ss_apt_update && ss_apt install --no-remove --only-upgrade nginx nginx-common nginx-extras libnginx-mod-stream; then
+            NGINX_SECURITY_INSTALLED=$(dpkg-query -W -f='${Version}' nginx-extras 2> /dev/null)
+
+            if [[ -n "${NGINX_SECURITY_INSTALLED}" ]] && dpkg --compare-versions "${NGINX_SECURITY_INSTALLED}" ge "${NGINX_SECURITY_FIXED}"; then
+                nginx -t && systemctl restart nginx
+            else
+                echo "Required Nginx security update unavailable" >&2
+            fi
+        else
+            echo "Nginx security update failed" >&2
+        fi
     fi
 fi
 
