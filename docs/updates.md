@@ -45,7 +45,7 @@ These aliases do not all perform the same sequence. Review the distinctions belo
 | Workflow | Primary purpose | Does not normally do |
 | :-- | :-- | :-- |
 | `ss-check` | Downloads and installs current SlickStack Bash scripts and cron wrappers | Migrate `ss-config`, upgrade Ubuntu packages, or reinstall LEMP configuration |
-| `ss-worker` | Performs recurring maintenance, backs up configuration and custom cron files, refreshes `ss-check`, and applies selected SlickStack support files | Upgrade Ubuntu packages or fully reinstall the stack |
+| `ss-worker` | Performs recurring maintenance, backs up configuration and custom cron files, refreshes `ss-check`, and applies selected SlickStack support files | Perform general Ubuntu package upgrades or fully reinstall the stack |
 | `ss-update-config` | Rebuilds `/var/www/ss-config` from the current upstream boilerplate while transferring supported existing values | Apply the new settings to Nginx, PHP-FPM, MySQL, WordPress, or other modules |
 | `ss-update-modules` | Upgrades installed Ubuntu packages, including the Linux kernel, and removes unused dependencies | Migrate `ss-config`, regenerate module configuration, explicitly restart all services, or reboot |
 | `ss-install` | Reinstalls and reapplies the complete SlickStack environment and managed configuration | Preserve unsupported direct edits to generated files |
@@ -126,7 +126,7 @@ Custom cron files are copied beneath:
 /var/www/backups/crons/
 ```
 
-`ss-worker` is not a replacement for either `ss-update-config` or `ss-update-modules`.
+`ss-worker` is not a replacement for either `ss-update-config` or `ss-update-modules`. However, urgent security and stability hotfixes may include targeted package upgrades, configuration changes, or service restarts. See [Security](security.md).
 
 ## `ss-update-config`: migrate `ss-config`
 
