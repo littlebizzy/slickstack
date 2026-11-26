@@ -86,7 +86,7 @@ Use these guides for detailed setup, configuration, maintenance, troubleshooting
 
 The table below shows the main software used by SlickStack, which versions it currently supports, and what SlickStack configures or maintains for each component.
 
-*Last updated: Jul 20, 2026*
+*Last updated: Nov 26, 2026*
 
 | Module | Version | What SlickStack manages |
 | :------------- | :----------: | :---------- |
