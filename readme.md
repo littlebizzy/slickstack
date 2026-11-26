@@ -12,10 +12,6 @@ SlickStack is a free LEMP stack automation script written in Bash designed to en
 
 &nbsp;
 
-<a href="https://emplibot.com"><img width="150" style="padding: 20px" src="https://slickstack.io/wp-content/uploads/2024/09/emplibot-square.png" /></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="https://www.osoelectric.com"><img width="150" src="https://slickstack.io/wp-content/uploads/2023/04/oso-logo-color-480x467.webp" /></a>
-
-&nbsp;
-
 Our sponsors: [alexbohariuc](https://github.com/alexbohariuc), [backamblock](https://github.com/backamblock), [gingibash](https://github.com/gingibash), [hamzah](https://github.com/hamzah), [liwernyap](https://github.com/liwernyap), [OSO Electric Equipment](https://github.com/Oso-Electric-Equipment), [romfeo](https://github.com/romfeo), [strxno](https://github.com/strxno), [trevplaig](https://github.com/trevplaig), [vivdev](https://github.com/vivdev), [vladbejenaru](https://github.com/vladbejenaru), [volneanschi](https://github.com/volneanschi)
 
 ## Installation
