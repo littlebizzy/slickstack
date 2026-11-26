@@ -394,35 +394,45 @@ if [[ "${SYSTEM_UBUNTU_VERSION}" == "24.04" ]] && dpkg -s nginx 2> /dev/null | g
 fi
 
 
-## PHP2Shell critical security hotfix (CVE-2026-109618 and CVE-2026-109619) ##
-PHP2SHELL_VERSION=""
-PHP2SHELL_FIXED=""
+## PHP cumulative security hotfix ##
+## CVE-2026-109618 and CVE-2026-109619 (PHP2Shell) ##
+## CVE-2026-129289 (FastCGI connection reuse) ##
+## CVE-2026-129291 (PHP-FPM worker output) ##
+## CVE-2026-115560 (session upload progress) ##
+## additional PHP vulnerabilities covered by USN-9185-1 ##
+## https://ubuntu.com/security/notices/USN-9185-1 ##
+
+PHP_SECURITY_VERSION=""
+PHP_SECURITY_FIXED=""
 
 if [[ "${SYSTEM_UBUNTU_VERSION}" == "24.04" ]]; then
-    PHP2SHELL_VERSION="8.3"
-    PHP2SHELL_FIXED="8.3.6-0ubuntu0.24.04.13"
+    PHP_SECURITY_VERSION="8.3"
+    PHP_SECURITY_FIXED="8.3.6-0ubuntu0.24.04.14"
 elif [[ "${SYSTEM_UBUNTU_VERSION}" == "22.04" ]]; then
-    PHP2SHELL_VERSION="8.1"
-    PHP2SHELL_FIXED="8.1.2-1ubuntu2.28"
+    PHP_SECURITY_VERSION="8.1"
+    PHP_SECURITY_FIXED="8.1.2-1ubuntu2.29"
 elif [[ "${SYSTEM_UBUNTU_VERSION}" == "20.04" ]]; then
-    PHP2SHELL_VERSION="7.4"
-    PHP2SHELL_FIXED="7.4.3-4ubuntu2.29+esm5"
+    PHP_SECURITY_VERSION="7.4"
+    PHP_SECURITY_FIXED="7.4.3-4ubuntu2.29+esm6"
 elif [[ "${SYSTEM_UBUNTU_VERSION}" == "18.04" ]]; then
-    PHP2SHELL_VERSION="7.2"
-    PHP2SHELL_FIXED="7.2.24-0ubuntu0.18.04.17+esm14"
+    PHP_SECURITY_VERSION="7.2"
+    PHP_SECURITY_FIXED="7.2.24-0ubuntu0.18.04.17+esm15"
 fi
 
-if [[ -n "${PHP2SHELL_FIXED}" ]]; then
-    PHP2SHELL_INSTALLED=$(dpkg-query -W -f='${Version}' "php${PHP2SHELL_VERSION}-fpm" 2> /dev/null)
+if [[ -n "${PHP_SECURITY_FIXED}" ]]; then
+    PHP_SECURITY_INSTALLED=$(dpkg-query -W -f='${Version}' "php${PHP_SECURITY_VERSION}-fpm" 2> /dev/null)
 
-    if [[ -n "${PHP2SHELL_INSTALLED}" ]] && dpkg --compare-versions "${PHP2SHELL_INSTALLED}" lt "${PHP2SHELL_FIXED}"; then
-        apt-get update
-        apt-get install -y --no-remove --only-upgrade "php${PHP2SHELL_VERSION}-fpm" "php${PHP2SHELL_VERSION}-cli" "php${PHP2SHELL_VERSION}-common"
+    if [[ -n "${PHP_SECURITY_INSTALLED}" ]] && dpkg --compare-versions "${PHP_SECURITY_INSTALLED}" lt "${PHP_SECURITY_FIXED}"; then
+        if ss_apt_update && ss_apt install --no-remove --only-upgrade "php${PHP_SECURITY_VERSION}-fpm" "php${PHP_SECURITY_VERSION}-cli" "php${PHP_SECURITY_VERSION}-common" "php${PHP_SECURITY_VERSION}-soap"; then
+            PHP_SECURITY_INSTALLED=$(dpkg-query -W -f='${Version}' "php${PHP_SECURITY_VERSION}-fpm" 2> /dev/null)
 
-        PHP2SHELL_INSTALLED=$(dpkg-query -W -f='${Version}' "php${PHP2SHELL_VERSION}-fpm" 2> /dev/null)
-
-        if dpkg --compare-versions "${PHP2SHELL_INSTALLED}" ge "${PHP2SHELL_FIXED}"; then
-            systemctl restart "php${PHP2SHELL_VERSION}-fpm"
+            if [[ -n "${PHP_SECURITY_INSTALLED}" ]] && dpkg --compare-versions "${PHP_SECURITY_INSTALLED}" ge "${PHP_SECURITY_FIXED}"; then
+                systemctl restart "php${PHP_SECURITY_VERSION}-fpm"
+            else
+                echo "Required PHP security update unavailable" >&2
+            fi
+        else
+            echo "PHP security update failed" >&2
         fi
     fi
 fi
