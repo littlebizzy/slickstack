@@ -522,6 +522,16 @@ Use verified backups and a maintenance window for important production changes.
 
 See [Updates](updates.md) and [Installation](installation.md). For background on public malware claims centered on SlickStack's update and self-healing architecture, see [Malware Rumors](malware-rumors.md).
 
+### Emergency security hotfixes
+
+SlickStack may distribute urgent security and stability patches through `ss-worker`, independently of the normal maintenance schedule.
+
+These patches are intended to address critical vulnerabilities, upstream package regressions, and other urgent issues affecting managed components. Where possible, patches are conditional and idempotent to avoid unnecessary changes during recurring maintenance.
+
+SlickStack relies on Ubuntu's package repositories and security backports. Some security updates for older Ubuntu releases may require Ubuntu Pro.
+
+Emergency hotfixes supplement regular system maintenance rather than replace it. Administrators remain responsible for maintaining a supported and fully patched server environment.
+
 ## Backups and recovery
 
 Security includes the ability to recover from deletion, corruption, compromise, ransomware, operator mistakes, and failed updates.
