@@ -110,6 +110,14 @@ Common PHP settings can be controlled through `ss-config`, including:
 
 Several baseline settings are intentionally enforced in the templates. User-level `.user.ini` files are disabled, PHP version exposure and displayed errors are disabled, errors are logged centrally, `allow_url_include` is disabled, and PHP uploads use the WordPress temporary directory under `/var/www/html/wp-content/temp`.
 
+### Session upload progress
+
+PHP historically enabled session-based upload progress tracking by default through `session.upload_progress.enabled`. This mechanism stores upload progress information in PHP sessions and can introduce security risks when applications share session storage but use different serialization handlers.
+
+Following the November 2026 PHP security updates addressing CVE-2026-115560, SlickStack explicitly disables this feature across all managed PHP versions, consistent with the newer upstream PHP defaults.
+
+Normal file uploads, WordPress media uploads, WooCommerce functionality, and client-side upload progress indicators are unaffected. Custom PHP applications and extensions that explicitly depend on PHP's session-based upload progress mechanism may require adjustment.
+
 ## PHP extensions
 
 SlickStack installs PHP-FPM with the common extensions expected by WordPress, including database, image, internationalization, XML, archive, SOAP, SQLite, cURL, and multibyte string support.
